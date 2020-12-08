@@ -1,0 +1,18 @@
+PODS:
+  - CardScan (1.0.5050):
+    - CardScan/Core (= 1.0.5050)
+  - CardScan/Core (1.0.5050)
+
+DEPENDENCIES:
+  - CardScan
+
+SPEC REPOS:
+  trunk:
+    - CardScan
+
+SPEC CHECKSUMS:
+  CardScan: 849c4da1bc84740a496f4898f9e9c3cc6ee7205e
+
+PODFILE CHECKSUM: 55fc36a43ce1779cbad1bd9c36db10c103c5cb78
+
+COCOAPODS: 1.10.0
