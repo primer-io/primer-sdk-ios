@@ -28,21 +28,21 @@
 		1D033B65257EF7D300EE9301 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B44257EF7D200EE9301 /* APIClient.swift */; };
 		1D033B66257EF7D300EE9301 /* UniversalCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B45257EF7D200EE9301 /* UniversalCheckout.swift */; };
 		1D033B68257EF7D300EE9301 /* APIClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B4B257EF7D300EE9301 /* APIClientProtocol.swift */; };
-		1D033BA2257EF8C000EE9301 /* UIViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B93257EF8C000EE9301 /* UIViewExtensions.swift */; };
-		1D033BA3257EF8C000EE9301 /* Veil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B94257EF8C000EE9301 /* Veil.swift */; };
-		1D033BA4257EF8C000EE9301 /* TransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B96257EF8C000EE9301 /* TransitioningDelegate.swift */; };
-		1D033BA5257EF8C000EE9301 /* PresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B98257EF8C000EE9301 /* PresentationController.swift */; };
-		1D033BA6257EF8C000EE9301 /* VaultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B99257EF8C000EE9301 /* VaultViewController.swift */; };
-		1D033BA7257EF8C000EE9301 /* OverlayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B9A257EF8C000EE9301 /* OverlayViewController.swift */; };
-		1D033BA8257EF8C000EE9301 /* CardScannerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B9B257EF8C000EE9301 /* CardScannerVC.swift */; };
-		1D033BA9257EF8C000EE9301 /* AddCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B9C257EF8C000EE9301 /* AddCardView.swift */; };
-		1D033BAA257EF8C000EE9301 /* VaultPaymentMethodVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B9D257EF8C000EE9301 /* VaultPaymentMethodVC.swift */; };
-		1D033BAB257EF8C000EE9301 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033B9F257EF8C000EE9301 /* ScannerView.swift */; };
-		1D033BAC257EF8C000EE9301 /* VaultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033BA0257EF8C000EE9301 /* VaultView.swift */; };
-		1D033BAD257EF8C000EE9301 /* CardFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033BA1257EF8C000EE9301 /* CardFormView.swift */; };
 		1D033BB8257EFD2100EE9301 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1D033BB7257EFD2100EE9301 /* Icons.xcassets */; };
 		1D033BE3257F047F00EE9301 /* Pods_PrimerSDKExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26F2626E3D28CC6CABCF9ABF /* Pods_PrimerSDKExample.framework */; };
 		1D033BE4257F047F00EE9301 /* Pods_PrimerSDKExample.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 26F2626E3D28CC6CABCF9ABF /* Pods_PrimerSDKExample.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1D033C7C257F10EF00EE9301 /* UIViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C6D257F10EF00EE9301 /* UIViewExtensions.swift */; };
+		1D033C7D257F10EF00EE9301 /* Veil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C6E257F10EF00EE9301 /* Veil.swift */; };
+		1D033C7E257F10EF00EE9301 /* TransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C70257F10EF00EE9301 /* TransitioningDelegate.swift */; };
+		1D033C7F257F10EF00EE9301 /* PresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C72257F10EF00EE9301 /* PresentationController.swift */; };
+		1D033C80257F10EF00EE9301 /* VaultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C73257F10EF00EE9301 /* VaultViewController.swift */; };
+		1D033C81257F10EF00EE9301 /* OverlayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C74257F10EF00EE9301 /* OverlayViewController.swift */; };
+		1D033C82257F10EF00EE9301 /* CardScannerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C75257F10EF00EE9301 /* CardScannerVC.swift */; };
+		1D033C83257F10EF00EE9301 /* AddCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C76257F10EF00EE9301 /* AddCardView.swift */; };
+		1D033C84257F10EF00EE9301 /* VaultPaymentMethodVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C77257F10EF00EE9301 /* VaultPaymentMethodVC.swift */; };
+		1D033C85257F10EF00EE9301 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C79257F10EF00EE9301 /* ScannerView.swift */; };
+		1D033C86257F10EF00EE9301 /* VaultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C7A257F10EF00EE9301 /* VaultView.swift */; };
+		1D033C87257F10EF00EE9301 /* CardFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C7B257F10EF00EE9301 /* CardFormView.swift */; };
 		399A9BA6E5ECDB9CABE4D6AB /* Pods_PrimerSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E419CD5C3011C94D70A97A01 /* Pods_PrimerSDK.framework */; };
 		E4E607881AE8E071A5978F19 /* Pods_PrimerSDK_PrimerSDKTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EA5F2AA83F67D88FF4CC9F /* Pods_PrimerSDK_PrimerSDKTests.framework */; };
 /* End PBXBuildFile section */
@@ -100,24 +100,24 @@
 		1D033B44257EF7D200EE9301 /* APIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		1D033B45257EF7D200EE9301 /* UniversalCheckout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniversalCheckout.swift; sourceTree = "<group>"; };
 		1D033B4B257EF7D300EE9301 /* APIClientProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClientProtocol.swift; sourceTree = "<group>"; };
-		1D033B93257EF8C000EE9301 /* UIViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtensions.swift; sourceTree = "<group>"; };
-		1D033B94257EF8C000EE9301 /* Veil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Veil.swift; sourceTree = "<group>"; };
-		1D033B96257EF8C000EE9301 /* TransitioningDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitioningDelegate.swift; sourceTree = "<group>"; };
-		1D033B98257EF8C000EE9301 /* PresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentationController.swift; sourceTree = "<group>"; };
-		1D033B99257EF8C000EE9301 /* VaultViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultViewController.swift; sourceTree = "<group>"; };
-		1D033B9A257EF8C000EE9301 /* OverlayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverlayViewController.swift; sourceTree = "<group>"; };
-		1D033B9B257EF8C000EE9301 /* CardScannerVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardScannerVC.swift; sourceTree = "<group>"; };
-		1D033B9C257EF8C000EE9301 /* AddCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddCardView.swift; sourceTree = "<group>"; };
-		1D033B9D257EF8C000EE9301 /* VaultPaymentMethodVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodVC.swift; sourceTree = "<group>"; };
-		1D033B9F257EF8C000EE9301 /* ScannerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
-		1D033BA0257EF8C000EE9301 /* VaultView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultView.swift; sourceTree = "<group>"; };
-		1D033BA1257EF8C000EE9301 /* CardFormView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardFormView.swift; sourceTree = "<group>"; };
 		1D033BB7257EFD2100EE9301 /* Icons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Icons.xcassets; sourceTree = "<group>"; };
 		1D033BEF257F053700EE9301 /* CardScan.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CardScan.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D033BF6257F057A00EE9301 /* CardScan.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = CardScan.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D033C04257F062000EE9301 /* CardScan.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CardScan.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D033C09257F064000EE9301 /* CardScan.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = CardScan.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D033C20257F07AE00EE9301 /* CardScan.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CardScan.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D033C6D257F10EF00EE9301 /* UIViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtensions.swift; sourceTree = "<group>"; };
+		1D033C6E257F10EF00EE9301 /* Veil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Veil.swift; sourceTree = "<group>"; };
+		1D033C70257F10EF00EE9301 /* TransitioningDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitioningDelegate.swift; sourceTree = "<group>"; };
+		1D033C72257F10EF00EE9301 /* PresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentationController.swift; sourceTree = "<group>"; };
+		1D033C73257F10EF00EE9301 /* VaultViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultViewController.swift; sourceTree = "<group>"; };
+		1D033C74257F10EF00EE9301 /* OverlayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverlayViewController.swift; sourceTree = "<group>"; };
+		1D033C75257F10EF00EE9301 /* CardScannerVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardScannerVC.swift; sourceTree = "<group>"; };
+		1D033C76257F10EF00EE9301 /* AddCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddCardView.swift; sourceTree = "<group>"; };
+		1D033C77257F10EF00EE9301 /* VaultPaymentMethodVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodVC.swift; sourceTree = "<group>"; };
+		1D033C79257F10EF00EE9301 /* ScannerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
+		1D033C7A257F10EF00EE9301 /* VaultView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultView.swift; sourceTree = "<group>"; };
+		1D033C7B257F10EF00EE9301 /* CardFormView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardFormView.swift; sourceTree = "<group>"; };
 		26F2626E3D28CC6CABCF9ABF /* Pods_PrimerSDKExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDKExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2915241A04C95830CFE8DD6E /* Pods-PrimerSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK/Pods-PrimerSDK.debug.xcconfig"; sourceTree = "<group>"; };
 		52EA5F2AA83F67D88FF4CC9F /* Pods_PrimerSDK_PrimerSDKTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_PrimerSDKTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -181,7 +181,7 @@
 		1D033A98257EF24000EE9301 /* PrimerSDK */ = {
 			isa = PBXGroup;
 			children = (
-				1D033B91257EF8C000EE9301 /* UI */,
+				1D033C6B257F10EF00EE9301 /* UI */,
 				1D033B38257EF7D200EE9301 /* Core */,
 				1D033A99257EF24000EE9301 /* PrimerSDK.h */,
 				1D033A9A257EF24000EE9301 /* Info.plist */,
@@ -256,54 +256,53 @@
 			path = ClientToken;
 			sourceTree = "<group>";
 		};
-		1D033B91257EF8C000EE9301 /* UI */ = {
+		1D033C6B257F10EF00EE9301 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				1D033B92257EF8C000EE9301 /* Utils */,
-				1D033B95257EF8C000EE9301 /* Delegates */,
-				1D033B97257EF8C000EE9301 /* Controllers */,
-				1D033B9E257EF8C000EE9301 /* Views */,
+				1D033C6C257F10EF00EE9301 /* Utils */,
+				1D033C6F257F10EF00EE9301 /* Delegates */,
+				1D033C71257F10EF00EE9301 /* Controllers */,
+				1D033C78257F10EF00EE9301 /* Views */,
 			);
-			name = UI;
-			path = "../../Clone/demo-primer-sdk-ios/DemoPrimerSDK/UI";
+			path = UI;
 			sourceTree = "<group>";
 		};
-		1D033B92257EF8C000EE9301 /* Utils */ = {
+		1D033C6C257F10EF00EE9301 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				1D033B93257EF8C000EE9301 /* UIViewExtensions.swift */,
-				1D033B94257EF8C000EE9301 /* Veil.swift */,
+				1D033C6D257F10EF00EE9301 /* UIViewExtensions.swift */,
+				1D033C6E257F10EF00EE9301 /* Veil.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
 		};
-		1D033B95257EF8C000EE9301 /* Delegates */ = {
+		1D033C6F257F10EF00EE9301 /* Delegates */ = {
 			isa = PBXGroup;
 			children = (
-				1D033B96257EF8C000EE9301 /* TransitioningDelegate.swift */,
+				1D033C70257F10EF00EE9301 /* TransitioningDelegate.swift */,
 			);
 			path = Delegates;
 			sourceTree = "<group>";
 		};
-		1D033B97257EF8C000EE9301 /* Controllers */ = {
+		1D033C71257F10EF00EE9301 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				1D033B98257EF8C000EE9301 /* PresentationController.swift */,
-				1D033B99257EF8C000EE9301 /* VaultViewController.swift */,
-				1D033B9A257EF8C000EE9301 /* OverlayViewController.swift */,
-				1D033B9B257EF8C000EE9301 /* CardScannerVC.swift */,
-				1D033B9C257EF8C000EE9301 /* AddCardView.swift */,
-				1D033B9D257EF8C000EE9301 /* VaultPaymentMethodVC.swift */,
+				1D033C72257F10EF00EE9301 /* PresentationController.swift */,
+				1D033C73257F10EF00EE9301 /* VaultViewController.swift */,
+				1D033C74257F10EF00EE9301 /* OverlayViewController.swift */,
+				1D033C75257F10EF00EE9301 /* CardScannerVC.swift */,
+				1D033C76257F10EF00EE9301 /* AddCardView.swift */,
+				1D033C77257F10EF00EE9301 /* VaultPaymentMethodVC.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
 		};
-		1D033B9E257EF8C000EE9301 /* Views */ = {
+		1D033C78257F10EF00EE9301 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				1D033B9F257EF8C000EE9301 /* ScannerView.swift */,
-				1D033BA0257EF8C000EE9301 /* VaultView.swift */,
-				1D033BA1257EF8C000EE9301 /* CardFormView.swift */,
+				1D033C79257F10EF00EE9301 /* ScannerView.swift */,
+				1D033C7A257F10EF00EE9301 /* VaultView.swift */,
+				1D033C7B257F10EF00EE9301 /* CardFormView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -587,29 +586,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D033B68257EF7D300EE9301 /* APIClientProtocol.swift in Sources */,
+				1D033C86257F10EF00EE9301 /* VaultView.swift in Sources */,
 				1D033B62257EF7D300EE9301 /* PaymentMethod.swift in Sources */,
-				1D033BA4257EF8C000EE9301 /* TransitioningDelegate.swift in Sources */,
+				1D033C85257F10EF00EE9301 /* ScannerView.swift in Sources */,
 				1D033B66257EF7D300EE9301 /* UniversalCheckout.swift in Sources */,
-				1D033BA5257EF8C000EE9301 /* PresentationController.swift in Sources */,
-				1D033BA8257EF8C000EE9301 /* CardScannerVC.swift in Sources */,
 				1D033B58257EF7D300EE9301 /* PaymentMethodToken.swift in Sources */,
-				1D033BAA257EF8C000EE9301 /* VaultPaymentMethodVC.swift in Sources */,
+				1D033C87257F10EF00EE9301 /* CardFormView.swift in Sources */,
 				1D033B65257EF7D300EE9301 /* APIClient.swift in Sources */,
-				1D033BA7257EF8C000EE9301 /* OverlayViewController.swift in Sources */,
+				1D033C83257F10EF00EE9301 /* AddCardView.swift in Sources */,
 				1D033B55257EF7D300EE9301 /* UniversalCheckoutProtocol.swift in Sources */,
-				1D033BA9257EF8C000EE9301 /* AddCardView.swift in Sources */,
+				1D033C7D257F10EF00EE9301 /* Veil.swift in Sources */,
 				1D033B64257EF7D300EE9301 /* ClientTokenProviderProtocol.swift in Sources */,
-				1D033BA2257EF8C000EE9301 /* UIViewExtensions.swift in Sources */,
 				1D033B5C257EF7D300EE9301 /* PaymentMethodTokenizationError.swift in Sources */,
 				1D033B4F257EF7D300EE9301 /* Primer.swift in Sources */,
-				1D033BAD257EF8C000EE9301 /* CardFormView.swift in Sources */,
-				1D033BA6257EF8C000EE9301 /* VaultViewController.swift in Sources */,
-				1D033BA3257EF8C000EE9301 /* Veil.swift in Sources */,
+				1D033C82257F10EF00EE9301 /* CardScannerVC.swift in Sources */,
+				1D033C80257F10EF00EE9301 /* VaultViewController.swift in Sources */,
+				1D033C7E257F10EF00EE9301 /* TransitioningDelegate.swift in Sources */,
+				1D033C84257F10EF00EE9301 /* VaultPaymentMethodVC.swift in Sources */,
 				1D033B5A257EF7D300EE9301 /* ClientToken.swift in Sources */,
 				1D033B51257EF7D300EE9301 /* ClientTokenProvider.swift in Sources */,
-				1D033BAC257EF8C000EE9301 /* VaultView.swift in Sources */,
+				1D033C7F257F10EF00EE9301 /* PresentationController.swift in Sources */,
+				1D033C7C257F10EF00EE9301 /* UIViewExtensions.swift in Sources */,
+				1D033C81257F10EF00EE9301 /* OverlayViewController.swift in Sources */,
 				1D033B52257EF7D300EE9301 /* PaymentMethodTokenizationRequest.swift in Sources */,
-				1D033BAB257EF8C000EE9301 /* ScannerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
