@@ -102,6 +102,7 @@ Have an Xcode project ready or generate a new one.
 
 To run app with local server while testing please add the following to the app's info.plist:
 ```
+<key>NSAppTransportSecurity</key>
 <dict>
 	<key>NSAllowsArbitraryLoads</key>
 	<true/>
