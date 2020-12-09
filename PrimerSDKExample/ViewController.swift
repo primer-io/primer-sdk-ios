@@ -1,10 +1,3 @@
-//
-//  ViewController.swift
-//  PrimerSDKExample
-//
-//  Created by Carl Eriksson on 07/12/2020.
-//
-
 import UIKit
 import PrimerSDK
 
@@ -15,15 +8,25 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
-    @IBAction func showCheckout() {
+    @IBAction func showVaultCheckout() {
         Primer.showCheckout(
             delegate: self,
+            vault: true,
             paymentMethod: .card,
             amount: 200,
             currency: Currency.GBP,
             customerId: "customer_1"
         )
-        
+    }
+    
+    @IBAction func showDirectCheckout() {
+        Primer.showCheckout(
+            delegate: self,
+            vault: false,
+            paymentMethod: .card,
+            amount: 200,
+            currency: Currency.GBP
+        )
     }
     
     private func callApi(_ req: URLRequest, completion: @escaping (_ result: Result<Data, Error>) -> Void) {
@@ -81,10 +84,11 @@ enum NetworkError: Error {
 }
 
 extension ViewController: PrimerCheckoutDelegate {
-    
     func clientTokenCallback(_ completion: @escaping (Result<ClientTokenResponse, Error>) -> Void) {
         
-        let endpoint = "http://localhost:8020/client-token"
+        let root = "http://localhost:8020"
+        
+        let endpoint = "\(root)/client-token"
         
         guard let url = URL(string: endpoint) else {
             completion(.failure(NetworkError.missingParams))
@@ -113,17 +117,18 @@ extension ViewController: PrimerCheckoutDelegate {
         })
     }
     
-    func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Result<Bool, Error>) -> Void) {
+    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         
         guard let token = result.token else {
-            completion(.failure(NetworkError.missingParams))
+            completion(NetworkError.missingParams)
             return
         }
         
-        let endpoint = "http://localhost:8020/authorize"
+        let root = "http://localhost:8020"
+        let endpoint = "\(root)/authorize"
         
         guard let url = URL(string: endpoint) else  {
-            completion(.failure(NetworkError.missingParams))
+            completion(NetworkError.missingParams)
             return
         }
         
@@ -136,23 +141,17 @@ extension ViewController: PrimerCheckoutDelegate {
         do {
             request.httpBody = try JSONEncoder().encode(body)
         } catch {
-            completion(.failure(NetworkError.missingParams))
+            completion(NetworkError.missingParams)
             return
         }
         
         callApi(request, completion: {
             result in
             switch result {
-            case .success(let data):
-                // serialize data
-                do {
-                    let res = try JSONDecoder().decode(AuthorizationResponse.self, from: data)
-                    completion(.success(res.success))
-                } catch {
-                    completion(.failure(NetworkError.serializationError))
-                }
+            case .success:
+                completion(nil)
             case .failure(let err):
-                completion(.failure(err))
+                completion(err)
             }
         })
     }

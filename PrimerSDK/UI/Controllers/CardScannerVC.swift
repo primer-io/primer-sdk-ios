@@ -66,5 +66,6 @@ extension CardScannerVC: SimpleScanDelegate {
         print("scanned! 🥳:", creditCard)
         let details = CreditCardDetails(name: creditCard.name, number: creditCard.number, expiryMonth: creditCard.expiryMonth, expiryYear: creditCard.expiryYear)
         creditCardDelegate?.setScannedCardDetails(details)
+        dismiss(animated: true, completion: nil)
     }
 }

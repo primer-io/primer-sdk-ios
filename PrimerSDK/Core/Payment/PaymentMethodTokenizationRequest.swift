@@ -2,9 +2,9 @@ import Foundation
 
 struct PaymentMethodTokenizationRequest: Encodable {
     let paymentInstrument: PaymentInstrument
-    let tokenType: String
-    let paymentFlow: String
-    let customerId: String
+    let tokenType: TokenType?
+    let paymentFlow: PaymentFlow?
+    let customerId: String?
 }
 
 struct PaymentInstrument: Encodable {
@@ -16,4 +16,13 @@ struct PaymentInstrument: Encodable {
     var cardholderName: String? = nil
     // PayPal
     var paypalOrderId: String? = nil
+}
+
+enum TokenType: String, Encodable {
+    case multiUse = "MULTI_USE"
+    case singleUse = "SINGLE_USE"
+}
+
+enum PaymentFlow: String, Encodable {
+    case vault = "VAULT"
 }
