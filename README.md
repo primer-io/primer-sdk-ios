@@ -1,7 +1,7 @@
 # primer-sdk-ios
-iOS SDK for Primer
+This is the iOS SDK for Primer. To get started quickly, just git clone this repo, follow the backend setup below (make sure to add your own sandbox API key), run the server in Node, then the app in Xcode, and you're good to go!
 
-## Integration
+## Get started
 
 ### Backend setup
 
@@ -20,6 +20,10 @@ npm install body-parser express node-fetch
 touch app.js
 
 // open app.js in your code editor and set up the correct routes, for example:
+
+////////////////////////////
+////////////////////////////
+////////////////////////////
 
 const bodyParser = require("body-parser");
 const express = require("express");
@@ -78,8 +82,49 @@ app.post("/authorize", async (req, res) => {
 });
 
 app.listen(PORT);
+
+////////////////////////////
+////////////////////////////
+////////////////////////////
+
+// run app.js in terminal:
+
+node app.js
+
 ```
 
-### Install Cocoapod
+### App setup
 
+Have an Xcode project ready or generate a new one.
+
+
+#### Info.plist
+
+To run app with local server while testing please add the following to the app's info.plist:
+```
+<dict>
+	<key>NSAllowsArbitraryLoads</key>
+	<true/>
+	<key>NSExceptionDomains</key>
+	<dict>
+		<key>yourdomain.com</key>
+		<dict>
+			<key>NSIncludesSubdomains</key>
+			<true/>
+			<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+			<false/>
+		</dict>
+	</dict>
+</dict>
+
+```
+
+The following is camera permissions also need to be added to info.plist to access the card scanning feature:
+```
+<key>NSCameraUsageDescription</key>
+<string>Primer needs camera access to scan card.</string>
+```
+
+
+### Install Cocoapod
 
