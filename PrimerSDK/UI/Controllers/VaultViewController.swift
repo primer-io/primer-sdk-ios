@@ -31,18 +31,18 @@ class VaultViewController: UIViewController {
         addSpinner()
         
         checkout.loadPaymentMethods({
-            (result: Result<Bool, Error>) in
+            error in
             
             DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    self.removeSpinner()
-                    self.configurePayButton()
-                    self.configureTableView()
-                    
-                case .failure:
-                    print("failure!")
+                
+                if let error = error {
+                    print("failure!", error)
+                    return
                 }
+                
+                self.removeSpinner()
+                self.configurePayButton()
+                self.configureTableView()
             }
             
         })
@@ -76,7 +76,7 @@ class VaultViewController: UIViewController {
         payButton.setTitleColor(.white, for: .normal)
         payButton.backgroundColor = .black
         
-        payButton.addTarget(self, action: #selector(authorizePay), for: .touchUpInside)
+        payButton.addTarget(self, action: #selector(completePayment), for: .touchUpInside)
         
         payButton.translatesAutoresizingMaskIntoConstraints = false
         payButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -12).isActive = true
@@ -86,43 +86,52 @@ class VaultViewController: UIViewController {
         payButton.heightAnchor.constraint(equalToConstant: 64).isActive = true
     }
     
-    @objc private func authorizePay() {
+    @objc private func completePayment() {
         
-        self.payButton.isUserInteractionEnabled = false
-        self.payButton.setTitle("", for: .normal)
-        let newSpinner = UIActivityIndicatorView()
-        newSpinner.color = .white
-        self.payButton.addSubview(newSpinner)
-        newSpinner.translatesAutoresizingMaskIntoConstraints = false
-        newSpinner.centerXAnchor.constraint(equalTo: self.payButton.centerXAnchor).isActive = true
-        newSpinner.centerYAnchor.constraint(equalTo: self.payButton.centerYAnchor).isActive = true
-        newSpinner.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        newSpinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        newSpinner.startAnimating()
+        self.payButton.showSpinner()
         
-        self.checkout.authorizePayment({
-            [weak self] result in
+        self.checkout.authorizePayment(paymentInstrument: nil, onAuthorizationSuccess: { error in
             
             DispatchQueue.main.async {
-                guard let self = self else { return }
                 
                 var alert: UIAlertController
-                switch result {
-                case .failure(let err): alert = UIAlertController(title: "Error!", message: err.localizedDescription, preferredStyle: UIAlertController.Style.alert)
-                case .success: alert = UIAlertController(title: "Success!", message: "Purchase completed.", preferredStyle: UIAlertController.Style.alert)
+                
+                if let error = error {
+                    alert = UIAlertController(title: "Error!", message: error.localizedDescription, preferredStyle: UIAlertController.Style.alert)
+                } else {
+                    alert = UIAlertController(title: "Success!", message: "Purchase completed.", preferredStyle: UIAlertController.Style.alert)
                 }
                 
                 alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: {
                     _ in
-                    self.dismiss(animated: true, completion: {
-                        
-                    })
+                    self.dismiss(animated: true, completion: nil)
                 }))
                 
                 self.present(alert, animated: true, completion: nil)
             }
             
         })
+    }
+}
+
+extension UIButton {
+    func showSpinner(_ color: UIColor = .white) {
+        self.isUserInteractionEnabled = false
+        self.setTitle("", for: .normal)
+        let newSpinner = UIActivityIndicatorView()
+        newSpinner.color = color
+        self.addSubview(newSpinner)
+        newSpinner.translatesAutoresizingMaskIntoConstraints = false
+        newSpinner.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        newSpinner.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        newSpinner.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        newSpinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        newSpinner.startAnimating()
+    }
+    
+    func hideSpinner(_ title: String, spinner: UIActivityIndicatorView) {
+        spinner.removeFromSuperview()
+        self.setTitle("", for: .normal)
     }
 }
 

@@ -43,12 +43,24 @@
 		1D033C85257F10EF00EE9301 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C79257F10EF00EE9301 /* ScannerView.swift */; };
 		1D033C86257F10EF00EE9301 /* VaultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C7A257F10EF00EE9301 /* VaultView.swift */; };
 		1D033C87257F10EF00EE9301 /* CardFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C7B257F10EF00EE9301 /* CardFormView.swift */; };
+		1D033C8D257F758B00EE9301 /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C8C257F758B00EE9301 /* Validation.swift */; };
+		1D033C94257F94A300EE9301 /* PrimerSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D033A96257EF24000EE9301 /* PrimerSDK.framework */; };
+		1D033C95257F94A300EE9301 /* PrimerSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1D033A96257EF24000EE9301 /* PrimerSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1D033C9B2580EEEA00EE9301 /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C9A2580EEEA00EE9301 /* UIViewControllerExtensions.swift */; };
+		1D033C9F2580EF1B00EE9301 /* UITextFieldExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C9E2580EF1B00EE9301 /* UITextFieldExtensions.swift */; };
 		399A9BA6E5ECDB9CABE4D6AB /* Pods_PrimerSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E419CD5C3011C94D70A97A01 /* Pods_PrimerSDK.framework */; };
 		E4E607881AE8E071A5978F19 /* Pods_PrimerSDK_PrimerSDKTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EA5F2AA83F67D88FF4CC9F /* Pods_PrimerSDK_PrimerSDKTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		1D033AA1257EF24100EE9301 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1D033A8D257EF24000EE9301 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D033A95257EF24000EE9301;
+			remoteInfo = PrimerSDK;
+		};
+		1D033C96257F94A300EE9301 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1D033A8D257EF24000EE9301 /* Project object */;
 			proxyType = 1;
@@ -64,6 +76,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				1D033C95257F94A300EE9301 /* PrimerSDK.framework in Embed Frameworks */,
 				1D033BE4257F047F00EE9301 /* Pods_PrimerSDKExample.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -118,6 +131,9 @@
 		1D033C79257F10EF00EE9301 /* ScannerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
 		1D033C7A257F10EF00EE9301 /* VaultView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultView.swift; sourceTree = "<group>"; };
 		1D033C7B257F10EF00EE9301 /* CardFormView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardFormView.swift; sourceTree = "<group>"; };
+		1D033C8C257F758B00EE9301 /* Validation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validation.swift; sourceTree = "<group>"; };
+		1D033C9A2580EEEA00EE9301 /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
+		1D033C9E2580EF1B00EE9301 /* UITextFieldExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtensions.swift; sourceTree = "<group>"; };
 		26F2626E3D28CC6CABCF9ABF /* Pods_PrimerSDKExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDKExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2915241A04C95830CFE8DD6E /* Pods-PrimerSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK/Pods-PrimerSDK.debug.xcconfig"; sourceTree = "<group>"; };
 		52EA5F2AA83F67D88FF4CC9F /* Pods_PrimerSDK_PrimerSDKTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_PrimerSDKTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -149,6 +165,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D033C94257F94A300EE9301 /* PrimerSDK.framework in Frameworks */,
 				1D033BE3257F047F00EE9301 /* Pods_PrimerSDKExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -271,7 +288,10 @@
 			isa = PBXGroup;
 			children = (
 				1D033C6D257F10EF00EE9301 /* UIViewExtensions.swift */,
+				1D033C9A2580EEEA00EE9301 /* UIViewControllerExtensions.swift */,
+				1D033C9E2580EF1B00EE9301 /* UITextFieldExtensions.swift */,
 				1D033C6E257F10EF00EE9301 /* Veil.swift */,
+				1D033C8C257F758B00EE9301 /* Validation.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -402,6 +422,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				1D033C97257F94A300EE9301 /* PBXTargetDependency */,
 			);
 			name = PrimerSDKExample;
 			productName = PrimerSDKExample;
@@ -588,6 +609,7 @@
 				1D033B68257EF7D300EE9301 /* APIClientProtocol.swift in Sources */,
 				1D033C86257F10EF00EE9301 /* VaultView.swift in Sources */,
 				1D033B62257EF7D300EE9301 /* PaymentMethod.swift in Sources */,
+				1D033C9F2580EF1B00EE9301 /* UITextFieldExtensions.swift in Sources */,
 				1D033C85257F10EF00EE9301 /* ScannerView.swift in Sources */,
 				1D033B66257EF7D300EE9301 /* UniversalCheckout.swift in Sources */,
 				1D033B58257EF7D300EE9301 /* PaymentMethodToken.swift in Sources */,
@@ -598,8 +620,10 @@
 				1D033C7D257F10EF00EE9301 /* Veil.swift in Sources */,
 				1D033B64257EF7D300EE9301 /* ClientTokenProviderProtocol.swift in Sources */,
 				1D033B5C257EF7D300EE9301 /* PaymentMethodTokenizationError.swift in Sources */,
+				1D033C8D257F758B00EE9301 /* Validation.swift in Sources */,
 				1D033B4F257EF7D300EE9301 /* Primer.swift in Sources */,
 				1D033C82257F10EF00EE9301 /* CardScannerVC.swift in Sources */,
+				1D033C9B2580EEEA00EE9301 /* UIViewControllerExtensions.swift in Sources */,
 				1D033C80257F10EF00EE9301 /* VaultViewController.swift in Sources */,
 				1D033C7E257F10EF00EE9301 /* TransitioningDelegate.swift in Sources */,
 				1D033C84257F10EF00EE9301 /* VaultPaymentMethodVC.swift in Sources */,
@@ -637,6 +661,11 @@
 			isa = PBXTargetDependency;
 			target = 1D033A95257EF24000EE9301 /* PrimerSDK */;
 			targetProxy = 1D033AA1257EF24100EE9301 /* PBXContainerItemProxy */;
+		};
+		1D033C97257F94A300EE9301 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1D033A95257EF24000EE9301 /* PrimerSDK */;
+			targetProxy = 1D033C96257F94A300EE9301 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -787,6 +816,7 @@
 			baseConfigurationReference = 2915241A04C95830CFE8DD6E /* Pods-PrimerSDK.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -816,6 +846,7 @@
 			baseConfigurationReference = D5A6C8F1791F02094438D9AE /* Pods-PrimerSDK.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
