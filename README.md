@@ -120,7 +120,7 @@ To run app with local server while testing please add the following to the app's
 
 ```
 
-The following is camera permissions also need to be added to info.plist to access the card scanning feature:
+The following camera permissions also need to be added to info.plist to access the card scanning feature:
 ```
 <key>NSCameraUsageDescription</key>
 <string>Primer needs camera access to scan card.</string>
