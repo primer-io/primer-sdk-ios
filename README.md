@@ -128,4 +128,40 @@ The following camera permissions also need to be added to info.plist to access t
 
 
 ### Install Cocoapod
+Do the following to add the Primer SDK Cocoapod to your app:
+```
+// in the terminal, in the app project's directory:
 
+pod init
+
+open Podfile
+
+////////////////////////////
+////////////////////////////
+////////////////////////////
+
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+source 'https://github.com/CocoaPods/Specs.git'
+source 'git@github.com:primer-io/primer-sdk-podspecs.git'
+
+target 'shoppie' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for shoppie
+  pod 'PrimerSDK'
+
+end
+
+////////////////////////////
+////////////////////////////
+////////////////////////////
+
+// in the terminal
+
+pod install
+
+//restart Xcode and open .xcworkspace file
+```
