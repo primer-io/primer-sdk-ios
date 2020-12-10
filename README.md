@@ -1,4 +1,7 @@
 # primer-sdk-ios
+
+![Version](https://img.shields.io/cocoapods/v/ScannerProject.svg?style=flat)
+
 This is the iOS SDK for Primer. To get started quickly, just git clone this repo, follow the backend setup below (make sure to add your own sandbox API key), run the server in Node, then the app in Xcode, and you're good to go!
 
 ## Get started
