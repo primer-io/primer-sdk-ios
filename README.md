@@ -8,9 +8,9 @@ This is the iOS SDK for Primer. To get started quickly, just git clone this repo
 
 ### Backend setup
 
-Before integrating, ensure you have a local server endpoint with the correct setup.
+Before integrating, ensure you have a server endpoint with the correct setup.
 
-Example:
+Local server example:
 ```
 mkdir myServer
 
