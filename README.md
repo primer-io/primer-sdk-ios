@@ -103,9 +103,11 @@ Have an Xcode project ready or generate a new one.
 
 #### Info.plist
 
-To run app with local server while testing please add the following to the app's info.plist:
+To run app with local server while testing please copy/paste the following to the app's info.plist in Xcode:
 ```
-<key>NSAppTransportSecurity</key>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
 <dict>
 	<key>NSAllowsArbitraryLoads</key>
 	<true/>
@@ -120,13 +122,18 @@ To run app with local server while testing please add the following to the app's
 		</dict>
 	</dict>
 </dict>
+</plist>
+
 
 ```
 
 The following camera permissions also need to be added to info.plist to access the card scanning feature:
 ```
-<key>NSCameraUsageDescription</key>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
 <string>Primer needs camera access to scan card.</string>
+</plist>
 ```
 
 
