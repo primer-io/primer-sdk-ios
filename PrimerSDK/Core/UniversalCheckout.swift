@@ -18,7 +18,6 @@ enum PrimerEndpoint: String {
 
 class UniversalCheckout: NSObject, UniversalCheckoutProtocol {
     
-    // Endpoints
     let coreEndpoint = ProcessInfo.processInfo.environment[PrimerEndpoint.CORE.rawValue] ?? ""
     let pciEndpoint = ProcessInfo.processInfo.environment[PrimerEndpoint.PCI.rawValue] ?? ""
     
@@ -32,8 +31,6 @@ class UniversalCheckout: NSObject, UniversalCheckoutProtocol {
     private let api = APIClient()
     private var decodedClientToken: ClientToken?
     private var paymentMethodConfig: PaymentMethodConfig?
-    
-    // Services
     private var payPalService: PayPalService?
     private var vaultService: VaultService?
     
