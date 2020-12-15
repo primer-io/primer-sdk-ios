@@ -1,17 +1,23 @@
 import UIKit
 import PrimerSDK
+import AuthenticationServices
 
-class ViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
+class ViewController: UIViewController  {
+    
+    @IBAction func showDirectCheckout() {
+        Primer.showCheckout(
+            delegate: self,
+            mode: .CHECKOUT,
+            paymentMethod: .card,
+            amount: 200,
+            currency: Currency.GBP
+        )
     }
     
     @IBAction func showVaultCheckout() {
         Primer.showCheckout(
             delegate: self,
-            vault: true,
+            mode: .VAULT,
             paymentMethod: .card,
             amount: 200,
             currency: Currency.GBP,
@@ -19,20 +25,8 @@ class ViewController: UIViewController {
         )
     }
     
-    @IBAction func showDirectCheckout() {
-        Primer.showCheckout(
-            delegate: self,
-            vault: false,
-            paymentMethod: .card,
-            amount: 200,
-            currency: Currency.GBP
-        )
-    }
-    
     private func callApi(_ req: URLRequest, completion: @escaping (_ result: Result<Data, Error>) -> Void) {
-        let task = URLSession.shared.dataTask(with: req, completionHandler: { (data, response, err) in
-            
-            // handle errors
+        URLSession.shared.dataTask(with: req, completionHandler: { (data, response, err) in
             
             if err != nil {
                 completion(.failure(NetworkError.serverError))
@@ -56,9 +50,7 @@ class ViewController: UIViewController {
             
             completion(.success(data))
             
-        })
-        
-        task.resume()
+        }).resume()
     }
 
 
@@ -68,10 +60,6 @@ class ViewController: UIViewController {
 
 struct AuthorizationRequest: Encodable {
     var token: String
-}
-
-struct AuthorizationResponse: Decodable {
-    var success: Bool
 }
 
 enum NetworkError: Error {
@@ -85,20 +73,12 @@ enum NetworkError: Error {
 
 extension ViewController: PrimerCheckoutDelegate {
     func clientTokenCallback(_ completion: @escaping (Result<ClientTokenResponse, Error>) -> Void) {
-        
-        let root = "http://localhost:8020"
-        
-        let endpoint = "\(root)/client-token"
-        
-        guard let url = URL(string: endpoint) else {
-            completion(.failure(NetworkError.missingParams))
-            return
+        guard let url = URL(string: "http://localhost:8020/client-token") else {
+            return completion(.failure(NetworkError.missingParams))
         }
-        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         callApi(request, completion: {
             result in
             switch result {
@@ -118,33 +98,21 @@ extension ViewController: PrimerCheckoutDelegate {
     }
     
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-        
         guard let token = result.token else {
-            completion(NetworkError.missingParams)
-            return
+            return completion(NetworkError.missingParams)
         }
-        
-        let root = "http://localhost:8020"
-        let endpoint = "\(root)/authorize"
-        
-        guard let url = URL(string: endpoint) else  {
-            completion(NetworkError.missingParams)
-            return
+        guard let url = URL(string: "http://localhost:8020/authorize") else  {
+            return completion(NetworkError.missingParams)
         }
-        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         let body = AuthorizationRequest(token: token)
-        
         do {
             request.httpBody = try JSONEncoder().encode(body)
         } catch {
-            completion(NetworkError.missingParams)
-            return
+            return completion(NetworkError.missingParams)
         }
-        
         callApi(request, completion: {
             result in
             switch result {
@@ -156,3 +124,4 @@ extension ViewController: PrimerCheckoutDelegate {
         })
     }
 }
+

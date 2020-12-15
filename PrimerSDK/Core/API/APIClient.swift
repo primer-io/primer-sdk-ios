@@ -1,8 +1,11 @@
 import Foundation
 
+enum APIError: Error {
+    case nullResponse
+    case statusError
+}
+
 class APIClient: APIClientProtocol {
-    
-    
     func get(_ token: ClientToken?, url: URL, completion: @escaping ((Result<Data, Error>) -> Void)) {
         
         var request = URLRequest(url: url)
@@ -24,13 +27,13 @@ class APIClient: APIClientProtocol {
             }
             
             guard let httpResponse = response as? HTTPURLResponse else {
-                return
+                return completion(.failure(APIError.nullResponse))
             }
             
             print("statusCode: \(httpResponse.statusCode)")
             
             if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
-                return
+                return completion(.failure(APIError.statusError))
             }
             
             guard let data = data else { return }
@@ -77,7 +80,7 @@ class APIClient: APIClientProtocol {
         }).resume()
     }
     
-    func post<T>(_ token: ClientToken?, url: URL, body: T, completion: @escaping ((Result<Data, Error>) -> Void)) where T : Encodable {
+    func post<T: Encodable>(_ token: ClientToken?, body: T, url: URL, completion: @escaping ((Result<Data, Error>) -> Void)) {
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

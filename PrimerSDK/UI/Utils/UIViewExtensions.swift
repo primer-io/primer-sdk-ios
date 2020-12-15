@@ -16,4 +16,8 @@ extension UIView {
         trailingAnchor.constraint(equalTo: superview!.trailingAnchor).isActive = true
         bottomAnchor.constraint(equalTo: superview!.bottomAnchor).isActive = true
     }
+    
+    func showSpinner(_ spinner: UIActivityIndicatorView, superView: UIView) {
+        
+    }
 }

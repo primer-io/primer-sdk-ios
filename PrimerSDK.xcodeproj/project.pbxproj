@@ -48,6 +48,14 @@
 		1D033C95257F94A300EE9301 /* PrimerSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1D033A96257EF24000EE9301 /* PrimerSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1D033C9B2580EEEA00EE9301 /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C9A2580EEEA00EE9301 /* UIViewControllerExtensions.swift */; };
 		1D033C9F2580EF1B00EE9301 /* UITextFieldExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D033C9E2580EF1B00EE9301 /* UITextFieldExtensions.swift */; };
+		1DB5C58C25890D4D00EDFDA2 /* PayPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB5C58B25890D4D00EDFDA2 /* PayPalService.swift */; };
+		1DB5C593258930CD00EDFDA2 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB5C592258930CD00EDFDA2 /* Currency.swift */; };
+		1DB5C597258932F600EDFDA2 /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB5C596258932F600EDFDA2 /* VaultService.swift */; };
+		1DB5C59D2589574A00EDFDA2 /* UXMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB5C59C2589574A00EDFDA2 /* UXMode.swift */; };
+		1DB5C5A325895A2900EDFDA2 /* PrimerCheckoutDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB5C5A225895A2900EDFDA2 /* PrimerCheckoutDelegate.swift */; };
+		1DC625402588091B002A6220 /* PaymentMethodViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC6253F2588091B002A6220 /* PaymentMethodViewController.swift */; };
+		1DC6254425880958002A6220 /* PaymentMethodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC6254325880958002A6220 /* PaymentMethodView.swift */; };
+		1DC6254E258832A1002A6220 /* SpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC6254D258832A1002A6220 /* SpinnerView.swift */; };
 		399A9BA6E5ECDB9CABE4D6AB /* Pods_PrimerSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E419CD5C3011C94D70A97A01 /* Pods_PrimerSDK.framework */; };
 		E4E607881AE8E071A5978F19 /* Pods_PrimerSDK_PrimerSDKTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EA5F2AA83F67D88FF4CC9F /* Pods_PrimerSDK_PrimerSDKTests.framework */; };
 /* End PBXBuildFile section */
@@ -134,6 +142,14 @@
 		1D033C8C257F758B00EE9301 /* Validation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validation.swift; sourceTree = "<group>"; };
 		1D033C9A2580EEEA00EE9301 /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		1D033C9E2580EF1B00EE9301 /* UITextFieldExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtensions.swift; sourceTree = "<group>"; };
+		1DB5C58B25890D4D00EDFDA2 /* PayPalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPalService.swift; sourceTree = "<group>"; };
+		1DB5C592258930CD00EDFDA2 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
+		1DB5C596258932F600EDFDA2 /* VaultService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultService.swift; sourceTree = "<group>"; };
+		1DB5C59C2589574A00EDFDA2 /* UXMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UXMode.swift; sourceTree = "<group>"; };
+		1DB5C5A225895A2900EDFDA2 /* PrimerCheckoutDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerCheckoutDelegate.swift; sourceTree = "<group>"; };
+		1DC6253F2588091B002A6220 /* PaymentMethodViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodViewController.swift; sourceTree = "<group>"; };
+		1DC6254325880958002A6220 /* PaymentMethodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodView.swift; sourceTree = "<group>"; };
+		1DC6254D258832A1002A6220 /* SpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerView.swift; sourceTree = "<group>"; };
 		26F2626E3D28CC6CABCF9ABF /* Pods_PrimerSDKExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDKExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2915241A04C95830CFE8DD6E /* Pods-PrimerSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK/Pods-PrimerSDK.debug.xcconfig"; sourceTree = "<group>"; };
 		52EA5F2AA83F67D88FF4CC9F /* Pods_PrimerSDK_PrimerSDKTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_PrimerSDKTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -245,6 +261,8 @@
 				1D033B28257EF7D100EE9301 /* Primer.swift */,
 				1D033B45257EF7D200EE9301 /* UniversalCheckout.swift */,
 				1D033B30257EF7D100EE9301 /* UniversalCheckoutProtocol.swift */,
+				1DB5C58A25890D2300EDFDA2 /* Services */,
+				1DB5C591258930BF00EDFDA2 /* Enums */,
 				1D033B36257EF7D200EE9301 /* API */,
 				1D033B4A257EF7D300EE9301 /* ClientToken */,
 				1D033B46257EF7D200EE9301 /* Payment */,
@@ -300,6 +318,7 @@
 			isa = PBXGroup;
 			children = (
 				1D033C70257F10EF00EE9301 /* TransitioningDelegate.swift */,
+				1DB5C5A225895A2900EDFDA2 /* PrimerCheckoutDelegate.swift */,
 			);
 			path = Delegates;
 			sourceTree = "<group>";
@@ -313,6 +332,7 @@
 				1D033C75257F10EF00EE9301 /* CardScannerVC.swift */,
 				1D033C76257F10EF00EE9301 /* AddCardView.swift */,
 				1D033C77257F10EF00EE9301 /* VaultPaymentMethodVC.swift */,
+				1DC6253F2588091B002A6220 /* PaymentMethodViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -323,8 +343,28 @@
 				1D033C79257F10EF00EE9301 /* ScannerView.swift */,
 				1D033C7A257F10EF00EE9301 /* VaultView.swift */,
 				1D033C7B257F10EF00EE9301 /* CardFormView.swift */,
+				1DC6254325880958002A6220 /* PaymentMethodView.swift */,
+				1DC6254D258832A1002A6220 /* SpinnerView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		1DB5C58A25890D2300EDFDA2 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				1DB5C58B25890D4D00EDFDA2 /* PayPalService.swift */,
+				1DB5C596258932F600EDFDA2 /* VaultService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		1DB5C591258930BF00EDFDA2 /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				1DB5C592258930CD00EDFDA2 /* Currency.swift */,
+				1DB5C59C2589574A00EDFDA2 /* UXMode.swift */,
+			);
+			path = Enums;
 			sourceTree = "<group>";
 		};
 		4D6418A9030796C9E77CBC51 /* Pods */ = {
@@ -608,26 +648,34 @@
 			files = (
 				1D033B68257EF7D300EE9301 /* APIClientProtocol.swift in Sources */,
 				1D033C86257F10EF00EE9301 /* VaultView.swift in Sources */,
+				1DB5C597258932F600EDFDA2 /* VaultService.swift in Sources */,
 				1D033B62257EF7D300EE9301 /* PaymentMethod.swift in Sources */,
 				1D033C9F2580EF1B00EE9301 /* UITextFieldExtensions.swift in Sources */,
 				1D033C85257F10EF00EE9301 /* ScannerView.swift in Sources */,
+				1DB5C593258930CD00EDFDA2 /* Currency.swift in Sources */,
+				1DB5C58C25890D4D00EDFDA2 /* PayPalService.swift in Sources */,
 				1D033B66257EF7D300EE9301 /* UniversalCheckout.swift in Sources */,
 				1D033B58257EF7D300EE9301 /* PaymentMethodToken.swift in Sources */,
+				1DB5C59D2589574A00EDFDA2 /* UXMode.swift in Sources */,
 				1D033C87257F10EF00EE9301 /* CardFormView.swift in Sources */,
 				1D033B65257EF7D300EE9301 /* APIClient.swift in Sources */,
 				1D033C83257F10EF00EE9301 /* AddCardView.swift in Sources */,
+				1DB5C5A325895A2900EDFDA2 /* PrimerCheckoutDelegate.swift in Sources */,
+				1DC625402588091B002A6220 /* PaymentMethodViewController.swift in Sources */,
 				1D033B55257EF7D300EE9301 /* UniversalCheckoutProtocol.swift in Sources */,
 				1D033C7D257F10EF00EE9301 /* Veil.swift in Sources */,
 				1D033B64257EF7D300EE9301 /* ClientTokenProviderProtocol.swift in Sources */,
 				1D033B5C257EF7D300EE9301 /* PaymentMethodTokenizationError.swift in Sources */,
 				1D033C8D257F758B00EE9301 /* Validation.swift in Sources */,
 				1D033B4F257EF7D300EE9301 /* Primer.swift in Sources */,
+				1DC6254E258832A1002A6220 /* SpinnerView.swift in Sources */,
 				1D033C82257F10EF00EE9301 /* CardScannerVC.swift in Sources */,
 				1D033C9B2580EEEA00EE9301 /* UIViewControllerExtensions.swift in Sources */,
 				1D033C80257F10EF00EE9301 /* VaultViewController.swift in Sources */,
 				1D033C7E257F10EF00EE9301 /* TransitioningDelegate.swift in Sources */,
 				1D033C84257F10EF00EE9301 /* VaultPaymentMethodVC.swift in Sources */,
 				1D033B5A257EF7D300EE9301 /* ClientToken.swift in Sources */,
+				1DC6254425880958002A6220 /* PaymentMethodView.swift in Sources */,
 				1D033B51257EF7D300EE9301 /* ClientTokenProvider.swift in Sources */,
 				1D033C7F257F10EF00EE9301 /* PresentationController.swift in Sources */,
 				1D033C7C257F10EF00EE9301 /* UIViewExtensions.swift in Sources */,

@@ -13,6 +13,8 @@ protocol CreditCardDelegate {
 }
 
 class CardScannerVC: UIViewController {
+    
+    private let bkgColor = UIColor(red: 246.0/255.0, green: 246.0/255.0, blue: 246.0/255.0, alpha: 1)
     let simpleScanVC = SimpleScanViewController.createViewController()
     let scannerView = ScannerView()
     private let checkout: UniversalCheckoutProtocol
@@ -29,7 +31,7 @@ class CardScannerVC: UIViewController {
     }
     
     public override func viewDidLoad() {
-        view.backgroundColor = .white
+        self.view.backgroundColor = self.bkgColor
         self.addScannerView()
     }
     
