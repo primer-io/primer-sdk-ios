@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import AuthenticationServices
 
-class AddCardViewController: UIViewController {
+class AddCardViewController: UIViewController, ASWebAuthenticationPresentationContextProviding {
     
     private let bkgColor = UIColor(red: 246.0/255.0, green: 246.0/255.0, blue: 246.0/255.0, alpha: 1)
     
@@ -25,39 +26,30 @@ class AddCardViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    var session: Any?
+    
+    @available(iOS 12.0, *)
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        return self.view.window ?? ASPresentationAnchor()
+    }
+    
     public override func viewDidLoad() {
         self.view.backgroundColor = self.bkgColor
+        self.view.addSubview(self.cardFormView)
+        self.cardFormView.pin(to: self.view)
+        self.cardFormView.cardTF.addTarget(self, action: #selector(self.textFieldDidChange2), for: .editingChanged)
+        self.cardFormView.expTF.addTarget(self, action: #selector(self.textFieldDidChange), for: .editingChanged)
+        self.cardFormView.submitButton.addTarget(self, action: #selector(self.authorize), for: .touchUpInside)
+        self.cardFormView.scannerButton.addTarget(self, action: #selector(self.showScanner), for: .touchUpInside)
         
-        addSpinner()
+        if (self.checkout.uxMode == UXMode.CHECKOUT) {
+            self.cardFormView.submitButton.setTitle("Pay", for: .normal)
+            self.cardFormView.title.text = "Checkout"
+        }
         
-        checkout.loadCheckoutConfig({
-            result in
-            
-            switch result {
-            case .failure(let error):
-                print("failure!", error)
-            case .success:
-                DispatchQueue.main.async {
-                    self.removeSpinner()
-                    
-                    self.view.addSubview(self.cardFormView)
-                    self.cardFormView.pin(to: self.view)
-                    self.cardFormView.cardTF.addTarget(self, action: #selector(self.textFieldDidChange2), for: .editingChanged)
-                    self.cardFormView.expTF.addTarget(self, action: #selector(self.textFieldDidChange), for: .editingChanged)
-                    self.cardFormView.submitButton.addTarget(self, action: #selector(self.authorize), for: .touchUpInside)
-                    self.cardFormView.scannerButton.addTarget(self, action: #selector(self.showScanner), for: .touchUpInside)
-                    
-                    if (self.checkout.uxMode == UXMode.CHECKOUT) {
-                        self.cardFormView.submitButton.setTitle("Pay", for: .normal)
-                    }
-                    
-//                    self.view.backgroundColor = self.bkgColor
-                    self.hideKeyboardWhenTappedAround()
-                    NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-                    NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-                }
-            }
-        })
+        self.hideKeyboardWhenTappedAround()
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     let dateMask = Veil(pattern: "##/##")
@@ -171,7 +163,9 @@ class AddCardViewController: UIViewController {
         self.cardFormView.submitButton.showSpinner()
         
         let paymentInstrument = PaymentInstrument(number: card, cvv: cvv, expirationMonth: expMonth, expirationYear: expYear, cardholderName: name)
-        let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, tokenType: TokenType.singleUse, paymentFlow: nil, customerId: nil)
+        let request =  checkout.uxMode == UXMode.CHECKOUT ?
+            PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, tokenType: TokenType.singleUse, paymentFlow: nil, customerId: nil) :
+            PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, tokenType: TokenType.multiUse, paymentFlow: PaymentFlow.vault, customerId: "customer_1")
         
         checkout.addPaymentMethod(
             request: request,
@@ -186,7 +180,7 @@ class AddCardViewController: UIViewController {
                         alert = UIAlertController(title: "Error!", message: "Something went wrong. Please try again.", preferredStyle: UIAlertController.Style.alert)
                     } else {
                         
-                        let message = self.checkout.uxMode == UXMode.ADD_PAYMENT_METHOD ? "Added new payment method." : "Payment completed."
+                        let message = self.checkout.uxMode == UXMode.VAULT ? "Added new payment method." : "Payment completed."
                         
                         alert = UIAlertController(title: "Success!", message: message, preferredStyle: UIAlertController.Style.alert)
                         

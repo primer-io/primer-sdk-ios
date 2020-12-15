@@ -8,22 +8,17 @@ struct PaymentMethodVM {
 protocol UniversalCheckoutProtocol {
     
     var selectedPaymentMethod: String {get set}
-    var paymentMethodVMs: [PaymentMethodVM] {get set}
-    
+    var orderId: String? { get set }
     var uxMode: UXMode {get set}
     var amount: Int {get set}
+    var selectedCard: String? { get }
+    var paymentMethods: [PaymentMethodVM]? { get }
     
     func showCardForm(_ controller: UIViewController, delegate: ReloadDelegate)
     func showScanner(_ controller: UIViewController & CreditCardDelegate)
-    func loadPaymentMethods(_ onTokenizeSuccess: @escaping (Error?) -> Void)
-    func showCheckout(
-        _ delegate: PrimerCheckoutDelegate,
-        uxMode: UXMode,
-        amount: Int,
-        currency: String,
-        customerId: String?
-    ) -> Void
-    func loadCheckoutConfig(_ completion: @escaping (Result<ClientToken, Error>) -> Void) -> Void
+    func showCheckout(_ delegate: PrimerCheckoutDelegate) -> Void
+    func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) -> Void
+    func reloadVault(_ completion: @escaping (Error?) -> Void) -> Void
     func authorizePayment(
         paymentInstrument: PaymentInstrument?,
         onAuthorizationSuccess: @escaping (Error?) -> Void
@@ -37,4 +32,5 @@ protocol UniversalCheckoutProtocol {
         onSuccess: @escaping (Error?) -> Void
     )
     func deletePaymentMethod(id: String, _ oompletion: @escaping (Error?) -> Void)
+    func payWithPayPal(_ completion: @escaping (Result<String, Error>) -> Void)
 }

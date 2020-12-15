@@ -119,7 +119,7 @@ class CardFormView: UIView {
     
     private func setTitleConstraints() {
         title.translatesAutoresizingMaskIntoConstraints = false
-        title.topAnchor.constraint(equalTo: topAnchor, constant: 18).isActive = true
+        title.topAnchor.constraint(equalTo: topAnchor, constant: 24).isActive = true
         title.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
     }
     
@@ -142,7 +142,7 @@ class CardFormView: UIView {
     
     private func setNameTFConstraints() {
         nameTF.translatesAutoresizingMaskIntoConstraints = false
-        nameTF.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 18).isActive = true
+        nameTF.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 12).isActive = true
         nameTF.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
         nameTF.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12).isActive = true
         nameTF.heightAnchor.constraint(equalToConstant: fieldHeight).isActive = true

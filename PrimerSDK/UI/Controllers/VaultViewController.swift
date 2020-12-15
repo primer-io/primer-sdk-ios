@@ -6,11 +6,33 @@
 //
 
 import UIKit
+import PassKit
+
+class SpinnerController {
+    var spinner = UIActivityIndicatorView()
+    
+    func showSpinner(superView: UIView) {
+        superView.addSubview(spinner)
+        spinner.color = .red
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.centerXAnchor.constraint(equalTo: superView.centerXAnchor).isActive = true
+        spinner.centerYAnchor.constraint(equalTo: superView.centerYAnchor).isActive = true
+        spinner.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        spinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        spinner.startAnimating()
+    }
+    
+    func hideSpinner() {
+        spinner.removeFromSuperview()
+    }
+}
 
 class VaultViewController: UIViewController {
     var tableView = UITableView()
     var payButton = UIButton()
+    var applePayButton = UIButton()
     private let cornerRadius: CGFloat = 8.0
+    private let bkgColor = UIColor(red: 246.0/255.0, green: 246.0/255.0, blue: 246.0/255.0, alpha: 1)
     
     private let checkout: UniversalCheckoutProtocol
     var spinner = UIActivityIndicatorView()
@@ -26,32 +48,24 @@ class VaultViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        
+        self.view.backgroundColor = self.bkgColor
         addSpinner()
-        
-        checkout.loadPaymentMethods({
+        checkout.loadCheckoutConfig({
             error in
-            
             DispatchQueue.main.async {
-                
-                if let error = error {
-                    print("failure!", error)
-                    return
-                }
-                
                 self.removeSpinner()
                 self.configurePayButton()
+                self.configureApplePayButton()
                 self.configureTableView()
             }
-            
         })
     }
     
     func configureTableView() {
         view.addSubview(tableView)
         setTableViewDelegates()
-        tableView.backgroundColor = .white
+        tableView.layer.cornerRadius = 8.0
+        tableView.backgroundColor = bkgColor
         tableView.rowHeight = 64
         tableView.tableFooterView = UIView()
         tableView.alwaysBounceVertical = false
@@ -61,7 +75,7 @@ class VaultViewController: UIViewController {
         tableView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 12).isActive = true
         tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 12).isActive = true
         tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -12).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: self.payButton.topAnchor, constant: -12).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: self.applePayButton.topAnchor, constant: -12).isActive = true
     }
     
     func setTableViewDelegates() {
@@ -72,7 +86,7 @@ class VaultViewController: UIViewController {
     func configurePayButton() {
         view.addSubview(payButton)
         payButton.layer.cornerRadius = cornerRadius
-        payButton.setTitle("Pay £\(checkout.amount / 100)", for: .normal)
+        payButton.setTitle("Pay $" + String(format: "%.2f", (Double(checkout.amount) / 100)), for: .normal)
         payButton.setTitleColor(.white, for: .normal)
         payButton.backgroundColor = .black
         
@@ -86,10 +100,21 @@ class VaultViewController: UIViewController {
         payButton.heightAnchor.constraint(equalToConstant: 64).isActive = true
     }
     
+    func configureApplePayButton() {
+        applePayButton.layer.cornerRadius = cornerRadius
+        applePayButton.setTitle(" Pay", for: .normal)
+        applePayButton.backgroundColor = .gray
+        view.addSubview(applePayButton)
+        applePayButton.translatesAutoresizingMaskIntoConstraints = false
+        applePayButton.bottomAnchor.constraint(equalTo: payButton.topAnchor, constant: -12).isActive = true
+        applePayButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        applePayButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12).isActive = true
+        applePayButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12).isActive = true
+        applePayButton.heightAnchor.constraint(equalToConstant: 64).isActive = true
+    }
+    
     @objc private func completePayment() {
-        
         self.payButton.showSpinner()
-        
         self.checkout.authorizePayment(paymentInstrument: nil, onAuthorizationSuccess: { error in
             
             DispatchQueue.main.async {
@@ -109,7 +134,6 @@ class VaultViewController: UIViewController {
                 
                 self.present(alert, animated: true, completion: nil)
             }
-            
         })
     }
 }
@@ -142,7 +166,6 @@ extension VaultViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         if (indexPath.row == 0) {
             let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell3")
             cell.textLabel?.text = "John Doe"
@@ -156,9 +179,11 @@ extension VaultViewController: UITableViewDelegate, UITableViewDataSource {
         } else {
             let cell = UITableViewCell(style: .default, reuseIdentifier: "cell3")
             
-            let selectedCard = checkout.paymentMethodVMs.first(where: {
+            guard let methods = checkout.paymentMethods else { return cell }
+            
+            let selectedCard = methods.first(where: {
                 vm in
-                return vm.id == checkout.selectedPaymentMethod
+                return vm.id == checkout.selectedCard
             })
             
             if (selectedCard != nil) {
@@ -179,28 +204,17 @@ extension VaultViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //Change the selected background view of the cell.
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        //implement show new sheet (address or card)
         if (indexPath.row == 0) {
-            print("edit address!")
-        } else {
-            print("edit payment methods!")
             
-            // set up presentation
+        } else {
             let vc = VaultPaymentMethodVC.init(self.checkout)
             let td = TransitionDelegate()
             vc.modalPresentationStyle = .custom
             vc.transitioningDelegate = td
-            
-            // add reload delegate
             vc.reloadDelegate = self
-            
             self.present(vc, animated: true, completion: nil)
-            
         }
-        
     }
     
     private func addSpinner() {
