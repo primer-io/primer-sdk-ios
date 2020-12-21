@@ -42,10 +42,13 @@ struct PayPalOrderLink: Decodable {
 
 class PayPalService {
     
+//    private let pciEndpoint = "https://api.sandbox.primer.io"
+    private let coreEndpoint = "https://api.sandbox.primer.io"
+//    private let coreEndpoint = "http://192.168.0.50:8085"
+    
     private let clientId: String
     private let clientToken: ClientToken
     private let api = APIClient()
-    private let coreEndpoint = ProcessInfo.processInfo.environment[PrimerEndpoint.CORE.rawValue] ?? ""
     
     var accessToken: String?
     var orderId: String?
@@ -71,6 +74,7 @@ class PayPalService {
     }
     
     func getAccessToken(_ completion: @escaping (Result<String, Error>) -> Void) {
+        print("getting PayPal Access Token!")
         guard let url = URL(string: "\(coreEndpoint)/paypal/access-tokens/create") else { return }
         let body = PayPalAccessTokenRequest(paymentMethodConfigId: clientId)
         self.api.post(self.clientToken, body: body, url: url, completion: { result in

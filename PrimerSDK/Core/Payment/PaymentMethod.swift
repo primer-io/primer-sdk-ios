@@ -10,3 +10,8 @@ struct PaymentMethod {
     let type: PaymentMethodType
     var details: PaymentInstrument
 }
+
+struct VaultedPaymentMethodViewModel {
+    let id: String
+    let last4: String
+}

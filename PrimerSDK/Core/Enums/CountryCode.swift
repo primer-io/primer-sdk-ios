@@ -1,0 +1,16 @@
+public enum CountryCode: String {
+    case US = "US"
+    case FR = "FR"
+    case UK = "UK"
+    case SE = "SE"
+    case DK = "DK"
+    case NO = "NO"
+    case NL = "NL"
+    case FI = "FI"
+    case RU = "RU"
+    case IL = "IL"
+    case IT = "IT"
+    case ES = "ES"
+    case DE = "DE"
+    case JP = "JP"
+}

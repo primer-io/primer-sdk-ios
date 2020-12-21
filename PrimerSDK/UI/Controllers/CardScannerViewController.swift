@@ -8,22 +8,24 @@ struct CreditCardDetails {
     let expiryYear: String?
 }
 
-protocol CreditCardDelegate {
+protocol CardScannerViewControllerDelegate {
     func setScannedCardDetails(_ details: CreditCardDetails) -> Void
 }
 
-class CardScannerVC: UIViewController {
+class CardScannerViewController: UIViewController {
     
     private let bkgColor = UIColor(red: 246.0/255.0, green: 246.0/255.0, blue: 246.0/255.0, alpha: 1)
     let simpleScanVC = SimpleScanViewController.createViewController()
     let scannerView = ScannerView()
-    private let checkout: UniversalCheckoutProtocol
-    var creditCardDelegate: CreditCardDelegate?
-    
+    private let delegate: CardScannerViewControllerDelegate
+    let transitionDelegate = TransitionDelegate()
 
-    init(_ checkout: UniversalCheckoutProtocol) {
-        self.checkout = checkout
+    init(delegate: CardScannerViewControllerDelegate) {
+        self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
+        self.view.backgroundColor = self.bkgColor
+        self.modalPresentationStyle = .custom
+        self.transitioningDelegate = transitionDelegate
     }
     
     required init?(coder: NSCoder) {
@@ -31,7 +33,7 @@ class CardScannerVC: UIViewController {
     }
     
     public override func viewDidLoad() {
-        self.view.backgroundColor = self.bkgColor
+        
         self.addScannerView()
     }
     
@@ -57,17 +59,17 @@ class CardScannerVC: UIViewController {
     }
 }
 
-extension CardScannerVC: SimpleScanDelegate {
+extension CardScannerViewController: SimpleScanDelegate {
     func userDidCancelSimple(_ scanViewController: SimpleScanViewController) {
         print("user cancelled 🤨")
         let details = CreditCardDetails(name: "J Doe", number: "4242424242424242", expiryMonth: "01", expiryYear: "2030")
-        creditCardDelegate?.setScannedCardDetails(details)
+        delegate.setScannedCardDetails(details)
     }
     
     public func userDidScanCardSimple(_ scanViewController: SimpleScanViewController, creditCard: CreditCard) {
         print("scanned! 🥳:", creditCard)
         let details = CreditCardDetails(name: creditCard.name, number: creditCard.number, expiryMonth: creditCard.expiryMonth, expiryYear: creditCard.expiryYear)
-        creditCardDelegate?.setScannedCardDetails(details)
+        delegate.setScannedCardDetails(details)
         dismiss(animated: true, completion: nil)
     }
 }
