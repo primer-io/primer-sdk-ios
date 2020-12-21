@@ -72,12 +72,12 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "PRIMER_PCI_API_URL"
-            value = "http://localhost:8081"
+            value = "http://192.168.0.102:8081"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "PRIMER_CORE_API_URL"
-            value = "http://localhost:8085"
+            value = "http://192.168.0.102:8085"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

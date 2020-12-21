@@ -5,17 +5,24 @@ public struct ClientTokenResponse: Decodable {
     var expirationDate: String?
 }
 
-public class Primer: NSObject {
+public class Primer {
     public static func showCheckout(
+        _ controller: UIViewController,
         delegate: PrimerCheckoutDelegate,
         mode: UXMode,
         paymentMethod: PaymentMethodType,
         amount: Int,
         currency: Currency,
+        merchantIdentifier: String,
+        countryCode: CountryCode,
+        applePayEnabled: Bool? = nil,
         customerId: String? = nil
     ) {
-        let checkout = UniversalCheckout.init(
+        let checkout = CheckoutContext(
             customerId: customerId,
+            merchantIdentifier: merchantIdentifier,
+            countryCode: countryCode,
+            applePayEnabled: applePayEnabled ?? true,
             amount: amount,
             currency: currency,
             uxMode: mode,
@@ -24,6 +31,6 @@ public class Primer: NSObject {
             clientTokenCallback: delegate.clientTokenCallback
         )
 
-        checkout.showCheckout(delegate)
+        checkout.showCheckout(controller)
     }
 }

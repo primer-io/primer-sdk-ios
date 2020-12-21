@@ -13,10 +13,9 @@ class CardFormView: UIView {
     private let fieldHeight: CGFloat = 44.0
     private let cornerRadius: CGFloat = 8.0
     
-    var title = UILabel()
-    var submitButton = UIButton()
-    var scannerButton = UIButton()
-    
+    let title = UILabel()
+    let submitButton = UIButton()
+    let scannerButton = UIButton()
     let nameTF = UITextField()
     let cardTF = UITextField()
     let expTF = UITextField()
@@ -28,7 +27,6 @@ class CardFormView: UIView {
         addSubview(title)
         addSubview(submitButton)
         addSubview(scannerButton)
-        
         addSubview(nameTF)
         addSubview(cardTF)
         addSubview(expTF)
@@ -37,7 +35,6 @@ class CardFormView: UIView {
         configureTitle()
         configureSubmitButton()
         configureScannerButton()
-        
         configureNameTF()
         configureCardTF()
         configureExpTF()
@@ -46,7 +43,6 @@ class CardFormView: UIView {
         setTitleConstraints()
         setSubmitButtonConstraints()
         setScannerButtonConstraints()
-        
         setNameTFConstraints()
         setCardTFConstraints()
         setExpTFConstraints()
@@ -172,4 +168,13 @@ class CardFormView: UIView {
         cvcTF.heightAnchor.constraint(equalToConstant: fieldHeight).isActive = true
     }
     
+}
+
+extension CardFormView {
+    @objc private func onSubmitButtonPressed() {
+        
+    }
+    @objc private func onScanButtonPressed() {
+        
+    }
 }

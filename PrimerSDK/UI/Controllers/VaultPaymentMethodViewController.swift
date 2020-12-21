@@ -1,16 +1,17 @@
 import UIKit
 
-protocol ReloadDelegate {
+protocol VaultPaymentMethodViewControllerDelegate {
+    var paymentMethods: [VaultedPaymentMethodViewModel] { get }
+    var selectedId: String { get set }
     func reload()
+    func showAddCardFormView(_ controller: UIViewController)
+    func deletePaymentMethod(_ id: String, completion: @escaping (Error?) -> Void)
 }
 
-class VaultPaymentMethodVC: UIViewController {
+class VaultPaymentMethodViewController: UIViewController {
     
     private let fieldColor = UIColor(red: 254.0/255.0, green: 254.0/255.0, blue: 254.0/255.0, alpha: 1)
     private let bkgColor = UIColor(red: 246.0/255.0, green: 246.0/255.0, blue: 246.0/255.0, alpha: 1)
-    
-    private var checkout: UniversalCheckoutProtocol
-    
     private let tableView = UITableView()
     private let backButton = UIButton()
     private let mainTitle = UILabel()
@@ -18,12 +19,15 @@ class VaultPaymentMethodVC: UIViewController {
     private let addButton = UIButton()
     
     private var showDeleteIcon = false
+    private var delegate: VaultPaymentMethodViewControllerDelegate
+    private let transitionDelegate = TransitionDelegate()
     
-    var reloadDelegate: ReloadDelegate?
-    
-    init(_ checkout: UniversalCheckoutProtocol) {
-        self.checkout = checkout
+    init(_ delegate: VaultPaymentMethodViewControllerDelegate) {
+        self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
+        modalPresentationStyle = .custom
+        transitioningDelegate = transitionDelegate
+        view.backgroundColor = bkgColor
     }
     
     required init?(coder: NSCoder) {
@@ -31,7 +35,6 @@ class VaultPaymentMethodVC: UIViewController {
     }
     
     override func viewDidLoad() {
-        self.view.backgroundColor = self.bkgColor
         
         view.addSubview(tableView)
         view.addSubview(backButton)
@@ -51,12 +54,6 @@ class VaultPaymentMethodVC: UIViewController {
         setAddButtonConstraints()
     }
     
-    deinit {
-        if let reloadDelegate = reloadDelegate {
-            reloadDelegate.reload()
-        }
-    }
-    
     private func configureTableView() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -64,13 +61,11 @@ class VaultPaymentMethodVC: UIViewController {
         tableView.backgroundColor = bkgColor
         tableView.rowHeight = 64
         tableView.tableFooterView = UIView()
-        //        tableView.alwaysBounceVertical = false
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell5")
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: mainTitle.bottomAnchor, constant: 12).isActive = true
         tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 12).isActive = true
         tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -12).isActive = true
-//        tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -48).isActive = true
         tableView.heightAnchor.constraint(equalToConstant: 64 * 3).isActive = true
     }
     
@@ -125,7 +120,7 @@ class VaultPaymentMethodVC: UIViewController {
     }
     
     @objc private func addPaymentMethod() {
-        checkout.showCardForm(self, delegate: self)
+        delegate.showAddCardFormView(self)
     }
     
     private func setBackButtonContraints() {
@@ -159,18 +154,16 @@ class VaultPaymentMethodVC: UIViewController {
     }
 }
 
-extension VaultPaymentMethodVC: UITableViewDelegate, UITableViewDataSource {
+extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let methods = checkout.paymentMethods else { return 0 }
-        return methods.count
+        return delegate.paymentMethods.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = UITableViewCell(style: .default, reuseIdentifier: "cell5")
-        guard let methods = checkout.paymentMethods else { return cell }
-        cell.textLabel?.text = "**** **** **** \(methods[indexPath.row].last4)"
+        cell.textLabel?.text = "**** **** **** \(delegate.paymentMethods[indexPath.row].last4)"
         
         if (showDeleteIcon) {
             cell.accessoryType = .none
@@ -188,12 +181,12 @@ extension VaultPaymentMethodVC: UITableViewDelegate, UITableViewDataSource {
             deleteButton.addTarget(self, action: #selector(deleteMethod), for: .touchUpInside)
             cell.accessoryView = deleteButton
         } else {
-            cell.accessoryType = checkout.selectedCard == methods[indexPath.row].id ? .checkmark : .none
+            cell.accessoryType = delegate.selectedId == delegate.paymentMethods[indexPath.row].id ? .checkmark : .none
         }
         
         cell.separatorInset = .zero
         
-        if (indexPath.row == methods.count - 1) {
+        if (indexPath.row == delegate.paymentMethods.count - 1) {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
         }
         return cell
@@ -202,36 +195,33 @@ extension VaultPaymentMethodVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if (!showDeleteIcon) {
-            guard let methods = checkout.paymentMethods else { return }
-            checkout.selectedPaymentMethod = methods[indexPath.row].id
+            delegate.selectedId = delegate.paymentMethods[indexPath.row].id
             tableView.reloadData()
         }
     }
     
     @objc private func deleteMethod(sender: UIButton) {
-        guard let methods = checkout.paymentMethods else { return }
-        let methodId = methods[sender.tag].id
+        let methodId = delegate.paymentMethods[sender.tag].id
         print("delete method:", sender.tag, methodId)
-        checkout.deletePaymentMethod(id: methodId, {
-            error in
-            self.checkout.reloadVault({
-                result in
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            })
+        delegate.deletePaymentMethod(methodId, completion: { error in
+//            self.delegate.reloadVault({
+//                result in
+//                DispatchQueue.main.async {
+//                    self.tableView.reloadData()
+//                }
+//            })
         })
     }
     
 }
 
-extension VaultPaymentMethodVC: ReloadDelegate {
-    func reload() {
-        self.checkout.reloadVault({
-            result in
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        })
-    }
-}
+//extension VaultPaymentMethodVC: ReloadDelegate {
+//    func reload() {
+//        self.delegate.reloadVault({
+//            result in
+//            DispatchQueue.main.async {
+//                self.tableView.reloadData()
+//            }
+//        })
+//    }
+//}
