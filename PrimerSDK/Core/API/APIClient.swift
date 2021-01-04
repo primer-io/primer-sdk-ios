@@ -3,6 +3,7 @@ import Foundation
 enum APIError: Error {
     case nullResponse
     case statusError
+    case postError
 }
 
 class APIClient: APIClientProtocol {
@@ -99,27 +100,28 @@ class APIClient: APIClientProtocol {
             print(error)
         }
         
-        URLSession.shared.dataTask(with: request, completionHandler: {
-            (data, response, err) in
+        URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
             
             if let err = err {
-                print("API GET request failed:", err)
-                return
+                print("API POST request failed:", err)
+                return completion(.failure(APIError.postError))
             }
             
-            guard let httpResponse = response as? HTTPURLResponse else { return }
+            guard let httpResponse = response as? HTTPURLResponse else { return completion(.failure(APIError.nullResponse)) }
             
             print("statusCode: \(httpResponse.statusCode)")
-            
             print("description: \(httpResponse.description)")
             
             if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
+                print("❌ status error:", httpResponse.statusCode)
+                completion(.failure(APIError.statusError))
                 return
             }
             
             guard let data = data else { return }
             
             completion(.success(data))
+            
         }).resume()
     }
 }

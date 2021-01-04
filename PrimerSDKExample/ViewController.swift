@@ -5,34 +5,38 @@ import AuthenticationServices
 class ViewController: UIViewController  {
     
     let amount = 200
+    var primer: Primer?
     
-    @IBAction func showDirectCheckout() {
-        Primer.showCheckout(
-            self,
-            delegate: self,
-            mode: .CHECKOUT,
-            paymentMethod: .card,
-            amount: amount,
-            currency: Currency.USD,
-            merchantIdentifier: "merchant.com.example.app",
-            countryCode: .US,
-            applePayEnabled: false
-        )
+    @IBAction func showCheckout() {
+        
+        // show Primer checkout
+        primer?.showCheckout(with: self)
+        
     }
     
-    @IBAction func showVaultCheckout() {
-        Primer.showCheckout(
-            self,
-            delegate: self,
-            mode: .VAULT,
-            paymentMethod: .card,
-            amount: amount,
-            currency: Currency.SEK,
-            merchantIdentifier: "merchant.com.example.app",
-            countryCode: .US,
-            customerId: "customer_1"
+    override func viewDidLoad() {
+        let settings = PrimerSettings(
+            amount: 200,
+            currency: .EUR,
+            clientTokenRequestCallback: self.clientTokenCallback,
+            onTokenizeSuccess: self.authorizePayment,
+//            theme: PrimerTheme(
+//                backgroundColor: .systemPink
+//            ),
+            uxMode: .CHECKOUT,
+            applePayEnabled: true,
+            customerId: "customer_1",
+            merchantIdentifier: "merchant.io.primer.dev",
+            countryCode: .FR
         )
+        
+        self.primer = Primer(with: settings)
     }
+}
+
+//MARK: API
+
+extension ViewController {
     
     private func callApi(_ req: URLRequest, completion: @escaping (_ result: Result<Data, Error>) -> Void) {
         URLSession.shared.dataTask(with: req, completionHandler: { (data, response, err) in
@@ -61,15 +65,15 @@ class ViewController: UIViewController  {
             
         }).resume()
     }
-
-
+    
 }
 
-// MARK: Required PrimerCheckoutDelegate methods
+// MARK: PrimerCheckoutDelegate (Required)
 
 struct AuthorizationRequest: Encodable {
     let token: String
     let amount: Int
+    let type: String
 }
 
 enum NetworkError: Error {
@@ -87,7 +91,7 @@ extension ViewController: PrimerCheckoutDelegate {
     }
     
     func clientTokenCallback(_ completion: @escaping (Result<ClientTokenResponse, Error>) -> Void) {
-        guard let url = URL(string: "http://192.168.0.50:8020/client-token") else {
+        guard let url = URL(string: "http://192.168.0.104:8020/client-token") else {
             return completion(.failure(NetworkError.missingParams))
         }
         var request = URLRequest(url: url)
@@ -113,13 +117,16 @@ extension ViewController: PrimerCheckoutDelegate {
         guard let token = result.token else {
             return completion(NetworkError.missingParams)
         }
-        guard let url = URL(string: "http://192.168.0.50:8020/authorize") else  {
+        guard let url = URL(string: "http://192.168.0.104:8020/authorize") else  {
+            return completion(NetworkError.missingParams)
+        }
+        guard let type = result.paymentInstrumentType else {
             return completion(NetworkError.missingParams)
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body = AuthorizationRequest(token: token, amount: amount)
+        let body = AuthorizationRequest(token: token, amount: amount, type: type)
         do {
             request.httpBody = try JSONEncoder().encode(body)
         } catch {

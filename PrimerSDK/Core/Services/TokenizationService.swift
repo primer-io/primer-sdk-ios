@@ -1,33 +1,45 @@
-import UIKit
+protocol TokenizationServiceProtocol {
+    func tokenize(
+        with clientToken: ClientToken,
+        request: PaymentMethodTokenizationRequest,
+        onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void
+    )
+}
 
-class TokenizationService {
+class TokenizationService: TokenizationServiceProtocol {
     
-    private let pciEndpoint = "https://api.sandbox.primer.io"
-//    private let pciEndpoint = "http://192.168.0.50:8081"
-    private let clientToken: ClientToken
     private let api: APIClientProtocol
     
-    init(clientToken: ClientToken, api: APIClientProtocol) {
-        self.clientToken = clientToken
-        self.api = api
-    }
+    init(with api: APIClientProtocol) { self.api = api }
     
     func tokenize(
+        with clientToken: ClientToken,
         request: PaymentMethodTokenizationRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void
     ) {
-        guard let url = URL(string: "\(pciEndpoint)/payment-instruments") else { return }
-        print("url:", url)
+        guard let pciURL = clientToken.pciUrl else { return }
+        guard let url = URL(string: "\(pciURL)/payment-instruments") else { return }
+        
         self.api.post(clientToken, body: request, url: url, completion: { result in
             do {
-                let data = try result.get()
-                let token = try JSONDecoder().decode(PaymentMethodToken.self, from: data)
-                print("token:", token)
-                onTokenizeSuccess(.success(token))
+                switch result {
+                case .failure: onTokenizeSuccess(.failure(PrimerError.ClientTokenNull))
+                case .success(let data):
+                    let token = try JSONDecoder().decode(PaymentMethodToken.self, from: data)
+                    onTokenizeSuccess(.success(token))
+                }
             } catch {
-                let tokenizationError = PaymentMethodTokenizationError(description: error.localizedDescription)
-                onTokenizeSuccess(.failure(tokenizationError))
+                onTokenizeSuccess(.failure(PrimerError.ClientTokenNull))
             }
         })
+    }
+}
+
+class MockTokenizationService: TokenizationServiceProtocol {
+    
+    var tokenizeCalled = false
+    
+    func tokenize(with clientToken: ClientToken, request: PaymentMethodTokenizationRequest, onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+        tokenizeCalled = true
     }
 }
