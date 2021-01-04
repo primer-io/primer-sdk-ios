@@ -1,53 +1,8 @@
 import Foundation
 
-struct PayPalCreateOrderRequest: Encodable {
-    let intent: String
-    let purchase_units: [PayPalPurchaseUnit]
-    let application_context: PayPalApplicationContext
-}
-
-struct PayPalPurchaseUnit: Encodable {
-    let amount: PayPalAmount
-}
-
-struct PayPalAmount: Encodable {
-    let currency_code: String
-    let value: String
-}
-
-struct PayPalApplicationContext: Encodable {
-    let return_url: String
-    let cancel_url: String
-}
-
-struct PayPalAccessTokenRequest: Encodable {
-    let paymentMethodConfigId: String
-}
-
-struct PayPalAccessTokenResponse: Decodable {
-    let accessToken: String?
-}
-
-struct PayPalCreateOrderResponse: Decodable {
-    let id: String?
-    let status: String?
-    let links: [PayPalOrderLink]?
-}
-
-struct PayPalOrderLink: Decodable {
-    let href: String?
-    let rel: String?
-    let method: String?
-}
-
 class PayPalService {
     
-//    private let pciEndpoint = "https://api.sandbox.primer.io"
-    private let coreEndpoint = "https://api.sandbox.primer.io"
-//    private let coreEndpoint = "http://192.168.0.50:8085"
-    
-    private let clientId: String
-    private let clientToken: ClientToken
+//    private let clientId: String
     private let api = APIClient()
     
     var accessToken: String?
@@ -66,18 +21,20 @@ class PayPalService {
         }
       }
     
-    init(clientId: String, clientToken: ClientToken, amount: Int, currency: Currency) {
-        self.clientId = clientId
-        self.clientToken = clientToken
+    init(amount: Int, currency: Currency) {
         self.amount = amount
         self.currency = currency
     }
     
-    func getAccessToken(_ completion: @escaping (Result<String, Error>) -> Void) {
-        print("getting PayPal Access Token!")
-        guard let url = URL(string: "\(coreEndpoint)/paypal/access-tokens/create") else { return }
-        let body = PayPalAccessTokenRequest(paymentMethodConfigId: clientId)
-        self.api.post(self.clientToken, body: body, url: url, completion: { result in
+    func getAccessToken(
+        with clientToken: ClientToken,
+        and configId: String,
+        and completion: @escaping (Result<String, Error>) -> Void
+    ) {
+        guard let coreURL = clientToken.coreUrl else { return }
+        guard let url = URL(string: "\(coreURL)/paypal/access-tokens/create") else { return }
+        let body = PayPalAccessTokenRequest(paymentMethodConfigId: configId)
+        self.api.post(clientToken, body: body, url: url, completion: { result in
             switch result {
             case .failure(let error):
                 print("😡😡", error)

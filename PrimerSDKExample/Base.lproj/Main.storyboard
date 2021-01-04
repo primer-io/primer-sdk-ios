@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -17,27 +17,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Awi-tV-9xq">
-                                <rect key="frame" x="134" y="433" width="146" height="30"/>
-                                <state key="normal" title="Show Vault Checkout"/>
-                                <connections>
-                                    <action selector="showVaultCheckout" destination="BYZ-38-t0r" eventType="touchUpInside" id="iYY-vk-LQR"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g3i-2J-voN">
-                                <rect key="frame" x="131" y="339" width="153" height="30"/>
-                                <state key="normal" title="Show Direct Checkout"/>
+                                <rect key="frame" x="132" y="433" width="150" height="30"/>
+                                <color key="backgroundColor" systemColor="systemPinkColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <state key="normal" title="Show Checkout">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
                                 <connections>
-                                    <action selector="showDirectCheckout" destination="BYZ-38-t0r" eventType="touchUpInside" id="Ihh-bw-UD1"/>
+                                    <action selector="showCheckout" destination="BYZ-38-t0r" eventType="touchUpInside" id="bGL-8C-sCw"/>
                                 </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Awi-tV-9xq" firstAttribute="top" secondItem="g3i-2J-voN" secondAttribute="bottom" constant="64" id="0TL-Oi-zOy"/>
-                            <constraint firstItem="Awi-tV-9xq" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="QzR-lr-2LE"/>
-                            <constraint firstItem="Awi-tV-9xq" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="RtY-5m-vAQ"/>
+                            <constraint firstItem="g3i-2J-voN" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="0EI-9s-eFF"/>
                             <constraint firstItem="g3i-2J-voN" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="pm7-Pv-X3Z"/>
                         </constraints>
                     </view>
@@ -50,6 +45,9 @@
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemPinkColor">
+            <color red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

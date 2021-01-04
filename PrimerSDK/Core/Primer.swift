@@ -1,36 +1,27 @@
 import UIKit
 
-public struct ClientTokenResponse: Decodable {
-    var clientToken: String?
-    var expirationDate: String?
-}
-
 public class Primer {
-    public static func showCheckout(
-        _ controller: UIViewController,
-        delegate: PrimerCheckoutDelegate,
-        mode: UXMode,
-        paymentMethod: PaymentMethodType,
-        amount: Int,
-        currency: Currency,
-        merchantIdentifier: String,
-        countryCode: CountryCode,
-        applePayEnabled: Bool? = nil,
-        customerId: String? = nil
-    ) {
-        let checkout = CheckoutContext(
-            customerId: customerId,
-            merchantIdentifier: merchantIdentifier,
-            countryCode: countryCode,
-            applePayEnabled: applePayEnabled ?? true,
-            amount: amount,
-            currency: currency,
-            uxMode: mode,
-            onTokenizeSuccess: delegate.authorizePayment,
-            authTokenProvider: nil,
-            clientTokenCallback: delegate.clientTokenCallback
-        )
-
-        checkout.showCheckout(controller)
+    
+    private let context: CheckoutContext
+    
+    public init(with settings: PrimerSettings) {
+        
+        let serviceLocator = ServiceLocator(settings: settings)
+        let viewModelLocator = ViewModelLocator(with: serviceLocator, and: settings)
+        
+        self.context = CheckoutContext.init(with: settings, and: serviceLocator, and: viewModelLocator)
+    }
+    
+    public func showCheckout(with controller: UIViewController) {
+        switch context.settings.uxMode {
+        case .VAULT:
+            let vaultViewControllerDelegate = context.viewModelLocator.vaultCheckoutViewModel
+            let vaultViewController = VaultCheckoutViewController.init(vaultViewControllerDelegate)
+            controller.present(vaultViewController, animated: true)
+        case .CHECKOUT:
+            let directCheckoutViewModel = context.viewModelLocator.directCheckoutViewModel
+            let directCheckoutViewController = DirectCheckoutViewController(with: directCheckoutViewModel)
+            controller.present(directCheckoutViewController, animated: true)
+        }
     }
 }

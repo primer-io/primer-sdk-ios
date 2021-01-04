@@ -2,17 +2,32 @@ PODS:
   - CardScan (1.0.5050):
     - CardScan/Core (= 1.0.5050)
   - CardScan/Core (1.0.5050)
+  - Sentry (6.0.12):
+    - Sentry/Core (= 6.0.12)
+  - Sentry/Core (6.0.12)
 
 DEPENDENCIES:
   - CardScan
+  - Sentry (from `https://github.com/getsentry/sentry-cocoa.git`, tag `6.0.12`)
 
 SPEC REPOS:
   trunk:
     - CardScan
 
+EXTERNAL SOURCES:
+  Sentry:
+    :git: https://github.com/getsentry/sentry-cocoa.git
+    :tag: 6.0.12
+
+CHECKOUT OPTIONS:
+  Sentry:
+    :git: https://github.com/getsentry/sentry-cocoa.git
+    :tag: 6.0.12
+
 SPEC CHECKSUMS:
   CardScan: 849c4da1bc84740a496f4898f9e9c3cc6ee7205e
+  Sentry: 8ffcfe3416e0a58b90bb1ae319e8e8a13022a03e
 
-PODFILE CHECKSUM: 55fc36a43ce1779cbad1bd9c36db10c103c5cb78
+PODFILE CHECKSUM: 39a662628089e57f9fa3a9bc28ed7aa694df75af
 
 COCOAPODS: 1.10.0
