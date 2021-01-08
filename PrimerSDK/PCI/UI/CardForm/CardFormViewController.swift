@@ -1,57 +1,52 @@
 import UIKit
 import AuthenticationServices
 
-protocol CardFormViewControllerDelegate {
-    func reload() -> Void
-}
-
 class CardFormViewController: UIViewController {
     
-    private let bkgColor = UIColor(red: 246.0/255.0, green: 246.0/255.0, blue: 246.0/255.0, alpha: 1)
     private let validation = Validation()
-    var cardFormView: CardFormView?
     private let spinner = UIActivityIndicatorView()
     private let viewModel: CardFormViewModelProtocol
     private let transitionDelegate = TransitionDelegate()
     
-    var delegate: CardFormViewControllerDelegate?
+    var formViewTitle: String { return viewModel.uxMode == .CHECKOUT ? "Checkout" : "Add card" }
+    var cardFormView: CardFormView?
+    var delegate: ReloadDelegate?
     
     init(with viewModel: CardFormViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         self.modalPresentationStyle = .custom
         self.transitioningDelegate = transitionDelegate
-        view.backgroundColor = .white
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    var formViewTitle: String {
-        get {
-            switch viewModel.uxMode {
-            case .CHECKOUT:
-                return "Checkout"
-            case .VAULT:
-                return "Add card"
-            }
-        }
-    }
+    
     
     public override func viewDidLoad() {
-        view.backgroundColor = self.bkgColor
+        view.backgroundColor = viewModel.theme.backgroundColor
         self.cardFormView = CardFormView(frame: view.frame, theme: viewModel.theme, uxMode: viewModel.uxMode)
         configureMainView()
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
     }
     
     deinit { NotificationCenter.default.removeObserver(self) }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        delegate?.reload()
-    }
+    override func viewWillDisappear(_ animated: Bool) { delegate?.reload() }
     
     private func configureMainView() {
         guard let cardFormView = self.cardFormView else { return print("no view") }
@@ -116,38 +111,21 @@ class CardFormViewController: UIViewController {
     }
     
     private var formValuesAreNotValid: Bool  {
-        get {
-            guard let cardFormView = self.cardFormView else { return true }
-            
-            if (validation.nameFieldIsNotValid(cardFormView.nameTF)) {
-                cardFormView.nameTF.textColor = .red
-                return true
-            } else {
-                cardFormView.nameTF.textColor = .black
-            }
-            
-            if (validation.cardFieldIsNotValid(cardFormView.cardTF)) {
-                cardFormView.cardTF.textColor = .red
-                return true
-            } else {
-                cardFormView.cardTF.textColor = .black
-            }
-            
-            if (validation.expiryFieldIsNotValid(cardFormView.expTF)) {
-                cardFormView.expTF.textColor = .red
-                return true
-            } else {
-                cardFormView.expTF.textColor = .black
-            }
-            
-            if (validation.CVCFieldIsNotValid(cardFormView.cvcTF)) {
-                cardFormView.cvcTF.textColor = .red
-                return true
-            } else {
-                cardFormView.cvcTF.textColor = .black
-            }
-            
-            return false
+
+        guard let cardFormView = self.cardFormView else { return true }
+        
+        let checks = [validation.nameFieldIsNotValid, validation.cardFieldIsNotValid, validation.expiryFieldIsNotValid, validation.CVCFieldIsNotValid]
+        
+        let fields = [cardFormView.nameTF, cardFormView.cardTF, cardFormView.expTF, cardFormView.cvcTF]
+        
+        var validations: [Bool] = []
+        
+        for (index, field) in fields.enumerated() {
+            let isNotValid = checks[index](field.text)
+            field.textColor = isNotValid ? .red : .black
+            validations.append(isNotValid)
         }
+        
+        return validations.contains(true)
     }
 }

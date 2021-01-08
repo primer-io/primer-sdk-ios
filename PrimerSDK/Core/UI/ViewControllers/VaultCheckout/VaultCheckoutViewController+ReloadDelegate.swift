@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension VaultCheckoutViewController: VaultPaymentMethodViewControllerDelegate {
+extension VaultCheckoutViewController: ReloadDelegate {
     
     func reload() {
         self.vaultCheckoutView.tableView.reloadData()

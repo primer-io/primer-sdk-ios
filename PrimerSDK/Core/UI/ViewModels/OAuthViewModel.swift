@@ -6,11 +6,10 @@ protocol OAuthViewModelProtocol {
 class OAuthViewModel: OAuthViewModelProtocol {
     private var clientToken: ClientToken? { return clientTokenService.decodedClientToken }
     private var orderId: String? { return paypalService.orderId }
-    private var onTokenizeSuccess: (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void {
-        return settings.onTokenizeSuccess
-    }
+    private var onTokenizeSuccess: PaymentMethodTokenCallBack { return settings.onTokenizeSuccess }
     
-    private let paypalService: PayPalService
+    //
+    private let paypalService: PayPalServiceProtocol
     private let tokenizationService: TokenizationServiceProtocol
     private let clientTokenService: ClientTokenServiceProtocol
     private let paymentMethodConfigService: PaymentMethodConfigServiceProtocol
@@ -18,7 +17,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
     
     init(
         with settings: PrimerSettings,
-        and paypalService: PayPalService,
+        and paypalService: PayPalServiceProtocol,
         and tokenizationService: TokenizationServiceProtocol,
         and clientTokenService: ClientTokenServiceProtocol,
         and paymentMethodConfigService: PaymentMethodConfigServiceProtocol
@@ -33,7 +32,6 @@ class OAuthViewModel: OAuthViewModelProtocol {
     func generateOAuthURL(with completion: @escaping (Result<String, Error>) -> Void) {
         guard let clientToken = clientToken else { return }
         guard let configId = paymentMethodConfigService.getConfigId(for: .PAYPAL) else { return }
-        
         paypalService.getAccessToken(with: clientToken, and: configId, and: completion)
     }
     
@@ -45,15 +43,14 @@ class OAuthViewModel: OAuthViewModelProtocol {
         let instrument = PaymentInstrument(paypalOrderId: id)
         let request = PaymentMethodTokenizationRequest.init(with: settings.uxMode, and: customerId, and: instrument)
         
-        tokenizationService.tokenize(with: clientToken, request: request, onTokenizeSuccess: { result in
+        tokenizationService.tokenize(with: clientToken, request: request, onTokenizeSuccess: { [weak self] result in
             switch result {
             case .failure(let error): completion(error)
             case .success(let token):
-                switch self.settings.uxMode {
-                case .VAULT:
-                    completion(nil)
-                case .CHECKOUT:
-                    self.onTokenizeSuccess(token, completion)
+                guard let uxMode = self?.settings.uxMode else { return }
+                switch uxMode {
+                case .VAULT: completion(nil)
+                case .CHECKOUT: self?.onTokenizeSuccess(token, completion)
                 }
             }
         })

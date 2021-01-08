@@ -1,6 +1,5 @@
 protocol ClientTokenServiceProtocol {
     var decodedClientToken: ClientToken? { get }
-    init(with settings: PrimerSettings, and paymentMethodConfigService: PaymentMethodConfigServiceProtocol)
     func loadCheckoutConfig(with completion: @escaping (Error?) -> Void)
 }
 
@@ -26,10 +25,10 @@ class ClientTokenService: ClientTokenServiceProtocol {
                 var decodedToken = provider.getDecodedClientToken()
                 
                 // ⚠️ this is just for testing locally on live device, remove from production
-                let gate = 104
-                decodedToken.configurationUrl = "http://192.168.0.\(gate):8085/client-sdk/configuration"
-                decodedToken.coreUrl = "http://192.168.0.\(gate):8085"
-                decodedToken.pciUrl = "http://192.168.0.\(gate):8081"
+//                let gate = 104
+//                decodedToken.configurationUrl = "http://192.168.0.\(gate):8085/client-sdk/configuration"
+//                decodedToken.coreUrl = "http://192.168.0.\(gate):8085"
+//                decodedToken.pciUrl = "http://192.168.0.\(gate):8081"
                 
                 self.decodedClientToken = decodedToken
                 self.paymentMethodConfigService.fetchConfig(with: decodedToken, completion)
@@ -51,10 +50,6 @@ class MockClientTokenService: ClientTokenServiceProtocol {
             pciUrl: "bla",
             env: "bla"
         )
-    }
-    
-    required init(with settings: PrimerSettings, and paymentMethodConfigService: PaymentMethodConfigServiceProtocol) {
-        
     }
     
     var loadCheckoutConfigCalled = false

@@ -41,5 +41,7 @@ class MockTokenizationService: TokenizationServiceProtocol {
     
     func tokenize(with clientToken: ClientToken, request: PaymentMethodTokenizationRequest, onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
         tokenizeCalled = true
+        let token = PaymentMethodToken(token: "tokenID")
+        return onTokenizeSuccess(.success(token))
     }
 }

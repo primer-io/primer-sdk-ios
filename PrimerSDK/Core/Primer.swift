@@ -24,4 +24,8 @@ public class Primer {
             controller.present(directCheckoutViewController, animated: true)
         }
     }
+    
+    // TODO: expose method to fetch all vaulted payment methods as a list.
+    
+    
 }

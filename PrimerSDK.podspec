@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "PrimerSDK"
-  spec.version      = "0.1.2"
+  spec.version      = "0.1.2+1"
   spec.summary      = "Official iOS SDK for Primer"
 
   # This description is used to generate tags and improve search results.
@@ -136,5 +136,6 @@ Pod::Spec.new do |spec|
   # spec.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   # spec.dependency "JSONKit", "~> 1.4"
   spec.dependency 'CardScan'
+  spec.dependency 'Sentry'
 
 end

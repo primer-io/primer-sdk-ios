@@ -19,10 +19,9 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
     var countryCode: CountryCode? { return settings.countryCode }
     var uxMode: UXMode { return settings.uxMode }
     var clientToken: ClientToken? { return clientTokenService.decodedClientToken }
-    var onTokenizeSuccess: (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void {
-        return settings.onTokenizeSuccess
-    }
+    var onTokenizeSuccess: PaymentMethodTokenCallBack { return settings.onTokenizeSuccess }
     
+    //
     let tokenizationService: TokenizationServiceProtocol
     let paymentMethodConfigService: PaymentMethodConfigServiceProtocol
     let clientTokenService: ClientTokenServiceProtocol
@@ -46,15 +45,14 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
         
         let request = PaymentMethodTokenizationRequest.init(with: uxMode, and: customerId, and: instrument)
         
-        tokenizationService.tokenize(with: clientToken, request: request, onTokenizeSuccess: { result in
+        tokenizationService.tokenize(with: clientToken, request: request, onTokenizeSuccess: { [weak self] result in
             switch result {
             case .failure(let error): completion(error)
             case .success(let token):
-                switch self.uxMode {
-                case .VAULT:
-                    completion(nil)
-                case .CHECKOUT:
-                    self.onTokenizeSuccess(token, completion)
+                guard let uxMode = self?.uxMode else { return }
+                switch uxMode {
+                case .VAULT: completion(nil)
+                case .CHECKOUT: self?.onTokenizeSuccess(token, completion)
                 }
             }
         })
@@ -72,7 +70,9 @@ class MockApplePayViewModel: ApplePayViewModelProtocol {
     
     var countryCode: CountryCode? { return .FR }
     
+    var calledTokenize = false
+    
     func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
-        
+        calledTokenize = true
     }
 }

@@ -89,6 +89,7 @@ class VaultService: VaultServiceProtocol {
 
 class MockVaultService: VaultServiceProtocol {
     var paymentMethods: [PaymentMethodToken] {
+        if (paymentMethodsIsEmpty) { return [] }
         return [
             PaymentMethodToken(
                 token: "tokenId",
@@ -113,13 +114,24 @@ class MockVaultService: VaultServiceProtocol {
         return []
     }
     
+    let paymentMethodsIsEmpty: Bool
+    
     var selectedPaymentMethod: String = "tokenId"
     
-    func loadVaultedPaymentMethods(with clientToken: ClientToken, and completion: @escaping (Error?) -> Void) {
-        
+    init(paymentMethodsIsEmpty: Bool = false, selectedPaymentMethod: String = "tokenId") {
+        self.paymentMethodsIsEmpty = paymentMethodsIsEmpty
+        self.selectedPaymentMethod = selectedPaymentMethod
     }
     
+    var loadVaultedPaymentMethodsCalled = false
+    
+    func loadVaultedPaymentMethods(with clientToken: ClientToken, and completion: @escaping (Error?) -> Void) {
+        loadVaultedPaymentMethodsCalled = true
+    }
+    
+    var deleteVaultedPaymentMethodCalled = false
+    
     func deleteVaultedPaymentMethod(with clientToken: ClientToken, and id: String, and onDeletetionSuccess: @escaping (Error?) -> Void) {
-        
+        deleteVaultedPaymentMethodCalled = true
     }
 }
