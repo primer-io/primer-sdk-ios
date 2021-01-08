@@ -1,4 +1,4 @@
-public struct PaymentMethodToken: Decodable {
+public struct PaymentMethodToken: Codable {
     public var token: String?
     public var analyticsId: String?
     public var tokenType: String?
@@ -6,7 +6,7 @@ public struct PaymentMethodToken: Decodable {
     var paymentInstrumentData: PaymentInstrumentData?
 }
 
-struct PaymentInstrumentData: Decodable {
+struct PaymentInstrumentData: Codable {
     public var last4Digits: String?
     public var expirationMonth: String?
     public var expirationYear: String?
@@ -18,7 +18,7 @@ struct PaymentInstrumentData: Decodable {
 //    var threeDSecureAuthentication: Any?
 }
 
-struct BinData: Decodable {
+struct BinData: Codable {
     var network: String?
     var issuerCountryCode: String?
     var issuerName: String?
@@ -32,6 +32,6 @@ struct BinData: Decodable {
     var productName: String?
 }
 
-struct VaultData: Decodable {
+struct VaultData: Codable {
     var customerId: String?
 }

@@ -75,13 +75,21 @@
 		1D6C241E25A24C9000409120 /* PaymentMethodConfigServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C241D25A24C9000409120 /* PaymentMethodConfigServiceTests.swift */; };
 		1D6C242A25A25B2600409120 /* ViewModelLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C242925A25B2600409120 /* ViewModelLocator.swift */; };
 		1D6C243025A2612A00409120 /* ClientTokenServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C242F25A2612A00409120 /* ClientTokenServiceTests.swift */; };
-		1D6C243925A261A100409120 /* PrimerSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C243825A261A100409120 /* PrimerSettings.swift */; };
+		1D6C243925A261A100409120 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C243825A261A100409120 /* Mocks.swift */; };
 		1D6C244425A2840600409120 /* PaymentMethodComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C244325A2840600409120 /* PaymentMethodComponent.swift */; };
 		1D6C244C25A29DCF00409120 /* PrimerTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C244B25A29DCF00409120 /* PrimerTheme.swift */; };
 		1D6C245025A35E4A00409120 /* MultiCardIconComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C244F25A35E4A00409120 /* MultiCardIconComponent.swift */; };
 		1D6C245425A3675700409120 /* SingleCardIconComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C245325A3675700409120 /* SingleCardIconComponent.swift */; };
-		1D6C245C25A3CF0900409120 /* VaultPaymentMethodViewController+CardFormViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C245B25A3CF0900409120 /* VaultPaymentMethodViewController+CardFormViewControllerDelegate.swift */; };
-		1D6C246025A3D61F00409120 /* VaultCheckoutViewController+VaultPaymentMethodViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C245F25A3D61E00409120 /* VaultCheckoutViewController+VaultPaymentMethodViewControllerDelegate.swift */; };
+		1D6C245C25A3CF0900409120 /* VaultPaymentMethodViewController+ReloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C245B25A3CF0900409120 /* VaultPaymentMethodViewController+ReloadDelegate.swift */; };
+		1D6C246025A3D61F00409120 /* VaultCheckoutViewController+ReloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C245F25A3D61E00409120 /* VaultCheckoutViewController+ReloadDelegate.swift */; };
+		1D6C24A425A5C70600409120 /* ReloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C24A325A5C70600409120 /* ReloadDelegate.swift */; };
+		1D6C24AC25A5C85600409120 /* VaultPaymentMethodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C24AB25A5C85600409120 /* VaultPaymentMethodView.swift */; };
+		1D6C24B025A5DEDB00409120 /* VaultPaymentMethodViewController+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C24AF25A5DEDB00409120 /* VaultPaymentMethodViewController+TableView.swift */; };
+		1D6C24CF25A7BA4800409120 /* ApplePayViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C24CE25A7BA4700409120 /* ApplePayViewModelTests.swift */; };
+		1D6C24DF25A7C2E800409120 /* CardFormViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C24DE25A7C2E800409120 /* CardFormViewModelTests.swift */; };
+		1D6C24E325A7C67700409120 /* OAuthViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C24E225A7C67700409120 /* OAuthViewModelTests.swift */; };
+		1D6C24F925A7CB0F00409120 /* VaultPaymentMethodViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C24F825A7CB0F00409120 /* VaultPaymentMethodViewModelTests.swift */; };
+		1D6C24FF25A7CD0B00409120 /* TokenizationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C24FE25A7CD0B00409120 /* TokenizationServiceTests.swift */; };
 		1DB5C58C25890D4D00EDFDA2 /* PayPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB5C58B25890D4D00EDFDA2 /* PayPalService.swift */; };
 		1DB5C593258930CD00EDFDA2 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB5C592258930CD00EDFDA2 /* Currency.swift */; };
 		1DB5C597258932F600EDFDA2 /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB5C596258932F600EDFDA2 /* VaultService.swift */; };
@@ -207,13 +215,21 @@
 		1D6C241D25A24C9000409120 /* PaymentMethodConfigServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigServiceTests.swift; sourceTree = "<group>"; };
 		1D6C242925A25B2600409120 /* ViewModelLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelLocator.swift; sourceTree = "<group>"; };
 		1D6C242F25A2612A00409120 /* ClientTokenServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTokenServiceTests.swift; sourceTree = "<group>"; };
-		1D6C243825A261A100409120 /* PrimerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerSettings.swift; sourceTree = "<group>"; };
+		1D6C243825A261A100409120 /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		1D6C244325A2840600409120 /* PaymentMethodComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodComponent.swift; sourceTree = "<group>"; };
 		1D6C244B25A29DCF00409120 /* PrimerTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerTheme.swift; sourceTree = "<group>"; };
 		1D6C244F25A35E4A00409120 /* MultiCardIconComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiCardIconComponent.swift; sourceTree = "<group>"; };
 		1D6C245325A3675700409120 /* SingleCardIconComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCardIconComponent.swift; sourceTree = "<group>"; };
-		1D6C245B25A3CF0900409120 /* VaultPaymentMethodViewController+CardFormViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VaultPaymentMethodViewController+CardFormViewControllerDelegate.swift"; sourceTree = "<group>"; };
-		1D6C245F25A3D61E00409120 /* VaultCheckoutViewController+VaultPaymentMethodViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VaultCheckoutViewController+VaultPaymentMethodViewControllerDelegate.swift"; sourceTree = "<group>"; };
+		1D6C245B25A3CF0900409120 /* VaultPaymentMethodViewController+ReloadDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VaultPaymentMethodViewController+ReloadDelegate.swift"; sourceTree = "<group>"; };
+		1D6C245F25A3D61E00409120 /* VaultCheckoutViewController+ReloadDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VaultCheckoutViewController+ReloadDelegate.swift"; sourceTree = "<group>"; };
+		1D6C24A325A5C70600409120 /* ReloadDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReloadDelegate.swift; sourceTree = "<group>"; };
+		1D6C24AB25A5C85600409120 /* VaultPaymentMethodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodView.swift; sourceTree = "<group>"; };
+		1D6C24AF25A5DEDB00409120 /* VaultPaymentMethodViewController+TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VaultPaymentMethodViewController+TableView.swift"; sourceTree = "<group>"; };
+		1D6C24CE25A7BA4700409120 /* ApplePayViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayViewModelTests.swift; sourceTree = "<group>"; };
+		1D6C24DE25A7C2E800409120 /* CardFormViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardFormViewModelTests.swift; sourceTree = "<group>"; };
+		1D6C24E225A7C67700409120 /* OAuthViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthViewModelTests.swift; sourceTree = "<group>"; };
+		1D6C24F825A7CB0F00409120 /* VaultPaymentMethodViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewModelTests.swift; sourceTree = "<group>"; };
+		1D6C24FE25A7CD0B00409120 /* TokenizationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenizationServiceTests.swift; sourceTree = "<group>"; };
 		1DB5C58B25890D4D00EDFDA2 /* PayPalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPalService.swift; sourceTree = "<group>"; };
 		1DB5C592258930CD00EDFDA2 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 		1DB5C596258932F600EDFDA2 /* VaultService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultService.swift; sourceTree = "<group>"; };
@@ -286,6 +302,7 @@
 		1D033A98257EF24000EE9301 /* PrimerSDK */ = {
 			isa = PBXGroup;
 			children = (
+				1D6C24D625A7BEAC00409120 /* PCI */,
 				1D033B38257EF7D200EE9301 /* Core */,
 				1D033A99257EF24000EE9301 /* PrimerSDK.h */,
 				1D033A9A257EF24000EE9301 /* Info.plist */,
@@ -369,7 +386,8 @@
 		1D033C6B257F10EF00EE9301 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				1D033C71257F10EF00EE9301 /* Controllers */,
+				1D033C72257F10EF00EE9301 /* PresentationController.swift */,
+				1D033C71257F10EF00EE9301 /* ViewControllers */,
 				1D033C6C257F10EF00EE9301 /* Utils */,
 				1D6C23A525A1420C00409120 /* ViewModels */,
 				1D033C78257F10EF00EE9301 /* Views */,
@@ -383,42 +401,31 @@
 				1D033C6D257F10EF00EE9301 /* UIViewExtensions.swift */,
 				1D033C9A2580EEEA00EE9301 /* UIViewControllerExtensions.swift */,
 				1D033C9E2580EF1B00EE9301 /* UITextFieldExtensions.swift */,
-				1D033C6E257F10EF00EE9301 /* Veil.swift */,
-				1D033C8C257F758B00EE9301 /* Validation.swift */,
 				1D52AE34258E4297000DBC25 /* UIButtonExtension.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
 		};
-		1D033C71257F10EF00EE9301 /* Controllers */ = {
+		1D033C71257F10EF00EE9301 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				1D52AE69258F9222000DBC25 /* ApplePayViewController.swift */,
-				1D6C238525A0F52B00409120 /* ApplePayViewController+PassKit.swift */,
-				1D033C76257F10EF00EE9301 /* CardFormViewController.swift */,
-				1D6C23F625A1E0B200409120 /* CardFormViewController+CardScannerViewControllerDelegate.swift */,
-				1D033C75257F10EF00EE9301 /* CardScannerViewController.swift */,
-				1D6C23FE25A1E3B500409120 /* CardScannerViewController+SimpleScanDelegate.swift */,
-				1DC6253F2588091B002A6220 /* DirectCheckoutViewController.swift */,
-				1D52AE62258EC861000DBC25 /* OAuthViewController.swift */,
-				1D033C72257F10EF00EE9301 /* PresentationController.swift */,
-				1D033C73257F10EF00EE9301 /* VaultCheckoutViewController.swift */,
-				1D6C245F25A3D61E00409120 /* VaultCheckoutViewController+VaultPaymentMethodViewControllerDelegate.swift */,
-				1D033C77257F10EF00EE9301 /* VaultPaymentMethodViewController.swift */,
-				1D6C245B25A3CF0900409120 /* VaultPaymentMethodViewController+CardFormViewControllerDelegate.swift */,
+				1D6C24B525A7B8ED00409120 /* ApplePay */,
+				1D6C24BC25A7B92700409120 /* DirectCheckout */,
+				1D6C24BF25A7B93700409120 /* OAuth */,
+				1D6C24C225A7B96200409120 /* VaultCheckout */,
+				1D6C24C325A7B97100409120 /* VaultPaymentMethods */,
 			);
-			path = Controllers;
+			path = ViewControllers;
 			sourceTree = "<group>";
 		};
 		1D033C78257F10EF00EE9301 /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				1D6C244225A283DF00409120 /* Components */,
-				1D033C7B257F10EF00EE9301 /* CardFormView.swift */,
 				1D52AE5A258EB26A000DBC25 /* DirectCheckoutView.swift */,
 				1DC6254325880958002A6220 /* PaymentMethodView.swift */,
-				1D033C79257F10EF00EE9301 /* ScannerView.swift */,
 				1D52AE30258E3DE1000DBC25 /* VaultCheckoutView.swift */,
+				1D6C24AB25A5C85600409120 /* VaultPaymentMethodView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -442,6 +449,7 @@
 			children = (
 				1D033C70257F10EF00EE9301 /* TransitioningDelegate.swift */,
 				1DB5C5A225895A2900EDFDA2 /* PrimerCheckoutDelegate.swift */,
+				1D6C24A325A5C70600409120 /* ReloadDelegate.swift */,
 			);
 			path = Delegates;
 			sourceTree = "<group>";
@@ -458,8 +466,12 @@
 		1D6C242325A2591600409120 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				1D033AA4257EF24100EE9301 /* VaultCheckoutViewModelTests.swift */,
+				1D6C24CE25A7BA4700409120 /* ApplePayViewModelTests.swift */,
+				1D6C24DE25A7C2E800409120 /* CardFormViewModelTests.swift */,
 				1D6C241725A23F5E00409120 /* DirectCheckoutViewModelTests.swift */,
+				1D6C24E225A7C67700409120 /* OAuthViewModelTests.swift */,
+				1D6C24F825A7CB0F00409120 /* VaultPaymentMethodViewModelTests.swift */,
+				1D033AA4257EF24100EE9301 /* VaultCheckoutViewModelTests.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -469,6 +481,7 @@
 			children = (
 				1D6C241D25A24C9000409120 /* PaymentMethodConfigServiceTests.swift */,
 				1D6C242F25A2612A00409120 /* ClientTokenServiceTests.swift */,
+				1D6C24FE25A7CD0B00409120 /* TokenizationServiceTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -476,7 +489,7 @@
 		1D6C243725A2619100409120 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
-				1D6C243825A261A100409120 /* PrimerSettings.swift */,
+				1D6C243825A261A100409120 /* Mocks.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -491,6 +504,106 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		1D6C24B525A7B8ED00409120 /* ApplePay */ = {
+			isa = PBXGroup;
+			children = (
+				1D52AE69258F9222000DBC25 /* ApplePayViewController.swift */,
+				1D6C238525A0F52B00409120 /* ApplePayViewController+PassKit.swift */,
+			);
+			path = ApplePay;
+			sourceTree = "<group>";
+		};
+		1D6C24B625A7B8FE00409120 /* CardForm */ = {
+			isa = PBXGroup;
+			children = (
+				1D033C76257F10EF00EE9301 /* CardFormViewController.swift */,
+				1D6C23F625A1E0B200409120 /* CardFormViewController+CardScannerViewControllerDelegate.swift */,
+				1D033C7B257F10EF00EE9301 /* CardFormView.swift */,
+			);
+			path = CardForm;
+			sourceTree = "<group>";
+		};
+		1D6C24B925A7B90E00409120 /* CardScanner */ = {
+			isa = PBXGroup;
+			children = (
+				1D033C79257F10EF00EE9301 /* ScannerView.swift */,
+				1D033C75257F10EF00EE9301 /* CardScannerViewController.swift */,
+				1D6C23FE25A1E3B500409120 /* CardScannerViewController+SimpleScanDelegate.swift */,
+			);
+			path = CardScanner;
+			sourceTree = "<group>";
+		};
+		1D6C24BC25A7B92700409120 /* DirectCheckout */ = {
+			isa = PBXGroup;
+			children = (
+				1DC6253F2588091B002A6220 /* DirectCheckoutViewController.swift */,
+			);
+			path = DirectCheckout;
+			sourceTree = "<group>";
+		};
+		1D6C24BF25A7B93700409120 /* OAuth */ = {
+			isa = PBXGroup;
+			children = (
+				1D52AE62258EC861000DBC25 /* OAuthViewController.swift */,
+			);
+			path = OAuth;
+			sourceTree = "<group>";
+		};
+		1D6C24C225A7B96200409120 /* VaultCheckout */ = {
+			isa = PBXGroup;
+			children = (
+				1D033C73257F10EF00EE9301 /* VaultCheckoutViewController.swift */,
+				1D6C245F25A3D61E00409120 /* VaultCheckoutViewController+ReloadDelegate.swift */,
+			);
+			path = VaultCheckout;
+			sourceTree = "<group>";
+		};
+		1D6C24C325A7B97100409120 /* VaultPaymentMethods */ = {
+			isa = PBXGroup;
+			children = (
+				1D033C77257F10EF00EE9301 /* VaultPaymentMethodViewController.swift */,
+				1D6C24AF25A5DEDB00409120 /* VaultPaymentMethodViewController+TableView.swift */,
+				1D6C245B25A3CF0900409120 /* VaultPaymentMethodViewController+ReloadDelegate.swift */,
+			);
+			path = VaultPaymentMethods;
+			sourceTree = "<group>";
+		};
+		1D6C24D625A7BEAC00409120 /* PCI */ = {
+			isa = PBXGroup;
+			children = (
+				1D6C24D825A7BED000409120 /* Services */,
+				1D6C24D725A7BEB800409120 /* UI */,
+				1D6C24D925A7BEF100409120 /* Utils */,
+			);
+			path = PCI;
+			sourceTree = "<group>";
+		};
+		1D6C24D725A7BEB800409120 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				1D6C24B925A7B90E00409120 /* CardScanner */,
+				1D6C24B625A7B8FE00409120 /* CardForm */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		1D6C24D825A7BED000409120 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				1D52AE6F258FD179000DBC25 /* TokenizationService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		1D6C24D925A7BEF100409120 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				1D033C6E257F10EF00EE9301 /* Veil.swift */,
+				1D033C8C257F758B00EE9301 /* Validation.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		1DB5C58A25890D2300EDFDA2 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -498,7 +611,6 @@
 				1D52AE73258FD5E0000DBC25 /* PaymentMethodConfigService.swift */,
 				1DB5C58B25890D4D00EDFDA2 /* PayPalService.swift */,
 				1D6C235525A0102500409120 /* SentryService.swift */,
-				1D52AE6F258FD179000DBC25 /* TokenizationService.swift */,
 				1DB5C596258932F600EDFDA2 /* VaultService.swift */,
 			);
 			path = Services;
@@ -811,11 +923,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1D6C246025A3D61F00409120 /* VaultCheckoutViewController+VaultPaymentMethodViewControllerDelegate.swift in Sources */,
+				1D6C246025A3D61F00409120 /* VaultCheckoutViewController+ReloadDelegate.swift in Sources */,
 				1D033B68257EF7D300EE9301 /* APIClientProtocol.swift in Sources */,
 				1D6C235A25A0163500409120 /* ClientTokenService.swift in Sources */,
 				1DB5C597258932F600EDFDA2 /* VaultService.swift in Sources */,
 				1D033B62257EF7D300EE9301 /* PaymentMethod.swift in Sources */,
+				1D6C24AC25A5C85600409120 /* VaultPaymentMethodView.swift in Sources */,
 				1D033C9F2580EF1B00EE9301 /* UITextFieldExtensions.swift in Sources */,
 				1D6C244425A2840600409120 /* PaymentMethodComponent.swift in Sources */,
 				1D033C85257F10EF00EE9301 /* ScannerView.swift in Sources */,
@@ -836,6 +949,7 @@
 				1D52AE63258EC861000DBC25 /* OAuthViewController.swift in Sources */,
 				1D52AE6A258F9222000DBC25 /* ApplePayViewController.swift in Sources */,
 				1D6C235225A00F5200409120 /* PrimerSettings.swift in Sources */,
+				1D6C24B025A5DEDB00409120 /* VaultPaymentMethodViewController+TableView.swift in Sources */,
 				1D6C23FF25A1E3B500409120 /* CardScannerViewController+SimpleScanDelegate.swift in Sources */,
 				1D52AE4A258E4D09000DBC25 /* CardFormViewController.swift in Sources */,
 				1D033B65257EF7D300EE9301 /* APIClient.swift in Sources */,
@@ -861,6 +975,7 @@
 				1D033C9B2580EEEA00EE9301 /* UIViewControllerExtensions.swift in Sources */,
 				1D6C235625A0102500409120 /* SentryService.swift in Sources */,
 				1D033C7E257F10EF00EE9301 /* TransitioningDelegate.swift in Sources */,
+				1D6C24A425A5C70600409120 /* ReloadDelegate.swift in Sources */,
 				1D6C244C25A29DCF00409120 /* PrimerTheme.swift in Sources */,
 				1D52AE80259029AD000DBC25 /* CountryCode.swift in Sources */,
 				1D033C84257F10EF00EE9301 /* VaultPaymentMethodViewController.swift in Sources */,
@@ -869,7 +984,7 @@
 				1D6C245025A35E4A00409120 /* MultiCardIconComponent.swift in Sources */,
 				1D033B5A257EF7D300EE9301 /* ClientToken.swift in Sources */,
 				1D6C23F725A1E0B200409120 /* CardFormViewController+CardScannerViewControllerDelegate.swift in Sources */,
-				1D6C245C25A3CF0900409120 /* VaultPaymentMethodViewController+CardFormViewControllerDelegate.swift in Sources */,
+				1D6C245C25A3CF0900409120 /* VaultPaymentMethodViewController+ReloadDelegate.swift in Sources */,
 				1DC6254425880958002A6220 /* PaymentMethodView.swift in Sources */,
 				1D033B51257EF7D300EE9301 /* ClientTokenProvider.swift in Sources */,
 				1D6C237225A0A4D000409120 /* VaultCheckoutViewModel.swift in Sources */,
@@ -886,9 +1001,14 @@
 			files = (
 				1D6C243025A2612A00409120 /* ClientTokenServiceTests.swift in Sources */,
 				1D033AA5257EF24100EE9301 /* VaultCheckoutViewModelTests.swift in Sources */,
+				1D6C24F925A7CB0F00409120 /* VaultPaymentMethodViewModelTests.swift in Sources */,
 				1D6C241E25A24C9000409120 /* PaymentMethodConfigServiceTests.swift in Sources */,
 				1D6C241825A23F5E00409120 /* DirectCheckoutViewModelTests.swift in Sources */,
-				1D6C243925A261A100409120 /* PrimerSettings.swift in Sources */,
+				1D6C24E325A7C67700409120 /* OAuthViewModelTests.swift in Sources */,
+				1D6C24CF25A7BA4800409120 /* ApplePayViewModelTests.swift in Sources */,
+				1D6C243925A261A100409120 /* Mocks.swift in Sources */,
+				1D6C24FF25A7CD0B00409120 /* TokenizationServiceTests.swift in Sources */,
+				1D6C24DF25A7C2E800409120 /* CardFormViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

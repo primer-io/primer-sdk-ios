@@ -1,5 +1,5 @@
 import UIKit
-import CardScan
+import CardScan //Bouncer
 
 class ScannerView: UIView {
     

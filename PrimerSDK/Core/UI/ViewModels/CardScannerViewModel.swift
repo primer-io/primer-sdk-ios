@@ -5,6 +5,7 @@ protocol CardScannerViewModelProtocol {
 class CardScannerViewModel: CardScannerViewModelProtocol {
     var theme: PrimerTheme { return settings.theme }
     
+    //
     let settings: PrimerSettings
     
     init(with settings: PrimerSettings) {
@@ -16,5 +17,4 @@ class MockCardScannerViewModel: CardScannerViewModelProtocol {
     var theme: PrimerTheme {
         return PrimerTheme()
     }
-    
 }

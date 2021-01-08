@@ -12,26 +12,14 @@ class DirectCheckoutViewModelTests: XCTestCase {
     
     func test_loadCheckoutConfig_calls_clientTokenService() throws {
         
-        let settings = PrimerSettings(
-            uxMode: .CHECKOUT,
-            amount: 200,
-            currency: .EUR,
-            merchantIdentifier: "mid",
-            countryCode: .FR,
-            applePayEnabled: false,
-            customerId: "cid",
-            clientTokenRequestCallback: { completionHandler in },
-            onTokenizeSuccess: { (result, callback) in }
-        )
-        
         let applePayViewModel = MockApplePayViewModel()
         let oAuthViewModel = MockOAuthViewModel()
         let cardFormViewModel = MockCardFormViewModel()
         let paymentMethodConfigService = MockPaymentMethodConfigService()
-        let clientTokenService = MockClientTokenService(with: settings, and: paymentMethodConfigService)
+        let clientTokenService = MockClientTokenService()
         
         let viewModel = DirectCheckoutViewModel(
-            with: settings,
+            with: mockSettings,
             and: applePayViewModel,
             and: oAuthViewModel,
             and: cardFormViewModel,

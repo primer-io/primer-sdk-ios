@@ -1,6 +1,20 @@
 import Foundation
 
-class PayPalService {
+protocol PayPalServiceProtocol {
+    
+    var orderId: String? { get }
+    
+    func getAccessToken(
+        with clientToken: ClientToken,
+        and configId: String,
+        and completion: @escaping (Result<String, Error>) -> Void
+    )
+    
+    func createPayPalOrder(_ completion: @escaping (Result<String, Error>) -> Void)
+    
+}
+
+class PayPalService: PayPalServiceProtocol {
     
 //    private let clientId: String
     private let api = APIClient()
@@ -102,5 +116,22 @@ class PayPalService {
             }
             
         }).resume()
+    }
+}
+
+class MockPayPalService: PayPalServiceProtocol {
+    
+    var orderId: String? { return "orderId" }
+    
+    var getAccessTokenCalled = false
+    
+    func getAccessToken(with clientToken: ClientToken, and configId: String, and completion: @escaping (Result<String, Error>) -> Void) {
+        getAccessTokenCalled = true
+    }
+    
+    var createPayPalOrderCalled = false
+    
+    func createPayPalOrder(_ completion: @escaping (Result<String, Error>) -> Void) {
+        createPayPalOrderCalled = true
     }
 }

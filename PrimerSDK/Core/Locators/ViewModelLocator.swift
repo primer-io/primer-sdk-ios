@@ -39,7 +39,8 @@ class ViewModelLocator {
     lazy var vaultPaymentMethodViewModel = VaultPaymentMethodViewModel(
         with: serviceLocator.clientTokenService,
         and: serviceLocator.vaultService,
-        and: cardFormViewModel
+        and: cardFormViewModel,
+        and: settings
     )
     lazy var vaultCheckoutViewModel = VaultCheckoutViewModel(
         with: serviceLocator.clientTokenService,

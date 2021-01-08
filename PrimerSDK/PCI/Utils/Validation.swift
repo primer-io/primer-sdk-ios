@@ -45,10 +45,11 @@ class Validation {
         return sum % 10 == 0
     }
     
-    func nameFieldIsNotValid(_ textField: UITextField) -> Bool {
+    func nameFieldIsNotValid(_ entry: String?) -> Bool {
         
-        guard var name = textField.text else { return true }
-        name = name.filter { !$0.isWhitespace }
+        guard let entry = entry else { return true }
+        
+        let name = entry.filter { !$0.isWhitespace }
         
         let nameIsEmpty = name.count < 1
         if (nameIsEmpty) { return true }
@@ -57,9 +58,11 @@ class Validation {
         
     }
     
-    func cardFieldIsNotValid(_ textField: UITextField) -> Bool {
-        guard var number = textField.text else { return true }
-        number = number.filter { !$0.isWhitespace }
+    func cardFieldIsNotValid(_ entry: String?) -> Bool {
+        
+        guard let entry = entry else { return true }
+        
+        let number = entry.filter { !$0.isWhitespace }
         
         let containsNotOnlyNumbers = number.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) != nil
         if (containsNotOnlyNumbers) { return true }
@@ -102,9 +105,11 @@ class Validation {
         
     }
     
-    func expiryFieldIsNotValid(_ textField: UITextField) -> Bool {
-        guard var expiry = textField.text else { return true }
-        expiry = expiry.filter { !$0.isWhitespace }
+    func expiryFieldIsNotValid(_ entry: String?) -> Bool {
+        
+        guard let entry = entry else { return true }
+        
+        let expiry = entry.filter { !$0.isWhitespace }
         let expiryValues = expiry.split(separator: "/")
         
         let month = expiryValues[0]
@@ -116,10 +121,11 @@ class Validation {
         return false
     }
     
-    func CVCFieldIsNotValid(_ textField: UITextField) -> Bool {
+    func CVCFieldIsNotValid(_ entry: String?) -> Bool {
         
-        guard var cvc = textField.text else { return true }
-        cvc = cvc.filter { !$0.isWhitespace }
+        guard let entry = entry else { return true }
+        
+        let cvc = entry.filter { !$0.isWhitespace }
         
         let containsNotOnlyNumbers = cvc.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) != nil
         if (containsNotOnlyNumbers) { return true }

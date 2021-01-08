@@ -18,18 +18,19 @@ class ClientTokenServiceTests: XCTestCase {
         )
         
         let settings = PrimerSettings(
-            uxMode: .CHECKOUT,
             amount: 200,
             currency: .EUR,
-            merchantIdentifier: "mid",
-            countryCode: .FR,
-            applePayEnabled: false,
-            customerId: "cid",
             clientTokenRequestCallback: { completion in
-                
                 completion(.success(response))
             },
-            onTokenizeSuccess: { (result, callback) in }
+            onTokenizeSuccess: { (result, callback) in
+            },
+            theme: PrimerTheme(),
+            uxMode: .CHECKOUT,
+            applePayEnabled: false,
+            customerId: "cid",
+            merchantIdentifier: "mid",
+            countryCode: .FR
         )
         
         let paymentMethodConfigService = MockPaymentMethodConfigService()
