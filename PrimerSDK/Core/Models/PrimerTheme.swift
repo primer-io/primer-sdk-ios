@@ -9,13 +9,16 @@ import UIKit
 
 public struct PrimerTheme {
     public let cornerRadiusTheme: CornerRadiusTheme
-    public let backgroundColor: UIColor
+    public let backgroundColor: UIColor //UIColor(red: 246.0/255.0, green: 246.0/255.0, blue: 246.0/255.0, alpha: 1)
     public let buttonColorTheme: ButtonColorTheme
     public let fontColorTheme: FontColorTheme
+    public let content = PrimerContent()
+    
+    
     
     public init(
         cornerRadiusTheme: CornerRadiusTheme = CornerRadiusTheme(),
-        backgroundColor: UIColor = UIColor(red: 246.0/255.0, green: 246.0/255.0, blue: 246.0/255.0, alpha: 1),
+        backgroundColor: UIColor = .white,
         buttonColorTheme: ButtonColorTheme = ButtonColorTheme(),
         fontColorTheme: FontColorTheme = FontColorTheme()
     ) {
@@ -30,8 +33,8 @@ public struct CornerRadiusTheme {
     public let buttons, textFields: CGFloat
     
     public init(
-        buttons: CGFloat = 8,
-        textFields: CGFloat = 8
+        buttons: CGFloat = 4,
+        textFields: CGFloat = 2
     ) {
         self.buttons = buttons
         self.textFields = textFields
@@ -44,7 +47,7 @@ public struct ButtonColorTheme {
         applePay: UIColor = .black,
         creditCard: UIColor = .white,
         paypal: UIColor = UIColor(red: 190.0/255.0, green: 228.0/255.0, blue: 254.0/255.0, alpha: 1),
-        payButton: UIColor = .black
+        payButton: UIColor = .systemBlue
     ) {
         self.applePay = applePay
         self.creditCard = creditCard

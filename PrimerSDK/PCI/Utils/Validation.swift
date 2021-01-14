@@ -112,6 +112,8 @@ class Validation {
         let expiry = entry.filter { !$0.isWhitespace }
         let expiryValues = expiry.split(separator: "/")
         
+        if (expiryValues.count != 2) { return true }
+        
         let month = expiryValues[0]
         let year = expiryValues[1]
         

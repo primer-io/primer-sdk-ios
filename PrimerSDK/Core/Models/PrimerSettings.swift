@@ -1,8 +1,8 @@
 public typealias ClientTokenCallBack = (_ completionHandler: @escaping (Result<ClientTokenResponse, Error>) -> Void) -> Void
 public typealias PaymentMethodTokenCallBack = (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
+public typealias CheckoutDismissalCallback = () -> Void
 
 public struct PrimerSettings {
-    public let uxMode: UXMode
     public let amount: Int
     public let currency: Currency
     public let merchantIdentifier: String?
@@ -12,14 +12,13 @@ public struct PrimerSettings {
     public let theme: PrimerTheme
     public let clientTokenRequestCallback: ClientTokenCallBack
     public let onTokenizeSuccess: PaymentMethodTokenCallBack
+    public let onCheckoutDismiss: CheckoutDismissalCallback
     
     public init(
+        delegate: PrimerCheckoutDelegate,
         amount: Int,
         currency: Currency,
-        clientTokenRequestCallback: @escaping ClientTokenCallBack,
-        onTokenizeSuccess: @escaping PaymentMethodTokenCallBack,
         theme: PrimerTheme = PrimerTheme.init(),
-        uxMode: UXMode = .CHECKOUT,
         applePayEnabled: Bool = false,
         customerId: String? = nil,
         merchantIdentifier: String? = nil,
@@ -27,13 +26,13 @@ public struct PrimerSettings {
     ) {
         self.amount = amount
         self.currency = currency
-        self.clientTokenRequestCallback = clientTokenRequestCallback
-        self.onTokenizeSuccess = onTokenizeSuccess
+        self.clientTokenRequestCallback = delegate.clientTokenCallback
+        self.onTokenizeSuccess = delegate.authorizePayment
         self.theme = theme
-        self.uxMode = uxMode
         self.applePayEnabled = applePayEnabled
         self.customerId = customerId
         self.merchantIdentifier = merchantIdentifier
         self.countryCode = countryCode
+        self.onCheckoutDismiss = delegate.onCheckoutDismissed
     }
 }

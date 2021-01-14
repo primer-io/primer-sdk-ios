@@ -56,7 +56,7 @@ enum PaymentMethodIcon: String {
 struct PaymentMethodViewModel {
     func toString() -> String {
         switch type {
-        case .PAYMENT_CARD: return "Pay by card"
+        case .PAYMENT_CARD: return "Pay by card".localized()
         case .APPLE_PAY: return "Pay"
         case .PAYPAL: return ""
         default: return ""

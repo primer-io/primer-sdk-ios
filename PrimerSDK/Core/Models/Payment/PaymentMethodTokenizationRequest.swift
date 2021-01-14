@@ -6,7 +6,11 @@ struct PaymentMethodTokenizationRequest: Encodable {
     let paymentFlow: PaymentFlow?
     let customerId: String?
     
-    init(with uxMode: UXMode, and customerId: String, and paymentInstrument: PaymentInstrument) {
+    init(
+        with uxMode: UXMode,
+        and customerId: String,
+        and paymentInstrument: PaymentInstrument
+    ) {
         self.paymentInstrument = paymentInstrument
         self.tokenType = uxMode == .VAULT ? .multiUse : .singleUse
         self.paymentFlow = uxMode == .VAULT ? PaymentFlow.vault : nil
@@ -24,9 +28,13 @@ struct PaymentInstrument: Encodable {
     var cardholderName: String? = nil
     // PayPal
     var paypalOrderId: String? = nil
+    var paypalBillingAgreementId: String? = nil
+    var shippingAddress: ShippingAddress? = nil
+    var externalPayerInfo: PayPalExternalPayerInfo? = nil
     // Apple Pay
     var paymentMethodConfigId: String? = nil
     var token: ApplePayToken? = nil
+    var merchantIdentifier: String? = nil
 }
 
 enum TokenType: String, Encodable {

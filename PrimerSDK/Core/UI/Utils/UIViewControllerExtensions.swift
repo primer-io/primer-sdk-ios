@@ -46,7 +46,7 @@ extension UIViewController {
     func addLoadingView(_ indicator: UIActivityIndicatorView) {
         indicator.color = .black
         view.addSubview(indicator)
-        setLoadingIndicatorConstraints(indicator)
+        indicator.pin(to: view)
         indicator.startAnimating()
     }
     
@@ -61,4 +61,17 @@ extension UIViewController {
     func removeLoadingView(_ indicator: UIActivityIndicatorView) {
         indicator.removeFromSuperview()
     }
+    
+    func remove() {
+        // Just to be safe, we check that this view controller
+        // is actually added to a parent before removing it.
+        guard parent != nil else {
+            return
+        }
+        
+        willMove(toParent: nil)
+        view.removeFromSuperview()
+        removeFromParent()
+    }
+    
 }
