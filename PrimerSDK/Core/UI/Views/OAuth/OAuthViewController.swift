@@ -52,12 +52,23 @@ class OAuthViewController: UIViewController {
     func createPaymentInstrument(_ urlString: String) {
         var session: ASWebAuthenticationSession?
         
-        guard let authURL = URL(string: urlString) else { return }
+        guard let authURL = URL(string: urlString) else {
+            self.dismiss(animated: true, completion: nil)
+            return
+        }
         
         session = ASWebAuthenticationSession(
             url: authURL,
             callbackURLScheme: "primer",
-            completionHandler: { [weak self] (url, error) in self?.onOAuthCompleted(callbackURL: url, error: error) }
+            completionHandler: { [weak self] (url, error) in
+                
+                if (error != nil) {
+                    self?.dismiss(animated: true, completion: nil)
+                    return
+                }
+                
+                self?.onOAuthCompleted(callbackURL: url, error: error)
+            }
         )
         
         session?.presentationContextProvider = self
@@ -72,12 +83,23 @@ class OAuthViewController: UIViewController {
         
         var session: SFAuthenticationSession?
         
-        guard let authURL = URL(string: urlString) else { return }
+        guard let authURL = URL(string: urlString) else {
+            self.dismiss(animated: true, completion: nil)
+            return
+        }
         
         session = SFAuthenticationSession(
             url: authURL,
             callbackURLScheme: "primer",
-            completionHandler: { [weak self] (url, error) in self?.onOAuthCompleted(callbackURL: url, error: error) }
+            completionHandler: { [weak self] (url, error) in
+                
+                if (error != nil) {
+                    self?.dismiss(animated: true, completion: nil)
+                    return
+                }
+                
+                self?.onOAuthCompleted(callbackURL: url, error: error)
+            }
         )
         
         session?.start()

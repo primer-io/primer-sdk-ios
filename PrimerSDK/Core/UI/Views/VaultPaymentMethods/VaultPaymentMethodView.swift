@@ -30,16 +30,16 @@ class VaultPaymentMethodView: UIView {
         addSubview(navBar)
         addSubview(tableView)
         addSubview(addButton)
-        addSubview(payPalButton)
+//        addSubview(payPalButton)
         
         configureNavBar()
         configureTableView()
         configureAddButton()
-        configurePayPalButton()
+//        configurePayPalButton()
         
         anchorNavBar()
         setAddButtonConstraints()
-        anchorPayPalButton()
+//        anchorPayPalButton()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -52,11 +52,11 @@ class VaultPaymentMethodView: UIView {
         let backItem = UIBarButtonItem()
         backItem.action = #selector(cancel)
         let backBtnImage = UIImage(named: "back")
-        backItem.tintColor = .blue
+        backItem.tintColor = .systemBlue
         backItem.image = backBtnImage
         let editItem = UIBarButtonItem()
         editItem.title = theme.content.vaultPaymentMethodView.editButtonText
-        editItem.tintColor = .blue
+        editItem.tintColor = .systemBlue
         editItem.action = #selector(edit)
         navItem.leftBarButtonItem = backItem
         navItem.rightBarButtonItem = editItem
@@ -82,12 +82,12 @@ class VaultPaymentMethodView: UIView {
         tableView.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 12).isActive = true
         tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
         tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12).isActive = true
-        tableView.heightAnchor.constraint(equalToConstant: 64 * 3).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: addButton.topAnchor).isActive = true
     }
     
     private func configureAddButton() {
         addButton.setTitle(theme.content.vaultPaymentMethodView.addButtonText, for: .normal)
-        addButton.setTitleColor(.blue, for: .normal)
+        addButton.setTitleColor(.systemBlue, for: .normal)
         addButton.setTitleColor(.lightGray, for: .highlighted)
         addButton.contentHorizontalAlignment = .left
         addButton.addTarget(self, action: #selector(showCardForm), for: .touchUpInside)
@@ -137,10 +137,9 @@ class VaultPaymentMethodView: UIView {
     
     private func setAddButtonConstraints() {
         addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.bottomAnchor.constraint(equalTo: payPalButton.topAnchor, constant: -18).isActive = true
+        addButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -18).isActive = true
         addButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18).isActive = true
-        addButton.widthAnchor.constraint(equalToConstant: addButton.intrinsicContentSize.width).isActive = true
-        addButton.heightAnchor.constraint(equalToConstant: addButton.intrinsicContentSize.height).isActive = true
+        addButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18).isActive = true
     }
     
     private func anchorPayPalButton() {

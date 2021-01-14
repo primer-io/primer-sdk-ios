@@ -41,7 +41,6 @@ class VaultCheckoutView: UIView {
         navBar.backgroundColor = theme.backgroundColor
         let navItem = UINavigationItem(title: "")
         let doneItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancel))
-        doneItem.tintColor = .blue
         navItem.leftBarButtonItem = doneItem
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
@@ -69,8 +68,8 @@ class VaultCheckoutView: UIView {
     func configurePayButton() {
         payButton.layer.cornerRadius = theme.cornerRadiusTheme.buttons
         payButton.setTitle(theme.content.vaultCheckout.payButtonText, for: .normal)
-        payButton.setTitleColor(theme.fontColorTheme.creditCard, for: .normal)
-        payButton.backgroundColor = theme.buttonColorTheme.creditCard
+        payButton.setTitleColor(theme.fontColorTheme.payButton, for: .normal)
+        payButton.backgroundColor = theme.buttonColorTheme.payButton
         payButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
 //        payButton.addTarget(self, action: #selector(onTap), for: .touchUpOutside)
 //        payButton.addTarget(self, action: #selector(onTap2), for: .touchDown)

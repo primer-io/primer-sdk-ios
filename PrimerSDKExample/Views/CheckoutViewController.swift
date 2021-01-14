@@ -18,6 +18,7 @@ class CheckoutViewController: UIViewController {
     let tableView = UITableView()
     let addCardButton = UIButton()
     let addPayPalButton = UIButton()
+    let vaultCheckoutButton = UIButton()
     
     override func viewDidLoad() {
         title = "Wallet"
@@ -36,6 +37,7 @@ class CheckoutViewController: UIViewController {
         view.addSubview(tableView)
         view.addSubview(addCardButton)
         view.addSubview(addPayPalButton)
+        view.addSubview(vaultCheckoutButton)
         
         //
         tableView.delegate = self
@@ -52,6 +54,11 @@ class CheckoutViewController: UIViewController {
         addPayPalButton.backgroundColor = .systemBlue
         addPayPalButton.addTarget(self, action: #selector(showPayPalForm), for: .touchUpInside)
         
+        vaultCheckoutButton.setTitle("Open wallet", for: .normal)
+        vaultCheckoutButton.setTitleColor(.white, for: .normal)
+        vaultCheckoutButton.backgroundColor = .systemPink
+        vaultCheckoutButton.addTarget(self, action: #selector(showCompleteVaultCheckout), for: .touchUpInside)
+        
         //
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -65,9 +72,14 @@ class CheckoutViewController: UIViewController {
         addCardButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         
         addPayPalButton.translatesAutoresizingMaskIntoConstraints = false
-        addPayPalButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
+        addPayPalButton.bottomAnchor.constraint(equalTo: vaultCheckoutButton.topAnchor, constant: -12).isActive = true
         addPayPalButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         addPayPalButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
+        
+        vaultCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
+        vaultCheckoutButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
+        vaultCheckoutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
+        vaultCheckoutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         
         fetchPaymentMethods()
     }
@@ -85,13 +97,18 @@ class CheckoutViewController: UIViewController {
         }
     }
     
-    deinit { print("🧨 destroy:", self.self) }
+    deinit {
+        print("🧨 destroy:", self.self)
+    }
     
     @objc private func showCardForm() {
         primer?.showCheckout(self, flow: .addCardToVault)
     }
     @objc private func showPayPalForm() {
         primer?.showCheckout(self, flow: .addPayPalToVault)
+    }
+    @objc private func showCompleteVaultCheckout() {
+        primer?.showCheckout(self, flow: .completeVaultCheckout)
     }
 }
 
