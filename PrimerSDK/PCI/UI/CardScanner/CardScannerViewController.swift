@@ -56,7 +56,7 @@ class CardScannerViewController: UIViewController {
         simpleScanVC.expiryText.text = ""
         simpleScanVC.cornerView = .none
         simpleScanVC.blurView.backgroundColor = .none
-        simpleScanVC.roiView.backgroundColor = .lightGray
+        simpleScanVC.roiView.backgroundColor = .none
     }
     
     private func removeScannerView() {

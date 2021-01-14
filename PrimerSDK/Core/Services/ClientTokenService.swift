@@ -22,14 +22,7 @@ class ClientTokenService: ClientTokenServiceProtocol {
             case .success(let token):
                 guard let clientToken = token.clientToken else { return completion(PrimerError.ClientTokenNull) }
                 let provider = ClientTokenProvider(clientToken)
-                var decodedToken = provider.getDecodedClientToken()
-                
-                // ⚠️ this is just for testing locally on live device, remove from production
-                let gate = 50
-                decodedToken.configurationUrl = "http://192.168.0.\(gate):8085/client-sdk/configuration"
-                decodedToken.coreUrl = "http://192.168.0.\(gate):8085"
-                decodedToken.pciUrl = "http://192.168.0.\(gate):8081"
-                
+                let decodedToken = provider.getDecodedClientToken()
                 self?.decodedClientToken = decodedToken
                 self?.paymentMethodConfigService.fetchConfig(with: decodedToken, completion)
             }
