@@ -2,58 +2,53 @@ import UIKit
 import AuthenticationServices
 
 class CardFormViewController: UIViewController {
-    
+    let indicator = UIActivityIndicatorView()
     private let validation = Validation()
     private let spinner = UIActivityIndicatorView()
     private let viewModel: CardFormViewModelProtocol
     private let transitionDelegate = TransitionDelegate()
     
-    var formViewTitle: String { return viewModel.uxMode == .CHECKOUT ? "Checkout" : "Add card" }
+//    var formViewTitle: String { return viewModel.uxMode == .CHECKOUT ? "Checkout" : "Add card" }
     var cardFormView: CardFormView?
     var delegate: ReloadDelegate?
+    weak var router: RouterDelegate?
     
-    init(with viewModel: CardFormViewModelProtocol) {
+    init(with viewModel: CardFormViewModelProtocol, and router: RouterDelegate) {
         self.viewModel = viewModel
+        self.router = router
         super.init(nibName: nil, bundle: nil)
         self.modalPresentationStyle = .custom
         self.transitioningDelegate = transitionDelegate
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     public override func viewDidLoad() {
         view.backgroundColor = viewModel.theme.backgroundColor
-        self.cardFormView = CardFormView(frame: view.frame, theme: viewModel.theme, uxMode: viewModel.uxMode)
-        configureMainView()
+        view.addSubview(indicator)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        indicator.startAnimating()
+        viewModel.configureView() { [weak self] error in
+            DispatchQueue.main.async {
+                self?.paintView()
+            }
+        }
         
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(self.keyboardWillShow),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(self.keyboardWillHide),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
     }
     
-    deinit { NotificationCenter.default.removeObserver(self) }
+    deinit { print("🧨 destroy:", self.self) }
     
     override func viewWillDisappear(_ animated: Bool) { delegate?.reload() }
     
-    private func configureMainView() {
+    private func paintView() {
+        cardFormView = CardFormView(frame: view.frame, theme: viewModel.theme, uxMode: viewModel.flow.uxMode, delegate: self)
         guard let cardFormView = self.cardFormView else { return print("no view") }
         view.addSubview(cardFormView)
         cardFormView.pin(to: self.view)
-        cardFormView.title.text = formViewTitle
         addTargetsToForm()
+        cardFormView.submitButton.backgroundColor = formIsNotValid ? .gray : viewModel.theme.buttonColorTheme.payButton
         hideKeyboardWhenTappedAround()
     }
     
@@ -61,24 +56,23 @@ class CardFormViewController: UIViewController {
         cardFormView?.cardTF.addTarget(self, action: #selector(onCardNumberTextFieldChanged), for: .editingChanged)
         cardFormView?.expTF.addTarget(self, action: #selector(onExpiryTextFieldChanged), for: .editingChanged)
         cardFormView?.submitButton.addTarget(self, action: #selector(onSubmitButtonPressed), for: .touchUpInside)
-        cardFormView?.scannerButton.addTarget(self, action: #selector(onScanButtonPressed), for: .touchUpInside)
     }
 
     @objc private func onExpiryTextFieldChanged(_ sender: UITextField) {
         guard let currentText = sender.text else  { return }
-        let dateMask = Veil(pattern: "##/##")
-        sender.text = dateMask.mask(input: currentText, exhaustive: false)
+        let dateMask = Mask(pattern: "##/##")
+        sender.text = dateMask.apply(on: currentText)
     }
     
     @objc private func onCardNumberTextFieldChanged(_ sender: UITextField) {
         guard let currentText = sender.text else  { return }
-        let numberMask = Veil(pattern: "#### #### #### #### ###")
-        sender.text = numberMask.mask(input: currentText, exhaustive: false)
+        let numberMask = Mask(pattern: "#### #### #### #### ###")
+        sender.text = numberMask.apply(on: currentText)
     }
     
     @objc private func onSubmitButtonPressed() {
         
-        if (formValuesAreNotValid) { return }
+        if (formIsNotValid) { return }
         
         guard let name = cardFormView?.nameTF.text else { return }
         guard var number = cardFormView?.cardTF.text else { return }
@@ -100,17 +94,24 @@ class CardFormViewController: UIViewController {
         
         viewModel.tokenize(
             instrument: instrument,
-            completion: { error in DispatchQueue.main.async { self.showModal(error) } }
+            completion: { [weak self] error in
+                DispatchQueue.main.async {
+                    
+                    self?.view.removeFromSuperview()
+                    
+                    if (error != nil) {
+                        self?.router?.showError()
+                        return
+                    }
+                    
+                    self?.router?.showSuccess()
+                    
+                }
+            }
         )
     }
     
-    @objc private func onScanButtonPressed() {
-        let vc = CardScannerViewController(viewModel: viewModel.cardScannerViewModel)
-        vc.delegate = self
-        self.present(vc, animated: true, completion: nil)
-    }
-    
-    private var formValuesAreNotValid: Bool  {
+    private var formIsNotValid: Bool  {
 
         guard let cardFormView = self.cardFormView else { return true }
         
@@ -122,10 +123,48 @@ class CardFormViewController: UIViewController {
         
         for (index, field) in fields.enumerated() {
             let isNotValid = checks[index](field.text)
-            field.textColor = isNotValid ? .red : .black
             validations.append(isNotValid)
         }
         
         return validations.contains(true)
+        
+    }
+}
+
+extension CardFormViewController: CardFormViewDelegate {
+    func validateCardName(_ text: String?) {
+        let nameIsNotValid = validation.nameFieldIsNotValid(text)
+        cardFormView?.nameTF.toggleValidity(nameIsNotValid)
+        cardFormView?.submitButton.backgroundColor = formIsNotValid ? .gray : viewModel.theme.buttonColorTheme.payButton
+    }
+    
+    func validateCardNumber(_ text: String?) {
+        let cardIsNotValid = validation.cardFieldIsNotValid(text)
+        cardFormView?.cardTF.toggleValidity(cardIsNotValid)
+        cardFormView?.submitButton.backgroundColor = formIsNotValid ? .gray : viewModel.theme.buttonColorTheme.payButton
+    }
+    
+    func validateExpiry(_ text: String?) {
+        let expiryIsNotValid = validation.expiryFieldIsNotValid(text)
+        cardFormView?.expTF.toggleValidity(expiryIsNotValid)
+        cardFormView?.submitButton.backgroundColor = formIsNotValid ? .gray : viewModel.theme.buttonColorTheme.payButton
+    }
+    
+    func validateCVC(_ text: String?) {
+        let cvcIsNotValid = validation.CVCFieldIsNotValid(text)
+        cardFormView?.cvcTF.toggleValidity(cvcIsNotValid)
+        cardFormView?.submitButton.backgroundColor = formIsNotValid ? .gray : viewModel.theme.buttonColorTheme.payButton
+    }
+    
+    func cancel() {
+        self.view.removeFromSuperview()
+        switch viewModel.flow {
+        case .completeDirectCheckout: router?.showDirectCheckout()
+        case .completeVaultCheckout: router?.showVaultPaymentMethods()
+        default: dismiss(animated: true, completion: nil)
+        }
+    }
+    func showScanner() {
+        router?.showCardScanner(delegate: self)
     }
 }

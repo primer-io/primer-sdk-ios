@@ -37,3 +37,25 @@ struct PayPalOrderLink: Decodable {
     let rel: String?
     let method: String?
 }
+
+struct PayPalCreateBillingAgreementResponse: Decodable {
+    let tokenId: String?
+}
+
+struct PayPalConfirmBillingAgreementRequest: Encodable {
+    let paymentMethodConfigId, tokenId: String
+}
+
+struct PayPalConfirmBillingAgreementResponse: Decodable {
+    let billingAgreementId: String
+    let externalPayerInfo: PayPalExternalPayerInfo
+    let shippingAddress: ShippingAddress
+}
+
+struct PayPalExternalPayerInfo: Codable {
+    let externalPayerId, email, firstName, lastName: String?
+}
+
+public struct ShippingAddress: Codable {
+    let firstName, lastName, addressLine1, addressLine2, city, state, countryCode, postalCode: String?
+}

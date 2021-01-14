@@ -1,6 +1,7 @@
 protocol VaultCheckoutViewModelProtocol {
     var paymentMethods: [VaultedPaymentMethodViewModel] { get }
     var selectedPaymentMethodId: String { get }
+    var theme: PrimerTheme { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
     var vaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol { get }
     var applePayViewModel: ApplePayViewModelProtocol { get }
@@ -8,6 +9,8 @@ protocol VaultCheckoutViewModelProtocol {
 }
 
 class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
+    var theme: PrimerTheme { return settings.theme }
+    
     var paymentMethods: [VaultedPaymentMethodViewModel] {
         return vaultService.paymentMethodVMs
     }
@@ -35,7 +38,12 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     }
     
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
-        clientTokenService.loadCheckoutConfig(with: completion)
+        if (clientTokenService.decodedClientToken == nil) {
+            clientTokenService.loadCheckoutConfig(with: completion)
+            return
+        }
+        completion(nil)
+        return
     }
     
     func authorizePayment(_ completion: @escaping (Error?) -> Void) {
@@ -55,6 +63,8 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 }
 
 class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
+    var theme: PrimerTheme { return PrimerTheme() }
+    
     var paymentMethods: [VaultedPaymentMethodViewModel] {
         return []
     }

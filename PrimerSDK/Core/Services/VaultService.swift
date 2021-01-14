@@ -1,9 +1,5 @@
 import Foundation
 
-struct PayMethods: Decodable {
-    var data: [PaymentMethodToken]
-}
-
 protocol VaultServiceProtocol {
     var paymentMethods: [PaymentMethodToken] { get }
     var paymentMethodVMs: [VaultedPaymentMethodViewModel] { get }
@@ -42,7 +38,7 @@ class VaultService: VaultServiceProtocol {
                 case .failure(let error): completion(error)
                 case .success(let data):
                     
-                    let methods = try JSONDecoder().decode(PayMethods.self, from: data)
+                    let methods = try JSONDecoder().decode(GetVaultedPaymentMethodsResponse.self, from: data)
                     
                     print("🚀 methods:", methods)
                     
@@ -52,7 +48,7 @@ class VaultService: VaultServiceProtocol {
                     guard let paymentMethods = self?.paymentMethods else { return }
                     
                     self?.paymentMethodVMs = paymentMethods.map({ method in
-                        return VaultedPaymentMethodViewModel(id: method.token!, last4: method.paymentInstrumentData!.last4Digits!)
+                        return VaultedPaymentMethodViewModel(id: method.token!, last4: method.paymentInstrumentData!.last4Digits ?? "paypal billing agreement")
                     })
                     
                     print("🚀 paymentMethodVMs:", self!.paymentMethodVMs)
@@ -78,10 +74,8 @@ class VaultService: VaultServiceProtocol {
         guard let url = URL(string: "\(pciURL)/payment-instruments/\(id)/vault") else { return }
         self.api.delete(clientToken, url: url, completion: { result in
             switch result {
-            case .failure(let error):
-                onDeletetionSuccess(error)
-            case .success:
-                onDeletetionSuccess(nil)
+            case .failure(let error): onDeletetionSuccess(error)
+            case .success: onDeletetionSuccess(nil)
             }
         })
     }
@@ -95,7 +89,7 @@ class MockVaultService: VaultServiceProtocol {
                 token: "tokenId",
                 analyticsId: "id",
                 tokenType: "type",
-                paymentInstrumentType: "instrumentType",
+                paymentInstrumentType: .PAYMENT_CARD,
                 paymentInstrumentData: PaymentInstrumentData(
                     last4Digits: nil,
                     expirationMonth: nil,

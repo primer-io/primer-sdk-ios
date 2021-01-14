@@ -1,0 +1,40 @@
+"navigateToPaymentMethods" = 'Autres façons de payer';
+"payWithCard" = 'Payer par carte';
+"cardNumber" = 'Nº de carte';
+"cardExpiry" = "Date d'expiration";
+"cardExpiryPlaceholder" = 'MM/AA';
+"cardCVV" = 'Cryptogramme visuel';
+"cardholderName" = 'Nom du titulaire de la carte';
+"cardholderNamePlaceholder" = 'Nom complet';
+"previouslyUsed" = 'Précédemment utilisé:';
+"forgetPaymentMethods" = 'Supprimer les méthodes de paiement';
+"forgetSavedCard" = 'Supprimer la carte se terminant par {{last4Digits}}';
+"required" = 'Obligatoire';
+"invalid" = 'Invalide';
+"forgetPayPal" = 'Supprimer le compte PayPal';
+"savePaymentMethod" = 'Enregistrer le mode de paiement';
+"managePaymentMethods" = 'Gérez vos modes de paiement';
+"savedPaymentMethodsEmpty" =
+  'Entrez les détails de votre carte ci-dessous pour ajouter un nouveau mode de paiement';
+"newPaymentMethod" = 'Ajouter un nouveau mode de paiement';
+"cardEndingWith" = 'Carte finissant par';
+"otherWaysToPay" = 'Autres moyens de paiement';
+"pay" = 'Payez';
+"addCard" = 'Ajouter carte';
+// Payment methods dropdown
+"editPaymentMethods" = 'Modifier les modes de paiement sauvegardés';
+"confirmCardDeletion" = 'Confirmer - Supprimer Carte';
+"confirmPayPalDeletion" = 'Confirmer - Supprimer PayPal';
+"delete" = 'Supprimer';
+"cancel" = 'Annuler';
+// Direct Debit Form
+"accountHolder" = 'Titulaire du Compte';
+"address" = 'Adresse';
+"addressLine1" = 'Adresse ligne 1';
+"addressLine2" = 'Adresse ligne 2';
+"fullName" = 'Nom et prénom';
+"email" = 'Email';
+"city" = 'Ville';
+"postalCode" = 'Code Postal';
+"setUpDirectDebit" = 'Configurer Direct Debit';
+//

@@ -17,7 +17,7 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
     var currency: Currency { return settings.currency }
     var merchantIdentifier: String? { return settings.merchantIdentifier }
     var countryCode: CountryCode? { return settings.countryCode }
-    var uxMode: UXMode { return settings.uxMode }
+    var uxMode: UXMode { return Primer.flow.uxMode }
     var clientToken: ClientToken? { return clientTokenService.decodedClientToken }
     var onTokenizeSuccess: PaymentMethodTokenCallBack { return settings.onTokenizeSuccess }
     

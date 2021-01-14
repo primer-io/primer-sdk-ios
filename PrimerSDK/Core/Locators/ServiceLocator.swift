@@ -5,12 +5,10 @@ public enum Environment {
 class ServiceLocator {
     
     let settings: PrimerSettings
-    let api = APIClient()
     
-    init(settings: PrimerSettings) {
-        self.settings = settings
-    }
+    init(settings: PrimerSettings) { self.settings = settings }
     
+    lazy var api: APIClientProtocol = APIClient()
     lazy var clientTokenService: ClientTokenServiceProtocol = ClientTokenService(with: settings, and: paymentMethodConfigService)
     lazy var paymentMethodConfigService: PaymentMethodConfigServiceProtocol = PaymentMethodConfigService(
         with: api,

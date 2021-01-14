@@ -53,7 +53,6 @@ class VaultCheckoutViewModelTests: XCTestCase {
             countryCode: .FR
         )
         
-        let paymentMethodConfigService = MockPaymentMethodConfigService()
         let clientTokenService = MockClientTokenService()
         let vaultPaymentMethodViewModel = MockVaultPaymentMethodViewModel()
         let applePayViewModel = MockApplePayViewModel()
@@ -90,7 +89,6 @@ class VaultCheckoutViewModelTests: XCTestCase {
             countryCode: .FR
         )
         
-        let paymentMethodConfigService = MockPaymentMethodConfigService()
         let clientTokenService = MockClientTokenService()
         let vaultPaymentMethodViewModel = MockVaultPaymentMethodViewModel()
         let applePayViewModel = MockApplePayViewModel()
@@ -127,7 +125,6 @@ class VaultCheckoutViewModelTests: XCTestCase {
             countryCode: .FR
         )
         
-        let paymentMethodConfigService = MockPaymentMethodConfigService()
         let clientTokenService = MockClientTokenService()
         let vaultPaymentMethodViewModel = MockVaultPaymentMethodViewModel()
         let applePayViewModel = MockApplePayViewModel()

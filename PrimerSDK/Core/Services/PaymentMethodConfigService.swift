@@ -38,6 +38,8 @@ class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                     
                     self?.paymentMethodConfig = config
                     
+                    print(config)
+                    
                     self?.viewModels = []
                     
                     config.paymentMethods?.forEach({ method in
@@ -56,9 +58,7 @@ class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                         self?.viewModels = arr
                     }
                     
-                    guard let uxMode = self?.settings.uxMode else { return }
-                    
-                    switch uxMode {
+                    switch Primer.flow.uxMode {
                     case .CHECKOUT: completion(nil)
                     case .VAULT:
                         
@@ -74,6 +74,7 @@ class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
     func getConfigId(for type: ConfigPaymentMethodType) -> String? {
         guard let method = self.paymentMethodConfig?.paymentMethods?
                 .first(where: { method in return method.type == type }) else { return nil}
+        
         return method.id
     }
     

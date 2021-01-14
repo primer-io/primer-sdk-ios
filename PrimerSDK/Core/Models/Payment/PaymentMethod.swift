@@ -11,7 +11,7 @@ struct PaymentMethod {
     var details: PaymentInstrument
 }
 
-struct VaultedPaymentMethodViewModel {
+public struct VaultedPaymentMethodViewModel {
     let id: String
     let last4: String
 }

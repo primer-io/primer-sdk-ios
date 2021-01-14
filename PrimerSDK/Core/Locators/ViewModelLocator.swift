@@ -49,4 +49,9 @@ class ViewModelLocator {
         and: serviceLocator.vaultService,
         and: settings
     )
+    lazy var ibanFormViewModel = IBANFormViewModel(
+        with: confirmMandateViewModelProtocol,
+        and: settings
+    )
+    lazy var confirmMandateViewModelProtocol = ConfirmMandateViewModel()
 }

@@ -6,26 +6,37 @@ enum APIError: Error {
     case postError
 }
 
+enum APIMethod: String {
+    case GET = "GET"
+    case POST = "POST"
+    case DELETE = "DELETE"
+    case PUT = "PUT"
+}
+
 class APIClient: APIClientProtocol {
-    func get(_ token: ClientToken?, url: URL, completion: @escaping ((Result<Data, Error>) -> Void)) {
-        
+    
+    private func renderRequest(of method: APIMethod, with url: URL, and token: String?) -> URLRequest {
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = method.rawValue
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("1.0.0-beta.0", forHTTPHeaderField: "Primer-SDK-Version")
         request.addValue("IOS_NATIVE", forHTTPHeaderField: "Primer-SDK-Client")
         
-        if let tokenVal = token?.accessToken {
-            request.addValue(tokenVal, forHTTPHeaderField: "Primer-Client-Token")
+        if let token = token {
+            request.addValue(token, forHTTPHeaderField: "Primer-Client-Token")
         }
+        
+        return request
+    }
+    
+    func get(_ token: ClientToken?, url: URL, completion: @escaping ((Result<Data, Error>) -> Void)) {
+        
+        let request = renderRequest(of: .GET, with: url, and: token?.accessToken)
         
         URLSession.shared.dataTask(with: request, completionHandler: {
             (data, response, err) in
             
-            if let err = err {
-                print("API GET request failed:", err)
-                return
-            }
+            if let err = err { return print("API GET request failed:", err) }
             
             guard let httpResponse = response as? HTTPURLResponse else {
                 return completion(.failure(APIError.nullResponse))
@@ -46,33 +57,17 @@ class APIClient: APIClientProtocol {
     
     func delete(_ token: ClientToken?, url: URL, completion: @escaping ((Result<Data, Error>) -> Void)) {
         
-        var request = URLRequest(url: url)
-        request.httpMethod = "DELETE"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("1.0.0-beta.0", forHTTPHeaderField: "Primer-SDK-Version")
-        request.addValue("IOS_NATIVE", forHTTPHeaderField: "Primer-SDK-Client")
+        let request = renderRequest(of: .DELETE, with: url, and: token?.accessToken)
         
-        if let tokenVal = token?.accessToken {
-            request.addValue(tokenVal, forHTTPHeaderField: "Primer-Client-Token")
-        }
-        
-        URLSession.shared.dataTask(with: request, completionHandler: {
-            (data, response, err) in
+        URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
             
-            if let err = err {
-                print("API DELETE request failed:", err)
-                return
-            }
+            if let err = err { return print("API DELETE request failed:", err) }
             
-            guard let httpResponse = response as? HTTPURLResponse else {
-                return
-            }
+            guard let httpResponse = response as? HTTPURLResponse else { return }
             
             print("statusCode: \(httpResponse.statusCode)")
             
-            if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
-                return
-            }
+            if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) { return }
             
             guard let data = data else { return }
             
@@ -83,19 +78,11 @@ class APIClient: APIClientProtocol {
     
     func post<T: Encodable>(_ token: ClientToken?, body: T, url: URL, completion: @escaping ((Result<Data, Error>) -> Void)) {
         
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("1.0.0-beta.0", forHTTPHeaderField: "Primer-SDK-Version")
-        request.addValue("IOS_NATIVE", forHTTPHeaderField: "Primer-SDK-Client")
-        
-        if let tokenVal = token?.accessToken {
-            request.addValue(tokenVal, forHTTPHeaderField: "Primer-Client-Token")
-        }
+        var request = renderRequest(of: .POST, with: url, and: token?.accessToken)
         
         do {
-            let jsonBody = try JSONEncoder().encode(body)
-            request.httpBody = jsonBody
+            let payload = try JSONEncoder().encode(body)
+            request.httpBody = payload
         } catch {
             print(error)
         }
