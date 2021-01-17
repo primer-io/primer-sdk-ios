@@ -1,6 +1,5 @@
 protocol TokenizationServiceProtocol {
     func tokenize(
-        with clientToken: ClientToken,
         request: PaymentMethodTokenizationRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void
     )
@@ -9,14 +8,18 @@ protocol TokenizationServiceProtocol {
 class TokenizationService: TokenizationServiceProtocol {
     
     private let api: APIClientProtocol
+    private var state: AppStateProtocol
     
-    init(with api: APIClientProtocol) { self.api = api }
+    init(api: APIClientProtocol, state: AppStateProtocol) {
+        self.api = api
+        self.state = state
+    }
     
     func tokenize(
-        with clientToken: ClientToken,
         request: PaymentMethodTokenizationRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void
     ) {
+        guard let clientToken = state.decodedClientToken else { return }
         guard let pciURL = clientToken.pciUrl else { return }
         guard let url = URL(string: "\(pciURL)/payment-instruments") else { return }
         
@@ -32,16 +35,5 @@ class TokenizationService: TokenizationServiceProtocol {
                 onTokenizeSuccess(.failure(PrimerError.ClientTokenNull))
             }
         })
-    }
-}
-
-class MockTokenizationService: TokenizationServiceProtocol {
-    
-    var tokenizeCalled = false
-    
-    func tokenize(with clientToken: ClientToken, request: PaymentMethodTokenizationRequest, onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
-        tokenizeCalled = true
-        let token = PaymentMethodToken(token: "tokenID", paymentInstrumentType: .PAYMENT_CARD)
-        return onTokenizeSuccess(.success(token))
     }
 }
