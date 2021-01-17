@@ -1,49 +1,37 @@
 protocol DirectCheckoutViewModelProtocol {
     var amountViewModel: AmountViewModel { get }
     var paymentMethods: [PaymentMethodViewModel] { get }
-    var applePayViewModel: ApplePayViewModelProtocol { get }
-    var oAuthViewModel: OAuthViewModelProtocol { get }
-    var cardFormViewModel: CardFormViewModelProtocol { get }
     var theme: PrimerTheme { get }
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) -> Void
 }
 
 class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
-    var theme: PrimerTheme { return settings.theme }
+    var theme: PrimerTheme { return state.settings.theme }
     
-    private var amount: Int { return settings.amount }
-    private var currency: Currency { return settings.currency }
+    private var amount: Int { return state.settings.amount }
+    private var currency: Currency { return state.settings.currency }
     
-    var amountViewModel: AmountViewModel {
-        return AmountViewModel(amount: amount, currency: currency)
-    }
-    var applePayViewModel: ApplePayViewModelProtocol
-    var oAuthViewModel: OAuthViewModelProtocol
-    var cardFormViewModel: CardFormViewModelProtocol
-    var paymentMethods: [PaymentMethodViewModel] { return paymentMethodConfigService.viewModels }
+    var amountViewModel: AmountViewModel { return AmountViewModel(amount: amount, currency: currency) }
+    var paymentMethods: [PaymentMethodViewModel] { return state.viewModels }
     
     let clientTokenService: ClientTokenServiceProtocol
     let paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    let settings: PrimerSettings
+    private var state: AppStateProtocol
     
-    init(
-        with settings: PrimerSettings,
-        and applePayViewModel: ApplePayViewModelProtocol,
-        and oAuthViewModel: OAuthViewModelProtocol,
-        and cardFormViewModel: CardFormViewModelProtocol,
-        and clientTokenService: ClientTokenServiceProtocol,
-        and paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    ) {
-        self.settings = settings
-        self.applePayViewModel = applePayViewModel
-        self.oAuthViewModel = oAuthViewModel
-        self.cardFormViewModel = cardFormViewModel
-        self.clientTokenService = clientTokenService
-        self.paymentMethodConfigService = paymentMethodConfigService
+    init(context: CheckoutContextProtocol) {
+        self.state = context.state
+        self.clientTokenService = context.serviceLocator.clientTokenService
+        self.paymentMethodConfigService = context.serviceLocator.paymentMethodConfigService
     }
     
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
-        self.clientTokenService.loadCheckoutConfig(with: completion)
+        if (state.decodedClientToken.exists) {
+            paymentMethodConfigService.fetchConfig(completion)
+        } else {
+            clientTokenService.loadCheckoutConfig({ [weak self] error in
+                self?.paymentMethodConfigService.fetchConfig(completion)
+            })
+        }
     }
 }
 

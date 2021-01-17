@@ -22,10 +22,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>http://www.primer.io/app</string>
+			<string>primer</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>primer</string>
+				<string>primer://oauth</string>
 			</array>
 		</dict>
 	</array>

@@ -10,25 +10,17 @@ import XCTest
 
 class DirectCheckoutViewModelTests: XCTestCase {
     
-    func test_loadCheckoutConfig_calls_clientTokenService() throws {
-        
-        let applePayViewModel = MockApplePayViewModel()
-        let oAuthViewModel = MockOAuthViewModel()
-        let cardFormViewModel = MockCardFormViewModel()
-        let paymentMethodConfigService = MockPaymentMethodConfigService()
+    func test_loadCheckoutConfig_calls_clientTokenService_if_client_token_nil() throws {
         let clientTokenService = MockClientTokenService()
+        let serviceLocator = MockServiceLocator(clientTokenService: clientTokenService)
+        let state = MockAppState(decodedClientToken: nil)
+        let context = MockCheckoutContext(state: state, serviceLocator: serviceLocator)
         
-        let viewModel = DirectCheckoutViewModel(
-            with: mockSettings,
-            and: applePayViewModel,
-            and: oAuthViewModel,
-            and: cardFormViewModel,
-            and: clientTokenService,
-            and: paymentMethodConfigService
-        )
+        let viewModel = DirectCheckoutViewModel(context: context)
         
         viewModel.loadCheckoutConfig({ error in })
         
         XCTAssertEqual(clientTokenService.loadCheckoutConfigCalled, true)
     }
+    
 }

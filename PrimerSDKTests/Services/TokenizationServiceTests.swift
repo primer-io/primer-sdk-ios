@@ -12,23 +12,22 @@ class TokenizationServiceTests: XCTestCase {
     
     func test_tokenize_calls_api_post() throws {
         
-        let token = PaymentMethodToken(token: "token")
-        var newToken = PaymentMethodToken()
-        
+        let token = PaymentMethodToken(token: "token", paymentInstrumentType: .PAYMENT_CARD)
+        var newToken = PaymentMethodToken(token: "", paymentInstrumentType: .UNKNOWN)
         let data = try JSONEncoder().encode(token)
-        
         let api = MockAPIClient(with: data, throwsError: false)
+        let state = MockAppState()
         
-        let request = PaymentMethodTokenizationRequest(with: .CHECKOUT, and: "", and: PaymentInstrument())
+        let request = PaymentMethodTokenizationRequest(paymentInstrument: PaymentInstrument(), state: state)
         
-        let service = TokenizationService(with: api)
+        let service = TokenizationService(api: api, state: state)
         
-        service.tokenize(with: mockClientToken, request: request, onTokenizeSuccess: { result in
+        service.tokenize(request: request) { result in
             switch result {
             case .failure: print("error")
             case .success(let token): newToken.token = token.token
             }
-        })
+        }
         
         XCTAssertEqual(api.postCalled, true)
         XCTAssertEqual(newToken.token, token.token)

@@ -31,6 +31,10 @@ class VaultPaymentMethodViewController: UIViewController {
         subView.tableView.register(PaymentMethodTableViewCell.self, forCellReuseIdentifier: "paymentMethodCell")
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        delegate?.reload()
+    }
+    
     @objc private func addPaymentMethod() {
 //        let cardFormVCDelegate = viewModel.cardFormViewModel
 //        let vc = CardFormViewController(with: cardFormVCDelegate, )
@@ -46,15 +50,12 @@ extension VaultPaymentMethodViewController: VaultPaymentMethodViewDelegate {
         subView?.tableView.reloadData()
     }
     func cancel() {
-        self.view.removeFromSuperview()
-        router?.showVaultCheckout()
+        router?.pop()
     }
     func showCardForm() {
-        self.view.removeFromSuperview()
-        router?.showCardForm()
+        router?.show(.cardForm)
     }
     func showPayPal() {
-        self.view.removeFromSuperview()
-        router?.showOAuth()
+        router?.show(.oAuth)
     }
 }
