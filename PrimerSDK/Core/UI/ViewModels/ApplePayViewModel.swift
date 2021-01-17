@@ -12,67 +12,39 @@ protocol ApplePayViewModelProtocol {
 
 class ApplePayViewModel: ApplePayViewModelProtocol {
     
-    var amount: Int { return settings.amount }
-    var applePayConfigId: String? { return paymentMethodConfigService.getConfigId(for: .APPLE_PAY) }
-    var currency: Currency { return settings.currency }
-    var merchantIdentifier: String? { return settings.merchantIdentifier }
-    var countryCode: CountryCode? { return settings.countryCode }
+    var amount: Int { return state.settings.amount }
+    var applePayConfigId: String? { return state.paymentMethodConfig?.getConfigId(for: .APPLE_PAY) }
+    var currency: Currency { return state.settings.currency }
+    var merchantIdentifier: String? { return state.settings.merchantIdentifier }
+    var countryCode: CountryCode? { return state.settings.countryCode }
     var uxMode: UXMode { return Primer.flow.uxMode }
-    var clientToken: ClientToken? { return clientTokenService.decodedClientToken }
-    var onTokenizeSuccess: PaymentMethodTokenCallBack { return settings.onTokenizeSuccess }
+    var clientToken: DecodedClientToken? { return state.decodedClientToken }
     
-    //
     let tokenizationService: TokenizationServiceProtocol
     let paymentMethodConfigService: PaymentMethodConfigServiceProtocol
     let clientTokenService: ClientTokenServiceProtocol
-    let settings: PrimerSettings
+    let state: AppStateProtocol
     
-    init(
-        with settings: PrimerSettings,
-        and clientTokenService: ClientTokenServiceProtocol,
-        and tokenizationService: TokenizationServiceProtocol,
-        and paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    ) {
-        self.settings = settings
-        self.clientTokenService = clientTokenService
-        self.tokenizationService = tokenizationService
-        self.paymentMethodConfigService = paymentMethodConfigService
+    init(context: CheckoutContextProtocol) {
+        self.state = context.state
+        self.clientTokenService = context.serviceLocator.clientTokenService
+        self.tokenizationService = context.serviceLocator.tokenizationService
+        self.paymentMethodConfigService = context.serviceLocator.paymentMethodConfigService
     }
     
     func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
-        guard let clientToken = self.clientToken else { return }
-        guard let customerId = settings.customerId else { return }
-        
-        let request = PaymentMethodTokenizationRequest.init(with: uxMode, and: customerId, and: instrument)
-        
-        tokenizationService.tokenize(with: clientToken, request: request, onTokenizeSuccess: { [weak self] result in
+        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+        tokenizationService.tokenize(request: request) { [weak self] result in
             switch result {
             case .failure(let error): completion(error)
             case .success(let token):
-                guard let uxMode = self?.uxMode else { return }
-                switch uxMode {
-                case .VAULT: completion(nil)
-                case .CHECKOUT: self?.onTokenizeSuccess(token, completion)
+                switch Primer.flow {
+                case .addCardToVault: completion(nil)
+                case .addPayPalToVault: completion(nil)
+                case .completeVaultCheckout: completion(nil)
+                case .completeDirectCheckout: self?.state.settings.onTokenizeSuccess(token, completion)
                 }
             }
-        })
-    }
-}
-
-class MockApplePayViewModel: ApplePayViewModelProtocol {
-    var amount: Int { return 200 }
-    
-    var applePayConfigId: String? { return "applePayConfigId" }
-    
-    var currency: Currency { return .EUR }
-    
-    var merchantIdentifier: String? { "mid" }
-    
-    var countryCode: CountryCode? { return .FR }
-    
-    var calledTokenize = false
-    
-    func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
-        calledTokenize = true
+        }
     }
 }

@@ -1,31 +1,21 @@
 import UIKit
 
 protocol PaymentMethodConfigServiceProtocol {
-    var viewModels: [PaymentMethodViewModel] { get }
-    func fetchConfig(with clientToken: ClientToken, _ completion: @escaping (Error?) -> Void)
-    func getConfigId(for type: ConfigPaymentMethodType) -> String?
+    func fetchConfig(_ completion: @escaping (Error?) -> Void)
 }
 
 class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
     
     let api: APIClientProtocol
-    let vaultService: VaultServiceProtocol
-    let settings: PrimerSettings
+    private var state: AppStateProtocol
     
-    var paymentMethodConfig: PaymentMethodConfig?
-    var viewModels: [PaymentMethodViewModel] = []
-    
-    init(
-        with api: APIClientProtocol,
-        and vaultService: VaultServiceProtocol,
-        and settings: PrimerSettings
-    ) {
+    init(api: APIClientProtocol, state: AppStateProtocol) {
         self.api = api
-        self.vaultService = vaultService
-        self.settings = settings
+        self.state = state
     }
     
-    func fetchConfig(with clientToken: ClientToken, _ completion: @escaping (Error?) -> Void) {
+    func fetchConfig(_ completion: @escaping (Error?) -> Void) {
+        guard let clientToken = state.decodedClientToken else { return }
         guard let configurationUrl = clientToken.configurationUrl else { return }
         guard let apiURL = URL(string: configurationUrl) else { return }
         
@@ -36,63 +26,33 @@ class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                 do {
                     let config = try JSONDecoder().decode(PaymentMethodConfig.self, from: data)
                     
-                    self?.paymentMethodConfig = config
+                    self?.state.paymentMethodConfig = config
                     
                     print(config)
                     
-                    self?.viewModels = []
+                    self?.state.viewModels = []
                     
                     config.paymentMethods?.forEach({ method in
                         guard let type = method.type else { return }
                         if type == .GOOGLE_PAY { return }
-                        self?.viewModels.append(PaymentMethodViewModel(type: type))
+                        self?.state.viewModels.append(PaymentMethodViewModel(type: type))
                     })
                     
                     // ensure Apple Pay is always first if present.
                     
-                    guard let viewModels = self?.viewModels else { return }
+                    guard let viewModels = self?.state.viewModels else { return }
                     
                     if (viewModels.contains(where: { model in model.type == .APPLE_PAY})) {
                         var arr = viewModels.filter({ model in model.type != .APPLE_PAY})
                         arr.insert(PaymentMethodViewModel(type: .APPLE_PAY), at: 0)
-                        self?.viewModels = arr
+                        self?.state.viewModels = arr
                     }
                     
-                    switch Primer.flow.uxMode {
-                    case .CHECKOUT: completion(nil)
-                    case .VAULT:
-                        
-                        self?.vaultService.loadVaultedPaymentMethods(with: clientToken, and: completion)
-                    }
+                    completion(nil)
                 } catch {
                     completion(error)
                 }
             }
         })
-    }
-    
-    func getConfigId(for type: ConfigPaymentMethodType) -> String? {
-        guard let method = self.paymentMethodConfig?.paymentMethods?
-                .first(where: { method in return method.type == type }) else { return nil}
-        
-        return method.id
-    }
-    
-}
-
-class MockPaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
-    
-    var viewModels: [PaymentMethodViewModel] = []
-    
-    var fetchConfigCalled = false
-    var getConfigIdCalled = false
-    
-    func fetchConfig(with clientToken: ClientToken, _ completion: @escaping (Error?) -> Void) {
-        fetchConfigCalled = true
-    }
-    
-    func getConfigId(for type: ConfigPaymentMethodType) -> String? {
-        getConfigIdCalled = true
-        return "id"
     }
 }

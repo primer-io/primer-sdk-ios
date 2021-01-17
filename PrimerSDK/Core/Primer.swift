@@ -5,57 +5,33 @@ public class Primer {
     static var flow: PrimerSessionFlow = .completeDirectCheckout
     
     private var rootViewController: RootViewController {
-        let vc = RootViewController.init(context)
-        return vc
+        return RootViewController(context)
     }
+    
     private let context: CheckoutContext
     
+    /** Intialise Primer with the settings object before calling any of the other methods.*/
     public init(with settings: PrimerSettings) {
-        
-        let serviceLocator = ServiceLocator(settings: settings)
-        let viewModelLocator = ViewModelLocator(with: serviceLocator, and: settings)
-        
-        self.context = CheckoutContext.init(with: settings, and: serviceLocator, and: viewModelLocator)
+        self.context = CheckoutContext(with: settings)
     }
     
+    deinit {
+        print("🧨 destroy:", self.self)
+    }
+    
+    /** Presents a bottom sheet view for Primer checkout. To determine the user journey specify the PrimerSessionFlow of the method. Additionally a parent view controller needs to be passed in to display the sheet view. */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
         Primer.flow = flow
         controller.present(rootViewController, animated: true)
     }
     
+    /** Performs an asynchronous get call returning all the saved payment methods for the user ID specified in the settings object when instantiating Primer. Provide a completion handler to access the returned list of saved payment methods (these have already been added to Primer vault and can be sent directly to your backend to authorize or capture a payment) */
     public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
-        guard let clientToken = context.serviceLocator.clientTokenService.decodedClientToken else {
-            return fetchClientToken(then: { [weak self] result in
-                switch result {
-                case .failure(let error): completion(.failure(error))
-                case .success(let clientToken): self?.fetchVaultedPaymentMethods(with: clientToken, then: completion)
-                }
-            })
-        }
-        fetchVaultedPaymentMethods(with: clientToken, then: completion)
+        context.viewModelLocator.externalViewModel.fetchVaultedPaymentMethods(completion)
     }
     
-    private func fetchClientToken(then completion: @escaping (Result<ClientToken, Error>) -> Void) {
-        context.serviceLocator.clientTokenService.loadCheckoutConfig(with: { [weak self] error in
-            if let error = error { completion(.failure(error)) }
-            
-            guard let clientToken = self?.context.serviceLocator.clientTokenService.decodedClientToken else { return }
-            
-            completion(.success(clientToken))
-        })
-    }
-    
-    private func fetchVaultedPaymentMethods(
-        with clientToken: ClientToken,
-        then completion: @escaping (Result<[PaymentMethodToken], Error>
-    ) -> Void) {
-        context.serviceLocator.vaultService.loadVaultedPaymentMethods(with: clientToken, and: { [weak self] error in
-            if let error = error { completion(.failure(error)) }
-            
-            guard let paymentMethods = self?.context.serviceLocator.vaultService.paymentMethods else { return }
-            
-            completion(.success(paymentMethods))
-        })
-    }
-    
+}
+
+extension Optional {
+    var exists: Bool { return self != nil }
 }
