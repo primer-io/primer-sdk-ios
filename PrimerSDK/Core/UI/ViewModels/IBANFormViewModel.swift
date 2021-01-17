@@ -6,23 +6,16 @@
 //
 
 protocol IBANFormViewModelProtocol {
-    var confirmMandateViewModel: ConfirmMandateViewModelProtocol { get }
     var theme: PrimerTheme { get }
 }
 
 class IBANFormViewModel: IBANFormViewModelProtocol {
     
-    var theme: PrimerTheme { return settings.theme }
+    var theme: PrimerTheme { return context.state.settings.theme }
+    let context: CheckoutContextProtocol
     
-    let confirmMandateViewModel: ConfirmMandateViewModelProtocol
-    let settings: PrimerSettings
-    
-    init(
-        with confirmMandateViewModel: ConfirmMandateViewModelProtocol,
-        and settings: PrimerSettings
-    ) {
-        self.confirmMandateViewModel = confirmMandateViewModel
-        self.settings = settings
+    init(context: CheckoutContextProtocol) {
+        self.context = context
     }
     
 }

@@ -11,30 +11,12 @@ import XCTest
 class VaultPaymentMethodViewModelTests: XCTestCase {
     
     func test_reloadVault_calls_vaultService_loadVaultedPaymentMethods() throws {
-        
-        let settings = PrimerSettings(
-            amount: 200,
-            currency: .EUR,
-            clientTokenRequestCallback: { completion in },
-            onTokenizeSuccess: { (result, callback) in },
-            theme: PrimerTheme(),
-            uxMode: .CHECKOUT,
-            applePayEnabled: false,
-            customerId: "cid",
-            merchantIdentifier: "mid",
-            countryCode: .FR
-        )
-        
         let clientTokenService = MockClientTokenService()
         let vaultService = MockVaultService()
-        let cardFormViewModel = MockCardFormViewModel()
+        let serviceLocator = MockServiceLocator(clientTokenService: clientTokenService, vaultService: vaultService)
+        let context = MockCheckoutContext(serviceLocator: serviceLocator)
         
-        let viewModel = VaultPaymentMethodViewModel(
-            with: clientTokenService,
-            and: vaultService,
-            and: cardFormViewModel,
-            and: settings
-        )
+        let viewModel = VaultPaymentMethodViewModel(context: context)
         
         viewModel.reloadVault(with: { error in })
         
@@ -42,29 +24,12 @@ class VaultPaymentMethodViewModelTests: XCTestCase {
     }
     
     func test_deletePaymentMethod_calls_vaultService_deleteVaultedPaymentMethod() throws {
-        let settings = PrimerSettings(
-            amount: 200,
-            currency: .EUR,
-            clientTokenRequestCallback: { completion in },
-            onTokenizeSuccess: { (result, callback) in },
-            theme: PrimerTheme(),
-            uxMode: .CHECKOUT,
-            applePayEnabled: false,
-            customerId: "cid",
-            merchantIdentifier: "mid",
-            countryCode: .FR
-        )
-        
         let clientTokenService = MockClientTokenService()
         let vaultService = MockVaultService()
-        let cardFormViewModel = MockCardFormViewModel()
+        let serviceLocator = MockServiceLocator(clientTokenService: clientTokenService, vaultService: vaultService)
+        let context = MockCheckoutContext(serviceLocator: serviceLocator)
         
-        let viewModel = VaultPaymentMethodViewModel(
-            with: clientTokenService,
-            and: vaultService,
-            and: cardFormViewModel,
-            and: settings
-        )
+        let viewModel = VaultPaymentMethodViewModel(context: context)
         
         viewModel.deletePaymentMethod(with: "id", and: { error in })
         

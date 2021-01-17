@@ -11,7 +11,6 @@ import XCTest
 class PaymentMethodConfigServiceTests: XCTestCase {
     
     func test_fetchConfig_updates_paymentMethodConfig_and_viewModels() throws {
-        
         let config = PaymentMethodConfig(
             coreUrl: "coreUrl",
             pciUrl: "pciUrl",
@@ -21,14 +20,13 @@ class PaymentMethodConfigServiceTests: XCTestCase {
         )
         let data: Data = try JSONEncoder().encode(config)
         let api = MockAPIClient(with: data, throwsError: false)
-        let vaultService = MockVaultService()
+        let state = MockAppState()
         
+        let service = PaymentMethodConfigService(api: api, state: state)
         
-        let service = PaymentMethodConfigService(with: api, and: vaultService, and: mockSettings)
+        service.fetchConfig({ error in })
         
-        service.fetchConfig(with: mockClientToken, { error in })
-        
-        XCTAssertEqual(service.paymentMethodConfig?.coreUrl, config.coreUrl)
-        XCTAssertEqual(service.viewModels.count, 1)
+        XCTAssertEqual(state.paymentMethodConfig?.coreUrl, config.coreUrl)
+        XCTAssertEqual(state.viewModels.count, 1)
     }
 }
