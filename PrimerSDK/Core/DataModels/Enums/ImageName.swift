@@ -8,18 +8,26 @@
 import UIKit
 
 enum ImageName: String {
-  case
-  amex,
-  discover,
-  mastercard,
-  visa,
-  unknownCard
-  
-  var image: UIImage? {
-    guard let image = UIImage(named: rawValue) else {
-      return nil
-    }
+    case
+        amex,
+        appleIcon,
+        back,
+        discover,
+        masterCard,
+        visa,
+        creditCard,
+        check,
+        success,
+        delete,
+        paypal
     
-    return image
-  }
+    var image: UIImage? {
+        let frameworkBundle = Bundle(for: Primer.self)
+        let bundleURL = frameworkBundle.resourceURL?.appendingPathComponent("XDCoreLib.bundle")
+        let resourceBundle = Bundle(url: bundleURL!)
+        guard let image = UIImage(named: rawValue, in: resourceBundle, compatibleWith: nil) else {
+            return nil
+        }
+        return image
+    }
 }

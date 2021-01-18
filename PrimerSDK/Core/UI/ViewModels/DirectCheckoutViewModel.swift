@@ -51,11 +51,11 @@ struct PaymentMethodViewModel {
         }
     }
     
-    func toIconName() -> PaymentMethodIcon {
+    func toIconName() -> ImageName {
         switch type {
-        case .APPLE_PAY: return .appleIcon
-        case .PAYPAL: return .paypal
-        default: return .creditCard
+        case .APPLE_PAY: return ImageName.appleIcon
+        case .PAYPAL: return  ImageName.paypal
+        default: return  ImageName.creditCard
         }
     }
     

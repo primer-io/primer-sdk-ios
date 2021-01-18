@@ -59,9 +59,9 @@ class PaymentMethodTableViewCell: UITableViewCell {
         if (showDeleteIcon) {
             accessoryType = .none
             if #available(iOS 13.0, *) {
-                deleteButton.setImage(UIImage(systemName: "minus.circle.fill"), for: .normal)
+                deleteButton.setImage(ImageName.delete.image, for: .normal)
             } else {
-                deleteButton.setImage(UIImage(named: "delete"), for: .normal)
+                deleteButton.setImage(ImageName.delete.image, for: .normal)
             }
             deleteButton.tintColor = .red
             deleteButton.frame = CGRect(x: 0, y: 0, width: 50, height: 50)

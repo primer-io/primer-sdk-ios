@@ -127,7 +127,6 @@
 		1DC625402588091B002A6220 /* DirectCheckoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC6253F2588091B002A6220 /* DirectCheckoutViewController.swift */; };
 		1DCDD559259BAA13000E9462 /* ImageName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCDD558259BAA13000E9462 /* ImageName.swift */; };
 		1DCDD596259BB3BC000E9462 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1D033BB7257EFD2100EE9301 /* Icons.xcassets */; };
-		1DCDD5A5259BB4A0000E9462 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1D033BB7257EFD2100EE9301 /* Icons.xcassets */; };
 		399A9BA6E5ECDB9CABE4D6AB /* Pods_PrimerSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E419CD5C3011C94D70A97A01 /* Pods_PrimerSDK.framework */; };
 		E4E607881AE8E071A5978F19 /* Pods_PrimerSDK_PrimerSDKTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EA5F2AA83F67D88FF4CC9F /* Pods_PrimerSDK_PrimerSDKTests.framework */; };
 /* End PBXBuildFile section */
@@ -984,7 +983,6 @@
 				1D6C257125ACD24200409120 /* Localizable.strings in Resources */,
 				1D033AC5257EF27500EE9301 /* LaunchScreen.storyboard in Resources */,
 				1D033AC2257EF27500EE9301 /* Assets.xcassets in Resources */,
-				1DCDD5A5259BB4A0000E9462 /* Icons.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

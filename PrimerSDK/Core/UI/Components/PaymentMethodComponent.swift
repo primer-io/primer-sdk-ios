@@ -23,7 +23,7 @@ class PaymentMethodComponent: UIView {
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString(), isBold: true)
-            configureIconView(with: method.toIconName().rawValue, color: .white)
+            configureIconView(with: method.toIconName().image, color: .white)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         case .PAYMENT_CARD:
@@ -32,13 +32,13 @@ class PaymentMethodComponent: UIView {
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString())
-            configureIconView(with: method.toIconName().rawValue, color: theme.fontColorTheme.creditCard)
+            configureIconView(with: method.toIconName().image, color: theme.fontColorTheme.creditCard)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         case .PAYPAL:
             backgroundColor = theme.buttonColorTheme.paypal
             addSubview(iconView)
-            configureIconView(with: method.toIconName().rawValue, color: theme.fontColorTheme.paypal)
+            configureIconView(with: method.toIconName().image, color: theme.fontColorTheme.paypal)
             anchorIconView(inRelationToLabel: false)
         default: break
         }
@@ -58,8 +58,7 @@ class PaymentMethodComponent: UIView {
         }
     }
     
-    func configureIconView(with iconName: String, color: UIColor = .black) {
-        let icon = UIImage(named: iconName)
+    func configureIconView(with icon: UIImage?, color: UIColor = .black) {
         let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
         iconView.image = tintedIcon
         iconView.tintColor = color
