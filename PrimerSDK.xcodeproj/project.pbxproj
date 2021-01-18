@@ -119,6 +119,7 @@
 		1D6C267F25B38F6500409120 /* ConfirmMandateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C267E25B38F6500409120 /* ConfirmMandateViewModel.swift */; };
 		1D6C26A125B4D1BD00409120 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C26A025B4D1BD00409120 /* Route.swift */; };
 		1D6C26A725B4DAAF00409120 /* PayPalServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C26A625B4DAAE00409120 /* PayPalServiceTests.swift */; };
+		1D6C272425B5A63A00409120 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1D033BB7257EFD2100EE9301 /* Icons.xcassets */; };
 		1DB5C58C25890D4D00EDFDA2 /* PayPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB5C58B25890D4D00EDFDA2 /* PayPalService.swift */; };
 		1DB5C593258930CD00EDFDA2 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB5C592258930CD00EDFDA2 /* Currency.swift */; };
 		1DB5C597258932F600EDFDA2 /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB5C596258932F600EDFDA2 /* VaultService.swift */; };
@@ -982,6 +983,7 @@
 			files = (
 				1D6C257125ACD24200409120 /* Localizable.strings in Resources */,
 				1D033AC5257EF27500EE9301 /* LaunchScreen.storyboard in Resources */,
+				1D6C272425B5A63A00409120 /* Icons.xcassets in Resources */,
 				1D033AC2257EF27500EE9301 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
