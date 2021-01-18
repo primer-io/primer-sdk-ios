@@ -23,7 +23,7 @@ enum ImageName: String {
     
     var image: UIImage? {
         let frameworkBundle = Bundle(for: Primer.self)
-        let bundleURL = frameworkBundle.resourceURL?.appendingPathComponent("XDCoreLib.bundle")
+        let bundleURL = frameworkBundle.resourceURL?.appendingPathComponent("PrimerSDK.bundle")
         let resourceBundle = Bundle(url: bundleURL!)
         guard let image = UIImage(named: rawValue, in: resourceBundle, compatibleWith: nil) else {
             return nil
