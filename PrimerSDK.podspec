@@ -106,7 +106,10 @@ Pod::Spec.new do |spec|
   #
 
   # spec.resource  = "icon.png"
-  spec.resources = "PrimerSDK/Icons.xcassets"
+  # spec.resources = "PrimerSDK/Icons.xcassets"
+  spec.resource_bundles = {
+    'PrimerSDK' => ['PrimerSDK/*/**.xcassets']
+  }
 
   # spec.preserve_paths = "FilesToSave", "MoreFilesToSave"
   spec.swift_version = "4.2"

@@ -9,7 +9,7 @@ import UIKit
 
 class SuccessViewController: UIViewController {
     
-    let icon = UIImageView(image: UIImage(named: "success"))
+    let icon = UIImageView(image: ImageName.success.image)
     let message = UILabel()
     let confirmationMessage = UILabel()
     
