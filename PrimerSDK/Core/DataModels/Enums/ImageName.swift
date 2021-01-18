@@ -28,7 +28,6 @@ enum ImageName: String {
         guard let image = UIImage(named: rawValue, in: resourceBundle, compatibleWith: nil) else {
             return nil
         }
-        print("🌃 image:", image)
         return image
     }
 }
