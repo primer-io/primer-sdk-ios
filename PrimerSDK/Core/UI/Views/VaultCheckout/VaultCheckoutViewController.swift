@@ -49,12 +49,12 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: "cell3")
         
-        let selectedCard = viewModel.paymentMethods.first(where: { vm in
-            return vm.id == viewModel.selectedPaymentMethodId
+        let selectedCard = viewModel.paymentMethods.first(where: { paymentMethod in
+            return paymentMethod.token == viewModel.selectedPaymentMethodId
         })
         
         if (selectedCard != nil) {
-            cell.textLabel?.text = "**** **** **** \(selectedCard!.last4)"
+            cell.textLabel?.text = selectedCard?.description
         } else {
             cell.textLabel?.text = "select a card".localized()
         }
@@ -97,14 +97,13 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        self.view.removeFromSuperview()
-        router?.showVaultPaymentMethods()
+        router?.show(.vaultPaymentMethods(delegate: self))
     }
 }
 
 extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
     func cancel() {
-        self.dismiss(animated: true, completion: nil)
+        router?.pop()
     }
     
     func pay() {
@@ -113,15 +112,11 @@ extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
         
         viewModel.authorizePayment({ [weak self] error in
             DispatchQueue.main.async {
-                
-                if (error != nil) {
-                    self?.view.removeFromSuperview()
-                    self?.router?.showError()
+                if (error.exists) {
+                    self?.router?.show(.error)
                     return
                 }
-                
-                self?.view.removeFromSuperview()
-                self?.router?.showSuccess()
+                self?.router?.show(.success)
             }
         })
     }

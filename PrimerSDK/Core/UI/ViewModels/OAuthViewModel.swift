@@ -1,37 +1,35 @@
 protocol OAuthViewModelProtocol {
+    var urlSchemeIdentifier: String { get }
     func generateOAuthURL(with completion: @escaping (Result<String, Error>) -> Void) -> Void
     func tokenize(with completion: @escaping (Error?) -> Void) -> Void
 }
 
 class OAuthViewModel: OAuthViewModelProtocol {
-    private var clientToken: ClientToken? { return clientTokenService.decodedClientToken }
-    private var orderId: String? { return paypalService.orderId }
-    private var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? { return paypalService.confirmedBillingAgreement }
-    private var onTokenizeSuccess: PaymentMethodTokenCallBack { return settings.onTokenizeSuccess }
+    
+    var urlSchemeIdentifier: String { return state.settings.urlSchemeIdentifier }
+    
+    private var clientToken: DecodedClientToken? { return state.decodedClientToken }
+    private var orderId: String? { return state.orderId }
+    private var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? { return state.confirmedBillingAgreement }
+    private var onTokenizeSuccess: PaymentMethodTokenCallBack { return state.settings.onTokenizeSuccess }
     
     //
     private let paypalService: PayPalServiceProtocol
     private let tokenizationService: TokenizationServiceProtocol
     private let clientTokenService: ClientTokenServiceProtocol
     private let paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    private let settings: PrimerSettings
+    private var state: AppStateProtocol
     
-    init(
-        with settings: PrimerSettings,
-        and paypalService: PayPalServiceProtocol,
-        and tokenizationService: TokenizationServiceProtocol,
-        and clientTokenService: ClientTokenServiceProtocol,
-        and paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    ) {
-        self.settings = settings
-        self.paypalService = paypalService
-        self.tokenizationService = tokenizationService
-        self.clientTokenService = clientTokenService
-        self.paymentMethodConfigService = paymentMethodConfigService
+    init(context: CheckoutContextProtocol) {
+        self.paypalService = context.serviceLocator.paypalService
+        self.tokenizationService = context.serviceLocator.tokenizationService
+        self.clientTokenService = context.serviceLocator.clientTokenService
+        self.paymentMethodConfigService = context.serviceLocator.paymentMethodConfigService
+        self.state = context.state
     }
     
     private func loadConfig(_ completion: @escaping (Result<String, Error>) -> Void) {
-        clientTokenService.loadCheckoutConfig(with: { [weak self] error in
+        clientTokenService.loadCheckoutConfig({ [weak self] error in
             if (error != nil) {
                 completion(.failure(PrimerError.ClientTokenNull))
                 return
@@ -41,25 +39,19 @@ class OAuthViewModel: OAuthViewModelProtocol {
     }
     
     func generateOAuthURL(with completion: @escaping (Result<String, Error>) -> Void) {
-        guard let clientToken = clientToken else {
+        if (clientToken != nil) {
+            switch Primer.flow.uxMode {
+            case .CHECKOUT: paypalService.startOrderSession(completion)
+            case .VAULT: paypalService.startBillingAgreementSession(completion)
+            }
+        } else {
             loadConfig(completion)
             return
-        }
-        
-        guard let configId = paymentMethodConfigService.getConfigId(for: .PAYPAL) else { return }
-        
-        switch Primer.flow.uxMode {
-        case .CHECKOUT: paypalService.getAccessToken(with: clientToken, configId: configId, completion: completion)
-        case .VAULT: paypalService.getBillingAgreementToken(with: clientToken, configId: configId, completion: completion)
         }
     }
     
     private func generateBillingAgreementConfirmation(with completion: @escaping (Error?) -> Void) {
-        guard let clientToken = clientToken else { return }
-        print("🎉 generateBillingAgreementConfirmation", clientToken)
-        guard let configId = paymentMethodConfigService.getConfigId(for: .PAYPAL) else { return }
-        print("🎉 generateBillingAgreementConfirmation", configId)
-        paypalService.confirmBillingAgreement(with: clientToken, configId: configId, completion: { [weak self] result in
+        paypalService.confirmBillingAgreement({ [weak self] result in
             switch result {
             case .failure(let error): print("generateBillingAgreementConfirmation", error)
             case .success: self?.tokenize(with: completion)
@@ -68,10 +60,6 @@ class OAuthViewModel: OAuthViewModelProtocol {
     }
     
     func tokenize(with completion: @escaping (Error?) -> Void) {
-        guard let clientToken = self.clientToken else { return }
-        guard let customerId = settings.customerId else { return }
-        
-        print("🎉 tokenizing")
         
         var instrument: PaymentInstrument
         
@@ -93,35 +81,17 @@ class OAuthViewModel: OAuthViewModelProtocol {
             )
         }
         
-        let request = PaymentMethodTokenizationRequest.init(with: Primer.flow.uxMode, and: customerId, and: instrument)
+        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
         
-        tokenizationService.tokenize(with: clientToken, request: request, onTokenizeSuccess: { [weak self] result in
+        tokenizationService.tokenize(request: request) { [weak self] result in
             switch result {
             case .failure(let error): completion(error)
             case .success(let token):
-//                guard let uxMode = self?.settings.flow.uxMode else {
-//                    self?.generateBillingAgreementConfirmation(with: completion)
-//                    return
-//                }
                 switch Primer.flow.uxMode {
                 case .VAULT: completion(nil)
                 case .CHECKOUT: self?.onTokenizeSuccess(token, completion)
                 }
             }
-        })
-    }
-}
-
-class MockOAuthViewModel: OAuthViewModelProtocol {
-    
-    var generateOAuthURLCalled = false
-    var tokenizeCalled = false
-    
-    func generateOAuthURL(with completion: @escaping (Result<String, Error>) -> Void) {
-        generateOAuthURLCalled = true
-    }
-    
-    func tokenize(with completion: @escaping (Error?) -> Void) {
-        tokenizeCalled = true
+        }
     }
 }

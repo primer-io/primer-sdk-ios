@@ -19,6 +19,7 @@ class CheckoutViewController: UIViewController {
     let addCardButton = UIButton()
     let addPayPalButton = UIButton()
     let vaultCheckoutButton = UIButton()
+    let directCheckoutButton = UIButton()
     
     override func viewDidLoad() {
         title = "Wallet"
@@ -28,7 +29,10 @@ class CheckoutViewController: UIViewController {
             delegate: self,
             amount: amount,
             currency: .EUR,
-            customerId: "customer_1"
+            customerId: "customer_1",
+            countryCode: .fr,
+            urlScheme: "primer://oauth",
+            urlSchemeIdentifier: "primer"
         )
         
         primer = Primer(with: settings)
@@ -38,6 +42,7 @@ class CheckoutViewController: UIViewController {
         view.addSubview(addCardButton)
         view.addSubview(addPayPalButton)
         view.addSubview(vaultCheckoutButton)
+        view.addSubview(directCheckoutButton)
         
         //
         tableView.delegate = self
@@ -54,10 +59,15 @@ class CheckoutViewController: UIViewController {
         addPayPalButton.backgroundColor = .systemBlue
         addPayPalButton.addTarget(self, action: #selector(showPayPalForm), for: .touchUpInside)
         
-        vaultCheckoutButton.setTitle("Open wallet", for: .normal)
+        vaultCheckoutButton.setTitle("Open Wallet", for: .normal)
         vaultCheckoutButton.setTitleColor(.white, for: .normal)
         vaultCheckoutButton.backgroundColor = .systemPink
         vaultCheckoutButton.addTarget(self, action: #selector(showCompleteVaultCheckout), for: .touchUpInside)
+        
+        directCheckoutButton.setTitle("Open Checkout", for: .normal)
+        directCheckoutButton.setTitleColor(.white, for: .normal)
+        directCheckoutButton.backgroundColor = .systemTeal
+        directCheckoutButton.addTarget(self, action: #selector(showCompleteDirectCheckout), for: .touchUpInside)
         
         //
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -77,10 +87,16 @@ class CheckoutViewController: UIViewController {
         addPayPalButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         
         vaultCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
-        vaultCheckoutButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
+        vaultCheckoutButton.bottomAnchor.constraint(equalTo: directCheckoutButton.topAnchor, constant: -12).isActive = true
         vaultCheckoutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         vaultCheckoutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         
+        directCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
+        directCheckoutButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
+        directCheckoutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
+        directCheckoutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
+        
+        //
         fetchPaymentMethods()
     }
     
@@ -110,6 +126,9 @@ class CheckoutViewController: UIViewController {
     @objc private func showCompleteVaultCheckout() {
         primer?.showCheckout(self, flow: .completeVaultCheckout)
     }
+    @objc private func showCompleteDirectCheckout() {
+        primer?.showCheckout(self, flow: .completeDirectCheckout)
+    }
 }
 
 // MARK: PrimerCheckoutDelegate (Required)
@@ -119,7 +138,7 @@ extension CheckoutViewController: PrimerCheckoutDelegate {
         fetchPaymentMethods()
     }
     
-    func clientTokenCallback(_ completion: @escaping (Result<ClientTokenResponse, Error>) -> Void) {
+    func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
         guard let url = URL(string: "http://192.168.0.50:8020/client-token") else {
             return completion(.failure(NetworkError.missingParams))
         }
@@ -130,7 +149,7 @@ extension CheckoutViewController: PrimerCheckoutDelegate {
             switch result {
             case .success(let data):
                 do {
-                    let token = try JSONDecoder().decode(ClientTokenResponse.self, from: data)
+                    let token = try JSONDecoder().decode(CreateClientTokenResponse.self, from: data)
                     completion(.success(token))
                 } catch {
                     completion(.failure(NetworkError.serializationError))

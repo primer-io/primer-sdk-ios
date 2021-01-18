@@ -1,20 +1,20 @@
 
 protocol CheckoutContextProtocol {
-    var settings: PrimerSettings  { get }
-    var serviceLocator: ServiceLocator  { get }
-    var viewModelLocator: ViewModelLocator { get }
+    var state: AppStateProtocol { get }
+    var settings: PrimerSettingsProtocol  { get }
+    var serviceLocator: ServiceLocatorProtocol  { get }
+    var viewModelLocator: ViewModelLocatorProtocol  { get }
 }
 
 class CheckoutContext: CheckoutContextProtocol {
+    let state: AppStateProtocol
+    let settings: PrimerSettingsProtocol
+    let serviceLocator: ServiceLocatorProtocol
+    lazy var viewModelLocator: ViewModelLocatorProtocol = ViewModelLocator(context: self)
     
-    let settings: PrimerSettings
-    let serviceLocator: ServiceLocator
-    let viewModelLocator: ViewModelLocator
-    
-    init(with settings: PrimerSettings, and serviceLocator: ServiceLocator, and viewModelLocator: ViewModelLocator) {
+    init(with settings: PrimerSettingsProtocol) {
         self.settings = settings
-        self.serviceLocator = serviceLocator
-        self.viewModelLocator = viewModelLocator
+        self.state = AppState(settings: settings)
+        self.serviceLocator = ServiceLocator(state: state)
     }
-    
 }

@@ -1,57 +1,31 @@
-class ViewModelLocator {
+class ViewModelLocator: ViewModelLocatorProtocol {
+    let context: CheckoutContext
     
-    let serviceLocator: ServiceLocator
-    let settings: PrimerSettings
-    
-    init(with serviceLocator: ServiceLocator, and settings: PrimerSettings) {
-        self.serviceLocator = serviceLocator
-        self.settings = settings
+    init(context: CheckoutContext) {
+        self.context = context
     }
     
-    lazy var applePayViewModel = ApplePayViewModel(
-        with: settings,
-        and: serviceLocator.clientTokenService,
-        and: serviceLocator.tokenizationService,
-        and: serviceLocator.paymentMethodConfigService
-    )
-    lazy var cardFormViewModel = CardFormViewModel(
-        with: settings,
-        and: cardScannerViewModel,
-        and: serviceLocator.tokenizationService,
-        and: serviceLocator.clientTokenService
-    )
-    lazy var cardScannerViewModel = CardScannerViewModel(with: settings)
-    lazy var directCheckoutViewModel = DirectCheckoutViewModel(
-        with: settings,
-        and: applePayViewModel,
-        and: oAuthViewModel,
-        and: cardFormViewModel,
-        and: serviceLocator.clientTokenService,
-        and: serviceLocator.paymentMethodConfigService
-    )
-    lazy var oAuthViewModel = OAuthViewModel(
-        with: settings,
-        and: serviceLocator.paypalService,
-        and: serviceLocator.tokenizationService,
-        and: serviceLocator.clientTokenService,
-        and: serviceLocator.paymentMethodConfigService
-    )
-    lazy var vaultPaymentMethodViewModel = VaultPaymentMethodViewModel(
-        with: serviceLocator.clientTokenService,
-        and: serviceLocator.vaultService,
-        and: cardFormViewModel,
-        and: settings
-    )
-    lazy var vaultCheckoutViewModel = VaultCheckoutViewModel(
-        with: serviceLocator.clientTokenService,
-        and: vaultPaymentMethodViewModel,
-        and: applePayViewModel,
-        and: serviceLocator.vaultService,
-        and: settings
-    )
-    lazy var ibanFormViewModel = IBANFormViewModel(
-        with: confirmMandateViewModelProtocol,
-        and: settings
-    )
-    lazy var confirmMandateViewModelProtocol = ConfirmMandateViewModel()
+    lazy var applePayViewModel: ApplePayViewModelProtocol = ApplePayViewModel(context: context)
+    lazy var cardFormViewModel: CardFormViewModelProtocol = CardFormViewModel(context: context)
+    lazy var cardScannerViewModel: CardScannerViewModelProtocol = CardScannerViewModel(context: context)
+    lazy var directCheckoutViewModel: DirectCheckoutViewModelProtocol = DirectCheckoutViewModel(context: context)
+    lazy var oAuthViewModel: OAuthViewModelProtocol = OAuthViewModel(context: context)
+    lazy var vaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel(context: context)
+    lazy var vaultCheckoutViewModel: VaultCheckoutViewModelProtocol = VaultCheckoutViewModel(context: context)
+    lazy var ibanFormViewModel: IBANFormViewModelProtocol = IBANFormViewModel(context: context)
+    lazy var confirmMandateViewModel: ConfirmMandateViewModelProtocol = ConfirmMandateViewModel()
+    lazy var externalViewModel: ExternalViewModelProtocol = ExternalViewModel(context: context)
+}
+
+protocol ViewModelLocatorProtocol {
+    var applePayViewModel: ApplePayViewModelProtocol { get }
+    var cardFormViewModel: CardFormViewModelProtocol { get }
+    var cardScannerViewModel: CardScannerViewModelProtocol { get }
+    var directCheckoutViewModel: DirectCheckoutViewModelProtocol { get }
+    var oAuthViewModel: OAuthViewModelProtocol { get }
+    var vaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol { get }
+    var vaultCheckoutViewModel: VaultCheckoutViewModelProtocol { get }
+    var ibanFormViewModel: IBANFormViewModelProtocol { get }
+    var confirmMandateViewModel: ConfirmMandateViewModelProtocol { get }
+    var externalViewModel: ExternalViewModelProtocol { get }
 }

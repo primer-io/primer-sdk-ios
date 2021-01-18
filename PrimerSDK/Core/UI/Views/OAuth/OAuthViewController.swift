@@ -21,7 +21,7 @@ class OAuthViewController: UIViewController {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    deinit { print("🧨 destroying:", self.self) }
+    deinit { print("🧨 destroy:", self.self) }
     
     override func viewDidLoad() {
         view.backgroundColor = .white
@@ -59,15 +59,9 @@ class OAuthViewController: UIViewController {
         
         session = ASWebAuthenticationSession(
             url: authURL,
-            callbackURLScheme: "primer",
+            callbackURLScheme: viewModel.urlSchemeIdentifier,
             completionHandler: { [weak self] (url, error) in
-                
-                if (error != nil) {
-                    self?.dismiss(animated: true, completion: nil)
-                    return
-                }
-                
-                self?.onOAuthCompleted(callbackURL: url, error: error)
+                error.exists ? self?.router?.show(.error) : self?.onOAuthCompleted(callbackURL: url)
             }
         )
         
@@ -80,45 +74,25 @@ class OAuthViewController: UIViewController {
     
     @available(iOS, deprecated: 12.0)
     func createPaymentInstrumentLegacy(_ urlString: String) {
-        
         var session: SFAuthenticationSession?
         
-        guard let authURL = URL(string: urlString) else {
-            self.dismiss(animated: true, completion: nil)
-            return
-        }
+        guard let authURL = URL(string: urlString) else { router?.show(.error); return }
         
         session = SFAuthenticationSession(
             url: authURL,
-            callbackURLScheme: "primer",
+            callbackURLScheme: viewModel.urlSchemeIdentifier,
             completionHandler: { [weak self] (url, error) in
-                
-                if (error != nil) {
-                    self?.dismiss(animated: true, completion: nil)
-                    return
-                }
-                
-                self?.onOAuthCompleted(callbackURL: url, error: error)
+                error.exists ? self?.router?.show(.error) : self?.onOAuthCompleted(callbackURL: url)
             }
         )
         
         session?.start()
-        
     }
     
-    private func onOAuthCompleted(callbackURL: URL?, error: Error?) {
+    private func onOAuthCompleted(callbackURL: URL?) {
         viewModel.tokenize(with: { [weak self] error in
             DispatchQueue.main.async {
-                
-                self?.view.removeFromSuperview()
-                
-                if (error != nil) {
-                    self?.router?.showError()
-                    return
-                }
-                
-                self?.router?.showSuccess()
-                
+                error.exists ? self?.router?.show(.error) : self?.router?.show(.success)
             }
         })
     }

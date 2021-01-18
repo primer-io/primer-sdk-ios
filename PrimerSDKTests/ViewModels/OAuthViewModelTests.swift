@@ -10,38 +10,16 @@ import XCTest
 
 class OAuthViewModelTests: XCTestCase {
     
-    func test_generateOAuthURL_calls_paypalService_getAccessToken() throws {
-        
-        let settings = PrimerSettings(
-            amount: 200,
-            currency: .EUR,
-            clientTokenRequestCallback: { completion in },
-            onTokenizeSuccess: { (result, callback) in },
-            theme: PrimerTheme(),
-            uxMode: .CHECKOUT,
-            applePayEnabled: false,
-            customerId: "cid",
-            merchantIdentifier: "mid",
-            countryCode: .FR
-        )
-        
-        let clientTokenService = MockClientTokenService()
+    func test_generateOAuthURL_calls_paypalService_getAccessToken_if_client_token_nil() throws {
         let paypalService = MockPayPalService()
-        let tokenizationService = MockTokenizationService()
-        let paymentMethodConfigService = MockPaymentMethodConfigService()
+        let serviceLocator = MockServiceLocator(paypalService: paypalService)
+        let context = MockCheckoutContext(serviceLocator: serviceLocator)
         
-        let viewModel: OAuthViewModel = OAuthViewModel(
-            with: settings,
-            and: paypalService,
-            and: tokenizationService,
-            and: clientTokenService,
-            and: paymentMethodConfigService
-        )
+        let viewModel: OAuthViewModel = OAuthViewModel(context: context)
         
         viewModel.generateOAuthURL(with: { result in })
         
-        XCTAssertEqual(paypalService.getAccessTokenCalled, true)
-        
+        XCTAssertEqual(paypalService.startOrderSessionCalled, true)
     }
 }
 

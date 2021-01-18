@@ -7,19 +7,7 @@
 
 import UIKit
 
-protocol RouterDelegate: class {
-    func showCardForm()
-    func showCardScanner(delegate: CardScannerViewControllerDelegate)
-    func showVaultCheckout()
-    func showVaultPaymentMethods()
-    func showDirectCheckout()
-    func showOAuth()
-    func showApplePay()
-    func showSuccess()
-    func showError()
-}
-
-class RootViewController: UIViewController, RouterDelegate {
+class RootViewController: UIViewController {
     
     let context: CheckoutContext
     let transitionDelegate = TransitionDelegate()
@@ -36,6 +24,8 @@ class RootViewController: UIViewController, RouterDelegate {
     let viewHeight = UIScreen.main.bounds.height * 0.5
     let mainView = UIView()
     
+    var routes: [UIViewController] = []
+    var heights: [CGFloat] = []
     var myViewHeightConstraint: NSLayoutConstraint!
     
     init(_ context: CheckoutContext) {
@@ -67,10 +57,10 @@ class RootViewController: UIViewController, RouterDelegate {
         mainView.layer.cornerRadius = 12
         
         switch Primer.flow {
-        case .completeDirectCheckout: showDirectCheckout()
-        case .completeVaultCheckout: showVaultCheckout()
-        case .addCardToVault: showCardForm()
-        case .addPayPalToVault: showOAuth()
+        case .completeDirectCheckout: show(.directCheckout)
+        case .completeVaultCheckout: show(.vaultCheckout)
+        case .addCardToVault: show(.cardForm)
+        case .addPayPalToVault: show(.oAuth)
         }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
@@ -98,95 +88,4 @@ class RootViewController: UIViewController, RouterDelegate {
         dismiss(animated: true, completion: nil)
     }
     
-    internal func showCardForm() {
-        if let vc = self.cardForm {
-            self.add(vc, height: 312, exists: true)
-        } else {
-            self.cardForm = CardFormViewController(with: context.viewModelLocator.cardFormViewModel, and: self)
-            guard let vc = cardForm else { return }
-            self.add(vc, height: 312)
-        }
-    }
-    
-    internal func showCardScanner(delegate: CardScannerViewControllerDelegate) {
-        if let vc = self.cardScanner {
-            self.add(vc, height: 400, exists: true)
-        } else {
-            self.cardScanner = CardScannerViewController(viewModel: context.viewModelLocator.cardScannerViewModel, router: self)
-            guard let vc = cardScanner else { return }
-            vc.delegate = delegate
-            self.add(vc, height: 400)
-        }
-    }
-    
-    internal func showVaultCheckout() {
-        if let vc = self.vaultCheckout {
-            vc.reload()
-            self.add(vc, height: 240, exists: true)
-        } else {
-            self.vaultCheckout = VaultCheckoutViewController(context.viewModelLocator.vaultCheckoutViewModel, router: self)
-            guard let vc = vaultCheckout else { return }
-            self.add(vc, height: 240)
-        }
-    }
-    
-    internal func showVaultPaymentMethods() {
-        if let vc = self.vaultPaymentMethods {
-            vc.reload()
-            self.add(vc, height: 320, exists: true)
-        } else {
-            self.vaultPaymentMethods = VaultPaymentMethodViewController(context.viewModelLocator.vaultPaymentMethodViewModel, router: self)
-            guard let vc = vaultPaymentMethods else { return }
-            self.add(vc, height: 320)
-        }
-    }
-    
-    internal func showDirectCheckout() {
-        if let vc = self.directCheckout {
-            self.add(vc, height: 320, exists: true)
-        } else {
-            self.directCheckout = DirectCheckoutViewController(with: context.viewModelLocator.directCheckoutViewModel, and: self)
-            guard let vc = directCheckout else { return }
-            self.add(vc, height: 320)
-        }
-    }
-    
-    internal func showOAuth() {
-        let vc = OAuthViewController(with: context.viewModelLocator.oAuthViewModel, router: self)
-        self.add(vc)
-    }
-    
-    internal func showApplePay() {
-        let vc = ApplePayViewController(with: context.viewModelLocator.applePayViewModel)
-        self.add(vc)
-    }
-    
-    internal func showSuccess() {
-        let vc = SuccessViewController()
-        self.add(vc, height: 220)
-    }
-    
-    internal func showError() {
-        let vc = ErrorViewController()
-        self.add(vc, height: 220)
-    }
-    
-}
-
-fileprivate extension RootViewController {
-    func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5, exists: Bool = false) {
-        UIView.animate(withDuration: 0.25, animations: {[weak self] in
-            guard let strongSelf = self else { return }
-            strongSelf.myViewHeightConstraint.constant = height
-            strongSelf.view.layoutIfNeeded()
-        })
-        
-        // add view controller
-        if (!exists) { addChild(child) }
-        
-        mainView.addSubview(child.view)
-        child.view.pin(to: mainView)
-        
-        if (!exists) { child.didMove(toParent: self) }
-    }
 }

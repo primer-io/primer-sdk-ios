@@ -53,10 +53,10 @@ extension DirectCheckoutViewController: UITableViewDelegate, UITableViewDataSour
         let vm = viewModel.paymentMethods[indexPath.section]
         
         switch vm.type {
-        case .APPLE_PAY: router?.showApplePay()
+        case .APPLE_PAY: router?.show(.applePay)
         case .GOOGLE_PAY: break
-        case .PAYMENT_CARD: router?.showCardForm()
-        case .PAYPAL: router?.showOAuth()
+        case .PAYMENT_CARD: router?.show(.cardForm)
+        case .PAYPAL: router?.show(.oAuth)
         }
     }
 }
