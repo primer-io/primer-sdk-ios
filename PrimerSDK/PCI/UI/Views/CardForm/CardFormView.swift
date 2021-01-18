@@ -213,7 +213,7 @@ extension UITextField {
         } else {
             self.layer.borderColor = UIColor.systemBlue.cgColor
             self.textColor = .black
-            let iconView = UIImageView(image: UIImage(named: "check"))
+            let iconView = UIImageView(image: ImageName.check.image)
             let rightView = UIView(frame:  CGRect(x: 0, y: 0, width: self.frame.height, height: self.frame.height))
             iconView.center = rightView.center
             rightView.addSubview(iconView)
