@@ -51,7 +51,7 @@ class VaultPaymentMethodView: UIView {
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem()
         backItem.action = #selector(cancel)
-        let backBtnImage = UIImage(named: "back")
+        let backBtnImage = ImageName.back.image
         backItem.tintColor = .systemBlue
         backItem.image = backBtnImage
         let editItem = UIBarButtonItem()

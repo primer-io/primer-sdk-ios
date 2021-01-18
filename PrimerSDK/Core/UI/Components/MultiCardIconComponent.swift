@@ -9,10 +9,10 @@ import UIKit
 
 class MultiCardIconComponent: UIView {
     
-    let visaIconView = UIImageView(image: UIImage(named: "visa"))
-    let discoverIconView = UIImageView(image: UIImage(named: "discover"))
-    let amexIconView = UIImageView(image: UIImage(named: "amex"))
-    let masterCardIconView = UIImageView(image: UIImage(named: "masterCard"))
+    let visaIconView = UIImageView(image: ImageName.visa.image)
+    let discoverIconView = UIImageView(image: ImageName.discover.image)
+    let amexIconView = UIImageView(image: ImageName.amex.image)
+    let masterCardIconView = UIImageView(image: ImageName.masterCard.image)
     
     
     override init(frame: CGRect) {
