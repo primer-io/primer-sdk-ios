@@ -1,22 +1,20 @@
-public enum Environment {
-    case production, test
-}
-
-class ServiceLocator {
-    
-    let settings: PrimerSettings
-    
-    init(settings: PrimerSettings) { self.settings = settings }
+class ServiceLocator: ServiceLocatorProtocol {
+    let state: AppStateProtocol
     
     lazy var api: APIClientProtocol = APIClient()
-    lazy var clientTokenService: ClientTokenServiceProtocol = ClientTokenService(with: settings, and: paymentMethodConfigService)
-    lazy var paymentMethodConfigService: PaymentMethodConfigServiceProtocol = PaymentMethodConfigService(
-        with: api,
-        and: vaultService,
-        and: settings
-    )
-    lazy var paypalService: PayPalService = PayPalService(amount: settings.amount, currency: settings.currency)
-    lazy var tokenizationService: TokenizationServiceProtocol = TokenizationService(with: api)
-    lazy var vaultService: VaultServiceProtocol = VaultService(customerID: settings.customerId)
+    lazy var clientTokenService: ClientTokenServiceProtocol = ClientTokenService(state: state)
+    lazy var paymentMethodConfigService: PaymentMethodConfigServiceProtocol = PaymentMethodConfigService(api: api, state: state)
+    lazy var paypalService: PayPalServiceProtocol = PayPalService(api: api, state: state)
+    lazy var tokenizationService: TokenizationServiceProtocol = TokenizationService(api: api, state: state)
+    lazy var vaultService: VaultServiceProtocol = VaultService(state: state)
     
+    init(state: AppStateProtocol) { self.state = state }
+}
+
+protocol ServiceLocatorProtocol {
+    var clientTokenService: ClientTokenServiceProtocol { get }
+    var paymentMethodConfigService: PaymentMethodConfigServiceProtocol { get }
+    var paypalService: PayPalServiceProtocol { get }
+    var tokenizationService: TokenizationServiceProtocol { get }
+    var vaultService: VaultServiceProtocol { get }
 }

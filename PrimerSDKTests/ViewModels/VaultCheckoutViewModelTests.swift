@@ -14,151 +14,16 @@ class VaultCheckoutViewModelTests: XCTestCase {
 
     override func tearDownWithError() throws {}
 
-    func test_loadConfig_calls_clientTokenService() throws {
-        
+    func test_loadConfig_calls_clientTokenService_if_client_token_nil() throws {
         let clientTokenService = MockClientTokenService()
-        let vaultPaymentMethodViewModel = MockVaultPaymentMethodViewModel()
-        let applePayViewModel = MockApplePayViewModel()
-        let vaultService = MockVaultService()
+        let serviceLocator = MockServiceLocator(clientTokenService: clientTokenService)
+        let state = MockAppState(decodedClientToken: nil)
+        let context = MockCheckoutContext(state: state, serviceLocator: serviceLocator)
         
-        let viewModel = VaultCheckoutViewModel(
-            with: clientTokenService,
-            and: vaultPaymentMethodViewModel,
-            and: applePayViewModel,
-            and: vaultService,
-            and: mockSettings
-        )
+        let viewModel = VaultCheckoutViewModel(context: context)
         
         viewModel.loadConfig({ error in })
         
         XCTAssertEqual(clientTokenService.loadCheckoutConfigCalled, true)
     }
-    
-    func test_VaultCheckoutViewModel_authorizePayment_calls_settings_onTokenizeSuccess() throws {
-        
-        var onTokenizeSuccessCalled = false
-        
-        let settings = PrimerSettings(
-            amount: 200,
-            currency: .EUR,
-            clientTokenRequestCallback: { completion in },
-            onTokenizeSuccess: { (result, callback) in
-                onTokenizeSuccessCalled = true
-            },
-            theme: PrimerTheme(),
-            uxMode: .CHECKOUT,
-            applePayEnabled: false,
-            customerId: "cid",
-            merchantIdentifier: "mid",
-            countryCode: .FR
-        )
-        
-        let clientTokenService = MockClientTokenService()
-        let vaultPaymentMethodViewModel = MockVaultPaymentMethodViewModel()
-        let applePayViewModel = MockApplePayViewModel()
-        let vaultService = MockVaultService()
-        
-        let viewModel = VaultCheckoutViewModel(
-            with: clientTokenService,
-            and: vaultPaymentMethodViewModel,
-            and: applePayViewModel,
-            and: vaultService,
-            and: settings
-        )
-        
-        viewModel.authorizePayment({ error in })
-        
-        XCTAssertEqual(onTokenizeSuccessCalled, true)
-    }
-    
-    func test_authorizePayment_does_not_call_onTokenizeSuccess_when_payment_methods_empty() throws {
-        var onTokenizeSuccessCalled = false
-        
-        let settings = PrimerSettings(
-            amount: 200,
-            currency: .EUR,
-            clientTokenRequestCallback: { completion in },
-            onTokenizeSuccess: { (result, callback) in
-                onTokenizeSuccessCalled = true
-            },
-            theme: PrimerTheme(),
-            uxMode: .CHECKOUT,
-            applePayEnabled: false,
-            customerId: "cid",
-            merchantIdentifier: "mid",
-            countryCode: .FR
-        )
-        
-        let clientTokenService = MockClientTokenService()
-        let vaultPaymentMethodViewModel = MockVaultPaymentMethodViewModel()
-        let applePayViewModel = MockApplePayViewModel()
-        let vaultService = MockVaultService(paymentMethodsIsEmpty: true)
-        
-        let viewModel = VaultCheckoutViewModel(
-            with: clientTokenService,
-            and: vaultPaymentMethodViewModel,
-            and: applePayViewModel,
-            and: vaultService,
-            and: settings
-        )
-        
-        viewModel.authorizePayment({ error in })
-        
-        XCTAssertEqual(onTokenizeSuccessCalled, false)
-    }
-    
-    func test_authorizePayment_does_not_call_onTokenizeSuccess_when_selected_method_id_no_match() throws {
-        var onTokenizeSuccessCalled = false
-        
-        let settings = PrimerSettings(
-            amount: 200,
-            currency: .EUR,
-            clientTokenRequestCallback: { completion in },
-            onTokenizeSuccess: { (result, callback) in
-                onTokenizeSuccessCalled = true
-            },
-            theme: PrimerTheme(),
-            uxMode: .CHECKOUT,
-            applePayEnabled: false,
-            customerId: "cid",
-            merchantIdentifier: "mid",
-            countryCode: .FR
-        )
-        
-        let clientTokenService = MockClientTokenService()
-        let vaultPaymentMethodViewModel = MockVaultPaymentMethodViewModel()
-        let applePayViewModel = MockApplePayViewModel()
-        let vaultService = MockVaultService(selectedPaymentMethod: "noMatchId")
-        
-        let viewModel = VaultCheckoutViewModel(
-            with: clientTokenService,
-            and: vaultPaymentMethodViewModel,
-            and: applePayViewModel,
-            and: vaultService,
-            and: settings
-        )
-        
-        viewModel.authorizePayment({ error in })
-        
-        XCTAssertEqual(onTokenizeSuccessCalled, false)
-    }
-    
-    
-    
 }
-
-
-
-
-
-
-
-
-
-
-//    func testPerformanceExample() throws {
-//        // This is an example of a performance test case.
-//        self.measure {
-//            // Put the code you want to measure the time of here.
-//        }
-//    }

@@ -13,7 +13,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
             reuseIdentifier: "paymentMethodCell",
             index: indexPath.row,
             paymentMethods: viewModel.paymentMethods,
-            isSelected: viewModel.selectedId == viewModel.paymentMethods[indexPath.row].id,
+            isSelected: viewModel.selectedId == viewModel.paymentMethods[indexPath.row].token,
             showDeleteIcon: showDeleteIcon
         )
         
@@ -25,13 +25,13 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if (!showDeleteIcon) {
-            viewModel.selectedId = viewModel.paymentMethods[indexPath.row].id
+            viewModel.selectedId = viewModel.paymentMethods[indexPath.row].token ?? ""
             tableView.reloadData()
         }
     }
     
     @objc private func deleteMethod(sender: UIButton) {
-        let methodId = viewModel.paymentMethods[sender.tag].id
+        guard let methodId = viewModel.paymentMethods[sender.tag].token else { return }
         viewModel.deletePaymentMethod(with: methodId, and: { [weak self] error in
             DispatchQueue.main.async { self?.subView?.tableView.reloadData() }
         })
@@ -41,20 +41,20 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
 class PaymentMethodTableViewCell: UITableViewCell {
     
     var deleteButton = UIButton(type: .system)
-    private let paymentMethod: VaultedPaymentMethodViewModel
+    private let paymentMethod: PaymentMethodToken
     
     init(
         style: UITableViewCell.CellStyle,
         reuseIdentifier: String?,
         index: Int,
-        paymentMethods: [VaultedPaymentMethodViewModel],
+        paymentMethods: [PaymentMethodToken],
         isSelected: Bool,
         showDeleteIcon: Bool
     ) {
         self.paymentMethod = paymentMethods[index]
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        textLabel?.text = "**** **** **** \(paymentMethod.last4)"
+        textLabel?.text = paymentMethod.description
         
         if (showDeleteIcon) {
             accessoryType = .none

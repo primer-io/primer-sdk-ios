@@ -1,131 +1,75 @@
 import Foundation
 
 protocol VaultServiceProtocol {
-    var paymentMethods: [PaymentMethodToken] { get }
-    var paymentMethodVMs: [VaultedPaymentMethodViewModel] { get }
-    var selectedPaymentMethod: String { get set }
-    func loadVaultedPaymentMethods(with clientToken: ClientToken, and completion: @escaping (Error?) -> Void)
-    func deleteVaultedPaymentMethod(with clientToken: ClientToken, and id: String, and onDeletetionSuccess: @escaping (Error?) -> Void)
+    func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void)
+    func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void)
 }
 
 class VaultService: VaultServiceProtocol {
     
-    private let customerID: String?
     private let api = APIClient()
+    private var state: AppStateProtocol
     
-    var paymentMethods: [PaymentMethodToken] = []
-    var paymentMethodVMs: [VaultedPaymentMethodViewModel] = []
-    var selectedPaymentMethod: String = ""
+    init(state: AppStateProtocol) { self.state = state }
     
-    init(customerID: String?) {
-        self.customerID = customerID
-    }
-    
-    func loadVaultedPaymentMethods(with clientToken: ClientToken, and completion: @escaping (Error?) -> Void) {
-        guard let pciURL = clientToken.pciUrl else { return }
-        guard let customerID = self.customerID else { return }
+    func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
+        guard let clientToken = state.decodedClientToken else {
+            return completion(PrimerError.VaultFetchFailed)
+        }
+        guard let pciURL = clientToken.pciUrl else {
+            return completion(PrimerError.VaultFetchFailed)
+        }
+        guard let customerID = self.state.settings.customerId else {
+            return completion(PrimerError.VaultFetchFailed)
+        }
+        guard let url = URL(string: "\(pciURL)/payment-instruments?customer_id=\(customerID)") else {
+            return completion(PrimerError.VaultFetchFailed)
+        }
         
-        let urlString = "\(pciURL)/payment-instruments?customer_id=\(customerID)"
-        
-        print("🚀 load vault from:", urlString)
-        
-        guard let url = URL(string: urlString) else { return }
-        
-        self.api.get(clientToken, url: url, completion: { [weak self] result2 in
-            
+        self.api.get(clientToken, url: url, completion: { [weak self] result in
             do {
-                switch result2 {
-                case .failure(let error): completion(error)
+                switch result {
+                case .failure: completion(PrimerError.VaultFetchFailed)
                 case .success(let data):
                     
                     let methods = try JSONDecoder().decode(GetVaultedPaymentMethodsResponse.self, from: data)
                     
-                    print("🚀 methods:", methods)
+                    self?.state.paymentMethods = methods.data
                     
-                    self?.paymentMethods = methods.data
-                    self?.paymentMethodVMs = []
+                    guard let paymentMethods = self?.state.paymentMethods else { return }
                     
-                    guard let paymentMethods = self?.paymentMethods else { return }
-                    
-                    self?.paymentMethodVMs = paymentMethods.map({ method in
-                        return VaultedPaymentMethodViewModel(id: method.token!, last4: method.paymentInstrumentData!.last4Digits ?? "paypal billing agreement")
-                    })
-                    
-                    print("🚀 paymentMethodVMs:", self!.paymentMethodVMs)
-                    
-                    if (self?.selectedPaymentMethod.isEmpty == true && self?.paymentMethodVMs.isEmpty == false) {
-                        guard let id = self?.paymentMethodVMs[0].id else { return }
-                        self?.selectedPaymentMethod = id
+                    if (self?.state.selectedPaymentMethod.isEmpty == true && paymentMethods.isEmpty == false) {
+                        guard let id = paymentMethods[0].token else { return }
+                        self?.state.selectedPaymentMethod = id
                     }
-                    
-                    print("🚀 selectedPaymentMethod:", self!.selectedPaymentMethod)
                     
                     completion(nil)
                 }
             } catch {
-                completion(nil)
+                completion(PrimerError.VaultFetchFailed)
             }
         })
         
     }
     
-    func deleteVaultedPaymentMethod(with clientToken: ClientToken, and id: String, and onDeletetionSuccess: @escaping (Error?) -> Void) {
-        guard let pciURL = clientToken.pciUrl else { return }
-        guard let url = URL(string: "\(pciURL)/payment-instruments/\(id)/vault") else { return }
+    func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {
+        guard let clientToken = state.decodedClientToken else {
+            return completion(PrimerError.VaultDeleteFailed)
+        }
+        
+        guard let pciURL = clientToken.pciUrl else {
+            return completion(PrimerError.VaultDeleteFailed)
+        }
+        
+        guard let url = URL(string: "\(pciURL)/payment-instruments/\(id)/vault") else {
+            return completion(PrimerError.VaultDeleteFailed)
+        }
+        
         self.api.delete(clientToken, url: url, completion: { result in
             switch result {
-            case .failure(let error): onDeletetionSuccess(error)
-            case .success: onDeletetionSuccess(nil)
+            case .failure: completion(PrimerError.VaultDeleteFailed)
+            case .success: completion(nil)
             }
         })
-    }
-}
-
-class MockVaultService: VaultServiceProtocol {
-    var paymentMethods: [PaymentMethodToken] {
-        if (paymentMethodsIsEmpty) { return [] }
-        return [
-            PaymentMethodToken(
-                token: "tokenId",
-                analyticsId: "id",
-                tokenType: "type",
-                paymentInstrumentType: .PAYMENT_CARD,
-                paymentInstrumentData: PaymentInstrumentData(
-                    last4Digits: nil,
-                    expirationMonth: nil,
-                    expirationYear: nil,
-                    cardholderName: nil,
-                    network: nil,
-                    isNetworkTokenized: nil,
-                    binData: nil,
-                    vaultData: nil
-                )
-            )
-        ]
-    }
-    
-    var paymentMethodVMs: [VaultedPaymentMethodViewModel] {
-        return []
-    }
-    
-    let paymentMethodsIsEmpty: Bool
-    
-    var selectedPaymentMethod: String = "tokenId"
-    
-    init(paymentMethodsIsEmpty: Bool = false, selectedPaymentMethod: String = "tokenId") {
-        self.paymentMethodsIsEmpty = paymentMethodsIsEmpty
-        self.selectedPaymentMethod = selectedPaymentMethod
-    }
-    
-    var loadVaultedPaymentMethodsCalled = false
-    
-    func loadVaultedPaymentMethods(with clientToken: ClientToken, and completion: @escaping (Error?) -> Void) {
-        loadVaultedPaymentMethodsCalled = true
-    }
-    
-    var deleteVaultedPaymentMethodCalled = false
-    
-    func deleteVaultedPaymentMethod(with clientToken: ClientToken, and id: String, and onDeletetionSuccess: @escaping (Error?) -> Void) {
-        deleteVaultedPaymentMethodCalled = true
     }
 }

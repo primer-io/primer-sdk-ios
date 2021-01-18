@@ -35,10 +35,10 @@ class IBANFormViewController: UIViewController {
 extension IBANFormViewController: IBANFormViewDelegate {
     func cancel() { self.dismiss(animated: true, completion: nil) }
     func next() {
-        let confirmMandateViewModel = viewModel.confirmMandateViewModel
-        let confirmMandateViewController = ConfirmMandateViewController(viewModel: confirmMandateViewModel)
-        confirmMandateViewController.iban = formView?.textField.text
-        self.present(confirmMandateViewController, animated: true, completion: nil)
+//        let confirmMandateViewModel = viewModel.confirmMandateViewModel
+//        let confirmMandateViewController = ConfirmMandateViewController(viewModel: confirmMandateViewModel)
+//        confirmMandateViewController.iban = formView?.textField.text
+//        self.present(confirmMandateViewController, animated: true, completion: nil)
     }
     
     func onIBANTextFieldChanged(_ sender: UITextField) {
