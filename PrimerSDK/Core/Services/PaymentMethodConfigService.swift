@@ -39,12 +39,15 @@ class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                     })
                     
                     // ensure Apple Pay is always first if present.
-                    
                     guard let viewModels = self?.state.viewModels else { return }
-                    
                     if (viewModels.contains(where: { model in model.type == .APPLE_PAY})) {
                         var arr = viewModels.filter({ model in model.type != .APPLE_PAY})
-                        arr.insert(PaymentMethodViewModel(type: .APPLE_PAY), at: 0)
+                        
+                        if (self?.state.settings.applePayEnabled == true) {
+                            arr.insert(PaymentMethodViewModel(type: .APPLE_PAY), at: 0)
+                        }
+                        
+                        
                         self?.state.viewModels = arr
                     }
                     
