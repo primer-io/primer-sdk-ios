@@ -47,7 +47,6 @@ class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                             arr.insert(PaymentMethodViewModel(type: .APPLE_PAY), at: 0)
                         }
                         
-                        
                         self?.state.viewModels = arr
                     }
                     
