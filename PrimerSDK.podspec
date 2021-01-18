@@ -105,10 +105,10 @@ Pod::Spec.new do |spec|
   #  non-essential files like tests, examples and documentation.
   #
 
-  # spec.resource  = "icon.png"
-  # spec.resources = "PrimerSDK/Icons.xcassets"
+  spec.resource  = "PrimerSDK/Icons.xcassets"
+  spec.resources = "PrimerSDK/**/*.{xcassets}"
   spec.resource_bundles = {
-    'PrimerSDK' => ['PrimerSDK/Icons.xcassets']
+    'PrimerSDK' => ['PrimerSDK/**/*.xcassets']
   }
 
   # spec.preserve_paths = "FilesToSave", "MoreFilesToSave"
