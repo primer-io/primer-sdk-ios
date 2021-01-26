@@ -57,18 +57,19 @@ class PayPalService: PayPalServiceProtocol {
     }
     
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void) {
+        print("🚀 startBillingAgreementSession")
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(PrimerError.PayPalSessionFailed))
         }
-        
+        print("🚀 clientToken", clientToken)
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .PAYPAL) else {
             return completion(.failure(PrimerError.PayPalSessionFailed))
         }
-        
+        print("🚀 configId", configId)
         guard let coreURL = clientToken.coreUrl else {
             return completion(.failure(PrimerError.PayPalSessionFailed))
         }
-        
+        print("🚀 coreURL", coreURL)
         guard let url = URL(string: "\(coreURL)/paypal/billing-agreements/create-agreement") else {
             return completion(.failure(PrimerError.PayPalSessionFailed))
         }

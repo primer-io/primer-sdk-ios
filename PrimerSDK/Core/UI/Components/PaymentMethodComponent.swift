@@ -27,6 +27,8 @@ class PaymentMethodComponent: UIView {
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         case .PAYMENT_CARD:
+            layer.borderWidth = 1
+            layer.borderColor = UIColor.darkGray.cgColor
             backgroundColor = theme.buttonColorTheme.creditCard
             label.textColor = theme.fontColorTheme.creditCard
             addSubview(label)
@@ -40,6 +42,17 @@ class PaymentMethodComponent: UIView {
             addSubview(iconView)
             configureIconView(with: method.toIconName().image, color: theme.fontColorTheme.paypal)
             anchorIconView(inRelationToLabel: false)
+        case .GOCARDLESS_MANDATE:
+            layer.borderWidth = 1
+            layer.borderColor = UIColor.darkGray.cgColor
+            backgroundColor = theme.buttonColorTheme.creditCard
+            label.textColor = theme.fontColorTheme.creditCard
+            addSubview(label)
+            addSubview(iconView)
+            configureLabel(with: method.toString())
+            configureIconView(with: method.toIconName().image, color: theme.fontColorTheme.creditCard)
+            anchorLabel()
+            anchorIconView(inRelationToLabel: true)
         default: break
         }
     }
@@ -59,9 +72,9 @@ class PaymentMethodComponent: UIView {
     }
     
     func configureIconView(with icon: UIImage?, color: UIColor = .black) {
-        let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
-        iconView.image = tintedIcon
-        iconView.tintColor = color
+//        let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
+        iconView.image = icon
+//        iconView.tintColor = color
     }
     
     //
@@ -75,7 +88,7 @@ class PaymentMethodComponent: UIView {
     
     func anchorIconView(inRelationToLabel: Bool) {
         iconView.translatesAutoresizingMaskIntoConstraints = false
-        iconView.heightAnchor.constraint(equalToConstant: 20).isActive = true
+//        iconView.heightAnchor.constraint(equalToConstant: 20).isActive = true
         iconView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         if (inRelationToLabel) {
             iconView.trailingAnchor.constraint(equalTo: label.leadingAnchor, constant: -6).isActive = true

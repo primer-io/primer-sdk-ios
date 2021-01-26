@@ -31,6 +31,8 @@ struct PaymentInstrument: Encodable {
     var paymentMethodConfigId: String? = nil
     var token: ApplePayToken? = nil
     var merchantIdentifier: String? = nil
+    // Direct Debit (GoCardless)
+    var gocardlessMandateId: String? = nil
 }
 
 enum TokenType: String, Encodable {

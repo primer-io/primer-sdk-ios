@@ -12,18 +12,24 @@ public struct PrimerTheme {
     public let backgroundColor: UIColor //UIColor(red: 246.0/255.0, green: 246.0/255.0, blue: 246.0/255.0, alpha: 1)
     public let buttonColorTheme: ButtonColorTheme
     public let fontColorTheme: FontColorTheme
+    public let textFieldTheme: PrimerTextFieldTheme
     public let content = PrimerContent()
+    public let layout: PrimerLayout
     
     public init(
         cornerRadiusTheme: CornerRadiusTheme = CornerRadiusTheme(),
         backgroundColor: UIColor = .white,
         buttonColorTheme: ButtonColorTheme = ButtonColorTheme(),
-        fontColorTheme: FontColorTheme = FontColorTheme()
+        fontColorTheme: FontColorTheme = FontColorTheme(),
+        layout: PrimerLayout = PrimerLayout(),
+        textFieldTheme: PrimerTextFieldTheme = .underlined
     ) {
         self.cornerRadiusTheme = cornerRadiusTheme
         self.backgroundColor = backgroundColor
         self.buttonColorTheme = buttonColorTheme
         self.fontColorTheme = fontColorTheme
+        self.layout = layout
+        self.textFieldTheme = textFieldTheme
     }
 }
 
@@ -72,4 +78,20 @@ public struct FontColorTheme {
         self.title = title
         self.payButton = payButton
     }
+}
+
+public struct PrimerLayout {
+    public let showMainTitle, showTopTitle: Bool
+    
+    public init(
+        showMainTitle: Bool = true,
+        showTopTitle: Bool = true
+    ) {
+        self.showMainTitle = showMainTitle
+        self.showTopTitle = showTopTitle
+    }
+}
+
+public enum PrimerTextFieldTheme {
+    case outlined, underlined, doublelined
 }

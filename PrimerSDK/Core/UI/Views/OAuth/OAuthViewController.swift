@@ -61,7 +61,13 @@ class OAuthViewController: UIViewController {
             url: authURL,
             callbackURLScheme: viewModel.urlSchemeIdentifier,
             completionHandler: { [weak self] (url, error) in
-                error.exists ? self?.router?.show(.error) : self?.onOAuthCompleted(callbackURL: url)
+                if (error is PrimerError) {
+                    self?.router?.show(.error)
+                } else if (error.exists) {
+                    self?.router?.pop()
+                } else {
+                    self?.onOAuthCompleted(callbackURL: url)
+                }
             }
         )
         

@@ -11,7 +11,7 @@ extension VaultPaymentMethodViewController: ReloadDelegate {
     
     func reload() {
         viewModel.reloadVault() { [weak self] error in
-            DispatchQueue.main.async { self?.subView?.tableView.reloadData() }
+            DispatchQueue.main.async { self?.subView.render() }
         }
     }
     

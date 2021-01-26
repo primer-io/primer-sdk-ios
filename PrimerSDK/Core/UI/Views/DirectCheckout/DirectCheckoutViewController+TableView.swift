@@ -57,6 +57,7 @@ extension DirectCheckoutViewController: UITableViewDelegate, UITableViewDataSour
         case .GOOGLE_PAY: break
         case .PAYMENT_CARD: router?.show(.cardForm)
         case .PAYPAL: router?.show(.oAuth)
+        case .GOCARDLESS_MANDATE: break
         }
     }
 }
