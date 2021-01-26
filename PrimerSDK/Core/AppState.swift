@@ -19,6 +19,9 @@ protocol AppStateProtocol: class {
     var orderId: String? { get set }
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? { get set }
     var approveURL: String? { get set }
+    var directDebitMandate: DirectDebitMandate { get set }
+    var directDebitFormCompleted: Bool { get set }
+    var mandateId: String? { get set }
 }
 
 class AppState: AppStateProtocol {
@@ -44,6 +47,15 @@ class AppState: AppStateProtocol {
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
     
     var approveURL: String?
+    
+    var directDebitMandate: DirectDebitMandate = DirectDebitMandate(
+//        iban: "FR1420041010050500013M02606",
+        address: Address()
+    )
+    
+    var directDebitFormCompleted: Bool = false
+    
+    var mandateId: String?
     
     init(settings: PrimerSettingsProtocol) { self.settings = settings }
     

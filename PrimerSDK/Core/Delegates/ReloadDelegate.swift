@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 06/01/2021.
 //
 
-protocol ReloadDelegate {
+protocol ReloadDelegate: class {
     func reload() -> Void
 }
 

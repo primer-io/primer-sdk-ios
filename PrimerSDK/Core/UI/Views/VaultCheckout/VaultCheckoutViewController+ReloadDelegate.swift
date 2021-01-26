@@ -9,6 +9,6 @@ import UIKit
 
 extension VaultCheckoutViewController: ReloadDelegate {
     
-    func reload() { self.vaultCheckoutView?.tableView.reloadData() }
+    func reload() { self.subView.reloadVaultDetails() }
     
 }

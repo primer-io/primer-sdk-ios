@@ -15,20 +15,23 @@ class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
     }
     
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
-        guard let clientToken = state.decodedClientToken else { return }
-        guard let configurationUrl = clientToken.configurationUrl else { return }
-        guard let apiURL = URL(string: configurationUrl) else { return }
-        
+        guard let clientToken = state.decodedClientToken else { return completion(PrimerError.ConfigFetchFailed) }
+        print("🤖")
+        guard let configurationUrl = clientToken.configurationUrl else { return completion(PrimerError.ConfigFetchFailed) }
+        print("🤖🤖")
+        guard let apiURL = URL(string: configurationUrl) else { return completion(PrimerError.ConfigFetchFailed) }
+        print("🤖🤖🤖")
         self.api.get(clientToken, url: apiURL, completion: { [weak self] result in
             switch result {
             case .failure(let error): completion(error)
             case .success(let data):
                 do {
+                    print("🤖🤖🤖🤖")
                     let config = try JSONDecoder().decode(PaymentMethodConfig.self, from: data)
                     
                     self?.state.paymentMethodConfig = config
                     
-                    print(config)
+                    print("🤖 config:", config)
                     
                     self?.state.viewModels = []
                     

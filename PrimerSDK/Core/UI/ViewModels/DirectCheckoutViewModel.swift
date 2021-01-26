@@ -43,18 +43,22 @@ enum PaymentMethodIcon: String {
 
 struct PaymentMethodViewModel {
     func toString() -> String {
+        print("🦋 payment option:", self.type)
         switch type {
-        case .PAYMENT_CARD: return "Pay by card".localized()
+        case .PAYMENT_CARD: return "Add a new card".localized()
         case .APPLE_PAY: return "Pay"
         case .PAYPAL: return ""
+        case .GOCARDLESS_MANDATE: return "Bank account"
         default: return ""
         }
     }
     
     func toIconName() -> ImageName {
+        print("🦋 payment option:", self.type)
         switch type {
         case .APPLE_PAY: return ImageName.appleIcon
-        case .PAYPAL: return  ImageName.paypal
+        case .PAYPAL: return  ImageName.paypal3
+        case .GOCARDLESS_MANDATE: return ImageName.forwardDark
         default: return  ImageName.creditCard
         }
     }

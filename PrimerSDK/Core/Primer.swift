@@ -15,9 +15,7 @@ public class Primer {
         self.context = CheckoutContext(with: settings)
     }
     
-    deinit {
-        print("🧨 destroy:", self.self)
-    }
+    deinit { print("🧨 destroy:", self.self) }
     
     /** Presents a bottom sheet view for Primer checkout. To determine the user journey specify the PrimerSessionFlow of the method. Additionally a parent view controller needs to be passed in to display the sheet view. */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {

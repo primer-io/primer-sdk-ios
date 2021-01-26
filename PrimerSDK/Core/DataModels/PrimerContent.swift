@@ -5,6 +5,7 @@ public struct PrimerContent {
     let vaultPaymentMethodView = VaultPaymentMethodViewContent()
     let scannerView = ScannerViewContent()
     let cardFormView = CardFormViewContent()
+    let singleFieldFormDirectDebitContent = SingleFieldFormDirectDebitContent()
 }
 
 struct IBANFormViewContent {
@@ -47,4 +48,9 @@ struct CardFormViewContent {
     var cardTextFieldPlaceholder: String { return "4242 4242 4242 4242".localized() }
     var expiryTextFieldPlaceholder: String { return "12/20".localized() }
     var cvcTextFieldPlaceholder: String { return "CVV".localized() }
+}
+
+struct SingleFieldFormDirectDebitContent {
+    var navBarRightText: String { return "Confirm".localized() }
+    var navBarTitle: String { return "Add bank account".localized() }
 }

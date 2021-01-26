@@ -32,6 +32,7 @@ class CardFormViewController: UIViewController {
         indicator.startAnimating()
         viewModel.configureView() { [weak self] error in
             DispatchQueue.main.async {
+                self?.indicator.removeFromSuperview()
                 self?.paintView()
             }
         }
@@ -125,26 +126,26 @@ class CardFormViewController: UIViewController {
 extension CardFormViewController: CardFormViewDelegate {
     func validateCardName(_ text: String?) {
         let nameIsNotValid = validation.nameFieldIsNotValid(text)
-        cardFormView?.nameTF.toggleValidity(nameIsNotValid)
-        cardFormView?.submitButton.backgroundColor = formIsNotValid ? .gray : viewModel.theme.buttonColorTheme.payButton
+        cardFormView?.nameTF.toggleValidity(!nameIsNotValid, theme: viewModel.theme.textFieldTheme)
+        cardFormView?.submitButton.toggleValidity(!formIsNotValid, validColor: .systemBlue)
     }
     
     func validateCardNumber(_ text: String?) {
         let cardIsNotValid = validation.cardFieldIsNotValid(text)
-        cardFormView?.cardTF.toggleValidity(cardIsNotValid)
-        cardFormView?.submitButton.backgroundColor = formIsNotValid ? .gray : viewModel.theme.buttonColorTheme.payButton
+        cardFormView?.cardTF.toggleValidity(!cardIsNotValid, theme: viewModel.theme.textFieldTheme)
+        cardFormView?.submitButton.toggleValidity(!formIsNotValid, validColor: .systemBlue)
     }
     
     func validateExpiry(_ text: String?) {
         let expiryIsNotValid = validation.expiryFieldIsNotValid(text)
-        cardFormView?.expTF.toggleValidity(expiryIsNotValid)
-        cardFormView?.submitButton.backgroundColor = formIsNotValid ? .gray : viewModel.theme.buttonColorTheme.payButton
+        cardFormView?.expTF.toggleValidity(!expiryIsNotValid, theme: viewModel.theme.textFieldTheme)
+        cardFormView?.submitButton.toggleValidity(!formIsNotValid, validColor: .systemBlue)
     }
     
     func validateCVC(_ text: String?) {
         let cvcIsNotValid = validation.CVCFieldIsNotValid(text)
-        cardFormView?.cvcTF.toggleValidity(cvcIsNotValid)
-        cardFormView?.submitButton.backgroundColor = formIsNotValid ? .gray : viewModel.theme.buttonColorTheme.payButton
+        cardFormView?.cvcTF.toggleValidity(!cvcIsNotValid, theme: viewModel.theme.textFieldTheme)
+        cardFormView?.submitButton.toggleValidity(!formIsNotValid, validColor: .systemBlue)
     }
     
     func cancel() { router?.pop() }

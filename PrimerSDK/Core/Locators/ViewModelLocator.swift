@@ -13,7 +13,7 @@ class ViewModelLocator: ViewModelLocatorProtocol {
     lazy var vaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel(context: context)
     lazy var vaultCheckoutViewModel: VaultCheckoutViewModelProtocol = VaultCheckoutViewModel(context: context)
     lazy var ibanFormViewModel: IBANFormViewModelProtocol = IBANFormViewModel(context: context)
-    lazy var confirmMandateViewModel: ConfirmMandateViewModelProtocol = ConfirmMandateViewModel()
+    lazy var confirmMandateViewModel: ConfirmMandateViewModelProtocol = ConfirmMandateViewModel(context: context)
     lazy var externalViewModel: ExternalViewModelProtocol = ExternalViewModel(context: context)
 }
 
