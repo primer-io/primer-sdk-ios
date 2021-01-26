@@ -25,6 +25,8 @@ class CardFormViewModel: CardFormViewModelProtocol {
         self.clientTokenService = context.serviceLocator.clientTokenService
     }
     
+    deinit { print("🧨 destroy:", self.self) }
+    
     func configureView(_ completion: @escaping (Error?) -> Void) {
         if (state.decodedClientToken.exists) {
             completion(nil)

@@ -7,8 +7,16 @@
 
 import UIKit
 
-class IBANFormView: UIView {
-    
+protocol IBANFormViewDelegate: class {
+    var theme: PrimerTheme { get }
+    func cancel() -> Void
+    func next() -> Void
+    func onIBANTextFieldChanged(_ sender: UITextField) -> Void
+}
+
+
+class IBANFormView: UIView, ReactiveView {
+    let indicator = UIActivityIndicatorView()
     let navBar = UINavigationBar()
     let mainTitle = UILabel()
     let subtitle = UILabel()
@@ -16,12 +24,9 @@ class IBANFormView: UIView {
     let switchLabel = UILabel()
     let nextButton = UIButton()
     
-    let theme: PrimerTheme
-    
     weak var  delegate: IBANFormViewDelegate?
     
-    init(frame: CGRect, theme: PrimerTheme) {
-        self.theme = theme
+    override init(frame: CGRect) {
         super.init(frame: frame)
         
         addSubview(navBar)
@@ -49,7 +54,12 @@ class IBANFormView: UIView {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    func render(isBusy: Bool) {
+        
+    }
+    
     private func configureNavBar() {
+        guard let theme = delegate?.theme else { return }
         navBar.backgroundColor = theme.backgroundColor
         navBar.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: 44)
         let navItem = UINavigationItem(title: "")
@@ -65,12 +75,14 @@ class IBANFormView: UIView {
     @objc private func cancel() { delegate?.cancel() }
     
     private func configureMainTitle() {
+        guard let theme = delegate?.theme else { return }
         mainTitle.text = theme.content.ibanForm.mainTitleText
         mainTitle.textColor = theme.fontColorTheme.title
         mainTitle.font = .boldSystemFont(ofSize: 32)
     }
     
     private func configureSubtitle() {
+        guard let theme = delegate?.theme else { return }
         subtitle.text = theme.content.ibanForm.subtitleText
         subtitle.textColor = .gray
         subtitle.numberOfLines = 0
@@ -79,10 +91,11 @@ class IBANFormView: UIView {
     }
     
     private func configureTextField() {
+        guard let theme = delegate?.theme else { return }
         textField.backgroundColor = .white
         textField.placeholder = theme.content.ibanForm.textFieldPlaceholder
         textField.layer.cornerRadius = theme.cornerRadiusTheme.textFields
-        textField.setLeftPaddingPoints(10)
+        textField.setLeftPaddingPoints(5)
         textField.adjustsFontSizeToFitWidth = true
         textField.addTarget(self, action: #selector(onExpiryTextFieldChanged), for: .editingChanged)
     }
@@ -94,12 +107,14 @@ class IBANFormView: UIView {
     }
     
     private func configureSwitchLabel() {
+        guard let theme = delegate?.theme else { return }
         switchLabel.text = theme.content.ibanForm.switchLabelText
         switchLabel.font = .systemFont(ofSize: 14, weight: .light)
         switchLabel.textColor = .blue
     }
     
     private func configureNextButton(disabled: Bool) {
+        guard let theme = delegate?.theme else { return }
         nextButton.setTitle(theme.content.ibanForm.nextButtonText, for: .normal)
         nextButton.setTitleColor(.white, for: .normal)
         nextButton.layer.cornerRadius = theme.cornerRadiusTheme.buttons

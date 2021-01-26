@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum ImageName: String {
+public enum ImageName: String {
     case
         amex,
         appleIcon,
@@ -17,11 +17,16 @@ enum ImageName: String {
         visa,
         creditCard,
         check,
+        check2,
         success,
         delete,
-        paypal
+        paypal,
+        paypal2,
+        paypal3,
+        forwardDark,
+        lock
     
-    var image: UIImage? {
+    public var image: UIImage? {
         let frameworkBundle = Bundle(for: Primer.self)
         let bundleURL = frameworkBundle.resourceURL?.appendingPathComponent("PrimerSDK.bundle")
         let resourceBundle = Bundle(url: bundleURL!)

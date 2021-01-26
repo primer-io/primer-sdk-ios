@@ -39,10 +39,8 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
             case .failure(let error): completion(error)
             case .success(let token):
                 switch Primer.flow {
-                case .addCardToVault: completion(nil)
-                case .addPayPalToVault: completion(nil)
-                case .completeVaultCheckout: completion(nil)
                 case .completeDirectCheckout: self?.state.settings.onTokenizeSuccess(token, completion)
+                default: completion(nil)
                 }
             }
         }
