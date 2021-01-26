@@ -31,18 +31,26 @@ class OAuthViewModel: OAuthViewModelProtocol {
     private func loadConfig(_ completion: @escaping (Result<String, Error>) -> Void) {
         clientTokenService.loadCheckoutConfig({ [weak self] error in
             if (error != nil) {
-                completion(.failure(PrimerError.ClientTokenNull))
+                completion(.failure(PrimerError.PayPalSessionFailed))
                 return
             }
-            self?.generateOAuthURL(with: completion)
+            self?.paymentMethodConfigService.fetchConfig({ [weak self] error in
+                if (error != nil) {
+                    completion(.failure(PrimerError.PayPalSessionFailed))
+                    return
+                }
+                self?.generateOAuthURL(with: completion)
+            })
         })
     }
     
     func generateOAuthURL(with completion: @escaping (Result<String, Error>) -> Void) {
-        if (clientToken != nil) {
+        if (clientToken != nil && state.paymentMethodConfig != nil) {
             switch Primer.flow.uxMode {
             case .CHECKOUT: paypalService.startOrderSession(completion)
-            case .VAULT: paypalService.startBillingAgreementSession(completion)
+            case .VAULT:
+                print("🚀 vault")
+                paypalService.startBillingAgreementSession(completion)
             }
         } else {
             loadConfig(completion)

@@ -1,5 +1,7 @@
 protocol VaultCheckoutViewModelProtocol {
     var paymentMethods: [PaymentMethodToken] { get }
+    var mandate: DirectDebitMandate { get }
+    var availablePaymentOptions: [PaymentMethodViewModel] { get }
     var selectedPaymentMethodId: String { get }
     var theme: PrimerTheme { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
@@ -7,6 +9,14 @@ protocol VaultCheckoutViewModelProtocol {
 }
 
 class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
+    var mandate: DirectDebitMandate {
+        return state.directDebitMandate
+    }
+    
+    var availablePaymentOptions: [PaymentMethodViewModel] {
+        return state.viewModels
+    }
+    
     var theme: PrimerTheme { return state.settings.theme }
     var paymentMethods: [PaymentMethodToken] { return state.paymentMethods }
     var selectedPaymentMethodId: String { return state.selectedPaymentMethod }

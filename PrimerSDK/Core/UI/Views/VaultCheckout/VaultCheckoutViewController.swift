@@ -3,7 +3,9 @@ import PassKit
 
 class VaultCheckoutViewController: UIViewController {
     
-    var vaultCheckoutView: VaultCheckoutView?
+    var subView: VaultCheckoutView = VaultCheckoutView()
+    
+    var tokenSelectedForPayment: PaymentMethodToken?
     
     private var viewModel: VaultCheckoutViewModelProtocol
     private let loadingIndicator = UIActivityIndicatorView()
@@ -23,93 +25,105 @@ class VaultCheckoutViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.vaultCheckoutView = VaultCheckoutView(frame: view.frame, theme: viewModel.theme, delegate: self)
-        addLoadingView(loadingIndicator)
+        view.addSubview(subView)
+        subView.delegate = self
+        subView.dataSource = self
+        subView.pin(to: view)
+        subView.render(isBusy: true)
         viewModel.loadConfig({ [weak self] error in
             DispatchQueue.main.async {
                 guard let indicator = self?.loadingIndicator else { return }
                 self?.removeLoadingView(indicator)
-                self?.addVaultCheckoutView()
+                self?.subView.render()
             }
         })
     }
-    
-    private func addVaultCheckoutView() {
-        guard let vaultCheckoutView = self.vaultCheckoutView else { return }
-        view.addSubview(vaultCheckoutView)
-        vaultCheckoutView.setTableViewDelegates(self)
-        vaultCheckoutView.pin(to: view)
+}
+
+extension VaultCheckoutViewController: VaultCheckoutViewDataSource {
+    var selectedSavedPaymentMethod: PaymentMethodToken? {
+        return viewModel.paymentMethods.first(where: { paymentMethod in
+            return paymentMethod.token == viewModel.selectedPaymentMethodId
+        })
+    }
+    var amount: String? {
+        return "£99"
     }
 }
 
+// MARK: UITableView
 extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSource {
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return 1 }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel.availablePaymentOptions.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    // Set the spacing between sections
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 14.0
+    }
+    
+    // Make the background color show through
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = UIColor.clear
+        return headerView
+    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "cell3")
+        let cell = UITableViewCell(style: .default, reuseIdentifier: "cell5")
         
-        let selectedCard = viewModel.paymentMethods.first(where: { paymentMethod in
-            return paymentMethod.token == viewModel.selectedPaymentMethodId
-        })
-        
-        if (selectedCard != nil) {
-            cell.textLabel?.text = selectedCard?.description
-        } else {
-            cell.textLabel?.text = "select a card".localized()
-        }
-        cell.accessoryType = .disclosureIndicator
-        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: UIScreen.main.bounds.width)
+        let option = viewModel.availablePaymentOptions[indexPath.section]
+        let methodView = PaymentMethodComponent(frame: view.frame, method: option, theme: viewModel.theme)
+    
+        cell.layer.cornerRadius = 12.0
+        cell.contentView.addSubview(methodView)
+        methodView.pin(to: cell.contentView)
+        cell.frame = cell.frame.inset(by: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
         cell.backgroundColor = .white
-        cell.tintColor = .black
-        cell.textLabel?.textColor = .darkGray
+        cell.separatorInset = UIEdgeInsets.zero
+        
         return cell
-        //        if (indexPath.row == 0) {
-        //            let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell3")
-        //            cell.textLabel?.text = "John Doe"
-        //            cell.detailTextLabel?.text = "1 Infinite Loop Cupertino, CA 95014, USA"
-        //            cell.accessoryType = .disclosureIndicator
-        //            cell.separatorInset = UIEdgeInsets.zero
-        //            cell.backgroundColor = .white
-        //            cell.tintColor = .black
-        //            cell.textLabel?.textColor = .darkGray
-        //            return cell
-        //        } else {
-        //            let cell = UITableViewCell(style: .default, reuseIdentifier: "cell3")
-        //
-        //            let selectedCard = viewModel.paymentMethods.first(where: { vm in
-        //                return vm.id == viewModel.selectedPaymentMethodId
-        //            })
-        //
-        //            if (selectedCard != nil) {
-        //                cell.textLabel?.text = "**** **** **** \(selectedCard!.last4)"
-        //            } else {
-        //                cell.textLabel?.text = "select a card".localized()
-        //            }
-        //            cell.accessoryType = .disclosureIndicator
-        //            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: UIScreen.main.bounds.width)
-        //            cell.backgroundColor = .white
-        //            cell.tintColor = .black
-        //            cell.textLabel?.textColor = .darkGray
-        //            return cell
-        //        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        router?.show(.vaultPaymentMethods(delegate: self))
+        
+        let option = viewModel.availablePaymentOptions[indexPath.section]
+        
+        switch option.type {
+        case .APPLE_PAY: router?.show(.applePay)
+        case .GOOGLE_PAY: break
+        case .PAYMENT_CARD: router?.show(.cardForm)
+        case .PAYPAL: router?.show(.oAuth)
+        case .GOCARDLESS_MANDATE: router?.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
+        }
     }
 }
 
+// MARK: VaultCheckoutViewDelegate
 extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
+    func openVault() {
+        router?.show(.vaultPaymentMethods(delegate: self))
+    }
+    
+    var theme: PrimerTheme {
+        return viewModel.theme
+    }
+    
     func cancel() {
         router?.pop()
     }
     
+    func selectTokenForPayment(token: PaymentMethodToken) {
+        tokenSelectedForPayment = token
+    }
+    
     func pay() {
-        guard let vaultCheckoutView = self.vaultCheckoutView else { return }
-        vaultCheckoutView.payButton.showSpinner()
-        
         viewModel.authorizePayment({ [weak self] error in
             DispatchQueue.main.async {
                 if (error.exists) {

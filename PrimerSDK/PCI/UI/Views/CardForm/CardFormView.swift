@@ -42,8 +42,6 @@ class CardFormView: UIView {
         self.delegate = delegate
         super.init(frame: frame)
         
-        backgroundColor = theme.backgroundColor
-        
         addSubview(navBar)
         addSubview(submitButton)
         addSubview(nameTF)
@@ -70,7 +68,6 @@ class CardFormView: UIView {
 }
 
 // MARK: Configuration
-
 extension CardFormView {
     private func configureNavBar() {
         navBar.backgroundColor = theme.backgroundColor
@@ -94,65 +91,85 @@ extension CardFormView {
         submitButton.setTitleColor(theme.fontColorTheme.payButton, for: .normal)
     }
     private func configureNameTF() {
-        nameTF.layer.borderWidth = 1
-        nameTF.layer.borderColor = borderColor
-        nameTF.rightViewMode = .always
+        nameTF.tag = 0
         nameTF.placeholder = theme.content.cardFormView.nameTextFieldPlaceholder
-        nameTF.layer.cornerRadius = theme.cornerRadiusTheme.textFields
+        nameTF.rightViewMode = .always
         nameTF.textColor = .darkGray
         nameTF.tintColor = .black
         nameTF.backgroundColor = .white
-        nameTF.setLeftPaddingPoints(10)
+        nameTF.setLeftPaddingPoints(5)
+        nameTF.setRightPaddingPoints(5)
+        //
         nameTF.addTarget(self, action: #selector(onNameTextFieldEditingDidEnd), for: .editingDidEnd)
+        nameTF.addTarget(self, action: #selector(onTextFieldEditingDidBegin), for: .editingDidBegin)
+        nameTF.addBorder(isFocused: false, title: "", cornerRadius: theme.cornerRadiusTheme.textFields, theme: theme.textFieldTheme)
     }
     @objc private func onNameTextFieldEditingDidEnd(_ sender: UITextField) {
         delegate?.validateCardName(sender.text)
     }
     private func configureCardTF() {
-        cardTF.layer.borderWidth = 1
-        cardTF.layer.borderColor = borderColor
+        cardTF.tag = 1
         cardTF.placeholder = theme.content.cardFormView.cardTextFieldPlaceholder
         cardTF.rightViewMode = .always
-        cardTF.layer.cornerRadius = theme.cornerRadiusTheme.textFields
         cardTF.textColor = .darkGray
         cardTF.tintColor = .black
-        cardTF.backgroundColor = .white
-        cardTF.setLeftPaddingPoints(10)
-        cardTF.setRightPaddingPoints(10)
+        cardTF.setLeftPaddingPoints(5)
+        cardTF.setRightPaddingPoints(5)
         cardTF.keyboardType = UIKeyboardType.numberPad
         cardTF.addTarget(self, action: #selector(onCardTextFieldEditingDidEnd), for: .editingDidEnd)
+        cardTF.addTarget(self, action: #selector(onTextFieldEditingDidBegin), for: .editingDidBegin)
+        cardTF.addBorder(isFocused: false, title: "", cornerRadius: theme.cornerRadiusTheme.textFields, theme: theme.textFieldTheme)
     }
+    
+    @objc private func onTextFieldEditingDidBegin(_ sender: UITextField) {
+        
+        var title = ""
+        
+        switch sender.tag {
+        case 0: title = "Cardholder name"
+        case 1: title = "Card number"
+        case 2: title = "Expiry date"
+        case 3: title = "CVC"
+        default: break
+        }
+        
+        sender.addBorder(isFocused: true, title: title, cornerRadius: theme.cornerRadiusTheme.textFields, theme: theme.textFieldTheme)
+        sender.layoutIfNeeded()
+    }
+    
     @objc private func onCardTextFieldEditingDidEnd(_ sender: UITextField) {
         delegate?.validateCardNumber(sender.text)
     }
+    
     private func configureExpTF() {
-        expTF.layer.borderWidth = 1
-        expTF.layer.borderColor = borderColor
-        expTF.rightViewMode = .always
+        expTF.tag = 2
         expTF.placeholder = theme.content.cardFormView.expiryTextFieldPlaceholder
-        expTF.layer.cornerRadius = theme.cornerRadiusTheme.textFields
+        expTF.rightViewMode = .always
         expTF.textColor = .darkGray
         expTF.tintColor = .black
-        expTF.backgroundColor = .white
-        expTF.setLeftPaddingPoints(10)
+        expTF.setLeftPaddingPoints(5)
+        expTF.setRightPaddingPoints(5)
         expTF.keyboardType = UIKeyboardType.numberPad
         expTF.addTarget(self, action: #selector(onExpiryTextFieldEditingDidEnd), for: .editingDidEnd)
+        expTF.addTarget(self, action: #selector(onTextFieldEditingDidBegin), for: .editingDidBegin)
+        expTF.addBorder(isFocused: false, title: "", cornerRadius: theme.cornerRadiusTheme.textFields, theme: theme.textFieldTheme)
     }
     @objc private func onExpiryTextFieldEditingDidEnd(_ sender: UITextField) {
         delegate?.validateExpiry(sender.text)
     }
     private func configureCvcTF() {
-        cvcTF.layer.borderWidth = 1
-        cvcTF.layer.borderColor = borderColor
-        cvcTF.rightViewMode = .always
+        cvcTF.tag = 3
         cvcTF.placeholder = theme.content.cardFormView.cvcTextFieldPlaceholder
-        cvcTF.layer.cornerRadius = theme.cornerRadiusTheme.textFields
+        cvcTF.rightViewMode = .always
         cvcTF.textColor = .darkGray
         cvcTF.tintColor = .black
         cvcTF.backgroundColor = .white
-        cvcTF.setLeftPaddingPoints(10)
+        cvcTF.setLeftPaddingPoints(5)
+        cvcTF.setRightPaddingPoints(5)
         cvcTF.keyboardType = UIKeyboardType.numberPad
         cvcTF.addTarget(self, action: #selector(onCVCTextFieldEditingDidEnd), for: .editingDidEnd)
+        cvcTF.addTarget(self, action: #selector(onTextFieldEditingDidBegin), for: .editingDidBegin)
+        cvcTF.addBorder(isFocused: false, title: "", cornerRadius: theme.cornerRadiusTheme.textFields, theme: theme.textFieldTheme)
     }
     @objc private func onCVCTextFieldEditingDidEnd(_ sender: UITextField) {
         delegate?.validateCVC(sender.text)
@@ -202,22 +219,5 @@ extension CardFormView {
         submitButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         submitButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
         submitButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12).isActive = true
-    }
-}
-
-extension UITextField {
-    func toggleValidity(_ isNotValid: Bool) {
-        if (isNotValid) {
-            self.layer.borderColor = UIColor.red.cgColor
-            self.textColor = .red
-        } else {
-            self.layer.borderColor = UIColor.systemBlue.cgColor
-            self.textColor = .black
-            let iconView = UIImageView(image: ImageName.check.image)
-            let rightView = UIView(frame:  CGRect(x: 0, y: 0, width: self.frame.height, height: self.frame.height))
-            iconView.center = rightView.center
-            rightView.addSubview(iconView)
-            self.rightView = rightView
-        }
     }
 }

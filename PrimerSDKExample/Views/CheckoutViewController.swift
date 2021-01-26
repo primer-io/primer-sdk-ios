@@ -15,11 +15,14 @@ class CheckoutViewController: UIViewController {
     var listOfVaultedPaymentMethods: [PaymentMethodToken] = []
     var primer: Primer?
     
+    weak var delegate: ViewControllerDelegate?
+    
     let tableView = UITableView()
     let addCardButton = UIButton()
     let addPayPalButton = UIButton()
     let vaultCheckoutButton = UIButton()
     let directCheckoutButton = UIButton()
+    let directDebitButton = UIButton()
     
     override func viewDidLoad() {
         title = "Wallet"
@@ -42,7 +45,8 @@ class CheckoutViewController: UIViewController {
         view.addSubview(addCardButton)
         view.addSubview(addPayPalButton)
         view.addSubview(vaultCheckoutButton)
-        view.addSubview(directCheckoutButton)
+//        view.addSubview(directCheckoutButton)
+        view.addSubview(directDebitButton)
         
         //
         tableView.delegate = self
@@ -51,23 +55,33 @@ class CheckoutViewController: UIViewController {
         
         addCardButton.setTitle("Add Card", for: .normal)
         addCardButton.setTitleColor(.white, for: .normal)
-        addCardButton.backgroundColor = .darkGray
+        addCardButton.layer.cornerRadius = 16
+        addCardButton.backgroundColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
         addCardButton.addTarget(self, action: #selector(showCardForm), for: .touchUpInside)
         
         addPayPalButton.setTitle("Add PayPal", for: .normal)
         addPayPalButton.setTitleColor(.white, for: .normal)
-        addPayPalButton.backgroundColor = .systemBlue
+        addPayPalButton.layer.cornerRadius = 16
+        addPayPalButton.backgroundColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
         addPayPalButton.addTarget(self, action: #selector(showPayPalForm), for: .touchUpInside)
         
         vaultCheckoutButton.setTitle("Open Wallet", for: .normal)
         vaultCheckoutButton.setTitleColor(.white, for: .normal)
-        vaultCheckoutButton.backgroundColor = .systemPink
+        vaultCheckoutButton.layer.cornerRadius = 16
+        vaultCheckoutButton.backgroundColor = .lightGray
         vaultCheckoutButton.addTarget(self, action: #selector(showCompleteVaultCheckout), for: .touchUpInside)
         
-        directCheckoutButton.setTitle("Open Checkout", for: .normal)
-        directCheckoutButton.setTitleColor(.white, for: .normal)
-        directCheckoutButton.backgroundColor = .systemTeal
-        directCheckoutButton.addTarget(self, action: #selector(showCompleteDirectCheckout), for: .touchUpInside)
+//        directCheckoutButton.setTitle("Open Checkout", for: .normal)
+//        directCheckoutButton.setTitleColor(.white, for: .normal)
+//        directCheckoutButton.layer.cornerRadius = 16
+//        directCheckoutButton.backgroundColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
+//        directCheckoutButton.addTarget(self, action: #selector(showCompleteDirectCheckout), for: .touchUpInside)
+//
+        directDebitButton.setTitle("Add Direct Debit", for: .normal)
+        directDebitButton.setTitleColor(.white, for: .normal)
+        directDebitButton.layer.cornerRadius = 16
+        directDebitButton.backgroundColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
+        directDebitButton.addTarget(self, action: #selector(showDirectDebit), for: .touchUpInside)
         
         //
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -87,14 +101,19 @@ class CheckoutViewController: UIViewController {
         addPayPalButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         
         vaultCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
-        vaultCheckoutButton.bottomAnchor.constraint(equalTo: directCheckoutButton.topAnchor, constant: -12).isActive = true
+        vaultCheckoutButton.bottomAnchor.constraint(equalTo: directDebitButton.topAnchor, constant: -24).isActive = true
         vaultCheckoutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         vaultCheckoutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         
-        directCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
-        directCheckoutButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
-        directCheckoutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
-        directCheckoutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
+//        directCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
+//        directCheckoutButton.bottomAnchor.constraint(equalTo: directDebitButton.topAnchor, constant: -12).isActive = true
+//        directCheckoutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
+//        directCheckoutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
+//
+        directDebitButton.translatesAutoresizingMaskIntoConstraints = false
+        directDebitButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
+        directDebitButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
+        directDebitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         
         //
         fetchPaymentMethods()
@@ -106,6 +125,7 @@ class CheckoutViewController: UIViewController {
                 switch result {
                 case .failure: print("Error!")
                 case .success(let tokens):
+                    print("🚀 methods:", tokens)
                     self?.listOfVaultedPaymentMethods = tokens
                     self?.tableView.reloadData()
                 }
@@ -129,6 +149,9 @@ class CheckoutViewController: UIViewController {
     @objc private func showCompleteDirectCheckout() {
         primer?.showCheckout(self, flow: .completeDirectCheckout)
     }
+    @objc private func showDirectDebit() {
+        primer?.showCheckout(self, flow: .addDirectDebit)
+    }
 }
 
 // MARK: PrimerCheckoutDelegate (Required)
@@ -139,7 +162,7 @@ extension CheckoutViewController: PrimerCheckoutDelegate {
     }
     
     func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
-        guard let url = URL(string: "http://192.168.0.50:8020/client-token") else {
+        guard let url = URL(string: "http://localhost:8020/client-token") else {
             return completion(.failure(NetworkError.missingParams))
         }
         var request = URLRequest(url: url)
@@ -162,7 +185,7 @@ extension CheckoutViewController: PrimerCheckoutDelegate {
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         guard let token = result.token else { return completion(NetworkError.missingParams) }
         
-        guard let url = URL(string: "http://192.168.0.50:8020/authorize") else {
+        guard let url = URL(string: "http://localhost:8020/authorize") else {
             return completion(NetworkError.missingParams)
         }
         
@@ -199,32 +222,73 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        presentCapturePayment(indexPath.row)
+    }
+    
+    private func presentCapturePayment(_ index: Int) {
+        let result = listOfVaultedPaymentMethods[index]
+        print("🦁", result)
+//        guard let token = result.token else { return }
+        let type = result.paymentInstrumentType
+        let request = AuthorizationRequest(token: result.token!, amount: amount, type: type.rawValue)
+        delegate?.addToken(request: request)
+        navigationController?.popViewController(animated: true)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "primerCell")
         let paymentMethodToken = listOfVaultedPaymentMethods[indexPath.row]
         
-        var title: String
+//        var title: String
         var subtitle: String
         
         switch paymentMethodToken.paymentInstrumentType {
         case .PAYMENT_CARD:
-            title = "Card"
-            subtitle = "**** **** **** \(paymentMethodToken.paymentInstrumentData?.last4Digits ?? "****")"
+//            cell.textLabel?.text = "Card"
+            subtitle = "•••• •••• •••• \(paymentMethodToken.paymentInstrumentData?.last4Digits ?? "••••")"
         case .PAYPAL_BILLING_AGREEMENT:
-            title = "PayPal"
+//            cell.textLabel?.text = "PayPal"
             subtitle = paymentMethodToken.paymentInstrumentData?.externalPayerInfo?.email ?? ""
+        case .GOCARDLESS_MANDATE:
+//            cell.textLabel?.text = "Direct Debit"
+            subtitle = "Direct Debit"
         default:
-            title = ""
+            cell.textLabel?.text = ""
             subtitle = ""
         }
         
-        cell.textLabel?.text = title
-        cell.detailTextLabel?.text = subtitle
-        cell.accessoryType = .disclosureIndicator
+        cell.addIcon(paymentMethodToken.icon.image)
+        cell.addTitle(subtitle)
+//        cell.detailTextLabel?.text = subtitle
+//        cell.accessoryType = .disclosureIndicator
         cell.tintColor = .black
         cell.textLabel?.textColor = .darkGray
         return cell
     }
+}
+
+extension UITableViewCell {
+    
+    func addIcon(_ icon: UIImage?) {
+        let imageView = UIImageView(image: icon)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(imageView)
+        imageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        imageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20).isActive = true
+    }
+    
+    func addTitle(_ text: String) {
+        let title = UILabel()
+        title.text = text
+        title.translatesAutoresizingMaskIntoConstraints = false
+        title.adjustsFontSizeToFitWidth = false
+        title.lineBreakMode = .byTruncatingTail
+        addSubview(title)
+        title.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 60).isActive = true
+        title.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -50).isActive = true
+    }
+    
 }
