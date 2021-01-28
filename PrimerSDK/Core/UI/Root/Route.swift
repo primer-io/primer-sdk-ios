@@ -14,7 +14,7 @@ enum Route {
     case directCheckout
     case oAuth
     case applePay
-    case success
+    case success(type: SuccessScreenType)
     case error
     case singleFieldForm(type: TextFieldType)
     case confirmMandate
@@ -33,7 +33,10 @@ enum Route {
             return DirectCheckoutViewController(with: context.viewModelLocator.directCheckoutViewModel, and: router)
         case .oAuth: return OAuthViewController(with: context.viewModelLocator.oAuthViewModel, router: router)
         case .applePay: return ApplePayViewController(with: context.viewModelLocator.applePayViewModel)
-        case .success: return SuccessViewController()
+        case .success(let type):
+            let vm = SuccessScreenViewModel(context: context, type: type)
+            let vc = SuccessViewController(viewModel: vm)
+            return vc
         case .error: return ErrorViewController()
         case .singleFieldForm(let type):
             let vm = SingleFieldFormViewModel(context: context, textFieldType: type)
@@ -49,21 +52,21 @@ enum Route {
     
     var height: CGFloat {
         switch self {
-        case .cardForm:  return 312
-        case .cardScanner:  return 400
+        case .cardForm:  return 340
+        case .cardScanner:  return 420
         case .vaultCheckout:  return 400
         case .vaultPaymentMethods:  return 320
         case .directCheckout:  return 320
         case .oAuth:  return 400
         case .applePay:  return 400
-        case .success:  return 220
+        case .success:  return 360
         case .error:  return 220
         case .singleFieldForm: return 288
         case .confirmMandate: return 640
         case .form(let type):
             switch type {
-            case .address: return 440
-            default: return 300
+            case .address: return 460
+            default: return 320
             }
         }
     }

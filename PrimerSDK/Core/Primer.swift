@@ -3,6 +3,7 @@ import UIKit
 public class Primer {
     
     static var flow: PrimerSessionFlow = .completeDirectCheckout
+    static var theme: PrimerTheme = PrimerTheme()
     
     private var rootViewController: RootViewController {
         return RootViewController(context)
@@ -13,6 +14,8 @@ public class Primer {
     /** Intialise Primer with the settings object before calling any of the other methods.*/
     public init(with settings: PrimerSettings) {
         self.context = CheckoutContext(with: settings)
+        Primer.theme = settings.theme
+//        DependencyContainer.register(AnalyticsService() as AnalyticsServiceProtocol)
     }
     
     deinit { print("🧨 destroy:", self.self) }

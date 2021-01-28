@@ -36,8 +36,7 @@ class CardScannerViewController: UIViewController {
     deinit { print("🧨 destroy:", self.self) }
     
     public override func viewDidLoad() {
-        view.backgroundColor = viewModel.theme.backgroundColor
-        scannerView = ScannerView(frame: view.frame, theme: viewModel.theme, delegate: self, simpleScanView: simpleScanVC.view)
+        scannerView = ScannerView(frame: view.frame, delegate: self, simpleScanView: simpleScanVC.view)
         self.addScannerView()
     }
     

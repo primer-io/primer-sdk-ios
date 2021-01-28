@@ -167,7 +167,7 @@ extension SingleFieldFormViewController: SingleFieldFormViewDelegate {
     func onTextFieldEditingChanged(_ sender: UITextField, mainButton: UIButton) {
         guard let text = sender.text else { return }
         viewModel.setState(text)
-        let validColor = viewModel.theme.buttonColorTheme.payButton
+        let validColor = viewModel.theme.colorTheme.tint1
         mainButton.toggleValidity(viewModel.textFieldType.validate(text), validColor: validColor)
         guard let mask = viewModel.textFieldType.mask else { return }
         sender.text = mask.apply(on: text.uppercased())

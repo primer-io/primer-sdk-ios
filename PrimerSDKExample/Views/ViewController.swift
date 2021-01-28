@@ -20,7 +20,7 @@ class ViewController: UIViewController  {
     var request: AuthorizationRequest?
     
     override func viewDidLoad() {
-        title = "Voi"
+        title = "Primer"
         view.backgroundColor = .white
         
         //map
@@ -46,7 +46,7 @@ class ViewController: UIViewController  {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
         button.widthAnchor.constraint(equalToConstant: 44).isActive = true
-        button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -88).isActive = true
+        button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
         button.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         button.addTarget(self, action: #selector(presentWallet), for: .touchUpInside)
         
@@ -58,38 +58,6 @@ class ViewController: UIViewController  {
         imageView.centerXAnchor.constraint(equalTo: button.centerXAnchor).isActive = true
         imageView.centerYAnchor.constraint(equalTo: button.centerYAnchor).isActive = true
         
-        //scanButton
-        scanButton.translatesAutoresizingMaskIntoConstraints = false
-        //        scanButton.setTitle("SCAN TO RIDE!", for: .normal)
-        //        scanButton.titleLabel?.font = .systemFont(ofSize: 12, weight: .bold)
-        //        scanButton.setTitleColor(.white, for: .normal)
-        scanButton.layer.cornerRadius = 22
-        scanButton.backgroundColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
-        view.addSubview(scanButton)
-        scanButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
-        scanButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
-        scanButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        scanButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
-        
-        scanButton.addTarget(self, action: #selector(authorizePayment), for: .touchUpInside)
-        
-        titleLabel.text = "SCAN TO RIDE!"
-        titleLabel.font = .systemFont(ofSize: 12, weight: .bold)
-        titleLabel.textColor = .white
-        
-        scanButton.addSubview(titleLabel)
-        
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.centerXAnchor.constraint(equalTo: scanButton.centerXAnchor, constant: 16).isActive = true
-        titleLabel.centerYAnchor.constraint(equalTo: scanButton.centerYAnchor).isActive = true
-        
-        //
-        let image2 = UIImage(systemName: "qrcode.viewfinder")?.withTintColor(.white, renderingMode: .alwaysOriginal)
-        let imageView2 = UIImageView(image: image2)
-        imageView2.translatesAutoresizingMaskIntoConstraints = false
-        scanButton.addSubview(imageView2)
-        imageView2.centerYAnchor.constraint(equalTo: scanButton.centerYAnchor).isActive = true
-        imageView2.trailingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: -4).isActive = true
     }
     
     @objc private func presentWallet() {

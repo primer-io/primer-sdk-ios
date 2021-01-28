@@ -26,7 +26,19 @@ class CheckoutViewController: UIViewController {
     
     override func viewDidLoad() {
         title = "Wallet"
-        view.backgroundColor = .white
+        if #available(iOS 12.0, *) {
+            if traitCollection.userInterfaceStyle == .light {
+                view.backgroundColor = .white
+                tableView.backgroundColor = .white
+            } else {
+                view.backgroundColor = .darkGray
+                tableView.backgroundColor = .darkGray
+                tableView.separatorColor = .gray
+            }
+        } else {
+            // Fallback on earlier versions
+            view.backgroundColor = .white
+        }
         
         let settings = PrimerSettings(
             delegate: self,
@@ -35,7 +47,11 @@ class CheckoutViewController: UIViewController {
             customerId: "customer_1",
             countryCode: .fr,
             urlScheme: "primer://oauth",
-            urlSchemeIdentifier: "primer"
+            urlSchemeIdentifier: "primer",
+            businessDetails: BusinessDetails(
+                name: "My Business",
+                address: Address(addressLine1: "107 Rue de Rivoli", city: "Paris", countryCode: "FR", postalCode: "75001")
+            )
         )
         
         primer = Primer(with: settings)
@@ -45,24 +61,36 @@ class CheckoutViewController: UIViewController {
         view.addSubview(addCardButton)
         view.addSubview(addPayPalButton)
         view.addSubview(vaultCheckoutButton)
-//        view.addSubview(directCheckoutButton)
+        //        view.addSubview(directCheckoutButton)
         view.addSubview(directDebitButton)
         
         //
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.tableFooterView = UIView()
+        let footer = UIView()
+        
+        if #available(iOS 12.0, *) {
+            if traitCollection.userInterfaceStyle == .light {
+                footer.backgroundColor = .white
+            } else {
+                footer.backgroundColor = .darkGray
+            }
+        } else {
+            footer.backgroundColor = .white
+        }
+        
+        tableView.tableFooterView = footer
         
         addCardButton.setTitle("Add Card", for: .normal)
         addCardButton.setTitleColor(.white, for: .normal)
         addCardButton.layer.cornerRadius = 16
-        addCardButton.backgroundColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
+        addCardButton.backgroundColor = .lightGray
         addCardButton.addTarget(self, action: #selector(showCardForm), for: .touchUpInside)
         
         addPayPalButton.setTitle("Add PayPal", for: .normal)
         addPayPalButton.setTitleColor(.white, for: .normal)
         addPayPalButton.layer.cornerRadius = 16
-        addPayPalButton.backgroundColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
+        addPayPalButton.backgroundColor = .lightGray
         addPayPalButton.addTarget(self, action: #selector(showPayPalForm), for: .touchUpInside)
         
         vaultCheckoutButton.setTitle("Open Wallet", for: .normal)
@@ -71,16 +99,10 @@ class CheckoutViewController: UIViewController {
         vaultCheckoutButton.backgroundColor = .lightGray
         vaultCheckoutButton.addTarget(self, action: #selector(showCompleteVaultCheckout), for: .touchUpInside)
         
-//        directCheckoutButton.setTitle("Open Checkout", for: .normal)
-//        directCheckoutButton.setTitleColor(.white, for: .normal)
-//        directCheckoutButton.layer.cornerRadius = 16
-//        directCheckoutButton.backgroundColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
-//        directCheckoutButton.addTarget(self, action: #selector(showCompleteDirectCheckout), for: .touchUpInside)
-//
         directDebitButton.setTitle("Add Direct Debit", for: .normal)
         directDebitButton.setTitleColor(.white, for: .normal)
         directDebitButton.layer.cornerRadius = 16
-        directDebitButton.backgroundColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
+        directDebitButton.backgroundColor = .lightGray
         directDebitButton.addTarget(self, action: #selector(showDirectDebit), for: .touchUpInside)
         
         //
@@ -101,21 +123,15 @@ class CheckoutViewController: UIViewController {
         addPayPalButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         
         vaultCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
-        vaultCheckoutButton.bottomAnchor.constraint(equalTo: directDebitButton.topAnchor, constant: -24).isActive = true
+        vaultCheckoutButton.bottomAnchor.constraint(equalTo: directDebitButton.topAnchor, constant: -12).isActive = true
         vaultCheckoutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         vaultCheckoutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         
-//        directCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
-//        directCheckoutButton.bottomAnchor.constraint(equalTo: directDebitButton.topAnchor, constant: -12).isActive = true
-//        directCheckoutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
-//        directCheckoutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
-//
         directDebitButton.translatesAutoresizingMaskIntoConstraints = false
-        directDebitButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
+        directDebitButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -48).isActive = true
         directDebitButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         directDebitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         
-        //
         fetchPaymentMethods()
     }
     
@@ -228,7 +244,7 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
     private func presentCapturePayment(_ index: Int) {
         let result = listOfVaultedPaymentMethods[index]
         print("🦁", result)
-//        guard let token = result.token else { return }
+        //        guard let token = result.token else { return }
         let type = result.paymentInstrumentType
         let request = AuthorizationRequest(token: result.token!, amount: amount, type: type.rawValue)
         delegate?.addToken(request: request)
@@ -239,18 +255,18 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "primerCell")
         let paymentMethodToken = listOfVaultedPaymentMethods[indexPath.row]
         
-//        var title: String
+        //        var title: String
         var subtitle: String
         
         switch paymentMethodToken.paymentInstrumentType {
         case .PAYMENT_CARD:
-//            cell.textLabel?.text = "Card"
+            //            cell.textLabel?.text = "Card"
             subtitle = "•••• •••• •••• \(paymentMethodToken.paymentInstrumentData?.last4Digits ?? "••••")"
         case .PAYPAL_BILLING_AGREEMENT:
-//            cell.textLabel?.text = "PayPal"
+            //            cell.textLabel?.text = "PayPal"
             subtitle = paymentMethodToken.paymentInstrumentData?.externalPayerInfo?.email ?? ""
         case .GOCARDLESS_MANDATE:
-//            cell.textLabel?.text = "Direct Debit"
+            //            cell.textLabel?.text = "Direct Debit"
             subtitle = "Direct Debit"
         default:
             cell.textLabel?.text = ""
@@ -259,10 +275,7 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell.addIcon(paymentMethodToken.icon.image)
         cell.addTitle(subtitle)
-//        cell.detailTextLabel?.text = subtitle
-//        cell.accessoryType = .disclosureIndicator
-        cell.tintColor = .black
-        cell.textLabel?.textColor = .darkGray
+        cell.backgroundColor = .darkGray
         return cell
     }
 }

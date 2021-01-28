@@ -39,7 +39,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
             cell.cardView.toggleIcon(isEnabled: !isEnabled)
         }
         
-       
+        cell.backgroundColor = Primer.theme.colorTheme.main1
         
         return cell
     }
