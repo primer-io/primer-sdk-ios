@@ -51,7 +51,7 @@ extension PaymentMethodToken {
                 network: ntwrk,
                 cardholder: cardholder,
                 last4: "•••• \(last4)",
-                expiry: "Expires".localized() + "\(expMonth)/\(expYear)",
+                expiry: "Expires".localized() + " \(expMonth) / \(expYear.suffix(2))",
                 imageName: self.icon
             )
         case .PAYPAL_BILLING_AGREEMENT:

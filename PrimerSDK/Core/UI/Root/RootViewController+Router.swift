@@ -16,8 +16,10 @@ protocol RouterDelegate: class {
 
 extension RootViewController: RouterDelegate {
     func show(_ route: Route) {
+        
         let vc = route.viewControllerFactory(context, router: self)
         self.add(vc, height: route.height)
+        
     }
     
     func pop() {
@@ -37,10 +39,17 @@ extension RootViewController: RouterDelegate {
 
 fileprivate extension RootViewController {
     func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5) {
+        
         UIView.animate(withDuration: 0.25, animations: {[weak self] in
             guard let strongSelf = self else { return }
-            strongSelf.heightConstraint?.constant = height
-            strongSelf.view.layoutIfNeeded()
+            
+            if (strongSelf.context.settings.isFullScreenOnly) {
+                strongSelf.heightConstraint.setFullScreen()
+                strongSelf.view.layoutIfNeeded()
+            } else {
+                strongSelf.heightConstraint?.constant = height
+                strongSelf.view.layoutIfNeeded()
+            }
         })
         //hide previous view
         routes.last?.view.isHidden = true
@@ -73,16 +82,18 @@ fileprivate extension RootViewController {
     
     func popView() {
         // dismiss checkout if this is the first route
-        if (routes.count == 1) { return dismiss(animated: true) }
+        if (routes.count < 2) { return dismiss(animated: true) }
         
         // remove view and view controller of foremost route
-        routes.last!.view.removeFromSuperview()
-        routes.last!.removeFromParent()
+        routes.last?.view.removeFromSuperview()
+        routes.last?.removeFromParent()
         
         print("routes:", routes)
         // remove foremost route from route stack & its associated height
-        routes.removeLast()
-        heights.removeLast()
+        if (!heights.isEmpty && !routes.isEmpty) {
+            routes.removeLast()
+            heights.removeLast()
+        }
         
         // reveal previous route view & animate height transition
         self.routes.last?.view.isHidden = false
@@ -93,8 +104,14 @@ fileprivate extension RootViewController {
         
         // animate to previous height
         UIView.animate(withDuration: 0.25, animations: {[weak self] in
-            self?.heightConstraint?.constant = self?.heights.last ?? 400
-            self?.view.layoutIfNeeded()
+            guard let strongSelf = self else { return }
+            if (strongSelf.context.settings.isFullScreenOnly) {
+                strongSelf.heightConstraint.setFullScreen()
+                strongSelf.view.layoutIfNeeded()
+            } else {
+                strongSelf.heightConstraint?.constant = self?.heights.last ?? 400
+                strongSelf.view.layoutIfNeeded()
+            }
         })
         
     }

@@ -2,17 +2,23 @@ PODS:
   - CardScan (1.0.5050):
     - CardScan/Core (= 1.0.5050)
   - CardScan/Core (1.0.5050)
+  - Mixpanel-swift (2.8.2):
+    - Mixpanel-swift/Complete (= 2.8.2)
+  - Mixpanel-swift/Complete (2.8.2)
 
 DEPENDENCIES:
   - CardScan
+  - Mixpanel-swift
 
 SPEC REPOS:
   trunk:
     - CardScan
+    - Mixpanel-swift
 
 SPEC CHECKSUMS:
   CardScan: 849c4da1bc84740a496f4898f9e9c3cc6ee7205e
+  Mixpanel-swift: ef37387899c8967fa95d492887f4bcc980041aa0
 
-PODFILE CHECKSUM: 55fc36a43ce1779cbad1bd9c36db10c103c5cb78
+PODFILE CHECKSUM: 2b304c7281772a9dcc0a8c406387ad9679db6801
 
 COCOAPODS: 1.10.1

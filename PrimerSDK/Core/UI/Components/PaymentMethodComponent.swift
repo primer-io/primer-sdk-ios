@@ -12,45 +12,48 @@ class PaymentMethodComponent: UIView {
     let label = UILabel()
     let iconView = UIImageView()
     
-    init(frame: CGRect, method: PaymentMethodViewModel, theme: PrimerTheme) {
+    init(frame: CGRect, method: PaymentMethodViewModel) {
         super.init(frame: frame)
-        layer.cornerRadius = theme.cornerRadiusTheme.buttons
+        
+        layer.cornerRadius = Primer.theme.cornerRadiusTheme.buttons
         
         switch method.type {
         case .APPLE_PAY:
-            backgroundColor = theme.buttonColorTheme.applePay
-            label.textColor = .white
+            backgroundColor = Primer.theme.colorTheme.main2
+            label.textColor = Primer.theme.colorTheme.text2
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString(), isBold: true)
-            configureIconView(with: method.toIconName().image, color: .white)
+            configureIconView(icon: method.toIconName().image, color: .white)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         case .PAYMENT_CARD:
             layer.borderWidth = 1
-            layer.borderColor = UIColor.darkGray.cgColor
-            backgroundColor = theme.buttonColorTheme.creditCard
-            label.textColor = theme.fontColorTheme.creditCard
+            layer.borderColor = Primer.theme.colorTheme.disabled1.cgColor
+            backgroundColor = Primer.theme.colorTheme.main1
+            label.textColor = Primer.theme.colorTheme.text1
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString())
-            configureIconView(with: method.toIconName().image, color: theme.fontColorTheme.creditCard)
+            configureIconView(icon: method.toIconName().image, color: Primer.theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         case .PAYPAL:
-            backgroundColor = theme.buttonColorTheme.paypal
+//            layer.borderWidth = 1
+            backgroundColor = UIColor(red: 190/255, green: 228/255, blue: 254/255, alpha: 1)
+            //            layer.borderColor = Primer.theme.colorTheme.disabled1.cgColor
             addSubview(iconView)
-            configureIconView(with: method.toIconName().image, color: theme.fontColorTheme.paypal)
+            configureIconView(icon: method.toIconName().image, color: Primer.theme.colorTheme.text1)
             anchorIconView(inRelationToLabel: false)
         case .GOCARDLESS_MANDATE:
             layer.borderWidth = 1
-            layer.borderColor = UIColor.darkGray.cgColor
-            backgroundColor = theme.buttonColorTheme.creditCard
-            label.textColor = theme.fontColorTheme.creditCard
+            layer.borderColor = Primer.theme.colorTheme.disabled1.cgColor
+            backgroundColor = Primer.theme.colorTheme.main1
+            label.textColor = Primer.theme.colorTheme.text1
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString())
-            configureIconView(with: method.toIconName().image, color: theme.fontColorTheme.creditCard)
+            configureIconView(icon: method.toIconName().image, color: Primer.theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         default: break
@@ -58,9 +61,10 @@ class PaymentMethodComponent: UIView {
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
-    //
-    
+}
+
+// MARK: Configuration
+extension PaymentMethodComponent {
     func configureLabel(
         with title: String,
         isBold: Bool = false
@@ -71,17 +75,22 @@ class PaymentMethodComponent: UIView {
         }
     }
     
-    func configureIconView(with icon: UIImage?, color: UIColor = .black) {
-//        let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
-        iconView.image = icon
-//        iconView.tintColor = color
+    func configureIconView(icon: UIImage?, color: UIColor = .black, isMonoColor: Bool = false) {
+        if (isMonoColor) {
+            let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
+            iconView.tintColor = color
+            iconView.image = tintedIcon
+        } else {
+            iconView.image = icon
+        }
     }
-    
-    //
-    
+}
+
+// MARK: Constraints
+extension PaymentMethodComponent {
     func anchorLabel() {
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        label.heightAnchor.constraint(equalToConstant: 14).isActive = true
         label.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         label.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 12).isActive = true
     }
@@ -90,6 +99,8 @@ class PaymentMethodComponent: UIView {
         iconView.translatesAutoresizingMaskIntoConstraints = false
 //        iconView.heightAnchor.constraint(equalToConstant: 20).isActive = true
         iconView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        iconView.heightAnchor.constraint(equalToConstant: iconView.intrinsicContentSize.height * 0.75).isActive = true
+        iconView.widthAnchor.constraint(equalToConstant: iconView.intrinsicContentSize.width * 0.75).isActive = true
         if (inRelationToLabel) {
             iconView.trailingAnchor.constraint(equalTo: label.leadingAnchor, constant: -6).isActive = true
         } else {

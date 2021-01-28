@@ -11,7 +11,7 @@ extension UITableViewCell {
     func addTitle(_ text: String) {
         let titleView = UILabel()
         titleView.text = text
-        titleView.textColor = .darkGray
+        titleView.textColor = Primer.theme.colorTheme.disabled1
         titleView.font = .systemFont(ofSize: 13, weight: .light)
         titleView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(titleView)
@@ -21,7 +21,7 @@ extension UITableViewCell {
     func addContent(_ text: String?) {
         let contentView = UILabel()
         contentView.text = text
-        contentView.textColor = .black
+        contentView.textColor = Primer.theme.colorTheme.text1
         contentView.font = .systemFont(ofSize: 17)
         contentView.adjustsFontSizeToFitWidth = true
         contentView.translatesAutoresizingMaskIntoConstraints = false

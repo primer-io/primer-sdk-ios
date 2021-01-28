@@ -50,7 +50,11 @@ class DirectDebitService: DirectDebitServiceProtocol {
                 postalCode: mandate.address?.postalCode ?? "",
                 countryCode: mandate.address?.countryCode ?? ""
             ),
-            bankDetails: BankDetails(iban: mandate.iban ?? "")
+            bankDetails: BankDetails(
+                iban: mandate.iban,
+                bankCode: mandate.sortCode,
+                accountNumber: mandate.accountNumber
+            )
         )
         
         print("🚀🚀🚀🚀", body)
@@ -89,7 +93,9 @@ struct UserDetails: Codable {
 }
 
 struct BankDetails: Codable {
-    let iban: String
+    let iban: String?
+    let bankCode: String?
+    let accountNumber: String?
 }
 
 struct DirectDebitCreateMandateResponse: Codable {

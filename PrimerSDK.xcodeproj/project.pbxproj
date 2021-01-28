@@ -87,9 +87,6 @@
 		1D6C24FF25A7CD0B00409120 /* TokenizationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C24FE25A7CD0B00409120 /* TokenizationServiceTests.swift */; };
 		1D6C252C25AA314900409120 /* MaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C252B25AA314900409120 /* MaskTests.swift */; };
 		1D6C253A25AB572500409120 /* ConfirmMandateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C253925AB572500409120 /* ConfirmMandateViewController.swift */; };
-		1D6C254025AB573300409120 /* IBANFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C253F25AB573300409120 /* IBANFormViewController.swift */; };
-		1D6C254425AB6E7C00409120 /* IBANFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C254325AB6E7C00409120 /* IBANFormViewModel.swift */; };
-		1D6C254825AB6EA300409120 /* IBANFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C254725AB6EA300409120 /* IBANFormView.swift */; };
 		1D6C255525ACCC6200409120 /* String+Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C255425ACCC6100409120 /* String+Localization.swift */; };
 		1D6C256125ACCDAE00409120 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1D6C256325ACCDAE00409120 /* Localizable.strings */; };
 		1D6C257125ACD24200409120 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1D6C256325ACCDAE00409120 /* Localizable.strings */; };
@@ -124,6 +121,7 @@
 		1D6C278D25B5D04A00409120 /* SingleFieldFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C278C25B5D04A00409120 /* SingleFieldFormViewController.swift */; };
 		1D6C279725B5E94E00409120 /* DirectDebitMandate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C279625B5E94E00409120 /* DirectDebitMandate.swift */; };
 		1D6C27A425B5FAA000409120 /* SingleFieldFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6C27A325B5FAA000409120 /* SingleFieldFormView.swift */; };
+		1D7F098225C22758009C1E63 /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7F098125C22758009C1E63 /* AnalyticsService.swift */; };
 		1D8FA6D625B9AEC700BE9F69 /* ConfirmMandateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8FA6D525B9AEC700BE9F69 /* ConfirmMandateView.swift */; };
 		1D8FA6DA25B9B00F00BE9F69 /* ConfirmMandateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8FA6D925B9B00F00BE9F69 /* ConfirmMandateViewModel.swift */; };
 		1D8FA6DE25BA4E5A00BE9F69 /* DirectDebitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8FA6DD25BA4E5A00BE9F69 /* DirectDebitService.swift */; };
@@ -268,9 +266,6 @@
 		1D6C24FE25A7CD0B00409120 /* TokenizationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenizationServiceTests.swift; sourceTree = "<group>"; };
 		1D6C252B25AA314900409120 /* MaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskTests.swift; sourceTree = "<group>"; };
 		1D6C253925AB572500409120 /* ConfirmMandateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmMandateViewController.swift; sourceTree = "<group>"; };
-		1D6C253F25AB573300409120 /* IBANFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IBANFormViewController.swift; sourceTree = "<group>"; };
-		1D6C254325AB6E7C00409120 /* IBANFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IBANFormViewModel.swift; sourceTree = "<group>"; };
-		1D6C254725AB6EA300409120 /* IBANFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IBANFormView.swift; sourceTree = "<group>"; };
 		1D6C255425ACCC6100409120 /* String+Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Localization.swift"; sourceTree = "<group>"; };
 		1D6C256225ACCDAE00409120 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1D6C256625ACCDC500409120 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -305,6 +300,7 @@
 		1D6C278C25B5D04A00409120 /* SingleFieldFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleFieldFormViewController.swift; sourceTree = "<group>"; };
 		1D6C279625B5E94E00409120 /* DirectDebitMandate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectDebitMandate.swift; sourceTree = "<group>"; };
 		1D6C27A325B5FAA000409120 /* SingleFieldFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleFieldFormView.swift; sourceTree = "<group>"; };
+		1D7F098125C22758009C1E63 /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		1D8FA6D525B9AEC700BE9F69 /* ConfirmMandateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmMandateView.swift; sourceTree = "<group>"; };
 		1D8FA6D925B9B00F00BE9F69 /* ConfirmMandateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmMandateViewModel.swift; sourceTree = "<group>"; };
 		1D8FA6DD25BA4E5A00BE9F69 /* DirectDebitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectDebitService.swift; sourceTree = "<group>"; };
@@ -385,6 +381,7 @@
 		1D033A98257EF24000EE9301 /* PrimerSDK */ = {
 			isa = PBXGroup;
 			children = (
+				1D7F098025C22749009C1E63 /* Analytics */,
 				1D6C264A25B277D200409120 /* Extensions */,
 				1D6C264325B2771200409120 /* Helpers */,
 				1D6C255C25ACCD6E00409120 /* Localization */,
@@ -471,7 +468,6 @@
 				1D6C24BC25A7B92700409120 /* DirectCheckout */,
 				1D6C253825AB56FB00409120 /* ConfirmMandate */,
 				1D6C25A025AE751700409120 /* Error */,
-				1D6C253725AB56F300409120 /* IBANForm */,
 				1D6C24BF25A7B93700409120 /* OAuth */,
 				1D6C278B25B5D02000409120 /* SingleFieldForm */,
 				1D6C259925AE709B00409120 /* Success */,
@@ -488,7 +484,6 @@
 				1D8FA6D925B9B00F00BE9F69 /* ConfirmMandateViewModel.swift */,
 				1D6C236525A09B7D00409120 /* DirectCheckoutViewModel.swift */,
 				1D6C266C25B3830200409120 /* ExternalViewModel.swift */,
-				1D6C254325AB6E7C00409120 /* IBANFormViewModel.swift */,
 				1D6C234D259FFE6900409120 /* OAuthViewModel.swift */,
 				1D6C237125A0A4D000409120 /* VaultCheckoutViewModel.swift */,
 				1D6C236D25A0A06F00409120 /* VaultPaymentMethodViewModel.swift */,
@@ -674,15 +669,6 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
-		1D6C253725AB56F300409120 /* IBANForm */ = {
-			isa = PBXGroup;
-			children = (
-				1D6C253F25AB573300409120 /* IBANFormViewController.swift */,
-				1D6C254725AB6EA300409120 /* IBANFormView.swift */,
-			);
-			path = IBANForm;
-			sourceTree = "<group>";
-		};
 		1D6C253825AB56FB00409120 /* ConfirmMandate */ = {
 			isa = PBXGroup;
 			children = (
@@ -813,6 +799,14 @@
 				1D6C27A325B5FAA000409120 /* SingleFieldFormView.swift */,
 			);
 			path = SingleFieldForm;
+			sourceTree = "<group>";
+		};
+		1D7F098025C22749009C1E63 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				1D7F098125C22758009C1E63 /* AnalyticsService.swift */,
+			);
+			path = Analytics;
 			sourceTree = "<group>";
 		};
 		1D8FA6F025BD8EE600BE9F69 /* Form */ = {
@@ -1209,6 +1203,7 @@
 				1D52AE5B258EB26A000DBC25 /* DirectCheckoutView.swift in Sources */,
 				1D6C279725B5E94E00409120 /* DirectDebitMandate.swift in Sources */,
 				1D8FA6EB25BC9DFB00BE9F69 /* UITableViewCellExtensions.swift in Sources */,
+				1D7F098225C22758009C1E63 /* AnalyticsService.swift in Sources */,
 				1D033C87257F10EF00EE9301 /* CardFormView.swift in Sources */,
 				1D52AE63258EC861000DBC25 /* OAuthViewController.swift in Sources */,
 				1D52AE6A258F9222000DBC25 /* ApplePayViewController.swift in Sources */,
@@ -1229,7 +1224,6 @@
 				1D6C241425A1FCBE00409120 /* PaymentMethodConfig.swift in Sources */,
 				1D033C7D257F10EF00EE9301 /* Mask.swift in Sources */,
 				1D6C235E25A0958D00409120 /* ApplePayViewModel.swift in Sources */,
-				1D6C254025AB573300409120 /* IBANFormViewController.swift in Sources */,
 				1D6C242A25A25B2600409120 /* ViewModelLocator.swift in Sources */,
 				1D6C25A225AE752000409120 /* ErrorViewController.swift in Sources */,
 				1D033C8D257F758B00EE9301 /* Validation.swift in Sources */,
@@ -1249,9 +1243,7 @@
 				1D8FA6FA25BD8F5F00BE9F69 /* FormView.swift in Sources */,
 				1D033C84257F10EF00EE9301 /* VaultPaymentMethodViewController.swift in Sources */,
 				1D6C237A25A0DB4400409120 /* CardScannerViewModel.swift in Sources */,
-				1D6C254825AB6EA300409120 /* IBANFormView.swift in Sources */,
 				1D6C236E25A0A06F00409120 /* VaultPaymentMethodViewModel.swift in Sources */,
-				1D6C254425AB6E7C00409120 /* IBANFormViewModel.swift in Sources */,
 				1D6C245025A35E4A00409120 /* MultiCardIconComponent.swift in Sources */,
 				1D8FA6DE25BA4E5A00BE9F69 /* DirectDebitService.swift in Sources */,
 				1D033B5A257EF7D300EE9301 /* ClientToken.swift in Sources */,

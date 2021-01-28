@@ -26,7 +26,7 @@ extension UITextField {
     
     func toggleValidity(_ isValid: Bool, theme: PrimerTextFieldTheme) {
         if (isValid) {
-            self.textColor = .black
+            self.textColor = Primer.theme.colorTheme.text1
             self.addIcon()
         } else {
             textColor = .red
@@ -65,11 +65,9 @@ extension UITextField {
         lineView.bottomAnchor.constraint(equalTo: isTop ? topAnchor : bottomAnchor).isActive = true
     }
     
-    func addBorder(isFocused: Bool, title: String, cornerRadius: CGFloat, theme: PrimerTextFieldTheme) {
+    func addBorder(isFocused: Bool, title: String, cornerRadius: CGFloat, theme: PrimerTextFieldTheme, color: UIColor, backgroundColor: UIColor) {
         
         self.subviews.forEach { $0.removeFromSuperview() }
-        
-        let color = isFocused ? UIColor.systemBlue : UIColor(red: 225/255, green: 222/255, blue: 218/255, alpha: 1)
         
         switch theme {
         case .outlined:
@@ -82,7 +80,7 @@ extension UITextField {
         }
         
         if (isFocused && theme != .doublelined) {
-            addFocusedTheme(title, theme: theme)
+            addFocusedTheme(title, theme: theme, textColor: color, backgroundColor: backgroundColor)
         }
         
     }
@@ -116,12 +114,12 @@ extension UITextField {
         titleView.topAnchor.constraint(equalTo: self.topAnchor, constant: -12).isActive = true
     }
     
-    private func addFocusedTheme(_ text: String, theme: PrimerTextFieldTheme) {
+    private func addFocusedTheme(_ text: String, theme: PrimerTextFieldTheme, textColor: UIColor, backgroundColor: UIColor) {
         let titleView = UILabel()
         titleView.text = text
-        titleView.textColor = .systemBlue
+        titleView.textColor = textColor
         titleView.font = .systemFont(ofSize: 10, weight: .light)
-        titleView.backgroundColor = .white
+        titleView.backgroundColor = backgroundColor
         titleView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(titleView)
         titleView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: theme == .outlined ? 10 : 0).isActive = true
