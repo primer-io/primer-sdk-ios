@@ -28,6 +28,7 @@ class ConfirmMandateViewController: UIViewController {
     override func viewDidLoad() {
         view.addSubview(subView)
         subView.delegate = self
+        subView.dataSource = self
         subView.pin(to: view)
         subView.render(isBusy: true)
         viewModel.loadConfig({ [weak self] error in
@@ -53,6 +54,7 @@ extension ConfirmMandateViewController: UITableViewDelegate, UITableViewDataSour
         cell.addTitle(formTypes[indexPath.row].title)
         cell.addContent(formTypes[indexPath.row].content(viewModel.mandate))
         cell.accessoryType = .disclosureIndicator
+        cell.backgroundColor = Primer.theme.colorTheme.main1
         return cell
     }
     
@@ -76,9 +78,19 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
         viewModel.confirmMandateAndTokenize({ [weak self] error in
             DispatchQueue.main.async {
                 if (error.exists) { self?.router?.show(.error); return }
-                self?.router?.show(.success)
+                self?.router?.show(.success(type: .directDebit))
             }
         })
+    }
+}
+
+extension ConfirmMandateViewController: ConfirmMandateViewDataSource {
+    var businessDetails: BusinessDetails? {
+        return viewModel.businessDetails
+    }
+    
+    var amount: String {
+        return viewModel.amount
     }
 }
 

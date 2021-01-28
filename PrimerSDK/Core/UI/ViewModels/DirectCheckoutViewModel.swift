@@ -45,7 +45,7 @@ struct PaymentMethodViewModel {
     func toString() -> String {
         print("🦋 payment option:", self.type)
         switch type {
-        case .PAYMENT_CARD: return "Add a new card".localized()
+        case .PAYMENT_CARD: return Primer.flow.vaulted ? "Add a new card".localized() : "Pay with card".localized()
         case .APPLE_PAY: return "Pay"
         case .PAYPAL: return ""
         case .GOCARDLESS_MANDATE: return "Bank account"
@@ -58,7 +58,7 @@ struct PaymentMethodViewModel {
         switch type {
         case .APPLE_PAY: return ImageName.appleIcon
         case .PAYPAL: return  ImageName.paypal3
-        case .GOCARDLESS_MANDATE: return ImageName.forwardDark
+        case .GOCARDLESS_MANDATE: return ImageName.rightArrow
         default: return  ImageName.creditCard
         }
     }

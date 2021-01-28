@@ -1,4 +1,5 @@
 class ViewModelLocator: ViewModelLocatorProtocol {
+    
     let context: CheckoutContext
     
     init(context: CheckoutContext) {
@@ -12,7 +13,6 @@ class ViewModelLocator: ViewModelLocatorProtocol {
     lazy var oAuthViewModel: OAuthViewModelProtocol = OAuthViewModel(context: context)
     lazy var vaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel(context: context)
     lazy var vaultCheckoutViewModel: VaultCheckoutViewModelProtocol = VaultCheckoutViewModel(context: context)
-    lazy var ibanFormViewModel: IBANFormViewModelProtocol = IBANFormViewModel(context: context)
     lazy var confirmMandateViewModel: ConfirmMandateViewModelProtocol = ConfirmMandateViewModel(context: context)
     lazy var externalViewModel: ExternalViewModelProtocol = ExternalViewModel(context: context)
 }
@@ -25,7 +25,6 @@ protocol ViewModelLocatorProtocol {
     var oAuthViewModel: OAuthViewModelProtocol { get }
     var vaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol { get }
     var vaultCheckoutViewModel: VaultCheckoutViewModelProtocol { get }
-    var ibanFormViewModel: IBANFormViewModelProtocol { get }
     var confirmMandateViewModel: ConfirmMandateViewModelProtocol { get }
     var externalViewModel: ExternalViewModelProtocol { get }
 }

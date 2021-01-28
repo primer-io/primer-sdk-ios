@@ -50,16 +50,16 @@ class VaultPaymentMethodView: UIView, ReactiveView {
 extension VaultPaymentMethodView {
     private func configureNavBar() {
         guard let theme = delegate?.theme else { return }
-        navBar.backgroundColor = theme.backgroundColor
+        navBar.backgroundColor = Primer.theme.colorTheme.main1
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem()
         backItem.action = #selector(cancel)
         let backBtnImage = ImageName.back.image
-        backItem.tintColor = .systemBlue
+        backItem.tintColor = Primer.theme.colorTheme.tint1
         backItem.image = backBtnImage
         let editItem = UIBarButtonItem()
         editItem.title = theme.content.vaultPaymentMethodView.editButtonText
-        editItem.tintColor = .systemBlue
+        editItem.tintColor = Primer.theme.colorTheme.tint1
         editItem.action = #selector(edit)
         navItem.leftBarButtonItem = backItem
         navItem.rightBarButtonItem = editItem
@@ -73,11 +73,10 @@ extension VaultPaymentMethodView {
     @objc private func edit() { delegate?.edit() }
     
     private func configureTableView() {
-        guard let theme = delegate?.theme else { return }
         tableView.delegate = delegate
         tableView.dataSource = delegate
         tableView.layer.cornerRadius = 8.0
-        tableView.backgroundColor = theme.backgroundColor
+        tableView.backgroundColor = Primer.theme.colorTheme.main1
         tableView.rowHeight = 64
         tableView.tableFooterView = UIView()
         tableView.alwaysBounceVertical = false
@@ -88,8 +87,8 @@ extension VaultPaymentMethodView {
     private func configureAddButton() {
         guard let theme = delegate?.theme else { return }
         addButton.setTitle(theme.content.vaultPaymentMethodView.addButtonText, for: .normal)
-        addButton.setTitleColor(.systemBlue, for: .normal)
-        addButton.setTitleColor(.lightGray, for: .highlighted)
+        addButton.setTitleColor(Primer.theme.colorTheme.tint1, for: .normal)
+        addButton.setTitleColor(Primer.theme.colorTheme.disabled1, for: .highlighted)
         addButton.contentHorizontalAlignment = .left
         addButton.addTarget(self, action: #selector(showCardForm), for: .touchUpInside)
     }
@@ -98,9 +97,9 @@ extension VaultPaymentMethodView {
     
     private func configurePayPalButton() {
         payPalButton.setTitle("PayPal", for: .normal)
-        payPalButton.setTitleColor(.blue, for: .normal)
-        payPalButton.setTitleColor(.lightGray, for: .highlighted)
-        payPalButton.backgroundColor = .orange
+        payPalButton.setTitleColor(Primer.theme.colorTheme.text1, for: .normal)
+        payPalButton.setTitleColor(Primer.theme.colorTheme.disabled1, for: .highlighted)
+        payPalButton.backgroundColor = Primer.theme.colorTheme.main2
         payPalButton.addTarget(self, action: #selector(showPayPal), for: .touchUpInside)
     }
     
@@ -118,7 +117,7 @@ extension VaultPaymentMethodView {
     private func setBackButtonContraints() {
         backButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.topAnchor.constraint(equalTo: topAnchor, constant: 24).isActive = true
-        backButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24).isActive = true
+        backButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
         backButton.heightAnchor.constraint(equalToConstant: 24).isActive = true
     }
     
@@ -132,8 +131,8 @@ extension VaultPaymentMethodView {
     private func setEditButtonConstraints() {
         editButton.translatesAutoresizingMaskIntoConstraints = false
         editButton.topAnchor.constraint(equalTo: topAnchor, constant: 24).isActive = true
-        editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24).isActive = true
-        editButton.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
+        editButton.heightAnchor.constraint(equalToConstant: Primer.theme.layout.safeMargin).isActive = true
         editButton.widthAnchor.constraint(equalToConstant: editButton.intrinsicContentSize.width).isActive = true
     }
     
@@ -148,14 +147,14 @@ extension VaultPaymentMethodView {
     private func anchorAddButton() {
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -18).isActive = true
-        addButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18).isActive = true
-        addButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18).isActive = true
+        addButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
+        addButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
     }
     
     private func anchorPayPalButton() {
         payPalButton.translatesAutoresizingMaskIntoConstraints = false
         payPalButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -18).isActive = true
-        payPalButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18).isActive = true
+        payPalButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
         payPalButton.widthAnchor.constraint(equalToConstant: payPalButton.intrinsicContentSize.width).isActive = true
         payPalButton.heightAnchor.constraint(equalToConstant: payPalButton.intrinsicContentSize.height).isActive = true
     }

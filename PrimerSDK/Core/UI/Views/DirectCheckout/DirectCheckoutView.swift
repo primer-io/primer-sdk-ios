@@ -41,7 +41,7 @@ class DirectCheckoutView: UIView {
         let doneItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancel))
         doneItem.tintColor = .blue
         let title = UILabel()
-        title.textColor = theme.fontColorTheme.total
+        title.textColor = theme.colorTheme.text1
         title.font = .boldSystemFont(ofSize: 32.0)
         title.text = amount
         let moneyItem = UIBarButtonItem(customView: title)

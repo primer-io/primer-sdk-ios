@@ -34,13 +34,13 @@ extension DirectCheckoutViewController: UITableViewDelegate, UITableViewDataSour
         let cell = UITableViewCell(style: .default, reuseIdentifier: "cell5")
         
         let method = viewModel.paymentMethods[indexPath.section]
-        let methodView = PaymentMethodComponent.init(frame: view.frame, method: method, theme: viewModel.theme)
+        let methodView = PaymentMethodComponent.init(frame: view.frame, method: method)
     
         cell.layer.cornerRadius = 12.0
         cell.contentView.addSubview(methodView)
         methodView.pin(to: cell.contentView)
         cell.frame = cell.frame.inset(by: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
-        cell.backgroundColor = .white
+        cell.backgroundColor = viewModel.theme.colorTheme.main2
         cell.separatorInset = UIEdgeInsets.zero
         
         return cell

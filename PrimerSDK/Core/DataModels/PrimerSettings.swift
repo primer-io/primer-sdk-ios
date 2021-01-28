@@ -15,6 +15,9 @@ protocol PrimerSettingsProtocol {
     var onCheckoutDismiss: CheckoutDismissalCallback { get }
     var urlScheme: String { get }
     var urlSchemeIdentifier: String { get }
+    var isFullScreenOnly: Bool { get }
+    var hasDisabledSuccessScreen: Bool { get }
+    var businessDetails: BusinessDetails? { get }
 }
 
 public class PrimerSettings: PrimerSettingsProtocol {
@@ -27,6 +30,9 @@ public class PrimerSettings: PrimerSettingsProtocol {
     public let theme: PrimerTheme
     public let urlScheme: String
     public let urlSchemeIdentifier: String
+    public let isFullScreenOnly: Bool
+    public let hasDisabledSuccessScreen: Bool
+    public let businessDetails: BusinessDetails?
     
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return delegate?.clientTokenCallback ?? { completion in }
@@ -52,7 +58,10 @@ public class PrimerSettings: PrimerSettingsProtocol {
         merchantIdentifier: String? = nil,
         countryCode: CountryCode? = nil,
         urlScheme: String,
-        urlSchemeIdentifier: String
+        urlSchemeIdentifier: String,
+        isFullScreenOnly: Bool = false,
+        hasDisabledSuccessScreen: Bool = false,
+        businessDetails: BusinessDetails? = nil
     ) {
         self.amount = amount
         self.currency = currency
@@ -64,5 +73,18 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.urlScheme = urlScheme
         self.urlSchemeIdentifier = urlSchemeIdentifier
         self.delegate = delegate
+        self.isFullScreenOnly = isFullScreenOnly
+        self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
+        self.businessDetails = businessDetails
+    }
+}
+
+public struct BusinessDetails {
+    public var name: String
+    public var address: Address
+    
+    public init(name: String, address: Address) {
+        self.name = name
+        self.address = address
     }
 }

@@ -9,7 +9,6 @@ import UIKit
 
 protocol FormViewDelegate: class, UITextFieldDelegate {
     var formType: FormType { get }
-    var theme: PrimerTheme { get }
     var validatedFields: [Bool] { get set }
     func back()
     func openLink()
@@ -52,7 +51,7 @@ class FormView: UIView {
         
         configureNavbar()
         configureTitle()
-        configureLink()
+//        configureLink()
         configureButton()
         
         anchorNavbar()
@@ -90,7 +89,7 @@ extension FormView {
         guard let delegate = delegate else { return }
         
         // set background color
-        navBar.backgroundColor = delegate.theme.backgroundColor
+        navBar.backgroundColor = Primer.theme.colorTheme.main1
         
         // define navigation item
         let navItem = UINavigationItem()
@@ -99,7 +98,7 @@ extension FormView {
         let backItem = UIBarButtonItem()
         backItem.action = #selector(back)
         let backBtnImage = ImageName.back.image
-        backItem.tintColor = delegate.theme.fontColorTheme.title
+        backItem.tintColor = Primer.theme.colorTheme.text1
         backItem.image = backBtnImage
         navItem.leftBarButtonItem = backItem
         
@@ -111,7 +110,7 @@ extension FormView {
         navBar.setItems([navItem], animated: false)
         
         // add top title if theme toggled true
-        if (delegate.theme.layout.showTopTitle) {
+        if (Primer.theme.layout.showTopTitle) {
             navBar.topItem?.title = delegate.formType.topTitle
         }
     }
@@ -122,7 +121,7 @@ extension FormView {
     
     private func configureTitle() {
         guard let delegate = delegate else { return }
-        if (delegate.theme.layout.showMainTitle) {
+        if (Primer.theme.layout.showMainTitle) {
             title.text = delegate.formType.mainTitle
         }
         title.textAlignment = .center
@@ -153,7 +152,8 @@ extension FormView {
         textField.addTarget(self, action: #selector(onTextFieldEditingDidEnd), for: .editingDidEnd)
         textField.addTarget(self, action: #selector(onTextFieldEditingChanged), for: .editingChanged)
         textField.addTarget(self, action: #selector(onTextFieldEditingDidBegin), for: .editingDidBegin)
-        textField.addBorder(isFocused: false, title: "", cornerRadius: 4, theme: delegate.theme.textFieldTheme)
+        textField.addBorder(isFocused: false, title: "", cornerRadius: 4, theme: Primer.theme.textFieldTheme, color: Primer.theme.colorTheme.text3,
+                            backgroundColor: Primer.theme.colorTheme.main1)
         textField.delegate = delegate
         anchorTextField(textField)
     }
@@ -161,7 +161,8 @@ extension FormView {
     @objc private func onTextFieldEditingDidBegin(_ sender: UITextField) {
         guard let delegate = delegate else { return }
         let title = delegate.formType.textFields[sender.tag].title
-        sender.addBorder(isFocused: true, title: title, cornerRadius: 4, theme: delegate.theme.textFieldTheme)
+        sender.addBorder(isFocused: true, title: title, cornerRadius: 4, theme: Primer.theme.textFieldTheme, color: Primer.theme.colorTheme.text3,
+                         backgroundColor: Primer.theme.colorTheme.main1)
         sender.layoutIfNeeded()
     }
     
@@ -180,21 +181,21 @@ extension FormView {
         guard let delegate = delegate else { return }
         guard let text = sender.text?.withoutWhiteSpace else { return }
         delegate.validatedFields[sender.tag] = delegate.formType.textFields[sender.tag].validate(text)
-        sender.toggleValidity(delegate.validatedFields[sender.tag], theme: delegate.theme.textFieldTheme)
+        sender.toggleValidity(delegate.validatedFields[sender.tag], theme: Primer.theme.textFieldTheme)
         guard let mask = delegate.formType.textFields[sender.tag].mask else { return }
         sender.text = mask.apply(on: text.uppercased())
     }
     
     private func validateForm() {
         let isAllValid = delegate?.validatedFields.allSatisfy({ $0 == true }) ?? false
-        button.toggleValidity(isAllValid, validColor: .systemBlue)
+        button.toggleValidity(isAllValid, validColor: Primer.theme.colorTheme.tint1)
     }
     
     private func configureLink() {
         guard let delegate = delegate else { return }
         link.text = delegate.formType.subtitle
         link.font = .systemFont(ofSize: 15)
-        link.textColor = .systemBlue
+        link.textColor = Primer.theme.colorTheme.tint1
         link.textAlignment = .center
         let tapRecogniser = UITapGestureRecognizer(target: self, action: #selector(onLinkTap))
         link.isUserInteractionEnabled = true
@@ -206,9 +207,8 @@ extension FormView {
     }
     
     private func configureButton() {
-        guard let delegate = delegate else { return }
         button.setTitle("Next", for: .normal)
-        button.layer.cornerRadius = delegate.theme.cornerRadiusTheme.buttons
+        button.layer.cornerRadius = Primer.theme.cornerRadiusTheme.buttons
         button.addTarget(self, action: #selector(onButtonPressed), for: .touchUpInside)
     }
     
@@ -231,8 +231,8 @@ extension FormView {
     
     func anchorTitle() {
         title.translatesAutoresizingMaskIntoConstraints = false
-        title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18).isActive = true
-        title.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18).isActive = true
+        title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
+        title.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
         title.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 12).isActive = true
     }
     
@@ -244,23 +244,23 @@ extension FormView {
             textField.topAnchor.constraint(equalTo: textFields[textField.tag - 1].bottomAnchor, constant: 12)
         
         topAnchor.isActive = true
-        textField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18).isActive = true
-        textField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18).isActive = true
+        textField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
+        textField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
         textField.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
     }
     
     func anchorLink() {
         link.translatesAutoresizingMaskIntoConstraints = false
-        link.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18).isActive = true
-        link.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18).isActive = true
+        link.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
+        link.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
         guard let textField = textFields.last else { return }
         link.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 24).isActive = true
     }
     
     func anchorButton() {
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
-        button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16).isActive = true
+        button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
+        button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
         button.heightAnchor.constraint(equalToConstant: 50).isActive = true
         button.topAnchor.constraint(equalTo: link.bottomAnchor, constant: 18).isActive = true
     }

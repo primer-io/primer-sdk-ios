@@ -7,6 +7,8 @@ class VaultCheckoutViewController: UIViewController {
     
     var tokenSelectedForPayment: PaymentMethodToken?
     
+//    @Dependency private(set) var analytics: AnalyticsServiceProtocol
+    
     private var viewModel: VaultCheckoutViewModelProtocol
     private let loadingIndicator = UIActivityIndicatorView()
     private let transitionDelegate = TransitionDelegate()
@@ -25,6 +27,9 @@ class VaultCheckoutViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+//        analytics.trackEvent(of: .STARTED_CHECKOUT)
+        
         view.addSubview(subView)
         subView.delegate = self
         subView.dataSource = self
@@ -46,8 +51,9 @@ extension VaultCheckoutViewController: VaultCheckoutViewDataSource {
             return paymentMethod.token == viewModel.selectedPaymentMethodId
         })
     }
+    
     var amount: String? {
-        return "£99"
+        return viewModel.amountStringed
     }
 }
 
@@ -70,7 +76,7 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
     // Make the background color show through
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView()
-        headerView.backgroundColor = UIColor.clear
+        headerView.backgroundColor = UIColor.clear //transparent
         return headerView
     }
     
@@ -78,13 +84,13 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
         let cell = UITableViewCell(style: .default, reuseIdentifier: "cell5")
         
         let option = viewModel.availablePaymentOptions[indexPath.section]
-        let methodView = PaymentMethodComponent(frame: view.frame, method: option, theme: viewModel.theme)
+        let methodView = PaymentMethodComponent(frame: view.frame, method: option)
     
         cell.layer.cornerRadius = 12.0
         cell.contentView.addSubview(methodView)
         methodView.pin(to: cell.contentView)
         cell.frame = cell.frame.inset(by: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
-        cell.backgroundColor = .white
+        cell.backgroundColor = Primer.theme.colorTheme.main1
         cell.separatorInset = UIEdgeInsets.zero
         
         return cell
@@ -111,10 +117,6 @@ extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
         router?.show(.vaultPaymentMethods(delegate: self))
     }
     
-    var theme: PrimerTheme {
-        return viewModel.theme
-    }
-    
     func cancel() {
         router?.pop()
     }
@@ -130,7 +132,7 @@ extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
                     self?.router?.show(.error)
                     return
                 }
-                self?.router?.show(.success)
+                self?.router?.show(.success(type: .regular))
             }
         })
     }

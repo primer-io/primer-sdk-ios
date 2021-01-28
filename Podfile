@@ -7,6 +7,7 @@ target 'PrimerSDK' do
 
   # Pods for PrimerSDK
   pod 'CardScan'
+  pod 'Mixpanel-swift'
 
   target 'PrimerSDKTests' do
     # Pods for testing

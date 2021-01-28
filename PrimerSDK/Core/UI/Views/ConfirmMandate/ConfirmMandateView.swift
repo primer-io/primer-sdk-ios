@@ -12,6 +12,11 @@ protocol ConfirmMandateViewDelegate: class, UITableViewDelegate, UITableViewData
     func confirm()
 }
 
+protocol ConfirmMandateViewDataSource: class {
+    var businessDetails: BusinessDetails? { get }
+    var amount: String { get }
+}
+
 class ConfirmMandateView: UIView {
     internal let indicator = UIActivityIndicatorView()
     private let navBar = UINavigationBar()
@@ -23,6 +28,7 @@ class ConfirmMandateView: UIView {
     private let confirmButton = UIButton()
     
     weak var delegate: ConfirmMandateViewDelegate?
+    weak var dataSource: ConfirmMandateViewDataSource?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -80,77 +86,84 @@ extension ConfirmMandateView {
     func addTitle() {
         title.text = "Confirm SEPA Direct Debit"
         title.font = .systemFont(ofSize: 20, weight: .regular)
+        title.textAlignment = .center
         title.translatesAutoresizingMaskIntoConstraints = false
         title.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         title.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 12).isActive = true
+        title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
+        title.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
     }
     
     func addTableView() {
-        tableView.backgroundColor = .white
+//        tableView.backgroundColor = delegate.theme.colorTheme.main1
         tableView.delegate = delegate
         tableView.dataSource = delegate
         tableView.rowHeight = 56
+        tableView.backgroundColor = Primer.theme.colorTheme.main1
         tableView.alwaysBounceVertical = false
         tableView.tableFooterView = UIView()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell5")
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 24).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
         tableView.heightAnchor.constraint(equalToConstant: 56 * 4).isActive = true
         tableView.reloadData()
     }
     
     func addCompanyLabel() {
-        companyLabel.text = "Company name Assurance, 91 Rue du Faubourg \nSaint-Honoré, 75008 Paris, France"
+        guard let business = dataSource?.businessDetails else { return }
+        companyLabel.text = business.name + ", " + business.address.toString()
         companyLabel.numberOfLines = 0
         companyLabel.font = .systemFont(ofSize: 13)
-        companyLabel.textColor = .gray
+        companyLabel.textColor = Primer.theme.colorTheme.disabled1
         companyLabel.translatesAutoresizingMaskIntoConstraints = false
         companyLabel.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 24).isActive = true
-        companyLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
+        companyLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
     }
     
     func addLegalLabel() {
-        legalLabel.text = "By signing this mandate form, you authorise (C) Company Name  to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from Company Name."
+        guard let business = dataSource?.businessDetails else { return }
+        legalLabel.text = "By signing this mandate form, you authorise (C) \(business.name) to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from \(business.name)."
         legalLabel.numberOfLines = 0
         legalLabel.font = .systemFont(ofSize: 10)
-        legalLabel.textColor = .gray
+        legalLabel.textColor = Primer.theme.colorTheme.disabled1
         legalLabel.translatesAutoresizingMaskIntoConstraints = false
         legalLabel.topAnchor.constraint(equalTo: companyLabel.bottomAnchor, constant: 8).isActive = true
-        legalLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
-        legalLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16).isActive = true
+        legalLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
+        legalLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
     }
     
     func addAmountLabel() {
-        amountLabel.text = "£20"
+        guard let amount = dataSource?.amount else { return }
+        amountLabel.text = amount
         amountLabel.font = .boldSystemFont(ofSize: 32)
-        amountLabel.textColor = .black
+        amountLabel.textColor = Primer.theme.colorTheme.text1
         amountLabel.textAlignment = .center
         amountLabel.translatesAutoresizingMaskIntoConstraints = false
         amountLabel.topAnchor.constraint(equalTo: legalLabel.bottomAnchor, constant: 12).isActive = true
-        amountLabel.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        amountLabel.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        amountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
+        amountLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
     }
     
     func addConfirmButton() {
         confirmButton.setTitle("Confirm", for: .normal)
-        confirmButton.setTitleColor(.white, for: .normal)
+        confirmButton.setTitleColor(Primer.theme.colorTheme.text2, for: .normal)
         confirmButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-        confirmButton.backgroundColor = .systemBlue
+        confirmButton.backgroundColor = Primer.theme.colorTheme.tint1
         confirmButton.layer.cornerRadius = 8
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
         confirmButton.topAnchor.constraint(equalTo: amountLabel.bottomAnchor, constant: 18).isActive = true
         confirmButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        confirmButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
-        confirmButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16).isActive = true
+        confirmButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
+        confirmButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
         confirmButton.addTarget(self, action: #selector(onConfirm), for: .touchUpInside)
     }
     
     @objc private func onConfirm() {
         confirmButton.setTitle("", for: .normal)
         confirmButton.addSubview(indicator)
-        indicator.color = .white
+        indicator.color = Primer.theme.colorTheme.disabled1
         indicator.pin(to: confirmButton)
         indicator.startAnimating()
         delegate?.confirm()
