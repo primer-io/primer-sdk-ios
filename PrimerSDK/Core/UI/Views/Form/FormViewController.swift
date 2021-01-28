@@ -46,9 +46,6 @@ extension FormViewController: UITextFieldDelegate {
 }
 
 extension FormViewController: FormViewDelegate {
-    var theme: PrimerTheme {
-        return viewModel.theme
-    }
     
     func back() {
         router?.pop()
@@ -56,8 +53,8 @@ extension FormViewController: FormViewDelegate {
     
     func openLink() {
         switch formType {
-        case .iban: router?.popAndShow(.form(type: .bankAccount(mandate: viewModel.mandate)))
-        case .bankAccount: router?.popAndShow(.form(type: .iban(mandate: viewModel.mandate)))
+//        case .iban: router?.popAndShow(.form(type: .bankAccount(mandate: viewModel.mandate)))
+//        case .bankAccount: router?.popAndShow(.form(type: .iban(mandate: viewModel.mandate)))
         default: break
         }
     }
@@ -82,7 +79,6 @@ extension FormViewController: FormViewDelegate {
 }
 
 protocol FormViewModelProtocol {
-    var theme: PrimerTheme { get }
     var formType: FormType { get }
     var popOnComplete: Bool { get }
     var mandate: DirectDebitMandate { get }
@@ -90,8 +86,9 @@ protocol FormViewModelProtocol {
 }
 
 class FormViewModel: FormViewModelProtocol {
-    var theme: PrimerTheme
+    
     var formType: FormType
+    
     var popOnComplete: Bool {
         return formType.popOnComplete
     }
@@ -102,7 +99,6 @@ class FormViewModel: FormViewModelProtocol {
     private var state: AppStateProtocol
     
     init(context: CheckoutContextProtocol, formType: FormType) {
-        self.theme = context.settings.theme
         self.formType = formType
         self.state = context.state
     }

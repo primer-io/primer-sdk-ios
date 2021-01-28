@@ -24,8 +24,8 @@ class OAuthViewController: UIViewController {
     deinit { print("🧨 destroy:", self.self) }
     
     override func viewDidLoad() {
-        view.backgroundColor = .white
         view.addSubview(indicator)
+        indicator.color = Primer.theme.colorTheme.disabled1
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -98,7 +98,7 @@ class OAuthViewController: UIViewController {
     private func onOAuthCompleted(callbackURL: URL?) {
         viewModel.tokenize(with: { [weak self] error in
             DispatchQueue.main.async {
-                error.exists ? self?.router?.show(.error) : self?.router?.show(.success)
+                error.exists ? self?.router?.show(.error) : self?.router?.show(.success(type: .regular))
             }
         })
     }

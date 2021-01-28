@@ -13,10 +13,7 @@ class ScannerView: UIView {
     weak var scannerView: UIView?
     weak var delegate: ScannerViewDelegate?
     
-    let theme: PrimerTheme
-    
-    init(frame: CGRect, theme: PrimerTheme, delegate: ScannerViewDelegate?, simpleScanView: UIView) {
-        self.theme = theme
+    init(frame: CGRect, delegate: ScannerViewDelegate?, simpleScanView: UIView) {
         self.delegate = delegate
         self.scannerView = simpleScanView
         
@@ -47,27 +44,27 @@ class ScannerView: UIView {
 
 extension ScannerView {
     private func configureNavBar() {
-        navBar.backgroundColor = theme.backgroundColor
+        navBar.backgroundColor = Primer.theme.colorTheme.main1
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
         navItem.leftBarButtonItem = backItem
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
-        navBar.topItem?.title = theme.content.scannerView.titleText
+        navBar.topItem?.title = Primer.theme.content.scannerView.titleText
     }
     @objc private func cancel() { delegate?.cancel() }
     private func configureDescriptionLabel() {
-        descriptionLabel.text = theme.content.scannerView.descriptionText
-        descriptionLabel.textColor = UIColor(red: 128/255, green: 128/255, blue: 128/255, alpha: 1)
+        descriptionLabel.text = Primer.theme.content.scannerView.descriptionText
+        descriptionLabel.textColor = Primer.theme.colorTheme.text1
     }
     private func configureScannerView() {
         scannerView?.clipsToBounds = true
-        scannerView?.layer.cornerRadius = theme.cornerRadiusTheme.buttons //⚠️
+        scannerView?.layer.cornerRadius = Primer.theme.cornerRadiusTheme.buttons //⚠️
     }
     private func configureSkipButton() {
-        skipButton.setTitle(theme.content.scannerView.skipButtonText, for: .normal)
-        skipButton.setTitleColor(.systemBlue, for: .normal)
+        skipButton.setTitle(Primer.theme.content.scannerView.skipButtonText, for: .normal)
+        skipButton.setTitleColor(Primer.theme.colorTheme.text3, for: .normal)
         skipButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
     }
 }
@@ -83,14 +80,14 @@ extension ScannerView {
     private func anchorDescriptionLabel() {
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 18).isActive = true
-        descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18).isActive = true
-        descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18).isActive = true
+        descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
+        descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
     }
     private func setScannerViewConstraints() {
         scannerView?.translatesAutoresizingMaskIntoConstraints = false
         scannerView?.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         scannerView?.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20).isActive = true
-        scannerView?.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.9, constant: 1).isActive = true
+        scannerView?.widthAnchor.constraint(equalTo: widthAnchor, constant: -(Primer.theme.layout.safeMargin * 2)).isActive = true
         scannerView?.heightAnchor.constraint(equalTo: widthAnchor, multiplier: 0.6, constant: 1).isActive = true
     }
     private func setSkipButtonConstraints() {

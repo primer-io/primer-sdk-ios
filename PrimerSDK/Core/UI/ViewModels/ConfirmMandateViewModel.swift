@@ -8,6 +8,8 @@
 protocol ConfirmMandateViewModelProtocol {
     var mandate: DirectDebitMandate { get }
     var formCompleted: Bool { get set }
+    var businessDetails: BusinessDetails? { get }
+    var amount: String { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
     func confirmMandateAndTokenize(_ completion: @escaping (Error?) -> Void)
 }
@@ -20,6 +22,14 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
     var formCompleted: Bool {
         get { return state.directDebitFormCompleted }
         set { state.directDebitFormCompleted = newValue }
+    }
+    
+    var businessDetails: BusinessDetails? {
+        return state.settings.businessDetails
+    }
+    
+    var amount: String {
+        return state.settings.amount.toCurrencyString(currency: state.settings.currency)
     }
     
     private let state: AppStateProtocol

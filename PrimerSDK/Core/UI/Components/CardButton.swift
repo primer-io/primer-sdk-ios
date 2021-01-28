@@ -17,6 +17,7 @@ class CardButton: UIButton {
     private var checkView = UIImageView()
     
     private weak var widthConstraint: NSLayoutConstraint?
+    private weak var trailingConstraint: NSLayoutConstraint?
     
     func render(model: CardButtonViewModel?) {
         guard let model = model else { return }
@@ -42,8 +43,9 @@ class CardButton: UIButton {
     }
     
     func toggleBorder(isSelected: Bool, isError: Bool = false) {
-        if (isError) { return border.layer.borderColor = UIColor.systemRed.cgColor }
-        border.layer.borderColor = isSelected ? UIColor.systemBlue.cgColor : UIColor.black.cgColor
+        if (isError) { return border.layer.borderColor = Primer.theme.colorTheme.error1.cgColor }
+        border.layer.borderWidth = isSelected ? 1.5 : 1
+        border.layer.borderColor = isSelected ? Primer.theme.colorTheme.tint1.cgColor : Primer.theme.colorTheme.disabled1.cgColor
     }
     
     private func addCardIcon(image: UIImage?) {
@@ -97,7 +99,7 @@ class CardButton: UIButton {
     
     private func addBorder() {
         border = UIView()
-        border.layer.borderColor = UIColor.black.cgColor
+        border.layer.borderColor = Primer.theme.colorTheme.disabled1.cgColor
         border.layer.borderWidth = 1
         border.layer.cornerRadius = 4
         addSubview(border)
@@ -110,8 +112,9 @@ class CardButton: UIButton {
         checkView = UIImageView(image: ImageName.check2.image)
         addSubview(checkView)
         checkView.translatesAutoresizingMaskIntoConstraints = false
-        checkView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
         checkView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        trailingConstraint = checkView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10)
+        trailingConstraint?.isActive = true
         widthConstraint = checkView.widthAnchor.constraint(equalToConstant: 20)
         widthConstraint?.isActive = true
         checkView.heightAnchor.constraint(equalTo: checkView.widthAnchor).isActive = true
@@ -125,6 +128,7 @@ class CardButton: UIButton {
     }
     
     func toggleIcon(isEnabled: Bool) {
+        trailingConstraint?.constant = isEnabled ? 0 : -10
         widthConstraint?.constant = isEnabled ? 0 : 12
     }
 }

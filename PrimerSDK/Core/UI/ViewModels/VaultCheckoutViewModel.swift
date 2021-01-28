@@ -4,6 +4,7 @@ protocol VaultCheckoutViewModelProtocol {
     var availablePaymentOptions: [PaymentMethodViewModel] { get }
     var selectedPaymentMethodId: String { get }
     var theme: PrimerTheme { get }
+    var amountStringed: String { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
     func authorizePayment(_ completion: @escaping (Error?) -> Void)
 }
@@ -15,6 +16,10 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     
     var availablePaymentOptions: [PaymentMethodViewModel] {
         return state.viewModels
+    }
+    
+    var amountStringed: String {
+        return state.settings.amount.toCurrencyString(currency: state.settings.currency)
     }
     
     var theme: PrimerTheme { return state.settings.theme }
@@ -55,4 +60,16 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         self.state.settings.onTokenizeSuccess(selectedToken, completion)
     }
     
+}
+
+extension Int {
+    func toCurrencyString(currency: Currency) -> String {
+        switch currency {
+        case .USD: return String(format: "$%.2f", Float(self) / 100)
+        case .EUR: return String(format: "€%.2f", Float(self) / 100)
+        case .GBP: return String(format: "£%.2f", Float(self) / 100)
+        default:
+            return "\(self) \(currency.rawValue)"
+        }
+    }
 }

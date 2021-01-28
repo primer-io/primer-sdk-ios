@@ -56,20 +56,28 @@ class RootViewController: UIViewController {
         mainView.clipsToBounds = true
         mainView.layer.cornerRadius = 10
         mainView.layer.maskedCorners = [.layerMinXMinYCorner,.layerMaxXMinYCorner]
-        mainView.backgroundColor = .white
+        mainView.backgroundColor = context.settings.theme.colorTheme.main1
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         bottomConstraint = mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomConstraint?.isActive = true
-        heightConstraint = mainView.heightAnchor.constraint(equalToConstant: 400)
+        if (context.settings.isFullScreenOnly) {
+            heightConstraint = mainView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height - 40)
+        } else {
+            heightConstraint = mainView.heightAnchor.constraint(equalToConstant: 400)
+        }
         heightConstraint?.isActive = true
         mainView.layer.cornerRadius = 12
         
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
-        mainView.addGestureRecognizer(panGesture)
+        if (context.settings.isFullScreenOnly) {
+            
+        } else {
+            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
+            mainView.addGestureRecognizer(panGesture)
+        }
         
         switch Primer.flow {
-        case .completeDirectCheckout: show(.directCheckout)
+        case .completeDirectCheckout: show(.vaultCheckout)
         case .completeVaultCheckout: show(.vaultCheckout)
         case .addCardToVault: show(.cardForm)
         case .addPayPalToVault: show(.oAuth)
