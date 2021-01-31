@@ -13,19 +13,19 @@ class VaultService: VaultServiceProtocol {
     init(state: AppStateProtocol) { self.state = state }
     
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
-        print("🦄")
+        
         guard let clientToken = state.decodedClientToken else {
             return completion(PrimerError.VaultFetchFailed)
         }
-        print("🦄🦄")
+        
         guard let pciURL = clientToken.pciUrl else {
             return completion(PrimerError.VaultFetchFailed)
         }
-        print("🦄🦄🦄")
+        
         guard let customerID = self.state.settings.customerId else {
             return completion(PrimerError.VaultFetchFailed)
         }
-        print("🦄🦄🦄🦄")
+        
         guard let url = URL(string: "\(pciURL)/payment-instruments?customer_id=\(customerID)") else {
             return completion(PrimerError.VaultFetchFailed)
         }
@@ -35,7 +35,7 @@ class VaultService: VaultServiceProtocol {
                 switch result {
                 case .failure: completion(PrimerError.VaultFetchFailed)
                 case .success(let data):
-                    print("🦄🦄🦄🦄🦄")
+                    
                     let methods = try JSONDecoder().decode(GetVaultedPaymentMethodsResponse.self, from: data)
                     
                     self?.state.paymentMethods = methods.data
@@ -46,6 +46,7 @@ class VaultService: VaultServiceProtocol {
                         guard let id = paymentMethods[0].token else { return }
                         self?.state.selectedPaymentMethod = id
                     }
+                    
                     print("🦄🦄🦄🦄🦄🦄")
                     completion(nil)
                 }

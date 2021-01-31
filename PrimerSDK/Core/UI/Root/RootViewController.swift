@@ -107,6 +107,13 @@ class RootViewController: UIViewController {
             let newConstant = -keyboardSize.height
             let duration = bottomConstraint!.constant.distance(to: newConstant) < 100 ? 0.0 : 0.5
             bottomConstraint!.constant = newConstant
+            
+            // adjust top anchor if height extends beyond screen
+            if (currentHeight + keyboardSize.height > UIScreen.main.bounds.height - 40) {
+                currentHeight = UIScreen.main.bounds.height - (40 + keyboardSize.height)
+                heightConstraint?.constant = UIScreen.main.bounds.height - (40 + keyboardSize.height)
+            }
+            
             UIView.animate(withDuration: duration){
                 self.view.layoutIfNeeded()
             }
@@ -135,6 +142,17 @@ class RootViewController: UIViewController {
         
         heightConstraint?.constant = currentHeight - translation.y
         
+        if (currentHeight - translation.y < 220) {
+            UIView.animate(withDuration: 0.3) { [weak self] in
+                guard let strongSelf = self else { return }
+                strongSelf.currentHeight = 280
+                strongSelf.heightConstraint?.constant = 280
+                strongSelf.view.layoutIfNeeded()
+            }
+            return
+        }
+        
+        
         if sender.state == .ended {
             
             if (currentHeight - translation.y > UIScreen.main.bounds.height - 40) {
@@ -142,13 +160,6 @@ class RootViewController: UIViewController {
                     guard let strongSelf = self else { return }
                     strongSelf.currentHeight = UIScreen.main.bounds.height - 40
                     strongSelf.heightConstraint.setFullScreen()
-                    strongSelf.view.layoutIfNeeded()
-                }
-            } else if (currentHeight - translation.y < 150) {
-                UIView.animate(withDuration: 0.3) { [weak self] in
-                    guard let strongSelf = self else { return }
-                    strongSelf.currentHeight = 150
-                    strongSelf.heightConstraint?.constant = 150
                     strongSelf.view.layoutIfNeeded()
                 }
             } else {

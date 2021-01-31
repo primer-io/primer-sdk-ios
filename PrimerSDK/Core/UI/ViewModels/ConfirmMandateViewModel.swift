@@ -12,6 +12,7 @@ protocol ConfirmMandateViewModelProtocol {
     var amount: String { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
     func confirmMandateAndTokenize(_ completion: @escaping (Error?) -> Void)
+    func eraseData()
 }
 
 class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
@@ -79,10 +80,20 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
             self?.tokenizationService.tokenize(request: request) { [weak self] result in
                 switch result {
                 case .failure(let error): completion(error)
-                case .success(let token):
-                    Primer.flow.vaulted ? completion(nil) : self?.state.settings.onTokenizeSuccess(token, completion)
+                case .success:
+                    
+                    self?.state.directDebitMandate = DirectDebitMandate(
+                        //        iban: "FR1420041010050500013M02606",
+                        address: Address()
+                    )
+                    
+                    completion(nil)
                 }
             }
         })
+    }
+    
+    func eraseData() {
+        state.directDebitMandate = DirectDebitMandate()
     }
 }

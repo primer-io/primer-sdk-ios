@@ -3,7 +3,7 @@ import UIKit
 public class Primer {
     
     static var flow: PrimerSessionFlow = .completeDirectCheckout
-    static var theme: PrimerTheme = PrimerTheme()
+    static var theme: PrimerTheme = PrimerTheme.initialise()
     
     private var rootViewController: RootViewController {
         return RootViewController(context)
