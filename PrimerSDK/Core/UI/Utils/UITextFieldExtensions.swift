@@ -24,9 +24,17 @@ extension UITextField {
         lineView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 5).isActive = true
     }
     
-    func toggleValidity(_ isValid: Bool, theme: PrimerTextFieldTheme) {
+    func toggleValidity(
+        _ isValid: Bool,
+        theme: PrimerTextFieldTheme,
+        errorMessage: String = "",
+        hideValidTheme: Bool = false
+    ) {
         if (isValid) {
             self.textColor = Primer.theme.colorTheme.text1
+            
+            if (hideValidTheme) { return }
+            
             self.addIcon()
         } else {
             textColor = .red
@@ -40,6 +48,7 @@ extension UITextField {
                 addLineBorder(color: UIColor.systemRed, isTop: true)
                 addLineBorder(color: UIColor.systemRed)
             }
+            showValidationError(message: errorMessage)
             
         }
     }
@@ -54,7 +63,7 @@ extension UITextField {
         borderView.pin(to: self)
     }
     
-    func addLineBorder(color: UIColor, isTop: Bool = false) {
+    func addLineBorder(color: UIColor, isTop: Bool = false, padding: CGFloat = 0) {
         let lineView = UIView()
         lineView.backgroundColor = color
         self.addSubview(lineView)
@@ -62,7 +71,7 @@ extension UITextField {
         lineView.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
         lineView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         lineView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
-        lineView.bottomAnchor.constraint(equalTo: isTop ? topAnchor : bottomAnchor).isActive = true
+        lineView.bottomAnchor.constraint(equalTo: isTop ? topAnchor : bottomAnchor, constant: isTop ? -padding : padding).isActive = true
     }
     
     func addBorder(isFocused: Bool, title: String, cornerRadius: CGFloat, theme: PrimerTextFieldTheme, color: UIColor, backgroundColor: UIColor) {
@@ -75,8 +84,8 @@ extension UITextField {
         case .underlined:
             addLineBorder(color: color)
         case .doublelined:
-            addLineBorder(color: color, isTop: true)
-            addLineBorder(color: color)
+            addLineBorder(color: color, isTop: true, padding: 3)
+            addLineBorder(color: color, padding: 3)
         }
         
         if (isFocused && theme != .doublelined) {
@@ -105,7 +114,7 @@ extension UITextField {
     
     func addMiniTitle(_ text: String) {
         let titleView = UILabel()
-        titleView.text = text
+        titleView.text = text.uppercased()
         titleView.textColor = .white
         titleView.font = .systemFont(ofSize: 10, weight: .light)
         titleView.translatesAutoresizingMaskIntoConstraints = false
@@ -116,13 +125,33 @@ extension UITextField {
     
     private func addFocusedTheme(_ text: String, theme: PrimerTextFieldTheme, textColor: UIColor, backgroundColor: UIColor) {
         let titleView = UILabel()
-        titleView.text = text
-        titleView.textColor = textColor
-        titleView.font = .systemFont(ofSize: 10, weight: .light)
+        titleView.text = text.uppercased()
         titleView.backgroundColor = backgroundColor
         titleView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(titleView)
-        titleView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: theme == .outlined ? 10 : 0).isActive = true
-        titleView.topAnchor.constraint(equalTo: self.topAnchor, constant: -6).isActive = true
+        
+        switch theme {
+        case .doublelined:
+            titleView.textColor = Primer.theme.colorTheme.text1
+            titleView.font = .systemFont(ofSize: 17, weight: .bold)
+            titleView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+            titleView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        default:
+            titleView.textColor = textColor
+            titleView.font = .systemFont(ofSize: 10, weight: .light)
+            titleView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: theme == .outlined ? 10 : 0).isActive = true
+            titleView.topAnchor.constraint(equalTo: self.topAnchor, constant: -6).isActive = true
+        }
+    }
+    
+    func showValidationError(message: String) {
+        let label = UILabel()
+        label.text = message
+        label.font = .systemFont(ofSize: 12)
+        label.textColor = .systemRed
+        label.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(label)
+        label.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        label.topAnchor.constraint(equalTo: bottomAnchor, constant: 2).isActive = true
     }
 }

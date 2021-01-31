@@ -18,17 +18,33 @@ class CardButton: UIButton {
     
     private weak var widthConstraint: NSLayoutConstraint?
     private weak var trailingConstraint: NSLayoutConstraint?
+    private weak var leadingConstraint: NSLayoutConstraint?
+    private weak var heightConstraint: NSLayoutConstraint?
     
-    func render(model: CardButtonViewModel?) {
+    var showIcon = true
+    
+    func render(model: CardButtonViewModel?, showIcon: Bool = true) {
         guard let model = model else { return }
+
+        addIcon()
+        if (showIcon) {
+            
+        } else {
+            self.showIcon = false
+            toggleIcon()
+        }
         
-        addCheckIcon()
         addCardIcon(image: model.imageName.image)
-        addNetworkName(value: model.network)
-        addCardholderName(value: model.cardholder)
-        addLast4Digits(value: model.last4)
-        addExpiryDetails(value: model.expiry)
         addBorder()
+        
+        if (model.paymentMethodType == .GOCARDLESS_MANDATE) {
+            addDDMandateLabel(value: model.network)
+        } else {
+            addNetworkName(value: model.network)
+            addCardholderName(value: model.cardholder)
+            addLast4Digits(value: model.last4)
+            addExpiryDetails(value: model.expiry)
+        }
         
     }
     
@@ -39,7 +55,6 @@ class CardButton: UIButton {
         last4Label.text = model?.last4
         expiryLabel.text = model?.expiry
         toggleBorder(isSelected: false)
-        toggleIcon(isEnabled: true)
     }
     
     func toggleBorder(isSelected: Bool, isError: Bool = false) {
@@ -50,12 +65,34 @@ class CardButton: UIButton {
     
     private func addCardIcon(image: UIImage?) {
         iconView = UIImageView(image: image)
+        iconView.clipsToBounds = true
         addSubview(iconView)
         iconView.translatesAutoresizingMaskIntoConstraints = false
-        iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
         iconView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        iconView.heightAnchor.constraint(equalTo: heightAnchor, constant: -32).isActive = true
-        iconView.widthAnchor.constraint(equalTo: iconView.heightAnchor, multiplier: 1.6).isActive = true
+        
+        if (iconView.image == ImageName.bank.image) {
+            
+            let tintedIcon = image?.withRenderingMode(.alwaysTemplate)
+            iconView.tintColor = Primer.theme.colorTheme.tint1
+            iconView.image = tintedIcon
+            
+            iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17).isActive = true
+            iconView.heightAnchor.constraint(equalToConstant: 24).isActive = true
+            iconView.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        } else {
+            iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
+            iconView.heightAnchor.constraint(equalToConstant: 28).isActive = true
+            iconView.widthAnchor.constraint(equalToConstant: 38).isActive = true
+        }
+    }
+    
+    private func addDDMandateLabel(value: String) {
+        let label = UILabel()
+        label.text = value
+        addSubview(label)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 17).isActive = true
+        label.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
     
     private func addNetworkName(value: String) {
@@ -63,7 +100,11 @@ class CardButton: UIButton {
         networkLabel.text = value
         addSubview(networkLabel)
         networkLabel.translatesAutoresizingMaskIntoConstraints = false
-        networkLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 8).isActive = true
+        if (iconView.image == ImageName.bank.image?.withRenderingMode(.alwaysTemplate)) {
+            networkLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 17).isActive = true
+        } else {
+            networkLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 10).isActive = true
+        }
         networkLabel.bottomAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
     
@@ -73,7 +114,7 @@ class CardButton: UIButton {
         cardholderLabel.font = .systemFont(ofSize: 12)
         addSubview(cardholderLabel)
         cardholderLabel.translatesAutoresizingMaskIntoConstraints = false
-        cardholderLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 8).isActive = true
+        cardholderLabel.leadingAnchor.constraint(equalTo: networkLabel.leadingAnchor).isActive = true
         cardholderLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -88).isActive = true
         cardholderLabel.topAnchor.constraint(equalTo: networkLabel.bottomAnchor, constant: 6).isActive = true
     }
@@ -83,7 +124,8 @@ class CardButton: UIButton {
         last4Label.text = value
         addSubview(last4Label)
         last4Label.translatesAutoresizingMaskIntoConstraints = false
-        last4Label.trailingAnchor.constraint(equalTo: checkView.leadingAnchor, constant: -10).isActive = true
+        leadingConstraint = last4Label.trailingAnchor.constraint(equalTo: checkView.leadingAnchor, constant: -14)
+        leadingConstraint?.isActive = true
         last4Label.bottomAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
     
@@ -93,7 +135,7 @@ class CardButton: UIButton {
         expiryLabel.font = .systemFont(ofSize: 12)
         addSubview(expiryLabel)
         expiryLabel.translatesAutoresizingMaskIntoConstraints = false
-        expiryLabel.trailingAnchor.constraint(equalTo: checkView.leadingAnchor, constant: -10).isActive = true
+        expiryLabel.trailingAnchor.constraint(equalTo: last4Label.trailingAnchor).isActive = true
         expiryLabel.topAnchor.constraint(equalTo: last4Label.bottomAnchor, constant: 6).isActive = true
     }
     
@@ -108,27 +150,56 @@ class CardButton: UIButton {
         border.isUserInteractionEnabled = false
     }
     
-    private func addCheckIcon() {
+    private func addIcon() {
         checkView = UIImageView(image: ImageName.check2.image)
         addSubview(checkView)
         checkView.translatesAutoresizingMaskIntoConstraints = false
         checkView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        trailingConstraint = checkView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10)
+        trailingConstraint = checkView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14)
+        widthConstraint = checkView.widthAnchor.constraint(equalToConstant: 14)
         trailingConstraint?.isActive = true
-        widthConstraint = checkView.widthAnchor.constraint(equalToConstant: 20)
         widthConstraint?.isActive = true
-        checkView.heightAnchor.constraint(equalTo: checkView.widthAnchor).isActive = true
-        toggleIcon(isEnabled: widthConstraint?.constant != 0)
+        heightConstraint = checkView.heightAnchor.constraint(equalToConstant: 22)
+        heightConstraint?.isActive = true
     }
     
     func toggleError(isEnabled: Bool) {
         checkView.image = isEnabled ? ImageName.delete.image : ImageName.check2.image
-        toggleIcon(isEnabled: false)
-        toggleBorder(isSelected: true, isError: isEnabled)
+        
+        if (checkView.image == ImageName.check2.image) {
+            leadingConstraint?.constant = -14
+            trailingConstraint?.constant = 14
+            widthConstraint?.constant = 14
+            heightConstraint?.constant = 14
+        } else {
+            leadingConstraint?.constant = -10
+            trailingConstraint?.constant = -10
+            widthConstraint?.constant = 22
+        }
     }
     
-    func toggleIcon(isEnabled: Bool) {
-        trailingConstraint?.constant = isEnabled ? 0 : -10
-        widthConstraint?.constant = isEnabled ? 0 : 12
+    func toggleIcon() {
+        trailingConstraint?.constant = showIcon ? -14 : 0
+        widthConstraint?.constant = showIcon ? 14 : 0
+        heightConstraint?.constant = showIcon ? 14 : 0
+    }
+    
+    func hideIcon(_ val: Bool) {
+        checkView.isHidden = !val
+    }
+    
+    func hideBorder() {
+        border.isHidden = true
+    }
+    
+    func addSeparatorLine() {
+        let line = UIView()
+        line.backgroundColor = Primer.theme.colorTheme.disabled1
+        line.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(line)
+        line.topAnchor.constraint(equalTo: bottomAnchor, constant: -0.5).isActive = true
+        line.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
+        line.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        line.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     }
 }

@@ -124,7 +124,7 @@ enum TextFieldType {
 
 extension UIButton {
     func toggleValidity(_ isValid: Bool, validColor: UIColor) {
-        self.backgroundColor = isValid ? validColor : .gray
+        self.backgroundColor = isValid ? validColor : Primer.theme.colorTheme.main2
         self.isEnabled = isValid
     }
 }

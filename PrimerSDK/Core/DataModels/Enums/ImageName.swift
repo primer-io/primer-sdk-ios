@@ -25,7 +25,9 @@ public enum ImageName: String {
         paypal3,
         forwardDark,
         lock,
-        rightArrow
+        rightArrow,
+        bank,
+        camera
     
     public var image: UIImage? {
         let frameworkBundle = Bundle(for: Primer.self)

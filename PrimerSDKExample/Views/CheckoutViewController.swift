@@ -40,19 +40,40 @@ class CheckoutViewController: UIViewController {
             view.backgroundColor = .white
         }
         
-        let settings = PrimerSettings(
-            delegate: self,
-            amount: amount,
-            currency: .EUR,
-            customerId: "customer_1",
-            countryCode: .fr,
-            urlScheme: "primer://oauth",
-            urlSchemeIdentifier: "primer",
-            businessDetails: BusinessDetails(
-                name: "My Business",
-                address: Address(addressLine1: "107 Rue de Rivoli", city: "Paris", countryCode: "FR", postalCode: "75001")
+        var settings: PrimerSettings
+        
+        if #available(iOS 13.0, *) {
+            settings = PrimerSettings(
+                delegate: self,
+                amount: amount,
+                currency: .EUR,
+                theme: PrimerTheme.initialiseWithDarkTheme(),
+                customerId: "customer_1",
+                countryCode: .fr,
+                urlScheme: "primer://oauth",
+                urlSchemeIdentifier: "primer",
+                businessDetails: BusinessDetails(
+                    name: "My Business",
+                    address: Address(addressLine1: "107 Rue de Rivoli", city: "Paris", countryCode: "FR", postalCode: "75001")
+                )
             )
-        )
+        } else {
+            // Fallback on earlier versions
+            settings = PrimerSettings(
+                delegate: self,
+                amount: amount,
+                currency: .EUR,
+                theme: PrimerTheme.initialise(),
+                customerId: "customer_1",
+                countryCode: .fr,
+                urlScheme: "primer://oauth",
+                urlSchemeIdentifier: "primer",
+                businessDetails: BusinessDetails(
+                    name: "My Business",
+                    address: Address(addressLine1: "107 Rue de Rivoli", city: "Paris", countryCode: "FR", postalCode: "75001")
+                )
+            )
+        }
         
         primer = Primer(with: settings)
         
@@ -275,7 +296,18 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell.addIcon(paymentMethodToken.icon.image)
         cell.addTitle(subtitle)
-        cell.backgroundColor = .darkGray
+        
+        if #available(iOS 12.0, *) {
+            if traitCollection.userInterfaceStyle == .light {
+                cell.backgroundColor = .white
+            } else {
+                cell.backgroundColor = .darkGray
+            }
+        } else {
+            cell.backgroundColor = .white
+        }
+        
+        
         return cell
     }
 }

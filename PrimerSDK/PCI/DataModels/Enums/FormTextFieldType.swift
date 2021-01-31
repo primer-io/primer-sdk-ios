@@ -4,7 +4,7 @@
 //
 //  Created by Carl Eriksson on 24/01/2021.
 //
-enum FormTextFieldType {
+enum FormTextFieldType: Equatable {
     case accountNumber(_ initialValue: String? = "")
     case sortCode(_ initialValue: String? = "")
     case iban(_ initialValue: String? = "")
@@ -17,42 +17,36 @@ enum FormTextFieldType {
     case country(_ initialValue: String? = "")
     case postalCode(_ initialValue: String? = "")
     
-    func validate(_ text: String) -> Bool {
+    func validate(_ text: String) -> (Bool, String, Bool) {
         switch self {
-        case .accountNumber: return text.isValidAccountNumber
-        case .sortCode: return text.count > 5
-        case .iban: return text.count > 5
-        case .firstName: return text.count > 0
-        case .lastName: return text.count > 0
+        case .accountNumber: return (text.isValidAccountNumber, "Account number is invalid", false)
+        case .sortCode: return (text.count > 5, "Sort code text field can't be empty", false)
+        case .iban:
+            if (text.count < 1) {
+                return (false, "IBAN text field can't be empty", false)
+            }
+            return (text.count > 5, "IBAN is too short", false)
+        case .firstName: return (text.count > 0, "First name text field can't be empty", false)
+        case .lastName: return (text.count > 0, "Last name text field can't be empty", false)
         case .email:
+            if (text.count < 1) {
+                return (false, "Email text field can't be empty", false)
+            }
+            
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-            return emailPred.evaluate(with: text)
-        case .addressLine1: return text.count > 0
-        case .addressLine2: return true
-        case .city: return text.count > 0
-        case .country: return text.count > 0
-        case .postalCode: return text.count > 0
+            return (emailPred.evaluate(with: text), "Email value is invalid", false)
+        case .addressLine1: return (text.count > 0, "Address text field can't be empty", false)
+        case .addressLine2:
+            if (text.count > 0) { return (true, "", false) }
+            return (true, "", true)
+        case .city: return (text.count > 0, "City text field can't be empty", false)
+        case .country: return (text.count > 0, "Coutry text field can't be empty", false)
+        case .postalCode: return (text.count > 0, "Postal code text field can't be empty", false)
         }
     }
     
     var title: String {
-        switch self {
-        case .accountNumber: return "ACCOUNT NUMBER"
-        case .sortCode: return "SORT CODE"
-        case .iban: return "IBAN"
-        case .firstName: return "FIRST NAME"
-        case .lastName: return "LAST NAME"
-        case .email: return "EMAIL"
-        case .addressLine1: return "ADDRESS LINE 1"
-        case .addressLine2: return "ADDRESS LINE 2"
-        case .city: return "CITY"
-        case .country: return "COUNTRY"
-        case .postalCode: return "POSTAL CODE"
-        }
-    }
-    
-    var placeHolder: String {
         switch self {
         case .accountNumber: return "Account number"
         case .sortCode: return "Sort code"
@@ -64,15 +58,31 @@ enum FormTextFieldType {
         case .addressLine2: return "Address line 2"
         case .city: return "City"
         case .country: return "Country"
-        case .postalCode: return "Postal code"
+        case .postalCode: return "Postal Code"
+        }
+    }
+    
+    var placeHolder: String {
+        switch self {
+        case .accountNumber: return "e.g. 12345678"
+        case .sortCode: return "e.g. 60-83-71"
+        case .iban: return "e.g. FR14 2004 1010 050500013M02606"
+        case .firstName: return "e.g. John"
+        case .lastName: return "e.g. Doe"
+        case .email: return "e.g. john@mail.com"
+        case .addressLine1: return "e.g. Apartment 5, 14 Some Street"
+        case .addressLine2: return "(optional)"
+        case .city: return "e.g. Paris"
+        case .country: return "e.g. France"
+        case .postalCode: return "e.g. 75001"
         }
     }
     
     var mask: Mask? {
         switch self {
-        case .accountNumber: return nil
-        case .sortCode: return nil
-        case .iban: return Mask(pattern: "**** **** **** **** **** **** **** **** **")
+        case .accountNumber: return Mask(pattern: "********")
+        case .sortCode: return Mask(pattern: "**-**-**")
+        case .iban: return Mask(pattern: "**** **** **** **********************")
         case .firstName: return nil
         case .lastName: return nil
         case .email: return nil
