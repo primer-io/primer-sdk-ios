@@ -21,7 +21,6 @@ class DirectCheckoutView: UIView {
         self.theme = theme
         self.amount = amount
         super.init(frame: frame)
-        backgroundColor = theme.backgroundColor
         
         addSubview(navBar)
         addSubview(tableView)
@@ -36,7 +35,6 @@ class DirectCheckoutView: UIView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     private func configureNavBar() {
-        navBar.backgroundColor = theme.backgroundColor
         let navItem = UINavigationItem(title: "")
         let doneItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancel))
         doneItem.tintColor = .blue
@@ -56,7 +54,6 @@ class DirectCheckoutView: UIView {
     
     private func configureTableView() {
         tableView.layer.cornerRadius = 8.0
-        tableView.backgroundColor = theme.backgroundColor
         tableView.rowHeight = 64
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none

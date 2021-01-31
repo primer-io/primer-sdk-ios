@@ -71,7 +71,15 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
     }
     
     func close() {
-        self.router?.pop()
+        let alert = UIAlertController(title: "Do you want to cancel adding a bank account?", message: "Your saved data will be erased.", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Back", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Erase", style: .destructive, handler: { [weak self] action in
+            self?.viewModel.eraseData()
+            self?.router?.pop()
+        }))
+        
+        present(alert, animated: true, completion: nil)
     }
     
     func confirm() {

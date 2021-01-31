@@ -23,7 +23,10 @@ enum Route {
     func viewControllerFactory(_ context: CheckoutContext, router: RouterDelegate) -> UIViewController {
         switch self {
         case .cardForm: return CardFormViewController(context.viewModelLocator.cardFormViewModel, router: router)
-        case .cardScanner: return CardScannerViewController(viewModel: context.viewModelLocator.cardScannerViewModel, router: router)
+        case .cardScanner(let delegate):
+            let vc = CardScannerViewController(viewModel: context.viewModelLocator.cardScannerViewModel, router: router)
+            vc.delegate = delegate
+            return vc
         case .vaultCheckout: return VaultCheckoutViewController(context.viewModelLocator.vaultCheckoutViewModel, router: router)
         case .vaultPaymentMethods(let delegate):
             let vc = VaultPaymentMethodViewController(context.viewModelLocator.vaultPaymentMethodViewModel, router: router)
@@ -52,7 +55,7 @@ enum Route {
     
     var height: CGFloat {
         switch self {
-        case .cardForm:  return 340
+        case .cardForm:  return 360
         case .cardScanner:  return 420
         case .vaultCheckout:  return 400
         case .vaultPaymentMethods:  return 320
@@ -62,7 +65,7 @@ enum Route {
         case .success:  return 360
         case .error:  return 220
         case .singleFieldForm: return 288
-        case .confirmMandate: return 640
+        case .confirmMandate: return 580
         case .form(let type):
             switch type {
             case .address: return 460

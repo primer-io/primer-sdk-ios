@@ -45,97 +45,103 @@ class Validation {
         return sum % 10 == 0
     }
     
-    func nameFieldIsNotValid(_ entry: String?) -> Bool {
+    func nameFieldIsNotValid(_ entry: String?) -> (Bool, String) {
         
-        guard let entry = entry else { return true }
+        guard let entry = entry else { return (true, "Name required") }
         
         let name = entry.filter { !$0.isWhitespace }
         
         let nameIsEmpty = name.count < 1
-        if (nameIsEmpty) { return true }
+        if (nameIsEmpty) { return (true, "Name field can't be empty") }
         
-        return false
+        return (false, "")
         
     }
     
-    func cardFieldIsNotValid(_ entry: String?) -> Bool {
+    func cardFieldIsNotValid(_ entry: String?) -> (Bool, String) {
         
-        guard let entry = entry else { return true }
+        guard let entry = entry else { return (true, "Card number required") }
         
         let number = entry.filter { !$0.isWhitespace }
         
         let containsNotOnlyNumbers = number.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) != nil
-        if (containsNotOnlyNumbers) { return true }
+        if (containsNotOnlyNumbers) { return (true, "Card number must contain only digits") }
         
-        let containsTooFewDigits = number.count < 12
-        if (containsTooFewDigits) { return true }
+        let containsTooFewDigits = number.count < 16
+        if (containsTooFewDigits) { return (true, "Card number is too short") }
         
         let isNotALuhnNumber = !luhnCheck(number)
-        if (isNotALuhnNumber)  { return true }
+        if (isNotALuhnNumber)  { return (true, "Card number is not valid") }
         
-        return false
+        return (false, "")
     }
     
-    private func expiryYearIsNotValid(_ year: String.SubSequence) -> Bool {
+    private func expiryYearIsNotValid(_ year: String.SubSequence) -> (Bool, String) {
         
-        guard var yearIntValue = Int(year) else { return true }
+        guard var yearIntValue = Int(year) else { return (true, "Expiry year is required") }
         yearIntValue += 2000
         
         let currentYear = Calendar.current.component(.year, from: Date())
         
         let yearAlreadyPassed = yearIntValue < currentYear
-        if (yearAlreadyPassed) { return true }
+        if (yearAlreadyPassed) { return (true, "Expiry date already passed") }
         
-        return false
-        
+        return (false, "")
     }
     
-    private func expiryMonthIsNotValid(_ month: String.SubSequence) -> Bool {
+    private func expiryMonthIsNotValid(_ month: String.SubSequence, year: String.SubSequence) -> (Bool, String) {
         
-        guard let monthIntValue = Int(month) else { return true }
+        guard let monthIntValue = Int(month) else { return (true, "Expiry month is required") }
         
         let monthIntValueIsNotValid = monthIntValue < 1 || monthIntValue > 12
-        if (monthIntValueIsNotValid) { return true }
+        if (monthIntValueIsNotValid) { return (true, "Expiry month input is not a valid month") }
+        
+        let currentYear = Calendar.current.component(.year, from: Date())
+        guard var yearIntValue = Int(year) else { return (true, "Expiry year is required") }
+        yearIntValue += 2000
+        let yearIsCurrentyYear = yearIntValue == currentYear
         
         let currentMonth = Calendar.current.component(.month, from: Date())
-        let monthAlreadyPassed = monthIntValue < currentMonth
-        if (monthAlreadyPassed) { return true }
+        let monthAlreadyPassed = monthIntValue < currentMonth && yearIsCurrentyYear
+        if (monthAlreadyPassed) { return (true, "Expiry date already passed") }
         
-        return false
-        
+        return (false, "")
     }
     
-    func expiryFieldIsNotValid(_ entry: String?) -> Bool {
+    func expiryFieldIsNotValid(_ entry: String?) -> (Bool, String) {
         
-        guard let entry = entry else { return true }
+        guard let entry = entry else { return (true, "Expiry text field required") }
         
         let expiry = entry.filter { !$0.isWhitespace }
         let expiryValues = expiry.split(separator: "/")
         
-        if (expiryValues.count != 2) { return true }
+        if (expiryValues.count != 2) { return (true, "Expiry text field is invalid") }
         
         let month = expiryValues[0]
         let year = expiryValues[1]
         
-        if (expiryYearIsNotValid(year)) { return true }
-        if (expiryMonthIsNotValid(month)) { return true }
+        let yearValidation = expiryYearIsNotValid(year)
+        if (yearValidation.0) { return yearValidation }
         
-        return false
+        let monthValidation = expiryMonthIsNotValid(month, year: year)
+        if (monthValidation.0) { return monthValidation }
+        
+        return (false, "")
     }
     
-    func CVCFieldIsNotValid(_ entry: String?) -> Bool {
+    func CVCFieldIsNotValid(_ entry: String?) -> (Bool, String) {
         
-        guard let entry = entry else { return true }
+        guard let entry = entry else { return (true, "CVC is required") }
         
         let cvc = entry.filter { !$0.isWhitespace }
         
         let containsNotOnlyNumbers = cvc.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) != nil
-        if (containsNotOnlyNumbers) { return true }
+        if (containsNotOnlyNumbers) { return (true, "CVC value is invalid") }
         
         let containsTooFewDigits = cvc.count < 3
-        if (containsTooFewDigits) { return true }
+        if (containsTooFewDigits) { return (true, "CVC value is too short") }
         
-        return false
+        return (false, "")
         
     }
 }

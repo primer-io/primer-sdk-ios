@@ -48,10 +48,6 @@ extension VaultPaymentMethodViewController: VaultPaymentMethodViewDelegate {
         router?.pop()
     }
     
-    func showCardForm() {
-        router?.show(.cardForm)
-    }
-    
     func showPayPal() {
         router?.show(.oAuth)
     }

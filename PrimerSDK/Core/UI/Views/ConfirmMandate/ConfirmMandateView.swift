@@ -48,6 +48,9 @@ class ConfirmMandateView: UIView {
     func render(isBusy: Bool = false) {
         subviews.forEach { $0.isHidden = isBusy }
         indicator.isHidden = !isBusy
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        indicator.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         
         addNavbar()
         addTitle()
@@ -105,8 +108,8 @@ extension ConfirmMandateView {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell5")
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 24).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         tableView.heightAnchor.constraint(equalToConstant: 56 * 4).isActive = true
         tableView.reloadData()
     }
@@ -153,17 +156,24 @@ extension ConfirmMandateView {
         confirmButton.backgroundColor = Primer.theme.colorTheme.tint1
         confirmButton.layer.cornerRadius = 8
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
-        confirmButton.topAnchor.constraint(equalTo: amountLabel.bottomAnchor, constant: 18).isActive = true
+        confirmButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30).isActive = true
         confirmButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
         confirmButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
         confirmButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
         confirmButton.addTarget(self, action: #selector(onConfirm), for: .touchUpInside)
+        let imageView = UIImageView(image: ImageName.lock.image)
+        confirmButton.addSubview(imageView)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.centerYAnchor.constraint(equalTo: confirmButton.centerYAnchor).isActive = true
+        imageView.trailingAnchor.constraint(equalTo: confirmButton.trailingAnchor, constant: -16).isActive = true
     }
     
     @objc private func onConfirm() {
+        indicator.removeFromSuperview()
+        addSubview(indicator)
         confirmButton.setTitle("", for: .normal)
         confirmButton.addSubview(indicator)
-        indicator.color = Primer.theme.colorTheme.disabled1
+        indicator.color = Primer.theme.colorTheme.text2
         indicator.pin(to: confirmButton)
         indicator.startAnimating()
         delegate?.confirm()

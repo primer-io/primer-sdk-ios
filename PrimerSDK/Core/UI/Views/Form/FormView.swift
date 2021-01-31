@@ -51,15 +51,13 @@ class FormView: UIView {
         
         configureNavbar()
         configureTitle()
-//        configureLink()
         configureButton()
+        validateForm()
         
         anchorNavbar()
         anchorTitle()
         anchorLink()
         anchorButton()
-        
-        validateForm()
     }
 }
 
@@ -125,7 +123,7 @@ extension FormView {
             title.text = delegate.formType.mainTitle
         }
         title.textAlignment = .center
-        title.font = .systemFont(ofSize: 20)
+        title.font = Primer.theme.fontTheme.mainTitle
     }
     
     // Textfield
@@ -135,6 +133,10 @@ extension FormView {
         textFields.append(textField)
         addSubview(textField)
         textField.tag = index
+        
+        if (index == 0) {
+            textField.becomeFirstResponder()
+        }
         
         switch delegate.formType.textFields[index] {
         case .country:
@@ -146,14 +148,35 @@ extension FormView {
         }
         
         textField.text = delegate.formType.textFields[index].initialValue
-        textField.setLeftPaddingPoints(5)
         textField.autocapitalizationType = .none
+        
+        if (Primer.theme.textFieldTheme == .doublelined) {
+            let leftView = UILabel()
+            leftView.text =  delegate.formType.textFields[index].title + "   "
+            leftView.font = .boldSystemFont(ofSize: 17)
+            leftView.textColor = Primer.theme.colorTheme.text1
+            textField.leftView = leftView
+        } else {
+            let padding: CGFloat = 5
+            textField.setLeftPaddingPoints(padding)
+        }
+        
+        textField.leftViewMode = .always
         textField.placeholder = delegate.formType.textFields[index].placeHolder
+        
         textField.addTarget(self, action: #selector(onTextFieldEditingDidEnd), for: .editingDidEnd)
         textField.addTarget(self, action: #selector(onTextFieldEditingChanged), for: .editingChanged)
         textField.addTarget(self, action: #selector(onTextFieldEditingDidBegin), for: .editingDidBegin)
-        textField.addBorder(isFocused: false, title: "", cornerRadius: 4, theme: Primer.theme.textFieldTheme, color: Primer.theme.colorTheme.text3,
-                            backgroundColor: Primer.theme.colorTheme.main1)
+        
+        textField.addBorder(
+            isFocused: false,
+            title: "",
+            cornerRadius: 4,
+            theme: Primer.theme.textFieldTheme,
+            color: Primer.theme.colorTheme.text3,
+            backgroundColor: Primer.theme.colorTheme.main1
+        )
+        
         textField.delegate = delegate
         anchorTextField(textField)
     }
@@ -161,8 +184,16 @@ extension FormView {
     @objc private func onTextFieldEditingDidBegin(_ sender: UITextField) {
         guard let delegate = delegate else { return }
         let title = delegate.formType.textFields[sender.tag].title
-        sender.addBorder(isFocused: true, title: title, cornerRadius: 4, theme: Primer.theme.textFieldTheme, color: Primer.theme.colorTheme.text3,
-                         backgroundColor: Primer.theme.colorTheme.main1)
+        
+        sender.addBorder(
+            isFocused: true,
+            title: title,
+            cornerRadius: 4,
+            theme: Primer.theme.textFieldTheme,
+            color: Primer.theme.textFieldTheme == .doublelined ? Primer.theme.colorTheme.disabled1 : Primer.theme.colorTheme.text3,
+            backgroundColor: Primer.theme.colorTheme.main1
+        )
+        
         sender.layoutIfNeeded()
     }
     
@@ -172,16 +203,37 @@ extension FormView {
     }
     
     @objc private func onTextFieldEditingChanged(_ sender: UITextField) {
+        guard let delegate = delegate else { return }
         guard let text = sender.text?.withoutWhiteSpace else { return }
-        guard let mask = delegate?.formType.textFields[sender.tag].mask else { return }
-        sender.text = mask.apply(on: text.uppercased())
+        let mask = delegate.formType.textFields[sender.tag].mask
+        
+        if (mask.exists) {
+            sender.text = mask?.apply(on: text.uppercased())
+        }
+        
+        sender.textColor = Primer.theme.colorTheme.text1
+        
+        let validation = delegate.formType.textFields[sender.tag].validate(text)
+        
+        delegate.validatedFields[sender.tag] = validation.0
+        
+        validateForm()
     }
     
     private func validateTextField(_ sender: UITextField) {
         guard let delegate = delegate else { return }
         guard let text = sender.text?.withoutWhiteSpace else { return }
-        delegate.validatedFields[sender.tag] = delegate.formType.textFields[sender.tag].validate(text)
-        sender.toggleValidity(delegate.validatedFields[sender.tag], theme: Primer.theme.textFieldTheme)
+        
+        let validation = delegate.formType.textFields[sender.tag].validate(text)
+        
+        delegate.validatedFields[sender.tag] = validation.0
+        
+        sender.toggleValidity(
+            delegate.validatedFields[sender.tag],
+            theme: Primer.theme.textFieldTheme,
+            errorMessage: validation.1,
+            hideValidTheme: validation.2
+        )
         guard let mask = delegate.formType.textFields[sender.tag].mask else { return }
         sender.text = mask.apply(on: text.uppercased())
     }
@@ -208,8 +260,10 @@ extension FormView {
     
     private func configureButton() {
         button.setTitle("Next", for: .normal)
-        button.layer.cornerRadius = Primer.theme.cornerRadiusTheme.buttons
+        button.layer.cornerRadius = 12
         button.addTarget(self, action: #selector(onButtonPressed), for: .touchUpInside)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        button.layer.zPosition = 10
     }
     
     @objc private func onButtonPressed(_ button: UIButton) {
@@ -262,7 +316,7 @@ extension FormView {
         button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
         button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
         button.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        button.topAnchor.constraint(equalTo: link.bottomAnchor, constant: 18).isActive = true
+        button.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30).isActive = true
     }
 }
 

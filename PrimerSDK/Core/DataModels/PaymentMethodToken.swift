@@ -33,6 +33,7 @@ public struct PaymentMethodToken: Codable {
             }
         case .PAYPAL_ORDER: return .paypal2
         case .PAYPAL_BILLING_AGREEMENT: return .paypal2
+        case .GOCARDLESS_MANDATE: return .bank
         default: return .creditCard
         }
     }
@@ -52,13 +53,14 @@ extension PaymentMethodToken {
                 cardholder: cardholder,
                 last4: "•••• \(last4)",
                 expiry: "Expires".localized() + " \(expMonth) / \(expYear.suffix(2))",
-                imageName: self.icon
+                imageName: self.icon,
+                paymentMethodType: self.paymentInstrumentType
             )
         case .PAYPAL_BILLING_AGREEMENT:
             guard let cardholder = self.paymentInstrumentData?.externalPayerInfo?.email else { return nil }
-            return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon)
+            return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
         case .GOCARDLESS_MANDATE:
-            return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon)
+            return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
         default:
             return nil
         }
@@ -68,6 +70,7 @@ extension PaymentMethodToken {
 struct CardButtonViewModel {
     let network, cardholder, last4, expiry: String
     let imageName: ImageName
+    let paymentMethodType: PaymentInstrumentType
 }
 
 public enum PaymentInstrumentType: String {

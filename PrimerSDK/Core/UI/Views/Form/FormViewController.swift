@@ -24,17 +24,19 @@ class FormViewController: UIViewController {
         self.router = router
         self.validatedFields = viewModel.formType.textFields.map { _ in return false }
         super.init(nibName: nil, bundle: nil)
+        view.addSubview(subview)
+        subview.delegate = self
+        subview.pin(to: view)
+        subview.render()
+        view.layoutIfNeeded()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     deinit { print("🧨 destroy:", self.self) }
     
-    override func viewDidLoad() {
-        view.addSubview(subview)
-        subview.pin(to: view)
-        subview.delegate = self
-        subview.render()
+    override func viewWillDisappear(_ animated: Bool) {
+        view.isHidden = true
     }
 }
 

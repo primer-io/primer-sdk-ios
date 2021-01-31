@@ -40,7 +40,10 @@ class CardFormViewController: UIViewController {
     
     deinit { print("🧨 destroy:", self.self) }
     
-    override func viewWillDisappear(_ animated: Bool) { delegate?.reload() }
+    override func viewWillDisappear(_ animated: Bool) {
+        view.isHidden = true
+        delegate?.reload()
+    }
     
     private func paintView() {
         cardFormView = CardFormView(frame: view.frame, theme: viewModel.theme, uxMode: viewModel.flow.uxMode, delegate: self)
@@ -48,7 +51,7 @@ class CardFormViewController: UIViewController {
         view.addSubview(cardFormView)
         cardFormView.pin(to: self.view)
         addTargetsToForm()
-        cardFormView.submitButton.backgroundColor = formIsNotValid ? .gray : viewModel.theme.colorTheme.tint1
+        cardFormView.submitButton.backgroundColor = formIsNotValid ? Primer.theme.colorTheme.main2 : Primer.theme.colorTheme.tint1
         hideKeyboardWhenTappedAround()
     }
     
@@ -115,7 +118,7 @@ class CardFormViewController: UIViewController {
         
         for (index, field) in fields.enumerated() {
             let isNotValid = checks[index](field.text)
-            validations.append(isNotValid)
+            validations.append(isNotValid.0)
         }
         
         return validations.contains(true)
@@ -124,27 +127,44 @@ class CardFormViewController: UIViewController {
 }
 
 extension CardFormViewController: CardFormViewDelegate {
-    func validateCardName(_ text: String?) {
+    func validateCardName(_ text: String?, updateTextField: Bool) {
         let nameIsNotValid = validation.nameFieldIsNotValid(text)
-        cardFormView?.nameTF.toggleValidity(!nameIsNotValid, theme: viewModel.theme.textFieldTheme)
+        
+        if (updateTextField) {
+            cardFormView?.nameTF.toggleValidity(!nameIsNotValid.0, theme: viewModel.theme.textFieldTheme, errorMessage: nameIsNotValid.1)
+        }
+        
+        
         cardFormView?.submitButton.toggleValidity(!formIsNotValid, validColor: .systemBlue)
     }
     
-    func validateCardNumber(_ text: String?) {
+    func validateCardNumber(_ text: String?, updateTextField: Bool) {
         let cardIsNotValid = validation.cardFieldIsNotValid(text)
-        cardFormView?.cardTF.toggleValidity(!cardIsNotValid, theme: viewModel.theme.textFieldTheme)
+        
+        if (updateTextField) {
+            cardFormView?.cardTF.toggleValidity(!cardIsNotValid.0, theme: viewModel.theme.textFieldTheme, errorMessage: cardIsNotValid.1)
+        }
+        
         cardFormView?.submitButton.toggleValidity(!formIsNotValid, validColor: .systemBlue)
     }
     
-    func validateExpiry(_ text: String?) {
+    func validateExpiry(_ text: String?, updateTextField: Bool) {
         let expiryIsNotValid = validation.expiryFieldIsNotValid(text)
-        cardFormView?.expTF.toggleValidity(!expiryIsNotValid, theme: viewModel.theme.textFieldTheme)
+        
+        if (updateTextField) {
+            cardFormView?.expTF.toggleValidity(!expiryIsNotValid.0, theme: viewModel.theme.textFieldTheme, errorMessage: expiryIsNotValid.1)
+        }
+        
         cardFormView?.submitButton.toggleValidity(!formIsNotValid, validColor: .systemBlue)
     }
     
-    func validateCVC(_ text: String?) {
+    func validateCVC(_ text: String?, updateTextField: Bool) {
         let cvcIsNotValid = validation.CVCFieldIsNotValid(text)
-        cardFormView?.cvcTF.toggleValidity(!cvcIsNotValid, theme: viewModel.theme.textFieldTheme)
+        
+        if (updateTextField) {
+            cardFormView?.cvcTF.toggleValidity(!cvcIsNotValid.0, theme: viewModel.theme.textFieldTheme, errorMessage: cvcIsNotValid.1)
+        }
+        
         cardFormView?.submitButton.toggleValidity(!formIsNotValid, validColor: .systemBlue)
     }
     
