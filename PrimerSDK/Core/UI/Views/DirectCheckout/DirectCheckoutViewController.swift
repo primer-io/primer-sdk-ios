@@ -22,7 +22,6 @@ class DirectCheckoutViewController: UIViewController {
     deinit { print("🧨 destroying:", self.self) }
     
     override func viewDidLoad() {
-        view.backgroundColor = viewModel.theme.backgroundColor
         addLoadingView(indicator)
         viewModel.loadCheckoutConfig({ [weak self] error in
             DispatchQueue.main.async {

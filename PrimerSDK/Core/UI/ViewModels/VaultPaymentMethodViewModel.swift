@@ -35,13 +35,19 @@ class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
     
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void) {
         vaultService.deleteVaultedPaymentMethod(with: id) { [weak self] error in
+            // reset selected payment method if that has been deleted
+            if (id == self?.state.selectedPaymentMethod) {
+                self?.state.selectedPaymentMethod = ""
+            }
+            
+            // reload vaulted payment methods
             self?.vaultService.loadVaultedPaymentMethods(completion)
         }
     }
 }
 
 class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
-    var theme: PrimerTheme { return PrimerTheme() }
+    var theme: PrimerTheme { return PrimerTheme.initialise() }
     
     var paymentMethods: [PaymentMethodToken] { return [] }
     

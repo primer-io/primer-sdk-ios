@@ -18,6 +18,11 @@ extension RootViewController: RouterDelegate {
     func show(_ route: Route) {
         
         let vc = route.viewControllerFactory(context, router: self)
+        
+        if (vc is SuccessViewController) {
+            view.endEditing(true)
+        }
+        
         self.add(vc, height: route.height)
         
     }
@@ -93,6 +98,7 @@ fileprivate extension RootViewController {
         if (!heights.isEmpty && !routes.isEmpty) {
             routes.removeLast()
             heights.removeLast()
+            currentHeight = heights[heights.count - 1]
         }
         
         // reveal previous route view & animate height transition

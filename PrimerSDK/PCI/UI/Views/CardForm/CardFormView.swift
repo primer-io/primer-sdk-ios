@@ -10,10 +10,10 @@ import UIKit
 protocol CardFormViewDelegate: class {
     func cancel()
     func showScanner()
-    func validateCardName(_ text: String?)
-    func validateCardNumber(_ text: String?)
-    func validateExpiry(_ text: String?)
-    func validateCVC(_ text: String?)
+    func validateCardName(_ text: String?, updateTextField: Bool)
+    func validateCardNumber(_ text: String?, updateTextField: Bool)
+    func validateExpiry(_ text: String?, updateTextField: Bool)
+    func validateCVC(_ text: String?, updateTextField: Bool)
 }
 
 class CardFormView: UIView {
@@ -47,6 +47,7 @@ class CardFormView: UIView {
         addSubview(cardTF)
         addSubview(expTF)
         addSubview(cvcTF)
+        addSubview(scannerButton)
         
         configureNavBar()
         configureSubmitButton()
@@ -54,6 +55,7 @@ class CardFormView: UIView {
         configureCardTF()
         configureExpTF()
         configureCvcTF()
+        configureScannerButton()
         
         anchorNavBar()
         setSubmitButtonConstraints()
@@ -61,6 +63,8 @@ class CardFormView: UIView {
         setCardTFConstraints()
         setExpTFConstraints()
         setCvcTFConstraints()
+        
+        layoutIfNeeded()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -71,11 +75,7 @@ extension CardFormView {
     private func configureNavBar() {
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
-        let editItem = UIBarButtonItem()
-        editItem.title = theme.content.cardFormView.scannerButtonText
-        editItem.action = #selector(showScanner)
         navItem.leftBarButtonItem = backItem
-        navItem.rightBarButtonItem = editItem
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
@@ -84,12 +84,15 @@ extension CardFormView {
     
     @objc private func cancel() { delegate?.cancel() }
     
-    @objc private func showScanner() { delegate?.showScanner() }
-    
     private func configureSubmitButton() {
-        submitButton.layer.cornerRadius = theme.cornerRadiusTheme.buttons
+        submitButton.layer.cornerRadius = 12
         submitButton.setTitle(submitButtonText, for: .normal)
-//        submitButton.setTitleColor(Primer.theme.colorTheme.text1, for: .normal)
+        submitButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        let imageView = UIImageView(image: ImageName.lock.image)
+        submitButton.addSubview(imageView)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.centerYAnchor.constraint(equalTo: submitButton.centerYAnchor).isActive = true
+        imageView.trailingAnchor.constraint(equalTo: submitButton.trailingAnchor, constant: -16).isActive = true
     }
     
     private func configureNameTF() {
@@ -102,6 +105,7 @@ extension CardFormView {
         nameTF.setRightPaddingPoints(5)
         //
         nameTF.addTarget(self, action: #selector(onNameTextFieldEditingDidEnd), for: .editingDidEnd)
+        nameTF.addTarget(self, action: #selector(onNameTextFieldDidChange), for: .editingChanged)
         nameTF.addTarget(self, action: #selector(onTextFieldEditingDidBegin), for: .editingDidBegin)
         nameTF.addBorder(
             isFocused: false,
@@ -111,10 +115,16 @@ extension CardFormView {
             color: Primer.theme.colorTheme.tint1,
             backgroundColor: Primer.theme.colorTheme.main1
         )
+        nameTF.becomeFirstResponder()
+    }
+    
+    @objc private func onNameTextFieldDidChange(_ sender: UITextField) {
+        delegate?.validateCardName(sender.text, updateTextField: false)
+        sender.textColor = Primer.theme.colorTheme.text1
     }
     
     @objc private func onNameTextFieldEditingDidEnd(_ sender: UITextField) {
-        delegate?.validateCardName(sender.text)
+        delegate?.validateCardName(sender.text, updateTextField: true)
     }
     
     private func configureCardTF() {
@@ -127,6 +137,7 @@ extension CardFormView {
         cardTF.setRightPaddingPoints(5)
         cardTF.keyboardType = UIKeyboardType.numberPad
         cardTF.addTarget(self, action: #selector(onCardTextFieldEditingDidEnd), for: .editingDidEnd)
+        cardTF.addTarget(self, action: #selector(onCardTextFieldDidChange), for: .editingChanged)
         cardTF.addTarget(self, action: #selector(onTextFieldEditingDidBegin), for: .editingDidBegin)
         cardTF.addBorder(
             isFocused: false,
@@ -137,6 +148,7 @@ extension CardFormView {
             backgroundColor: Primer.theme.colorTheme.main1
         )
     }
+    
     
     @objc private func onTextFieldEditingDidBegin(_ sender: UITextField) {
         
@@ -155,8 +167,13 @@ extension CardFormView {
         sender.layoutIfNeeded()
     }
     
+    @objc private func onCardTextFieldDidChange(_ sender: UITextField) {
+        delegate?.validateCardNumber(sender.text, updateTextField: false)
+        sender.textColor = Primer.theme.colorTheme.text1
+    }
+    
     @objc private func onCardTextFieldEditingDidEnd(_ sender: UITextField) {
-        delegate?.validateCardNumber(sender.text)
+        delegate?.validateCardNumber(sender.text, updateTextField: true)
     }
     
     private func configureExpTF() {
@@ -169,13 +186,21 @@ extension CardFormView {
         expTF.setRightPaddingPoints(5)
         expTF.keyboardType = UIKeyboardType.numberPad
         expTF.addTarget(self, action: #selector(onExpiryTextFieldEditingDidEnd), for: .editingDidEnd)
+        expTF.addTarget(self, action: #selector(onExpiryTextFieldDidChange), for: .editingChanged)
         expTF.addTarget(self, action: #selector(onTextFieldEditingDidBegin), for: .editingDidBegin)
         expTF.addBorder(isFocused: false, title: "", cornerRadius: theme.cornerRadiusTheme.textFields, theme: Primer.theme.textFieldTheme, color: Primer.theme.colorTheme.tint1,
-                        backgroundColor: theme.backgroundColor)
+                        backgroundColor: theme.colorTheme.main1)
     }
+    
+    @objc private func onExpiryTextFieldDidChange(_ sender: UITextField) {
+        delegate?.validateExpiry(sender.text, updateTextField: false)
+        sender.textColor = Primer.theme.colorTheme.text1
+    }
+    
     @objc private func onExpiryTextFieldEditingDidEnd(_ sender: UITextField) {
-        delegate?.validateExpiry(sender.text)
+        delegate?.validateExpiry(sender.text, updateTextField: true)
     }
+    
     private func configureCvcTF() {
         cvcTF.tag = 3
         cvcTF.placeholder = theme.content.cardFormView.cvcTextFieldPlaceholder
@@ -186,13 +211,43 @@ extension CardFormView {
         cvcTF.setRightPaddingPoints(5)
         cvcTF.keyboardType = UIKeyboardType.numberPad
         cvcTF.addTarget(self, action: #selector(onCVCTextFieldEditingDidEnd), for: .editingDidEnd)
+        cvcTF.addTarget(self, action: #selector(onCVCTextFieldDidChange), for: .editingChanged)
         cvcTF.addTarget(self, action: #selector(onTextFieldEditingDidBegin), for: .editingDidBegin)
         cvcTF.addBorder(isFocused: false, title: "", cornerRadius: theme.cornerRadiusTheme.textFields, theme: Primer.theme.textFieldTheme, color: Primer.theme.colorTheme.tint1,
                         backgroundColor: Primer.theme.colorTheme.main1)
     }
-    @objc private func onCVCTextFieldEditingDidEnd(_ sender: UITextField) {
-        delegate?.validateCVC(sender.text)
+    
+    @objc private func onCVCTextFieldDidChange(_ sender: UITextField) {
+        delegate?.validateCVC(sender.text, updateTextField: false)
+        sender.textColor = Primer.theme.colorTheme.text1
     }
+    
+    @objc private func onCVCTextFieldEditingDidEnd(_ sender: UITextField) {
+        delegate?.validateCVC(sender.text, updateTextField: true)
+    }
+    
+    private func configureScannerButton() {
+        scannerButton.setTitle("Scan card", for: .normal)
+        scannerButton.setTitleColor(Primer.theme.colorTheme.text3, for: .normal)
+        scannerButton.titleLabel?.font = .systemFont(ofSize: 15)
+        
+        scannerButton.addTarget(self, action: #selector(showScanner), for: .touchUpInside)
+        
+        scannerButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        scannerButton.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 12).isActive = true
+        scannerButton.topAnchor.constraint(equalTo: submitButton.bottomAnchor, constant: 12).isActive = true
+        
+        let iconView = UIImageView(image: ImageName.camera.image)
+        scannerButton.addSubview(iconView)
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.trailingAnchor.constraint(equalTo: scannerButton.leadingAnchor, constant: -8).isActive = true
+        iconView.centerYAnchor.constraint(equalTo: scannerButton.centerYAnchor).isActive = true
+        iconView.heightAnchor.constraint(equalToConstant: iconView.intrinsicContentSize.height * 0.75).isActive = true
+        iconView.widthAnchor.constraint(equalToConstant: iconView.intrinsicContentSize.width * 0.75).isActive = true
+    }
+    
+    @objc private func showScanner() { delegate?.showScanner() }
 }
 
 // MARK: Anchoring

@@ -52,7 +52,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         delegate: PrimerCheckoutDelegate,
         amount: Int,
         currency: Currency,
-        theme: PrimerTheme = PrimerTheme.init(),
+        theme: PrimerTheme = PrimerTheme.initialise(),
         applePayEnabled: Bool = false,
         customerId: String? = nil,
         merchantIdentifier: String? = nil,

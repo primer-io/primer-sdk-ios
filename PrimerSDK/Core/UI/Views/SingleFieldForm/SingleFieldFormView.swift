@@ -55,7 +55,6 @@ class SingleFieldFormView: UIView {
 extension SingleFieldFormView {
     func configureNavbar() {
         guard let delegate = delegate else { return }
-        navBar.backgroundColor = delegate.theme.backgroundColor
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem()
         backItem.action = #selector(back)

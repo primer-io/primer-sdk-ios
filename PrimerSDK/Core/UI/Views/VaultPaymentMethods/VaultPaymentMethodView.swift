@@ -4,7 +4,6 @@ protocol VaultPaymentMethodViewDelegate: class, UITableViewDelegate, UITableView
     var theme: PrimerTheme { get }
     func cancel()
     func edit()
-    func showCardForm()
     func showPayPal()
 }
 
@@ -30,7 +29,7 @@ class VaultPaymentMethodView: UIView, ReactiveView {
         
         addSubview(navBar)
         addSubview(tableView)
-        addSubview(addButton)
+//        addSubview(addButton)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -38,11 +37,11 @@ class VaultPaymentMethodView: UIView, ReactiveView {
     func render(isBusy: Bool = false) {
         configureNavBar()
         configureTableView()
-        configureAddButton()
+//        configureAddButton()
         
         anchorNavBar()
         anchorTableView()
-        anchorAddButton()
+//        anchorAddButton()
     }
 }
 
@@ -77,11 +76,9 @@ extension VaultPaymentMethodView {
         tableView.dataSource = delegate
         tableView.layer.cornerRadius = 8.0
         tableView.backgroundColor = Primer.theme.colorTheme.main1
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         tableView.rowHeight = 64
-        tableView.tableFooterView = UIView()
         tableView.alwaysBounceVertical = false
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell5")
-        tableView.register(PaymentMethodTableViewCell.self, forCellReuseIdentifier: "paymentMethodCell")
     }
     
     private func configureAddButton() {
@@ -93,7 +90,7 @@ extension VaultPaymentMethodView {
         addButton.addTarget(self, action: #selector(showCardForm), for: .touchUpInside)
     }
     
-    @objc private func showCardForm() { delegate?.showCardForm() }
+    @objc private func showCardForm() { }
     
     private func configurePayPalButton() {
         payPalButton.setTitle("PayPal", for: .normal)
@@ -141,12 +138,12 @@ extension VaultPaymentMethodView {
         tableView.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 12).isActive = true
         tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
         tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: addButton.topAnchor).isActive = true
+        tableView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
     }
     
     private func anchorAddButton() {
         addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -18).isActive = true
+        addButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30).isActive = true
         addButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
         addButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
     }
@@ -156,6 +153,6 @@ extension VaultPaymentMethodView {
         payPalButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -18).isActive = true
         payPalButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
         payPalButton.widthAnchor.constraint(equalToConstant: payPalButton.intrinsicContentSize.width).isActive = true
-        payPalButton.heightAnchor.constraint(equalToConstant: payPalButton.intrinsicContentSize.height).isActive = true
+        payPalButton.heightAnchor.constraint(equalToConstant: payPalButton.intrinsicContentSize.height - 160).isActive = true
     }
 }

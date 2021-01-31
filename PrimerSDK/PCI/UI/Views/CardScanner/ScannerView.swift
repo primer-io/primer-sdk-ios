@@ -88,11 +88,12 @@ extension ScannerView {
         scannerView?.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         scannerView?.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20).isActive = true
         scannerView?.widthAnchor.constraint(equalTo: widthAnchor, constant: -(Primer.theme.layout.safeMargin * 2)).isActive = true
-        scannerView?.heightAnchor.constraint(equalTo: widthAnchor, multiplier: 0.6, constant: 1).isActive = true
+        scannerView?.heightAnchor.constraint(equalTo: widthAnchor, multiplier: 0.55, constant: 1).isActive = true
     }
     private func setSkipButtonConstraints() {
+        guard let scannerView = scannerView else { return }
         skipButton.translatesAutoresizingMaskIntoConstraints = false
-        skipButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -18).isActive = true
+        skipButton.topAnchor.constraint(equalTo: scannerView.bottomAnchor, constant: 18).isActive = true
         skipButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
     }
 }
