@@ -18,15 +18,15 @@ public struct PrimerTheme {
     @available(iOS 13.0, *)
     public static func initialiseWithDarkTheme(
         cornerRadiusTheme: CornerRadiusTheme = CornerRadiusTheme(),
-        defaultTheme: ColorTheme? = nil,
-        darkTheme: ColorTheme? = nil,
+        colorTheme: ColorTheme = PrimerLightTheme(),
+        darkTheme: ColorTheme = PrimerDarkTheme(),
         layout: PrimerLayout = PrimerLayout(),
         textFieldTheme: PrimerTextFieldTheme = .underlined,
         fontTheme: PrimerFontTheme = PrimerFontTheme()
     ) -> PrimerTheme {
         return PrimerTheme(
             cornerRadiusTheme: cornerRadiusTheme,
-            colorTheme: DefaultColorTheme(lightTheme: defaultTheme ?? LightTheme(), darkTheme: darkTheme ?? DarkTheme()),
+            colorTheme: DefaultColorTheme(lightTheme: colorTheme, darkTheme: darkTheme),
             textFieldTheme: textFieldTheme,
             fontTheme: fontTheme,
             layout: layout
@@ -35,14 +35,14 @@ public struct PrimerTheme {
     
     public static func initialise(
         cornerRadiusTheme: CornerRadiusTheme = CornerRadiusTheme(),
-        defaultTheme: ColorTheme? = nil,
+        colorTheme: ColorTheme = PrimerLightTheme(),
         layout: PrimerLayout = PrimerLayout(),
         textFieldTheme: PrimerTextFieldTheme = .underlined,
         fontTheme: PrimerFontTheme = PrimerFontTheme()
     ) -> PrimerTheme {
         return PrimerTheme(
             cornerRadiusTheme: cornerRadiusTheme,
-            colorTheme: defaultTheme ?? LightTheme(),
+            colorTheme: colorTheme,
             textFieldTheme: textFieldTheme,
             fontTheme: fontTheme,
             layout: layout
@@ -165,18 +165,18 @@ struct DefaultColorTheme: ColorTheme {
     }
 }
 
-struct LightTheme: ColorTheme {
-    var text1: UIColor
-    var text2: UIColor
-    var text3: UIColor
-    var secondaryText1: UIColor
-    var main1: UIColor
-    var main2: UIColor
-    var tint1: UIColor
-    var disabled1: UIColor
-    var error1: UIColor
+public struct PrimerLightTheme: ColorTheme {
+    public var text1: UIColor
+    public var text2: UIColor
+    public var text3: UIColor
+    public var secondaryText1: UIColor
+    public var main1: UIColor
+    public var main2: UIColor
+    public var tint1: UIColor
+    public var disabled1: UIColor
+    public var error1: UIColor
     
-    init(
+    public init(
         text1: UIColor = .black,
         text2: UIColor = .white,
         text3: UIColor = .systemBlue,
@@ -200,18 +200,18 @@ struct LightTheme: ColorTheme {
 }
 
 @available(iOS 13.0, *)
-struct DarkTheme: ColorTheme {
-    var text1: UIColor
-    var text2: UIColor
-    var text3: UIColor
-    var secondaryText1: UIColor
-    var main1: UIColor
-    var main2: UIColor
-    var tint1: UIColor
-    var disabled1: UIColor
-    var error1: UIColor
+public struct PrimerDarkTheme: ColorTheme {
+    public var text1: UIColor
+    public var text2: UIColor
+    public var text3: UIColor
+    public var secondaryText1: UIColor
+    public var main1: UIColor
+    public var main2: UIColor
+    public var tint1: UIColor
+    public var disabled1: UIColor
+    public var error1: UIColor
     
-    init(
+    public init(
         text1: UIColor = .white,
         text2: UIColor = .white,
         text3: UIColor = .systemBlue,

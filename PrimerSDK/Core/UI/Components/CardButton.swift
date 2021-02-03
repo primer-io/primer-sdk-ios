@@ -152,6 +152,8 @@ class CardButton: UIButton {
     
     private func addIcon() {
         checkView = UIImageView(image: ImageName.check2.image)
+        
+        
         addSubview(checkView)
         checkView.translatesAutoresizingMaskIntoConstraints = false
         checkView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
