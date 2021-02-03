@@ -84,8 +84,8 @@ extension UITextField {
         case .underlined:
             addLineBorder(color: color)
         case .doublelined:
-            addLineBorder(color: color, isTop: true, padding: 3)
-            addLineBorder(color: color, padding: 3)
+            addLineBorder(color: color, isTop: true, padding: 0)
+            addLineBorder(color: color, padding: 0)
         }
         
         if (isFocused && theme != .doublelined) {
@@ -104,7 +104,12 @@ extension UITextField {
     }
     
     func addIcon() {
-        let iconView = UIImageView(image: ImageName.check2.image)
+        let icon = ImageName.check2.image
+        let iconView = UIImageView()
+        let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
+        iconView.tintColor = Primer.theme.colorTheme.tint1
+        iconView.image = tintedIcon
+        
         iconView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(iconView)
 //        iconView.heightAnchor.constraint(equalToConstant: 20).isActive = true

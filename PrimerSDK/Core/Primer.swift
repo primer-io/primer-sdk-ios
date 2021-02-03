@@ -31,6 +31,10 @@ public class Primer {
         context.viewModelLocator.externalViewModel.fetchVaultedPaymentMethods(completion)
     }
     
+    public func dismiss() {
+        rootViewController.dismiss(animated: true, completion: nil)
+    }
+    
 }
 
 extension Optional {

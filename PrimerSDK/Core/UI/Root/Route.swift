@@ -69,6 +69,7 @@ enum Route {
         case .form(let type):
             switch type {
             case .address: return 460
+            case .name, .iban, .email: return 300
             default: return 320
             }
         }

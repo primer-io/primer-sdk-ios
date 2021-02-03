@@ -20,7 +20,13 @@ extension RootViewController: RouterDelegate {
         let vc = route.viewControllerFactory(context, router: self)
         
         if (vc is SuccessViewController) {
+            
+            if (context.settings.hasDisabledSuccessScreen) {
+                return dismiss(animated: true, completion: nil)
+            }
+            
             view.endEditing(true)
+            
         }
         
         self.add(vc, height: route.height)
