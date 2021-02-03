@@ -17,7 +17,7 @@ protocol RouterDelegate: class {
 extension RootViewController: RouterDelegate {
     func show(_ route: Route) {
         
-        let vc = route.viewControllerFactory(context, router: self)
+        guard let vc = route.viewControllerFactory(context, router: self) else { return }
         
         if (vc is SuccessViewController) {
             
@@ -38,12 +38,12 @@ extension RootViewController: RouterDelegate {
     }
     
     func popAllAndShow(_ route: Route) {
-        let vc = route.viewControllerFactory(context, router: self)
+        guard let vc = route.viewControllerFactory(context, router: self) else { return }
         popAllAndShow(vc, height: route.height)
     }
     
     func popAndShow(_ route: Route) {
-        let vc = route.viewControllerFactory(context, router: self)
+        guard let vc = route.viewControllerFactory(context, router: self) else { return }
         popAndShow(vc, height: route.height)
     }
 }

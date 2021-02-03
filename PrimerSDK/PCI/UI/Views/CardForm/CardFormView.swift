@@ -243,7 +243,13 @@ extension CardFormView {
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.trailingAnchor.constraint(equalTo: scannerButton.leadingAnchor, constant: -8).isActive = true
         iconView.centerYAnchor.constraint(equalTo: scannerButton.centerYAnchor).isActive = true
-        iconView.heightAnchor.constraint(equalToConstant: iconView.intrinsicContentSize.height * 0.75).isActive = true
+        
+        if #available(iOS 11.0, *) {
+            iconView.heightAnchor.constraint(equalToConstant: iconView.intrinsicContentSize.height * 0.75).isActive = true
+        } else {
+            iconView.heightAnchor.constraint(equalToConstant: 0).isActive = true
+        }
+        
         iconView.widthAnchor.constraint(equalToConstant: iconView.intrinsicContentSize.width * 0.75).isActive = true
     }
     

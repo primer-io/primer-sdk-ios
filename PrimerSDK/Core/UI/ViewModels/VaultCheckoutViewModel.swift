@@ -23,7 +23,21 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     }
     
     var theme: PrimerTheme { return state.settings.theme }
-    var paymentMethods: [PaymentMethodToken] { return state.paymentMethods }
+    
+    var paymentMethods: [PaymentMethodToken] {
+        if #available(iOS 11.0, *) {
+            return state.paymentMethods
+        } else {
+            return state.paymentMethods.filter {
+                switch $0.paymentInstrumentType {
+                case .GOCARDLESS_MANDATE: return true
+                case .PAYMENT_CARD: return true
+                default: return false
+                }
+            }
+        }
+    }
+    
     var selectedPaymentMethodId: String { return state.selectedPaymentMethod }
     
     var clientTokenService: ClientTokenServiceProtocol
