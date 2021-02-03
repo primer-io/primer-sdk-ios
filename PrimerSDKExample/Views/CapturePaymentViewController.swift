@@ -41,7 +41,7 @@ class CapturePaymentViewController: UIViewController {
             return
         }
         
-        callApi(request, completion: { [weak self] result in
+        callApi(request, completion: { result in
             switch result {
             case .success:
                 print("done 🚀")

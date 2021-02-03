@@ -40,49 +40,69 @@ class CheckoutViewController: UIViewController {
             view.backgroundColor = .white
         }
         
-        var settings: PrimerSettings
+        var theme: PrimerTheme
+        
+        let themeColor = UIColor(red: 45/255, green: 80/255, blue: 230/255, alpha: 1)
         
         if #available(iOS 13.0, *) {
-            settings = PrimerSettings(
-                delegate: self,
-                amount: amount,
-                currency: .EUR,
-                theme: PrimerTheme.initialiseWithDarkTheme(),
-                customerId: "customer_1",
-                countryCode: .fr,
-                urlScheme: "primer://oauth",
-                urlSchemeIdentifier: "primer",
-                businessDetails: BusinessDetails(
-                    name: "My Business",
-                    address: Address(addressLine1: "107 Rue de Rivoli", city: "Paris", countryCode: "FR", postalCode: "75001")
-                )
+            theme = PrimerTheme.initialiseWithDarkTheme(
+                colorTheme: PrimerLightTheme(
+                    text3: themeColor,
+                    tint1: themeColor
+                ),
+                darkTheme: PrimerDarkTheme(
+                    text3: themeColor,
+                    tint1: themeColor
+                ),
+                layout: PrimerLayout(showMainTitle: true, showTopTitle: false),
+                textFieldTheme: .doublelined,
+                fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
             )
         } else {
-            // Fallback on earlier versions
-            settings = PrimerSettings(
-                delegate: self,
-                amount: amount,
-                currency: .EUR,
-                theme: PrimerTheme.initialise(),
-                customerId: "customer_1",
-                countryCode: .fr,
-                urlScheme: "primer://oauth",
-                urlSchemeIdentifier: "primer",
-                businessDetails: BusinessDetails(
-                    name: "My Business",
-                    address: Address(addressLine1: "107 Rue de Rivoli", city: "Paris", countryCode: "FR", postalCode: "75001")
+            theme = PrimerTheme.initialise(
+                colorTheme: PrimerLightTheme(
+                    text3: themeColor,
+                    tint1: themeColor
                 )
             )
         }
         
+        let delegate = self
+        
+        let businessDetails = BusinessDetails(
+            name: "My Business",
+            address: Address(
+                addressLine1: "107 Rue de Rivoli",
+                addressLine2: nil,
+                city: "Paris",
+                state: nil,
+                countryCode: "FR",
+                postalCode: "75001"
+            )
+        )
+        
+        let settings = PrimerSettings(
+            delegate: delegate, // object
+            amount: amount, // int
+            currency: .EUR, // enum
+            theme: theme, // theme object
+            customerId: "customer_1", // string
+            countryCode: .fr, // enum
+            urlScheme: "primer://oauth",
+            urlSchemeIdentifier: "primer",
+            businessDetails: businessDetails // business details object
+        )
+        
         primer = Primer(with: settings)
+        
+        // primer showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) -> Void
+        // primer fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void)
         
         //
         view.addSubview(tableView)
         view.addSubview(addCardButton)
         view.addSubview(addPayPalButton)
         view.addSubview(vaultCheckoutButton)
-        //        view.addSubview(directCheckoutButton)
         view.addSubview(directDebitButton)
         
         //

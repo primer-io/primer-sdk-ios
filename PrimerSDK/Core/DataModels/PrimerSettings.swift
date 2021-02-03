@@ -79,12 +79,26 @@ public class PrimerSettings: PrimerSettingsProtocol {
     }
 }
 
-public struct BusinessDetails {
+public struct BusinessDetails: Codable {
     public var name: String
     public var address: Address
     
     public init(name: String, address: Address) {
         self.name = name
         self.address = address
+    }
+}
+
+class MockDelegate: PrimerCheckoutDelegate {
+    func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
+        
+    }
+    
+    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+        
+    }
+    
+    func onCheckoutDismissed() {
+        
     }
 }
