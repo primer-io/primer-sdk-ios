@@ -6,6 +6,7 @@ enum OAuthError: Error {
     case invalidURL
 }
 
+@available(iOS 11.0, *)
 class OAuthViewController: UIViewController {
     let indicator = UIActivityIndicatorView()
     let viewModel: OAuthViewModelProtocol
@@ -104,6 +105,7 @@ class OAuthViewController: UIViewController {
     }
 }
 
+@available(iOS 11.0, *)
 extension OAuthViewController: ASWebAuthenticationPresentationContextProviding {
     @available(iOS 12.0, *)
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {

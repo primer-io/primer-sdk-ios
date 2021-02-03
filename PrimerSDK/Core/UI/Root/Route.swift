@@ -20,13 +20,17 @@ enum Route {
     case confirmMandate
     case form(type: FormType)
     
-    func viewControllerFactory(_ context: CheckoutContext, router: RouterDelegate) -> UIViewController {
+    func viewControllerFactory(_ context: CheckoutContext, router: RouterDelegate) -> UIViewController? {
         switch self {
         case .cardForm: return CardFormViewController(context.viewModelLocator.cardFormViewModel, router: router)
         case .cardScanner(let delegate):
-            let vc = CardScannerViewController(viewModel: context.viewModelLocator.cardScannerViewModel, router: router)
-            vc.delegate = delegate
-            return vc
+            if #available(iOS 11.2, *) {
+                let vc = CardScannerViewController(viewModel: context.viewModelLocator.cardScannerViewModel, router: router)
+                vc.delegate = delegate
+                return vc
+            } else {
+                return nil
+            }
         case .vaultCheckout: return VaultCheckoutViewController(context.viewModelLocator.vaultCheckoutViewModel, router: router)
         case .vaultPaymentMethods(let delegate):
             let vc = VaultPaymentMethodViewController(context.viewModelLocator.vaultPaymentMethodViewModel, router: router)
@@ -34,7 +38,11 @@ enum Route {
             return vc
         case .directCheckout:
             return DirectCheckoutViewController(with: context.viewModelLocator.directCheckoutViewModel, and: router)
-        case .oAuth: return OAuthViewController(with: context.viewModelLocator.oAuthViewModel, router: router)
+        case .oAuth: if #available(iOS 11.0, *) {
+            return OAuthViewController(with: context.viewModelLocator.oAuthViewModel, router: router)
+        } else {
+            return nil
+        }
         case .applePay: return ApplePayViewController(with: context.viewModelLocator.applePayViewModel)
         case .success(let type):
             let vm = SuccessScreenViewModel(context: context, type: type)
