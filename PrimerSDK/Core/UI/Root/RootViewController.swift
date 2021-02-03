@@ -14,13 +14,6 @@ class RootViewController: UIViewController {
     
     lazy var backdropView: UIView = UIView()
     
-    var directCheckout: DirectCheckoutViewController?
-    var cardForm: CardFormViewController?
-    var cardScanner: CardScannerViewController?
-    var vaultCheckout: VaultCheckoutViewController?
-    var vaultPaymentMethods: VaultPaymentMethodViewController?
-    var oAuth: OAuthViewController?
-    
     let mainView = UIView()
     
     var routes: [UIViewController] = []
@@ -55,7 +48,11 @@ class RootViewController: UIViewController {
         backdropView.pin(to: view)
         mainView.clipsToBounds = true
         mainView.layer.cornerRadius = 10
-        mainView.layer.maskedCorners = [.layerMinXMinYCorner,.layerMaxXMinYCorner]
+        if #available(iOS 11.0, *) {
+            mainView.layer.maskedCorners = [.layerMinXMinYCorner,.layerMaxXMinYCorner]
+        } else {
+            // Fallback on earlier versions
+        }
         mainView.backgroundColor = context.settings.theme.colorTheme.main1
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
