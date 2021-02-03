@@ -12,6 +12,7 @@ protocol CardScannerViewControllerDelegate: class {
     func setScannedCardDetails(with cardDetails: PrimerCreditCardDetails)
 }
 
+@available(iOS 11.2, *)
 class CardScannerViewController: UIViewController {
     
     let simpleScanVC = SimpleScanViewController.createViewController()
@@ -65,6 +66,7 @@ class CardScannerViewController: UIViewController {
     }
 }
 
+@available(iOS 11.2, *)
 extension CardScannerViewController: ScannerViewDelegate {
     func cancel() {
         router?.pop()
