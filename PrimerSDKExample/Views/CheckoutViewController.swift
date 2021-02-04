@@ -90,7 +90,8 @@ class CheckoutViewController: UIViewController {
             countryCode: .fr, // enum
             urlScheme: "primer://oauth",
             urlSchemeIdentifier: "primer",
-            businessDetails: businessDetails // business details object
+            businessDetails: businessDetails, // business details object
+            directDebitHasNoAmount: true
         )
         
         primer = Primer(with: settings)
@@ -284,8 +285,6 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
     
     private func presentCapturePayment(_ index: Int) {
         let result = listOfVaultedPaymentMethods[index]
-        print("🦁", result)
-        //        guard let token = result.token else { return }
         let type = result.paymentInstrumentType
         let request = AuthorizationRequest(token: result.token!, amount: amount, type: type.rawValue)
         delegate?.addToken(request: request)

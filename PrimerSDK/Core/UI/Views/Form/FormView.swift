@@ -259,7 +259,7 @@ extension FormView {
     }
     
     private func configureButton() {
-        button.setTitle("Next", for: .normal)
+        button.setTitle("Next".localized(), for: .normal)
         button.layer.cornerRadius = 12
         button.addTarget(self, action: #selector(onButtonPressed), for: .touchUpInside)
         button.titleLabel?.font = .boldSystemFont(ofSize: 18)

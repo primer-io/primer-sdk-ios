@@ -23,15 +23,15 @@ class DirectDebitService: DirectDebitServiceProtocol {
         guard let clientToken = state.decodedClientToken else {
             return completion(PrimerError.DirectDebitSessionFailed)
         }
-        print("🚀")
+
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .GOCARDLESS_MANDATE) else {
             return completion(PrimerError.DirectDebitSessionFailed)
         }
-        print("🚀🚀")
+
         guard let coreURL = clientToken.coreUrl else {
             return completion(PrimerError.DirectDebitSessionFailed)
         }
-        print("🚀🚀🚀")
+        
         guard let url = URL(string: "\(coreURL)/gocardless/mandates") else {
             return completion(PrimerError.DirectDebitSessionFailed)
         }
@@ -56,8 +56,6 @@ class DirectDebitService: DirectDebitServiceProtocol {
                 accountNumber: mandate.accountNumber
             )
         )
-        
-        print("🚀🚀🚀🚀", body)
         
         self.api.post(clientToken, body: body, url: url, completion: { [weak self] result in
             switch result {
