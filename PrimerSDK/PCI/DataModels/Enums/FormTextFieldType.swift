@@ -19,46 +19,46 @@ enum FormTextFieldType: Equatable {
     
     func validate(_ text: String) -> (Bool, String, Bool) {
         switch self {
-        case .accountNumber: return (text.isValidAccountNumber, "Account number is invalid", false)
-        case .sortCode: return (text.count > 5, "Sort code text field can't be empty", false)
+        case .accountNumber: return (text.isValidAccountNumber, "Account number is invalid".localized(), false)
+        case .sortCode: return (text.count > 5, "Sort code text field can't be empty".localized(), false)
         case .iban:
             if (text.count < 1) {
-                return (false, "IBAN text field can't be empty", false)
+                return (false, "IBAN text field can't be empty".localized(), false)
             }
-            return (text.count > 5, "IBAN is too short", false)
-        case .firstName: return (text.count > 0, "First name text field can't be empty", false)
-        case .lastName: return (text.count > 0, "Last name text field can't be empty", false)
+            return (text.count > 5, "IBAN is too short".localized(), false)
+        case .firstName: return (text.count > 0, "First name text field can't be empty".localized(), false)
+        case .lastName: return (text.count > 0, "Last name text field can't be empty".localized(), false)
         case .email:
             if (text.count < 1) {
-                return (false, "Email text field can't be empty", false)
+                return (false, "Email text field can't be empty".localized(), false)
             }
             
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-            return (emailPred.evaluate(with: text), "Email value is invalid", false)
-        case .addressLine1: return (text.count > 0, "Address text field can't be empty", false)
+            return (emailPred.evaluate(with: text), "Email value is invalid".localized(), false)
+        case .addressLine1: return (text.count > 0, "Address text field can't be empty".localized(), false)
         case .addressLine2:
             if (text.count > 0) { return (true, "", false) }
             return (true, "", true)
-        case .city: return (text.count > 0, "City text field can't be empty", false)
-        case .country: return (text.count > 0, "Coutry text field can't be empty", false)
-        case .postalCode: return (text.count > 0, "Postal code text field can't be empty", false)
+        case .city: return (text.count > 0, "City text field can't be empty".localized(), false)
+        case .country: return (text.count > 0, "Coutry text field can't be empty".localized(), false)
+        case .postalCode: return (text.count > 0, "Postal code text field can't be empty".localized(), false)
         }
     }
     
     var title: String {
         switch self {
-        case .accountNumber: return "Account number"
-        case .sortCode: return "Sort code"
+        case .accountNumber: return "Account number".localized()
+        case .sortCode: return "Sort code".localized()
         case .iban: return "IBAN"
-        case .firstName: return "First name"
-        case .lastName: return "Last name"
-        case .email: return "Email"
-        case .addressLine1: return "Address line 1"
-        case .addressLine2: return "Address line 2"
-        case .city: return "City"
-        case .country: return "Country"
-        case .postalCode: return "Postal Code"
+        case .firstName: return "First name".localized()
+        case .lastName: return "Last name".localized()
+        case .email: return "Email".localized()
+        case .addressLine1: return "Address line 1".localized()
+        case .addressLine2: return "Address line 2".localized()
+        case .city: return "City".localized()
+        case .country: return "Country".localized()
+        case .postalCode: return "Postal Code".localized()
         }
     }
     
@@ -70,7 +70,7 @@ enum FormTextFieldType: Equatable {
         case .firstName: return "e.g. John"
         case .lastName: return "e.g. Doe"
         case .email: return "e.g. john@mail.com"
-        case .addressLine1: return "e.g. Apartment 5, 14 Some Street"
+        case .addressLine1: return "e.g. Apartment 5, 14 Some Street".localized()
         case .addressLine2: return "(optional)"
         case .city: return "e.g. Paris"
         case .country: return "e.g. France"

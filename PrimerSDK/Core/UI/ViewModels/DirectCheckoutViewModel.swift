@@ -11,7 +11,11 @@ class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
     private var amount: Int { return state.settings.amount }
     private var currency: Currency { return state.settings.currency }
     
-    var amountViewModel: AmountViewModel { return AmountViewModel(amount: amount, currency: currency) }
+    var amountViewModel: AmountViewModel {
+        var vm = AmountViewModel(amount: amount, currency: currency)
+        vm.disabled = state.settings.directDebitHasNoAmount
+        return vm
+    }
     var paymentMethods: [PaymentMethodViewModel] { return state.viewModels }
     
     let clientTokenService: ClientTokenServiceProtocol
@@ -69,10 +73,14 @@ struct PaymentMethodViewModel {
 struct AmountViewModel {
     let amount: Int
     let currency: Currency
+    
+    var disabled = false
+    
     var formattedAmount: String {
         return String(format: "%.2f", (Double(amount) / 100))
     }
     func toLocal() -> String {
+        if (disabled) { return "" }
         switch currency {
         case .USD:
             return "$\(formattedAmount)"

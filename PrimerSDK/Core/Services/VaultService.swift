@@ -22,11 +22,11 @@ class VaultService: VaultServiceProtocol {
             return completion(PrimerError.VaultFetchFailed)
         }
         
-        guard let customerID = self.state.settings.customerId else {
-            return completion(PrimerError.VaultFetchFailed)
-        }
+//        guard let customerID = self.state.settings.customerId else {
+//            return completion(PrimerError.VaultFetchFailed)
+//        }
         
-        guard let url = URL(string: "\(pciURL)/payment-instruments?customer_id=\(customerID)") else {
+        guard let url = URL(string: "\(pciURL)/payment-instruments") else {
             return completion(PrimerError.VaultFetchFailed)
         }
         

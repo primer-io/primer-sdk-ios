@@ -29,11 +29,11 @@ enum FormType {
     
     var topTitle: String {
         switch self {
-        case .bankAccount: return "Add bank account"
-        case .name: return "Add bank account"
-        case .iban: return "Add bank account"
-        case .email: return "Add bank account"
-        case .address: return "Add bank account"
+        case .bankAccount: return "Add bank account".localized()
+        case .name: return "Add bank account".localized()
+        case .iban: return "Add bank account".localized()
+        case .email: return "Add bank account".localized()
+        case .address: return "Add bank account".localized()
         }
     }
     
@@ -41,7 +41,7 @@ enum FormType {
         switch self {
         case .bankAccount: return ""
         case .name: return ""
-        case .iban: return "SEPA Direct Debit Mandate"
+        case .iban: return "SEPA Direct Debit Mandate".localized()
         case .email: return ""
         case .address: return ""
         }
@@ -49,9 +49,9 @@ enum FormType {
     
     var subtitle: String {
         switch self {
-        case .bankAccount: return "Use IBAN instead"
-        case .name: return "Add bank account"
-        case .iban: return "Use an account number instead"
+        case .bankAccount: return "Use IBAN instead".localized()
+        case .name: return "Add bank account".localized()
+        case .iban: return "Use an account number instead".localized()
         case .email: return ""
         case .address: return ""
         }
