@@ -76,7 +76,7 @@ extension ConfirmMandateView {
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
-        navBar.topItem?.title = "Add bank account"
+        navBar.topItem?.title = "Add bank account".localized()
         navBar.translatesAutoresizingMaskIntoConstraints = false
         navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
         navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
@@ -87,7 +87,7 @@ extension ConfirmMandateView {
     }
     
     func addTitle() {
-        title.text = "Confirm SEPA Direct Debit"
+        title.text = "Confirm SEPA Direct Debit".localized()
         title.font = .systemFont(ofSize: 20, weight: .regular)
         title.textAlignment = .center
         title.translatesAutoresizingMaskIntoConstraints = false
@@ -127,8 +127,12 @@ extension ConfirmMandateView {
     
     func addLegalLabel() {
         guard let business = dataSource?.businessDetails else { return }
-        legalLabel.text = "By signing this mandate form, you authorise (C) \(business.name) to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from \(business.name)."
+        legalLabel.text =
+            "By signing this mandate form, you authorise (C) ".localized() +
+            "\(business.name) " + "to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from ".localized() +
+            "\(business.name)."
         legalLabel.numberOfLines = 0
+        legalLabel.lineBreakMode = .byWordWrapping
         legalLabel.font = .systemFont(ofSize: 10)
         legalLabel.textColor = Primer.theme.colorTheme.disabled1
         legalLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -150,7 +154,7 @@ extension ConfirmMandateView {
     }
     
     func addConfirmButton() {
-        confirmButton.setTitle("Confirm", for: .normal)
+        confirmButton.setTitle("Confirm".localized(), for: .normal)
         confirmButton.setTitleColor(Primer.theme.colorTheme.text2, for: .normal)
         confirmButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         confirmButton.backgroundColor = Primer.theme.colorTheme.tint1
