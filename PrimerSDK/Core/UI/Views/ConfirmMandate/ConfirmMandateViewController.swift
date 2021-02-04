@@ -71,7 +71,11 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
     }
     
     func close() {
-        let alert = UIAlertController(title: "Do you want to cancel adding a bank account?", message: "Your saved data will be erased.", preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: "Do you want to cancel adding a bank account?".localized(),
+            message: "Your saved data will be erased.".localized(),
+            preferredStyle: .alert
+        )
         
         alert.addAction(UIAlertAction(title: "Back", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Erase", style: .destructive, handler: { [weak self] action in
@@ -112,7 +116,7 @@ enum ConfirmMandateFormType: String {
     case name, email, address, iban
     
     var title: String {
-        return self.rawValue.uppercased()
+        return self.rawValue.localized().uppercased()
     }
     
     func content(_ mandate: DirectDebitMandate) -> String {

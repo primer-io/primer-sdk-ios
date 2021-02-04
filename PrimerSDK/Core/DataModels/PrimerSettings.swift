@@ -18,6 +18,7 @@ protocol PrimerSettingsProtocol {
     var isFullScreenOnly: Bool { get }
     var hasDisabledSuccessScreen: Bool { get }
     var businessDetails: BusinessDetails? { get }
+    var directDebitHasNoAmount: Bool { get }
 }
 
 public class PrimerSettings: PrimerSettingsProtocol {
@@ -33,6 +34,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     public let isFullScreenOnly: Bool
     public let hasDisabledSuccessScreen: Bool
     public let businessDetails: BusinessDetails?
+    public let directDebitHasNoAmount: Bool
     
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return delegate?.clientTokenCallback ?? { completion in }
@@ -61,7 +63,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         urlSchemeIdentifier: String,
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
-        businessDetails: BusinessDetails? = nil
+        businessDetails: BusinessDetails? = nil,
+        directDebitHasNoAmount: Bool = false
     ) {
         self.amount = amount
         self.currency = currency
@@ -76,6 +79,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
         self.businessDetails = businessDetails
+        self.directDebitHasNoAmount = directDebitHasNoAmount
     }
 }
 
