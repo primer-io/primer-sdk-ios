@@ -7,4 +7,6 @@ enum PrimerError: String, Error {
     case VaultCreateFailed = "Failed to save payment method."
     case DirectDebitSessionFailed = "Direct debit session failed."
     case ConfigFetchFailed = "Failed to setup session."
+    case TokenizationPreRequestFailed = "Failed to complete action. Your payment method was not processed."
+    case TokenizationRequestFailed = "Connection error, your payment method was not saved. Please try again."
 }

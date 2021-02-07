@@ -22,7 +22,7 @@ var mockSettings = PrimerSettings(
     delegate: MockPrimerCheckoutDelegate(),
     amount: 200,
     currency: .EUR,
-    theme: PrimerTheme(),
+    theme: PrimerTheme.initialise(),
     applePayEnabled: false,
     customerId: "cid",
     merchantIdentifier: "mid",
@@ -64,6 +64,20 @@ class MockPrimerCheckoutDelegate: PrimerCheckoutDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var isFullScreenOnly: Bool {
+        return false
+    }
+    
+    var hasDisabledSuccessScreen: Bool {
+        return false
+    }
+    
+    var businessDetails: BusinessDetails?
+    
+    var directDebitHasNoAmount: Bool {
+        return true
+    }
+    
     var urlScheme: String = ""
     
     var urlSchemeIdentifier: String = ""
@@ -80,7 +94,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     
     var customerId: String? { return "cid" }
     
-    var theme: PrimerTheme { return PrimerTheme() }
+    var theme: PrimerTheme { return PrimerTheme.initialise() }
     
     var clientTokenRequestCallback: ClientTokenCallBack
     
@@ -100,8 +114,13 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 }
 
 class MockAppState: AppStateProtocol {
+    var directDebitMandate: DirectDebitMandate = DirectDebitMandate(firstName: "", lastName: "", email: "", iban: "", accountNumber: "", sortCode: "", address: nil)
     
-    var settings: PrimerSettingsProtocol
+    var directDebitFormCompleted: Bool = false
+    
+    var mandateId: String?
+    
+    var settings: PrimerSettingsProtocol = MockPrimerSettings()
     
     var viewModels: [PaymentMethodViewModel] = []
     
@@ -136,68 +155,67 @@ class MockAppState: AppStateProtocol {
     }
 }
 
-class MockServiceLocator: ServiceLocatorProtocol {
-    var clientTokenService: ClientTokenServiceProtocol
-    var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    var paypalService: PayPalServiceProtocol
-    var tokenizationService: TokenizationServiceProtocol
-    var vaultService: VaultServiceProtocol
-    
-    init (
-        clientTokenService: ClientTokenServiceProtocol = MockClientTokenService(),
-        paymentMethodConfigService: PaymentMethodConfigServiceProtocol = MockPaymentMethodConfigService(),
-        paypalService: PayPalServiceProtocol = MockPayPalService(),
-        tokenizationService: TokenizationServiceProtocol = MockTokenizationService(),
-        vaultService: VaultServiceProtocol = MockVaultService()
-    ) {
-        self.clientTokenService = clientTokenService
-        self.paymentMethodConfigService = paymentMethodConfigService
-        self.paypalService = paypalService
-        self.tokenizationService = tokenizationService
-        self.vaultService = vaultService
-    }
-}
-
-class MockViewModelLocator: ViewModelLocatorProtocol {
-    var applePayViewModel: ApplePayViewModelProtocol { return MockApplePayViewModel() }
-    
-    var cardFormViewModel: CardFormViewModelProtocol { return MockCardFormViewModel() }
-    
-    var cardScannerViewModel: CardScannerViewModelProtocol { return MockCardScannerViewModel() }
-    
-    var directCheckoutViewModel: DirectCheckoutViewModelProtocol { return MockDirectCheckoutViewModel() }
-    
-    var oAuthViewModel: OAuthViewModelProtocol { return MockOAuthViewModel() }
-    
-    var vaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol { return MockVaultPaymentMethodViewModel() }
-    
-    var vaultCheckoutViewModel: VaultCheckoutViewModelProtocol { return MockVaultCheckoutViewModel() }
-    
-    var ibanFormViewModel: IBANFormViewModelProtocol { return MockIBANFormViewModel() }
-    
-    var confirmMandateViewModel: ConfirmMandateViewModelProtocol { return MockConfirmMandateViewModel() }
-    
-    var externalViewModel: ExternalViewModelProtocol { return MockExternalViewModel() }
-}
-
-class MockCheckoutContext: CheckoutContextProtocol {
-    var state: AppStateProtocol
-    var settings: PrimerSettingsProtocol
-    var serviceLocator: ServiceLocatorProtocol
-    var viewModelLocator: ViewModelLocatorProtocol
-    
-    init(
-        state: AppStateProtocol = MockAppState(),
-        settings: PrimerSettingsProtocol = mockSettings,
-        serviceLocator: ServiceLocatorProtocol = MockServiceLocator(),
-        viewModelLocator: ViewModelLocatorProtocol = MockViewModelLocator()
-    ) {
-        self.state = state
-        self.settings = settings
-        self.serviceLocator = serviceLocator
-        self.viewModelLocator = viewModelLocator
-    }
-}
-
-
 let mockPayPalBillingAgreement = PayPalConfirmBillingAgreementResponse(billingAgreementId: "agreementId", externalPayerInfo: PayPalExternalPayerInfo(externalPayerId: "", email: "", firstName: "", lastName: ""), shippingAddress: ShippingAddress(firstName: "", lastName: "", addressLine1: "", addressLine2: "", city: "", state: "", countryCode: "", postalCode: ""))
+
+
+class MockLocator {
+    static func registerDependencies() {
+        // register dependencies
+        DependencyContainer.register(mockSettings as PrimerSettingsProtocol)
+        DependencyContainer.register(MockAppState() as AppStateProtocol)
+        DependencyContainer.register(MockAPIClient() as APIClientProtocol)
+        DependencyContainer.register(MockVaultService() as VaultServiceProtocol)
+        DependencyContainer.register(MockClientTokenService() as ClientTokenServiceProtocol)
+        DependencyContainer.register(MockPaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
+        DependencyContainer.register(MockPayPalService() as PayPalServiceProtocol)
+        DependencyContainer.register(MockTokenizationService() as TokenizationServiceProtocol)
+        DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
+        DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
+        DependencyContainer.register(MockCardFormViewModel() as CardFormViewModelProtocol)
+        DependencyContainer.register(MockCardScannerViewModel() as CardScannerViewModelProtocol)
+        DependencyContainer.register(MockDirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
+        DependencyContainer.register(MockOAuthViewModel() as OAuthViewModelProtocol)
+        DependencyContainer.register(MockVaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
+        DependencyContainer.register(MockVaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
+        DependencyContainer.register(MockConfirmMandateViewModel() as ConfirmMandateViewModelProtocol)
+        DependencyContainer.register(MockFormViewModel() as FormViewModelProtocol)
+        DependencyContainer.register(MockExternalViewModel() as ExternalViewModelProtocol)
+        DependencyContainer.register(MockRouter() as RouterDelegate)
+    }
+}
+
+class MockDirectDebitService: DirectDebitServiceProtocol {
+    func createMandate(_ completion: @escaping (Error?) -> Void) {
+        
+    }
+}
+
+class MockRouter: RouterDelegate {
+    func setRoot(_ root: RootViewController) {
+        
+    }
+    
+    func show(_ route: Route) {
+        
+    }
+    
+    func pop() {
+        
+    }
+    
+    func popAllAndShow(_ route: Route) {
+        
+    }
+    
+    func popAndShow(_ route: Route) {
+        
+    }
+}
+
+class MockFormViewModel: FormViewModelProtocol {
+    var mandate: DirectDebitMandate = DirectDebitMandate(firstName: "", lastName: "", email: "", iban: "", accountNumber: "", sortCode: "", address: nil)
+    
+    func setState(_ value: String?, type: FormTextFieldType) {
+        
+    }
+}

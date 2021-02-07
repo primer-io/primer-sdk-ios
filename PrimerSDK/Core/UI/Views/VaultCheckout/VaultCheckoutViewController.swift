@@ -4,31 +4,18 @@ import PassKit
 class VaultCheckoutViewController: UIViewController {
     
     var subView: VaultCheckoutView = VaultCheckoutView()
-    
     var tokenSelectedForPayment: PaymentMethodToken?
     
-//    @Dependency private(set) var analytics: AnalyticsServiceProtocol
+    @Dependency private(set) var viewModel: VaultCheckoutViewModelProtocol
+    @Dependency private(set) var router: RouterDelegate
     
-    private var viewModel: VaultCheckoutViewModelProtocol
     private let loadingIndicator = UIActivityIndicatorView()
     private let transitionDelegate = TransitionDelegate()
-    
-    weak var router: RouterDelegate?
-    
-    init(_ viewModel: VaultCheckoutViewModelProtocol, router: RouterDelegate?) {
-        self.viewModel = viewModel
-        self.router = router
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     deinit { print("🧨 destroy:", self.self) }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        analytics.trackEvent(of: .STARTED_CHECKOUT)
         
         view.addSubview(subView)
         subView.delegate = self
@@ -102,11 +89,11 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
         let option = viewModel.availablePaymentOptions[indexPath.section]
         
         switch option.type {
-        case .APPLE_PAY: router?.show(.applePay)
+        case .APPLE_PAY: router.show(.applePay)
         case .GOOGLE_PAY: break
-        case .PAYMENT_CARD: router?.show(.cardForm)
-        case .PAYPAL: router?.show(.oAuth)
-        case .GOCARDLESS_MANDATE: router?.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
+        case .PAYMENT_CARD: router.show(.cardForm)
+        case .PAYPAL: router.show(.oAuth)
+        case .GOCARDLESS_MANDATE: router.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
         }
     }
 }
@@ -114,11 +101,11 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
 // MARK: VaultCheckoutViewDelegate
 extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
     func openVault() {
-        router?.show(.vaultPaymentMethods(delegate: self))
+        router.show(.vaultPaymentMethods(delegate: self))
     }
     
     func cancel() {
-        router?.pop()
+        router.pop()
     }
     
     func selectTokenForPayment(token: PaymentMethodToken) {
@@ -129,10 +116,10 @@ extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
         viewModel.authorizePayment({ [weak self] error in
             DispatchQueue.main.async {
                 if (error.exists) {
-                    self?.router?.show(.error)
+                    self?.router.show(.error())
                     return
                 }
-                self?.router?.show(.success(type: .regular))
+                self?.router.show(.success(type: .regular))
             }
         })
     }

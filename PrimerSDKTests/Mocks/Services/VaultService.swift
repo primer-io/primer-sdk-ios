@@ -8,27 +8,27 @@
 @testable import PrimerSDK
 
 class MockVaultService: VaultServiceProtocol {
-    var paymentMethods: [PaymentMethodToken] {
-        if (paymentMethodsIsEmpty) { return [] }
-        return [
-            PaymentMethodToken(
-                token: "tokenId",
-                analyticsId: "id",
-                tokenType: "type",
-                paymentInstrumentType: .PAYMENT_CARD,
-                paymentInstrumentData: PaymentInstrumentData(
-                    last4Digits: nil,
-                    expirationMonth: nil,
-                    expirationYear: nil,
-                    cardholderName: nil,
-                    network: nil,
-                    isNetworkTokenized: nil,
-                    binData: nil,
-                    vaultData: nil
-                )
-            )
-        ]
-    }
+//    var paymentMethods: [PaymentMethodToken] {
+//        if (paymentMethodsIsEmpty) { return [] }
+//        return [
+//            PaymentMethodToken(
+//                token: "tokenId",
+//                analyticsId: "id",
+//                tokenType: "type",
+//                paymentInstrumentType: .PAYMENT_CARD,
+//                paymentInstrumentData: PaymentInstrumentData(
+//                    last4Digits: nil,
+//                    expirationMonth: nil,
+//                    expirationYear: nil,
+//                    cardholderName: nil,
+//                    network: nil,
+//                    isNetworkTokenized: nil,
+//                    binData: nil,
+//                    vaultData: nil
+//                )
+//            )
+//        ]
+//    }
     
     var paymentMethodVMs: [PaymentMethodToken] {
         return []

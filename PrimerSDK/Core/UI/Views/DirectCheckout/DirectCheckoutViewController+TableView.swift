@@ -40,7 +40,6 @@ extension DirectCheckoutViewController: UITableViewDelegate, UITableViewDataSour
         cell.contentView.addSubview(methodView)
         methodView.pin(to: cell.contentView)
         cell.frame = cell.frame.inset(by: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
-        cell.backgroundColor = viewModel.theme.colorTheme.main2
         cell.separatorInset = UIEdgeInsets.zero
         
         return cell
@@ -53,10 +52,10 @@ extension DirectCheckoutViewController: UITableViewDelegate, UITableViewDataSour
         let vm = viewModel.paymentMethods[indexPath.section]
         
         switch vm.type {
-        case .APPLE_PAY: router?.show(.applePay)
+        case .APPLE_PAY: router.show(.applePay)
         case .GOOGLE_PAY: break
-        case .PAYMENT_CARD: router?.show(.cardForm)
-        case .PAYPAL: router?.show(.oAuth)
+        case .PAYMENT_CARD: router.show(.cardForm)
+        case .PAYPAL: router.show(.oAuth)
         case .GOCARDLESS_MANDATE: break
         }
     }

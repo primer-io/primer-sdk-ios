@@ -54,8 +54,8 @@ class CheckoutViewController: UIViewController {
                     text3: themeColor,
                     tint1: themeColor
                 ),
-                layout: PrimerLayout(showMainTitle: true, showTopTitle: false),
-                textFieldTheme: .doublelined,
+                layout: PrimerLayout(showMainTitle: true, showTopTitle: true),
+                textFieldTheme: .underlined,
                 fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
             )
         } else {
@@ -191,9 +191,7 @@ class CheckoutViewController: UIViewController {
         }
     }
     
-    deinit {
-        print("🧨 destroy:", self.self)
-    }
+    deinit { print("🧨 destroy:", self.self) }
     
     @objc private func showCardForm() {
         primer?.showCheckout(self, flow: .addCardToVault)

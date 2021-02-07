@@ -12,10 +12,11 @@ class OAuthViewModelTests: XCTestCase {
     
     func test_generateOAuthURL_calls_paypalService_getAccessToken_if_client_token_nil() throws {
         let paypalService = MockPayPalService()
-        let serviceLocator = MockServiceLocator(paypalService: paypalService)
-        let context = MockCheckoutContext(serviceLocator: serviceLocator)
         
-        let viewModel: OAuthViewModel = OAuthViewModel(context: context)
+        MockLocator.registerDependencies()
+        DependencyContainer.register(paypalService as PayPalServiceProtocol)
+        
+        let viewModel = OAuthViewModel()
         
         viewModel.generateOAuthURL(with: { result in })
         

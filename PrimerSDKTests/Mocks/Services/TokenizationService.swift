@@ -13,7 +13,7 @@ class MockTokenizationService: TokenizationServiceProtocol {
     
     func tokenize(request: PaymentMethodTokenizationRequest, onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
         tokenizeCalled = true
-        let token = PaymentMethodToken(token: "tokenID", paymentInstrumentType: .PAYMENT_CARD)
+        let token = PaymentMethodToken(token: "tokenID", paymentInstrumentType: .PAYMENT_CARD, vaultData: VaultData())
         return onTokenizeSuccess(.success(token))
     }
 }

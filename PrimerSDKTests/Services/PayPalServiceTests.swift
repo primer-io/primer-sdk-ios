@@ -17,7 +17,10 @@ class PayPalServiceTests: XCTestCase {
         let api = MockAPIClient(with: data, throwsError: false)
         let state = MockAppState()
         
-        let service = PayPalService(api: api, state: state)
+        DependencyContainer.register(api as APIClientProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let service = PayPalService()
         
         var throwsError = false
         var approvalUrl = ""
@@ -40,7 +43,10 @@ class PayPalServiceTests: XCTestCase {
         let api = MockAPIClient(with: data, throwsError: false)
         let state = MockAppState(decodedClientToken: nil)
         
-        let service = PayPalService(api: api, state: state)
+        DependencyContainer.register(api as APIClientProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let service = PayPalService()
         
         var throwsError = false
         var approvalUrl = ""
@@ -63,7 +69,10 @@ class PayPalServiceTests: XCTestCase {
         let api = MockAPIClient(with: data, throwsError: false)
         let state = MockAppState(paymentMethodConfig: nil)
         
-        let service = PayPalService(api: api, state: state)
+        DependencyContainer.register(api as APIClientProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let service = PayPalService()
         
         var throwsError = false
         var approvalUrl = ""
@@ -87,7 +96,10 @@ class PayPalServiceTests: XCTestCase {
         let api = MockAPIClient(with: data, throwsError: false)
         let state = MockAppState()
         
-        let service = PayPalService(api: api, state: state)
+        DependencyContainer.register(api as APIClientProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let service = PayPalService()
         
         var throwsError = false
         var approvalUrl = ""
@@ -110,7 +122,10 @@ class PayPalServiceTests: XCTestCase {
         let api = MockAPIClient(with: data, throwsError: false)
         let state = MockAppState(decodedClientToken: nil)
         
-        let service = PayPalService(api: api, state: state)
+        DependencyContainer.register(api as APIClientProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let service = PayPalService()
         
         var throwsError = false
         var approvalUrl = ""
@@ -133,7 +148,10 @@ class PayPalServiceTests: XCTestCase {
         let api = MockAPIClient(with: data, throwsError: false)
         let state = MockAppState(paymentMethodConfig: nil)
         
-        let service = PayPalService(api: api, state: state)
+        DependencyContainer.register(api as APIClientProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let service = PayPalService()
         
         var throwsError = false
         var approvalUrl = ""
@@ -157,7 +175,10 @@ class PayPalServiceTests: XCTestCase {
         let api = MockAPIClient(with: data, throwsError: false)
         let state = MockAppState()
         
-        let service = PayPalService(api: api, state: state)
+        DependencyContainer.register(api as APIClientProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let service = PayPalService()
         
         var throwsError = false
         var billingAgreementId = ""
@@ -180,7 +201,10 @@ class PayPalServiceTests: XCTestCase {
         let api = MockAPIClient(with: data, throwsError: false)
         let state = MockAppState(decodedClientToken: nil)
         
-        let service = PayPalService(api: api, state: state)
+        DependencyContainer.register(api as APIClientProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let service = PayPalService()
         
         var throwsError = false
         var billingAgreementId = ""
@@ -203,7 +227,11 @@ class PayPalServiceTests: XCTestCase {
         let api = MockAPIClient(with: data, throwsError: false)
         let state = MockAppState(paymentMethodConfig: nil)
         
-        let service = PayPalService(api: api, state: state)
+        MockLocator.registerDependencies()
+        DependencyContainer.register(api as APIClientProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let service = PayPalService()
         
         var throwsError = false
         var billingAgreementId = ""

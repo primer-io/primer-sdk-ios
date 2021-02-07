@@ -13,10 +13,12 @@ class VaultPaymentMethodViewModelTests: XCTestCase {
     func test_reloadVault_calls_vaultService_loadVaultedPaymentMethods() throws {
         let clientTokenService = MockClientTokenService()
         let vaultService = MockVaultService()
-        let serviceLocator = MockServiceLocator(clientTokenService: clientTokenService, vaultService: vaultService)
-        let context = MockCheckoutContext(serviceLocator: serviceLocator)
         
-        let viewModel = VaultPaymentMethodViewModel(context: context)
+        MockLocator.registerDependencies()
+        DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)
+        DependencyContainer.register(vaultService as VaultServiceProtocol)
+        
+        let viewModel = VaultPaymentMethodViewModel()
         
         viewModel.reloadVault(with: { error in })
         
@@ -26,10 +28,12 @@ class VaultPaymentMethodViewModelTests: XCTestCase {
     func test_deletePaymentMethod_calls_vaultService_deleteVaultedPaymentMethod() throws {
         let clientTokenService = MockClientTokenService()
         let vaultService = MockVaultService()
-        let serviceLocator = MockServiceLocator(clientTokenService: clientTokenService, vaultService: vaultService)
-        let context = MockCheckoutContext(serviceLocator: serviceLocator)
         
-        let viewModel = VaultPaymentMethodViewModel(context: context)
+        MockLocator.registerDependencies()
+        DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)
+        DependencyContainer.register(vaultService as VaultServiceProtocol)
+        
+        let viewModel = VaultPaymentMethodViewModel()
         
         viewModel.deletePaymentMethod(with: "id", and: { error in })
         

@@ -9,7 +9,9 @@ import UIKit
 
 class RootViewController: UIViewController {
     
-    let context: CheckoutContext
+    @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
+    
     let transitionDelegate = TransitionDelegate()
     
     lazy var backdropView: UIView = UIView()
@@ -26,8 +28,7 @@ class RootViewController: UIViewController {
     var hasSetPointOrigin = false
     var currentHeight: CGFloat = 0
     
-    init(_ context: CheckoutContext) {
-        self.context = context
+    init() {
         super.init(nibName: nil, bundle: nil)
         self.modalPresentationStyle = .custom
         self.transitioningDelegate = transitionDelegate
@@ -53,12 +54,12 @@ class RootViewController: UIViewController {
         } else {
             // Fallback on earlier versions
         }
-        mainView.backgroundColor = context.settings.theme.colorTheme.main1
+        mainView.backgroundColor = Primer.theme.colorTheme.main1
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         bottomConstraint = mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomConstraint?.isActive = true
-        if (context.settings.isFullScreenOnly) {
+        if (settings.isFullScreenOnly) {
             heightConstraint = mainView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height - 40)
         } else {
             heightConstraint = mainView.heightAnchor.constraint(equalToConstant: 400)
@@ -66,20 +67,22 @@ class RootViewController: UIViewController {
         heightConstraint?.isActive = true
         mainView.layer.cornerRadius = 12
         
-        if (context.settings.isFullScreenOnly) {
+        if (settings.isFullScreenOnly) {
             
         } else {
             let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
             mainView.addGestureRecognizer(panGesture)
         }
         
+        let router: RouterDelegate = DependencyContainer.resolve()
+        
         switch Primer.flow {
-        case .completeDirectCheckout: show(.vaultCheckout)
-        case .completeVaultCheckout: show(.vaultCheckout)
-        case .addCardToVault: show(.cardForm)
-        case .addPayPalToVault: show(.oAuth)
+        case .completeDirectCheckout: router.show(.vaultCheckout)
+        case .completeVaultCheckout: router.show(.vaultCheckout)
+        case .addCardToVault: router.show(.cardForm)
+        case .addPayPalToVault: router.show(.oAuth)
         //        case .addDirectDebit: show(.confirmMandate)
-        case .addDirectDebit: show(.form(type: .iban(mandate: context.state.directDebitMandate)))
+        case .addDirectDebit: router.show(.form(type: .iban(mandate: state.directDebitMandate)))
         }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
@@ -127,7 +130,7 @@ class RootViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        context.settings.onCheckoutDismiss()
+        settings.onCheckoutDismiss()
     }
     
     @objc func handleTap(_ sender: UITapGestureRecognizer) {

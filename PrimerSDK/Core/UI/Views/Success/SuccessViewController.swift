@@ -15,16 +15,7 @@ class SuccessViewController: UIViewController {
     let referenceTitle = UILabel()
     let reference = UILabel()
     
-    var viewModel: SuccessScreenViewModelProtocol
-    
-    init(viewModel: SuccessScreenViewModelProtocol) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    @Dependency private(set) var viewModel: SuccessScreenViewModelProtocol
     
     override func viewDidLoad() {
         view.addSubview(icon)
@@ -55,7 +46,6 @@ extension SuccessViewController {
     }
     
     func configureMessage() {
-        print("🐥🐥")
         message.text = viewModel.title
         message.numberOfLines = 0
         message.textAlignment = .center
@@ -142,11 +132,9 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
         return state.mandateId
     }
     
-    let state: AppStateProtocol
+    @Dependency private(set) var state: AppStateProtocol
     
-    init(context: CheckoutContext, type: SuccessScreenType) {
-        print("🐥")
-        self.state = context.state
+    init(type: SuccessScreenType) {
         self.successScreenType = type
     }
     

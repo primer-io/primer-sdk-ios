@@ -8,18 +8,21 @@
 @testable import PrimerSDK
 
 class MockCardFormViewModel: CardFormViewModelProtocol {
+    var theme: PrimerTheme {
+        return PrimerTheme.initialise()
+    }
+    
     var flow: PrimerSessionFlow {
         return .completeDirectCheckout
     }
     
     func configureView(_ completion: @escaping (Error?) -> Void) {
-        
+        return
     }
     
     var cardScannerViewModel: CardScannerViewModelProtocol {
         return MockCardScannerViewModel()
     }
-    var theme: PrimerTheme { return PrimerTheme() }
     
     var tokenizeCalled = false
     
