@@ -14,10 +14,6 @@ class MockDirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
     
     var paymentMethods: [PaymentMethodViewModel] = []
     
-    var theme: PrimerTheme {
-        return PrimerTheme()
-    }
-    
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
         
     }

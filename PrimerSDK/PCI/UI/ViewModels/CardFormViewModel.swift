@@ -1,6 +1,5 @@
 protocol CardFormViewModelProtocol {
     var flow: PrimerSessionFlow { get }
-    var theme: PrimerTheme { get }
     func configureView(_ completion: @escaping (Error?) -> Void)
     func tokenize(
         instrument: PaymentInstrument,
@@ -10,20 +9,12 @@ protocol CardFormViewModelProtocol {
 
 
 class CardFormViewModel: CardFormViewModelProtocol {
-    var theme: PrimerTheme { return state.settings.theme }
     var flow: PrimerSessionFlow { return Primer.flow }
     
     //
-    let tokenizationService: TokenizationServiceProtocol
-    let clientTokenService: ClientTokenServiceProtocol
-    
-    private var state: AppStateProtocol
-    
-    init(context: CheckoutContextProtocol) {
-        self.state = context.state
-        self.tokenizationService = context.serviceLocator.tokenizationService
-        self.clientTokenService = context.serviceLocator.clientTokenService
-    }
+    @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
+    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
+    @Dependency private(set) var state: AppStateProtocol
     
     deinit { print("🧨 destroy:", self.self) }
     

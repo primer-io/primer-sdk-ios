@@ -47,21 +47,26 @@ extension ScannerView {
         navBar.backgroundColor = Primer.theme.colorTheme.main1
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
+        backItem.tintColor = Primer.theme.colorTheme.tint1
         navItem.leftBarButtonItem = backItem
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
         navBar.topItem?.title = Primer.theme.content.scannerView.titleText
     }
+    
     @objc private func cancel() { delegate?.cancel() }
+    
     private func configureDescriptionLabel() {
         descriptionLabel.text = Primer.theme.content.scannerView.descriptionText
         descriptionLabel.textColor = Primer.theme.colorTheme.text1
     }
+    
     private func configureScannerView() {
         scannerView?.clipsToBounds = true
         scannerView?.layer.cornerRadius = Primer.theme.cornerRadiusTheme.buttons //⚠️
     }
+    
     private func configureSkipButton() {
         skipButton.setTitle(Primer.theme.content.scannerView.skipButtonText, for: .normal)
         skipButton.setTitleColor(Primer.theme.colorTheme.text3, for: .normal)

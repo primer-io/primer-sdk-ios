@@ -12,15 +12,19 @@ class TokenizationServiceTests: XCTestCase {
     
     func test_tokenize_calls_api_post() throws {
         
-        let token = PaymentMethodToken(token: "token", paymentInstrumentType: .PAYMENT_CARD)
-        var newToken = PaymentMethodToken(token: "", paymentInstrumentType: .UNKNOWN)
+        let token = PaymentMethodToken(token: "token", paymentInstrumentType: .PAYMENT_CARD, vaultData: VaultData(customerId: "customerId"))
+        var newToken = PaymentMethodToken(token: "", paymentInstrumentType: .UNKNOWN, vaultData: VaultData(customerId: ""))
         let data = try JSONEncoder().encode(token)
         let api = MockAPIClient(with: data, throwsError: false)
         let state = MockAppState()
         
         let request = PaymentMethodTokenizationRequest(paymentInstrument: PaymentInstrument(), state: state)
         
-        let service = TokenizationService(api: api, state: state)
+        MockLocator.registerDependencies()
+        DependencyContainer.register(api as APIClientProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let service = TokenizationService()
         
         service.tokenize(request: request) { result in
             switch result {

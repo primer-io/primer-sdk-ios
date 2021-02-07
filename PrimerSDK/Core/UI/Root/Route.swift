@@ -15,49 +15,39 @@ enum Route {
     case oAuth
     case applePay
     case success(type: SuccessScreenType)
-    case error
-    case singleFieldForm(type: TextFieldType)
+    case error(message: String = "")
     case confirmMandate
-    case form(type: FormType)
+    case form(type: FormType, closeOnSubmit: Bool = false)
     
-    func viewControllerFactory(_ context: CheckoutContext, router: RouterDelegate) -> UIViewController? {
+    var viewController: UIViewController? {
         switch self {
-        case .cardForm: return CardFormViewController(context.viewModelLocator.cardFormViewModel, router: router)
+        case .cardForm: return FormViewController(formType: .cardForm)
         case .cardScanner(let delegate):
             if #available(iOS 11.2, *) {
-                let vc = CardScannerViewController(viewModel: context.viewModelLocator.cardScannerViewModel, router: router)
+                let vc = CardScannerViewController()
                 vc.delegate = delegate
                 return vc
             } else {
                 return nil
             }
-        case .vaultCheckout: return VaultCheckoutViewController(context.viewModelLocator.vaultCheckoutViewModel, router: router)
+        case .vaultCheckout: return VaultCheckoutViewController()
         case .vaultPaymentMethods(let delegate):
-            let vc = VaultPaymentMethodViewController(context.viewModelLocator.vaultPaymentMethodViewModel, router: router)
+            let vc = VaultPaymentMethodViewController()
             vc.delegate = delegate
             return vc
         case .directCheckout:
-            return DirectCheckoutViewController(with: context.viewModelLocator.directCheckoutViewModel, and: router)
+            return DirectCheckoutViewController()
         case .oAuth: if #available(iOS 11.0, *) {
-            return OAuthViewController(with: context.viewModelLocator.oAuthViewModel, router: router)
+            return OAuthViewController()
         } else {
             return nil
         }
-        case .applePay: return ApplePayViewController(with: context.viewModelLocator.applePayViewModel)
-        case .success(let type):
-            let vm = SuccessScreenViewModel(context: context, type: type)
-            let vc = SuccessViewController(viewModel: vm)
-            return vc
-        case .error: return ErrorViewController()
-        case .singleFieldForm(let type):
-            let vm = SingleFieldFormViewModel(context: context, textFieldType: type)
-            return SingleFieldFormViewController(viewModel: vm, router: router)
-        case .confirmMandate:
-            context.state.directDebitFormCompleted = true
-            return ConfirmMandateViewController(viewModel: ConfirmMandateViewModel(context: context), router: router)
-        case .form(let type):
-            let vm = FormViewModel(context: context, formType: type)
-            return FormViewController(viewModel: vm, router: router)
+        case .applePay: return ApplePayViewController()
+        case .success: return SuccessViewController()
+        case .error(let message):
+            return ErrorViewController(message: message)
+        case .confirmMandate: return ConfirmMandateViewController()
+        case .form(let type, _): return FormViewController(formType: type)
         }
     }
     
@@ -72,12 +62,16 @@ enum Route {
         case .applePay:  return 400
         case .success:  return 360
         case .error:  return 220
-        case .singleFieldForm: return 288
         case .confirmMandate: return 580
-        case .form(let type):
+        case .form(let type, _):
             switch type {
             case .address: return 460
             case .name, .iban, .email: return 300
+            case .cardForm:
+                switch Primer.theme.textFieldTheme {
+                case .doublelined: return 360
+                default: return 320
+                }
             default: return 320
             }
         }

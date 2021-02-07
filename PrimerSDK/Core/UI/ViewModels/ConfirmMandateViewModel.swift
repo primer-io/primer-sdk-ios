@@ -34,21 +34,12 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
         return state.settings.amount.toCurrencyString(currency: state.settings.currency)
     }
     
-    private let state: AppStateProtocol
-    private let directDebitService: DirectDebitServiceProtocol
-    private let tokenizationService: TokenizationServiceProtocol
-    private let paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    private let clientTokenService: ClientTokenServiceProtocol
-    private let vaultService: VaultServiceProtocol
-    
-    init(context: CheckoutContext) {
-        self.state = context.state
-        self.directDebitService = context.serviceLocator.directDebitService
-        self.tokenizationService = context.serviceLocator.tokenizationService
-        self.paymentMethodConfigService = context.serviceLocator.paymentMethodConfigService
-        self.clientTokenService = context.serviceLocator.clientTokenService
-        self.vaultService = context.serviceLocator.vaultService
-    }
+    @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var directDebitService: DirectDebitServiceProtocol
+    @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
+    @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
+    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
+    @Dependency private(set) var vaultService: VaultServiceProtocol
     
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
         if (state.decodedClientToken.exists) {

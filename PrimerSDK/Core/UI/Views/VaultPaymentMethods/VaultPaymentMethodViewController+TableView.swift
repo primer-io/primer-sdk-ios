@@ -10,7 +10,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
     }
     
     @objc private func showCardForm(_ sender: UIButton) {
-        router?.show(.cardForm)
+        router.show(.cardForm)
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

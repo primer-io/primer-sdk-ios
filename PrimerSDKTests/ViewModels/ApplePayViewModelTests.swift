@@ -13,10 +13,11 @@ class ApplePayViewModelTests: XCTestCase {
     func test_tokenize_calls_tokenizationService_tokenize_onTokenizeSuccess() throws {
         let tokenizationService = MockTokenizationService()
         let paymentInstrument = PaymentInstrument()
-        let serviceLocator = MockServiceLocator(tokenizationService: tokenizationService)
-        let context = MockCheckoutContext(serviceLocator: serviceLocator)
         
-        let viewModel = ApplePayViewModel(context: context)
+        MockLocator.registerDependencies()
+        DependencyContainer.register(tokenizationService as TokenizationServiceProtocol)
+        
+        let viewModel = ApplePayViewModel()
         
         viewModel.tokenize(instrument: paymentInstrument, completion: { error in })
         
@@ -26,10 +27,11 @@ class ApplePayViewModelTests: XCTestCase {
     func test_tokenize_calls_tokenizationService_passes_error() throws {
         let tokenizationService = MockTokenizationService()
         let paymentInstrument = PaymentInstrument()
-        let serviceLocator = MockServiceLocator(tokenizationService: tokenizationService)
-        let context = MockCheckoutContext(serviceLocator: serviceLocator)
         
-        let viewModel = ApplePayViewModel(context: context)
+        MockLocator.registerDependencies()
+        DependencyContainer.register(tokenizationService as TokenizationServiceProtocol)
+        
+        let viewModel = ApplePayViewModel()
         
         viewModel.tokenize(instrument: paymentInstrument) { error in }
         
