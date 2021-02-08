@@ -3,9 +3,8 @@ protocol ClientTokenServiceProtocol {
 }
 
 class ClientTokenService: ClientTokenServiceProtocol {
-    let state: AppStateProtocol
     
-    init(state: AppStateProtocol) { self.state = state }
+    @Dependency private(set) var state: AppStateProtocol
     
     /**
     performs asynchronous call passed in by app developer, decodes the returned Base64 Primer client token string and adds it to shared state.

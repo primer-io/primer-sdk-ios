@@ -13,20 +13,11 @@ class OAuthViewModel: OAuthViewModelProtocol {
     private var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? { return state.confirmedBillingAgreement }
     private var onTokenizeSuccess: PaymentMethodTokenCallBack { return state.settings.onTokenizeSuccess }
     
-    //
-    private let paypalService: PayPalServiceProtocol
-    private let tokenizationService: TokenizationServiceProtocol
-    private let clientTokenService: ClientTokenServiceProtocol
-    private let paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    private var state: AppStateProtocol
-    
-    init(context: CheckoutContextProtocol) {
-        self.paypalService = context.serviceLocator.paypalService
-        self.tokenizationService = context.serviceLocator.tokenizationService
-        self.clientTokenService = context.serviceLocator.clientTokenService
-        self.paymentMethodConfigService = context.serviceLocator.paymentMethodConfigService
-        self.state = context.state
-    }
+    @Dependency private(set) var paypalService: PayPalServiceProtocol
+    @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
+    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
+    @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
+    @Dependency private(set) var state: AppStateProtocol
     
     private func loadConfig(_ completion: @escaping (Result<String, Error>) -> Void) {
         clientTokenService.loadCheckoutConfig({ [weak self] error in

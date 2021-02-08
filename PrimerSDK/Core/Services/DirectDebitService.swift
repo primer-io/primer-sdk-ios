@@ -11,13 +11,8 @@ protocol DirectDebitServiceProtocol {
 
 class DirectDebitService: DirectDebitServiceProtocol {
     
-    private let api: APIClientProtocol
-    private var state: AppStateProtocol
-    
-    init(api: APIClientProtocol, state: AppStateProtocol) {
-        self.api = api
-        self.state = state
-    }
+    @Dependency private(set) var api: APIClientProtocol
+    @Dependency private(set) var state: AppStateProtocol
     
     func createMandate(_ completion: @escaping (Error?) -> Void) {
         guard let clientToken = state.decodedClientToken else {

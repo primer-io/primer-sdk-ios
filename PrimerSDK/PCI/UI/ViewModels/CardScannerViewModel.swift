@@ -5,10 +5,7 @@ protocol CardScannerViewModelProtocol {
 class CardScannerViewModel: CardScannerViewModelProtocol {
     var theme: PrimerTheme { return settings.theme }
     
-    //
-    let settings: PrimerSettingsProtocol
-    
-    init(context: CheckoutContextProtocol) { self.settings = context.settings }
+    @Dependency private(set) var settings: PrimerSettingsProtocol
 }
 
 class MockCardScannerViewModel: CardScannerViewModelProtocol {

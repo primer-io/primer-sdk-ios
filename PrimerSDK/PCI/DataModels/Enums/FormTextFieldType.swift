@@ -4,6 +4,8 @@
 //
 //  Created by Carl Eriksson on 24/01/2021.
 //
+import UIKit
+
 enum FormTextFieldType: Equatable {
     case accountNumber(_ initialValue: String? = "")
     case sortCode(_ initialValue: String? = "")
@@ -16,18 +18,22 @@ enum FormTextFieldType: Equatable {
     case city(_ initialValue: String? = "")
     case country(_ initialValue: String? = "")
     case postalCode(_ initialValue: String? = "")
+    case cardholderName
+    case cardNumber
+    case expiryDate
+    case cvc
     
     func validate(_ text: String) -> (Bool, String, Bool) {
         switch self {
         case .accountNumber: return (text.isValidAccountNumber, "Account number is invalid".localized(), false)
-        case .sortCode: return (text.count > 5, "Sort code text field can't be empty".localized(), false)
+        case .sortCode: return (text.count > 5, "Sort code is required".localized(), false)
         case .iban:
             if (text.count < 1) {
-                return (false, "IBAN text field can't be empty".localized(), false)
+                return (false, "IBAN is required".localized(), false)
             }
             return (text.count > 5, "IBAN is too short".localized(), false)
-        case .firstName: return (text.count > 0, "First name text field can't be empty".localized(), false)
-        case .lastName: return (text.count > 0, "Last name text field can't be empty".localized(), false)
+        case .firstName: return (text.count > 0, "First name is required".localized(), false)
+        case .lastName: return (text.count > 0, "Last name is required".localized(), false)
         case .email:
             if (text.count < 1) {
                 return (false, "Email text field can't be empty".localized(), false)
@@ -36,13 +42,17 @@ enum FormTextFieldType: Equatable {
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
             return (emailPred.evaluate(with: text), "Email value is invalid".localized(), false)
-        case .addressLine1: return (text.count > 0, "Address text field can't be empty".localized(), false)
+        case .addressLine1: return (text.count > 0, "Address is required".localized(), false)
         case .addressLine2:
             if (text.count > 0) { return (true, "", false) }
             return (true, "", true)
-        case .city: return (text.count > 0, "City text field can't be empty".localized(), false)
-        case .country: return (text.count > 0, "Coutry text field can't be empty".localized(), false)
-        case .postalCode: return (text.count > 0, "Postal code text field can't be empty".localized(), false)
+        case .city: return (text.count > 0, "City is required".localized(), false)
+        case .country: return (text.count > 0, "Country is required".localized(), false)
+        case .postalCode: return (text.count > 0, "Postal code is required".localized(), false)
+        case .cardholderName: return Validation.nameFieldIsValid(text)
+        case .cardNumber: return Validation.cardFieldIsValid(text)
+        case .expiryDate: return Validation.expiryFieldIsValid(text)
+        case .cvc: return Validation.CVCFieldIsValid(text)
         }
     }
     
@@ -59,6 +69,10 @@ enum FormTextFieldType: Equatable {
         case .city: return "City".localized()
         case .country: return "Country".localized()
         case .postalCode: return "Postal Code".localized()
+        case .cardholderName: return "Cardholder name"
+        case .cardNumber: return "Card number"
+        case .expiryDate: return "Expiry date"
+        case .cvc: return "CVC"
         }
     }
     
@@ -66,7 +80,7 @@ enum FormTextFieldType: Equatable {
         switch self {
         case .accountNumber: return "e.g. 12345678"
         case .sortCode: return "e.g. 60-83-71"
-        case .iban: return "e.g. FR14 2004 1010 050500013M02606"
+        case .iban: return "e.g. FR14 2004 1010 0505000..."
         case .firstName: return "e.g. John"
         case .lastName: return "e.g. Doe"
         case .email: return "e.g. john@mail.com"
@@ -75,13 +89,17 @@ enum FormTextFieldType: Equatable {
         case .city: return "e.g. Paris"
         case .country: return "e.g. France"
         case .postalCode: return "e.g. 75001"
+        case .cardholderName: return "e.g. John Doe"
+        case .cardNumber: return "e.g. 4242 4242 4242 4242"
+        case .expiryDate: return "e.g. 09/23"
+        case .cvc: return "e.g. 123"
         }
     }
     
     var mask: Mask? {
         switch self {
-        case .accountNumber: return Mask(pattern: "********")
-        case .sortCode: return Mask(pattern: "**-**-**")
+        case .accountNumber: return Mask(pattern: "########")
+        case .sortCode: return Mask(pattern: "##-##-##")
         case .iban: return Mask(pattern: "**** **** **** **********************")
         case .firstName: return nil
         case .lastName: return nil
@@ -91,6 +109,10 @@ enum FormTextFieldType: Equatable {
         case .city: return nil
         case .country: return nil
         case .postalCode: return nil
+        case .cardholderName: return nil
+        case .cardNumber: return Mask(pattern: "#### #### #### #### ###")
+        case .expiryDate: return Mask(pattern: "##/##")
+        case .cvc: return Mask(pattern: "####")
         }
     }
     
@@ -107,6 +129,22 @@ enum FormTextFieldType: Equatable {
         case .city(let val): return val ?? ""
         case .country(let val): return val ?? ""
         case .postalCode(let val): return val ?? ""
+        case .cardholderName: return ""
+        case .cardNumber: return ""
+        case .expiryDate: return ""
+        case .cvc: return ""
+        }
+    }
+}
+
+extension FormTextFieldType {
+    var keyboardType: UIKeyboardType {
+        switch self {
+        case .email: return .emailAddress
+        case .expiryDate: return .numberPad
+        case .cardNumber: return .numberPad
+        case .cvc: return .numberPad
+        default: return .default
         }
     }
 }

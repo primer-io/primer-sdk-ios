@@ -21,42 +21,30 @@ protocol AppStateProtocol: class {
     var approveURL: String? { get set }
     var directDebitMandate: DirectDebitMandate { get set }
     var directDebitFormCompleted: Bool { get set }
+    var cardData: CardData { get set }
     var mandateId: String? { get set }
 }
 
 class AppState: AppStateProtocol {
     
-    let settings: PrimerSettingsProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
     
     var viewModels: [PaymentMethodViewModel] = []
-    
     var paymentMethods: [PaymentMethodToken] = []
-    
     var selectedPaymentMethod: String = ""
-    
     var decodedClientToken: DecodedClientToken?
-    
     var paymentMethodConfig: PaymentMethodConfig?
-    
     var accessToken: String?
-    
     var billingAgreementToken: String?
-    
     var orderId: String?
-    
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
-    
     var approveURL: String?
-    
-    var directDebitMandate: DirectDebitMandate = DirectDebitMandate(
-//        iban: "FR1420041010050500013M02606",
-        address: Address()
-    )
-    
+    var directDebitMandate: DirectDebitMandate = DirectDebitMandate(address: Address())
     var directDebitFormCompleted: Bool = false
-    
     var mandateId: String?
-    
-    init(settings: PrimerSettingsProtocol) { self.settings = settings }
-    
+    var cardData: CardData = CardData(name: "", number: "", expiryYear: "", expiryMonth: "", cvc: "")
+}
+
+struct CardData {
+    var name, number, expiryYear, expiryMonth, cvc: String
 }

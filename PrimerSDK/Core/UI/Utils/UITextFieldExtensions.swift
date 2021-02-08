@@ -103,12 +103,20 @@ extension UITextField {
         self.addSubview(borderLine)
     }
     
-    func addIcon() {
-        let icon = ImageName.check2.image
+    func addIcon(isError: Bool = false) {
         let iconView = UIImageView()
-        let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
-        iconView.tintColor = Primer.theme.colorTheme.tint1
-        iconView.image = tintedIcon
+        
+        if (isError) {
+            let icon = ImageName.error.image
+            let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
+            iconView.tintColor = Primer.theme.colorTheme.error1
+            iconView.image = tintedIcon
+        } else {
+            let icon = ImageName.check2.image
+            let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
+            iconView.tintColor = Primer.theme.colorTheme.tint1
+            iconView.image = tintedIcon
+        }
         
         iconView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(iconView)
@@ -158,5 +166,6 @@ extension UITextField {
         self.addSubview(label)
         label.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         label.topAnchor.constraint(equalTo: bottomAnchor, constant: 2).isActive = true
+        addIcon(isError: true)
     }
 }

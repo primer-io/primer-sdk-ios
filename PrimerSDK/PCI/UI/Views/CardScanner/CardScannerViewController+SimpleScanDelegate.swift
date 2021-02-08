@@ -16,6 +16,6 @@ extension CardScannerViewController: SimpleScanDelegate {
         )
         
         delegate?.setScannedCardDetails(with: details)
-        router?.pop()
+        router.pop()
     }
 }

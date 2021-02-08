@@ -3,7 +3,6 @@ protocol VaultCheckoutViewModelProtocol {
     var mandate: DirectDebitMandate { get }
     var availablePaymentOptions: [PaymentMethodViewModel] { get }
     var selectedPaymentMethodId: String { get }
-    var theme: PrimerTheme { get }
     var amountStringed: String { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
     func authorizePayment(_ completion: @escaping (Error?) -> Void)
@@ -22,8 +21,6 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return state.settings.amount.toCurrencyString(currency: state.settings.currency)
     }
     
-    var theme: PrimerTheme { return state.settings.theme }
-    
     var paymentMethods: [PaymentMethodToken] {
         if #available(iOS 11.0, *) {
             return state.paymentMethods
@@ -40,17 +37,10 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     
     var selectedPaymentMethodId: String { return state.selectedPaymentMethod }
     
-    var clientTokenService: ClientTokenServiceProtocol
-    var vaultService: VaultServiceProtocol
-    var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    var state: AppStateProtocol
-    
-    init(context: CheckoutContextProtocol) {
-        self.clientTokenService = context.serviceLocator.clientTokenService
-        self.vaultService = context.serviceLocator.vaultService
-        self.paymentMethodConfigService = context.serviceLocator.paymentMethodConfigService
-        self.state = context.state
-    }
+    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
+    @Dependency private(set) var vaultService: VaultServiceProtocol
+    @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
+    @Dependency private(set) var state: AppStateProtocol
     
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
         if (state.decodedClientToken.exists) {

@@ -153,6 +153,10 @@ class CardButton: UIButton {
     private func addIcon() {
         checkView = UIImageView(image: ImageName.check2.image)
         
+        // color
+        let tintedIcon = ImageName.check2.image?.withRenderingMode(.alwaysTemplate)
+        checkView.tintColor = Primer.theme.colorTheme.tint1
+        checkView.image = tintedIcon
         
         addSubview(checkView)
         checkView.translatesAutoresizingMaskIntoConstraints = false

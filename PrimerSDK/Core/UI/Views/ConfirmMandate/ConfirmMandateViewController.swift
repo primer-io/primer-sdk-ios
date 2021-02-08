@@ -10,18 +10,10 @@ import UIKit
 class ConfirmMandateViewController: UIViewController {
     
     var subView: ConfirmMandateView = ConfirmMandateView()
-    private var viewModel: ConfirmMandateViewModelProtocol
-    weak var router: RouterDelegate?
+    @Dependency private(set) var viewModel: ConfirmMandateViewModelProtocol
+    @Dependency private(set) var router: RouterDelegate
     
     let formTypes: [ConfirmMandateFormType] = [.name, .email, .address, .iban]
-    
-    init(viewModel: ConfirmMandateViewModelProtocol, router: RouterDelegate) {
-        self.viewModel = viewModel
-        self.router = router
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     deinit { print("🧨 destroy:", self.self) }
     
@@ -60,7 +52,6 @@ extension ConfirmMandateViewController: UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard let router = router else { return }
         formTypes[indexPath.row].action(viewModel.mandate, router: router)
     }
 }
@@ -80,7 +71,7 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
         alert.addAction(UIAlertAction(title: "Back", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Erase", style: .destructive, handler: { [weak self] action in
             self?.viewModel.eraseData()
-            self?.router?.pop()
+            self?.router.pop()
         }))
         
         present(alert, animated: true, completion: nil)
@@ -89,8 +80,8 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
     func confirm() {
         viewModel.confirmMandateAndTokenize({ [weak self] error in
             DispatchQueue.main.async {
-                if (error.exists) { self?.router?.show(.error); return }
-                self?.router?.show(.success(type: .directDebit))
+                if (error.exists) { self?.router.show(.error()); return }
+                self?.router.show(.success(type: .directDebit))
             }
         })
     }

@@ -27,7 +27,7 @@ struct VaultCheckoutViewContent {
 }
 
 struct VaultPaymentMethodViewContent {
-    var mainTitleText: String { return "Other ways to pay".localized() }
+    var mainTitleText: String { return "Saved payment methods".localized() }
     var editButtonText: String { return "Edit".localized() }
     var addButtonText: String { return "Add new card".localized() }
 }

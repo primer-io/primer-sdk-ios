@@ -7,18 +7,10 @@ class VaultPaymentMethodViewController: UIViewController {
     
     
     var subView: VaultPaymentMethodView = VaultPaymentMethodView()
-    var viewModel: VaultPaymentMethodViewModelProtocol
+    @Dependency private(set) var viewModel: VaultPaymentMethodViewModelProtocol
     
     weak var delegate: ReloadDelegate?
-    weak var router: RouterDelegate?
-    
-    init(_ viewModel: VaultPaymentMethodViewModelProtocol, router: RouterDelegate?) {
-        self.viewModel = viewModel
-        self.router = router
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    @Dependency private(set) var router: RouterDelegate
     
     deinit { print("🧨 destroy:", self.self) }
     
@@ -35,9 +27,6 @@ class VaultPaymentMethodViewController: UIViewController {
 }
 
 extension VaultPaymentMethodViewController: VaultPaymentMethodViewDelegate {
-    var theme: PrimerTheme {
-        return viewModel.theme
-    }
     
     func edit() {
         showDeleteIcon = !showDeleteIcon
@@ -45,10 +34,10 @@ extension VaultPaymentMethodViewController: VaultPaymentMethodViewDelegate {
     }
     
     func cancel() {
-        router?.pop()
+        router.pop()
     }
     
     func showPayPal() {
-        router?.show(.oAuth)
+        router.show(.oAuth)
     }
 }

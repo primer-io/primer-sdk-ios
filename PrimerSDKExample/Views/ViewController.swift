@@ -55,6 +55,7 @@ class ViewController: UIViewController  {
         let imageView = UIImageView(image: image)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         button.addSubview(imageView)
+        button.accessibilityIdentifier = "walletButton"
         imageView.centerXAnchor.constraint(equalTo: button.centerXAnchor).isActive = true
         imageView.centerYAnchor.constraint(equalTo: button.centerYAnchor).isActive = true
         

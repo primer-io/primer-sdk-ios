@@ -17,16 +17,14 @@ class CardScannerViewController: UIViewController {
     
     let simpleScanVC = SimpleScanViewController.createViewController()
     let transitionDelegate = TransitionDelegate()
-    let viewModel: CardScannerViewModelProtocol
+    @Dependency private(set) var viewModel: CardScannerViewModelProtocol
+    @Dependency private(set) var router: RouterDelegate
     
     var scannerView: ScannerView?
     
     weak var delegate: CardScannerViewControllerDelegate?
-    weak var router: RouterDelegate?
 
-    init(viewModel: CardScannerViewModelProtocol, router: RouterDelegate?) {
-        self.viewModel = viewModel
-        self.router = router
+    init() {
         super.init(nibName: nil, bundle: nil)
         self.modalPresentationStyle = .custom
         self.transitioningDelegate = transitionDelegate
@@ -69,6 +67,6 @@ class CardScannerViewController: UIViewController {
 @available(iOS 11.2, *)
 extension CardScannerViewController: ScannerViewDelegate {
     func cancel() {
-        router?.pop()
+        router.pop()
     }
 }

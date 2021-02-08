@@ -17,21 +17,17 @@ enum AnalyticsEventType: String {
 
 class AnalyticsService: AnalyticsServiceProtocol {
     func trackEvent(of type: AnalyticsEventType) {
-        print("🦁🦁🦁🦁")
         print(Mixpanel.mainInstance().serverURL)
         Mixpanel.mainInstance().track(event: type.rawValue)
         
     }
     
     init() {
-        print("🦁🦁🦁")
         Mixpanel.initialize(token: "token", flushInterval: 0)
         Mixpanel.mainInstance().serverURL = "https://analytics.api.dev.core.primer.io/mixpanel"
 //        Mixpanel.mainInstance().delegate = self
         Mixpanel.mainInstance().loggingEnabled = true
         Mixpanel.mainInstance().flush(completion: {
-            print(Mixpanel.mainInstance())
-            print("🦅🦅🦅🦅🦅🦅🦅🦅🦅🦅")
         })
     }
 }
@@ -63,6 +59,10 @@ final class DependencyContainer {
     static func resolve<T>() -> T {
         shared.resolve()
     }
+    
+    static func clear() {
+        shared.clear()
+    }
 
     private func register<T>(_ dependency: T) {
         let key = String(describing: T.self)
@@ -76,5 +76,9 @@ final class DependencyContainer {
         precondition(dependency != nil, "No dependency found for \(key)! must register a dependency before resolve.")
 
         return dependency!
+    }
+    
+    private func clear() {
+        dependencies = [String: AnyObject]()
     }
 }

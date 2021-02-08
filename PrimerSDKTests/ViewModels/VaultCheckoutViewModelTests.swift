@@ -16,11 +16,13 @@ class VaultCheckoutViewModelTests: XCTestCase {
 
     func test_loadConfig_calls_clientTokenService_if_client_token_nil() throws {
         let clientTokenService = MockClientTokenService()
-        let serviceLocator = MockServiceLocator(clientTokenService: clientTokenService)
         let state = MockAppState(decodedClientToken: nil)
-        let context = MockCheckoutContext(state: state, serviceLocator: serviceLocator)
         
-        let viewModel = VaultCheckoutViewModel(context: context)
+        MockLocator.registerDependencies()
+        DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let viewModel = VaultCheckoutViewModel()
         
         viewModel.loadConfig({ error in })
         
