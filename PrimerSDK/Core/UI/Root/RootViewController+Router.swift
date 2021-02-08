@@ -8,43 +8,50 @@
 import UIKit
 
 protocol RouterDelegate: class {
+    func setRoot(_ root: RootViewController)
     func show(_ route: Route)
     func pop()
     func popAllAndShow(_ route: Route)
     func popAndShow(_ route: Route)
 }
 
-extension RootViewController: RouterDelegate {
+class Router: RouterDelegate {
+    
+    weak var root: RootViewController?
+    
+    func setRoot(_ root: RootViewController) {
+        self.root = root
+    }
+    
     func show(_ route: Route) {
-        
-        guard let vc = route.viewControllerFactory(context, router: self) else { return }
+        guard let root = self.root else { return }
+        guard let vc = route.viewController else { return }
         
         if (vc is SuccessViewController) {
             
-            if (context.settings.hasDisabledSuccessScreen) {
-                return dismiss(animated: true, completion: nil)
+            if (root.settings.hasDisabledSuccessScreen) {
+                return root.dismiss(animated: true, completion: nil)
             }
             
-            view.endEditing(true)
+            root.view.endEditing(true)
             
         }
         
-        self.add(vc, height: route.height)
-        
+        root.add(vc, height: route.height)
     }
     
     func pop() {
-        popView()
+        root?.popView()
     }
     
     func popAllAndShow(_ route: Route) {
-        guard let vc = route.viewControllerFactory(context, router: self) else { return }
-        popAllAndShow(vc, height: route.height)
+        guard let vc = route.viewController else { return }
+        root?.popAllAndShow(vc, height: route.height)
     }
     
     func popAndShow(_ route: Route) {
-        guard let vc = route.viewControllerFactory(context, router: self) else { return }
-        popAndShow(vc, height: route.height)
+        guard let vc = route.viewController else { return }
+        root?.popAndShow(vc, height: route.height)
     }
 }
 
@@ -54,7 +61,7 @@ fileprivate extension RootViewController {
         UIView.animate(withDuration: 0.25, animations: {[weak self] in
             guard let strongSelf = self else { return }
             
-            if (strongSelf.context.settings.isFullScreenOnly) {
+            if (strongSelf.settings.isFullScreenOnly) {
                 strongSelf.heightConstraint.setFullScreen()
                 strongSelf.view.layoutIfNeeded()
             } else {
@@ -62,6 +69,8 @@ fileprivate extension RootViewController {
                 strongSelf.view.layoutIfNeeded()
             }
         })
+        
+        
         //hide previous view
         routes.last?.view.isHidden = true
         routes.append(child)
@@ -70,9 +79,14 @@ fileprivate extension RootViewController {
         addChild(child)
         //view
         mainView.addSubview(child.view)
+        
         child.view.pin(to: mainView)
         //final step
         child.didMove(toParent: self)
+        
+        if (self.routes.last is ConfirmMandateViewController) {
+            state.directDebitFormCompleted = true
+        }
     }
     
     func popAllAndShow(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5) {
@@ -117,7 +131,7 @@ fileprivate extension RootViewController {
         // animate to previous height
         UIView.animate(withDuration: 0.25, animations: {[weak self] in
             guard let strongSelf = self else { return }
-            if (strongSelf.context.settings.isFullScreenOnly) {
+            if (strongSelf.settings.isFullScreenOnly) {
                 strongSelf.heightConstraint.setFullScreen()
                 strongSelf.view.layoutIfNeeded()
             } else {

@@ -20,17 +20,10 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
     var uxMode: UXMode { return Primer.flow.uxMode }
     var clientToken: DecodedClientToken? { return state.decodedClientToken }
     
-    let tokenizationService: TokenizationServiceProtocol
-    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    let clientTokenService: ClientTokenServiceProtocol
-    let state: AppStateProtocol
-    
-    init(context: CheckoutContextProtocol) {
-        self.state = context.state
-        self.clientTokenService = context.serviceLocator.clientTokenService
-        self.tokenizationService = context.serviceLocator.tokenizationService
-        self.paymentMethodConfigService = context.serviceLocator.paymentMethodConfigService
-    }
+    @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
+    @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
+    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
+    @Dependency private(set) var state: AppStateProtocol
     
     func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
         let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)

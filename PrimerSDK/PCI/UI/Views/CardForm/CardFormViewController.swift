@@ -5,17 +5,16 @@ class CardFormViewController: UIViewController {
     let indicator = UIActivityIndicatorView()
     private let validation = Validation()
     private let spinner = UIActivityIndicatorView()
-    private let viewModel: CardFormViewModelProtocol
-    private let transitionDelegate = TransitionDelegate()
     
-//    var formViewTitle: String { return viewModel.uxMode == .CHECKOUT ? "Checkout" : "Add card" }
+    @Dependency private(set) var viewModel: CardFormViewModelProtocol
+    @Dependency private(set) var router: RouterDelegate
+    
+    private let transitionDelegate = TransitionDelegate()
     var cardFormView: CardFormView?
     var delegate: ReloadDelegate?
-    weak var router: RouterDelegate?
     
-    init(_ viewModel: CardFormViewModelProtocol, router: RouterDelegate) {
-        self.viewModel = viewModel
-        self.router = router
+    
+    init() {
         super.init(nibName: nil, bundle: nil)
         self.modalPresentationStyle = .custom
         self.transitioningDelegate = transitionDelegate
@@ -46,7 +45,7 @@ class CardFormViewController: UIViewController {
     }
     
     private func paintView() {
-        cardFormView = CardFormView(frame: view.frame, theme: viewModel.theme, uxMode: viewModel.flow.uxMode, delegate: self)
+        cardFormView = CardFormView(frame: view.frame, theme: Primer.theme, uxMode: viewModel.flow.uxMode, delegate: self)
         guard let cardFormView = self.cardFormView else { return print("no view") }
         view.addSubview(cardFormView)
         cardFormView.pin(to: self.view)
@@ -100,7 +99,7 @@ class CardFormViewController: UIViewController {
             completion: { [weak self] error in
                 DispatchQueue.main.async {
 //                    self?.dismiss(animated: true, completion: nil)
-                    error.exists ? self?.router?.show(.error) : self?.router?.show(.success(type: .regular))
+                    error.exists ? self?.router.show(.error()) : self?.router.show(.success(type: .regular))
                 }
             }
         )
@@ -109,9 +108,9 @@ class CardFormViewController: UIViewController {
     private var formIsNotValid: Bool  {
 
         guard let cardFormView = self.cardFormView else { return true }
-        
-        let checks = [validation.nameFieldIsNotValid, validation.cardFieldIsNotValid, validation.expiryFieldIsNotValid, validation.CVCFieldIsNotValid]
-        
+
+        let checks = [Validation.nameFieldIsValid, Validation.cardFieldIsValid, Validation.expiryFieldIsValid, Validation.CVCFieldIsValid]
+
         let fields = [cardFormView.nameTF, cardFormView.cardTF, cardFormView.expTF, cardFormView.cvcTF]
         
         var validations: [Bool] = []
@@ -120,7 +119,7 @@ class CardFormViewController: UIViewController {
             let isNotValid = checks[index](field.text)
             validations.append(isNotValid.0)
         }
-        
+
         return validations.contains(true)
         
     }
@@ -128,10 +127,10 @@ class CardFormViewController: UIViewController {
 
 extension CardFormViewController: CardFormViewDelegate {
     func validateCardName(_ text: String?, updateTextField: Bool) {
-        let nameIsNotValid = validation.nameFieldIsNotValid(text)
+        let nameIsNotValid = Validation.nameFieldIsValid(text)
         
         if (updateTextField) {
-            cardFormView?.nameTF.toggleValidity(!nameIsNotValid.0, theme: viewModel.theme.textFieldTheme, errorMessage: nameIsNotValid.1)
+            cardFormView?.nameTF.toggleValidity(!nameIsNotValid.0, theme: Primer.theme.textFieldTheme, errorMessage: nameIsNotValid.1)
         }
         
         
@@ -139,37 +138,37 @@ extension CardFormViewController: CardFormViewDelegate {
     }
     
     func validateCardNumber(_ text: String?, updateTextField: Bool) {
-        let cardIsNotValid = validation.cardFieldIsNotValid(text)
+        let cardIsNotValid = Validation.cardFieldIsValid(text)
         
         if (updateTextField) {
-            cardFormView?.cardTF.toggleValidity(!cardIsNotValid.0, theme: viewModel.theme.textFieldTheme, errorMessage: cardIsNotValid.1)
+            cardFormView?.cardTF.toggleValidity(!cardIsNotValid.0, theme: Primer.theme.textFieldTheme, errorMessage: cardIsNotValid.1)
         }
         
         cardFormView?.submitButton.toggleValidity(!formIsNotValid, validColor: .systemBlue)
     }
     
     func validateExpiry(_ text: String?, updateTextField: Bool) {
-        let expiryIsNotValid = validation.expiryFieldIsNotValid(text)
+        let expiryIsNotValid = Validation.expiryFieldIsValid(text)
         
         if (updateTextField) {
-            cardFormView?.expTF.toggleValidity(!expiryIsNotValid.0, theme: viewModel.theme.textFieldTheme, errorMessage: expiryIsNotValid.1)
+            cardFormView?.expTF.toggleValidity(!expiryIsNotValid.0, theme: Primer.theme.textFieldTheme, errorMessage: expiryIsNotValid.1)
         }
         
         cardFormView?.submitButton.toggleValidity(!formIsNotValid, validColor: .systemBlue)
     }
     
     func validateCVC(_ text: String?, updateTextField: Bool) {
-        let cvcIsNotValid = validation.CVCFieldIsNotValid(text)
+        let cvcIsNotValid = Validation.CVCFieldIsValid(text)
         
         if (updateTextField) {
-            cardFormView?.cvcTF.toggleValidity(!cvcIsNotValid.0, theme: viewModel.theme.textFieldTheme, errorMessage: cvcIsNotValid.1)
+            cardFormView?.cvcTF.toggleValidity(!cvcIsNotValid.0, theme: Primer.theme.textFieldTheme, errorMessage: cvcIsNotValid.1)
         }
         
         cardFormView?.submitButton.toggleValidity(!formIsNotValid, validColor: .systemBlue)
     }
     
-    func cancel() { router?.pop() }
+    func cancel() { router.pop() }
     
-    func showScanner() { router?.show(.cardScanner(delegate: self)) }
+    func showScanner() { router.show(.cardScanner(delegate: self)) }
     
 }

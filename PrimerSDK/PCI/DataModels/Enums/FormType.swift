@@ -5,25 +5,43 @@
 //  Created by Carl Eriksson on 24/01/2021.
 //
 enum FormType {
+    
     case bankAccount(mandate: DirectDebitMandate, popOnComplete: Bool = false)
     case name(mandate: DirectDebitMandate, popOnComplete: Bool = false)
     case iban(mandate: DirectDebitMandate, popOnComplete: Bool = false)
     case email(mandate: DirectDebitMandate, popOnComplete: Bool = false)
     case address(mandate: DirectDebitMandate, popOnComplete: Bool = false)
+    case cardForm
     
-    var textFields: [FormTextFieldType] {
+    var textFields: [[FormTextFieldType]] {
         switch self {
-        case .bankAccount(let mandate, _): return [.accountNumber(mandate.accountNumber), .sortCode(mandate.sortCode)]
-        case .name(let mandate, _): return [.firstName(mandate.firstName), .lastName(mandate.lastName)]
-        case .iban(let mandate, _): return [.iban(mandate.iban)]
-        case .email(let mandate, _): return [.email(mandate.email)]
+        case .bankAccount(let mandate, _): return [[.accountNumber(mandate.accountNumber)], [.sortCode(mandate.sortCode)]]
+        case .name(let mandate, _): return [[.firstName(mandate.firstName)], [.lastName(mandate.lastName)]]
+        case .iban(let mandate, _): return [[.iban(mandate.iban)]]
+        case .email(let mandate, _): return [[.email(mandate.email)]]
         case .address(let mandate, _): return [
-            .addressLine1(mandate.address?.addressLine1),
-            .addressLine2(mandate.address?.addressLine2),
-            .city(mandate.address?.city),
-            .postalCode(mandate.address?.postalCode),
-            .country(mandate.address?.countryCode)
+            [.addressLine1(mandate.address?.addressLine1)],
+            [.addressLine2(mandate.address?.addressLine2)],
+            [.city(mandate.address?.city)],
+            [.postalCode(mandate.address?.postalCode)],
+            [.country(mandate.address?.countryCode)]
         ]
+        case .cardForm:
+            switch Primer.theme.textFieldTheme {
+            case .doublelined:
+                return [
+                    [.cardholderName],
+                    [.cardNumber],
+                    [.expiryDate],
+                    [.cvc]
+                ]
+            default:
+                return [
+                    [.cardholderName],
+                    [.cardNumber],
+                    [.expiryDate, .cvc]
+                ]
+            }
         }
     }
     
@@ -34,6 +52,7 @@ enum FormType {
         case .iban: return "Add bank account".localized()
         case .email: return "Add bank account".localized()
         case .address: return "Add bank account".localized()
+        case .cardForm: return "Add new card"
         }
     }
     
@@ -44,6 +63,7 @@ enum FormType {
         case .iban: return "SEPA Direct Debit Mandate".localized()
         case .email: return ""
         case .address: return ""
+        case .cardForm: return ""
         }
     }
     
@@ -54,6 +74,7 @@ enum FormType {
         case .iban: return "Use an account number instead".localized()
         case .email: return ""
         case .address: return ""
+        case .cardForm: return ""
         }
     }
     
@@ -64,6 +85,7 @@ enum FormType {
         case .iban(_, let val): return val
         case .email(_, let val): return val
         case .address(_, let val): return val
+        case .cardForm: return false
         }
     }
 }

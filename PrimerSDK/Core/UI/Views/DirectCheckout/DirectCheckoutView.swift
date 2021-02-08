@@ -12,13 +12,11 @@ class DirectCheckoutView: UIView {
     let applePayButton = UIButton()
     let payPalButton = UIButton()
     
-    let theme: PrimerTheme
     let amount: String
     
     weak var delegate: DirectCheckoutViewDelegate?
     
-    init(frame: CGRect, theme: PrimerTheme, amount: String) {
-        self.theme = theme
+    init(frame: CGRect, amount: String) {
         self.amount = amount
         super.init(frame: frame)
         
@@ -39,7 +37,7 @@ class DirectCheckoutView: UIView {
         let doneItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancel))
         doneItem.tintColor = .blue
         let title = UILabel()
-        title.textColor = theme.colorTheme.text1
+        title.textColor = Primer.theme.colorTheme.text1
         title.font = .boldSystemFont(ofSize: 32.0)
         title.text = amount
         let moneyItem = UIBarButtonItem(customView: title)

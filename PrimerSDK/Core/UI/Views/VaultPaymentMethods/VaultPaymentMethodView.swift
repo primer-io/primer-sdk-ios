@@ -1,7 +1,6 @@
 import UIKit
 
 protocol VaultPaymentMethodViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
-    var theme: PrimerTheme { get }
     func cancel()
     func edit()
     func showPayPal()
@@ -48,7 +47,6 @@ class VaultPaymentMethodView: UIView, ReactiveView {
 //MARK: Configuration
 extension VaultPaymentMethodView {
     private func configureNavBar() {
-        guard let theme = delegate?.theme else { return }
         navBar.backgroundColor = Primer.theme.colorTheme.main1
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem()
@@ -57,7 +55,7 @@ extension VaultPaymentMethodView {
         backItem.tintColor = Primer.theme.colorTheme.tint1
         backItem.image = backBtnImage
         let editItem = UIBarButtonItem()
-        editItem.title = theme.content.vaultPaymentMethodView.editButtonText
+        editItem.title = Primer.theme.content.vaultPaymentMethodView.editButtonText
         editItem.tintColor = Primer.theme.colorTheme.tint1
         editItem.action = #selector(edit)
         navItem.leftBarButtonItem = backItem
@@ -65,7 +63,7 @@ extension VaultPaymentMethodView {
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
-        navBar.topItem?.title = theme.content.vaultPaymentMethodView.mainTitleText
+        navBar.topItem?.title = Primer.theme.content.vaultPaymentMethodView.mainTitleText
     }
     
     @objc private func cancel() { delegate?.cancel() }
@@ -82,8 +80,7 @@ extension VaultPaymentMethodView {
     }
     
     private func configureAddButton() {
-        guard let theme = delegate?.theme else { return }
-        addButton.setTitle(theme.content.vaultPaymentMethodView.addButtonText, for: .normal)
+        addButton.setTitle(Primer.theme.content.vaultPaymentMethodView.addButtonText, for: .normal)
         addButton.setTitleColor(Primer.theme.colorTheme.tint1, for: .normal)
         addButton.setTitleColor(Primer.theme.colorTheme.disabled1, for: .highlighted)
         addButton.contentHorizontalAlignment = .left

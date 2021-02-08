@@ -3,11 +3,10 @@ import UIKit
 class ApplePayViewController: UIViewController {
     private let indicator = UIActivityIndicatorView()
     
-    let viewModel: ApplePayViewModelProtocol
+    @Dependency private(set) var viewModel: ApplePayViewModelProtocol
     let transitionDelegate = TransitionDelegate()
     
-    init(with viewModel: ApplePayViewModelProtocol) {
-        self.viewModel = viewModel
+    init() {
         super.init(nibName: nil, bundle: nil)
         self.modalPresentationStyle = .custom
         self.transitioningDelegate = transitionDelegate

@@ -10,13 +10,19 @@ import XCTest
 
 class DirectCheckoutViewModelTests: XCTestCase {
     
+    override func tearDown() {
+        DependencyContainer.clear()
+    }
+    
     func test_loadCheckoutConfig_calls_clientTokenService_if_client_token_nil() throws {
         let clientTokenService = MockClientTokenService()
-        let serviceLocator = MockServiceLocator(clientTokenService: clientTokenService)
         let state = MockAppState(decodedClientToken: nil)
-        let context = MockCheckoutContext(state: state, serviceLocator: serviceLocator)
         
-        let viewModel = DirectCheckoutViewModel(context: context)
+        MockLocator.registerDependencies()
+        DependencyContainer.register(state as AppStateProtocol)
+        DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)
+        
+        let viewModel = DirectCheckoutViewModel()
         
         viewModel.loadCheckoutConfig({ error in })
         

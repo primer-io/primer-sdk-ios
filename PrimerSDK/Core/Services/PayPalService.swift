@@ -8,40 +8,44 @@ protocol PayPalServiceProtocol {
 
 class PayPalService: PayPalServiceProtocol {
     
-    private let api: APIClientProtocol
-    private var state: AppStateProtocol
+    @Dependency private(set) var api: APIClientProtocol
+    @Dependency private(set) var state: AppStateProtocol
     
-    init(api: APIClientProtocol, state: AppStateProtocol) {
-        self.api = api
-        self.state = state
-    }
-    
-    func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void) {
+    private func prepareUrlAndTokenAndId(path: String) -> (DecodedClientToken, URL, String)? {
         guard let clientToken = state.decodedClientToken else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
+            return nil
         }
         
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .PAYPAL) else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
+            return nil
         }
         
         guard let coreURL = clientToken.coreUrl else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
+            return nil
         }
         
-        guard let url = URL(string: "\(coreURL)/paypal/orders/create") else {
+        guard let url = URL(string: "\(coreURL)\(path)") else {
+            return nil
+        }
+        
+        return (clientToken, url, configId)
+    }
+    
+    func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void) {
+        
+        guard let tokenAndUrlAndId = prepareUrlAndTokenAndId(path: "/paypal/orders/create") else {
             return completion(.failure(PrimerError.PayPalSessionFailed))
         }
         
         let body = PayPalCreateOrderRequest(
-            paymentMethodConfigId: configId,
+            paymentMethodConfigId: tokenAndUrlAndId.2,
             amount: state.settings.amount,
             currencyCode: state.settings.currency,
             returnUrl: state.settings.urlScheme,
             cancelUrl: state.settings.urlScheme
         )
         
-        self.api.post(clientToken, body: body, url: url, completion: { [weak self] result in
+        self.api.post(tokenAndUrlAndId.0, body: body, url: tokenAndUrlAndId.1, completion: { [weak self] result in
             switch result {
             case .failure: completion(.failure(PrimerError.PayPalSessionFailed))
             case .success(let data):
@@ -57,30 +61,17 @@ class PayPalService: PayPalServiceProtocol {
     }
     
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void) {
-        print("🚀 startBillingAgreementSession")
-        guard let clientToken = state.decodedClientToken else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
-        }
-        print("🚀 clientToken", clientToken)
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .PAYPAL) else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
-        }
-        print("🚀 configId", configId)
-        guard let coreURL = clientToken.coreUrl else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
-        }
-        print("🚀 coreURL", coreURL)
-        guard let url = URL(string: "\(coreURL)/paypal/billing-agreements/create-agreement") else {
+        guard let tokenAndUrlAndId = prepareUrlAndTokenAndId(path: "/paypal/billing-agreements/create-agreement") else {
             return completion(.failure(PrimerError.PayPalSessionFailed))
         }
         
         let body = PayPalCreateBillingAgreementRequest(
-            paymentMethodConfigId: configId,
+            paymentMethodConfigId: tokenAndUrlAndId.2,
             returnUrl: state.settings.urlScheme,
             cancelUrl: state.settings.urlScheme
         )
         
-        self.api.post(clientToken, body: body, url: url, completion: { [weak self] result in
+        self.api.post(tokenAndUrlAndId.0, body: body, url: tokenAndUrlAndId.1, completion: { [weak self] result in
             switch result {
             case .failure: completion(.failure(PrimerError.PayPalSessionFailed))
             case .success(let data):
@@ -96,29 +87,17 @@ class PayPalService: PayPalServiceProtocol {
     }
     
     func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
-        guard let clientToken = state.decodedClientToken else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
-        }
-        
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .PAYPAL) else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
-        }
-        
-        guard let coreURL = clientToken.coreUrl else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
-        }
-        
         guard let tokenId = state.billingAgreementToken else {
             return completion(.failure(PrimerError.PayPalSessionFailed))
         }
         
-        guard let url = URL(string: "\(coreURL)/paypal/billing-agreements/confirm-agreement") else {
+        guard let tokenAndUrlAndId = prepareUrlAndTokenAndId(path: "/paypal/billing-agreements/confirm-agreement") else {
             return completion(.failure(PrimerError.PayPalSessionFailed))
         }
         
-        let body = PayPalConfirmBillingAgreementRequest(paymentMethodConfigId: configId, tokenId: tokenId)
+        let body = PayPalConfirmBillingAgreementRequest(paymentMethodConfigId: tokenAndUrlAndId.2, tokenId: tokenId)
         
-        self.api.post(clientToken, body: body, url: url, completion: { [weak self] result in
+        self.api.post(tokenAndUrlAndId.0, body: body, url: tokenAndUrlAndId.1, completion: { [weak self] result in
             switch result {
             case .failure: completion(.failure(PrimerError.PayPalSessionFailed))
             case .success(let data):

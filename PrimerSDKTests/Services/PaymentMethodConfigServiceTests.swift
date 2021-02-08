@@ -18,11 +18,15 @@ class PaymentMethodConfigServiceTests: XCTestCase {
                 ConfigPaymentMethod(id: "id123", type: .PAYMENT_CARD)
             ]
         )
+        
         let data: Data = try JSONEncoder().encode(config)
-        let api = MockAPIClient(with: data, throwsError: false)
         let state = MockAppState()
         
-        let service = PaymentMethodConfigService(api: api, state: state)
+        MockLocator.registerDependencies()
+        DependencyContainer.register(MockAPIClient(with: data, throwsError: false) as APIClientProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
+        
+        let service = PaymentMethodConfigService()
         
         service.fetchConfig({ error in })
         

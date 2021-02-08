@@ -13,25 +13,23 @@ protocol ExternalViewModelProtocol {
 
 class ExternalViewModel: ExternalViewModelProtocol {
     
-    let context: CheckoutContextProtocol
-    
-    init(context: CheckoutContextProtocol) {
-        self.context = context
-    }
-    
+    @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var vaultService: VaultServiceProtocol
+    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
+
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
-        if (context.state.decodedClientToken.exists) {
-            context.serviceLocator.vaultService.loadVaultedPaymentMethods({ [weak self] error in
+        if (state.decodedClientToken.exists) {
+            vaultService.loadVaultedPaymentMethods({ [weak self] error in
                 if let error = error { completion(.failure(error)) }
-                guard let paymentMethods = self?.context.state.paymentMethods else { return }
+                guard let paymentMethods = self?.state.paymentMethods else { return }
                 completion(.success(paymentMethods))
             })
         } else {
-            context.serviceLocator.clientTokenService.loadCheckoutConfig({ [weak self] error in
+            clientTokenService.loadCheckoutConfig({ [weak self] error in
                 if let error = error { completion(.failure(error)) }
-                self?.context.serviceLocator.vaultService.loadVaultedPaymentMethods({ [weak self] error in
+                self?.vaultService.loadVaultedPaymentMethods({ [weak self] error in
                     if let error = error { completion(.failure(error)) }
-                    guard let paymentMethods = self?.context.state.paymentMethods else { return }
+                    guard let paymentMethods = self?.state.paymentMethods else { return }
                     completion(.success(paymentMethods))
                 })
             })

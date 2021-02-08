@@ -7,17 +7,8 @@ class DirectCheckoutViewController: UIViewController {
     private let indicator = UIActivityIndicatorView()
     private var subView: DirectCheckoutView?
     
-    var viewModel: DirectCheckoutViewModelProtocol
-    
-    weak var router: RouterDelegate?
-    
-    init(with viewModel: DirectCheckoutViewModelProtocol, and router: RouterDelegate) {
-        self.viewModel = viewModel
-        self.router = router
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    @Dependency private(set) var viewModel: DirectCheckoutViewModelProtocol
+    @Dependency private(set) var  router: RouterDelegate
     
     deinit { print("🧨 destroying:", self.self) }
     
@@ -34,7 +25,7 @@ class DirectCheckoutViewController: UIViewController {
     }
     
     private func addSubView() {
-        let subView = DirectCheckoutView(frame: view.frame, theme: viewModel.theme, amount: viewModel.amountViewModel.toLocal())
+        let subView = DirectCheckoutView(frame: view.frame, amount: viewModel.amountViewModel.toLocal())
         subView.tableView.delegate = self
         subView.tableView.dataSource = self
         subView.delegate = self

@@ -1,13 +1,10 @@
 protocol DirectCheckoutViewModelProtocol {
     var amountViewModel: AmountViewModel { get }
     var paymentMethods: [PaymentMethodViewModel] { get }
-    var theme: PrimerTheme { get }
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) -> Void
 }
 
 class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
-    var theme: PrimerTheme { return state.settings.theme }
-    
     private var amount: Int { return state.settings.amount }
     private var currency: Currency { return state.settings.currency }
     
@@ -18,15 +15,9 @@ class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
     }
     var paymentMethods: [PaymentMethodViewModel] { return state.viewModels }
     
-    let clientTokenService: ClientTokenServiceProtocol
-    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    private var state: AppStateProtocol
-    
-    init(context: CheckoutContextProtocol) {
-        self.state = context.state
-        self.clientTokenService = context.serviceLocator.clientTokenService
-        self.paymentMethodConfigService = context.serviceLocator.paymentMethodConfigService
-    }
+    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
+    @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
+    @Dependency private(set) var state: AppStateProtocol
     
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
         if (state.decodedClientToken.exists) {

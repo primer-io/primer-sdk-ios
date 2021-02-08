@@ -7,10 +7,8 @@ protocol VaultServiceProtocol {
 
 class VaultService: VaultServiceProtocol {
     
-    private let api = APIClient()
-    private var state: AppStateProtocol
-    
-    init(state: AppStateProtocol) { self.state = state }
+    @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var api: APIClientProtocol
     
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
         
@@ -21,10 +19,6 @@ class VaultService: VaultServiceProtocol {
         guard let pciURL = clientToken.pciUrl else {
             return completion(PrimerError.VaultFetchFailed)
         }
-        
-//        guard let customerID = self.state.settings.customerId else {
-//            return completion(PrimerError.VaultFetchFailed)
-//        }
         
         guard let url = URL(string: "\(pciURL)/payment-instruments") else {
             return completion(PrimerError.VaultFetchFailed)
@@ -47,7 +41,6 @@ class VaultService: VaultServiceProtocol {
                         self?.state.selectedPaymentMethod = id
                     }
                     
-                    print("🦄🦄🦄🦄🦄🦄")
                     completion(nil)
                 }
             } catch {
