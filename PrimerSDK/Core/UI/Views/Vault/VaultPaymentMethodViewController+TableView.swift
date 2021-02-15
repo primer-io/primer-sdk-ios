@@ -10,7 +10,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
     }
     
     @objc private func showCardForm(_ sender: UIButton) {
-        router.show(.cardForm)
+        router.show(.form(type: .cardForm(theme: theme)))
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -69,9 +69,9 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
         if (indexPath.row == viewModel.paymentMethods.count) {
             let addButton = UIButton()
             
-            addButton.setTitle(Primer.theme.content.vaultPaymentMethodView.addButtonText, for: .normal)
-            addButton.setTitleColor(Primer.theme.colorTheme.tint1, for: .normal)
-            addButton.setTitleColor(Primer.theme.colorTheme.disabled1, for: .highlighted)
+            addButton.setTitle(theme.content.vaultPaymentMethodView.addButtonText, for: .normal)
+            addButton.setTitleColor(theme.colorTheme.tint1, for: .normal)
+            addButton.setTitleColor(theme.colorTheme.disabled1, for: .highlighted)
             addButton.contentHorizontalAlignment = .left
             addButton.addTarget(self, action: #selector(showCardForm), for: .touchUpInside)
             
@@ -109,7 +109,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
         
         cardView.pin(to: cell)
         
-        cell.backgroundColor = Primer.theme.colorTheme.main1
+        cell.backgroundColor = theme.colorTheme.main1
 
         return cell
     }

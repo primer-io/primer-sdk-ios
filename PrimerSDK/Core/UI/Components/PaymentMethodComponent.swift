@@ -9,18 +9,20 @@ import UIKit
 
 class PaymentMethodComponent: UIView {
     
+    @Dependency private(set) var theme: PrimerThemeProtocol
+    
     let label = UILabel()
     let iconView = UIImageView()
     
     init(frame: CGRect, method: PaymentMethodViewModel) {
         super.init(frame: frame)
         
-        layer.cornerRadius = Primer.theme.cornerRadiusTheme.buttons
+        layer.cornerRadius = theme.cornerRadiusTheme.buttons
         
         switch method.type {
         case .APPLE_PAY:
-            backgroundColor = Primer.theme.colorTheme.main2
-            label.textColor = Primer.theme.colorTheme.text2
+            backgroundColor = theme.colorTheme.main2
+            label.textColor = theme.colorTheme.text2
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString(), isBold: true)
@@ -29,31 +31,31 @@ class PaymentMethodComponent: UIView {
             anchorIconView(inRelationToLabel: true)
         case .PAYMENT_CARD:
             layer.borderWidth = 1
-            layer.borderColor = Primer.theme.colorTheme.disabled1.cgColor
-            backgroundColor = Primer.theme.colorTheme.main1
-            label.textColor = Primer.theme.colorTheme.text1
+            layer.borderColor = theme.colorTheme.disabled1.cgColor
+            backgroundColor = theme.colorTheme.main1
+            label.textColor = theme.colorTheme.text1
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString())
-            configureIconView(icon: method.toIconName().image, color: Primer.theme.colorTheme.text1, isMonoColor: true)
+            configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         case .PAYPAL:
 //            layer.borderWidth = 1
             backgroundColor = UIColor(red: 190/255, green: 228/255, blue: 254/255, alpha: 1)
-            //            layer.borderColor = Primer.theme.colorTheme.disabled1.cgColor
+            //            layer.borderColor = theme.colorTheme.disabled1.cgColor
             addSubview(iconView)
-            configureIconView(icon: method.toIconName().image, color: Primer.theme.colorTheme.text1)
+            configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1)
             anchorIconView(inRelationToLabel: false)
         case .GOCARDLESS_MANDATE:
             layer.borderWidth = 1
-            layer.borderColor = Primer.theme.colorTheme.disabled1.cgColor
-            backgroundColor = Primer.theme.colorTheme.main1
-            label.textColor = Primer.theme.colorTheme.text1
+            layer.borderColor = theme.colorTheme.disabled1.cgColor
+            backgroundColor = theme.colorTheme.main1
+            label.textColor = theme.colorTheme.text1
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString())
-            configureIconView(icon: method.toIconName().image, color: Primer.theme.colorTheme.text1, isMonoColor: true)
+            configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         default: break

@@ -6,9 +6,7 @@
 //
 
 protocol AppStateProtocol: class {
-    //immutable
     var settings: PrimerSettingsProtocol { get }
-    //mutable
     var viewModels: [PaymentMethodViewModel] { get set }
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethod: String { get set }
@@ -23,6 +21,7 @@ protocol AppStateProtocol: class {
     var directDebitFormCompleted: Bool { get set }
     var cardData: CardData { get set }
     var mandateId: String? { get set }
+    var routerState: RouterState { get set }
 }
 
 class AppState: AppStateProtocol {
@@ -43,8 +42,13 @@ class AppState: AppStateProtocol {
     var directDebitFormCompleted: Bool = false
     var mandateId: String?
     var cardData: CardData = CardData(name: "", number: "", expiryYear: "", expiryMonth: "", cvc: "")
+    var routerState: RouterState = RouterState()
 }
 
 struct CardData {
     var name, number, expiryYear, expiryMonth, cvc: String
+}
+
+struct RouterState {
+    var formType: FormType?
 }

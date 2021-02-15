@@ -45,29 +45,21 @@ class CheckoutViewController: UIViewController {
         let themeColor = UIColor(red: 45/255, green: 80/255, blue: 230/255, alpha: 1)
         
         if #available(iOS 13.0, *) {
-            theme = PrimerTheme.initialiseWithDarkTheme(
-                colorTheme: PrimerLightTheme(
-                    text3: themeColor,
-                    tint1: themeColor
-                ),
-                darkTheme: PrimerDarkTheme(
-                    text3: themeColor,
-                    tint1: themeColor
-                ),
-                layout: PrimerLayout(showMainTitle: true, showTopTitle: true),
-                textFieldTheme: .underlined,
+            theme = PrimerTheme(
+                cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
+                darkTheme: PrimerDarkTheme(),
+                layout: PrimerLayout(showTopTitle: false, textFieldHeight: 56),
+                textFieldTheme: .outlined,
                 fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
             )
         } else {
-            theme = PrimerTheme.initialise(
-                colorTheme: PrimerLightTheme(
+            theme = PrimerTheme(
+                colorTheme: PrimerDefaultTheme(
                     text3: themeColor,
-                    tint1: themeColor
+                    tint1: .systemPink
                 )
             )
         }
-        
-        let delegate = self
         
         let businessDetails = BusinessDetails(
             name: "My Business",
@@ -82,19 +74,16 @@ class CheckoutViewController: UIViewController {
         )
         
         let settings = PrimerSettings(
-            delegate: delegate, // object
-            amount: amount, // int
-            currency: .EUR, // enum
-            theme: theme, // theme object
-            customerId: "customer_1", // string
-            countryCode: .fr, // enum
-            urlScheme: "primer://oauth",
-            urlSchemeIdentifier: "primer",
-            businessDetails: businessDetails, // business details object
-            directDebitHasNoAmount: true
+            delegate: self,
+            isFullScreenOnly: true,
+            businessDetails: businessDetails
         )
         
         primer = Primer(with: settings)
+        
+        primer?.setDirectDebitDetails(firstName: "John", lastName: "Doe", email: "test@mail.com", iban: "FR1420041010050500013M02606", address: Address(addressLine1: "1 Rue de Rivoli", addressLine2: "", city: "Paris", state: "", countryCode: "FR", postalCode: "75001"))
+        
+        primer?.setTheme(theme: theme)
         
         // primer showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) -> Void
         // primer fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void)
@@ -200,7 +189,7 @@ class CheckoutViewController: UIViewController {
         primer?.showCheckout(self, flow: .addPayPalToVault)
     }
     @objc private func showCompleteVaultCheckout() {
-        primer?.showCheckout(self, flow: .completeVaultCheckout)
+        primer?.showCheckout(self, flow: .default)
     }
     @objc private func showCompleteDirectCheckout() {
         primer?.showCheckout(self, flow: .completeDirectCheckout)
@@ -218,7 +207,7 @@ extension CheckoutViewController: PrimerCheckoutDelegate {
     }
     
     func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
-        guard let url = URL(string: "http://localhost:8020/client-token") else {
+        guard let url = URL(string: "https://arcane-hollows-13383.herokuapp.com/client-token") else {
             return completion(.failure(NetworkError.missingParams))
         }
         var request = URLRequest(url: url)
@@ -241,7 +230,7 @@ extension CheckoutViewController: PrimerCheckoutDelegate {
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         guard let token = result.token else { return completion(NetworkError.missingParams) }
         
-        guard let url = URL(string: "http://localhost:8020/authorize") else {
+        guard let url = URL(string: "https://arcane-hollows-13383.herokuapp.com/authorize") else {
             return completion(NetworkError.missingParams)
         }
         

@@ -1,5 +1,7 @@
 import UIKit
-import CardScan //Bouncer
+#if canImport(CardScan)
+import CardScan
+#endif
 
 struct PrimerCreditCardDetails {
     var name: String?
@@ -12,10 +14,12 @@ protocol CardScannerViewControllerDelegate: class {
     func setScannedCardDetails(with cardDetails: PrimerCreditCardDetails)
 }
 
-@available(iOS 11.2, *)
+@available(iOS 12, *)
 class CardScannerViewController: UIViewController {
     
+    
     let simpleScanVC = SimpleScanViewController.createViewController()
+    
     let transitionDelegate = TransitionDelegate()
     @Dependency private(set) var viewModel: CardScannerViewModelProtocol
     @Dependency private(set) var router: RouterDelegate
@@ -64,7 +68,7 @@ class CardScannerViewController: UIViewController {
     }
 }
 
-@available(iOS 11.2, *)
+@available(iOS 12, *)
 extension CardScannerViewController: ScannerViewDelegate {
     func cancel() {
         router.pop()

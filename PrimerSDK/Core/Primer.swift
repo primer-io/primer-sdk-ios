@@ -3,15 +3,26 @@ import UIKit
 public class Primer {
     
     static var flow: PrimerSessionFlow = .completeDirectCheckout
-    static var theme: PrimerTheme = PrimerTheme.initialise()
+    
+    public var clearOnDestroy: Bool = true
     
     private var root: RootViewController?
     
     /** Intialise Primer with the settings object before calling any of the other methods.*/
     public init(with settings: PrimerSettings) {
-        
-        // register dependencies
+        setDependencies(settings: settings)
+    }
+    
+    deinit {
+        print("🧨 destroy:", self.self)
+        if clearOnDestroy { clearDependencies() }
+    }
+    
+    public func setDependencies(settings: PrimerSettings) {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
+        DependencyContainer.register(settings.theme as PrimerTheme)
+        DependencyContainer.register(FormType.cardForm(theme: settings.theme) as FormType)
+        DependencyContainer.register(Router() as RouterDelegate)
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(APIClient() as APIClientProtocol)
         DependencyContainer.register(VaultService() as VaultServiceProtocol)
@@ -31,14 +42,39 @@ public class Primer {
         DependencyContainer.register(FormViewModel() as FormViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(SuccessScreenViewModel(type: .regular) as SuccessScreenViewModelProtocol)
-        DependencyContainer.register(Router() as RouterDelegate)
-        
-        Primer.theme = settings.theme
     }
     
-    deinit {
+    public func clearDependencies() {
         DependencyContainer.clear()
-        print("🧨 destroy:", self.self)
+    }
+    
+    public func setTheme(theme: PrimerTheme) {
+        DependencyContainer.register(theme as PrimerThemeProtocol)
+    }
+    
+    public func setFormTopTitle(_ text: String, for formType: PrimerFormType) {
+        var theme: PrimerTheme = DependencyContainer.resolve()
+        theme.content.formTopTitles.setTopTitle(text, for: formType)
+    }
+    
+    public func setFormMainTitle(_ text: String, for formType: PrimerFormType) {
+        var theme: PrimerTheme = DependencyContainer.resolve()
+        theme.content.formMainTitles.setMainTitle(text, for: formType)
+    }
+    
+    public func setDirectDebitDetails(
+        firstName: String,
+        lastName: String,
+        email: String,
+        iban: String,
+        address: Address
+    ) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        state.directDebitMandate.firstName = firstName
+        state.directDebitMandate.lastName = lastName
+        state.directDebitMandate.email = email
+        state.directDebitMandate.iban = iban
+        state.directDebitMandate.address = address
     }
     
     // Methods
@@ -77,12 +113,5 @@ extension String {
     
     var isNotValidIBAN: Bool {
         return self.withoutWhiteSpace.count < 6
-    }
-}
-
-extension UIButton {
-    func toggleValidity(_ isValid: Bool, validColor: UIColor) {
-        self.backgroundColor = isValid ? validColor : Primer.theme.colorTheme.main2
-        self.isEnabled = isValid
     }
 }
