@@ -8,6 +8,9 @@
 import UIKit
 
 class CardButton: UIButton {
+    
+    @Dependency private(set) var theme: PrimerThemeProtocol
+    
     private var iconView = UIImageView()
     private var networkLabel = UILabel()
     private var cardholderLabel = UILabel()
@@ -58,9 +61,9 @@ class CardButton: UIButton {
     }
     
     func toggleBorder(isSelected: Bool, isError: Bool = false) {
-        if (isError) { return border.layer.borderColor = Primer.theme.colorTheme.error1.cgColor }
+        if (isError) { return border.layer.borderColor = theme.colorTheme.error1.cgColor }
         border.layer.borderWidth = isSelected ? 1.5 : 1
-        border.layer.borderColor = isSelected ? Primer.theme.colorTheme.tint1.cgColor : Primer.theme.colorTheme.disabled1.cgColor
+        border.layer.borderColor = isSelected ? theme.colorTheme.tint1.cgColor : theme.colorTheme.disabled1.cgColor
     }
     
     private func addCardIcon(image: UIImage?) {
@@ -73,7 +76,7 @@ class CardButton: UIButton {
         if (iconView.image == ImageName.bank.image) {
             
             let tintedIcon = image?.withRenderingMode(.alwaysTemplate)
-            iconView.tintColor = Primer.theme.colorTheme.tint1
+            iconView.tintColor = theme.colorTheme.tint1
             iconView.image = tintedIcon
             
             iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17).isActive = true
@@ -141,7 +144,7 @@ class CardButton: UIButton {
     
     private func addBorder() {
         border = UIView()
-        border.layer.borderColor = Primer.theme.colorTheme.disabled1.cgColor
+        border.layer.borderColor = theme.colorTheme.disabled1.cgColor
         border.layer.borderWidth = 1
         border.layer.cornerRadius = 4
         addSubview(border)
@@ -155,7 +158,7 @@ class CardButton: UIButton {
         
         // color
         let tintedIcon = ImageName.check2.image?.withRenderingMode(.alwaysTemplate)
-        checkView.tintColor = Primer.theme.colorTheme.tint1
+        checkView.tintColor = theme.colorTheme.tint1
         checkView.image = tintedIcon
         
         addSubview(checkView)
@@ -200,7 +203,7 @@ class CardButton: UIButton {
     
     func addSeparatorLine() {
         let line = UIView()
-        line.backgroundColor = Primer.theme.colorTheme.disabled1
+        line.backgroundColor = theme.colorTheme.disabled1
         line.translatesAutoresizingMaskIntoConstraints = false
         addSubview(line)
         line.topAnchor.constraint(equalTo: bottomAnchor, constant: -0.5).isActive = true

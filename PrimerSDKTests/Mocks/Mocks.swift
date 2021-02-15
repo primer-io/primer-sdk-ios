@@ -22,7 +22,7 @@ var mockSettings = PrimerSettings(
     delegate: MockPrimerCheckoutDelegate(),
     amount: 200,
     currency: .EUR,
-    theme: PrimerTheme.initialise(),
+    theme: PrimerTheme(),
     applePayEnabled: false,
     customerId: "cid",
     merchantIdentifier: "mid",
@@ -64,6 +64,7 @@ class MockPrimerCheckoutDelegate: PrimerCheckoutDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    
     var isFullScreenOnly: Bool {
         return false
     }
@@ -78,13 +79,13 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         return true
     }
     
-    var urlScheme: String = ""
+    var urlScheme: String? = ""
     
-    var urlSchemeIdentifier: String = ""
+    var urlSchemeIdentifier: String? = ""
     
-    var amount: Int { return 200 }
+    var amount: Int? { return 200 }
     
-    var currency: Currency { return .EUR }
+    var currency: Currency? { return .EUR }
     
     var merchantIdentifier: String? { return "mid"}
     
@@ -94,7 +95,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     
     var customerId: String? { return "cid" }
     
-    var theme: PrimerTheme { return PrimerTheme.initialise() }
+    var theme: PrimerTheme { return PrimerTheme() }
     
     var clientTokenRequestCallback: ClientTokenCallBack
     
@@ -114,6 +115,12 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 }
 
 class MockAppState: AppStateProtocol {
+    
+    var cardData: CardData = CardData(name: "", number: "", expiryYear: "", expiryMonth: "", cvc: "")
+    
+    
+    var routerState: RouterState = RouterState()
+    
     var directDebitMandate: DirectDebitMandate = DirectDebitMandate(firstName: "", lastName: "", email: "", iban: "", accountNumber: "", sortCode: "", address: nil)
     
     var directDebitFormCompleted: Bool = false
@@ -213,6 +220,28 @@ class MockRouter: RouterDelegate {
 }
 
 class MockFormViewModel: FormViewModelProtocol {
+    var popOnComplete: Bool = false
+    
+    func getSubmitButtonTitle(formType: FormType) -> String {
+        return "title"
+    }
+    
+    func onSubmit(formType: FormType) {
+        
+    }
+    
+    func onBottomLinkTapped(delegate: CardScannerViewControllerDelegate) {
+        
+    }
+    
+    func submit(completion: @escaping (PrimerError?) -> Void) {
+        
+    }
+    
+    func onReturnButtonTapped() {
+        
+    }
+    
     var mandate: DirectDebitMandate = DirectDebitMandate(firstName: "", lastName: "", email: "", iban: "", accountNumber: "", sortCode: "", address: nil)
     
     func setState(_ value: String?, type: FormTextFieldType) {

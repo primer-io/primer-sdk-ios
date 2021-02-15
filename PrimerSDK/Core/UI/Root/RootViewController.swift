@@ -11,6 +11,7 @@ class RootViewController: UIViewController {
     
     @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var settings: PrimerSettingsProtocol
+    @Dependency private(set) var theme: PrimerThemeProtocol
     
     let transitionDelegate = TransitionDelegate()
     
@@ -28,20 +29,19 @@ class RootViewController: UIViewController {
     var hasSetPointOrigin = false
     var currentHeight: CGFloat = 0
     
-    init() {
-        super.init(nibName: nil, bundle: nil)
-        self.modalPresentationStyle = .custom
-        self.transitioningDelegate = transitionDelegate
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
     deinit {
         print("🧨 destroy:", self.self)
         NotificationCenter.default.removeObserver(self)
     }
     
     override func viewDidLoad() {
+        
+        if settings.isFullScreenOnly {
+            
+        } else {
+            self.modalPresentationStyle = .custom
+            self.transitioningDelegate = transitionDelegate
+        }
         
         view.addSubview(backdropView)
         backdropView.translatesAutoresizingMaskIntoConstraints = false
@@ -54,22 +54,22 @@ class RootViewController: UIViewController {
         } else {
             // Fallback on earlier versions
         }
-        mainView.backgroundColor = Primer.theme.colorTheme.main1
+        mainView.backgroundColor = theme.colorTheme.main1
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         bottomConstraint = mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomConstraint?.isActive = true
-        if (settings.isFullScreenOnly) {
-            heightConstraint = mainView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height - 40)
-        } else {
-            heightConstraint = mainView.heightAnchor.constraint(equalToConstant: 400)
-        }
         heightConstraint?.isActive = true
-        mainView.layer.cornerRadius = 12
+        mainView.layer.cornerRadius = theme.cornerRadiusTheme.sheetView
         
         if (settings.isFullScreenOnly) {
-            
+            topConstraint = mainView.topAnchor.constraint(equalTo: view.topAnchor)
+            topConstraint?.isActive = true
         } else {
+            heightConstraint = mainView.heightAnchor.constraint(equalToConstant: 400)
+            heightConstraint?.isActive = true
+            self.modalPresentationStyle = .custom
+            self.transitioningDelegate = transitionDelegate
             let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
             mainView.addGestureRecognizer(panGesture)
         }
@@ -78,11 +78,10 @@ class RootViewController: UIViewController {
         
         switch Primer.flow {
         case .completeDirectCheckout: router.show(.vaultCheckout)
-        case .completeVaultCheckout: router.show(.vaultCheckout)
-        case .addCardToVault: router.show(.cardForm)
+        case .default: router.show(.vaultCheckout)
+        case .addCardToVault: router.show(.form(type: .cardForm(theme: theme)))
         case .addPayPalToVault: router.show(.oAuth)
-        //        case .addDirectDebit: show(.confirmMandate)
-        case .addDirectDebit: router.show(.form(type: .iban(mandate: state.directDebitMandate)))
+        case .addDirectDebit: router.show(.confirmMandate)
         }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
@@ -154,32 +153,16 @@ class RootViewController: UIViewController {
         
         
         if sender.state == .ended {
-            
-            if (currentHeight - translation.y > UIScreen.main.bounds.height - 40) {
+            if (currentHeight - translation.y > UIScreen.main.bounds.height - 80) {
                 UIView.animate(withDuration: 0.3) { [weak self] in
                     guard let strongSelf = self else { return }
-                    strongSelf.currentHeight = UIScreen.main.bounds.height - 40
+                    strongSelf.currentHeight = UIScreen.main.bounds.height - 80
                     strongSelf.heightConstraint.setFullScreen()
                     strongSelf.view.layoutIfNeeded()
                 }
             } else {
                 currentHeight = heightConstraint?.constant ?? 400
             }
-            
-            
-            //            UIView.animate(withDuration: 0.3) { [weak self] in
-            //                guard let strongSelf = self else { return }
-            //
-            //                if ((strongSelf.heightConstraint?.constant ?? 400) > 500)  {
-            //                    strongSelf.currentHeight = UIScreen.main.bounds.height - 40
-            //                    strongSelf.heightConstraint.setFullScreen()
-            //                } else {
-            //                    strongSelf.currentHeight = strongSelf.heights.last ?? 400
-            //                    strongSelf.heightConstraint?.constant = strongSelf.currentHeight
-            //                }
-            //
-            //                strongSelf.view.layoutIfNeeded()
-            //            }
         }
     }
     

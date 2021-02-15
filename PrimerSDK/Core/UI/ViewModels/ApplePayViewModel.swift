@@ -12,9 +12,16 @@ protocol ApplePayViewModelProtocol {
 
 class ApplePayViewModel: ApplePayViewModelProtocol {
     
-    var amount: Int { return state.settings.amount }
+    var amount: Int {
+        guard let amount = state.settings.amount else { fatalError("Apple Pay requires amount value!") }
+        return amount
+
+    }
     var applePayConfigId: String? { return state.paymentMethodConfig?.getConfigId(for: .APPLE_PAY) }
-    var currency: Currency { return state.settings.currency }
+    var currency: Currency {
+        guard let currency = state.settings.currency else { fatalError("Apple Pay requires currency value!") }
+        return currency
+    }
     var merchantIdentifier: String? { return state.settings.merchantIdentifier }
     var countryCode: CountryCode? { return state.settings.countryCode }
     var uxMode: UXMode { return Primer.flow.uxMode }

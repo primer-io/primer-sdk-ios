@@ -9,7 +9,7 @@
 
 class MockCardFormViewModel: CardFormViewModelProtocol {
     var theme: PrimerTheme {
-        return PrimerTheme.initialise()
+        return PrimerTheme()
     }
     
     var flow: PrimerSessionFlow {

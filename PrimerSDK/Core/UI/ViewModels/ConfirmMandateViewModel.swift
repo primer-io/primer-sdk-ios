@@ -31,7 +31,16 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
     
     var amount: String {
         if (state.settings.directDebitHasNoAmount) { return "" }
-        return state.settings.amount.toCurrencyString(currency: state.settings.currency)
+        
+        guard let amount = state.settings.amount else {
+            return ""
+        }
+        
+        guard let currency = state.settings.currency else {
+            return ""
+        }
+        
+        return amount.toCurrencyString(currency: currency)
     }
     
     @Dependency private(set) var state: AppStateProtocol

@@ -37,12 +37,24 @@ class PayPalService: PayPalServiceProtocol {
             return completion(.failure(PrimerError.PayPalSessionFailed))
         }
         
+        guard let amount = state.settings.amount else {
+            fatalError("Paypal checkout requires amount value!")
+        }
+        
+        guard let currency = state.settings.currency else {
+            fatalError("Paypal checkout requires currency value!")
+        }
+        
+        guard let urlScheme = state.settings.urlScheme else {
+            fatalError("Paypal checkout requires URL Scheme value!")
+        }
+        
         let body = PayPalCreateOrderRequest(
             paymentMethodConfigId: tokenAndUrlAndId.2,
-            amount: state.settings.amount,
-            currencyCode: state.settings.currency,
-            returnUrl: state.settings.urlScheme,
-            cancelUrl: state.settings.urlScheme
+            amount: amount,
+            currencyCode: currency,
+            returnUrl: urlScheme,
+            cancelUrl: urlScheme
         )
         
         self.api.post(tokenAndUrlAndId.0, body: body, url: tokenAndUrlAndId.1, completion: { [weak self] result in
@@ -65,10 +77,15 @@ class PayPalService: PayPalServiceProtocol {
             return completion(.failure(PrimerError.PayPalSessionFailed))
         }
         
+        guard let urlScheme = state.settings.urlScheme else {
+            fatalError("Paypal checkout requires URL Scheme value!")
+        }
+        
+        
         let body = PayPalCreateBillingAgreementRequest(
             paymentMethodConfigId: tokenAndUrlAndId.2,
-            returnUrl: state.settings.urlScheme,
-            cancelUrl: state.settings.urlScheme
+            returnUrl: urlScheme,
+            cancelUrl: urlScheme
         )
         
         self.api.post(tokenAndUrlAndId.0, body: body, url: tokenAndUrlAndId.1, completion: { [weak self] result in

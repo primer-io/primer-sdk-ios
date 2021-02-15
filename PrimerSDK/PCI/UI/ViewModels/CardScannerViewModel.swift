@@ -9,5 +9,5 @@ class CardScannerViewModel: CardScannerViewModelProtocol {
 }
 
 class MockCardScannerViewModel: CardScannerViewModelProtocol {
-    var theme: PrimerTheme { return PrimerTheme.initialise() }
+    var theme: PrimerTheme { return PrimerTheme() }
 }
