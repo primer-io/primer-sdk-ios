@@ -16,6 +16,7 @@ class SuccessViewController: UIViewController {
     let reference = UILabel()
     
     @Dependency private(set) var viewModel: SuccessScreenViewModelProtocol
+    @Dependency private(set) var theme: PrimerThemeProtocol
     
     override func viewDidLoad() {
         view.addSubview(icon)
@@ -62,7 +63,7 @@ extension SuccessViewController {
     func configureReferenceTitle() {
         if (viewModel.successScreenType != .directDebit) { return }
         referenceTitle.text = "Reference".uppercased()
-        referenceTitle.textColor = Primer.theme.colorTheme.disabled1
+        referenceTitle.textColor = theme.colorTheme.neutral1
         referenceTitle.font = .systemFont(ofSize: 13)
     }
     
@@ -90,8 +91,8 @@ extension SuccessViewController {
         confirmationMessage.translatesAutoresizingMaskIntoConstraints = false
         confirmationMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         confirmationMessage.topAnchor.constraint(equalTo: message.bottomAnchor, constant: 24).isActive = true
-        confirmationMessage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Primer.theme.layout.safeMargin).isActive = true
-        confirmationMessage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Primer.theme.layout.safeMargin).isActive = true
+        confirmationMessage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: theme.layout.safeMargin).isActive = true
+        confirmationMessage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
     }
     
     func anchorReferenceTitle() {

@@ -3,8 +3,8 @@ public typealias PaymentMethodTokenCallBack = (_ result: PaymentMethodToken, _ c
 public typealias CheckoutDismissalCallback = () -> Void
 
 protocol PrimerSettingsProtocol {
-    var amount: Int { get }
-    var currency: Currency { get }
+    var amount: Int? { get }
+    var currency: Currency? { get }
     var merchantIdentifier: String? { get }
     var countryCode: CountryCode? { get }
     var applePayEnabled: Bool { get }
@@ -13,8 +13,8 @@ protocol PrimerSettingsProtocol {
     var clientTokenRequestCallback: ClientTokenCallBack { get }
     var onTokenizeSuccess: PaymentMethodTokenCallBack { get }
     var onCheckoutDismiss: CheckoutDismissalCallback { get }
-    var urlScheme: String { get }
-    var urlSchemeIdentifier: String { get }
+    var urlScheme: String? { get }
+    var urlSchemeIdentifier: String? { get }
     var isFullScreenOnly: Bool { get }
     var hasDisabledSuccessScreen: Bool { get }
     var businessDetails: BusinessDetails? { get }
@@ -22,15 +22,15 @@ protocol PrimerSettingsProtocol {
 }
 
 public class PrimerSettings: PrimerSettingsProtocol {
-    public let amount: Int
-    public let currency: Currency
+    public let amount: Int?
+    public let currency: Currency?
     public let merchantIdentifier: String?
     public let countryCode: CountryCode?
     public let applePayEnabled: Bool
     public let customerId: String?
     public let theme: PrimerTheme
-    public let urlScheme: String
-    public let urlSchemeIdentifier: String
+    public let urlScheme: String?
+    public let urlSchemeIdentifier: String?
     public let isFullScreenOnly: Bool
     public let hasDisabledSuccessScreen: Bool
     public let businessDetails: BusinessDetails?
@@ -52,15 +52,15 @@ public class PrimerSettings: PrimerSettingsProtocol {
     
     public init(
         delegate: PrimerCheckoutDelegate,
-        amount: Int,
-        currency: Currency,
-        theme: PrimerTheme = PrimerTheme.initialise(),
+        amount: Int? = nil,
+        currency: Currency? = nil,
+        theme: PrimerTheme = PrimerTheme(),
         applePayEnabled: Bool = false,
         customerId: String? = nil,
         merchantIdentifier: String? = nil,
         countryCode: CountryCode? = nil,
-        urlScheme: String,
-        urlSchemeIdentifier: String,
+        urlScheme: String? = nil,
+        urlSchemeIdentifier: String? = nil,
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
         businessDetails: BusinessDetails? = nil,

@@ -12,6 +12,7 @@ class ConfirmMandateViewController: UIViewController {
     var subView: ConfirmMandateView = ConfirmMandateView()
     @Dependency private(set) var viewModel: ConfirmMandateViewModelProtocol
     @Dependency private(set) var router: RouterDelegate
+    @Dependency private(set) var theme: PrimerThemeProtocol
     
     let formTypes: [ConfirmMandateFormType] = [.name, .email, .address, .iban]
     
@@ -43,10 +44,10 @@ extension ConfirmMandateViewController: UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
-        cell.addTitle(formTypes[indexPath.row].title)
-        cell.addContent(formTypes[indexPath.row].content(viewModel.mandate))
+        cell.addTitle(formTypes[indexPath.row].title, theme: theme)
+        cell.addContent(formTypes[indexPath.row].content(viewModel.mandate), theme: theme)
         cell.accessoryType = .disclosureIndicator
-        cell.backgroundColor = Primer.theme.colorTheme.main1
+        cell.backgroundColor = theme.colorTheme.main1
         return cell
     }
     
@@ -62,19 +63,20 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
     }
     
     func close() {
-        let alert = UIAlertController(
-            title: "Do you want to cancel adding a bank account?".localized(),
-            message: "Your saved data will be erased.".localized(),
-            preferredStyle: .alert
-        )
-        
-        alert.addAction(UIAlertAction(title: "Back", style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: "Erase", style: .destructive, handler: { [weak self] action in
-            self?.viewModel.eraseData()
-            self?.router.pop()
-        }))
-        
-        present(alert, animated: true, completion: nil)
+        router.pop()
+//        let alert = UIAlertController(
+//            title: "Do you want to cancel adding a bank account?".localized(),
+//            message: "Your saved data will be erased.".localized(),
+//            preferredStyle: .alert
+//        )
+//
+//        alert.addAction(UIAlertAction(title: "Back", style: .cancel, handler: nil))
+//        alert.addAction(UIAlertAction(title: "Erase", style: .destructive, handler: { [weak self] action in
+//            self?.viewModel.eraseData()
+//            self?.router.pop()
+//        }))
+//
+//        present(alert, animated: true, completion: nil)
     }
     
     func confirm() {

@@ -5,8 +5,14 @@ protocol DirectCheckoutViewModelProtocol {
 }
 
 class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
-    private var amount: Int { return state.settings.amount }
-    private var currency: Currency { return state.settings.currency }
+    private var amount: Int {
+        guard let amount = state.settings.amount else { fatalError("Direct checkout requires amount value!") }
+        return amount
+    }
+    private var currency: Currency {
+        guard let currency = state.settings.currency else { fatalError("Direct checkout requires currency value!") }
+        return currency
+    }
     
     var amountViewModel: AmountViewModel {
         var vm = AmountViewModel(amount: amount, currency: currency)

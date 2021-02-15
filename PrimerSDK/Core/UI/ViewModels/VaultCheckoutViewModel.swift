@@ -18,7 +18,9 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     }
     
     var amountStringed: String {
-        return state.settings.amount.toCurrencyString(currency: state.settings.currency)
+        guard let amount = state.settings.amount else { return "" }
+        guard let currency = state.settings.currency else { return "" }
+        return amount.toCurrencyString(currency: currency)
     }
     
     var paymentMethods: [PaymentMethodToken] {

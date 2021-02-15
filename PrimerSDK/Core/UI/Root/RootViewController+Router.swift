@@ -62,7 +62,6 @@ fileprivate extension RootViewController {
             guard let strongSelf = self else { return }
             
             if (strongSelf.settings.isFullScreenOnly) {
-                strongSelf.heightConstraint.setFullScreen()
                 strongSelf.view.layoutIfNeeded()
             } else {
                 strongSelf.heightConstraint?.constant = height
@@ -81,7 +80,6 @@ fileprivate extension RootViewController {
         mainView.addSubview(child.view)
         
         child.view.pin(to: mainView)
-        //final step
         child.didMove(toParent: self)
         
         if (self.routes.last is ConfirmMandateViewController) {

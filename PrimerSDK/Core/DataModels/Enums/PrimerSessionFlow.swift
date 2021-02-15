@@ -7,7 +7,7 @@
 
 public enum PrimerSessionFlow {
     case completeDirectCheckout
-    case completeVaultCheckout
+    case `default`
     case addPayPalToVault
     case addCardToVault
     case addDirectDebit
@@ -16,7 +16,7 @@ public enum PrimerSessionFlow {
         switch self {
         case .addCardToVault: return true
         case .addPayPalToVault: return true
-        case .completeVaultCheckout: return true
+        case .default: return true
         case .addDirectDebit: return true
         case .completeDirectCheckout: return false
         }
@@ -25,7 +25,7 @@ public enum PrimerSessionFlow {
         switch self {
         case .addCardToVault: return .VAULT
         case .addPayPalToVault: return .VAULT
-        case .completeVaultCheckout: return .VAULT
+        case .default: return .VAULT
         case .addDirectDebit: return .VAULT
         case .completeDirectCheckout: return .CHECKOUT
         }

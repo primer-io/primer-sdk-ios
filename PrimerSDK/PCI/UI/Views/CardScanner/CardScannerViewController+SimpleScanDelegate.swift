@@ -1,6 +1,6 @@
 import CardScan
 
-@available(iOS 11.2, *)
+@available(iOS 12, *)
 extension CardScannerViewController: SimpleScanDelegate {
     
     func userDidCancelSimple(_ scanViewController: SimpleScanViewController) {}

@@ -4,6 +4,17 @@
 //
 //  Created by Carl Eriksson on 24/01/2021.
 //
+
+
+public enum PrimerFormType {
+    case bankAccount
+    case name
+    case iban
+    case email
+    case address
+    case cardForm
+}
+
 enum FormType {
     
     case bankAccount(mandate: DirectDebitMandate, popOnComplete: Bool = false)
@@ -11,7 +22,7 @@ enum FormType {
     case iban(mandate: DirectDebitMandate, popOnComplete: Bool = false)
     case email(mandate: DirectDebitMandate, popOnComplete: Bool = false)
     case address(mandate: DirectDebitMandate, popOnComplete: Bool = false)
-    case cardForm
+    case cardForm(theme: PrimerThemeProtocol)
     
     var textFields: [[FormTextFieldType]] {
         switch self {
@@ -26,8 +37,8 @@ enum FormType {
             [.postalCode(mandate.address?.postalCode)],
             [.country(mandate.address?.countryCode)]
         ]
-        case .cardForm:
-            switch Primer.theme.textFieldTheme {
+        case .cardForm(let theme):
+            switch theme.textFieldTheme {
             case .doublelined:
                 return [
                     [.cardholderName],

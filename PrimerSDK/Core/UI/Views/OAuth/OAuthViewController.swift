@@ -11,7 +11,7 @@ class OAuthViewController: UIViewController {
     let indicator = UIActivityIndicatorView()
     @Dependency private(set) var viewModel: OAuthViewModelProtocol
     var session: Any?
-    
+    @Dependency private(set) var theme: PrimerThemeProtocol
     @Dependency private(set) var router: RouterDelegate
     
     
@@ -19,7 +19,7 @@ class OAuthViewController: UIViewController {
     
     override func viewDidLoad() {
         view.addSubview(indicator)
-        indicator.color = Primer.theme.colorTheme.disabled1
+        indicator.color = theme.colorTheme.disabled1
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true

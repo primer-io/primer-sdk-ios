@@ -8,6 +8,7 @@ class VaultCheckoutViewController: UIViewController {
     
     @Dependency private(set) var viewModel: VaultCheckoutViewModelProtocol
     @Dependency private(set) var router: RouterDelegate
+    @Dependency private(set) var theme: PrimerThemeProtocol
     
     private let loadingIndicator = UIActivityIndicatorView()
     private let transitionDelegate = TransitionDelegate()
@@ -77,7 +78,7 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
         cell.contentView.addSubview(methodView)
         methodView.pin(to: cell.contentView)
         cell.frame = cell.frame.inset(by: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
-        cell.backgroundColor = Primer.theme.colorTheme.main1
+        cell.backgroundColor = theme.colorTheme.main1
         cell.separatorInset = UIEdgeInsets.zero
         
         return cell
@@ -91,7 +92,7 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
         switch option.type {
         case .APPLE_PAY: router.show(.applePay)
         case .GOOGLE_PAY: break
-        case .PAYMENT_CARD: router.show(.cardForm)
+        case .PAYMENT_CARD: router.show(.form(type: .cardForm(theme: theme)))
         case .PAYPAL: router.show(.oAuth)
         case .GOCARDLESS_MANDATE: router.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
         }
