@@ -1,4 +1,4 @@
-framework module Pods_PrimerSDKExample {
+module Pods_PrimerSDKExample {
   umbrella header "Pods-PrimerSDKExample-umbrella.h"
 
   export *

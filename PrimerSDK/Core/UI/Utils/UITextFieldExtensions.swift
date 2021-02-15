@@ -12,160 +12,127 @@ extension UITextField {
         self.rightView = paddingView
         self.rightViewMode = .always
     }
+}
+
+enum TextFieldState {
+    case `default`
+    case valid
+    case invalid
     
-    func addLine() {
-        let lineView = UIView()
-        lineView.backgroundColor = .systemBlue
-        lineView.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(lineView)
-        lineView.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
-        lineView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-        lineView.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -5).isActive = true
-        lineView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 5).isActive = true
-    }
-    
-    func toggleValidity(
-        _ isValid: Bool,
-        theme: PrimerTextFieldTheme,
-        errorMessage: String = "",
-        hideValidTheme: Bool = false
-    ) {
-        if (isValid) {
-            self.textColor = Primer.theme.colorTheme.text1
-            
-            if (hideValidTheme) { return }
-            
-            self.addIcon()
-        } else {
-            textColor = .red
-            subviews.forEach { $0.removeFromSuperview() }
-            switch theme {
-            case .outlined:
-                addOutlinedBorder(color: UIColor.systemRed.cgColor)
-            case .underlined:
-                addLineBorder(color: UIColor.systemRed)
-            case .doublelined:
-                addLineBorder(color: UIColor.systemRed, isTop: true)
-                addLineBorder(color: UIColor.systemRed)
-            }
-            showValidationError(message: errorMessage)
-            
+    func getColor(theme: PrimerThemeProtocol) -> UIColor {
+        switch self {
+        case .default:
+            return theme.colorTheme.neutral1
+        case .valid:
+            return theme.colorTheme.tint1
+        case .invalid:
+            return theme.colorTheme.error1
         }
     }
     
-    func addOutlinedBorder(color: CGColor) {
-        let borderView = UIView()
-        borderView.layer.zPosition = -1
-        borderView.layer.borderWidth = 1
-        borderView.layer.borderColor = color
-        borderView.isUserInteractionEnabled = false
-        addSubview(borderView)
-        borderView.pin(to: self)
+    var icon: UIImage? {
+        switch self {
+        case .default:
+            return nil
+        case .valid:
+            let tintedIcon = ImageName.check2.image?.withRenderingMode(.alwaysTemplate)
+            return tintedIcon
+        case .invalid:
+            let tintedIcon = ImageName.error.image?.withRenderingMode(.alwaysTemplate)
+            return tintedIcon
+        }
     }
+}
+
+class PrimerTextField: UITextField {
     
-    func addLineBorder(color: UIColor, isTop: Bool = false, padding: CGFloat = 0) {
-        let lineView = UIView()
-        lineView.backgroundColor = color
-        self.addSubview(lineView)
-        lineView.translatesAutoresizingMaskIntoConstraints = false
-        lineView.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
-        lineView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-        lineView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
-        lineView.bottomAnchor.constraint(equalTo: isTop ? topAnchor : bottomAnchor, constant: isTop ? -padding : padding).isActive = true
-    }
+    var validationIsOptional = false
     
-    func addBorder(isFocused: Bool, title: String, cornerRadius: CGFloat, theme: PrimerTextFieldTheme, color: UIColor, backgroundColor: UIColor) {
+    var label = UILabel()
+    var errorMessage = UILabel()
+    
+    private var icon = UIImageView()
+    
+    @Dependency private(set) var theme: PrimerThemeProtocol
+    
+    var padding: CGFloat = 12
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         
-        self.subviews.forEach { $0.removeFromSuperview() }
+        addSubview(label)
+        addSubview(errorMessage)
         
-        switch theme {
-        case .outlined:
-            addOutlinedBorder(color: UIColor.systemRed.cgColor)
+        setLeftPaddingPoints(padding)
+        configureErrorMessage()
+        configureLabel()
+        
+        switch theme.textFieldTheme {
         case .underlined:
-            addLineBorder(color: color)
+            let bottomBorder = CALayer()
+            bottomBorder.frame = CGRect(x: 0, y: 0, width: bounds.size.width, height: 1)
+            self.layer.addSublayer(bottomBorder)
         case .doublelined:
-            addLineBorder(color: color, isTop: true, padding: 0)
-            addLineBorder(color: color, padding: 0)
+            let topBorder = CALayer()
+            topBorder.frame = CGRect(x: 0, y: 0, width: bounds.size.width, height: 1)
+            layer.addSublayer(topBorder)
+            let bottomBorder = CALayer()
+            bottomBorder.frame = CGRect(x: 0, y: 0, width: bounds.size.width, height: 1)
+            layer.addSublayer(bottomBorder)
+        case .outlined:
+            layer.borderWidth = 1
         }
         
-        if (isFocused && theme != .doublelined) {
-            addFocusedTheme(title, theme: theme, textColor: color, backgroundColor: backgroundColor)
+        renderSubViews(validationState: .default)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func renderSubViews(validationState: TextFieldState, showIcon: Bool = true) {
+        let color = validationState.getColor(theme: theme)
+        
+        // border
+        switch theme.textFieldTheme {
+        case .doublelined, .underlined:
+            layer.sublayers?.forEach { $0.backgroundColor = color.cgColor }
+        case .outlined:
+            layer.borderColor = color.cgColor
+            layer.cornerRadius = theme.cornerRadiusTheme.textFields
         }
         
-    }
-    
-    func setBottomBorder(withColor color: UIColor) {
-        self.borderStyle = UITextField.BorderStyle.none
-        self.backgroundColor = UIColor.clear
-        let width: CGFloat = 1.0
-        let borderLine = UIView(frame: CGRect(x: 0, y: self.frame.height - width, width: self.frame.width, height: width))
-        borderLine.backgroundColor = color
-        self.addSubview(borderLine)
-    }
-    
-    func addIcon(isError: Bool = false) {
-        let iconView = UIImageView()
+        // label
+        label.textColor = color
         
-        if (isError) {
-            let icon = ImageName.error.image
-            let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
-            iconView.tintColor = Primer.theme.colorTheme.error1
-            iconView.image = tintedIcon
-        } else {
-            let icon = ImageName.check2.image
-            let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
-            iconView.tintColor = Primer.theme.colorTheme.tint1
-            iconView.image = tintedIcon
-        }
+        // icon
+        let image = validationState.icon
+        let size = frame.size.height / 3
+        let iconSize = validationState == .invalid ? size + 4 : size
         
-        iconView.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(iconView)
-//        iconView.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        iconView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10).isActive = true
-        iconView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        if !showIcon { return }
+        rightView = UIView(frame: CGRect(x: 0, y: 0, width: frame.size.height, height: frame.size.height))
+        icon.frame = CGRect(x: 0, y: 0, width: iconSize, height: iconSize)
+        icon.center = rightView!.center
+        icon.image = image
+        icon.tintColor = color
+        rightViewMode = .unlessEditing
+        rightView?.addSubview(icon)
     }
     
-    func addMiniTitle(_ text: String) {
-        let titleView = UILabel()
-        titleView.text = text.uppercased()
-        titleView.textColor = .white
-        titleView.font = .systemFont(ofSize: 10, weight: .light)
-        titleView.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(titleView)
-        titleView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 2).isActive = true
-        titleView.topAnchor.constraint(equalTo: self.topAnchor, constant: -12).isActive = true
-    }
-    
-    private func addFocusedTheme(_ text: String, theme: PrimerTextFieldTheme, textColor: UIColor, backgroundColor: UIColor) {
-        let titleView = UILabel()
-        titleView.text = text.uppercased()
-        titleView.backgroundColor = backgroundColor
-        titleView.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(titleView)
-        
-        switch theme {
-        case .doublelined:
-            titleView.textColor = Primer.theme.colorTheme.text1
-            titleView.font = .systemFont(ofSize: 17, weight: .bold)
-            titleView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-            titleView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        default:
-            titleView.textColor = textColor
-            titleView.font = .systemFont(ofSize: 10, weight: .light)
-            titleView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: theme == .outlined ? 10 : 0).isActive = true
-            titleView.topAnchor.constraint(equalTo: self.topAnchor, constant: -6).isActive = true
-        }
-    }
-    
-    func showValidationError(message: String) {
-        let label = UILabel()
-        label.text = message
+    private func configureLabel() {
         label.font = .systemFont(ofSize: 12)
-        label.textColor = .systemRed
         label.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(label)
-        label.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        label.topAnchor.constraint(equalTo: bottomAnchor, constant: 2).isActive = true
-        addIcon(isError: true)
+        label.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        label.bottomAnchor.constraint(equalTo: topAnchor, constant: -2).isActive = true
     }
+    
+    private func configureErrorMessage() {
+        errorMessage.font = .systemFont(ofSize: 12)
+        errorMessage.textColor = .systemRed
+        errorMessage.translatesAutoresizingMaskIntoConstraints = false
+        errorMessage.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        errorMessage.topAnchor.constraint(equalTo: bottomAnchor, constant: 2).isActive = true
+    }
+    
 }

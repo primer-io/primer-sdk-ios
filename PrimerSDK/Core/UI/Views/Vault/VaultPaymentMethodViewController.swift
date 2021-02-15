@@ -8,6 +8,7 @@ class VaultPaymentMethodViewController: UIViewController {
     
     var subView: VaultPaymentMethodView = VaultPaymentMethodView()
     @Dependency private(set) var viewModel: VaultPaymentMethodViewModelProtocol
+    @Dependency private(set) var theme: PrimerThemeProtocol
     
     weak var delegate: ReloadDelegate?
     @Dependency private(set) var router: RouterDelegate

@@ -6,7 +6,13 @@ protocol OAuthViewModelProtocol {
 
 class OAuthViewModel: OAuthViewModelProtocol {
     
-    var urlSchemeIdentifier: String { return state.settings.urlSchemeIdentifier }
+    var urlSchemeIdentifier: String {
+        guard let identifier = state.settings.urlSchemeIdentifier else {
+            fatalError("OAuth requires URL scheme identifier!")
+        }
+        
+        return identifier
+    }
     
     private var clientToken: DecodedClientToken? { return state.decodedClientToken }
     private var orderId: String? { return state.orderId }
@@ -39,9 +45,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
         if (clientToken != nil && state.paymentMethodConfig != nil) {
             switch Primer.flow.uxMode {
             case .CHECKOUT: paypalService.startOrderSession(completion)
-            case .VAULT:
-                print("🚀 vault")
-                paypalService.startBillingAgreementSession(completion)
+            case .VAULT: paypalService.startBillingAgreementSession(completion)
             }
         } else {
             loadConfig(completion)
@@ -67,12 +71,10 @@ class OAuthViewModel: OAuthViewModelProtocol {
             guard let id = orderId else { return }
             instrument = PaymentInstrument(paypalOrderId: id)
         case .VAULT:
-            print("🎉 confirmedBillingAgreement", confirmedBillingAgreement ?? "nil")
             guard let agreement = confirmedBillingAgreement else {
                 generateBillingAgreementConfirmation(with: completion)
                 return
             }
-            print("🎉 agreement", agreement)
             instrument = PaymentInstrument(
                 paypalBillingAgreementId: agreement.billingAgreementId,
                 shippingAddress: agreement.shippingAddress,

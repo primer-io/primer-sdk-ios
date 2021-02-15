@@ -1,43 +1,9 @@
 //
-//  AnalyticsService.swift
+//  DependencyInjection.swift
 //  PrimerSDK
 //
-//  Created by Carl Eriksson on 27/01/2021.
+//  Created by Carl Eriksson on 10/02/2021.
 //
-import Mixpanel
-
-protocol AnalyticsServiceProtocol: class {
-    func trackEvent(of type: AnalyticsEventType)
-}
-
-enum AnalyticsEventType: String {
-    case LOADED_CHECKOUT_UI
-    case STARTED_CHECKOUT
-}
-
-class AnalyticsService: AnalyticsServiceProtocol {
-    func trackEvent(of type: AnalyticsEventType) {
-        print(Mixpanel.mainInstance().serverURL)
-        Mixpanel.mainInstance().track(event: type.rawValue)
-        
-    }
-    
-    init() {
-        Mixpanel.initialize(token: "token", flushInterval: 0)
-        Mixpanel.mainInstance().serverURL = "https://analytics.api.dev.core.primer.io/mixpanel"
-//        Mixpanel.mainInstance().delegate = self
-        Mixpanel.mainInstance().loggingEnabled = true
-        Mixpanel.mainInstance().flush(completion: {
-        })
-    }
-}
-
-extension AnalyticsService: MixpanelDelegate {
-    func mixpanelWillFlush(_ mixpanel: MixpanelInstance) -> Bool {
-        print(mixpanel)
-        return true
-    }
-}
 
 @propertyWrapper
 struct Dependency<T> {

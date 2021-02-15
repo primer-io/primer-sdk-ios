@@ -1,24 +1,23 @@
 PODS:
-  - CardScan (1.0.5050):
-    - CardScan/Core (= 1.0.5050)
-  - CardScan/Core (1.0.5050)
-  - Mixpanel-swift (2.8.2):
-    - Mixpanel-swift/Complete (= 2.8.2)
-  - Mixpanel-swift/Complete (2.8.2)
+  - CardScan (2.0.7)
+  - PrimerSDK (1.1.15):
+    - CardScan
 
 DEPENDENCIES:
-  - CardScan
-  - Mixpanel-swift
+  - PrimerSDK (from `./`)
 
 SPEC REPOS:
   trunk:
     - CardScan
-    - Mixpanel-swift
+
+EXTERNAL SOURCES:
+  PrimerSDK:
+    :path: "./"
 
 SPEC CHECKSUMS:
-  CardScan: 849c4da1bc84740a496f4898f9e9c3cc6ee7205e
-  Mixpanel-swift: ef37387899c8967fa95d492887f4bcc980041aa0
+  CardScan: 0bc2843073a9c2ef954fbb59a671d306efd76c4c
+  PrimerSDK: f5c9826b87fc52c43f962ff9c88eef3f5f9fcfe1
 
-PODFILE CHECKSUM: 2b304c7281772a9dcc0a8c406387ad9679db6801
+PODFILE CHECKSUM: a09d40d7af2fc0bb7e0233e82b00a129787885a7
 
 COCOAPODS: 1.10.1

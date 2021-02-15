@@ -38,7 +38,7 @@ class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
 }
 
 class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
-    var theme: PrimerTheme { return PrimerTheme.initialise() }
+    var theme: PrimerTheme { return PrimerTheme() }
     
     var paymentMethods: [PaymentMethodToken] { return [] }
     

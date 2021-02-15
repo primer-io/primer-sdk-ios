@@ -6,6 +6,19 @@ public struct PrimerContent {
     let scannerView = ScannerViewContent()
     let cardFormView = CardFormViewContent()
     let singleFieldFormDirectDebitContent = SingleFieldFormDirectDebitContent()
+    var formMainTitles = FormMainTitles()
+    var formTopTitles = FormTopTitles()
+    
+    mutating func setTopTitle(_ text: String, for formType: PrimerFormType) {
+        switch formType {
+        case .address: formTopTitles.address = text
+        case .cardForm: formTopTitles.cardForm = text
+        case .name: formTopTitles.name = text
+        case .email: formTopTitles.email = text
+        case .iban: formTopTitles.iban = text
+        case .bankAccount: formTopTitles.bankAccount = text
+        }
+    }
 }
 
 struct IBANFormViewContent {
@@ -53,4 +66,57 @@ struct CardFormViewContent {
 struct SingleFieldFormDirectDebitContent {
     var navBarRightText: String { return "Confirm".localized() }
     var navBarTitle: String { return "Add bank account".localized() }
+}
+
+protocol FormProtocol {
+    var address: String { get }
+    var cardForm: String { get }
+    var name: String { get }
+    var email: String { get }
+    var iban: String { get }
+    var bankAccount: String { get }
+}
+
+public struct FormMainTitles: FormProtocol {
+    var address = ""
+    var cardForm = ""
+    var name = ""
+    var email = ""
+    var iban = ""
+    var bankAccount = ""
+}
+
+extension FormMainTitles {
+    mutating func setMainTitle(_ text: String, for formType: PrimerFormType) {
+        switch formType {
+        case .address: address = text
+        case .cardForm: cardForm = text
+        case .name: name = text
+        case .email: email = text
+        case .iban: iban = text
+        case .bankAccount: bankAccount = text
+        }
+    }
+}
+
+public struct FormTopTitles: FormProtocol {
+    var address = ""
+    var cardForm = ""
+    var name = ""
+    var email = ""
+    var iban = ""
+    var bankAccount = ""
+}
+
+extension FormTopTitles {
+    mutating func setTopTitle(_ text: String, for formType: PrimerFormType) {
+        switch formType {
+        case .address: address = text
+        case .cardForm: cardForm = text
+        case .name: name = text
+        case .email: email = text
+        case .iban: iban = text
+        case .bankAccount: bankAccount = text
+        }
+    }
 }

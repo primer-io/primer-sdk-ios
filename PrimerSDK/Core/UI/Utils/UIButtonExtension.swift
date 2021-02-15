@@ -19,4 +19,9 @@ extension UIButton {
         spinner.removeFromSuperview()
         self.setTitle(title, for: .normal)
     }
+    
+    func toggleValidity(_ isValid: Bool, validColor: UIColor, defaultColor: UIColor) {
+        self.backgroundColor = isValid ? validColor : defaultColor
+        self.isEnabled = isValid
+    }
 }

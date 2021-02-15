@@ -22,6 +22,13 @@ class PrimerSDKExampleUITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
+    private func takeScreenshot() {
+        let fullScreenshot = XCUIScreen.main.screenshot()
+        let screenshot = XCTAttachment(screenshot: fullScreenshot)
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+    
     func testCanAddDirectDebitSuccessfully() throws {
         let app = XCUIApplication()
         app.launch()
@@ -42,6 +49,11 @@ class PrimerSDKExampleUITests: XCTestCase {
         let iban = "FR1420041010050500013M02606"
         ibanField.element.typeText(iban)
         
+        let fullScreenshot = XCUIScreen.main.screenshot()
+        let screenshot = XCTAttachment(screenshot: fullScreenshot)
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        
         // tap next button
         let nextButton = app.buttons["Next"]
         XCTAssert(nextButton.exists)
@@ -60,6 +72,8 @@ class PrimerSDKExampleUITests: XCTestCase {
         let lastName = "Doe"
         lastNameField.element.typeText(lastName)
         
+        takeScreenshot()
+        
         // tap next button
         nextButton.tap()
         
@@ -68,6 +82,8 @@ class PrimerSDKExampleUITests: XCTestCase {
         XCTAssert(emailField.element.exists)
         let email = "test@mail.com"
         emailField.element.typeText(email)
+        
+        takeScreenshot()
         
         // tap next button
         nextButton.tap()
@@ -110,6 +126,8 @@ class PrimerSDKExampleUITests: XCTestCase {
         let finish = label.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: -60))
         start.press(forDuration: 0.2, thenDragTo: finish)
         
+        takeScreenshot()
+        
         // tap next button
         nextButton.tap()
         
@@ -120,6 +138,8 @@ class PrimerSDKExampleUITests: XCTestCase {
         waitForExpectations(timeout: 1, handler: nil)
         XCTAssert(submitButton.exists)
         submitButton.tap()
+        
+        takeScreenshot()
         
         // discover success screen
         let successLabel = app.staticTexts["Success!"]
@@ -134,6 +154,8 @@ class PrimerSDKExampleUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
         
+        takeScreenshot()
+        
         // tap wallet button
         let walletButton = app.buttons.matching(identifier: "walletButton")
         XCTAssert(walletButton.element.exists)
@@ -143,6 +165,8 @@ class PrimerSDKExampleUITests: XCTestCase {
         let cardFormButton = app.buttons["Add Card"]
         XCTAssert(cardFormButton.exists)
         cardFormButton.tap()
+        
+        takeScreenshot()
         
         // enter name value
         let nameField = app.textFields.matching(identifier: "nameField")
@@ -163,6 +187,8 @@ class PrimerSDKExampleUITests: XCTestCase {
         XCTAssert(expiryField.element.exists)
         expiryField.element.tap()
         
+        takeScreenshot()
+        
         let expiry = "0925"
         expiryField.element.typeText(expiry)
         
@@ -173,6 +199,8 @@ class PrimerSDKExampleUITests: XCTestCase {
         
         let cvc = "234"
         cvcField.element.typeText(cvc)
+        
+        takeScreenshot()
         
         // tab submit button
         let submitButton = app.buttons.matching(identifier: "submitButton")
