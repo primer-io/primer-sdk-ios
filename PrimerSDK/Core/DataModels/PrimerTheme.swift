@@ -23,6 +23,7 @@ public struct PrimerTheme: PrimerThemeProtocol {
     public let fontTheme: PrimerFontTheme
     public var content: PrimerContent = PrimerContent()
     public let layout: PrimerLayout
+    public let shadowTheme: PrimerShadowTheme = PrimerShadowTheme(color: UIColor.gray.cgColor, opacity: 0.3, radius: 10)
     
     @available(iOS 13.0, *)
     public init(
@@ -58,16 +59,18 @@ public struct PrimerTheme: PrimerThemeProtocol {
 }
 
 public struct CornerRadiusTheme {
-    public let buttons, textFields, sheetView: CGFloat
+    public let buttons, textFields, sheetView, confirmMandateList: CGFloat
     
     public init(
         buttons: CGFloat = 4,
         textFields: CGFloat = 2,
-        sheetView: CGFloat = 12
+        sheetView: CGFloat = 12,
+        confirmMandateList: CGFloat = 0
     ) {
         self.buttons = buttons
         self.textFields = textFields
         self.sheetView = sheetView
+        self.confirmMandateList = confirmMandateList
     }
 }
 
@@ -112,19 +115,28 @@ public struct PrimerLayout {
     public let showMainTitle, showTopTitle, fullScreenOnly: Bool
     public let safeMargin: CGFloat
     public let textFieldHeight: CGFloat
+    public let confirmMandateListItemHeight: CGFloat
+    public let confirmMandateListMargin: CGFloat
+    public let confirmMandateListTopMargin: CGFloat
     
     public init(
         showMainTitle: Bool = true,
         showTopTitle: Bool = true,
         fullScreenOnly: Bool = false,
         safeMargin: CGFloat = 16.0,
-        textFieldHeight: CGFloat = 44.0
+        textFieldHeight: CGFloat = 44.0,
+        confirmMandateListItemHeight: CGFloat = 60.0,
+        confirmMandateListMargin: CGFloat = 0.0,
+        confirmMandateListTopMargin: CGFloat = 24
     ) {
         self.showMainTitle = showMainTitle
         self.showTopTitle = showTopTitle
         self.fullScreenOnly = fullScreenOnly
         self.safeMargin = safeMargin
         self.textFieldHeight = textFieldHeight
+        self.confirmMandateListItemHeight = confirmMandateListItemHeight
+        self.confirmMandateListMargin = confirmMandateListMargin
+        self.confirmMandateListTopMargin = confirmMandateListTopMargin
     }
 }
 
@@ -264,3 +276,9 @@ public struct PrimerFontTheme {
         self.mainTitle = mainTitle
     }
 }
+
+public struct PrimerShadowTheme {
+    var color: CGColor
+    var opacity, radius: CGFloat
+}
+

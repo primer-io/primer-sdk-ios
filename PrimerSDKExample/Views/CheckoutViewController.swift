@@ -54,10 +54,14 @@ class CheckoutViewController: UIViewController {
             )
         } else {
             theme = PrimerTheme(
+                cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
                 colorTheme: PrimerDefaultTheme(
                     text3: themeColor,
-                    tint1: .systemPink
-                )
+                    tint1: .systemOrange
+                ),
+                layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
+                textFieldTheme: .outlined,
+                fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
             )
         }
         
@@ -218,6 +222,7 @@ extension CheckoutViewController: PrimerCheckoutDelegate {
             case .success(let data):
                 do {
                     let token = try JSONDecoder().decode(CreateClientTokenResponse.self, from: data)
+                    print("🚀🚀🚀 token:", token)
                     completion(.success(token))
                 } catch {
                     completion(.failure(NetworkError.serializationError))
