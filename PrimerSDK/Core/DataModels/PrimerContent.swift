@@ -77,25 +77,17 @@ protocol FormProtocol {
     var bankAccount: String { get }
 }
 
-public struct FormMainTitles: FormProtocol {
-    var address = ""
-    var cardForm = ""
-    var name = ""
-    var email = ""
-    var iban = ""
-    var bankAccount = ""
-}
+public struct FormMainTitles {
+    private var titles = Dictionary(
+        uniqueKeysWithValues: PrimerFormType.allCases.map { ($0.rawValue, "") }
+    )
 
-extension FormMainTitles {
     mutating func setMainTitle(_ text: String, for formType: PrimerFormType) {
-        switch formType {
-        case .address: address = text
-        case .cardForm: cardForm = text
-        case .name: name = text
-        case .email: email = text
-        case .iban: iban = text
-        case .bankAccount: bankAccount = text
-        }
+        titles[formType.rawValue] = text
+    }
+    
+    func getMainTitle(for formType: PrimerFormType) -> String {
+        return titles[formType.rawValue]!
     }
 }
 

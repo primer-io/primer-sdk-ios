@@ -6,7 +6,7 @@
 //
 
 
-public enum PrimerFormType {
+public enum PrimerFormType: String, CaseIterable {
     case bankAccount
     case name
     case iban
