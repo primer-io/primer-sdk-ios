@@ -84,7 +84,7 @@ class FormView: UIView {
         configureTitle()
         configureButton()
         
-        anchorNavbar()
+//        anchorNavbar()
         anchorTitle()
         anchorLink()
         anchorButton()
@@ -152,6 +152,16 @@ extension FormView {
         if (theme.layout.showTopTitle) {
             navBar.topItem?.title = delegate.formType.topTitle
         }
+        
+        navBar.translatesAutoresizingMaskIntoConstraints = false
+        
+        if #available(iOS 13.0, *) {
+            navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
+        } else {
+            navBar.topAnchor.constraint(equalTo: topAnchor, constant: 18).isActive = true
+        }
+        
+        navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     }
     
     @objc private func back() {
@@ -387,11 +397,17 @@ extension FormView {
 
 // MARK: Anchoring
 extension FormView {
-    func anchorNavbar() {
-        navBar.translatesAutoresizingMaskIntoConstraints = false
-        navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
-        navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
-    }
+//    func anchorNavbar() {
+//        navBar.translatesAutoresizingMaskIntoConstraints = false
+//
+//        if #available(iOS 13.0, *) {
+//            navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
+//        } else {
+//            navBar.topAnchor.constraint(equalTo: topAnchor, constant: 18).isActive = true
+//        }
+//
+//        navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+//    }
     
     func anchorContentView() {
         contentView.translatesAutoresizingMaskIntoConstraints = false

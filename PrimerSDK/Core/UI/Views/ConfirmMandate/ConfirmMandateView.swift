@@ -24,7 +24,7 @@ class ConfirmMandateView: UIView {
     internal let indicator = UIActivityIndicatorView()
     private let navBar = UINavigationBar()
     private let title = UILabel()
-    private let tableView = UITableView()
+    private let tableView = ConfirmMandateTableView()
     private let companyLabel = UILabel()
     private let legalLabel = UILabel()
     private let amountLabel = UILabel()
@@ -33,9 +33,7 @@ class ConfirmMandateView: UIView {
     weak var delegate: ConfirmMandateViewDelegate?
     weak var dataSource: ConfirmMandateViewDataSource?
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
+    func render(isBusy: Bool = false) {
         addSubview(navBar)
         addSubview(title)
         addSubview(tableView)
@@ -44,12 +42,9 @@ class ConfirmMandateView: UIView {
         addSubview(amountLabel)
         addSubview(button)
         addSubview(indicator)
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
-    func render(isBusy: Bool = false) {
+        
         subviews.forEach { $0.isHidden = isBusy }
+        indicator.color = theme.colorTheme.tint1
         indicator.isHidden = !isBusy
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
@@ -75,13 +70,20 @@ extension ConfirmMandateView {
     func addNavbar() {
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(close))
+        backItem.tintColor = theme.colorTheme.tint1
         navItem.leftBarButtonItem = backItem
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
-        navBar.topItem?.title = "Add bank account".localized()
+        navBar.topItem?.title = theme.content.confirmMandateContent.topTitleText
         navBar.translatesAutoresizingMaskIntoConstraints = false
-        navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
+        
+        if #available(iOS 13.0, *) {
+            navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
+        } else {
+            navBar.topAnchor.constraint(equalTo: topAnchor, constant: 18).isActive = true
+        }
+        
         navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     }
     
@@ -90,8 +92,8 @@ extension ConfirmMandateView {
     }
     
     func addTitle() {
-        title.text = "Confirm SEPA Direct Debit".localized()
-        title.font = .systemFont(ofSize: 20, weight: .regular)
+        title.text = theme.content.confirmMandateContent.mainTitleText
+        title.font = theme.fontTheme.mainTitle
         title.textAlignment = .center
         title.translatesAutoresizingMaskIntoConstraints = false
         title.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
@@ -101,19 +103,14 @@ extension ConfirmMandateView {
     }
     
     func addTableView() {
+        tableView.render()
         tableView.delegate = delegate
         tableView.dataSource = delegate
-        tableView.rowHeight = 56
-        tableView.backgroundColor = theme.colorTheme.main1
-        tableView.alwaysBounceVertical = false
-        tableView.tableFooterView = UIView()
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell5")
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 24).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        tableView.heightAnchor.constraint(equalToConstant: 56 * 4).isActive = true
-        tableView.reloadData()
+        tableView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: theme.layout.confirmMandateListTopMargin).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.confirmMandateListMargin).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.confirmMandateListMargin).isActive = true
+        tableView.heightAnchor.constraint(equalToConstant: theme.layout.confirmMandateListItemHeight * 4).isActive = true
     }
     
     func addCompanyLabel() {
@@ -156,7 +153,7 @@ extension ConfirmMandateView {
     }
     
     func addConfirmButton() {
-        button.setTitle("Confirm".localized(), for: .normal)
+        button.setTitle(theme.content.confirmMandateContent.submitButtonLabelText, for: .normal)
         button.setTitleColor(theme.colorTheme.text2, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         button.backgroundColor = theme.colorTheme.tint1
@@ -185,4 +182,25 @@ extension ConfirmMandateView {
         indicator.startAnimating()
         delegate?.confirm()
     }
+}
+
+class ConfirmMandateTableView: UITableView {
+    
+    @Dependency private(set) var theme: PrimerThemeProtocol
+    
+    func render() {
+        rowHeight = theme.layout.confirmMandateListItemHeight
+        backgroundColor = theme.colorTheme.main1
+        layer.cornerRadius = theme.cornerRadiusTheme.confirmMandateList
+//        layer.shadowColor = UIColor.black.cgColor
+//        layer.shadowOpacity = 1
+//        layer.shadowOffset = .zero
+//        layer.shadowRadius = 10
+//        layer.shadowPath = UIBezierPath(rect: bounds).cgPath
+        alwaysBounceVertical = false
+        tableFooterView = UIView()
+        register(UITableViewCell.self, forCellReuseIdentifier: "cell5")
+        reloadData()
+    }
+    
 }

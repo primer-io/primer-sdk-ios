@@ -47,20 +47,22 @@ class RootViewController: UIViewController {
         backdropView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mainView)
         backdropView.pin(to: view)
-        mainView.clipsToBounds = true
-        mainView.layer.cornerRadius = 10
-        if #available(iOS 11.0, *) {
+        
+//        mainView.layer.cornerRadius = 10
+        if #available(iOS 13.0, *) {
+            mainView.clipsToBounds = true
             mainView.layer.maskedCorners = [.layerMinXMinYCorner,.layerMaxXMinYCorner]
+            mainView.layer.cornerRadius = theme.cornerRadiusTheme.sheetView
         } else {
             // Fallback on earlier versions
         }
+        
         mainView.backgroundColor = theme.colorTheme.main1
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         bottomConstraint = mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomConstraint?.isActive = true
         heightConstraint?.isActive = true
-        mainView.layer.cornerRadius = theme.cornerRadiusTheme.sheetView
         
         if (settings.isFullScreenOnly) {
             topConstraint = mainView.topAnchor.constraint(equalTo: view.topAnchor)
@@ -81,7 +83,7 @@ class RootViewController: UIViewController {
         case .default: router.show(.vaultCheckout)
         case .addCardToVault: router.show(.form(type: .cardForm(theme: theme)))
         case .addPayPalToVault: router.show(.oAuth)
-        case .addDirectDebit: router.show(.confirmMandate)
+        case .addDirectDebit: router.show(.form(type: .iban(mandate: state.directDebitMandate, popOnComplete: true), closeOnSubmit: false))
         }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))

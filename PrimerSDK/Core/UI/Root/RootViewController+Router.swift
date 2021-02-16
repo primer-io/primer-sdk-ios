@@ -62,13 +62,12 @@ fileprivate extension RootViewController {
             guard let strongSelf = self else { return }
             
             if (strongSelf.settings.isFullScreenOnly) {
-                strongSelf.view.layoutIfNeeded()
+//                strongSelf.view.layoutIfNeeded()
             } else {
                 strongSelf.heightConstraint?.constant = height
                 strongSelf.view.layoutIfNeeded()
             }
         })
-        
         
         //hide previous view
         routes.last?.view.isHidden = true

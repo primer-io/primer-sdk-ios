@@ -30,6 +30,7 @@ class ConfirmMandateViewController: UIViewController {
                 self?.subView.render()
             }
         })
+        view.layoutIfNeeded()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -63,7 +64,7 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
     }
     
     func close() {
-        router.pop()
+        dismiss(animated: true, completion: nil)
 //        let alert = UIAlertController(
 //            title: "Do you want to cancel adding a bank account?".localized(),
 //            message: "Your saved data will be erased.".localized(),
@@ -102,6 +103,7 @@ extension ConfirmMandateViewController: ConfirmMandateViewDataSource {
 extension ConfirmMandateViewController: ReloadDelegate {
     func reload() {
         subView.render()
+        view.layoutIfNeeded()
     }
 }
 
