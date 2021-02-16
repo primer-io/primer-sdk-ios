@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
   spec.version      = "1.1.15"
   spec.summary      = "Official iOS SDK for Primer"
   spec.description  = <<-DESC
-  This library contains the official iOS SDK for Primer. Install this pod to seemlessly integrate the Primer Checkout & API platform in your app.
+  This library contains the official iOS SDK for Primer. Install this Cocoapod to seemlessly integrate the Primer Checkout & API platform in your app.
                    DESC
   spec.homepage     = "http://www.primer.io"
   spec.license      = { :type => "MIT", :file => "LICENSE" }
