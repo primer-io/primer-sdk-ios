@@ -49,6 +49,9 @@ class PrimerTextField: UITextField {
     var validationIsOptional = false
     
     var label = UILabel()
+    var bottomBorder = CALayer()
+    var underLine = UIView()
+    var overLine = UIView()
     var errorMessage = UILabel()
     
     private var icon = UIImageView()
@@ -62,6 +65,8 @@ class PrimerTextField: UITextField {
         
         addSubview(label)
         addSubview(errorMessage)
+        addSubview(underLine)
+        addSubview(overLine)
         
         setLeftPaddingPoints(padding)
         configureErrorMessage()
@@ -69,16 +74,10 @@ class PrimerTextField: UITextField {
         
         switch theme.textFieldTheme {
         case .underlined:
-            let bottomBorder = CALayer()
-            bottomBorder.frame = CGRect(x: 0, y: 0, width: bounds.size.width, height: 1)
-            self.layer.addSublayer(bottomBorder)
+            configureUnderLine()
         case .doublelined:
-            let topBorder = CALayer()
-            topBorder.frame = CGRect(x: 0, y: 0, width: bounds.size.width, height: 1)
-            layer.addSublayer(topBorder)
-            let bottomBorder = CALayer()
-            bottomBorder.frame = CGRect(x: 0, y: 0, width: bounds.size.width, height: 1)
-            layer.addSublayer(bottomBorder)
+            configureOverLine()
+            configureUnderLine()
         case .outlined:
             layer.borderWidth = 1
         }
@@ -96,7 +95,8 @@ class PrimerTextField: UITextField {
         // border
         switch theme.textFieldTheme {
         case .doublelined, .underlined:
-            layer.sublayers?.forEach { $0.backgroundColor = color.cgColor }
+            underLine.backgroundColor = color
+            overLine.backgroundColor = color
         case .outlined:
             layer.borderColor = color.cgColor
             layer.cornerRadius = theme.cornerRadiusTheme.textFields
@@ -125,6 +125,20 @@ class PrimerTextField: UITextField {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         label.bottomAnchor.constraint(equalTo: topAnchor, constant: -2).isActive = true
+    }
+    
+    private func configureUnderLine() {
+        underLine.translatesAutoresizingMaskIntoConstraints = false
+        underLine.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        underLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        underLine.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+    }
+    
+    private func configureOverLine() {
+        overLine.translatesAutoresizingMaskIntoConstraints = false
+        overLine.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        overLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        overLine.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     }
     
     private func configureErrorMessage() {

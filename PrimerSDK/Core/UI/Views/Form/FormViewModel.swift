@@ -67,7 +67,7 @@ class FormViewModel: FormViewModelProtocol {
         
         switch formType {
         case .iban:
-            router.show(.form(type: .name(mandate: mandate)))
+            router.show(.confirmMandate)
         case .bankAccount:
             router.show(.form(type: .name(mandate: mandate)))
         case .name:
