@@ -8,6 +8,7 @@ public struct PrimerContent {
     let singleFieldFormDirectDebitContent = SingleFieldFormDirectDebitContent()
     var formMainTitles = FormMainTitles()
     var formTopTitles = FormTopTitles()
+    var confirmMandateContent = ConfirmMandateViewContent()
     
     mutating func setTopTitle(_ text: String, for formType: PrimerFormType) {
         switch formType {
@@ -19,6 +20,12 @@ public struct PrimerContent {
         case .bankAccount: formTopTitles.bankAccount = text
         }
     }
+}
+
+struct ConfirmMandateViewContent {
+    var topTitleText: String { return "Add bank account".localized() }
+    var mainTitleText: String { return "Confirm SEPA Direct Debit".localized() }
+    var submitButtonLabelText: String { return "Confirm".localized() }
 }
 
 struct IBANFormViewContent {

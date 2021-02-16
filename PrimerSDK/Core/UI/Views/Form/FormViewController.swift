@@ -47,6 +47,7 @@ extension FormViewController: UITextFieldDelegate {
 extension FormViewController: FormViewDelegate {
     
     func back() {
+        view.endEditing(true)
         viewModel.onReturnButtonTapped()
     }
     
@@ -63,6 +64,7 @@ extension FormViewController: FormViewDelegate {
     }
     
     func onSubmit() {
+        view.endEditing(true)
         viewModel.onSubmit(formType: formType)
     }
     
