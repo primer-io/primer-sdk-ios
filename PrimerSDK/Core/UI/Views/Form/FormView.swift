@@ -175,6 +175,7 @@ extension FormView {
         }
         title.textAlignment = .center
         title.font = theme.fontTheme.mainTitle
+        title.textColor = theme.colorTheme.text1
     }
     
     // Textfield
@@ -319,6 +320,7 @@ extension FormView {
     
     private func configureButton() {
         button.setTitle(delegate?.submitButtonTitle, for: .normal)
+        button.setTitleColor(theme.colorTheme.text2, for: .normal)
         button.layer.cornerRadius = theme.cornerRadiusTheme.buttons
         button.accessibilityIdentifier = "submitButton"
         button.addTarget(self, action: #selector(onButtonPressed), for: .touchUpInside)
