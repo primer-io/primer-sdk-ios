@@ -76,6 +76,7 @@ extension ConfirmMandateView {
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
         navBar.topItem?.title = theme.content.confirmMandateContent.topTitleText
+        navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: theme.colorTheme.text1]
         navBar.translatesAutoresizingMaskIntoConstraints = false
         
         if #available(iOS 13.0, *) {
@@ -93,6 +94,7 @@ extension ConfirmMandateView {
     
     func addTitle() {
         title.text = theme.content.confirmMandateContent.mainTitleText
+        title.textColor = theme.colorTheme.text1
         title.font = theme.fontTheme.mainTitle
         title.textAlignment = .center
         title.translatesAutoresizingMaskIntoConstraints = false
@@ -165,7 +167,10 @@ extension ConfirmMandateView {
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
         button.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -32).isActive = true
         button.addTarget(self, action: #selector(onConfirm), for: .touchUpInside)
-        let imageView = UIImageView(image: ImageName.lock.image)
+        let image = ImageName.lock.image?.withRenderingMode(.alwaysTemplate)
+        let imageView = UIImageView()
+        imageView.tintColor = theme.colorTheme.text2
+        imageView.image = image
         button.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.centerYAnchor.constraint(equalTo: button.centerYAnchor).isActive = true
