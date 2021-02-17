@@ -9,7 +9,7 @@ import UIKit
 
 class SuccessViewController: UIViewController {
     
-    let icon = UIImageView(image: ImageName.success.image)
+    let icon = UIImageView(image: ImageName.success.image?.withRenderingMode(.alwaysTemplate))
     let message = UILabel()
     let confirmationMessage = UILabel()
     let referenceTitle = UILabel()
@@ -50,6 +50,7 @@ extension SuccessViewController {
         message.text = viewModel.title
         message.numberOfLines = 0
         message.textAlignment = .center
+        message.textColor = theme.colorTheme.text1
         message.font = .systemFont(ofSize: 20)
     }
     
@@ -76,6 +77,7 @@ extension SuccessViewController {
 // MARK: Constraints
 extension SuccessViewController {
     func anchorIcon() {
+        icon.tintColor = theme.colorTheme.tint1
         icon.translatesAutoresizingMaskIntoConstraints = false
         icon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         icon.topAnchor.constraint(equalTo: view.topAnchor, constant: 48).isActive = true
