@@ -47,6 +47,14 @@ class CheckoutViewController: UIViewController {
         if #available(iOS 13.0, *) {
             theme = PrimerTheme(
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
+                colorTheme: PrimerDefaultTheme(
+                    text1: .systemTeal,
+                    text2: .systemGreen,
+                    text3: themeColor,
+                    main1: .systemPurple,
+                    tint1: .systemOrange,
+                    neutral1: .systemPink
+                ),
                 darkTheme: PrimerDarkTheme(),
                 layout: PrimerLayout(showTopTitle: false, textFieldHeight: 56),
                 textFieldTheme: .outlined,
@@ -57,7 +65,8 @@ class CheckoutViewController: UIViewController {
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
                 colorTheme: PrimerDefaultTheme(
                     text3: themeColor,
-                    tint1: .systemOrange
+                    tint1: .systemOrange,
+                    neutral1: .systemPink
                 ),
                 layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
                 textFieldTheme: .outlined,
