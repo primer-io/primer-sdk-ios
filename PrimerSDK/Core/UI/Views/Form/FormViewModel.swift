@@ -10,7 +10,9 @@ protocol FormViewModelProtocol {
     func getSubmitButtonTitle(formType: FormType) -> String
     func setState(_ value: String?, type: FormTextFieldType)
     func onSubmit(formType: FormType) -> Void
+    #if canImport(CardScan)
     func onBottomLinkTapped(delegate: CardScannerViewControllerDelegate) -> Void
+    #endif
     func submit(completion: @escaping (PrimerError?) -> Void)
     func onReturnButtonTapped() -> Void
 }
@@ -20,7 +22,7 @@ class FormViewModel: FormViewModelProtocol {
     @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
     @Dependency private(set) var router: RouterDelegate
-    @Dependency private(set) var theme: PrimerTheme
+    @Dependency private(set) var theme: PrimerThemeProtocol
 
     var popOnComplete: Bool {
         return state.directDebitFormCompleted
@@ -88,9 +90,11 @@ class FormViewModel: FormViewModelProtocol {
         }
     }
     
+    #if canImport(CardScan)
     func onBottomLinkTapped(delegate: CardScannerViewControllerDelegate) {
         router.show(.cardScanner(delegate: delegate))
     }
+    #endif
     
     func onReturnButtonTapped() {
         router.pop()

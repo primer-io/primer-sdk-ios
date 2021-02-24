@@ -129,6 +129,7 @@
 		1DB9531725C01645002CDC32 /* CardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB9531625C01645002CDC32 /* CardButton.swift */; };
 		1DCDD559259BAA13000E9462 /* ImageName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCDD558259BAA13000E9462 /* ImageName.swift */; };
 		722563F04857926462AD4758 /* libPods-PrimerSDKExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1885EC91CCF4C7D3DFEC6A37 /* libPods-PrimerSDKExample.a */; };
+		FD3CDCB4ACAB409430379C6C /* libPods-PrimerSDKExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D7D063125DB0FD6003EED55 /* libPods-PrimerSDKExample.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -343,6 +344,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				722563F04857926462AD4758 /* libPods-PrimerSDKExample.a in Frameworks */,
+				FD3CDCB4ACAB409430379C6C /* libPods-PrimerSDKExample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -936,7 +938,6 @@
 				1D033AB3257EF27300EE9301 /* Frameworks */,
 				1D033AB4257EF27300EE9301 /* Resources */,
 				1D033BE5257F047F00EE9301 /* Embed Frameworks */,
-				1FA5707E4EA8963EAE50D095 /* [CP] Embed Pods Frameworks */,
 				4F0A810960BF82442E96095C /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -981,6 +982,7 @@
 					};
 					1D033A9E257EF24100EE9301 = {
 						CreatedOnToolsVersion = 12.2;
+						TestTargetID = 1D033AB5257EF27300EE9301;
 					};
 					1D033AB5257EF27300EE9301 = {
 						CreatedOnToolsVersion = 12.2;
@@ -1050,23 +1052,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1FA5707E4EA8963EAE50D095 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PrimerSDKExample/Pods-PrimerSDKExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PrimerSDKExample/Pods-PrimerSDKExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PrimerSDKExample/Pods-PrimerSDKExample-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		4F0A810960BF82442E96095C /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1489,6 +1474,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PrimerSDKExample.app/PrimerSDKExample";
 			};
 			name = Debug;
 		};
@@ -1508,6 +1494,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PrimerSDKExample.app/PrimerSDKExample";
 			};
 			name = Release;
 		};

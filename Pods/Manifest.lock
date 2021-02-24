@@ -1,22 +1,15 @@
 PODS:
-  - CardScan (2.0.7)
-  - PrimerSDK (1.1.15):
-    - CardScan
+  - PrimerSDK (1.1.18)
 
 DEPENDENCIES:
   - PrimerSDK (from `./`)
-
-SPEC REPOS:
-  trunk:
-    - CardScan
 
 EXTERNAL SOURCES:
   PrimerSDK:
     :path: "./"
 
 SPEC CHECKSUMS:
-  CardScan: 0bc2843073a9c2ef954fbb59a671d306efd76c4c
-  PrimerSDK: f5c9826b87fc52c43f962ff9c88eef3f5f9fcfe1
+  PrimerSDK: 6d35ffeb4e91a49097bed4edae1f6733f5fdb8fe
 
 PODFILE CHECKSUM: a09d40d7af2fc0bb7e0233e82b00a129787885a7
 
