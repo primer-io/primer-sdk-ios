@@ -1,6 +1,6 @@
 PODS:
   - CardScan (2.0.7)
-  - PrimerSDK (1.1.15):
+  - PrimerSDK (1.1.18):
     - CardScan
 
 DEPENDENCIES:
@@ -16,7 +16,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   CardScan: 0bc2843073a9c2ef954fbb59a671d306efd76c4c
-  PrimerSDK: f5c9826b87fc52c43f962ff9c88eef3f5f9fcfe1
+  PrimerSDK: c90b1d674441cb2ef3a45a785f83a723584e153e
 
 PODFILE CHECKSUM: a09d40d7af2fc0bb7e0233e82b00a129787885a7
 

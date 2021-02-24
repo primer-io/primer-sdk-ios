@@ -20,7 +20,11 @@ class FormViewModel: FormViewModelProtocol {
     @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
     @Dependency private(set) var router: RouterDelegate
-    @Dependency private(set) var theme: PrimerTheme
+    @Dependency private(set) var theme: PrimerThemeProtocol
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
 
     var popOnComplete: Bool {
         return state.directDebitFormCompleted

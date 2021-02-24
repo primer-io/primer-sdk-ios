@@ -29,19 +29,24 @@ class RootViewController: UIViewController {
     var hasSetPointOrigin = false
     var currentHeight: CGFloat = 0
     
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        if !settings.isFullScreenOnly {
+            self.modalPresentationStyle = .custom
+            self.transitioningDelegate = transitionDelegate
+        }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     deinit {
-        print("🧨 destroy:", self.self)
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
         NotificationCenter.default.removeObserver(self)
     }
     
     override func viewDidLoad() {
-        
-        if settings.isFullScreenOnly {
-            
-        } else {
-            self.modalPresentationStyle = .custom
-            self.transitioningDelegate = transitionDelegate
-        }
         
         view.addSubview(backdropView)
         backdropView.translatesAutoresizingMaskIntoConstraints = false
@@ -82,8 +87,9 @@ class RootViewController: UIViewController {
         case .completeDirectCheckout: router.show(.vaultCheckout)
         case .default: router.show(.vaultCheckout)
         case .addCardToVault: router.show(.form(type: .cardForm(theme: theme)))
-        case .addPayPalToVault: router.show(.oAuth)
+        case .addPayPalToVault: router.show(.oAuth(host: .paypal))
         case .addDirectDebit: router.show(.form(type: .iban(mandate: state.directDebitMandate, popOnComplete: true), closeOnSubmit: false))
+        case .checkoutWithKlarna: router.show(.oAuth(host: .klarna))
         }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))

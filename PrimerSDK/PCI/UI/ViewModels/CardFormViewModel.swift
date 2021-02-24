@@ -16,7 +16,9 @@ class CardFormViewModel: CardFormViewModelProtocol {
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var state: AppStateProtocol
     
-    deinit { print("🧨 destroy:", self.self) }
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
     
     func configureView(_ completion: @escaping (Error?) -> Void) {
         if (state.decodedClientToken.exists) {

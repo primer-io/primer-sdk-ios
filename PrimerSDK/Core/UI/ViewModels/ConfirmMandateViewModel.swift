@@ -50,6 +50,10 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var vaultService: VaultServiceProtocol
     
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
+    
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
         if (state.decodedClientToken.exists) {
             paymentMethodConfigService.fetchConfig({ [weak self] error in

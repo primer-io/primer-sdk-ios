@@ -6,11 +6,16 @@
 //
 import UIKit
 
+enum OAuthHost {
+    case paypal
+    case klarna
+}
+
 enum Route {
     case cardScanner(delegate: CardScannerViewControllerDelegate)
     case vaultCheckout
     case vaultPaymentMethods(delegate: ReloadDelegate)
-    case oAuth
+    case oAuth(host: OAuthHost)
     case applePay
     case success(type: SuccessScreenType)
     case error(message: String = "")
@@ -33,9 +38,9 @@ enum Route {
             let vc = VaultPaymentMethodViewController()
             vc.delegate = delegate
             return vc
-        case .oAuth:
+        case .oAuth(let host):
             if #available(iOS 11.0, *) {
-                return OAuthViewController()
+                return OAuthViewController(host: host)
             } else {
                 return nil
             }

@@ -51,7 +51,9 @@ class FormView: UIView {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    deinit { print("🧨 destroy:", self.self) }
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
     
     func render() {
         if (textFields.isEmpty) {
