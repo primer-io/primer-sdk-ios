@@ -16,7 +16,9 @@ class ConfirmMandateViewController: UIViewController {
     
     let formTypes: [ConfirmMandateFormType] = [.name, .email, .address, .iban]
     
-    deinit { print("🧨 destroy:", self.self) }
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
     
     override func viewDidLoad() {
         view.addSubview(subView)

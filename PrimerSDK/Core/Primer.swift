@@ -14,13 +14,13 @@ public class Primer {
     }
     
     deinit {
-        print("🧨 destroy:", self.self)
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
         if clearOnDestroy { clearDependencies() }
     }
     
     public func setDependencies(settings: PrimerSettings) {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
-        DependencyContainer.register(settings.theme as PrimerTheme)
+        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
         DependencyContainer.register(FormType.cardForm(theme: settings.theme) as FormType)
         DependencyContainer.register(Router() as RouterDelegate)
         DependencyContainer.register(AppState() as AppStateProtocol)
@@ -31,8 +31,8 @@ public class Primer {
         DependencyContainer.register(PayPalService() as PayPalServiceProtocol)
         DependencyContainer.register(TokenizationService() as TokenizationServiceProtocol)
         DependencyContainer.register(DirectDebitService() as DirectDebitServiceProtocol)
+        DependencyContainer.register(KlarnaService() as KlarnaServiceProtocol)
         DependencyContainer.register(ApplePayViewModel() as ApplePayViewModelProtocol)
-        DependencyContainer.register(CardFormViewModel() as CardFormViewModelProtocol)
         DependencyContainer.register(CardScannerViewModel() as CardScannerViewModelProtocol)
         DependencyContainer.register(DirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
         DependencyContainer.register(OAuthViewModel() as OAuthViewModelProtocol)
@@ -86,6 +86,7 @@ public class Primer {
         router.setRoot(root!)
         guard let root = self.root else { return }
         Primer.flow = flow
+        print("🍷", Primer.flow)
         controller.present(root, animated: true)
     }
     

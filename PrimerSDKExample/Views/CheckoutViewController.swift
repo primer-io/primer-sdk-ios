@@ -10,6 +10,9 @@ import PrimerSDK
 
 class CheckoutViewController: UIViewController {
     
+    //    let endpoint = "https://arcane-hollows-13383.herokuapp.com"
+    let endpoint = "http:localhost:8020"
+    
     let amount = 200
     
     var listOfVaultedPaymentMethods: [PaymentMethodToken] = []
@@ -48,12 +51,12 @@ class CheckoutViewController: UIViewController {
             theme = PrimerTheme(
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
                 colorTheme: PrimerDefaultTheme(
-                    text1: .systemTeal,
-                    text2: .systemGreen,
-                    text3: themeColor,
-                    main1: .systemPurple,
-                    tint1: .systemOrange,
-                    neutral1: .systemPink
+//                    text1: .systemTeal,
+//                    text2: .systemGreen,
+//                    text3: themeColor,
+//                    main1: .systemPurple,
+                    tint1: .systemOrange
+//                    neutral1: .systemPink
                 ),
                 darkTheme: PrimerDarkTheme(),
                 layout: PrimerLayout(showTopTitle: false, textFieldHeight: 56),
@@ -64,9 +67,9 @@ class CheckoutViewController: UIViewController {
             theme = PrimerTheme(
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
                 colorTheme: PrimerDefaultTheme(
-                    text3: themeColor,
-                    tint1: .systemOrange,
-                    neutral1: .systemPink
+//                    text3: themeColor,
+//                    tint1: .systemOrange,
+//                    neutral1: .systemPink
                 ),
                 layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
                 textFieldTheme: .outlined,
@@ -88,9 +91,13 @@ class CheckoutViewController: UIViewController {
         
         let settings = PrimerSettings(
             delegate: self,
+            amount: 200,
+            currency: .GBP,
+            urlScheme: "https://primer.io/success",
+            urlSchemeIdentifier: "primer",
             isFullScreenOnly: true,
             businessDetails: businessDetails
-        )
+            )
         
         primer = Primer(with: settings)
         
@@ -100,7 +107,6 @@ class CheckoutViewController: UIViewController {
         
         // primer showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) -> Void
         // primer fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void)
-        
         //
         view.addSubview(tableView)
         view.addSubview(addCardButton)
@@ -135,7 +141,7 @@ class CheckoutViewController: UIViewController {
         addPayPalButton.setTitleColor(.white, for: .normal)
         addPayPalButton.layer.cornerRadius = 16
         addPayPalButton.backgroundColor = .lightGray
-        addPayPalButton.addTarget(self, action: #selector(showPayPalForm), for: .touchUpInside)
+        addPayPalButton.addTarget(self, action: #selector(showKlarnaForm), for: .touchUpInside)
         
         vaultCheckoutButton.setTitle("Open Wallet", for: .normal)
         vaultCheckoutButton.setTitleColor(.white, for: .normal)
@@ -193,13 +199,18 @@ class CheckoutViewController: UIViewController {
         }
     }
     
-    deinit { print("🧨 destroy:", self.self) }
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
     
     @objc private func showCardForm() {
         primer?.showCheckout(self, flow: .addCardToVault)
     }
     @objc private func showPayPalForm() {
         primer?.showCheckout(self, flow: .addPayPalToVault)
+    }
+    @objc private func showKlarnaForm() {
+        primer?.showCheckout(self, flow: .checkoutWithKlarna)
     }
     @objc private func showCompleteVaultCheckout() {
         primer?.showCheckout(self, flow: .default)
@@ -220,7 +231,7 @@ extension CheckoutViewController: PrimerCheckoutDelegate {
     }
     
     func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
-        guard let url = URL(string: "https://arcane-hollows-13383.herokuapp.com/client-token") else {
+        guard let url = URL(string: "\(endpoint)/client-token") else {
             return completion(.failure(NetworkError.missingParams))
         }
         var request = URLRequest(url: url)
@@ -244,7 +255,7 @@ extension CheckoutViewController: PrimerCheckoutDelegate {
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         guard let token = result.token else { return completion(NetworkError.missingParams) }
         
-        guard let url = URL(string: "https://arcane-hollows-13383.herokuapp.com/authorize") else {
+        guard let url = URL(string: "\(endpoint)/authorize") else {
             return completion(NetworkError.missingParams)
         }
         

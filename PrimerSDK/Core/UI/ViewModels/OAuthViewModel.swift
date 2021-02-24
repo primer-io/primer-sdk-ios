@@ -1,6 +1,6 @@
 protocol OAuthViewModelProtocol {
     var urlSchemeIdentifier: String { get }
-    func generateOAuthURL(with completion: @escaping (Result<String, Error>) -> Void) -> Void
+    func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void) -> Void
     func tokenize(with completion: @escaping (Error?) -> Void) -> Void
 }
 
@@ -23,9 +23,14 @@ class OAuthViewModel: OAuthViewModelProtocol {
     @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
+    @Dependency private(set) var klarnaService: KlarnaServiceProtocol
     @Dependency private(set) var state: AppStateProtocol
     
-    private func loadConfig(_ completion: @escaping (Result<String, Error>) -> Void) {
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
+    
+    private func loadConfig(_ host: OAuthHost, _ completion: @escaping (Result<String, Error>) -> Void) {
         clientTokenService.loadCheckoutConfig({ [weak self] error in
             if (error != nil) {
                 completion(.failure(PrimerError.PayPalSessionFailed))
@@ -36,19 +41,25 @@ class OAuthViewModel: OAuthViewModelProtocol {
                     completion(.failure(PrimerError.PayPalSessionFailed))
                     return
                 }
-                self?.generateOAuthURL(with: completion)
+                self?.generateOAuthURL(host, with: completion)
             })
         })
     }
     
-    func generateOAuthURL(with completion: @escaping (Result<String, Error>) -> Void) {
+    func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void) {
         if (clientToken != nil && state.paymentMethodConfig != nil) {
+            
+            if (host == .klarna) {
+                return klarnaService.createPaymentSession(completion)
+//                return completion(.success("https://pay.playground.klarna.com/eu/9IUNvHa"))
+            }
+            
             switch Primer.flow.uxMode {
             case .CHECKOUT: paypalService.startOrderSession(completion)
             case .VAULT: paypalService.startBillingAgreementSession(completion)
             }
         } else {
-            loadConfig(completion)
+            loadConfig(host, completion)
             return
         }
     }

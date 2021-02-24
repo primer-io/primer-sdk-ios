@@ -25,7 +25,7 @@
 			<string>primer</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>primer://oauth</string>
+				<string>primer.io</string>
 			</array>
 		</dict>
 	</array>

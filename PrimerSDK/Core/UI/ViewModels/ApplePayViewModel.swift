@@ -32,6 +32,10 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var state: AppStateProtocol
     
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
+    
     func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
         let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
         tokenizationService.tokenize(request: request) { [weak self] result in

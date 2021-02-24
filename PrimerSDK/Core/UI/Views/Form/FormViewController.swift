@@ -34,7 +34,9 @@ class FormViewController: UIViewController {
         view.layoutIfNeeded()
     }
     
-    deinit { print("🧨 destroy:", self.self) }
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
 }
 
 extension FormViewController: UITextFieldDelegate {

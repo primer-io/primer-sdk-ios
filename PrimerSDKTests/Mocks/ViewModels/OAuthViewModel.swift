@@ -13,7 +13,7 @@ class MockOAuthViewModel: OAuthViewModelProtocol {
     var generateOAuthURLCalled = false
     var tokenizeCalled = false
     
-    func generateOAuthURL(with completion: @escaping (Result<String, Error>) -> Void) {
+    func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void) {
         generateOAuthURLCalled = true
     }
     
