@@ -1,7 +1,6 @@
-import UIKit
 #if canImport(CardScan)
+import UIKit
 import CardScan
-#endif
 
 struct PrimerCreditCardDetails {
     var name: String?
@@ -74,3 +73,4 @@ extension CardScannerViewController: ScannerViewDelegate {
         router.pop()
     }
 }
+#endif

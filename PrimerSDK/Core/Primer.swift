@@ -20,7 +20,7 @@ public class Primer {
     
     public func setDependencies(settings: PrimerSettings) {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
-        DependencyContainer.register(settings.theme as PrimerTheme)
+        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
         DependencyContainer.register(FormType.cardForm(theme: settings.theme) as FormType)
         DependencyContainer.register(Router() as RouterDelegate)
         DependencyContainer.register(AppState() as AppStateProtocol)
@@ -41,7 +41,7 @@ public class Primer {
         DependencyContainer.register(ConfirmMandateViewModel() as ConfirmMandateViewModelProtocol)
         DependencyContainer.register(FormViewModel() as FormViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
-        DependencyContainer.register(SuccessScreenViewModel(type: .regular) as SuccessScreenViewModelProtocol)
+        DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
     }
     
     public func clearDependencies() {

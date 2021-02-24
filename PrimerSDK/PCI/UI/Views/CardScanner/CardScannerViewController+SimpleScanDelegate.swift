@@ -1,3 +1,4 @@
+#if canImport(CardScan)
 import CardScan
 
 @available(iOS 12, *)
@@ -19,3 +20,4 @@ extension CardScannerViewController: SimpleScanDelegate {
         router.pop()
     }
 }
+#endif
