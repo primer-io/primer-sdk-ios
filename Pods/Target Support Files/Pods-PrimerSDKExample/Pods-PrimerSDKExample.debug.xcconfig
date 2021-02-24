@@ -1,10 +1,9 @@
 ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
 CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO
-FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/CardScan" "${PODS_XCFRAMEWORKS_BUILD_DIR}/CardScan"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
 LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/PrimerSDK"
 OTHER_CFLAGS = $(inherited) -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerSDK/PrimerSDK.modulemap"
-OTHER_LDFLAGS = $(inherited) -ObjC -l"PrimerSDK" -framework "CardScan" -framework "UIKit" -weak_framework "AVFoundation" -weak_framework "AVKit" -weak_framework "CoreML" -weak_framework "UIKit" -weak_framework "VideoToolbox" -weak_framework "Vision"
+OTHER_LDFLAGS = $(inherited) -ObjC -l"PrimerSDK" -framework "UIKit"
 OTHER_SWIFT_FLAGS = $(inherited) -D COCOAPODS -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerSDK/PrimerSDK.modulemap"
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)

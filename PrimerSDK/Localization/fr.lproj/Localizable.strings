@@ -47,6 +47,8 @@
 "Do you want to cancel adding a bank account?" = 'Voulez-vous annuler l\'ajout du prélèvement SEPA?';
 "Your saved data will be erased." = 'Vos données enregistrées seront effacées.';
 "SEPA Direct Debit Mandate" = 'Mandat de prélèvement SEPA';
+"will appear on your bank statement when payments are taken against the Direct Debit." = 'apparaîtra sur votre relevé bancaire lorsque les paiements seront prélevés sur le prélèvement automatique.';
+"Failed to create a direct debit mandate.\n\n Please try again." = '"Échec de la création d\'un mandat de prélèvement automatique.\n\n Veuillez réessayer."';
 "First name" = 'Prénom';
 "Last name" = 'Nom de famille';
 "Address line 1" = 'Adresse ligne 1';
