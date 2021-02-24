@@ -12,7 +12,9 @@ enum OAuthHost {
 }
 
 enum Route {
+    #if canImport(CardScan)
     case cardScanner(delegate: CardScannerViewControllerDelegate)
+    #endif
     case vaultCheckout
     case vaultPaymentMethods(delegate: ReloadDelegate)
     case oAuth(host: OAuthHost)
@@ -24,6 +26,7 @@ enum Route {
     
     var viewController: UIViewController? {
         switch self {
+        #if canImport(CardScan)
         case .cardScanner(let delegate):
             if #available(iOS 12, *) {
                 let vc = CardScannerViewController()
@@ -32,6 +35,7 @@ enum Route {
             } else {
                 return nil
             }
+        #endif
         case .vaultCheckout:
             return VaultCheckoutViewController()
         case .vaultPaymentMethods(let delegate):
@@ -46,8 +50,10 @@ enum Route {
             }
         case .applePay:
             return ApplePayViewController()
-        case .success:
-            return SuccessViewController()
+        case .success(let screenType):
+            let vc = SuccessViewController()
+            vc.screenType = screenType
+            return vc
         case .error(let message):
             return ErrorViewController(message: message)
         case .confirmMandate:
@@ -61,7 +67,9 @@ enum Route {
     
     var height: CGFloat {
         switch self {
+        #if canImport(CardScan)
         case .cardScanner:  return 420
+        #endif
         case .vaultCheckout:  return 400
         case .vaultPaymentMethods:  return 320
         case .oAuth:  return 400

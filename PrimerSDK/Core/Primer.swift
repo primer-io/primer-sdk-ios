@@ -41,7 +41,7 @@ public class Primer {
         DependencyContainer.register(ConfirmMandateViewModel() as ConfirmMandateViewModelProtocol)
         DependencyContainer.register(FormViewModel() as FormViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
-        DependencyContainer.register(SuccessScreenViewModel(type: .regular) as SuccessScreenViewModelProtocol)
+        DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
     }
     
     public func clearDependencies() {

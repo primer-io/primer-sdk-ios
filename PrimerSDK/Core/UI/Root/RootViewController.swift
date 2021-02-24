@@ -48,6 +48,15 @@ class RootViewController: UIViewController {
     
     override func viewDidLoad() {
         
+        mainView.backgroundColor = theme.colorTheme.main1
+        
+        if settings.isFullScreenOnly {
+            
+        } else {
+            self.modalPresentationStyle = .custom
+            self.transitioningDelegate = transitionDelegate
+        }
+        
         view.addSubview(backdropView)
         backdropView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mainView)
@@ -60,9 +69,10 @@ class RootViewController: UIViewController {
             mainView.layer.cornerRadius = theme.cornerRadiusTheme.sheetView
         } else {
             // Fallback on earlier versions
+            view.backgroundColor = theme.colorTheme.main1
         }
         
-        mainView.backgroundColor = theme.colorTheme.main1
+        
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         bottomConstraint = mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor)

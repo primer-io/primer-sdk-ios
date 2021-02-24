@@ -71,10 +71,13 @@ extension FormViewController: FormViewDelegate {
     }
     
     func onBottomLinkTapped() {
+        #if canImport(CardScan)
         viewModel.onBottomLinkTapped(delegate: self)
+        #endif
     }
 }
 
+#if canImport(CardScan)
 extension FormViewController: CardScannerViewControllerDelegate {
     func setScannedCardDetails(with cardDetails: PrimerCreditCardDetails) {
         switch formType {
@@ -90,3 +93,4 @@ extension FormViewController: CardScannerViewControllerDelegate {
         }
     }
 }
+#endif

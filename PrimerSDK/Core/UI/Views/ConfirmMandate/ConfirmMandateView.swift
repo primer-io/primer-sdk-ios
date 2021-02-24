@@ -44,6 +44,7 @@ class ConfirmMandateView: UIView {
         addSubview(indicator)
         
         subviews.forEach { $0.isHidden = isBusy }
+        navBar.isHidden = false
         indicator.color = theme.colorTheme.tint1
         indicator.isHidden = !isBusy
         indicator.translatesAutoresizingMaskIntoConstraints = false
