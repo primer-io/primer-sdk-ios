@@ -142,8 +142,8 @@
             filePath = "PrimerSDK/PCI/UI/Views/CardScanner/CardScannerViewController+SimpleScanDelegate.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "5"
-            endingLineNumber = "5"
+            startingLineNumber = "6"
+            endingLineNumber = "6"
             landmarkName = "CardScannerViewController"
             landmarkType = "21">
          </BreakpointContent>

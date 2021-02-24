@@ -81,12 +81,13 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
     }
     
     func confirm() {
-        viewModel.confirmMandateAndTokenize({ [weak self] error in
-            DispatchQueue.main.async {
-                if (error.exists) { self?.router.show(.error()); return }
-                self?.router.show(.success(type: .directDebit))
-            }
-        })
+        router.show(.error(message: PrimerError.DirectDebitSessionFailed.rawValue.localized()))
+//        viewModel.confirmMandateAndTokenize({ [weak self] error in
+//            DispatchQueue.main.async {
+//                if (error.exists) { self?.router.show(.error(message: PrimerError.DirectDebitSessionFailed.rawValue.localized())); return }
+//                self?.router.show(.success(type: .directDebit))
+//            }
+//        })
     }
 }
 
