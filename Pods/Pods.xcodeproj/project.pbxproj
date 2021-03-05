@@ -11,6 +11,7 @@
 		0E95646083553340933A38D1BC73A2DC /* VaultCheckoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8E6B9A9620CB3D2BFBFCF4FB451352 /* VaultCheckoutViewController.swift */; };
 		0F3441002EA7F28087480506F5A84C68 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224989BFA181C8775AA2ADB83E011C55 /* RootViewController.swift */; };
 		14531148845ECE2E7F27E83C8F485FEE /* ClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59EBFDBE6E42C8B7E7A628AD9506D4E /* ClientToken.swift */; };
+		15D7DBB125F21B0400FD004C /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D7DBB025F21B0400FD004C /* StringExtension.swift */; };
 		1B9D3C5D604368E51BA6F9A65487FEAF /* PaymentMethodConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 723EBD4DF0D6076D02A1F558ED0A12D6 /* PaymentMethodConfigService.swift */; };
 		1C545DACCD693F8749EA8362D1D430EA /* Pods-PrimerSDKExample-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FF24D777908ACADDF5B441D354A7F0F /* Pods-PrimerSDKExample-dummy.m */; };
 		1D4A90F53728FF553A7EFE98EC1D7EA7 /* VaultPaymentMethodViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5143FEDECB0E260F173CD844F5865585 /* VaultPaymentMethodViewController.swift */; };
@@ -126,6 +127,7 @@
 		0DEF2E7E424C52DD7955ECFCFCCB0B40 /* FormView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormView.swift; sourceTree = "<group>"; };
 		0F5868C5EB6723A048FFEAA7F264C98D /* ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReloadDelegate.swift; sourceTree = "<group>"; };
 		14023E93B2FA02EF1C77AB580848CF38 /* ExternalViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExternalViewModel.swift; sourceTree = "<group>"; };
+		15D7DBB025F21B0400FD004C /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		161D020004C7524F25033FCF406779AC /* ResourceBundle-PrimerSDK-PrimerSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-PrimerSDK-PrimerSDK-Info.plist"; sourceTree = "<group>"; };
 		16E83C9412B8108F03FA82DDD1920326 /* TransitioningDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransitioningDelegate.swift; sourceTree = "<group>"; };
 		1C19C88725677A00839D3D482CB6CD6A /* CountryCode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountryCode.swift; sourceTree = "<group>"; };
@@ -259,6 +261,13 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		15D7DB7E25F218DA00FD004C /* Extensions & Helpers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Extensions & Helpers";
+			sourceTree = "<group>";
+		};
 		1A8C43DA54BEFA025DC4CAA81A603816 /* Form */ = {
 			isa = PBXGroup;
 			children = (
@@ -335,6 +344,7 @@
 		3CF849413B103C3A41E348F46A518F9A /* PrimerSDK */ = {
 			isa = PBXGroup;
 			children = (
+				15D7DB7E25F218DA00FD004C /* Extensions & Helpers */,
 				D84081D28EA0247794E2284FA1AB85DD /* Icons.xcassets */,
 				9E38C3B00F380E35CC298ACBD166436A /* Core */,
 				89DBE7BCCD90BBF2D8E5A75D3245CECE /* Extensions */,
@@ -504,6 +514,7 @@
 			isa = PBXGroup;
 			children = (
 				3D6A6CE40CEB002C80702B9142B29728 /* DateExtension.swift */,
+				15D7DBB025F21B0400FD004C /* StringExtension.swift */,
 			);
 			name = Extensions;
 			path = PrimerSDK/Extensions;
@@ -874,6 +885,7 @@
 				7A40DEC372ECD162AAE645E2D4A27D9A /* CardFormViewController+CardScannerViewControllerDelegate.swift in Sources */,
 				76665F0836F28C499BA8C4AE46D08CC7 /* CardFormViewController.swift in Sources */,
 				5F71E8474D6E9AE21B089CADBBC09E0C /* CardFormViewModel.swift in Sources */,
+				15D7DBB125F21B0400FD004C /* StringExtension.swift in Sources */,
 				818B866E36CA861D15F87369A4CFE659 /* CardScannerViewController+SimpleScanDelegate.swift in Sources */,
 				2FE1B2EA41F2AB234212328777483391 /* CardScannerViewController.swift in Sources */,
 				DA4434BB1BF709B4C8888A47B4848A53 /* CardScannerViewModel.swift in Sources */,
