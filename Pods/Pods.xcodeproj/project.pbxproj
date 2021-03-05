@@ -12,6 +12,7 @@
 		0F3441002EA7F28087480506F5A84C68 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224989BFA181C8775AA2ADB83E011C55 /* RootViewController.swift */; };
 		14531148845ECE2E7F27E83C8F485FEE /* ClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59EBFDBE6E42C8B7E7A628AD9506D4E /* ClientToken.swift */; };
 		15D7DBB125F21B0400FD004C /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D7DBB025F21B0400FD004C /* StringExtension.swift */; };
+		15D7DC2225F2247600FD004C /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D7DC2125F2247600FD004C /* UIDeviceExtension.swift */; };
 		1B9D3C5D604368E51BA6F9A65487FEAF /* PaymentMethodConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 723EBD4DF0D6076D02A1F558ED0A12D6 /* PaymentMethodConfigService.swift */; };
 		1C545DACCD693F8749EA8362D1D430EA /* Pods-PrimerSDKExample-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FF24D777908ACADDF5B441D354A7F0F /* Pods-PrimerSDKExample-dummy.m */; };
 		1D4A90F53728FF553A7EFE98EC1D7EA7 /* VaultPaymentMethodViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5143FEDECB0E260F173CD844F5865585 /* VaultPaymentMethodViewController.swift */; };
@@ -128,6 +129,7 @@
 		0F5868C5EB6723A048FFEAA7F264C98D /* ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReloadDelegate.swift; sourceTree = "<group>"; };
 		14023E93B2FA02EF1C77AB580848CF38 /* ExternalViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExternalViewModel.swift; sourceTree = "<group>"; };
 		15D7DBB025F21B0400FD004C /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
+		15D7DC2125F2247600FD004C /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		161D020004C7524F25033FCF406779AC /* ResourceBundle-PrimerSDK-PrimerSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-PrimerSDK-PrimerSDK-Info.plist"; sourceTree = "<group>"; };
 		16E83C9412B8108F03FA82DDD1920326 /* TransitioningDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransitioningDelegate.swift; sourceTree = "<group>"; };
 		1C19C88725677A00839D3D482CB6CD6A /* CountryCode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountryCode.swift; sourceTree = "<group>"; };
@@ -515,6 +517,7 @@
 			children = (
 				3D6A6CE40CEB002C80702B9142B29728 /* DateExtension.swift */,
 				15D7DBB025F21B0400FD004C /* StringExtension.swift */,
+				15D7DC2125F2247600FD004C /* UIDeviceExtension.swift */,
 			);
 			name = Extensions;
 			path = PrimerSDK/Extensions;
@@ -894,6 +897,7 @@
 				F225CDEA5978359B02BEB817515AAA95 /* ConfirmMandateView.swift in Sources */,
 				AEE45B9648085895EB59405DE8C61CD3 /* ConfirmMandateViewController.swift in Sources */,
 				967F4DCC0A9241DA314204355984B629 /* ConfirmMandateViewModel.swift in Sources */,
+				15D7DC2225F2247600FD004C /* UIDeviceExtension.swift in Sources */,
 				6D93D47D0F25DE2DADEB392A849239AB /* CountryCode.swift in Sources */,
 				57863B60DEF6DCA74362D4315469F80E /* Currency.swift in Sources */,
 				E6153AF3DFBF049FC31F4955959FF96F /* DateExtension.swift in Sources */,
