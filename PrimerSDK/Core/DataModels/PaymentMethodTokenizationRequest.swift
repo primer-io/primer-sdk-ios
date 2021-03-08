@@ -8,9 +8,9 @@ struct PaymentMethodTokenizationRequest: Encodable {
     
     init(paymentInstrument: PaymentInstrument, state: AppStateProtocol) {
         self.paymentInstrument = paymentInstrument
-        self.tokenType = Primer.flow.vaulted ? .multiUse : .singleUse
-        self.paymentFlow = Primer.flow.vaulted ? PaymentFlow.vault : nil
-        self.customerId = Primer.flow.vaulted ? state.settings.customerId : nil
+        self.tokenType = .multiUse
+        self.paymentFlow = PaymentFlow.vault
+        self.customerId = state.settings.customerId
     }
     
 }
@@ -33,6 +33,9 @@ struct PaymentInstrument: Encodable {
     var merchantIdentifier: String? = nil
     // Direct Debit (GoCardless)
     var gocardlessMandateId: String? = nil
+    // Klarna payment session
+    var klarnaAuthorizationToken: String? = nil
+    var sessionData: KlarnaSessionData? = nil
 }
 
 enum TokenType: String, Encodable {

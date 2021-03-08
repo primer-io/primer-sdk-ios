@@ -5,17 +5,17 @@ on:
       - created
     
 jobs:
-#   build:
+  build:
     
-#     runs-on: macOS-latest
+    runs-on: macOS-latest
     
-#     steps:
-#     - uses: actions/checkout@v1
-#     - name: Publish to CocoaPod register
-#       env:
-#         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-#       run: |
-#         pod trunk push PrimerSDK.podspec --allow-warnings
+    steps:
+    - uses: actions/checkout@v1
+    - name: Publish to CocoaPod register
+      env:
+        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      run: |
+        pod trunk push PrimerSDK.podspec --allow-warnings
 
 
   merge-branch:

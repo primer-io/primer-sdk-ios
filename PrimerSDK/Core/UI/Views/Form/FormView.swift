@@ -51,7 +51,9 @@ class FormView: UIView {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    deinit { print("🧨 destroy:", self.self) }
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
     
     func render() {
         if (textFields.isEmpty) {
@@ -362,9 +364,8 @@ extension FormView {
     
     private func configureScannerButton() {
         scannerButton.setTitle("Scan card", for: .normal)
-        scannerButton.setTitleColor(theme.colorTheme.text3, for: .normal)
+        scannerButton.setTitleColor(theme.colorTheme.tint1, for: .normal)
         scannerButton.titleLabel?.font = .systemFont(ofSize: 15)
-        
         scannerButton.addTarget(self, action: #selector(showScanner), for: .touchUpInside)
         
         scannerButton.translatesAutoresizingMaskIntoConstraints = false

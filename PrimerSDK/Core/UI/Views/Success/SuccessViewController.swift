@@ -59,7 +59,7 @@ extension SuccessViewController {
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
-        navBar.topItem?.title = theme.content.confirmMandateContent.topTitleText
+//        navBar.topItem?.title = theme.content.confirmMandateContent.topTitleText
         navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: theme.colorTheme.text1]
         navBar.translatesAutoresizingMaskIntoConstraints = false
         
@@ -110,7 +110,7 @@ extension SuccessViewController {
         icon.tintColor = theme.colorTheme.tint1
         icon.translatesAutoresizingMaskIntoConstraints = false
         icon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        icon.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 24).isActive = true
+        icon.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 36).isActive = true
     }
     
     func anchorMessage() {

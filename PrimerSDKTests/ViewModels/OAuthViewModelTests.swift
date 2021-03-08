@@ -14,11 +14,12 @@ class OAuthViewModelTests: XCTestCase {
         let paypalService = MockPayPalService()
         
         MockLocator.registerDependencies()
+        
         DependencyContainer.register(paypalService as PayPalServiceProtocol)
         
         let viewModel = OAuthViewModel()
         
-        viewModel.generateOAuthURL(with: { result in })
+        viewModel.generateOAuthURL(.paypal, with: { result in })
         
         XCTAssertEqual(paypalService.startOrderSessionCalled, true)
     }
