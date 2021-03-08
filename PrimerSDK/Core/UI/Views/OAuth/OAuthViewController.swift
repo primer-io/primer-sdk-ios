@@ -60,6 +60,7 @@ class OAuthViewController: UIViewController {
     private func presentWebview(_ urlString: String) {
         let vc = WebViewController()
         vc.url = URL(string: urlString)
+        vc.delegate = self
         present(vc, animated: true, completion: nil)
     }
     
@@ -111,7 +112,7 @@ class OAuthViewController: UIViewController {
     }
     
     private func onOAuthCompleted(callbackURL: URL?) {
-        viewModel.tokenize(with: { [weak self] error in
+        viewModel.tokenize(host, with: { [weak self] error in
             DispatchQueue.main.async {
                 error.exists ? self?.router.show(.error()) : self?.router.show(.success(type: .regular))
             }
@@ -128,8 +129,24 @@ extension OAuthViewController: ASWebAuthenticationPresentationContextProviding {
     
 }
 
+@available(iOS 11.0, *)
+extension OAuthViewController: ReloadDelegate {
+    func reload() {
+        print("🔥🔥🔥🔥🔥")
+        viewModel.tokenize(host, with: { [weak self] error in
+            DispatchQueue.main.async {
+                error.exists ? self?.router.show(.error()) : self?.router.show(.success(type: .regular))
+            }
+        })
+    }
+}
+
 
 class WebViewController: UIViewController, WKNavigationDelegate {
+    
+    @Dependency private(set) var state: AppStateProtocol
+    
+    weak var delegate: ReloadDelegate?
     
     let webView = WKWebView()
     
@@ -149,6 +166,10 @@ class WebViewController: UIViewController, WKNavigationDelegate {
         }
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        delegate?.reload()
+    }
+    
     func queryValue(for name : String, of url: URL?) -> String? {
         guard let url = url,
             let urlComponents = URLComponents(url:url, resolvingAgainstBaseURL:false),
@@ -159,7 +180,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host)")
         // here we handle internally the callback url and call method that call handleOpenURL (not app scheme used)
-        if let url = navigationAction.request.url, url.host == "primer.io" {
+        if let url = navigationAction.request.url, url.host == "primer.io" || url.host == "api.playground.klarna.com"{
             //                if self.codeCheck == false {
             //                    if let code = url.valueOf("code") {
             //                        Log("Found code: \(code)")
@@ -171,8 +192,11 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             //                }
             
             let val = queryValue(for: "token", of: url)
+            log(logLevel: .info, message: "🚀🚀 \(url)")
             
-            log(logLevel: .info, message: "🚀🚀 \(val)")
+            state.authorizationToken = val
+            
+            log(logLevel: .info, message: "🚀🚀🚀 \(state.authorizationToken)")
             
             decisionHandler(.cancel)
             

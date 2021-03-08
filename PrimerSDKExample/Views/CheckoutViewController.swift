@@ -45,7 +45,7 @@ class CheckoutViewController: UIViewController {
         
         var theme: PrimerTheme
         
-        let themeColor = UIColor(red: 45/255, green: 80/255, blue: 230/255, alpha: 1)
+        let themeColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
         
         if #available(iOS 13.0, *) {
             theme = PrimerTheme(
@@ -55,14 +55,14 @@ class CheckoutViewController: UIViewController {
 //                    text2: .systemGreen,
 //                    text3: themeColor,
 //                    main1: .systemPurple,
-                    tint1: .systemOrange
+                    tint1: themeColor
 //                    neutral1: .systemPink
                 ),
                 darkTheme: PrimerDarkTheme(
-                    tint1: .systemOrange
+                    tint1: themeColor
                 ),
-                layout: PrimerLayout(showTopTitle: false, textFieldHeight: 56),
-                textFieldTheme: .outlined,
+                layout: PrimerLayout(showTopTitle: true, textFieldHeight: 40),
+//                textFieldTheme: .outlined,
                 fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
             )
         } else {
@@ -70,7 +70,7 @@ class CheckoutViewController: UIViewController {
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
                 colorTheme: PrimerDefaultTheme(
 //                    text3: themeColor,
-                    tint1: .systemOrange
+                    tint1: .systemBlue
 //                    neutral1: .systemPink
                 ),
                 layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
@@ -82,7 +82,7 @@ class CheckoutViewController: UIViewController {
         let businessDetails = BusinessDetails(
             name: "My Business",
             address: Address(
-                addressLine1: "107 Rue de Rivoli",
+                addressLine1: "107 Rue",
                 addressLine2: nil,
                 city: "Paris",
                 state: nil,
@@ -99,11 +99,24 @@ class CheckoutViewController: UIViewController {
             urlSchemeIdentifier: "primer",
             isFullScreenOnly: true,
             businessDetails: businessDetails
-            )
+        )
         
         primer = Primer(with: settings)
         
-        primer?.setDirectDebitDetails(firstName: "John", lastName: "Doe", email: "test@mail.com", iban: "FR1420041010050500013M02606", address: Address(addressLine1: "1 Rue de Rivoli", addressLine2: "", city: "Paris", state: "", countryCode: "FR", postalCode: "75001"))
+        primer?.setDirectDebitDetails(
+            firstName: "John",
+            lastName: "Doe",
+            email: "test@mail.com",
+            iban: "FR1420041010050500013M02606",
+            address: Address(
+                addressLine1: "1 Rue",
+                addressLine2: "",
+                city: "Paris",
+                state: "",
+                countryCode: "FR",
+                postalCode: "75001"
+            )
+        )
         
         primer?.setTheme(theme: theme)
         
@@ -139,7 +152,7 @@ class CheckoutViewController: UIViewController {
         addCardButton.backgroundColor = .lightGray
         addCardButton.addTarget(self, action: #selector(showCardForm), for: .touchUpInside)
         
-        addPayPalButton.setTitle("Add PayPal", for: .normal)
+        addPayPalButton.setTitle("Klarna", for: .normal)
         addPayPalButton.setTitleColor(.white, for: .normal)
         addPayPalButton.layer.cornerRadius = 16
         addPayPalButton.backgroundColor = .lightGray

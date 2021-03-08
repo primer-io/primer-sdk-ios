@@ -1,7 +1,7 @@
 protocol OAuthViewModelProtocol {
     var urlSchemeIdentifier: String { get }
     func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void) -> Void
-    func tokenize(with completion: @escaping (Error?) -> Void) -> Void
+    func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) -> Void
 }
 
 class OAuthViewModel: OAuthViewModelProtocol {
@@ -64,44 +64,94 @@ class OAuthViewModel: OAuthViewModelProtocol {
         }
     }
     
-    private func generateBillingAgreementConfirmation(with completion: @escaping (Error?) -> Void) {
+    private func generateBillingAgreementConfirmation(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
         paypalService.confirmBillingAgreement({ [weak self] result in
             switch result {
             case .failure(let error): print("generateBillingAgreementConfirmation", error)
-            case .success: self?.tokenize(with: completion)
+            case .success: self?.tokenize(host, with: completion)
             }
         })
     }
     
-    func tokenize(with completion: @escaping (Error?) -> Void) {
+    func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
         
-        var instrument: PaymentInstrument
+        var instrument = PaymentInstrument()
         
-        switch Primer.flow.uxMode {
-        case .CHECKOUT:
-            guard let id = orderId else { return }
-            instrument = PaymentInstrument(paypalOrderId: id)
-        case .VAULT:
-            guard let agreement = confirmedBillingAgreement else {
-                generateBillingAgreementConfirmation(with: completion)
-                return
+        if (host == .klarna) {
+            
+            print("🔥🔥🔥🔥🔥", host)
+            
+            
+            klarnaService.finalizePaymentSession() { [weak self] result in
+                switch result {
+                case .failure(let err): completion(err)
+                case .success(let res):
+                    instrument = PaymentInstrument(
+                        klarnaAuthorizationToken: self?.state.authorizationToken,
+                        sessionData: res.sessionData
+                    )
+                    
+                    print("🔥🔥🔥🔥🔥", instrument)
+                    
+                    guard let state = self?.state else { return }
+                    
+                    let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+                    
+                    print("🔥🔥🔥🔥🔥", request)
+                    
+                    self?.tokenizationService.tokenize(request: request) { [weak self] result in
+                        switch result {
+                        case .failure(let error): completion(error)
+                        case .success(let token):
+                            
+                            print("🔥🔥🔥🔥🔥 token:", token)
+                            
+                            switch Primer.flow.uxMode {
+                            case .VAULT:
+                                print("🔥🔥🔥🔥🔥 vaulting")
+                                completion(nil) //self?.onTokenizeSuccess(token, completion)
+                            case .CHECKOUT:
+                                print("🔥🔥🔥🔥🔥 paying")
+                                self?.onTokenizeSuccess(token, completion)
+                            }
+                        }
+                    }
+                    
+                }
             }
-            instrument = PaymentInstrument(
-                paypalBillingAgreementId: agreement.billingAgreementId,
-                shippingAddress: agreement.shippingAddress,
-                externalPayerInfo: agreement.externalPayerInfo
-            )
-        }
-        
-        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
-        
-        tokenizationService.tokenize(request: request) { [weak self] result in
-            switch result {
-            case .failure(let error): completion(error)
-            case .success(let token):
-                switch Primer.flow.uxMode {
-                case .VAULT: completion(nil)
-                case .CHECKOUT: self?.onTokenizeSuccess(token, completion)
+            
+        } else {
+            switch Primer.flow.uxMode {
+            case .CHECKOUT:
+                guard let id = orderId else { return }
+                instrument = PaymentInstrument(paypalOrderId: id)
+            case .VAULT:
+                guard let agreement = confirmedBillingAgreement else {
+                    generateBillingAgreementConfirmation(host, with: completion)
+                    return
+                }
+                instrument = PaymentInstrument(
+                    paypalBillingAgreementId: agreement.billingAgreementId,
+                    shippingAddress: agreement.shippingAddress,
+                    externalPayerInfo: agreement.externalPayerInfo
+                )
+            }
+            
+            let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+            
+            print("🔥🔥🔥🔥🔥", request)
+            
+            tokenizationService.tokenize(request: request) { [weak self] result in
+                switch result {
+                case .failure(let error): completion(error)
+                case .success(let token):
+                    
+                    print("🔥🔥🔥🔥🔥 token:", token)
+                    
+                    switch Primer.flow.uxMode {
+                    case .VAULT: completion(nil) //self?.onTokenizeSuccess(token, completion)
+                    case .CHECKOUT: self?.onTokenizeSuccess(token, completion)
+                    }
                 }
             }
         }

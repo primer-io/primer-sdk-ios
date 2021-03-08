@@ -364,9 +364,8 @@ extension FormView {
     
     private func configureScannerButton() {
         scannerButton.setTitle("Scan card", for: .normal)
-        scannerButton.setTitleColor(theme.colorTheme.text3, for: .normal)
+        scannerButton.setTitleColor(theme.colorTheme.tint1, for: .normal)
         scannerButton.titleLabel?.font = .systemFont(ofSize: 15)
-        
         scannerButton.addTarget(self, action: #selector(showScanner), for: .touchUpInside)
         
         scannerButton.translatesAutoresizingMaskIntoConstraints = false
