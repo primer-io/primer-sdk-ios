@@ -60,6 +60,7 @@ struct PaymentMethodViewModel {
         case .APPLE_PAY: return ImageName.appleIcon
         case .PAYPAL: return  ImageName.paypal3
         case .GOCARDLESS_MANDATE: return ImageName.rightArrow
+        case .KLARNA: return ImageName.klarna
         default: return  ImageName.creditCard
         }
     }

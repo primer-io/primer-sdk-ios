@@ -13,7 +13,9 @@ class VaultCheckoutViewController: UIViewController {
     private let loadingIndicator = UIActivityIndicatorView()
     private let transitionDelegate = TransitionDelegate()
     
-    deinit { print("🧨 destroy:", self.self) }
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,8 +95,9 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
         case .APPLE_PAY: router.show(.applePay)
         case .GOOGLE_PAY: break
         case .PAYMENT_CARD: router.show(.form(type: .cardForm(theme: theme)))
-        case .PAYPAL: router.show(.oAuth)
+        case .PAYPAL: router.show(.oAuth(host: .paypal))
         case .GOCARDLESS_MANDATE: router.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
+        case .KLARNA: router.show(.oAuth(host: .klarna))
         }
     }
 }

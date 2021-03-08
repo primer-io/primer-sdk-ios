@@ -13,7 +13,9 @@ class VaultPaymentMethodViewController: UIViewController {
     weak var delegate: ReloadDelegate?
     @Dependency private(set) var router: RouterDelegate
     
-    deinit { print("🧨 destroy:", self.self) }
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
     
     override func viewDidLoad() {
         view.addSubview(subView)
@@ -39,6 +41,6 @@ extension VaultPaymentMethodViewController: VaultPaymentMethodViewDelegate {
     }
     
     func showPayPal() {
-        router.show(.oAuth)
+        router.show(.oAuth(host: .paypal))
     }
 }

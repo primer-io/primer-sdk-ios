@@ -30,6 +30,9 @@ class MockAPIClient: APIClientProtocol {
     
     func post<T>(_ token: DecodedClientToken?, body: T, url: URL, completion: @escaping ((Result<Data, Error>) -> Void)) where T : Encodable {
         postCalled = true
+        if throwsError {
+            return completion(.failure(APIError.postError))
+        }
         guard let response = response else { return }
         completion(.success(response))
     }
