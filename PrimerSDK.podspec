@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = "PrimerSDK"
-  spec.version      = "1.1.20"
+  spec.version      = "1.2.0"
   spec.summary      = "Official iOS SDK for Primer"
   spec.description  = <<-DESC
   This library contains the official iOS SDK for Primer. Install this Cocoapod to seemlessly integrate the Primer Checkout & API platform in your app.
