@@ -8,7 +8,7 @@ public struct PaymentMethodToken: Codable {
     public var tokenType: String?
     public var paymentInstrumentType: PaymentInstrumentType
     public var paymentInstrumentData: PaymentInstrumentData?
-    public var vaultData: VaultData
+    public var vaultData: VaultData?
     public var threeDSecureAuthentication: ThreeDSecureAuthentication?
     
     var description: String {
@@ -79,6 +79,8 @@ public enum PaymentInstrumentType: String {
     case PAYPAL_ORDER = "PAYPAL_ORDER"
     case GOCARDLESS_MANDATE = "GOCARDLESS_MANDATE"
     case UNKNOWN = "UNKNOWN"
+    case KLARNA_PAYMENT_SESSION = "KLARNA_PAYMENT_SESSION"
+    case KLARNA = "KLARNA_AUTHORIZATION_TOKEN"
 }
 
 extension PaymentInstrumentType: Codable {
@@ -100,6 +102,7 @@ public struct PaymentInstrumentData: Codable {
     public var binData: BinData?
     public var threeDSecureAuthentication: ThreeDSecureAuthentication?
     public var gocardlessMandateId: String?
+    public var authorizationToken: String?
 }
 
 public struct ExternalPayerInfo: Codable {

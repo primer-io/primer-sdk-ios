@@ -18,6 +18,7 @@ public class Primer {
         if clearOnDestroy { clearDependencies() }
     }
     
+    /** Reload all the dependencies of the SDK */
     public func setDependencies(settings: PrimerSettings) {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         DependencyContainer.register(settings.theme as PrimerThemeProtocol)
@@ -44,10 +45,12 @@ public class Primer {
         DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
     }
     
+    /** Force the SDK to clear all dependencies */
     public func clearDependencies() {
         DependencyContainer.clear()
     }
     
+    /** Set theme after initialising the SDK */
     public func setTheme(theme: PrimerTheme) {
         DependencyContainer.register(theme as PrimerThemeProtocol)
     }
@@ -62,6 +65,7 @@ public class Primer {
         theme.content.formMainTitles.setMainTitle(text, for: formType)
     }
     
+    /** Pre-fill direct debit details of user in form */
     public func setDirectDebitDetails(
         firstName: String,
         lastName: String,
@@ -77,8 +81,6 @@ public class Primer {
         state.directDebitMandate.address = address
     }
     
-    // Methods
-    
     /** Presents a bottom sheet view for Primer checkout. To determine the user journey specify the PrimerSessionFlow of the method. Additionally a parent view controller needs to be passed in to display the sheet view. */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
         root = RootViewController()
@@ -86,7 +88,6 @@ public class Primer {
         router.setRoot(root!)
         guard let root = self.root else { return }
         Primer.flow = flow
-        print("🍷", Primer.flow)
         controller.present(root, animated: true)
     }
     
@@ -101,18 +102,4 @@ public class Primer {
         root?.dismiss(animated: true, completion: nil)
     }
     
-}
-
-extension Optional {
-    var exists: Bool { return self != nil }
-}
-
-extension String {
-    var withoutWhiteSpace: String {
-        return self.filter { !$0.isWhitespace }
-    }
-    
-    var isNotValidIBAN: Bool {
-        return self.withoutWhiteSpace.count < 6
-    }
 }

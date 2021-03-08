@@ -130,10 +130,11 @@
 		1DB9530025BE3098002CDC32 /* FormType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB952FF25BE3098002CDC32 /* FormType.swift */; };
 		1DB9530625BE30C0002CDC32 /* FormTextFieldType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB9530525BE30C0002CDC32 /* FormTextFieldType.swift */; };
 		1DB9531725C01645002CDC32 /* CardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB9531625C01645002CDC32 /* CardButton.swift */; };
+		1DCD729525F592080061A1C3 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCD729425F592080061A1C3 /* String+Extensions.swift */; };
+		1DCD729B25F592270061A1C3 /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCD729A25F592270061A1C3 /* Optional+Extensions.swift */; };
 		1DCDD559259BAA13000E9462 /* ImageName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCDD558259BAA13000E9462 /* ImageName.swift */; };
 		3B7675C39A74702FD09490EE /* libPods-PrimerSDKExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D7D063125DB0FD6003EED55 /* libPods-PrimerSDKExample.a */; };
 		722563F04857926462AD4758 /* libPods-PrimerSDKExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1885EC91CCF4C7D3DFEC6A37 /* libPods-PrimerSDKExample.a */; };
-		FD3CDCB4ACAB409430379C6C /* libPods-PrimerSDKExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D7D063125DB0FD6003EED55 /* libPods-PrimerSDKExample.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -324,6 +325,8 @@
 		1DB952FF25BE3098002CDC32 /* FormType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormType.swift; sourceTree = "<group>"; };
 		1DB9530525BE30C0002CDC32 /* FormTextFieldType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormTextFieldType.swift; sourceTree = "<group>"; };
 		1DB9531625C01645002CDC32 /* CardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardButton.swift; sourceTree = "<group>"; };
+		1DCD729425F592080061A1C3 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
+		1DCD729A25F592270061A1C3 /* Optional+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
 		1DCDD558259BAA13000E9462 /* ImageName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageName.swift; sourceTree = "<group>"; };
 		2C316D672B14F1548C871340 /* Pods-PrimerSDKExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDKExample.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDKExample/Pods-PrimerSDKExample.debug.xcconfig"; sourceTree = "<group>"; };
 		315DB2CB08BFBBA023C9E629 /* Pods-PrimerSDKExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDKExample.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDKExample/Pods-PrimerSDKExample.release.xcconfig"; sourceTree = "<group>"; };
@@ -351,11 +354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				722563F04857926462AD4758 /* libPods-PrimerSDKExample.a in Frameworks */,
-<<<<<<< HEAD
 				3B7675C39A74702FD09490EE /* libPods-PrimerSDKExample.a in Frameworks */,
-=======
-				FD3CDCB4ACAB409430379C6C /* libPods-PrimerSDKExample.a in Frameworks */,
->>>>>>> 7a3cae11197d896125418972ff8a925b6a93052a
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,6 +443,7 @@
 				1DCDD557259BA9EB000E9462 /* DataModels */,
 				1DB5C58A25890D2300EDFDA2 /* Services */,
 				1D033C6B257F10EF00EE9301 /* UI */,
+				1DCD729325F591D80061A1C3 /* Utils */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -848,6 +848,15 @@
 			path = Enums;
 			sourceTree = "<group>";
 		};
+		1DCD729325F591D80061A1C3 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				1DCD729425F592080061A1C3 /* String+Extensions.swift */,
+				1DCD729A25F592270061A1C3 /* Optional+Extensions.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		1DCDD557259BA9EB000E9462 /* DataModels */ = {
 			isa = PBXGroup;
 			children = (
@@ -1172,12 +1181,14 @@
 				1D033C8D257F758B00EE9301 /* Validation.swift in Sources */,
 				1D033B4F257EF7D300EE9301 /* Primer.swift in Sources */,
 				1D52AE2D258E3D97000DBC25 /* VaultCheckoutViewController.swift in Sources */,
+				1DCD729525F592080061A1C3 /* String+Extensions.swift in Sources */,
 				1D52AE31258E3DE1000DBC25 /* VaultCheckoutView.swift in Sources */,
 				1D52AE70258FD179000DBC25 /* TokenizationService.swift in Sources */,
 				1D6C236225A0999600409120 /* CardFormViewModel.swift in Sources */,
 				1D033C9B2580EEEA00EE9301 /* UIViewControllerExtensions.swift in Sources */,
 				1D033C7E257F10EF00EE9301 /* TransitioningDelegate.swift in Sources */,
 				1D6C25B825AF681400409120 /* SuccessMessage.swift in Sources */,
+				1DCD729B25F592270061A1C3 /* Optional+Extensions.swift in Sources */,
 				1D6C266D25B3830200409120 /* ExternalViewModel.swift in Sources */,
 				1D6C24A425A5C70600409120 /* ReloadDelegate.swift in Sources */,
 				1D6C244C25A29DCF00409120 /* PrimerTheme.swift in Sources */,
