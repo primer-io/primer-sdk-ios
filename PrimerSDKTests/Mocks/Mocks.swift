@@ -152,9 +152,14 @@ class MockAppState: AppStateProtocol {
     init(
         settings: PrimerSettingsProtocol = mockSettings,
         decodedClientToken: DecodedClientToken? = mockClientToken,
-        paymentMethodConfig: PaymentMethodConfig? = PaymentMethodConfig(coreUrl: "url", pciUrl: "url", paymentMethods: [
-            ConfigPaymentMethod(id: "id", type: .PAYPAL)
-        ])
+        paymentMethodConfig: PaymentMethodConfig? = PaymentMethodConfig(
+            coreUrl: "url",
+            pciUrl: "url",
+            paymentMethods: [
+                ConfigPaymentMethod(id: "1", type: .KLARNA),
+                ConfigPaymentMethod(id: "2", type: .PAYPAL)
+            ]
+        )
     ) {
         self.settings = settings
         self.decodedClientToken = decodedClientToken
@@ -177,6 +182,7 @@ class MockLocator {
         DependencyContainer.register(MockPayPalService() as PayPalServiceProtocol)
         DependencyContainer.register(MockTokenizationService() as TokenizationServiceProtocol)
         DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
+        DependencyContainer.register(MockKlarnaService() as KlarnaServiceProtocol)
         DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
         DependencyContainer.register(MockCardFormViewModel() as CardFormViewModelProtocol)
         DependencyContainer.register(MockCardScannerViewModel() as CardScannerViewModelProtocol)
@@ -188,6 +194,7 @@ class MockLocator {
         DependencyContainer.register(MockFormViewModel() as FormViewModelProtocol)
         DependencyContainer.register(MockExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(MockRouter() as RouterDelegate)
+        
     }
 }
 

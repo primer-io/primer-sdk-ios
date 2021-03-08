@@ -15,6 +15,7 @@ enum ConfigPaymentMethodType: String, Codable {
     case PAYMENT_CARD = "PAYMENT_CARD"
     case GOOGLE_PAY = "GOOGLE_PAY"
     case GOCARDLESS_MANDATE = "GOCARDLESS"
+    case KLARNA = "KLARNA"
 }
 
 extension PaymentMethodConfig {

@@ -74,21 +74,6 @@ public struct CornerRadiusTheme {
     }
 }
 
-//public struct ButtonColorTheme {
-//    public let applePay, creditCard, paypal, payButton: UIColor
-//    public init(
-//        applePay: UIColor = .black,
-//        creditCard: UIColor = .white,
-//        paypal: UIColor = UIColor(red: 190.0/255.0, green: 228.0/255.0, blue: 254.0/255.0, alpha: 1),
-//        payButton: UIColor = .systemBlue
-//    ) {
-//        self.applePay = applePay
-//        self.creditCard = creditCard
-//        self.paypal = paypal
-//        self.payButton = payButton
-//    }
-//}
-
 public struct FontColorTheme {
     public let applePay, creditCard, paypal, total, title, payButton, labels: UIColor
     
