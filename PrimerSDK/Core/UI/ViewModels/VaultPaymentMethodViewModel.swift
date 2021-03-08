@@ -20,6 +20,10 @@ class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var state: AppStateProtocol
     
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
+    
     func reloadVault(with completion: @escaping (Error?) -> Void) {
         vaultService.loadVaultedPaymentMethods(completion)
     }

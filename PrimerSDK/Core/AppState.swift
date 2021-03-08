@@ -22,6 +22,8 @@ protocol AppStateProtocol: class {
     var cardData: CardData { get set }
     var mandateId: String? { get set }
     var routerState: RouterState { get set }
+    var authorizationToken: String? { get set }
+    var sessionId: String? { get set }
 }
 
 class AppState: AppStateProtocol {
@@ -43,6 +45,8 @@ class AppState: AppStateProtocol {
     var mandateId: String?
     var cardData: CardData = CardData(name: "", number: "", expiryYear: "", expiryMonth: "", cvc: "")
     var routerState: RouterState = RouterState()
+    var authorizationToken: String?
+    var sessionId: String?
 }
 
 struct CardData {

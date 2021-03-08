@@ -16,6 +16,10 @@ class ExternalViewModel: ExternalViewModelProtocol {
     @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var vaultService: VaultServiceProtocol
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
 
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
         if (state.decodedClientToken.exists) {

@@ -44,6 +44,10 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
     @Dependency private(set) var state: AppStateProtocol
     
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
+    
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
         if (state.decodedClientToken.exists) {
             paymentMethodConfigService.fetchConfig({ [weak self] error in

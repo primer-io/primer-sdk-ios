@@ -1,7 +1,7 @@
 import UIKit
 //import PrimerSDK
 //import AuthenticationServices
-//import MapKit
+import MapKit
 
 protocol ViewControllerDelegate: class {
     func addToken(request: AuthorizationRequest)
@@ -55,7 +55,7 @@ class ViewController: UIViewController  {
     let image = UIImage(systemName: "creditcard")?.withTintColor(.black, renderingMode: .alwaysOriginal)
     let imageView = UIImageView(image: UIImage(systemName: "creditcard")?.withTintColor(.black, renderingMode: .alwaysOriginal))
     let titleLabel = UILabel()
-//    let map = MKMapView()
+    let map = MKMapView()
     
     var request: AuthorizationRequest?
     
@@ -63,17 +63,17 @@ class ViewController: UIViewController  {
         title = "Primer"
         view.backgroundColor = .white
         
-//        //map
-//        view.addSubview(map)
-//        map.translatesAutoresizingMaskIntoConstraints = false
-//        map.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-//        map.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-//        map.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-//        map.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-//
-//        //
-//        let initialLocation = CLLocation(latitude: 51.510067, longitude: -0.133869)
-//        map.centerToLocation(initialLocation)
+        //map
+        view.addSubview(map)
+        map.translatesAutoresizingMaskIntoConstraints = false
+        map.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        map.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        map.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        map.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+
+        //
+        let initialLocation = CLLocation(latitude: 51.510067, longitude: -0.133869)
+        map.centerToLocation(initialLocation)
         
         // button
         view.addSubview(button)
@@ -85,9 +85,10 @@ class ViewController: UIViewController  {
         button.layer.shadowRadius = 4
         button.translatesAutoresizingMaskIntoConstraints = false
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        button.widthAnchor.constraint(equalToConstant: 44).isActive = true
+//        button.widthAnchor.constraint(equalToConstant: 44).isActive = true
         button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
         button.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
+        button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         button.addTarget(self, action: #selector(presentWallet), for: .touchUpInside)
         
         //
@@ -149,18 +150,18 @@ class ViewController: UIViewController  {
     
 }
 
-//private extension MKMapView {
-//    func centerToLocation(
-//        _ location: CLLocation,
-//        regionRadius: CLLocationDistance = 1000
-//    ) {
-//        let coordinateRegion = MKCoordinateRegion(
-//            center: location.coordinate,
-//            latitudinalMeters: regionRadius,
-//            longitudinalMeters: regionRadius)
-//        setRegion(coordinateRegion, animated: true)
-//    }
-//}
+private extension MKMapView {
+    func centerToLocation(
+        _ location: CLLocation,
+        regionRadius: CLLocationDistance = 1000
+    ) {
+        let coordinateRegion = MKCoordinateRegion(
+            center: location.coordinate,
+            latitudinalMeters: regionRadius,
+            longitudinalMeters: regionRadius)
+        setRegion(coordinateRegion, animated: true)
+    }
+}
 
 @available(iOS 13.0, *)
 extension ViewController: ViewControllerDelegate {

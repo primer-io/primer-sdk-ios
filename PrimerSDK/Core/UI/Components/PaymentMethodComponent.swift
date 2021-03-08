@@ -58,6 +58,11 @@ class PaymentMethodComponent: UIView {
             configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
+        case .KLARNA:
+            backgroundColor = UIColor(red: 255/255, green: 179/255, blue: 199/255, alpha: 1)
+            addSubview(iconView)
+            configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1)
+            anchorIconView(inRelationToLabel: false)
         default: break
         }
     }

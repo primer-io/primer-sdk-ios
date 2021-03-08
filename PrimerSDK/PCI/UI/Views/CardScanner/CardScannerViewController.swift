@@ -35,7 +35,9 @@ class CardScannerViewController: UIViewController {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    deinit { print("🧨 destroy:", self.self) }
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
     
     public override func viewDidLoad() {
         scannerView = ScannerView(frame: view.frame, delegate: self, simpleScanView: simpleScanVC.view)
