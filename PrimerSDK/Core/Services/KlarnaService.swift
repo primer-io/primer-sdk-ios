@@ -93,38 +93,32 @@ protocol KlarnaServiceProtocol {
 
 
 class KlarnaService: KlarnaServiceProtocol {
-    
+
     @Dependency private(set) var api: APIClientProtocol
     @Dependency private(set) var state: AppStateProtocol
-    
+
+    let primerAPI = PrimerAPIClient()
+
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
-        
-        guard let token = state.decodedClientToken else {
+
+        guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
-        
-        guard let coreUrl = token.coreUrl else {
-            return completion(.failure(KlarnaException.noCoreUrl))
-        }
-        
-        guard let url = URL(string: "\(coreUrl)/klarna/payment-sessions") else {
-            return completion(.failure(KlarnaException.invalidUrl))
-        }
-        
+
         guard let amount = state.settings.amount else {
             return completion(.failure(KlarnaException.noAmount))
         }
-        
+
         log(logLevel: .info, message: "amount: \(amount)")
-        
-        guard let currency = state.settings.currency else {
+
+        guard state.settings.currency != nil else {
             return completion(.failure(KlarnaException.noCurrency))
         }
-        
+
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA) else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
-        
+
         let body = KlarnaCreatePaymentSessionAPIRequest(
             paymentMethodConfigId: configId,
             sessionType: "HOSTED_PAYMENT_PAGE",
@@ -139,64 +133,46 @@ class KlarnaService: KlarnaServiceProtocol {
                 OrderItem(name: "Socks", unitAmount: 200, quantity: 1)
             ]
         )
-        
+
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "createPaymentSession", line: 66)
-        
-        // call backend
-        self.api.post(token, body: body, url: url, completion: { [weak self] result in
+
+        primerAPI.klarnaCreatePaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
             switch result {
             case .failure: completion(.failure(KlarnaException.failedApiCall))
-            case .success(let data):
-                do {
-                    let response = try JSONDecoder().decode(KlarnaCreatePaymentSessionAPIResponse.self, from: data)
-                    log(logLevel: .info, message: "\(response)", className: "KlarnaService", function: "createPaymentSession", line: 80)
-                    self?.state.sessionId = response.sessionId
-                    completion(.success(response.hppRedirectUrl))
-                } catch {
-                    completion(.failure(KlarnaException.failedApiCall))
-                }
+            case .success(let response):
+                log(logLevel: .info, message: "\(response)", className: "KlarnaService", function: "createPaymentSession", line: 80)
+                self?.state.sessionId = response.sessionId
+                completion(.success(response.hppRedirectUrl))
             }
-        })
+        }
     }
-    
+
     func finalizePaymentSession(_ completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void) {
-        guard let token = state.decodedClientToken else {
+        guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
-        
-        guard let coreUrl = token.coreUrl else {
-            return completion(.failure(KlarnaException.noCoreUrl))
-        }
-        
-        guard let url = URL(string: "\(coreUrl)/klarna/payment-sessions/finalize") else {
-            return completion(.failure(KlarnaException.invalidUrl))
-        }
-        
+
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA) else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
-        
+
         guard let sessionId = state.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
-        
+
         let body = KlarnaFinalizePaymentSessionRequest(paymentMethodConfigId: configId, sessionId: sessionId)
-        
+
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession", line: 66)
-        
-        // call backend
-        self.api.post(token, body: body, url: url, completion: { result in
+
+        primerAPI.klarnaFinalizePaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
-            case .failure: completion(.failure(KlarnaException.failedApiCall))
-            case .success(let data):
-                do {
-                    let response = try JSONDecoder().decode(KlarnaFinalizePaymentSessionresponse.self, from: data)
-                    log(logLevel: .info, message: "\(response)", className: "KlarnaService", function: "createPaymentSession", line: 80)
-                    completion(.success(response))
-                } catch {
-                    completion(.failure(KlarnaException.failedApiCall))
-                }
+            case .failure:
+                completion(.failure(KlarnaException.failedApiCall))
+            case .success(let response):
+                log(logLevel: .info, message: "\(response)", className: "KlarnaService", function: "createPaymentSession", line: 80)
+                completion(.success(response))
             }
-        })
+        }
     }
 }
+

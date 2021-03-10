@@ -25,7 +25,7 @@ public class Primer {
         DependencyContainer.register(FormType.cardForm(theme: settings.theme) as FormType)
         DependencyContainer.register(Router() as RouterDelegate)
         DependencyContainer.register(AppState() as AppStateProtocol)
-        DependencyContainer.register(APIClient() as APIClientProtocol)
+        DependencyContainer.register(_APIClient() as APIClientProtocol)
         DependencyContainer.register(VaultService() as VaultServiceProtocol)
         DependencyContainer.register(ClientTokenService() as ClientTokenServiceProtocol)
         DependencyContainer.register(PaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
