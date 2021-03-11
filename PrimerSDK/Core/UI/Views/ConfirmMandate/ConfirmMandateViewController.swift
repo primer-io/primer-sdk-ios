@@ -28,7 +28,10 @@ class ConfirmMandateViewController: UIViewController {
         subView.render(isBusy: true)
         viewModel.loadConfig({ [weak self] error in
             DispatchQueue.main.async {
-                if (error.exists) { return }
+                if (error.exists) {
+                    self?.router.show(.error(message: "failed to load session, please close and try again."))
+                    return
+                }
                 self?.subView.render()
             }
         })

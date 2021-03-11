@@ -75,7 +75,13 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
         directDebitService.createMandate({ [weak self] error in
             if (error.exists) { return completion(PrimerError.DirectDebitSessionFailed) }
             
-            guard let state = self?.state else { return completion(PrimerError.DirectDebitSessionFailed) }
+            guard let state = self?.state else {
+                return completion(PrimerError.DirectDebitSessionFailed)
+            }
+            
+            guard let onTokenizeSuccess = self?.state.settings.onTokenizeSuccess else {
+                return completion(PrimerError.DirectDebitSessionFailed)
+            }
             
             let request = PaymentMethodTokenizationRequest(
                 paymentInstrument: PaymentInstrument(gocardlessMandateId: state.mandateId),
@@ -85,14 +91,11 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
             self?.tokenizationService.tokenize(request: request) { [weak self] result in
                 switch result {
                 case .failure(let error): completion(error)
-                case .success:
+                case .success(let token):
                     
-                    self?.state.directDebitMandate = DirectDebitMandate(
-                        //        iban: "FR1420041010050500013M02606",
-                        address: Address()
-                    )
+                    self?.state.directDebitMandate = DirectDebitMandate(address: Address())
                     
-                    completion(nil)
+                    onTokenizeSuccess(token, completion)
                 }
             }
         })
