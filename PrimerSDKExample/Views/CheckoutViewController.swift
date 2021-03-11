@@ -289,12 +289,17 @@ extension CheckoutViewController: PrimerDelegate {
             return completion(NetworkError.missingParams)
         }
         
-        callApi(request, completion: { result in
-            switch result {
-            case .success: completion(nil)
-            case .failure(let err): completion(err)
-            }
-        })
+        print("🐳", result)
+        
+        
+        completion(nil)
+        
+//        callApi(request, completion: { result in
+//            switch result {
+//            case .success: completion(nil)
+//            case .failure(let err): completion(err)
+//            }
+//        })
     }
 }
 
