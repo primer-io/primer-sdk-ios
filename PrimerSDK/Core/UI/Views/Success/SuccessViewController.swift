@@ -178,7 +178,7 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
         switch screenType {
         case .directDebit:
             guard let name = state.settings.businessDetails?.name else { return "" }
-            return name + "will appear on your bank statement when payments are taken against the Direct Debit."
+            return name + " " + "will appear on your bank statement when payments are taken against the Direct Debit."
         default:
             return ""
         }
