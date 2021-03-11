@@ -48,10 +48,10 @@ public class PrimerSettings: PrimerSettingsProtocol {
         return delegate?.onCheckoutDismissed ?? {}
     }
     
-    weak var delegate: PrimerCheckoutDelegate?
+    weak var delegate: PrimerDelegate?
     
     public init(
-        delegate: PrimerCheckoutDelegate,
+        delegate: PrimerDelegate,
         amount: Int? = nil,
         currency: Currency? = nil,
         theme: PrimerTheme = PrimerTheme(),
@@ -93,7 +93,7 @@ public struct BusinessDetails: Codable {
     }
 }
 
-class MockDelegate: PrimerCheckoutDelegate {
+class MockDelegate: PrimerDelegate {
     func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
         
     }
