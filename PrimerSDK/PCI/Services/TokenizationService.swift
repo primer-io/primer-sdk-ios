@@ -7,9 +7,9 @@ protocol TokenizationServiceProtocol {
 
 class TokenizationService: TokenizationServiceProtocol {
     
-    @Dependency private(set) var api: APIClientProtocol
+    @Dependency private(set) var api: PrimerAPIClientProtocol
     @Dependency private(set) var state: AppStateProtocol
-    
+        
     func tokenize(
         request: PaymentMethodTokenizationRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void
@@ -32,21 +32,14 @@ class TokenizationService: TokenizationServiceProtocol {
         
         print("🔥🔥🔥🔥🔥 url:", url)
         
-        self.api.post(clientToken, body: request, url: url, completion: { result in
-            do {
-                switch result {
-                case .failure:
-                    onTokenizeSuccess(.failure( PrimerError.TokenizationRequestFailed ))
-                case .success(let data):
-                    let token = try JSONDecoder().decode(PaymentMethodToken.self, from: data)
-                    
-                    print("🔥🔥🔥🔥🔥 token:", token)
-                    
-                    onTokenizeSuccess(.success(token))
-                }
-            } catch {
-                onTokenizeSuccess(.failure(PrimerError.TokenizationRequestFailed))
+        api.tokenizePaymentMethod(clientToken: clientToken, paymentMethodTokenizationRequest: request) { (result) in
+            switch result {
+            case .failure:
+                onTokenizeSuccess(.failure( PrimerError.TokenizationRequestFailed ))
+            case .success(let paymentMethodToken):
+                onTokenizeSuccess(.success(paymentMethodToken))
+            
             }
-        })
+        }
     }
 }

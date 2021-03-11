@@ -11,7 +11,7 @@ protocol DirectDebitServiceProtocol {
 
 class DirectDebitService: DirectDebitServiceProtocol {
     
-    @Dependency private(set) var api: APIClientProtocol
+    @Dependency private(set) var api: PrimerAPIClientProtocol
     @Dependency private(set) var state: AppStateProtocol
     
     func createMandate(_ completion: @escaping (Error?) -> Void) {
@@ -20,14 +20,6 @@ class DirectDebitService: DirectDebitServiceProtocol {
         }
 
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .GOCARDLESS_MANDATE) else {
-            return completion(PrimerError.DirectDebitSessionFailed)
-        }
-
-        guard let coreURL = clientToken.coreUrl else {
-            return completion(PrimerError.DirectDebitSessionFailed)
-        }
-        
-        guard let url = URL(string: "\(coreURL)/gocardless/mandates") else {
             return completion(PrimerError.DirectDebitSessionFailed)
         }
         
@@ -52,19 +44,14 @@ class DirectDebitService: DirectDebitServiceProtocol {
             )
         )
         
-        self.api.post(clientToken, body: body, url: url, completion: { [weak self] result in
+        api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { [weak self] result in
             switch result {
             case .failure: completion(PrimerError.DirectDebitSessionFailed)
-            case .success(let data):
-                do {
-                    let response = try JSONDecoder().decode(DirectDebitCreateMandateResponse.self, from: data)
-                    self?.state.mandateId = response.mandateId
-                    completion(nil)
-                } catch {
-                    completion(PrimerError.DirectDebitSessionFailed)
-                }
+            case .success(let response):
+                self?.state.mandateId = response.mandateId
+                completion(nil)
             }
-        })
+        }
     }
 }
 
