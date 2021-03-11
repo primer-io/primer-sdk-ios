@@ -8,11 +8,9 @@ protocol PayPalServiceProtocol {
 
 class PayPalService: PayPalServiceProtocol {
     
-    @Dependency private(set) var api: APIClientProtocol
+    @Dependency private(set) var api: PrimerAPIClientProtocol
     @Dependency private(set) var state: AppStateProtocol
-    
-    let primerAPI = PrimerAPIClient()
-    
+        
     private func prepareUrlAndTokenAndId(path: String) -> (DecodedClientToken, URL, String)? {
         guard let clientToken = state.decodedClientToken else {
             return nil
@@ -62,7 +60,7 @@ class PayPalService: PayPalServiceProtocol {
             cancelUrl: urlScheme
         )
         
-        primerAPI.payPalStartOrderSession(clientToken: clientToken, payPalCreateOrderRequest: body) { [weak self] (result) in
+        api.payPalStartOrderSession(clientToken: clientToken, payPalCreateOrderRequest: body) { [weak self] (result) in
             switch result {
             case .failure: completion(.failure(PrimerError.PayPalSessionFailed))
             case .success(let response):
@@ -92,7 +90,7 @@ class PayPalService: PayPalServiceProtocol {
             cancelUrl: urlScheme
         )
         
-        primerAPI.payPalStartBillingAgreementSession(clientToken: clientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
+        api.payPalStartBillingAgreementSession(clientToken: clientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure: completion(.failure(PrimerError.PayPalSessionFailed))
             case .success(let config):
@@ -117,7 +115,7 @@ class PayPalService: PayPalServiceProtocol {
         
         let body = PayPalConfirmBillingAgreementRequest(paymentMethodConfigId: configId, tokenId: tokenId)
         
-        primerAPI.payPalConfirmBillingAgreement(clientToken: clientToken, payPalConfirmBillingAgreementRequest: body) { [weak self] (result) in
+        api.payPalConfirmBillingAgreement(clientToken: clientToken, payPalConfirmBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure: completion(.failure(PrimerError.PayPalSessionFailed))
             case .success(let response):

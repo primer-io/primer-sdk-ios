@@ -20,7 +20,7 @@ protocol PrimerAPIClientProtocol {
     func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
 }
 
-class PrimerAPIClient {
+class PrimerAPIClient: PrimerAPIClientProtocol {
     
     private let networkService: NetworkService
     
