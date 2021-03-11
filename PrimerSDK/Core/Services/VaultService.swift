@@ -8,16 +8,14 @@ protocol VaultServiceProtocol {
 class VaultService: VaultServiceProtocol {
     
     @Dependency private(set) var state: AppStateProtocol
-    @Dependency private(set) var api: APIClientProtocol
-    
-    private let primerAPI = PrimerAPIClient()
-    
+    @Dependency private(set) var api: PrimerAPIClientProtocol
+        
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
         guard let clientToken = state.decodedClientToken else {
             return completion(PrimerError.VaultFetchFailed)
         }
         
-        primerAPI.vaultFetchPaymentMethods(clientToken: clientToken) { [weak self] (result) in
+        api.vaultFetchPaymentMethods(clientToken: clientToken) { [weak self] (result) in
             switch result {
             case .failure(let err):
                 completion(PrimerError.VaultFetchFailed)
@@ -42,7 +40,7 @@ class VaultService: VaultServiceProtocol {
             return completion(PrimerError.VaultDeleteFailed)
         }
         
-        primerAPI.vaultDeletePaymentMethod(clientToken: clientToken, id: id) { (result) in
+        api.vaultDeletePaymentMethod(clientToken: clientToken, id: id) { (result) in
             switch result {
             case .failure:
                 completion(PrimerError.VaultDeleteFailed)

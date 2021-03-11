@@ -11,9 +11,8 @@ protocol DirectDebitServiceProtocol {
 
 class DirectDebitService: DirectDebitServiceProtocol {
     
-    @Dependency private(set) var api: APIClientProtocol
+    @Dependency private(set) var api: PrimerAPIClientProtocol
     @Dependency private(set) var state: AppStateProtocol
-    let primerAPI = PrimerAPIClient()
     
     func createMandate(_ completion: @escaping (Error?) -> Void) {
         guard let clientToken = state.decodedClientToken else {
@@ -45,7 +44,7 @@ class DirectDebitService: DirectDebitServiceProtocol {
             )
         )
         
-        primerAPI.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { [weak self] result in
+        api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { [weak self] result in
             switch result {
             case .failure: completion(PrimerError.DirectDebitSessionFailed)
             case .success(let response):

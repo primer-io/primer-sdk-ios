@@ -94,10 +94,8 @@ protocol KlarnaServiceProtocol {
 
 class KlarnaService: KlarnaServiceProtocol {
 
-    @Dependency private(set) var api: APIClientProtocol
+    @Dependency private(set) var api: PrimerAPIClientProtocol
     @Dependency private(set) var state: AppStateProtocol
-
-    let primerAPI = PrimerAPIClient()
 
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
 
@@ -136,7 +134,7 @@ class KlarnaService: KlarnaServiceProtocol {
 
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "createPaymentSession", line: 66)
 
-        primerAPI.klarnaCreatePaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
+        api.klarnaCreatePaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
             switch result {
             case .failure: completion(.failure(KlarnaException.failedApiCall))
             case .success(let response):
@@ -164,7 +162,7 @@ class KlarnaService: KlarnaServiceProtocol {
 
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession", line: 66)
 
-        primerAPI.klarnaFinalizePaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
+        api.klarnaFinalizePaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
             case .failure:
                 completion(.failure(KlarnaException.failedApiCall))

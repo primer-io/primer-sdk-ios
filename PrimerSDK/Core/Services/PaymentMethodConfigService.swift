@@ -6,17 +6,15 @@ protocol PaymentMethodConfigServiceProtocol {
 
 class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
     
-    @Dependency private(set) var api: APIClientProtocol
+    @Dependency private(set) var api: PrimerAPIClientProtocol
     @Dependency private(set) var state: AppStateProtocol
-    
-    let primerAPI = PrimerAPIClient()
-    
+        
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
         guard let clientToken = state.decodedClientToken else {
             return completion(PrimerError.ConfigFetchFailed)
         }
         
-        primerAPI.fetchConfiguration(clientToken: clientToken) { [weak self] (result) in
+        api.fetchConfiguration(clientToken: clientToken) { [weak self] (result) in
             switch result {
             case .failure(let error):
                 completion(error)
