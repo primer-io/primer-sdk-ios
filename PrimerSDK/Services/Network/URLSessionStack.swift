@@ -35,7 +35,8 @@ class URLSessionStack: NetworkService {
         
         var msg = "\nHeaders: \(request.allHTTPHeaderFields ?? [:])"
         
-        if let body = endpoint.body, let data = try? JSONSerialization.data(withJSONObject: body, options: .fragmentsAllowed) {
+        
+        if let data = endpoint.body {
             request.httpBody = data
             msg += "\nBody: \((try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) ?? [:])"
         }

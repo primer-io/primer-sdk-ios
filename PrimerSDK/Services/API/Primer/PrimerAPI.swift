@@ -132,22 +132,22 @@ extension PrimerAPI {
         }
     }
     
-    var body: Encodable? {
+    var body: Data? {
         switch self {
         case .directDebitCreateMandate(_, let mandateRequest):
-            return mandateRequest
+            return try? JSONEncoder().encode(mandateRequest)
         case .payPalStartOrderSession(_, let payPalCreateOrderRequest):
-            return payPalCreateOrderRequest
+            return try? JSONEncoder().encode(payPalCreateOrderRequest)
         case .payPalStartBillingAgreementSession(_, let payPalCreateBillingAgreementRequest):
-            return payPalCreateBillingAgreementRequest
+            return try? JSONEncoder().encode(payPalCreateBillingAgreementRequest)
         case .payPalConfirmBillingAgreement(_, let payPalConfirmBillingAgreementRequest):
-            return payPalConfirmBillingAgreementRequest
+            return try? JSONEncoder().encode(payPalConfirmBillingAgreementRequest)
         case .klarnaCreatePaymentSession(_, let klarnaCreatePaymentSessionAPIRequest):
-            return klarnaCreatePaymentSessionAPIRequest
+            return try? JSONEncoder().encode(klarnaCreatePaymentSessionAPIRequest)
         case .klarnaFinalizePaymentSession(_, let klarnaFinalizePaymentSessionRequest):
-            return klarnaFinalizePaymentSessionRequest
+            return try? JSONEncoder().encode(klarnaFinalizePaymentSessionRequest)
         case .tokenizePaymentMethod(_, let paymentMethodTokenizationRequest):
-            return paymentMethodTokenizationRequest
+            return try? JSONEncoder().encode(paymentMethodTokenizationRequest)
         case .vaultDeletePaymentMethod,
              .fetchConfiguration,
              .vaultFetchPaymentMethods:

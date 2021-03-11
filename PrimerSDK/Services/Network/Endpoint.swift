@@ -17,7 +17,7 @@ protocol Endpoint {
     var method: HTTPMethod { get }
     var headers: [String: String]? { get }
     var queryParameters: [String: String]? { get }
-    var body: Encodable? { get }
+    var body: Data? { get }
 }
 
 //extension Endpoint {
