@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -112,8 +112,6 @@
 		1D7D04B425D83257003EED55 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1D6C256325ACCDAE00409120 /* Localizable.strings */; };
 		1D7D05DD25D8A64C003EED55 /* FormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8FA6F125BD8F1100BE9F69 /* FormViewController.swift */; };
 		1D7D05E425D8A65C003EED55 /* FormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7D05CE25D8A56E003EED55 /* FormViewModel.swift */; };
-		1D7D063725DB0FE4003EED55 /* CardScan.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D7D063625DB0FE4003EED55 /* CardScan.xcframework */; };
-		1D7D063825DB0FE4003EED55 /* CardScan.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1D7D063625DB0FE4003EED55 /* CardScan.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1D7D069B25E3CF7B003EED55 /* KlarnaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7D069A25E3CF7A003EED55 /* KlarnaService.swift */; };
 		1D7D06A725E41CDF003EED55 /* KlarnaServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7D06A625E41CDF003EED55 /* KlarnaServiceTests.swift */; };
 		1D7D06AB25E42E57003EED55 /* KlarnaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7D06AA25E42E56003EED55 /* KlarnaService.swift */; };
@@ -133,8 +131,6 @@
 		1DCD729525F592080061A1C3 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCD729425F592080061A1C3 /* String+Extensions.swift */; };
 		1DCD729B25F592270061A1C3 /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCD729A25F592270061A1C3 /* Optional+Extensions.swift */; };
 		1DCDD559259BAA13000E9462 /* ImageName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCDD558259BAA13000E9462 /* ImageName.swift */; };
-		3B7675C39A74702FD09490EE /* libPods-PrimerSDKExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D7D063125DB0FD6003EED55 /* libPods-PrimerSDKExample.a */; };
-		722563F04857926462AD4758 /* libPods-PrimerSDKExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1885EC91CCF4C7D3DFEC6A37 /* libPods-PrimerSDKExample.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -178,7 +174,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				1D7D063825DB0FE4003EED55 /* CardScan.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -186,7 +181,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1885EC91CCF4C7D3DFEC6A37 /* libPods-PrimerSDKExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PrimerSDKExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D033A96257EF24000EE9301 /* PrimerSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PrimerSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D033A99257EF24000EE9301 /* PrimerSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrimerSDK.h; sourceTree = "<group>"; };
 		1D033A9A257EF24000EE9301 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -208,11 +202,6 @@
 		1D033B44257EF7D200EE9301 /* APIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		1D033B4B257EF7D300EE9301 /* APIClientProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClientProtocol.swift; sourceTree = "<group>"; };
 		1D033BB7257EFD2100EE9301 /* Icons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Icons.xcassets; sourceTree = "<group>"; };
-		1D033BEF257F053700EE9301 /* CardScan.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CardScan.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		1D033BF6257F057A00EE9301 /* CardScan.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = CardScan.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		1D033C04257F062000EE9301 /* CardScan.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CardScan.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		1D033C09257F064000EE9301 /* CardScan.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = CardScan.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		1D033C20257F07AE00EE9301 /* CardScan.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CardScan.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D033C6D257F10EF00EE9301 /* UIViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtensions.swift; sourceTree = "<group>"; };
 		1D033C6E257F10EF00EE9301 /* Mask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mask.swift; sourceTree = "<group>"; };
 		1D033C70257F10EF00EE9301 /* TransitioningDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitioningDelegate.swift; sourceTree = "<group>"; };
@@ -306,8 +295,6 @@
 		1D6C26A625B4DAAE00409120 /* PayPalServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPalServiceTests.swift; sourceTree = "<group>"; };
 		1D6C279625B5E94E00409120 /* DirectDebitMandate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectDebitMandate.swift; sourceTree = "<group>"; };
 		1D7D05CE25D8A56E003EED55 /* FormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormViewModel.swift; sourceTree = "<group>"; };
-		1D7D063125DB0FD6003EED55 /* libPods-PrimerSDKExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libPods-PrimerSDKExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1D7D063625DB0FE4003EED55 /* CardScan.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = CardScan.xcframework; path = Pods/CardScan/CardScan.xcframework; sourceTree = "<group>"; };
 		1D7D069A25E3CF7A003EED55 /* KlarnaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlarnaService.swift; sourceTree = "<group>"; };
 		1D7D06A625E41CDF003EED55 /* KlarnaServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlarnaServiceTests.swift; sourceTree = "<group>"; };
 		1D7D06AA25E42E56003EED55 /* KlarnaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlarnaService.swift; sourceTree = "<group>"; };
@@ -337,7 +324,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1D7D063725DB0FE4003EED55 /* CardScan.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,8 +339,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				722563F04857926462AD4758 /* libPods-PrimerSDKExample.a in Frameworks */,
-				3B7675C39A74702FD09490EE /* libPods-PrimerSDKExample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -888,14 +872,6 @@
 		F1394196F4003D2513F19E7B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1D7D063625DB0FE4003EED55 /* CardScan.xcframework */,
-				1D7D063125DB0FD6003EED55 /* libPods-PrimerSDKExample.a */,
-				1D033C20257F07AE00EE9301 /* CardScan.framework */,
-				1D033C09257F064000EE9301 /* CardScan.bundle */,
-				1D033C04257F062000EE9301 /* CardScan.framework */,
-				1D033BF6257F057A00EE9301 /* CardScan.bundle */,
-				1D033BEF257F053700EE9301 /* CardScan.framework */,
-				1885EC91CCF4C7D3DFEC6A37 /* libPods-PrimerSDKExample.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
