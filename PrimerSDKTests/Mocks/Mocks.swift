@@ -19,7 +19,7 @@ var mockClientToken = DecodedClientToken(
 )
 
 var mockSettings = PrimerSettings(
-    delegate: MockPrimerCheckoutDelegate(),
+    delegate: MockPrimerDelegate(),
     amount: 200,
     currency: .EUR,
     theme: PrimerTheme(),
@@ -31,7 +31,7 @@ var mockSettings = PrimerSettings(
     urlSchemeIdentifier: "urlSchemeIdentifier"
 )
 
-class MockPrimerCheckoutDelegate: PrimerCheckoutDelegate {
+class MockPrimerDelegate: PrimerDelegate {
     
     var tokenData: CreateClientTokenResponse?
     var authorizePaymentFails: Bool

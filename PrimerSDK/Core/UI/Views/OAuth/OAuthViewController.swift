@@ -46,12 +46,16 @@ class OAuthViewController: UIViewController {
             case .failure(let error): print(error)
             case .success(let urlString):
                 DispatchQueue.main.async {
-                    self?.presentWebview(urlString)
-                    //                    if #available(iOS 13.0, *) {
-                    //                        self?.createPaymentInstrument(urlString)
-                    //                    } else {
-                    //                        self?.createPaymentInstrumentLegacy(urlString)
-                    //                    }
+                    // if klarna show webview, otherwise oauth
+                    if self?.host == OAuthHost.klarna {
+                        self?.presentWebview(urlString)
+                    } else {
+                        if #available(iOS 13.0, *) {
+                            self?.createPaymentInstrument(urlString)
+                        } else {
+                            self?.createPaymentInstrumentLegacy(urlString)
+                        }
+                    }
                 }
             }
         })
@@ -172,8 +176,8 @@ class WebViewController: UIViewController, WKNavigationDelegate {
     
     func queryValue(for name : String, of url: URL?) -> String? {
         guard let url = url,
-            let urlComponents = URLComponents(url:url, resolvingAgainstBaseURL:false),
-            let queryItem = urlComponents.queryItems?.last(where: {$0.name == name}) else { return nil }
+              let urlComponents = URLComponents(url:url, resolvingAgainstBaseURL:false),
+              let queryItem = urlComponents.queryItems?.last(where: {$0.name == name}) else { return nil }
         return queryItem.value
     }
     
