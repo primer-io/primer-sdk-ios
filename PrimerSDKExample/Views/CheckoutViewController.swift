@@ -238,9 +238,9 @@ class CheckoutViewController: UIViewController {
     }
 }
 
-// MARK: PrimerCheckoutDelegate (Required)
+// MARK: PrimerDelegate (Required)
 
-extension CheckoutViewController: PrimerCheckoutDelegate {
+extension CheckoutViewController: PrimerDelegate {
     func onCheckoutDismissed() {
         fetchPaymentMethods()
     }

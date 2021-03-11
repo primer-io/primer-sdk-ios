@@ -94,12 +94,24 @@ class RootViewController: UIViewController {
         let router: RouterDelegate = DependencyContainer.resolve()
         
         switch Primer.flow {
-        case .completeDirectCheckout: router.show(.vaultCheckout)
-        case .default: router.show(.vaultCheckout)
-        case .addCardToVault: router.show(.form(type: .cardForm(theme: theme)))
-        case .addPayPalToVault: router.show(.oAuth(host: .paypal))
-        case .addDirectDebit: router.show(.form(type: .iban(mandate: state.directDebitMandate, popOnComplete: true), closeOnSubmit: false))
-        case .checkoutWithKlarna: router.show(.oAuth(host: .klarna))
+        case .completeDirectCheckout:
+            router.show(.vaultCheckout)
+        case .default:
+            router.show(.vaultCheckout)
+        case .addCardToVault:
+            router.show(.form(type: .cardForm(theme: theme)))
+        case .addPayPalToVault:
+            router.show(.oAuth(host: .paypal))
+        case .addDirectDebit:
+            router.show(.form(type: .iban(mandate: state.directDebitMandate, popOnComplete: true), closeOnSubmit: false))
+        case .checkoutWithKlarna:
+            router.show(.oAuth(host: .klarna))
+        case .addDirectDebitToVault:
+            router.show(.form(type: .iban(mandate: state.directDebitMandate, popOnComplete: true), closeOnSubmit: false))
+        case .addKlarnaToVault:
+            router.show(.oAuth(host: .klarna))
+        case .defaultWithVault:
+            router.show(.vaultCheckout)
         }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
