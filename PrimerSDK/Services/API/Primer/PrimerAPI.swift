@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum APIError: Error {
+    case nullResponse
+    case statusError
+    case postError
+}
 
 enum PrimerAPI: Endpoint {
     case directDebitCreateMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
@@ -51,10 +56,7 @@ extension PrimerAPI {
         }
     }
     
-    var port: Int? {
-        return nil
-    }
-    
+    // MARK: Path
     var path: String {
         switch self {
         case .directDebitCreateMandate:
@@ -80,6 +82,13 @@ extension PrimerAPI {
         }
     }
     
+    // MARK: Port
+    // (not needed atm since port is included in the base URL provided by the access token)
+    var port: Int? {
+        return nil
+    }
+    
+    // MARK: HTTP Method
     var method: HTTPMethod {
         switch self {
         case .vaultDeletePaymentMethod:
@@ -98,6 +107,7 @@ extension PrimerAPI {
         }
     }
     
+    // MARK: Headers
     var headers: [String : String]? {
         var headers: [String: String] = [
             "Content-Type": "application/json",
@@ -118,13 +128,12 @@ extension PrimerAPI {
             if let token = clientToken.accessToken {
                 headers["Primer-Client-Token"] = token
             }
-//        default:
-//            break
         }
         
         return headers
     }
     
+    // MARK: Query Parameters
     var queryParameters: [String : String]? {
         switch self {
         default:
@@ -132,6 +141,7 @@ extension PrimerAPI {
         }
     }
     
+    // MARK: HTTP Body
     var body: Data? {
         switch self {
         case .directDebitCreateMandate(_, let mandateRequest):
