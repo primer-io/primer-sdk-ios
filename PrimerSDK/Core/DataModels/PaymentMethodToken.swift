@@ -2,6 +2,16 @@ struct GetVaultedPaymentMethodsResponse: Decodable {
     var data: [PaymentMethodToken]
 }
 
+/**
+ Each **PaymentMethodToken** represents a payment method added on Primer and carries the necessary information
+ for identification (e.g. type), as well as further information to be used if needed.
+ 
+ - Author:
+ Primer
+ - Version:
+ 1.2.2
+ */
+
 public struct PaymentMethodToken: Codable {
     public var token: String?
     public var analyticsId: String?
@@ -73,6 +83,36 @@ struct CardButtonViewModel {
     let paymentMethodType: PaymentInstrumentType
 }
 
+// FIXME: Add description for Klarna
+/**
+ Enum exposing available payment methods
+  
+ *Values*
+ 
+ `PAYMENT_CARD`: Used for card payments.
+ 
+ `PAYPAL_ORDER`: Used for a one-off payment through PayPal. It cannot be stored in the vault.
+ 
+ `PAYPAL_BILLING_AGREEMENT`: Used for a billing agreement through PayPal. It can be stored in the vault.
+ 
+ `APPLE_PAY`: Used for a payment through Apple Pay.
+ 
+ `GOOGLE_PAY`: Used for a payment through Google Pay.
+ 
+ `GOCARDLESS_MANDATE`: Used for a Debit Direct payment.
+ 
+ `KLARNA_PAYMENT_SESSION`:
+ 
+ `KLARNA`:
+  
+ `UNKNOWN`: Unknown payment instrument..
+ 
+ - Author:
+ Primer
+ - Version:
+ 1.2.2
+ */
+
 public enum PaymentInstrumentType: String {
     case PAYPAL_BILLING_AGREEMENT = "PAYPAL_BILLING_AGREEMENT"
     case PAYMENT_CARD = "PAYMENT_CARD"
@@ -88,6 +128,16 @@ extension PaymentInstrumentType: Codable {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .UNKNOWN
     }
 }
+
+/**
+ This structure contains all the available information on the payment instrument. Each payment instrument contains its own data,
+ therefore not all fields will have a value.
+ 
+ - Author:
+ Primer
+ - Version:
+ 1.2.2
+ */
 
 public struct PaymentInstrumentData: Codable {
     public var paypalBillingAgreementId: String?
@@ -105,9 +155,37 @@ public struct PaymentInstrumentData: Codable {
     public var authorizationToken: String?
 }
 
+/**
+ Contains information of the payer (if available).
+ 
+ *Values*
+ 
+ `externalPayerId`: ID representing the payer.
+ 
+ `email`: The payer's email.
+ 
+ `firstName`: The payer's firstName.
+ 
+ `lastName`: The payer's lastName.
+ 
+ - Author:
+ Primer
+ - Version:
+ 1.2.2
+ */
+
 public struct ExternalPayerInfo: Codable {
     public var externalPayerId, email, firstName, lastName: String?
 }
+
+/**
+ Contains extra information about the payment method.
+ 
+ - Author:
+ Primer
+ - Version:
+ 1.2.2
+ */
 
 public struct BinData: Codable {
     public var network: String?
@@ -126,6 +204,15 @@ public struct BinData: Codable {
 public struct VaultData: Codable {
     public var customerId: String?
 }
+
+/**
+ If available, it contains information on the 3DSecure authentication associated with this payment method token/instrument.
+ 
+ - Author:
+ Primer
+ - Version:
+ 1.2.2
+ */
 
 public struct ThreeDSecureAuthentication: Codable {
     public var responseCode, reasonCode, reasonText, protocolVersion, challengeIssued: String?
