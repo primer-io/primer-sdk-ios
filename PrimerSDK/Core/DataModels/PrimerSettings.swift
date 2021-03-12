@@ -21,6 +21,28 @@ protocol PrimerSettingsProtocol {
     var directDebitHasNoAmount: Bool { get }
 }
 
+/**
+ Set the settings of your Primer integration. Various settings for the payment or the drop-in UI customization can be set
+ 
+ - Parameters:
+    - amount: The amount multiplied by 100
+    - currency: Enum of available currencies
+    - merchantIdentifier: The merchant's identifier.
+    - countryCode: Enum of available countries.
+    - applePayEnabled: Enable/Disable Apple Pay
+    - customerId: Customer identifier
+    - theme: **PrimerTheme** for the drop-in UI.
+    - urlScheme: The URL scheme that has been set in the *Info.plist*
+    - urlSchemeIdentifier: The URL scheme identifier that has been set in the *Info.plist*
+    - isFullScreenOnly: Drop-in UI opearated in fullscreen only
+    - hasDisabledSuccessScreen: Enable/Disable success screen on successful payment.
+    - businessDetails: **BusinessDetails** object containing the details of payer's business.
+ 
+ - Author: Primer
+ 
+ - Version: 1.2.2
+ */
+
 public class PrimerSettings: PrimerSettingsProtocol {
     public let amount: Int?
     public let currency: Currency?
