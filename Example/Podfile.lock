@@ -1,27 +1,16 @@
 PODS:
-  - FBSnapshotTestCase (2.1.4):
-    - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
-  - FBSnapshotTestCase/Core (2.1.4)
-  - FBSnapshotTestCase/SwiftSupport (2.1.4):
-    - FBSnapshotTestCase/Core
   - PrimerSDK (1.2.2)
 
 DEPENDENCIES:
-  - FBSnapshotTestCase (~> 2.1.4)
   - PrimerSDK (from `../`)
-
-SPEC REPOS:
-  trunk:
-    - FBSnapshotTestCase
 
 EXTERNAL SOURCES:
   PrimerSDK:
     :path: "../"
 
 SPEC CHECKSUMS:
-  FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   PrimerSDK: 8ca68a2f837e15f29149e514cacb15eb27a114c0
 
-PODFILE CHECKSUM: 6175123c17a9f0730f24a863f9bd3d5fcf5062a3
+PODFILE CHECKSUM: b843e4a9cd4936a82c825fa2e39462abcd196c6c
 
 COCOAPODS: 1.10.1
