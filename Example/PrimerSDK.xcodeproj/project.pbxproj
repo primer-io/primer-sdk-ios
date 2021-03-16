@@ -138,8 +138,8 @@
 			children = (
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
-				607FACD71AFB9204008FA782 /* CheckoutViewController.swift */,
 				15F5BFB125FBA37900426B1C /* ViewController.swift */,
+				607FACD71AFB9204008FA782 /* CheckoutViewController.swift */,
 				15F5BFB725FBA3C000426B1C /* CapturePaymentViewController.swift */,
 			);
 			name = "User Interface";

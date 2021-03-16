@@ -193,13 +193,13 @@
 		2304DBC6FDADA9133E763A56F761C132 /* ClientTokenService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClientTokenService.swift; sourceTree = "<group>"; };
 		2350C0AC3FA29691AA3030660310C4DC /* UXMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UXMode.swift; sourceTree = "<group>"; };
 		235A78CFFA6D8B8D86CACD733531CB13 /* UIImage+Compare.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Compare.m"; path = "FBSnapshotTestCase/Categories/UIImage+Compare.m"; sourceTree = "<group>"; };
-		23FD1D157B8C8E7148BE8A7D354A051F /* Pods_PrimerSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_PrimerSDK_Tests.framework; path = "Pods-PrimerSDK_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		23FD1D157B8C8E7148BE8A7D354A051F /* Pods_PrimerSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24181EEB4DE660F307D03BB898C78790 /* UITableViewCellExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITableViewCellExtensions.swift; sourceTree = "<group>"; };
 		2499748384CCB1DC39DE4AC9341A4AA5 /* MultiCardIconComponent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultiCardIconComponent.swift; sourceTree = "<group>"; };
 		2540713D6BF68061D8C8FCC32C9D0B3A /* String+Localization.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "String+Localization.swift"; sourceTree = "<group>"; };
 		277B6BE10C665F515606A22FD60C6DCC /* FBSnapshotTestCase.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FBSnapshotTestCase.m; path = FBSnapshotTestCase/FBSnapshotTestCase.m; sourceTree = "<group>"; };
 		284833D18C244D2B42966B6EE425AA59 /* UIImage+Snapshot.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+Snapshot.h"; path = "FBSnapshotTestCase/Categories/UIImage+Snapshot.h"; sourceTree = "<group>"; };
-		28E47791C9F9D0A9BA05C719761A4F3F /* PrimerSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = PrimerSDK.framework; path = PrimerSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		28E47791C9F9D0A9BA05C719761A4F3F /* PrimerSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PrimerSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C57B99EBCBACF0F47BCAE30E5F77BB6 /* StringExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		2D220F892EA08000F63CECC17BDFA443 /* ErrorViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ErrorViewController.swift; sourceTree = "<group>"; };
 		2D3066DEC0F3A69A66B1FD1F83BFC08B /* CardFormViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardFormViewModel.swift; sourceTree = "<group>"; };
@@ -220,14 +220,14 @@
 		45E98FD648CDE9A050646071C373A713 /* Pods-PrimerSDK_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PrimerSDK_Tests-umbrella.h"; sourceTree = "<group>"; };
 		4B76A79E1E37C5127CAEDF1E4762B642 /* NetworkService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		4C6513B09838318BD763CFD5390D1DE0 /* FBSnapshotTestCase.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FBSnapshotTestCase.release.xcconfig; sourceTree = "<group>"; };
-		4D3869E0A461E802A5916AA6523517A4 /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_PrimerSDK_Example.framework; path = "Pods-PrimerSDK_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D3869E0A461E802A5916AA6523517A4 /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		555740DF18BCA48E784D1729ADA02CD7 /* VaultPaymentMethodView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodView.swift; sourceTree = "<group>"; };
 		57221B54D014471C3D3E1925EFC917C8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		584E0A955558FE433AC26DD7BF84FF44 /* Pods-PrimerSDK_Tests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-PrimerSDK_Tests-frameworks.sh"; sourceTree = "<group>"; };
 		59DF796CF7B77B31E0D3F68D435BA5E2 /* VaultCheckoutViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultCheckoutViewModel.swift; sourceTree = "<group>"; };
 		5B24448124DA253E0E116B3CB2BF9233 /* PaymentMethodTokenizationRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodTokenizationRequest.swift; sourceTree = "<group>"; };
 		5BE9221350D0A1A63BD2E3883B58BD09 /* DirectDebitMandate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DirectDebitMandate.swift; sourceTree = "<group>"; };
-		5C4F31330DFA99D699E4BDC8C3573D73 /* FBSnapshotTestCase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FBSnapshotTestCase.framework; path = FBSnapshotTestCase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C4F31330DFA99D699E4BDC8C3573D73 /* FBSnapshotTestCase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FBSnapshotTestCase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D3137BF546015A824F63FAF3C11B6C8 /* CardFormViewController+CardScannerViewControllerDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CardFormViewController+CardScannerViewControllerDelegate.swift"; sourceTree = "<group>"; };
 		5D468D0F9E418D406C45BAC75095F111 /* VaultPaymentMethodViewController+ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "VaultPaymentMethodViewController+ReloadDelegate.swift"; sourceTree = "<group>"; };
 		5D7BD9097C404A50861999E2D5250929 /* Pods-PrimerSDK_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrimerSDK_Example-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -258,7 +258,7 @@
 		871674567AC13ADD9D19A4ED336238CB /* Pods-PrimerSDK_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrimerSDK_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		88B1DEEBF6316A84D7413645212492FF /* FBSnapshotTestCasePlatform.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBSnapshotTestCasePlatform.h; path = FBSnapshotTestCase/FBSnapshotTestCasePlatform.h; sourceTree = "<group>"; };
 		8C34E4D5BE0C53489AA7F8254E07E795 /* VaultPaymentMethodViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewController.swift; sourceTree = "<group>"; };
-		8C474D64709CBBACFAA707DCD5B8B04C /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		8C474D64709CBBACFAA707DCD5B8B04C /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		8C6137967129C2F3880E465C48002626 /* PrimerAPIError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerAPIError.swift; sourceTree = "<group>"; };
 		8E5923010B02074CAA9AAF6EA02D66AA /* FBSnapshotTestCase-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "FBSnapshotTestCase-umbrella.h"; sourceTree = "<group>"; };
 		9252FB1D6E59E9192C1FC6474C154BBF /* PayPal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayPal.swift; sourceTree = "<group>"; };
@@ -267,7 +267,7 @@
 		99A67367E018411D614EC8536A8A1C5B /* UIApplication+StrictKeyWindow.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIApplication+StrictKeyWindow.h"; path = "FBSnapshotTestCase/Categories/UIApplication+StrictKeyWindow.h"; sourceTree = "<group>"; };
 		9A416D019AE9D8CAB36968A3B42DC05E /* PrimerTheme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerTheme.swift; sourceTree = "<group>"; };
 		9D2A15B219F536F2AE585A97CCF5BB33 /* ConfirmMandateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConfirmMandateView.swift; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A1E6ACB69B534F6E0F92C0D13B1B1BD3 /* Localizable.strings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A6A31EC3DA16C8E1E062C0ACFD1A43DE /* TokenizationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
 		AAF45BC1ACA462F9D1CE2AF09E93E48B /* PrimerSDK-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerSDK-prefix.pch"; sourceTree = "<group>"; };
@@ -275,7 +275,7 @@
 		AE53D90E29638EFD32C08A3D1D2CF824 /* VaultCheckoutViewController+ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "VaultCheckoutViewController+ReloadDelegate.swift"; sourceTree = "<group>"; };
 		AE9FF9459FBCDC4AF88FB6B5A4CC1439 /* FBSnapshotTestController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBSnapshotTestController.h; path = FBSnapshotTestCase/FBSnapshotTestController.h; sourceTree = "<group>"; };
 		B110AA804AAFF751921476B3FD0D5111 /* Pods-PrimerSDK_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrimerSDK_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
-		B1B089FED120D3E3C2DE41CA7F52C9FC /* PrimerSDK.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = PrimerSDK.bundle; path = "PrimerSDK-PrimerSDK.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1B089FED120D3E3C2DE41CA7F52C9FC /* PrimerSDK.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimerSDK.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		B30BF19A7E92860332A75FB53530BB9D /* RootViewController+Router.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "RootViewController+Router.swift"; sourceTree = "<group>"; };
 		B411490F8BD282C065CDD4AE7102D112 /* ConfirmMandateViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConfirmMandateViewController.swift; sourceTree = "<group>"; };
 		B5DCA3C5D418C4EC29345CD9B68CDDE5 /* UIViewExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UIViewExtensions.swift; sourceTree = "<group>"; };
@@ -283,7 +283,7 @@
 		B7E50CD4C35266703BC5B2C277E95B55 /* URLSessionStack.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = URLSessionStack.swift; sourceTree = "<group>"; };
 		B88B588469BE92BBA2920862AC6B1999 /* Pods-PrimerSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		B8FDF0F8EB75270F4C00DBDE5A39180A /* PrimerAPI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerAPI.swift; sourceTree = "<group>"; };
-		B919C0C1D13EC4E57AB08C07C6C43E03 /* PrimerSDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = PrimerSDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		B919C0C1D13EC4E57AB08C07C6C43E03 /* PrimerSDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = PrimerSDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		BAAED145674C622A06720259D7DB41BA /* Currency.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 		BDBD52CF7D39403506E3C7BF4D09BBE0 /* ClientToken.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClientToken.swift; sourceTree = "<group>"; };
 		BFEF8FF844432087B298E2A3C44338EA /* SuccessViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SuccessViewController.swift; sourceTree = "<group>"; };
@@ -302,7 +302,7 @@
 		D0FB0915950A343DFA0305CEAAA6BA10 /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		D16177E958975DF163170E7DB428B6F1 /* FormViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormViewController.swift; sourceTree = "<group>"; };
 		D3545DCED5B141F9A9A721D7F5D99FD9 /* DirectCheckoutViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DirectCheckoutViewModel.swift; sourceTree = "<group>"; };
-		D5967CFAA5F2B1AAD0F031476C5FF045 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		D5967CFAA5F2B1AAD0F031476C5FF045 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		D63ADC017319F691339A1243437F5E54 /* Logger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		D872A3EE224412D4057C234FBC629F9C /* UIImage+Snapshot.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Snapshot.m"; path = "FBSnapshotTestCase/Categories/UIImage+Snapshot.m"; sourceTree = "<group>"; };
 		D8B489AC49C381C1ACB4F533A65347DE /* Pods-PrimerSDK_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PrimerSDK_Example-umbrella.h"; sourceTree = "<group>"; };
@@ -406,7 +406,6 @@
 				860D36991A508125ACB34F92B4BBB780 /* SuccessMessage.swift */,
 				2350C0AC3FA29691AA3030660310C4DC /* UXMode.swift */,
 			);
-			name = Enums;
 			path = Enums;
 			sourceTree = "<group>";
 		};
@@ -425,7 +424,6 @@
 			children = (
 				BFEF8FF844432087B298E2A3C44338EA /* SuccessViewController.swift */,
 			);
-			name = Success;
 			path = Success;
 			sourceTree = "<group>";
 		};
@@ -439,7 +437,6 @@
 				EB82A87CAEA9948600DFAD5A8D53810E /* PayPalService.swift */,
 				0768349103D6F57CAD6122D7812F0770 /* VaultService.swift */,
 			);
-			name = Services;
 			path = Services;
 			sourceTree = "<group>";
 		};
@@ -451,7 +448,6 @@
 				5D468D0F9E418D406C45BAC75095F111 /* VaultPaymentMethodViewController+ReloadDelegate.swift */,
 				AD95CE72D44CD5C4CD7C8EF0025630AC /* VaultPaymentMethodViewController+TableView.swift */,
 			);
-			name = Vault;
 			path = Vault;
 			sourceTree = "<group>";
 		};
@@ -460,7 +456,6 @@
 			children = (
 				2D220F892EA08000F63CECC17BDFA443 /* ErrorViewController.swift */,
 			);
-			name = Error;
 			path = Error;
 			sourceTree = "<group>";
 		};
@@ -469,7 +464,6 @@
 			children = (
 				E0112E45217A2F2AF6A7766BB443232B /* Primer */,
 			);
-			name = API;
 			path = API;
 			sourceTree = "<group>";
 		};
@@ -478,7 +472,6 @@
 			children = (
 				61DD48D12BC5E28CB82CE58B67C346F1 /* OAuthViewController.swift */,
 			);
-			name = OAuth;
 			path = OAuth;
 			sourceTree = "<group>";
 		};
@@ -489,7 +482,6 @@
 				D16177E958975DF163170E7DB428B6F1 /* FormViewController.swift */,
 				0C85C006C0CFC12B346503CB5D186245 /* FormViewModel.swift */,
 			);
-			name = Form;
 			path = Form;
 			sourceTree = "<group>";
 		};
@@ -499,7 +491,6 @@
 				F7BE2D432A732C15CFDF8B241E27A410 /* Optional+Extensions.swift */,
 				42169898DFD1644E5B02F669135ADAB2 /* String+Extensions.swift */,
 			);
-			name = Utils;
 			path = Utils;
 			sourceTree = "<group>";
 		};
@@ -510,7 +501,6 @@
 				B30BF19A7E92860332A75FB53530BB9D /* RootViewController+Router.swift */,
 				451ABFF1060AC5A93D80FC4C73577CE0 /* Route.swift */,
 			);
-			name = Root;
 			path = Root;
 			sourceTree = "<group>";
 		};
@@ -550,7 +540,6 @@
 				2D3066DEC0F3A69A66B1FD1F83BFC08B /* CardFormViewModel.swift */,
 				C62428B485AF00099C8200FDBCC7B1D1 /* CardScannerViewModel.swift */,
 			);
-			name = ViewModels;
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
@@ -585,7 +574,6 @@
 				83F0291AED1D02035A2FCD25A4C3B57E /* ApplePayViewController.swift */,
 				C4C87627767335F0883AC18AE68B1C49 /* ApplePayViewController+PassKit.swift */,
 			);
-			name = ApplePay;
 			path = ApplePay;
 			sourceTree = "<group>";
 		};
@@ -606,7 +594,6 @@
 				C99BB9E9936FA4B5F8E8DA870E34B238 /* NetworkServiceError.swift */,
 				B7E50CD4C35266703BC5B2C277E95B55 /* URLSessionStack.swift */,
 			);
-			name = Network;
 			path = Network;
 			sourceTree = "<group>";
 		};
@@ -632,7 +619,6 @@
 			children = (
 				DC18611A97A270F392F851C7C27316F2 /* Enums */,
 			);
-			name = DataModels;
 			path = DataModels;
 			sourceTree = "<group>";
 		};
@@ -655,7 +641,6 @@
 				832A4C9ED7D7FD0DB5BCA4F2253D5F67 /* ReloadDelegate.swift */,
 				7EF25596362BA36C1742238271F97158 /* TransitioningDelegate.swift */,
 			);
-			name = Delegates;
 			path = Delegates;
 			sourceTree = "<group>";
 		};
@@ -664,7 +649,6 @@
 			children = (
 				A6A31EC3DA16C8E1E062C0ACFD1A43DE /* TokenizationService.swift */,
 			);
-			name = Services;
 			path = Services;
 			sourceTree = "<group>";
 		};
@@ -675,7 +659,6 @@
 				02C6FEEC29281128632A96342A45B03C /* CardFormViewController.swift */,
 				5D3137BF546015A824F63FAF3C11B6C8 /* CardFormViewController+CardScannerViewControllerDelegate.swift */,
 			);
-			name = CardForm;
 			path = CardForm;
 			sourceTree = "<group>";
 		};
@@ -711,7 +694,6 @@
 				D8B6E40FF2A937631E0CAD483ADC4522 /* PaymentMethodComponent.swift */,
 				6335ACE58B7CD5C08D192E62E78F213F /* SingleCardIconComponent.swift */,
 			);
-			name = Components;
 			path = Components;
 			sourceTree = "<group>";
 		};
@@ -738,7 +720,6 @@
 				59DF796CF7B77B31E0D3F68D435BA5E2 /* VaultCheckoutViewModel.swift */,
 				C2FFA5CE00555AE6B92E42A19461B7D8 /* VaultPaymentMethodViewModel.swift */,
 			);
-			name = ViewModels;
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
@@ -749,7 +730,6 @@
 				DCC15B2EF6D20CE54824BE48267AE4BE /* VaultCheckoutViewController.swift */,
 				AE53D90E29638EFD32C08A3D1D2CF824 /* VaultCheckoutViewController+ReloadDelegate.swift */,
 			);
-			name = Checkout;
 			path = Checkout;
 			sourceTree = "<group>";
 		};
@@ -758,7 +738,6 @@
 			children = (
 				DAB5E4BB7830E60809C22A024521D2A0 /* JSONParser.swift */,
 			);
-			name = JSON;
 			path = JSON;
 			sourceTree = "<group>";
 		};
@@ -772,7 +751,6 @@
 				DCF623CC014B43724E2C234C4B123C65 /* UIViewControllerExtensions.swift */,
 				B5DCA3C5D418C4EC29345CD9B68CDDE5 /* UIViewExtensions.swift */,
 			);
-			name = Utils;
 			path = Utils;
 			sourceTree = "<group>";
 		};
@@ -799,7 +777,6 @@
 				74AE8A57CE283222B8B2B8CB478FFD6C /* Mask.swift */,
 				0D34D1F6EDC8908CA2C71CBDCE0E31D2 /* Validation.swift */,
 			);
-			name = Utils;
 			path = Utils;
 			sourceTree = "<group>";
 		};
@@ -824,7 +801,6 @@
 				9D2A15B219F536F2AE585A97CCF5BB33 /* ConfirmMandateView.swift */,
 				B411490F8BD282C065CDD4AE7102D112 /* ConfirmMandateViewController.swift */,
 			);
-			name = ConfirmMandate;
 			path = ConfirmMandate;
 			sourceTree = "<group>";
 		};
@@ -834,7 +810,6 @@
 				3F8D8AEC7B26A258D0B5DEAEBA6A3238 /* Parser.swift */,
 				A5941972CC0904EF1107106531A7DDBB /* JSON */,
 			);
-			name = Parser;
 			path = Parser;
 			sourceTree = "<group>";
 		};
@@ -853,7 +828,6 @@
 				B69B2ECE2D2C9A3924A9231138CE0BBC /* Support Files */,
 				906402ECC4C6C5EB58DD365FD2C64E92 /* SwiftSupport */,
 			);
-			name = FBSnapshotTestCase;
 			path = FBSnapshotTestCase;
 			sourceTree = "<group>";
 		};
@@ -864,7 +838,6 @@
 				E79184B359AC4F3183D38E3A00A0F647 /* CardScannerViewController+SimpleScanDelegate.swift */,
 				EE476E8C4D297162474E8263B7C77A17 /* ScannerView.swift */,
 			);
-			name = CardScanner;
 			path = CardScanner;
 			sourceTree = "<group>";
 		};
@@ -889,7 +862,6 @@
 				9967EE10705EC3141F9DBD2B3F50F78A /* ViewModels */,
 				E075F974B5CE8D9DFA30A378F8BF4AB2 /* Views */,
 			);
-			name = UI;
 			path = UI;
 			sourceTree = "<group>";
 		};
@@ -899,7 +871,6 @@
 				EDF2D6E98E27957E5AD5D9FF85ED5C10 /* FormTextFieldType.swift */,
 				E4D45CCD11EA484382AB32C970084463 /* FormType.swift */,
 			);
-			name = Enums;
 			path = Enums;
 			sourceTree = "<group>";
 		};
@@ -909,7 +880,6 @@
 				526653591ACEF1DEC902BD0287B3BABD /* ViewModels */,
 				F2EEDD4617D06009475FC2074895CF51 /* Views */,
 			);
-			name = UI;
 			path = UI;
 			sourceTree = "<group>";
 		};
@@ -920,7 +890,6 @@
 				DE6F2A8F9F4147E2026FAD36EE4991A2 /* PrimerAPIClient.swift */,
 				8C6137967129C2F3880E465C48002626 /* PrimerAPIError.swift */,
 			);
-			name = Primer;
 			path = Primer;
 			sourceTree = "<group>";
 		};
@@ -936,7 +905,6 @@
 				18E997DBDDCE9FC79AC74223267FC317 /* Success */,
 				22B2DDDA6F02B5DB5A68785903137CD3 /* Vault */,
 			);
-			name = Views;
 			path = Views;
 			sourceTree = "<group>";
 		};
@@ -975,7 +943,6 @@
 				89E0B54B091D7EBFF36F023AF46EA422 /* CardForm */,
 				CEAA07970C1EB2EA38945B3A441800F7 /* CardScanner */,
 			);
-			name = Views;
 			path = Views;
 			sourceTree = "<group>";
 		};
@@ -1006,7 +973,6 @@
 				9A416D019AE9D8CAB36968A3B42DC05E /* PrimerTheme.swift */,
 				145DA05896982D9B6CF6813EAA05250E /* Enums */,
 			);
-			name = DataModels;
 			path = DataModels;
 			sourceTree = "<group>";
 		};
@@ -1174,6 +1140,8 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
+				sv,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
 			productRefGroup = 7E2A2C156AE18F5487A2FD84A3336010 /* Products */;
@@ -1794,8 +1762,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
