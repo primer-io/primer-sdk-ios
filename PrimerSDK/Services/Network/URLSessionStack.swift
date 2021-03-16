@@ -57,7 +57,7 @@ class URLSessionStack: NetworkService {
             if let error = error {
                 msg += "\nError: \(error)"
                 log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                DispatchQueue.main.async { completion(.failure(.error(error))) }
+                DispatchQueue.main.async { completion(.failure(.underlyingError(error))) }
                 return
             }
             
@@ -86,7 +86,7 @@ class URLSessionStack: NetworkService {
                     log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                     
                     DispatchQueue.main.async {
-                        completion(.failure(.error(nsErr)))
+                        completion(.failure(.underlyingError(nsErr)))
                     }
                 } else {
                     msg += "\nError: Failed to parse."

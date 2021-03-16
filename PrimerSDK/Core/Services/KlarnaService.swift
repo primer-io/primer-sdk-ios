@@ -5,16 +5,6 @@
 //  Created by Carl Eriksson on 22/02/2021.
 //
 
-enum KlarnaException: Error {
-    case invalidUrl
-    case noToken
-    case noCoreUrl
-    case failedApiCall
-    case noAmount
-    case noCurrency
-    case noPaymentMethodConfigId
-}
-
 struct LocaleData: Codable {
     let countryCode: String
     let currencyCode: String
