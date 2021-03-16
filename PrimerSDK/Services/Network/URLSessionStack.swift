@@ -30,7 +30,7 @@ class URLSessionStack: NetworkService {
         request.httpMethod = endpoint.method.rawValue
         
         if let headers = endpoint.headers {
-            request.allHTTPHeaderFields = headers
+//            request.allHTTPHeaderFields = headers
         }
         
         var msg = "\nHeaders: \(request.allHTTPHeaderFields ?? [:])"
@@ -79,8 +79,49 @@ class URLSessionStack: NetworkService {
                 if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any?],
                    let primerErrorJSON = json?["error"] as? [String: Any] {
                     let statusCode = (response as! HTTPURLResponse).statusCode
-                    let nsErr = NSError(domain: "Primer", code: 100, userInfo: primerErrorJSON)
                     
+                    let primerErrorResponse = try? self.parser.parse(PrimerErrorResponse.self, from: try! JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed))
+                    
+                    if statusCode == 401 {
+                        let err = NetworkServiceError.unauthorised(primerErrorResponse)
+                        msg += "\nError: Status code \(statusCode)\n\(err)"
+                                                
+                        log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+                        
+                        DispatchQueue.main.async {
+                            completion(.failure(err))
+                        }
+                        
+                        return
+                        
+                    } else if (400...499).contains(statusCode) {
+                        let err = NetworkServiceError.clientError(statusCode, info: primerErrorResponse)
+                        msg += "\nError: Status code \(statusCode)\n\(err)"
+                        
+                        log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+                        
+                        DispatchQueue.main.async {
+                            completion(.failure(err))
+                        }
+                        
+                        return
+                        
+                    } else if (500...599).contains(statusCode) {
+                        let err = NetworkServiceError.serverError(statusCode, info: primerErrorResponse)
+                        msg += "\nError: Status code \(statusCode)\n\(err)"
+                        
+                        log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+                        
+                        DispatchQueue.main.async {
+                            completion(.failure(err))
+                        }
+                        
+                        return
+                        
+                    }
+                    
+                    let nsErr = NSError(domain: "primer-client-error", code: statusCode, userInfo: primerErrorJSON)
+
                     msg += "\nError: Status code \(statusCode)\n\(nsErr)"
                     
                     log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
