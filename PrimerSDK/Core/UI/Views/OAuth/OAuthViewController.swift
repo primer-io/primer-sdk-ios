@@ -3,10 +3,6 @@ import AuthenticationServices
 import SafariServices
 import WebKit
 
-enum OAuthError: Error {
-    case invalidURL
-}
-
 @available(iOS 11.0, *)
 class OAuthViewController: UIViewController {
     

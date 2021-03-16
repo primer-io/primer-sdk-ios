@@ -18,6 +18,8 @@
 		0D66443CB9798C3121ACB3BC5CA85660 /* OAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240FC11D78181BBD7D68F39C8D68E222 /* OAuthViewController.swift */; };
 		0E54A1D9D15AE4FA13C6B9FCC87CE239 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1997957C50F0DF1A9D84C7A36ECD51C /* Currency.swift */; };
 		143D98236D0A025024929ACB7E1C0300 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E8DB7374DED10AA66ED86F27BB1F2C /* PaymentMethod.swift */; };
+		152C70572600D82500D3AA66 /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152C70562600D82500D3AA66 /* ErrorHandler.swift */; };
+		152C705C2600DBEB00D3AA66 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152C705B2600DBEB00D3AA66 /* Error.swift */; };
 		15BD9D059B2C5FD70FC93096DFD6FA1C /* FormTextFieldType.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A0A7B6D9FF82345CE102707A7AD949 /* FormTextFieldType.swift */; };
 		182349331B32E3863EAFB3BCDBDC8AB7 /* UXMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = E927F854987BC3A234775E968C7A984C /* UXMode.swift */; };
 		1882E2039024846A658F8C3EA300F2EF /* VaultCheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4252024777871DCEBFAA79E5AA82D10E /* VaultCheckoutView.swift */; };
@@ -135,6 +137,8 @@
 		0BF325673341170A81DA9ECE15D95C63 /* ApplePayViewController+PassKit.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ApplePayViewController+PassKit.swift"; sourceTree = "<group>"; };
 		0C57D6851B3047FA0F6FDB68CD166A17 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		11E4CF6AFD9AD6423A6D29C72E1F8005 /* ExternalViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExternalViewModel.swift; sourceTree = "<group>"; };
+		152C70562600D82500D3AA66 /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
+		152C705B2600DBEB00D3AA66 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		1944F8A87130D5E88432E4D1A5A2F247 /* PrimerSDK.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = PrimerSDK.modulemap; sourceTree = "<group>"; };
 		1B6CC7B68CD601BE36E34CA0187A2484 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		21AA583E7D4D91EF15F272DB9D374805 /* UITextFieldExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITextFieldExtensions.swift; sourceTree = "<group>"; };
@@ -302,6 +306,15 @@
 				BD5F7E8FE026C0860548596F36CA54DF /* ConfirmMandateViewController.swift */,
 			);
 			path = ConfirmMandate;
+			sourceTree = "<group>";
+		};
+		152C70552600D81100D3AA66 /* Error Handler */ = {
+			isa = PBXGroup;
+			children = (
+				152C70562600D82500D3AA66 /* ErrorHandler.swift */,
+				152C705B2600DBEB00D3AA66 /* Error.swift */,
+			);
+			path = "Error Handler";
 			sourceTree = "<group>";
 		};
 		208A106ED7D2951F549E0A9966F39FCF /* Services */ = {
@@ -609,6 +622,7 @@
 		BBE663788D29D16923074AC8365D93BF /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				152C70552600D81100D3AA66 /* Error Handler */,
 				926263817E2585FBF5132F9875F9F8BD /* API */,
 				793183A66DBCD30AE6EC513AAD3B0111 /* Network */,
 				A5F930DA99DDD58E5A00E4CC605477B9 /* Parser */,
@@ -1024,6 +1038,8 @@
 				DAEB456EE6A1AD1333791F8A585DF9DA /* VaultPaymentMethodViewController+TableView.swift in Sources */,
 				3F376FBD35E84D857013CB19058F679F /* VaultPaymentMethodViewController.swift in Sources */,
 				E0FE79B58DF2C5193CB0BD84924BBEF3 /* VaultPaymentMethodViewModel.swift in Sources */,
+				152C70572600D82500D3AA66 /* ErrorHandler.swift in Sources */,
+				152C705C2600DBEB00D3AA66 /* Error.swift in Sources */,
 				92E8DD1EE3EA2DBC587DEC6D17E61F12 /* VaultService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
