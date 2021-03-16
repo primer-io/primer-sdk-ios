@@ -38,7 +38,9 @@ enum KlarnaException: Error {
 
 enum NetworkServiceError: Error {
     case invalidURL
+    case unauthorised
+    case statusError(_ statusCode: Int, data: Data?)
     case noData
     case parsing(_ error: Error, _ data: Data)
-    case underlyingError(_ error: Error)
+    case underlyingError(_ error: Error)            // Use this error when we have received an error JSON from the backend.
 }
