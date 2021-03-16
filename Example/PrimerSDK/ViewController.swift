@@ -47,13 +47,12 @@ extension LegacyViewController: ViewControllerDelegate {
     }
 }
 
-@available(iOS 13.0, *)
+//@available(iOS 13.0, *)
 class ViewController: UIViewController  {
     
     let button = UIButton()
     let scanButton = UIButton()
-    let image = UIImage(systemName: "creditcard")?.withTintColor(.black, renderingMode: .alwaysOriginal)
-    let imageView = UIImageView(image: UIImage(systemName: "creditcard")?.withTintColor(.black, renderingMode: .alwaysOriginal))
+    let imageView = UIImageView(image: UIImage(named: "credit-card"))
     let titleLabel = UILabel()
     let map = MKMapView()
     
@@ -92,7 +91,7 @@ class ViewController: UIViewController  {
         button.addTarget(self, action: #selector(presentWallet), for: .touchUpInside)
         
         //
-        let image = UIImage(systemName: "creditcard")?.withTintColor(.black, renderingMode: .alwaysOriginal)
+        let image = UIImage(named: "credit-card")
         let imageView = UIImageView(image: image)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         button.addSubview(imageView)
@@ -163,7 +162,7 @@ private extension MKMapView {
     }
 }
 
-@available(iOS 13.0, *)
+//@available(iOS 13.0, *)
 extension ViewController: ViewControllerDelegate {
     func addToken(request: AuthorizationRequest) {
         self.request = request

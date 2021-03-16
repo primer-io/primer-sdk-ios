@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         nc.navigationBar.barTintColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
         nc.navigationBar.tintColor = .white
         nc.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
-        let vc = LegacyViewController()
+        let vc = ViewController()
         nc.viewControllers = [vc]
         window?.rootViewController = nc
         window?.makeKeyAndVisible()

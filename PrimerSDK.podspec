@@ -9,7 +9,6 @@ Pod::Spec.new do |spec|
     spec.license      = { :type => "MIT", :file => "LICENSE" }
     spec.author       = { "Primer" => "carl@primer.io" }
     spec.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{spec.version}" }
-    # spec.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
     
     spec.ios.deployment_target = '10.0'
     
