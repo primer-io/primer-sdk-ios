@@ -10,12 +10,10 @@ Pod::Spec.new do |spec|
     spec.author       = { "Primer" => "carl@primer.io" }
     spec.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{spec.version}" }
     
+    spec.swift_version = "4.2"
     spec.ios.deployment_target = '10.0'
     
     spec.source_files = 'PrimerSDK/Classes/**/*'
-    
-    spec.swift_version = "4.2"
-    
     spec.resource_bundles = {
         'PrimerSDK' => ['PrimerSDK/Assets/*.xcassets']
     }
