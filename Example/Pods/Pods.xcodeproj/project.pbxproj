@@ -20,6 +20,7 @@
 		1409DA75C26BA70F7B65C5F0CD21D2BF /* FormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0600C978273FB44B737CB432A614001 /* FormView.swift */; };
 		155259A926010B3F00E180F3 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155259A726010B3200E180F3 /* Error.swift */; };
 		155259AA26010B3F00E180F3 /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155259A826010B3200E180F3 /* ErrorHandler.swift */; };
+		155259B826010C2000E180F3 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155259B726010C2000E180F3 /* UIAlertController.swift */; };
 		15770F5F589FAFE38D56518B76888DE9 /* CountryCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 624F4E1D623540ED76B50D9BE131BF3F /* CountryCode.swift */; };
 		16D94678DE1920B6E17527281F9CB23A /* ApplePay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2002F8927F12A15A280FF35F453CC095 /* ApplePay.swift */; };
 		16E347ECB734C4F5128F4BD779A20F59 /* CardFormViewController+CardScannerViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D3137BF546015A824F63FAF3C11B6C8 /* CardFormViewController+CardScannerViewControllerDelegate.swift */; };
@@ -152,6 +153,7 @@
 		105FAFDEA00556F653679E56004F5188 /* UIButtonExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UIButtonExtension.swift; sourceTree = "<group>"; };
 		155259A726010B3200E180F3 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		155259A826010B3200E180F3 /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
+		155259B726010C2000E180F3 /* UIAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
 		19B3B6840DCBFC688F7293043B2A93B1 /* AppState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		1B4A7277390D022C0A1659F78E7F2FD8 /* PrimerSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PrimerSDK.debug.xcconfig; sourceTree = "<group>"; };
 		1DF93C73A4D016FD80163AA9B721436B /* ApplePayViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePayViewModel.swift; sourceTree = "<group>"; };
@@ -357,6 +359,7 @@
 			children = (
 				1E646282DAAF8499270F90F85C23DF88 /* DateExtension.swift */,
 				2C57B99EBCBACF0F47BCAE30E5F77BB6 /* StringExtension.swift */,
+				155259B726010C2000E180F3 /* UIAlertController.swift */,
 			);
 			name = Extensions;
 			path = PrimerSDK/Classes/Extensions;
@@ -1099,6 +1102,7 @@
 				B8ECA80566A84BD5FD5396E069280983 /* PrimerAPIClient.swift in Sources */,
 				55B198E564C314678E892039053BFBEA /* PrimerContent.swift in Sources */,
 				B660EE8D00F016ECBA69EEECE6AE3ED5 /* PrimerDelegate.swift in Sources */,
+				155259B826010C2000E180F3 /* UIAlertController.swift in Sources */,
 				95C8DAC16162EA4D1782ACB8CB440C90 /* PrimerSDK-dummy.m in Sources */,
 				80C6722075CA939E384E5539CE460C3F /* PrimerSessionFlow.swift in Sources */,
 				F02F097BE6E3864707D17BFE11C40B0F /* PrimerSettings.swift in Sources */,
