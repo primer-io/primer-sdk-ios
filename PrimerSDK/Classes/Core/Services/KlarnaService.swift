@@ -88,7 +88,6 @@ class KlarnaService: KlarnaServiceProtocol {
     @Dependency private(set) var state: AppStateProtocol
 
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
-
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
