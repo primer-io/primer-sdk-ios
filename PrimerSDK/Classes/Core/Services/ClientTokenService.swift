@@ -14,7 +14,9 @@ class ClientTokenService: ClientTokenServiceProtocol {
             switch result {
             case .failure: completion(PrimerError.ClientTokenNull)
             case .success(let token):
-                guard let clientToken = token.clientToken else { return completion(PrimerError.ClientTokenNull) }
+                guard let clientToken = token.clientToken else {
+                    return completion(PrimerError.ClientTokenNull)
+                }
                 self?.state.decodedClientToken = clientToken.decodeClientTokenBase64()
                 completion(nil)
             }

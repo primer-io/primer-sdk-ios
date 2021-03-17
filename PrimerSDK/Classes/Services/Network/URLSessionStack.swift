@@ -89,6 +89,7 @@ class URLSessionStack: NetworkService {
                         log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                         
                         DispatchQueue.main.async {
+                            ErrorHandler.shared.handle(error: err)
                             completion(.failure(err))
                         }
                         

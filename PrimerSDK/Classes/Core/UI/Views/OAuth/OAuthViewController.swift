@@ -40,7 +40,7 @@ class OAuthViewController: UIViewController {
         viewModel.generateOAuthURL(host, with: { [weak self] result in
             switch result {
             case .failure(let error):
-                log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                ErrorHandler.shared.handle(error: error)
             case .success(let urlString):
                 DispatchQueue.main.async {
                     // if klarna show webview, otherwise oauth
@@ -78,6 +78,10 @@ class OAuthViewController: UIViewController {
             url: authURL,
             callbackURLScheme: "https://primer.io/",
             completionHandler: { [weak self] (url, error) in
+                if let error = error {
+                    ErrorHandler.shared.handle(error: error)
+                }
+                
                 if (error is PrimerError) {
                     self?.router.show(.error())
                 } else if (error.exists) {

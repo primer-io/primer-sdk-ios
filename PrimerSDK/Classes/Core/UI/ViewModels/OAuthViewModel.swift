@@ -33,11 +33,13 @@ class OAuthViewModel: OAuthViewModelProtocol {
     private func loadConfig(_ host: OAuthHost, _ completion: @escaping (Result<String, Error>) -> Void) {
         clientTokenService.loadCheckoutConfig({ [weak self] error in
             if (error != nil) {
+                ErrorHandler.shared.handle(error: error!)
                 completion(.failure(PrimerError.PayPalSessionFailed))
                 return
             }
             self?.paymentMethodConfigService.fetchConfig({ [weak self] error in
                 if (error != nil) {
+                    ErrorHandler.shared.handle(error: error!)
                     completion(.failure(PrimerError.PayPalSessionFailed))
                     return
                 }
@@ -102,6 +104,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
                     self?.tokenizationService.tokenize(request: request) { [weak self] result in
                         switch result {
                         case .failure(let error):
+                            ErrorHandler.shared.handle(error: error)
                             completion(error)
                         case .success(let token):
                             log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
@@ -143,7 +146,9 @@ class OAuthViewModel: OAuthViewModelProtocol {
             
             tokenizationService.tokenize(request: request) { [weak self] result in
                 switch result {
-                case .failure(let error): completion(error)
+                case .failure(let error):
+                    ErrorHandler.shared.handle(error: error)
+                    completion(error)
                 case .success(let token):
                     log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                     

@@ -97,7 +97,7 @@ class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.noAmount))
         }
 
-        log(logLevel: .info, message: "amount: \(amount)")
+        log(logLevel: .info, message: "Klarna amount: \(amount)")
 
         guard state.settings.currency != nil else {
             return completion(.failure(KlarnaException.noCurrency))
@@ -126,7 +126,8 @@ class KlarnaService: KlarnaServiceProtocol {
 
         api.klarnaCreatePaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
             switch result {
-            case .failure: completion(.failure(KlarnaException.failedApiCall))
+            case .failure:
+                completion(.failure(KlarnaException.failedApiCall))
             case .success(let response):
                 log(logLevel: .info, message: "\(response)", className: "KlarnaService", function: "createPaymentSession", line: 80)
                 self?.state.sessionId = response.sessionId
