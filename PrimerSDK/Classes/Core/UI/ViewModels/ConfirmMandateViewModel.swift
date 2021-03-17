@@ -90,11 +90,10 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
             
             self?.tokenizationService.tokenize(request: request) { [weak self] result in
                 switch result {
-                case .failure(let error): completion(error)
+                case .failure(let error):
+                    completion(error)
                 case .success(let token):
-                    
                     self?.state.directDebitMandate = DirectDebitMandate(address: Address())
-                    
                     onTokenizeSuccess(token, completion)
                 }
             }

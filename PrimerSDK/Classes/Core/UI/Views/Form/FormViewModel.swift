@@ -115,7 +115,9 @@ class FormViewModel: FormViewModelProtocol {
         let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
         self.tokenizationService.tokenize(request: request) { [weak self] result in
             switch result {
-            case .failure(let error): completion(error)
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(error)
             case .success(let token):
                 switch Primer.flow {
                 case .completeDirectCheckout:

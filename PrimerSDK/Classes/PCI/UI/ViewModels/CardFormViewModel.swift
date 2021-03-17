@@ -35,7 +35,8 @@ class CardFormViewModel: CardFormViewModelProtocol {
         let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
         self.tokenizationService.tokenize(request: request) { [weak self] result in
             switch result {
-            case .failure(let error): completion(error)
+            case .failure(let error):
+                completion(error)
             case .success(let token):
                 Primer.flow.vaulted ? completion(nil) : self?.state.settings.onTokenizeSuccess(token, completion)
             }
