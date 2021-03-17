@@ -7,7 +7,12 @@
 
 import Foundation
 
-enum KlarnaException: CustomNSError, LocalizedError {
+protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
+    var shouldBePresented: Bool { get }
+}
+
+enum KlarnaException: PrimerErrorProtocol {
+    
     case invalidUrl
     case noToken
     case noCoreUrl
@@ -52,9 +57,18 @@ enum KlarnaException: CustomNSError, LocalizedError {
             return "Failed to find Klarna configuration".localized()
         }
     }
+    
+    var shouldBePresented: Bool {
+        switch self {
+        default:
+            return true
+        }
+    }
+    
 }
 
-enum NetworkServiceError: CustomNSError, LocalizedError {
+enum NetworkServiceError: PrimerErrorProtocol {
+    
     case invalidURL
     case unauthorised(_ info: PrimerErrorResponse?)
     case clientError(_ statusCode: Int, info: PrimerErrorResponse?)
@@ -100,9 +114,18 @@ enum NetworkServiceError: CustomNSError, LocalizedError {
             return error.localizedDescription
         }
     }
+    
+    var shouldBePresented: Bool {
+        switch self {
+        default:
+            return true
+        }
+    }
+    
 }
 
-enum PrimerError: CustomNSError, LocalizedError {
+enum PrimerError: PrimerErrorProtocol {
+    
     case ClientTokenNull
     case CustomerIDNull
     case PayPalSessionFailed
@@ -156,6 +179,14 @@ enum PrimerError: CustomNSError, LocalizedError {
             return "Connection error, your payment method was not saved. Please try again.".localized()
         }
     }
+    
+    var shouldBePresented: Bool {
+        switch self {
+        default:
+            return true
+        }
+    }
+    
 }
 
 struct PrimerErrorResponse: Codable {
