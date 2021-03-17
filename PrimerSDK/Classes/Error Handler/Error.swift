@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum KlarnaException: Error {
+enum KlarnaException: CustomNSError, LocalizedError {
     case invalidUrl
     case noToken
     case noCoreUrl
@@ -15,28 +15,46 @@ enum KlarnaException: Error {
     case noAmount
     case noCurrency
     case noPaymentMethodConfigId
+    
+    static var errorDomain: String = "primer.klarna"
+    
+    var errorCode: Int {
+        switch self {
+        default:
+            // Define API error codes with Android & Web
+            return 100
+        }
+    }
+    
+    var errorUserInfo: [String : Any] {
+        switch self {
+        default:
+            // Do we want more information on the errors? E.g. timestamps?
+            return [:]
+        }
+    }
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidUrl:
+            return "Failed to construct URL".localized()
+        case .noToken:
+            return "Failed to find client token".localized()
+        case .noCoreUrl:
+            return "Failed to find Core Base URL".localized()
+        case .failedApiCall:
+            return "API request failed".localized()
+        case .noAmount:
+            return "Failed to find amount".localized()
+        case .noCurrency:
+            return "Failed to find currency".localized()
+        case .noPaymentMethodConfigId:
+            return "Failed to find Klarna configuration".localized()
+        }
+    }
 }
 
-//enum OAuthError: Error {
-//    case invalidURL
-//}
-
-//enum NetworkError: Error {
-//    case missingParams
-//    case unauthorised
-//    case timeout
-//    case serverError
-//    case invalidResponse
-//    case serializationError
-//}
-
-//enum APIError: Error {
-//    case nullResponse
-//    case statusError
-//    case postError
-//}
-
-enum NetworkServiceError: Error {
+enum NetworkServiceError: CustomNSError, LocalizedError {
     case invalidURL
     case unauthorised(_ info: PrimerErrorResponse?)
     case clientError(_ statusCode: Int, info: PrimerErrorResponse?)
@@ -44,19 +62,100 @@ enum NetworkServiceError: Error {
     case noData
     case parsing(_ error: Error, _ data: Data)
     case underlyingError(_ error: Error)            // Use this error when we have received an error JSON from the backend.
+    
+    static var errorDomain: String = "primer.network"
+    
+    var errorCode: Int {
+        switch self {
+        default:
+            // Define API error codes with Android & Web
+            return 100
+        }
+    }
+    
+    var errorUserInfo: [String : Any] {
+        switch self {
+        default:
+            // Do we want more information on the errors? E.g. timestamps?
+            return [:]
+        }
+    }
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "Invalid url".localized()
+        case .unauthorised:
+            return "Unauthorized request".localized()
+        case .noData:
+            return "No data".localized()
+        case .clientError(let statusCode, let data):
+            return "Request failed with status code \(statusCode)".localized()
+        case .serverError(let statusCode, let data):
+            return "Request failed with status code \(statusCode)".localized()
+        case .parsing(let error, let data):
+            let response = String(data: data, encoding: .utf8) ?? ""
+            return "Parsing error: \(error.localizedDescription)\n\nResponse:\n\(response)".localized()
+        case .underlyingError(let error):
+            return error.localizedDescription
+        }
+    }
 }
 
-enum PrimerError: String, LocalizedError {
-    case ClientTokenNull = "Client token is missing."
-    case CustomerIDNull = "Customer ID is missing."
-    case PayPalSessionFailed = "PayPal checkout session failed. Your account has not been charged."
-    case VaultFetchFailed = "Failed to fetch saved payment methods."
-    case VaultDeleteFailed = "Failed to delete saved payment method."
-    case VaultCreateFailed = "Failed to save payment method."
-    case DirectDebitSessionFailed = "Failed to create a direct debit mandate.\n\n Please try again."
-    case ConfigFetchFailed = "Failed to setup session."
-    case TokenizationPreRequestFailed = "Failed to complete action. Your payment method was not processed."
-    case TokenizationRequestFailed = "Connection error, your payment method was not saved. Please try again."
+enum PrimerError: CustomNSError, LocalizedError {
+    case ClientTokenNull
+    case CustomerIDNull
+    case PayPalSessionFailed
+    case VaultFetchFailed
+    case VaultDeleteFailed
+    case VaultCreateFailed
+    case DirectDebitSessionFailed
+    case ConfigFetchFailed
+    case TokenizationPreRequestFailed
+    case TokenizationRequestFailed
+    
+    static var errorDomain: String = "primer"
+    
+    var errorCode: Int {
+        switch self {
+        default:
+            // Define API error codes with Android & Web
+            return 100
+        }
+    }
+    
+    var errorUserInfo: [String : Any] {
+        switch self {
+        default:
+            // Do we want more information on the errors? E.g. timestamps?
+            return [:]
+        }
+    }
+    
+    var errorDescription: String? {
+        switch self {
+        case .ClientTokenNull:
+            return "Client token is missing.".localized()
+        case .CustomerIDNull:
+            return "Customer ID is missing.".localized()
+        case .PayPalSessionFailed:
+            return "PayPal checkout session failed. Your account has not been charged.".localized()
+        case .VaultFetchFailed:
+            return "Failed to fetch saved payment methods.".localized()
+        case .VaultDeleteFailed:
+            return "Failed to delete saved payment method.".localized()
+        case .VaultCreateFailed:
+            return "Failed to save payment method.".localized()
+        case .DirectDebitSessionFailed:
+            return "Failed to create a direct debit mandate.\n\n Please try again.".localized()
+        case .ConfigFetchFailed:
+            return "Failed to setup session.".localized()
+        case .TokenizationPreRequestFailed:
+            return "Failed to complete action. Your payment method was not processed.".localized()
+        case .TokenizationRequestFailed:
+            return "Connection error, your payment method was not saved. Please try again.".localized()
+        }
+    }
 }
 
 struct PrimerErrorResponse: Codable {

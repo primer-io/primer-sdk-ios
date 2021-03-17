@@ -85,7 +85,7 @@ class FormViewModel: FormViewModelProtocol {
         case .cardForm: submit() { error in
             DispatchQueue.main.async { [weak self] in
                 if (error.exists) {
-                    self?.router.show(.error(message: error!.rawValue))
+                    self?.router.show(.error(message: error!.localizedDescription))
                 } else {
                     self?.router.show(.success(type: .regular))
                 }
