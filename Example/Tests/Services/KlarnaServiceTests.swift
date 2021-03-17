@@ -10,21 +10,15 @@ import XCTest
 
 class KlarnaServiceTests: XCTestCase {
     
-    var throwsError = false
-    var error: KlarnaException?
-    var redirectUrl: String?
-    
     override func setUp() {
-        throwsError = false
-        error = nil
-        redirectUrl = nil
         let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
     }
     
     // MARK: createPaymentSession - success
     func test_create_order_session_success() throws {
-//        let response = KlarnaCreatePaymentSessionAPIResponse(sessionId: "id", redirectUrl: "https://primer.io/")
+        let expectation = XCTestExpectation(description: "Create Klarna payment sesion | Success")
+        
         let response = KlarnaCreatePaymentSessionAPIResponse(clientToken: "token", sessionId: "id", categories: [], hppSessionId: "hppSessionId", hppRedirectUrl: "https://primer.io/")
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
@@ -32,21 +26,26 @@ class KlarnaServiceTests: XCTestCase {
         
         let service = KlarnaService()
         
-        service.createPaymentSession({ [weak self] result in
+        service.createPaymentSession({ result in
             switch result {
-            case .failure(let err): self?.throwsError = true; self?.error = err as? KlarnaException
-            case .success(let url): self?.redirectUrl = url
+            case .failure:
+                XCTAssert(false, "Test should get into the success case.")
+            case .success(let url):
+                XCTAssertEqual(url, response.hppRedirectUrl)
             }
+            
+            expectation.fulfill()
         })
         
-        XCTAssertEqual(api.postCalled, true)
-        XCTAssertEqual(throwsError, false)
-        XCTAssertEqual(error, nil)
-        XCTAssertEqual(redirectUrl, response.hppRedirectUrl)
+        XCTAssertEqual(api.isCalled, true)
+        
+        wait(for: [expectation], timeout: 10.0)
     }
     
     // MARK: createPaymentSession - fail, api exception
     func test_create_order_session_fail_invalid_response() throws {
+        let expectation = XCTestExpectation(description: "Create Klarna payment sesion | Failure")
+        
         let response = KlarnaCreatePaymentSessionAPIResponse(clientToken: "token", sessionId: "id", categories: [], hppSessionId: "hppSessionId", hppRedirectUrl: "https://primer.io/")
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: true)
@@ -54,21 +53,26 @@ class KlarnaServiceTests: XCTestCase {
         
         let service = KlarnaService()
         
-        service.createPaymentSession({ [weak self] result in
+        service.createPaymentSession({ result in
             switch result {
-            case .failure(let err): self?.throwsError = true; self?.error = err as? KlarnaException
-            case .success(let url): self?.redirectUrl = url
+            case .failure(let err):
+                XCTAssertEqual(err as? KlarnaException, KlarnaException.failedApiCall)
+            case .success:
+                XCTAssert(false, "Test should get into the failure case.")
             }
+            
+            expectation.fulfill()
         })
         
-        XCTAssertEqual(api.postCalled, true)
-        XCTAssertEqual(throwsError, true)
-        XCTAssertEqual(error, KlarnaException.failedApiCall)
-        XCTAssertEqual(redirectUrl, nil)
+        XCTAssertEqual(api.isCalled, true)
+        
+        wait(for: [expectation], timeout: 10.0)
     }
     
     // MARK: createPaymentSession - fail, no client token
     func test_create_order_session_fail_no_client_token() throws {
+        let expectation = XCTestExpectation(description: "Create Klarna payment sesion | Failure")
+        
         let state = MockAppState(decodedClientToken: nil)
         DependencyContainer.register(state as AppStateProtocol)
         
@@ -77,16 +81,18 @@ class KlarnaServiceTests: XCTestCase {
         
         let service = KlarnaService()
         
-        service.createPaymentSession({ [weak self] result in
+        service.createPaymentSession({ result in
             switch result {
-            case .failure(let err): self?.throwsError = true; self?.error = err as? KlarnaException
-            case .success(let url): self?.redirectUrl = url
+            case .failure(let err):
+                XCTAssertEqual(err as? KlarnaException, KlarnaException.noToken)
+            case .success:
+                XCTAssert(false, "Test should get into the failure case.")
             }
+            expectation.fulfill()
         })
         
-        XCTAssertEqual(api.postCalled, false)
-        XCTAssertEqual(throwsError, true)
-        XCTAssertEqual(error, KlarnaException.noToken)
-        XCTAssertEqual(redirectUrl, nil)
+        XCTAssertEqual(api.isCalled, false)
+        
+        wait(for: [expectation], timeout: 10.0)
     }
 }
