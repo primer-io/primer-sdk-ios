@@ -14,7 +14,9 @@ class ApplePayViewController: UIViewController {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    deinit { print("🧨 destroying:", self.self) }
+    deinit {
+        log(logLevel: .verbose, title: nil, message: "\(self.self) deinit", prefix: "🧨", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+    }
     
     override func viewDidLoad() {
         addLoadingView(indicator)

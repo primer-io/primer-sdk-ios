@@ -28,8 +28,10 @@ class TokenizationServiceTests: XCTestCase {
         
         service.tokenize(request: request) { result in
             switch result {
-            case .failure: print("error")
-            case .success(let token): newToken.token = token.token
+            case .failure:
+                print("error")
+            case .success(let token):
+                newToken.token = token.token
             }
         }
         

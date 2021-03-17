@@ -24,7 +24,7 @@ class OAuthViewController: UIViewController {
     }
     
     deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+        log(logLevel: .verbose, message: "🧨 destroyed: \(self.self)")
     }
     
     override func viewDidLoad() {
@@ -39,7 +39,8 @@ class OAuthViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         viewModel.generateOAuthURL(host, with: { [weak self] result in
             switch result {
-            case .failure(let error): print(error)
+            case .failure(let error):
+                log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
             case .success(let urlString):
                 DispatchQueue.main.async {
                     // if klarna show webview, otherwise oauth
@@ -132,7 +133,6 @@ extension OAuthViewController: ASWebAuthenticationPresentationContextProviding {
 @available(iOS 11.0, *)
 extension OAuthViewController: ReloadDelegate {
     func reload() {
-        print("🔥🔥🔥🔥🔥")
         viewModel.tokenize(host, with: { [weak self] error in
             DispatchQueue.main.async {
                 error.exists ? self?.router.show(.error()) : self?.router.show(.success(type: .regular))
