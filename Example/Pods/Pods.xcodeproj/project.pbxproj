@@ -21,6 +21,7 @@
 		155259A926010B3F00E180F3 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155259A726010B3200E180F3 /* Error.swift */; };
 		155259AA26010B3F00E180F3 /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155259A826010B3200E180F3 /* ErrorHandler.swift */; };
 		155259B826010C2000E180F3 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155259B726010C2000E180F3 /* UIAlertController.swift */; };
+		15525A192601F05500E180F3 /* AlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15525A182601F05500E180F3 /* AlertController.swift */; };
 		15770F5F589FAFE38D56518B76888DE9 /* CountryCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 624F4E1D623540ED76B50D9BE131BF3F /* CountryCode.swift */; };
 		16D94678DE1920B6E17527281F9CB23A /* ApplePay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2002F8927F12A15A280FF35F453CC095 /* ApplePay.swift */; };
 		16E347ECB734C4F5128F4BD779A20F59 /* CardFormViewController+CardScannerViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D3137BF546015A824F63FAF3C11B6C8 /* CardFormViewController+CardScannerViewControllerDelegate.swift */; };
@@ -154,6 +155,7 @@
 		155259A726010B3200E180F3 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		155259A826010B3200E180F3 /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
 		155259B726010C2000E180F3 /* UIAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
+		15525A182601F05500E180F3 /* AlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		19B3B6840DCBFC688F7293043B2A93B1 /* AppState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		1B4A7277390D022C0A1659F78E7F2FD8 /* PrimerSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PrimerSDK.debug.xcconfig; sourceTree = "<group>"; };
 		1DF93C73A4D016FD80163AA9B721436B /* ApplePayViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePayViewModel.swift; sourceTree = "<group>"; };
@@ -496,6 +498,7 @@
 		6740EEA4BB927C5FC36FCD9628BE7572 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				15525A182601F05500E180F3 /* AlertController.swift */,
 				D63ADC017319F691339A1243437F5E54 /* Logger.swift */,
 			);
 			name = Helpers;
@@ -1116,6 +1119,7 @@
 				DF19BE010760339AA9A58FBAD52CBC73 /* String+Extensions.swift in Sources */,
 				6FAB43BEF0013BE41C9224E10FF436CD /* String+Localization.swift in Sources */,
 				D4E34A8E608BB8E865DE6708F217FDDB /* StringExtension.swift in Sources */,
+				15525A192601F05500E180F3 /* AlertController.swift in Sources */,
 				634AB57E9CDBAAEE8BAC57326ABC947C /* SuccessMessage.swift in Sources */,
 				13582A4CA50EBFD03D887D86DC604D3E /* SuccessViewController.swift in Sources */,
 				03F85F796460BBC5065AF2D3296AFC19 /* TokenizationService.swift in Sources */,
