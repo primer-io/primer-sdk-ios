@@ -1,0 +1,11 @@
+use_frameworks!
+
+platform :ios, '9.0'
+
+target 'PrimerSDK_Example' do
+  pod 'PrimerSDK', :path => '../'
+
+  target 'PrimerSDK_Tests' do
+    inherit! :search_paths
+  end
+end
