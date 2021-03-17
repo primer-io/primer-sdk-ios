@@ -27,22 +27,6 @@ extension UIViewController {
         }
     }
     
-    func showModal(_ error: Error?) {
-        var alert: UIAlertController
-        
-        if let error = error {
-            alert = UIAlertController(title: "Error!", message: error.localizedDescription, preferredStyle: UIAlertController.Style.alert)
-        } else {
-            alert = UIAlertController(title: "Success!", message: "Purchase completed.", preferredStyle: UIAlertController.Style.alert)
-        }
-        
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: { _ in
-            self.dismiss(animated: true, completion: nil)
-        }))
-        
-        self.present(alert, animated: true, completion: nil)
-    }
-    
     func addLoadingView(_ indicator: UIActivityIndicatorView) {
         indicator.color = .black
         view.addSubview(indicator)

@@ -30,7 +30,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
             
             guard let methodId = viewModel.paymentMethods[indexPath.row].token else { return }
 
-            let alert = UIAlertController(
+            let alert = AlertController(
                 title: "Confirmation",
                 message: "Are you sure you want to delete this payment method?",
                 preferredStyle: .alert
@@ -44,7 +44,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
                 })
             }))
 
-            present(alert, animated: true, completion: nil)
+            alert.show()
         }
     }
 
