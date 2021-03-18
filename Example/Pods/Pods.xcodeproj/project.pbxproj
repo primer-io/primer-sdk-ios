@@ -22,6 +22,10 @@
 		138894A03D4725EAF0864E8BCDBB85D3 /* OAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97BABF3BA9350069D29E6990A82E5F86 /* OAuthViewController.swift */; };
 		157AFEC75C219E26E05C4804E3F52B0F /* VaultPaymentMethodViewController+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EFC5AFAF3C75B867A1E79A96288A154 /* VaultPaymentMethodViewController+TableView.swift */; };
 		15D286F7260394FD0036CACA /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D286F6260394FD0036CACA /* BundleExtension.swift */; };
+		15D2870326039C4C0036CACA /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D2870226039C4C0036CACA /* UIDeviceExtension.swift */; };
+		15D2870926039CB70036CACA /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D2870826039CB70036CACA /* URLExtension.swift */; };
+		15D2871326039D400036CACA /* UserDefaultsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D2871226039D400036CACA /* UserDefaultsExtension.swift */; };
+		15D2871926039E5A0036CACA /* UIScrollViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D2871826039E5A0036CACA /* UIScrollViewExtension.swift */; };
 		1E47BA73EDFEB1402862BB2A7A57D238 /* UXMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCFC9ACAA22E88377E9C63F22A16968 /* UXMode.swift */; };
 		20345FCA4D1439E2689DE2F5CFFC090E /* FormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7992C4E251A62343E93626B09D3664 /* FormViewController.swift */; };
 		22ACF62552972836AB294CA2E18981C8 /* Localizable.strings in Sources */ = {isa = PBXBuildFile; fileRef = DA7FEE6591B1C2F4A7414526CB5280DC /* Localizable.strings */; };
@@ -154,6 +158,10 @@
 		15AB4949DDC949373CAD44D432B9E9CF /* NetworkService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		15C1BE17491FEB98F71C78C45B63FA71 /* TokenizationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
 		15D286F6260394FD0036CACA /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
+		15D2870226039C4C0036CACA /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
+		15D2870826039CB70036CACA /* URLExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
+		15D2871226039D400036CACA /* UserDefaultsExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsExtension.swift; sourceTree = "<group>"; };
+		15D2871826039E5A0036CACA /* UIScrollViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScrollViewExtension.swift; sourceTree = "<group>"; };
 		17F6A8A6A37FA7A0B6899A1CE39CFBCC /* VaultCheckoutViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultCheckoutViewController.swift; sourceTree = "<group>"; };
 		194D47AAEC94A2B4D42B5CADEE419746 /* ImageName.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImageName.swift; sourceTree = "<group>"; };
 		1A945209458AA9058A81CBB5C3CD6C08 /* CardFormView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardFormView.swift; sourceTree = "<group>"; };
@@ -372,6 +380,7 @@
 		36CC8CC20C7C96F7CC1CD83B42B3957D /* Extensions & Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				15D286F6260394FD0036CACA /* BundleExtension.swift */,
 				081BE4F02ECF9ED7B880FF2A9F31C86F /* DateExtension.swift */,
 				911926D5FFB37BACBAA5C0F076D4D730 /* Logger.swift */,
 				5FB2F9C87525F65E8B6C2EAA96FB9B7E /* Mask.swift */,
@@ -379,12 +388,15 @@
 				BEF1F5DC59E8C65C07DAA704D79FEC2A /* PresentationController.swift */,
 				3DFBA777D38DFD12D74F8E74413C179A /* StringExtension.swift */,
 				72157E951ACC3E2EE9DB2262ABE37F52 /* UIButtonExtension.swift */,
+				15D2870226039C4C0036CACA /* UIDeviceExtension.swift */,
 				11675554A89472B38BA379C9AB466B80 /* UITableViewCellExtensions.swift */,
 				A04D5608A70E1A5CB765A2EF6314739A /* UITextFieldExtensions.swift */,
 				5F340D0AB3B518338373D4FA2FE4028D /* UIViewControllerExtensions.swift */,
 				3A1B9835D874DCAC6AD1ADBEF158AD19 /* UIViewExtensions.swift */,
+				15D2870826039CB70036CACA /* URLExtension.swift */,
+				15D2871226039D400036CACA /* UserDefaultsExtension.swift */,
 				AE3B8329C5484E7A75D1DC8C8CCE8FDA /* Validation.swift */,
-				15D286F6260394FD0036CACA /* BundleExtension.swift */,
+				15D2871826039E5A0036CACA /* UIScrollViewExtension.swift */,
 			);
 			path = "Extensions & Utilities";
 			sourceTree = "<group>";
@@ -981,6 +993,7 @@
 				94DD56B5E6BB557D53980DEA025A51E3 /* KlarnaService.swift in Sources */,
 				9AEF0E26004058D19FFCB162452A8A80 /* Localizable.strings in Sources */,
 				A3B9BCEF28CDE75D6D3F18BD279085DA /* Localizable.strings in Sources */,
+				15D2870326039C4C0036CACA /* UIDeviceExtension.swift in Sources */,
 				22ACF62552972836AB294CA2E18981C8 /* Localizable.strings in Sources */,
 				0AE4C99AD386AD85A078DA830904D2B5 /* Logger.swift in Sources */,
 				24731A54A70F5B991E764CA8AE59B496 /* Mask.swift in Sources */,
@@ -994,6 +1007,7 @@
 				393969D2384A941FE3ECF45CE281835B /* PaymentMethod.swift in Sources */,
 				D3EE9BD2FB9577E0622716280321B619 /* PaymentMethodComponent.swift in Sources */,
 				4CA90335789FED5F6CB377679535E32F /* PaymentMethodConfig.swift in Sources */,
+				15D2871926039E5A0036CACA /* UIScrollViewExtension.swift in Sources */,
 				F562B6BE611C539B74AED1DF53091792 /* PaymentMethodConfigService.swift in Sources */,
 				851C4DB8320F55D9924124DFFA508FF8 /* PaymentMethodToken.swift in Sources */,
 				588317E90C3BCC54C4A5008A313D19FC /* PaymentMethodTokenizationRequest.swift in Sources */,
@@ -1006,6 +1020,7 @@
 				90AFB81842990F72D823BFA3A841DF0F /* PrimerAPIError.swift in Sources */,
 				2B2DA286CEF2DE7366313E9764FF9599 /* PrimerContent.swift in Sources */,
 				540216EE8DECC35D75711D82EC7FAF84 /* PrimerDelegate.swift in Sources */,
+				15D2870926039CB70036CACA /* URLExtension.swift in Sources */,
 				4AB48E25BE716DA5488DA013DB51DB8E /* PrimerError.swift in Sources */,
 				07ED108E0D114E0CC4C30EDBFB698D2A /* PrimerSDK-dummy.m in Sources */,
 				81124A04F48D746B825B31D4B1B638F1 /* PrimerSessionFlow.swift in Sources */,
@@ -1031,6 +1046,7 @@
 				1E47BA73EDFEB1402862BB2A7A57D238 /* UXMode.swift in Sources */,
 				F9AB5D764EA1E0FD89A62D9F61CDF507 /* Validation.swift in Sources */,
 				ABAD54C6B3034E42E3C171C247A7949F /* VaultCheckoutView.swift in Sources */,
+				15D2871326039D400036CACA /* UserDefaultsExtension.swift in Sources */,
 				D284DB13E7C13E76294F9C9ECC83A3E2 /* VaultCheckoutViewController+ReloadDelegate.swift in Sources */,
 				DB925B22FAC8BF4313E85989E9167B5E /* VaultCheckoutViewController.swift in Sources */,
 				ED98B50B7B5984ABCF4ECDAF2C24C780 /* VaultCheckoutViewModel.swift in Sources */,
