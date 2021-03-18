@@ -29,7 +29,7 @@ class KlarnaServiceTests: XCTestCase {
         service.createPaymentSession({ result in
             switch result {
             case .failure:
-                XCTAssert(false, "Test should get into the success case.")
+                XCTAssert(false, "Test should not get into the failure case.")
             case .success(let url):
                 XCTAssertEqual(url, response.hppRedirectUrl)
             }
@@ -44,7 +44,7 @@ class KlarnaServiceTests: XCTestCase {
     
     // MARK: createPaymentSession - fail, api exception
     func test_create_order_session_fail_invalid_response() throws {
-        let expectation = XCTestExpectation(description: "Create Klarna payment sesion | Failure")
+        let expectation = XCTestExpectation(description: "Create Klarna payment sesion | Failure: API call failed")
         
         let response = KlarnaCreatePaymentSessionAPIResponse(clientToken: "token", sessionId: "id", categories: [], hppSessionId: "hppSessionId", hppRedirectUrl: "https://primer.io/")
         let data = try JSONEncoder().encode(response)
@@ -58,7 +58,7 @@ class KlarnaServiceTests: XCTestCase {
             case .failure(let err):
                 XCTAssertEqual(err as? KlarnaException, KlarnaException.failedApiCall)
             case .success:
-                XCTAssert(false, "Test should get into the failure case.")
+                XCTAssert(false, "Test should get into the success case.")
             }
             
             expectation.fulfill()
@@ -71,7 +71,7 @@ class KlarnaServiceTests: XCTestCase {
     
     // MARK: createPaymentSession - fail, no client token
     func test_create_order_session_fail_no_client_token() throws {
-        let expectation = XCTestExpectation(description: "Create Klarna payment sesion | Failure")
+        let expectation = XCTestExpectation(description: "Create Klarna payment sesion | Failure: No token")
         
         let state = MockAppState(decodedClientToken: nil)
         DependencyContainer.register(state as AppStateProtocol)
@@ -91,6 +91,7 @@ class KlarnaServiceTests: XCTestCase {
             expectation.fulfill()
         })
         
+        // Since no token is found, API call shouldn't be performed.
         XCTAssertEqual(api.isCalled, false)
         
         wait(for: [expectation], timeout: 10.0)
