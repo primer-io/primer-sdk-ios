@@ -11,7 +11,7 @@ import XCTest
 class PayPalServiceTests: XCTestCase {
     
     // MARK: startOrderSession
-    func test_startOrderSession_calls_api_post() throws {
+    func test_startOrderSession_calls_api() throws {
         let expectation = XCTestExpectation(description: "Create PayPal payment sesion | Success")
         
         let response = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: "primer.io")
@@ -104,7 +104,7 @@ class PayPalServiceTests: XCTestCase {
     }
     
     // MARK: startBillingAgreementSession
-    func test_startBillingAgreementSession_calls_api_post() throws {
+    func test_startBillingAgreementSession_calls_api() throws {
         let expectation = XCTestExpectation(description: "Create PayPal billing agreement | Success")
         
         let response = PayPalCreateBillingAgreementResponse(tokenId: "tid", approvalUrl: "https://primer.io")
