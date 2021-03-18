@@ -110,7 +110,7 @@ extension String {
         return NSLocalizedString(
             self,
             tableName: "Localizable",
-            bundle: .main,
+            bundle: Bundle.primerFramework,
             value: self,
             comment: comment ?? self
         )
