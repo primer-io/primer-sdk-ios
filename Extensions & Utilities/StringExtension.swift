@@ -9,6 +9,14 @@ import Foundation
 
 extension String {
     
+    var withoutWhiteSpace: String {
+        return self.filter { !$0.isWhitespace }
+    }
+    
+    var isNotValidIBAN: Bool {
+        return self.withoutWhiteSpace.count < 6
+    }
+    
     var urlEscaped: String? {
         return addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
     }
@@ -96,6 +104,16 @@ extension String {
             mutableAttString.addAttributes(value, range: range)
         }
         return mutableAttString
+    }
+    
+    func localized(comment: String? = nil) -> String {
+        return NSLocalizedString(
+            self,
+            tableName: "Localizable",
+            bundle: .main,
+            value: self,
+            comment: comment ?? self
+        )
     }
     
 }
