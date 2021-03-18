@@ -26,13 +26,13 @@ public class Primer {
      
      - Version: 1.2.2
      */
-    public init(with settings: PrimerSettings) {
-        setDependencies(settings: settings)
-    }
-    
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
         if clearOnDestroy { clearDependencies() }
+    }
+    
+    public init(with settings: PrimerSettings) {
+        setDependencies(settings: settings)
     }
     
     /**
