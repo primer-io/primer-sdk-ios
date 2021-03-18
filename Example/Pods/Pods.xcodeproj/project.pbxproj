@@ -389,6 +389,7 @@
 				3DFBA777D38DFD12D74F8E74413C179A /* StringExtension.swift */,
 				72157E951ACC3E2EE9DB2262ABE37F52 /* UIButtonExtension.swift */,
 				15D2870226039C4C0036CACA /* UIDeviceExtension.swift */,
+				15D2871826039E5A0036CACA /* UIScrollViewExtension.swift */,
 				11675554A89472B38BA379C9AB466B80 /* UITableViewCellExtensions.swift */,
 				A04D5608A70E1A5CB765A2EF6314739A /* UITextFieldExtensions.swift */,
 				5F340D0AB3B518338373D4FA2FE4028D /* UIViewControllerExtensions.swift */,
@@ -396,7 +397,6 @@
 				15D2870826039CB70036CACA /* URLExtension.swift */,
 				15D2871226039D400036CACA /* UserDefaultsExtension.swift */,
 				AE3B8329C5484E7A75D1DC8C8CCE8FDA /* Validation.swift */,
-				15D2871826039E5A0036CACA /* UIScrollViewExtension.swift */,
 			);
 			path = "Extensions & Utilities";
 			sourceTree = "<group>";
