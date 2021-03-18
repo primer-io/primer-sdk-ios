@@ -29,6 +29,7 @@ class FormView: UIView {
     let contentView = UIScrollView()
     
     var textFields: [[UITextField]] = []
+    var countryPickerTextField: PrimerTextField?
     var validatedFields: [[Bool]] = []
     
     let countries = CountryCode.all
@@ -120,7 +121,7 @@ extension FormView: UIPickerViewDataSource, UIPickerViewDelegate {
         let textFieldColumn: Int = pickerView.tag % 10
         let textFieldRow: Int = (pickerView.tag - textFieldColumn) / 10
         textFields[textFieldRow][textFieldColumn].text = countries[row].rawValue
-        textFields[textFieldRow][textFieldColumn].resignFirstResponder()
+//        textFields[textFieldRow][textFieldColumn].resignFirstResponder()
     }
 }
 
@@ -166,8 +167,20 @@ extension FormView {
         navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     }
     
-    @objc private func back() {
+    @objc
+    private func back() {
         delegate?.back()
+    }
+    
+    @objc
+    func toolbarCancelButtonTapped(_ sender: UIBarButtonItem) {
+        countryPickerTextField?.text = nil
+        countryPickerTextField?.resignFirstResponder()
+    }
+    
+    @objc
+    func toolbarSubmitButtonTapped(_ sender: UIBarButtonItem) {
+        countryPickerTextField?.resignFirstResponder()
     }
     
     private func configureTitle() {
@@ -205,19 +218,33 @@ extension FormView {
         // accessbility identifier
         
         switch model {
-        case .cardholderName: textField.accessibilityIdentifier = "nameField"
-        case .cardNumber: textField.accessibilityIdentifier = "cardField"
-        case .expiryDate: textField.accessibilityIdentifier = "expiryField"
-        case .cvc: textField.accessibilityIdentifier = "cvcField"
-        case .addressLine1: textField.accessibilityIdentifier = "addressLine1Field"
-        case .addressLine2: textField.accessibilityIdentifier = "addressLine2Field"
-        case .firstName: textField.accessibilityIdentifier = "firstNameField"
-        case .lastName: textField.accessibilityIdentifier = "lastNameField"
-        case .city: textField.accessibilityIdentifier = "cityField"
-        case .country: textField.accessibilityIdentifier = "countryField"
-        case .postalCode: textField.accessibilityIdentifier = "postalCodeField"
-        case .email: textField.accessibilityIdentifier = "emailField"
-        case .iban: textField.accessibilityIdentifier = "ibanField"
+        case .cardholderName:
+            textField.accessibilityIdentifier = "nameField"
+        case .cardNumber:
+            textField.accessibilityIdentifier = "cardField"
+        case .expiryDate:
+            textField.accessibilityIdentifier = "expiryField"
+        case .cvc:
+            textField.accessibilityIdentifier = "cvcField"
+        case .addressLine1:
+            textField.accessibilityIdentifier = "addressLine1Field"
+        case .addressLine2:
+            textField.accessibilityIdentifier = "addressLine2Field"
+        case .firstName:
+            textField.accessibilityIdentifier = "firstNameField"
+        case .lastName:
+            textField.accessibilityIdentifier = "lastNameField"
+        case .city:
+            textField.accessibilityIdentifier = "cityField"
+        case .country:
+            textField.accessibilityIdentifier = "countryField"
+            countryPickerTextField = textField
+        case .postalCode:
+            textField.accessibilityIdentifier = "postalCodeField"
+        case .email:
+            textField.accessibilityIdentifier = "emailField"
+        case .iban:
+            textField.accessibilityIdentifier = "ibanField"
         default:
             break
         }
@@ -232,7 +259,16 @@ extension FormView {
             countryPickerView.tag = textField.tag
             countryPickerView.delegate = self
             countryPickerView.dataSource = self
-        default: break
+            
+            let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+            let cancelBarButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(toolbarCancelButtonTapped(_:)))
+            let flexWidth = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            let submitButton = UIBarButtonItem(title: "Submit", style: .done, target: self, action: #selector(toolbarSubmitButtonTapped(_:)))
+            toolbar.items = [cancelBarButton, flexWidth, submitButton]
+            textField.inputAccessoryView = toolbar
+            
+        default:
+            break
         }
         
         textField.text = delegate.formType.textFields[row][column].initialValue
