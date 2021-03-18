@@ -19,6 +19,7 @@
 		13582A4CA50EBFD03D887D86DC604D3E /* SuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEF8FF844432087B298E2A3C44338EA /* SuccessViewController.swift */; };
 		1409DA75C26BA70F7B65C5F0CD21D2BF /* FormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0600C978273FB44B737CB432A614001 /* FormView.swift */; };
 		15525A3126022C5200E180F3 /* PrimerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15525A3026022C5200E180F3 /* PrimerDelegate.swift */; };
+		15525ABC2603448400E180F3 /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15525ABB2603448400E180F3 /* UIButtonExtension.swift */; };
 		15770F5F589FAFE38D56518B76888DE9 /* CountryCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 624F4E1D623540ED76B50D9BE131BF3F /* CountryCode.swift */; };
 		16D94678DE1920B6E17527281F9CB23A /* ApplePay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2002F8927F12A15A280FF35F453CC095 /* ApplePay.swift */; };
 		16E347ECB734C4F5128F4BD779A20F59 /* CardFormViewController+CardScannerViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D3137BF546015A824F63FAF3C11B6C8 /* CardFormViewController+CardScannerViewControllerDelegate.swift */; };
@@ -83,7 +84,6 @@
 		95C8DAC16162EA4D1782ACB8CB440C90 /* PrimerSDK-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DF84E6A07CD8CF79199939E7454BB615 /* PrimerSDK-dummy.m */; };
 		98C2BC28355140BA21355CE876774A31 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		995659215CAD9C1F069778B7E05D47E0 /* PrimerSDK-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = C9D6EF83807CF3A1F5C9CE698CA88650 /* PrimerSDK-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9F50C087556306C29DB4796C323DE214 /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105FAFDEA00556F653679E56004F5188 /* UIButtonExtension.swift */; };
 		A4A1AE5442B11F0EE787F1D3AC6C24E7 /* Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E214B403D06E835E9E6ED60A38AB01BB /* Primer.swift */; };
 		A5FD0F95B6C7F48D8B919FF0B0E4039A /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812634B7DFD24E38665FAB2D7F3DE47B /* Endpoint.swift */; };
 		A8AF02267FB518CBEAEC004CC32CBD9D /* CardFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3066DEC0F3A69A66B1FD1F83BFC08B /* CardFormViewModel.swift */; };
@@ -149,8 +149,8 @@
 		0768349103D6F57CAD6122D7812F0770 /* VaultService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultService.swift; sourceTree = "<group>"; };
 		0C85C006C0CFC12B346503CB5D186245 /* FormViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormViewModel.swift; sourceTree = "<group>"; };
 		0D34D1F6EDC8908CA2C71CBDCE0E31D2 /* Validation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Validation.swift; sourceTree = "<group>"; };
-		105FAFDEA00556F653679E56004F5188 /* UIButtonExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UIButtonExtension.swift; sourceTree = "<group>"; };
 		15525A3026022C5200E180F3 /* PrimerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PrimerDelegate.swift; path = ../Core/Delegates/PrimerDelegate.swift; sourceTree = "<group>"; };
+		15525ABB2603448400E180F3 /* UIButtonExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonExtension.swift; sourceTree = "<group>"; };
 		19B3B6840DCBFC688F7293043B2A93B1 /* AppState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		1B4A7277390D022C0A1659F78E7F2FD8 /* PrimerSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PrimerSDK.debug.xcconfig; sourceTree = "<group>"; };
 		1DF93C73A4D016FD80163AA9B721436B /* ApplePayViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePayViewModel.swift; sourceTree = "<group>"; };
@@ -349,6 +349,7 @@
 				15525A3026022C5200E180F3 /* PrimerDelegate.swift */,
 				1E646282DAAF8499270F90F85C23DF88 /* DateExtension.swift */,
 				2C57B99EBCBACF0F47BCAE30E5F77BB6 /* StringExtension.swift */,
+				15525ABB2603448400E180F3 /* UIButtonExtension.swift */,
 			);
 			name = Extensions;
 			path = PrimerSDK/Classes/Extensions;
@@ -612,7 +613,6 @@
 			isa = PBXGroup;
 			children = (
 				7EC854A62B1E648F04BCE25D57A5730B /* PresentationController.swift */,
-				105FAFDEA00556F653679E56004F5188 /* UIButtonExtension.swift */,
 				24181EEB4DE660F307D03BB898C78790 /* UITableViewCellExtensions.swift */,
 				DE647A0588C1EAF7385DE54EAD658EE8 /* UITextFieldExtensions.swift */,
 				DCF623CC014B43724E2C234C4B123C65 /* UIViewControllerExtensions.swift */,
@@ -1047,6 +1047,7 @@
 				15770F5F589FAFE38D56518B76888DE9 /* CountryCode.swift in Sources */,
 				912AB4A1231ECFFEC75B5A62B1D4FBF2 /* Currency.swift in Sources */,
 				D97A5F7353AF2AAFC92479F489F26C6B /* DateExtension.swift in Sources */,
+				15525ABC2603448400E180F3 /* UIButtonExtension.swift in Sources */,
 				F1AE0292BECC18378113FB5B519429BB /* DependencyInjection.swift in Sources */,
 				03A9743A4BE36F4470E139FAB75D1113 /* DirectCheckoutViewModel.swift in Sources */,
 				E3DB2BE658C9EB0AB1A1FDC5722482F7 /* DirectDebitMandate.swift in Sources */,
@@ -1107,7 +1108,6 @@
 				13582A4CA50EBFD03D887D86DC604D3E /* SuccessViewController.swift in Sources */,
 				03F85F796460BBC5065AF2D3296AFC19 /* TokenizationService.swift in Sources */,
 				89013A0EC9C47491565E5ECE8790A2CA /* TransitioningDelegate.swift in Sources */,
-				9F50C087556306C29DB4796C323DE214 /* UIButtonExtension.swift in Sources */,
 				92746FD45662E6C394EEA18DEC9EC1BB /* UITableViewCellExtensions.swift in Sources */,
 				DACCD16E8C384D3622805D5472755EF7 /* UITextFieldExtensions.swift in Sources */,
 				C1F7632F63AA5790B277D74424EB2B2A /* UIViewControllerExtensions.swift in Sources */,
