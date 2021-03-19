@@ -31,6 +31,7 @@ class CardFormViewModel: CardFormViewModelProtocol {
         }
     }
     
+    // FIXME: Is this called only by the unit tests?
     func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
         let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
         self.tokenizationService.tokenize(request: request) { [weak self] result in

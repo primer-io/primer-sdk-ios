@@ -7,6 +7,7 @@
 
 import UIKit
 
+// FIXME: Unused?
 class PaymentMethodComponent: UIView {
     
     @Dependency private(set) var theme: PrimerThemeProtocol

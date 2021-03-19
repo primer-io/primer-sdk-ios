@@ -7,6 +7,7 @@
 
 import UIKit
 
+// FIXME: Unused?
 class SingleCardIconComponent: UIView {
     
     let iconView: UIImageView

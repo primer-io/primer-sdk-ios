@@ -7,6 +7,7 @@
 
 import UIKit
 
+// FIXME: Unused?
 class MultiCardIconComponent: UIView {
     
     let visaIconView = UIImageView(image: ImageName.visa.image)
