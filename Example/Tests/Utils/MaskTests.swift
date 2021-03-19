@@ -11,7 +11,6 @@ import XCTest
 class MaskTests: XCTestCase {
     
     func test_card_number_formats_correctly() throws {
-        
         let numberMask = Mask(pattern: "#### #### #### #### ###")
         let text = numberMask.apply(on: "4242424242424242")
         
@@ -19,7 +18,6 @@ class MaskTests: XCTestCase {
     }
     
     func test_card_number_formats_length_correctly() throws {
-        
         let numberMask = Mask(pattern: "#### #### #### #### ###")
         let text = numberMask.apply(on: "424242424242424242444")
         
@@ -27,7 +25,6 @@ class MaskTests: XCTestCase {
     }
     
     func test_card_number_formats_only_digits() throws {
-        
         let numberMask = Mask(pattern: "#### #### #### #### ###")
         let text = numberMask.apply(on: "bla")
         
@@ -35,7 +32,6 @@ class MaskTests: XCTestCase {
     }
     
     func test_date_formats_correctly() throws {
-        
         let numberMask = Mask(pattern: "##/##")
         let text = numberMask.apply(on: "1223")
         
@@ -43,7 +39,6 @@ class MaskTests: XCTestCase {
     }
     
     func test_date_formats_length_correctly() throws {
-        
         let numberMask = Mask(pattern: "##/##")
         let text = numberMask.apply(on: "122333333")
         
@@ -51,7 +46,6 @@ class MaskTests: XCTestCase {
     }
     
     func test_date_formats_only_digits() throws {
-        
         let numberMask = Mask(pattern: "##/##")
         let text = numberMask.apply(on: "bla")
         
