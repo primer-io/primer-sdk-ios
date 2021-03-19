@@ -156,7 +156,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     let response: Data?
     let throwsError: Bool
-    var postCalled = false
+    var isCalled: Bool = false
 
     init(with response: Data? = nil, throwsError: Bool = false) {
         self.response = response
@@ -164,6 +164,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func vaultFetchPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (Result<GetVaultedPaymentMethodsResponse, Error>) -> Void) {
+        isCalled = true
         guard let response = response else { return }
         
         do {
@@ -175,6 +176,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func vaultDeletePaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (Result<Data, Error>) -> Void) {
+        isCalled = true
         guard let response = response else { return }
         
         do {
@@ -186,6 +188,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (Result<PaymentMethodConfig, Error>) -> Void) {
+        isCalled = true
         guard let response = response else { return }
         
         do {
@@ -197,6 +200,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func directDebitCreateMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (Result<DirectDebitCreateMandateResponse, Error>) -> Void) {
+        isCalled = true
         guard let response = response else { return }
         
         do {
@@ -208,6 +212,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func payPalStartOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
+        isCalled = true
         guard let response = response else { return }
         
         do {
@@ -219,6 +224,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func payPalStartBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (Result<PayPalCreateBillingAgreementResponse, Error>) -> Void) {
+        isCalled = true
         guard let response = response else { return }
         
         do {
@@ -230,6 +236,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func payPalConfirmBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
+        isCalled = true
         guard let response = response else { return }
         
         do {
@@ -241,6 +248,12 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func klarnaCreatePaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void) {
+        isCalled = true
+        
+        guard throwsError == false else {
+            completion(.failure(KlarnaException.failedApiCall))
+            return
+        }
         guard let response = response else { return }
         
         do {
@@ -252,6 +265,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void) {
+        isCalled = true
         guard let response = response else { return }
         
         do {
@@ -263,6 +277,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+        isCalled = true
         guard let response = response else { return }
         
         do {
