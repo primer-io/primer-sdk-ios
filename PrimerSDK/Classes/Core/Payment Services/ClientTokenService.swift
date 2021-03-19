@@ -22,26 +22,3 @@ class ClientTokenService: ClientTokenServiceProtocol {
     }
     
 }
-
-extension String {
-    func decodeClientTokenBase64() -> DecodedClientToken {
-        let bytes = self.components(separatedBy: ".")
-        for element in bytes {
-            // decode element, add necessary padding to base64 to ensure it's a multiple of 4 (required by Swift foundation)
-            if let decodedData = Data(base64Encoded: element.padding(toLength: ((element.count + 3) / 4) * 4, withPad: "=", startingAt: 0)) {
-                let decodedString = String(data: decodedData, encoding: .utf8)!
-                if (decodedString.contains("\"accessToken\":")) {
-                    do {
-                        print(decodedString)
-                        let token = try JSONDecoder().decode(DecodedClientToken.self, from: decodedData)
-                        return token
-                    } catch {
-                        print("error!")
-                    }
-                }
-            }
-            
-        }
-        return DecodedClientToken()
-    }
-}
