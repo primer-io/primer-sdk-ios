@@ -353,23 +353,23 @@
 		1550C2C32604AE05001EF655 /* Extensions & Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				1550C2C42604AE05001EF655 /* UIButtonExtension.swift */,
-				1550C2C52604AE05001EF655 /* PresentationController.swift */,
-				1550C2C62604AE05001EF655 /* UITextFieldExtensions.swift */,
-				1550C2C72604AE05001EF655 /* Logger.swift */,
 				1550C2C82604AE05001EF655 /* BundleExtension.swift */,
-				1550C2C92604AE05001EF655 /* UITableViewCellExtensions.swift */,
-				1550C2CA2604AE05001EF655 /* URLExtension.swift */,
-				1550C2CB2604AE05001EF655 /* Validation.swift */,
-				1550C2CC2604AE05001EF655 /* Mask.swift */,
-				1550C2CD2604AE05001EF655 /* UIViewControllerExtensions.swift */,
-				1550C2CE2604AE05001EF655 /* UIDeviceExtension.swift */,
-				1550C2CF2604AE05001EF655 /* UIViewExtensions.swift */,
-				1550C2D02604AE05001EF655 /* Optional+Extensions.swift */,
-				1550C2D12604AE05001EF655 /* StringExtension.swift */,
-				1550C2D22604AE05001EF655 /* UIScrollViewExtension.swift */,
-				1550C2D32604AE05001EF655 /* UserDefaultsExtension.swift */,
 				1550C2D42604AE05001EF655 /* DateExtension.swift */,
+				1550C2C72604AE05001EF655 /* Logger.swift */,
+				1550C2CC2604AE05001EF655 /* Mask.swift */,
+				1550C2D02604AE05001EF655 /* Optional+Extensions.swift */,
+				1550C2C52604AE05001EF655 /* PresentationController.swift */,
+				1550C2D12604AE05001EF655 /* StringExtension.swift */,
+				1550C2C42604AE05001EF655 /* UIButtonExtension.swift */,
+				1550C2CE2604AE05001EF655 /* UIDeviceExtension.swift */,
+				1550C2D22604AE05001EF655 /* UIScrollViewExtension.swift */,
+				1550C2C92604AE05001EF655 /* UITableViewCellExtensions.swift */,
+				1550C2C62604AE05001EF655 /* UITextFieldExtensions.swift */,
+				1550C2CD2604AE05001EF655 /* UIViewControllerExtensions.swift */,
+				1550C2CF2604AE05001EF655 /* UIViewExtensions.swift */,
+				1550C2CA2604AE05001EF655 /* URLExtension.swift */,
+				1550C2D32604AE05001EF655 /* UserDefaultsExtension.swift */,
+				1550C2CB2604AE05001EF655 /* Validation.swift */,
 			);
 			name = "Extensions & Utilities";
 			path = "PrimerSDK/Classes/Extensions & Utilities";
@@ -417,7 +417,6 @@
 			isa = PBXGroup;
 			children = (
 				25EEE7D2E106CAF9476CC8254C9F5FEF /* CardButton.swift */,
-				8BD23FEDF9039D825AFA153C9EA45F8D /* DirectCheckoutViewModel.swift */,
 				DBAD0E6C736A9EC9B8A318C11F923147 /* ExternalViewModel.swift */,
 				FA1142C6BDA2862D18F25662BB104997 /* MultiCardIconComponent.swift */,
 				2ABA3E5FEA4D1F2F5E67F23E40A9C244 /* PaymentMethodComponent.swift */,
@@ -597,6 +596,7 @@
 		B52B831F4B1C603FA812081C9A665B0B /* Checkout */ = {
 			isa = PBXGroup;
 			children = (
+				8BD23FEDF9039D825AFA153C9EA45F8D /* DirectCheckoutViewModel.swift */,
 				6B4851432322FC1139E72A6C2D6096A2 /* VaultCheckoutView.swift */,
 				83BE411C5A0EA65227D0289293560804 /* VaultCheckoutViewController.swift */,
 				73BBA482CF65427952CB8354741927C6 /* VaultCheckoutViewController+ReloadDelegate.swift */,
