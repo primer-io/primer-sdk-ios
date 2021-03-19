@@ -20,6 +20,7 @@
 		119C4023484EFE1EB2B270305FD3A6D1 /* PrimerTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F014B64C059EE144E5C0D8A58EA1207 /* PrimerTheme.swift */; };
 		12FD41D4323C47002FC1F9849C6D681D /* DependencyInjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732B25B1F6510836E18000C01BDB19DE /* DependencyInjection.swift */; };
 		138894A03D4725EAF0864E8BCDBB85D3 /* OAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97BABF3BA9350069D29E6990A82E5F86 /* OAuthViewController.swift */; };
+		1550C2A426049359001EF655 /* Consolable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1550C2A326049359001EF655 /* Consolable.swift */; };
 		157AFEC75C219E26E05C4804E3F52B0F /* VaultPaymentMethodViewController+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EFC5AFAF3C75B867A1E79A96288A154 /* VaultPaymentMethodViewController+TableView.swift */; };
 		15D286F7260394FD0036CACA /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D286F6260394FD0036CACA /* BundleExtension.swift */; };
 		15D2870326039C4C0036CACA /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D2870226039C4C0036CACA /* UIDeviceExtension.swift */; };
@@ -155,6 +156,7 @@
 		118AAD4F1D9819E2D9825DC8DEB1F8C7 /* ErrorViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ErrorViewController.swift; sourceTree = "<group>"; };
 		13B313A612FC1A3F5A3C20241B9A1F55 /* DirectDebitService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DirectDebitService.swift; sourceTree = "<group>"; };
 		13E427FD0E16D3A9ED4B4436FFA08FE0 /* PaymentMethodComponent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodComponent.swift; sourceTree = "<group>"; };
+		1550C2A326049359001EF655 /* Consolable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Consolable.swift; sourceTree = "<group>"; };
 		15AB4949DDC949373CAD44D432B9E9CF /* NetworkService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		15C1BE17491FEB98F71C78C45B63FA71 /* TokenizationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
 		15D286F6260394FD0036CACA /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
@@ -469,6 +471,7 @@
 				3420A17CBDD0D2809BDDC373C236DB9A /* SuccessMessage.swift */,
 				9FCFC9ACAA22E88377E9C63F22A16968 /* UXMode.swift */,
 				939B43BB2B8579D0C7BD42CA376A6883 /* PCI */,
+				1550C2A326049359001EF655 /* Consolable.swift */,
 			);
 			name = "Data Models";
 			path = "PrimerSDK/Classes/Data Models";
@@ -1023,6 +1026,7 @@
 				15D2870926039CB70036CACA /* URLExtension.swift in Sources */,
 				4AB48E25BE716DA5488DA013DB51DB8E /* PrimerError.swift in Sources */,
 				07ED108E0D114E0CC4C30EDBFB698D2A /* PrimerSDK-dummy.m in Sources */,
+				1550C2A426049359001EF655 /* Consolable.swift in Sources */,
 				81124A04F48D746B825B31D4B1B638F1 /* PrimerSessionFlow.swift in Sources */,
 				317242A35F9E9654C2E17EB981F4199D /* PrimerSettings.swift in Sources */,
 				119C4023484EFE1EB2B270305FD3A6D1 /* PrimerTheme.swift in Sources */,
