@@ -116,5 +116,10 @@ extension String {
         )
     }
     
+    var isValidAccountNumber: Bool {
+        print(!self.isEmpty)
+        return !self.isEmpty
+    }
+    
 }
 

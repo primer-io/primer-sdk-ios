@@ -136,7 +136,8 @@ class KlarnaService: KlarnaServiceProtocol {
 
         api.klarnaCreatePaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
             switch result {
-            case .failure: completion(.failure(KlarnaException.failedApiCall))
+            case .failure:
+                completion(.failure(KlarnaException.failedApiCall))
             case .success(let response):
                 log(logLevel: .info, message: "\(response)", className: "KlarnaService", function: "createPaymentSession", line: 80)
                 self?.state.sessionId = response.sessionId
