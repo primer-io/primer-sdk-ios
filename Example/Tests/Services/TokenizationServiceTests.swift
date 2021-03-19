@@ -10,11 +10,11 @@ import XCTest
 
 class TokenizationServiceTests: XCTestCase {
     
-    func test_tokenize_calls_api_post() throws {
+    func test_tokenize_calls_api() throws {
+        let expectation = XCTestExpectation(description: "Create PayPal payment sesion | Success")
         
-        let token = PaymentMethodToken(token: "token", paymentInstrumentType: .PAYMENT_CARD, vaultData: VaultData(customerId: "customerId"))
-        var newToken = PaymentMethodToken(token: "", paymentInstrumentType: .UNKNOWN, vaultData: VaultData(customerId: ""))
-        let data = try JSONEncoder().encode(token)
+        let mockedToken = PaymentMethodToken(token: "token", paymentInstrumentType: .PAYMENT_CARD, vaultData: VaultData(customerId: "customerId"))
+        let data = try JSONEncoder().encode(mockedToken)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState()
         
@@ -28,13 +28,18 @@ class TokenizationServiceTests: XCTestCase {
         
         service.tokenize(request: request) { result in
             switch result {
-            case .failure: print("error")
-            case .success(let token): newToken.token = token.token
+            case .failure:
+                XCTAssert(false, "Test should not get into the failure case.")
+            case .success(let token):
+                XCTAssertEqual(mockedToken.token, token.token)
             }
+            
+            expectation.fulfill()
         }
         
-        XCTAssertEqual(api.postCalled, true)
-        XCTAssertEqual(newToken.token, token.token)
+        XCTAssertEqual(api.isCalled, true)
+        
+        wait(for: [expectation], timeout: 10.0)
     }
     
 }

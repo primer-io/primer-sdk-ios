@@ -10,10 +10,6 @@ import XCTest
 
 class VaultCheckoutViewModelTests: XCTestCase {
 
-    override func setUpWithError() throws {}
-
-    override func tearDownWithError() throws {}
-
     func test_loadConfig_calls_clientTokenService_if_client_token_nil() throws {
         let clientTokenService = MockClientTokenService()
         let state = MockAppState(decodedClientToken: nil)
