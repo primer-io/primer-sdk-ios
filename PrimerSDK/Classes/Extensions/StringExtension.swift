@@ -98,5 +98,10 @@ extension String {
         return mutableAttString
     }
     
+    var isValidAccountNumber: Bool {
+        print(!self.isEmpty)
+        return !self.isEmpty
+    }
+    
 }
 
