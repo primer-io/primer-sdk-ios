@@ -10,7 +10,7 @@ import Foundation
 extension String {
     
     var withoutWhiteSpace: String {
-        return self.trimmingCharacters(in: .whitespaces)
+        return self.replacingOccurrences(of: " ", with: "")
     }
     
     var isNotValidIBAN: Bool {
