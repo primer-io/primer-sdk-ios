@@ -17,7 +17,7 @@ class VaultService: VaultServiceProtocol {
         
         api.vaultFetchPaymentMethods(clientToken: clientToken) { [weak self] (result) in
             switch result {
-            case .failure(let err):
+            case .failure:
                 completion(PrimerError.VaultFetchFailed)
             case .success(let paymentMethods):
                 print("Response: \(paymentMethods)")

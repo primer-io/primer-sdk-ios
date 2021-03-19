@@ -182,7 +182,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host)")
+        log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
         // here we handle internally the callback url and call method that call handleOpenURL (not app scheme used)
         if let url = navigationAction.request.url, url.host == "primer.io" || url.host == "api.playground.klarna.com"{
             //                if self.codeCheck == false {
@@ -200,7 +200,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             
             state.authorizationToken = val
             
-            log(logLevel: .info, message: "🚀🚀🚀 \(state.authorizationToken)")
+            log(logLevel: .info, message: "🚀🚀🚀 \(state.authorizationToken ?? "n/a")")
             
             decisionHandler(.cancel)
             
