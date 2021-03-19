@@ -1,6 +1,23 @@
+//
+//  UIButtonExtension.swift
+//  PrimerSDK
+//
+//  Created by Evangelos Pittas on 18/3/21.
+//
+
 import UIKit
 
 extension UIButton {
+    
+    func setBusy(theme: PrimerThemeProtocol) {
+        let indicator = UIActivityIndicatorView()
+        self.setTitle("", for: .normal)
+        self.addSubview(indicator)
+        indicator.pin(to: self)
+        indicator.color = theme.colorTheme.text2
+        indicator.startAnimating()
+    }
+    
     func showSpinner(_ color: UIColor = .white) {
         self.isUserInteractionEnabled = false
         self.setTitle("", for: .normal)
@@ -24,4 +41,5 @@ extension UIButton {
         self.backgroundColor = isValid ? validColor : defaultColor
         self.isEnabled = isValid
     }
+    
 }
