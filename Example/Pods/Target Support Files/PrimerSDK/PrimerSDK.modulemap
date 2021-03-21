@@ -1,0 +1,6 @@
+framework module PrimerSDK {
+  umbrella header "PrimerSDK-umbrella.h"
+
+  export *
+  module * { export * }
+}
