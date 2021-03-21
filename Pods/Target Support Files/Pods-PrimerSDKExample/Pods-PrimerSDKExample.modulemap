@@ -1,6 +1,0 @@
-module Pods_PrimerSDKExample {
-  umbrella header "Pods-PrimerSDKExample-umbrella.h"
-
-  export *
-  module * { export * }
-}
