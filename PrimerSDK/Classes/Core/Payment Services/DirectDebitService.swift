@@ -60,6 +60,7 @@ struct DirectDebitCreateMandateRequest: Codable {
     let id: String
     let userDetails: UserDetails
     let bankDetails: BankDetails
+    var path: String = "/gocardless/mandates"
 }
 
 struct UserDetails: Codable {
