@@ -3,10 +3,6 @@ import AuthenticationServices
 import SafariServices
 import WebKit
 
-enum OAuthError: Error {
-    case invalidURL
-}
-
 @available(iOS 11.0, *)
 class OAuthViewController: UIViewController {
     
@@ -28,7 +24,7 @@ class OAuthViewController: UIViewController {
     }
     
     deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+        log(logLevel: .verbose, message: "🧨 destroyed: \(self.self)")
     }
     
     override func viewDidLoad() {
@@ -43,7 +39,13 @@ class OAuthViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         viewModel.generateOAuthURL(host, with: { [weak self] result in
             switch result {
-            case .failure(let error): print(error)
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                let alert = AlertController(title: "ERROR!", message: error.localizedDescription, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
+                    self?.dismiss(animated: true, completion: nil)
+                }))
+                alert.show()
             case .success(let urlString):
                 DispatchQueue.main.async {
                     // if klarna show webview, otherwise oauth
@@ -81,6 +83,10 @@ class OAuthViewController: UIViewController {
             url: authURL,
             callbackURLScheme: "https://primer.io/",
             completionHandler: { [weak self] (url, error) in
+                if let error = error {
+                    ErrorHandler.shared.handle(error: error)
+                }
+                
                 if (error is PrimerError) {
                     self?.router.show(.error())
                 } else if (error.exists) {
@@ -136,7 +142,6 @@ extension OAuthViewController: ASWebAuthenticationPresentationContextProviding {
 @available(iOS 11.0, *)
 extension OAuthViewController: ReloadDelegate {
     func reload() {
-        print("🔥🔥🔥🔥🔥")
         viewModel.tokenize(host, with: { [weak self] error in
             DispatchQueue.main.async {
                 error.exists ? self?.router.show(.error()) : self?.router.show(.success(type: .regular))

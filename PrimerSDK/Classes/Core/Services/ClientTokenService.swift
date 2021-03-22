@@ -14,7 +14,9 @@ class ClientTokenService: ClientTokenServiceProtocol {
             switch result {
             case .failure: completion(PrimerError.ClientTokenNull)
             case .success(let token):
-                guard let clientToken = token.clientToken else { return completion(PrimerError.ClientTokenNull) }
+                guard let clientToken = token.clientToken else {
+                    return completion(PrimerError.ClientTokenNull)
+                }
                 self?.state.decodedClientToken = clientToken.decodeClientTokenBase64()
                 completion(nil)
             }
@@ -32,11 +34,11 @@ extension String {
                 let decodedString = String(data: decodedData, encoding: .utf8)!
                 if (decodedString.contains("\"accessToken\":")) {
                     do {
-                        print(decodedString)
+                        log(logLevel: .info, title: nil, message: "Decoded string: \(decodedString)", prefix: nil, suffix: nil, bundle: Bundle.self.description(), file: #file, className: String(describing: Self.self), function: #function, line: #line)
                         let token = try JSONDecoder().decode(DecodedClientToken.self, from: decodedData)
                         return token
                     } catch {
-                        print("error!")
+                        _ = ErrorHandler.shared.handle(error: error)
                     }
                 }
             }
