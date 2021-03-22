@@ -7,12 +7,6 @@
 
 import Foundation
 
-enum APIError: Error {
-    case nullResponse
-    case statusError
-    case postError
-}
-
 enum PrimerAPI: Endpoint {
     case directDebitCreateMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
     case vaultFetchPaymentMethods(clientToken: DecodedClientToken)

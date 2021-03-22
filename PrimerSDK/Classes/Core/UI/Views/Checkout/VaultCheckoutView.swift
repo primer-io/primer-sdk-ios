@@ -255,7 +255,7 @@ extension VaultCheckoutView {
     
     @objc private func onTap(sender: UIButton) {
         payButton.isEnabled = false
-        print("paying!")
+        log(logLevel: .verbose, title: nil, message: "Paying", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         payButton.showSpinner()
         delegate?.pay()
     }

@@ -90,7 +90,7 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
         viewModel.confirmMandateAndTokenize({ [weak self] error in
             DispatchQueue.main.async {
                 if (error.exists) {
-                    self?.router.show(.error(message: PrimerError.DirectDebitSessionFailed.rawValue.localized()
+                    self?.router.show(.error(message: PrimerError.DirectDebitSessionFailed.localizedDescription
                     ))
                     return
                 }

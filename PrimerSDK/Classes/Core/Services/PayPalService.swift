@@ -62,7 +62,8 @@ class PayPalService: PayPalServiceProtocol {
         
         api.payPalStartOrderSession(clientToken: clientToken, payPalCreateOrderRequest: body) { [weak self] (result) in
             switch result {
-            case .failure: completion(.failure(PrimerError.PayPalSessionFailed))
+            case .failure:
+                completion(.failure(PrimerError.PayPalSessionFailed))
             case .success(let response):
                 self?.state.orderId = response.orderId
                 completion(.success(response.approvalUrl))
@@ -92,7 +93,8 @@ class PayPalService: PayPalServiceProtocol {
         
         api.payPalStartBillingAgreementSession(clientToken: clientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
-            case .failure: completion(.failure(PrimerError.PayPalSessionFailed))
+            case .failure:
+                completion(.failure(PrimerError.PayPalSessionFailed))
             case .success(let config):
                 self?.state.billingAgreementToken = config.tokenId
                 completion(.success(config.approvalUrl))
@@ -117,7 +119,8 @@ class PayPalService: PayPalServiceProtocol {
         
         api.payPalConfirmBillingAgreement(clientToken: clientToken, payPalConfirmBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
-            case .failure: completion(.failure(PrimerError.PayPalSessionFailed))
+            case .failure:
+                completion(.failure(PrimerError.PayPalSessionFailed))
             case .success(let response):
                 self?.state.confirmedBillingAgreement = response
                 completion(.success(response))

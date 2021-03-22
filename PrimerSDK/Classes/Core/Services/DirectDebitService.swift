@@ -46,7 +46,8 @@ class DirectDebitService: DirectDebitServiceProtocol {
         
         api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { [weak self] result in
             switch result {
-            case .failure: completion(PrimerError.DirectDebitSessionFailed)
+            case .failure:
+                completion(PrimerError.DirectDebitSessionFailed)
             case .success(let response):
                 self?.state.mandateId = response.mandateId
                 completion(nil)

@@ -110,7 +110,7 @@ fileprivate extension RootViewController {
         routes.last?.view.removeFromSuperview()
         routes.last?.removeFromParent()
         
-        print("routes:", routes)
+        log(logLevel: .debug, title: nil, message: "Routes: \(routes)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         // remove foremost route from route stack & its associated height
         if (!heights.isEmpty && !routes.isEmpty) {
             routes.removeLast()

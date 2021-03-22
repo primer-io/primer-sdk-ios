@@ -5,16 +5,6 @@
 //  Created by Carl Eriksson on 22/02/2021.
 //
 
-enum KlarnaException: Error {
-    case invalidUrl
-    case noToken
-    case noCoreUrl
-    case failedApiCall
-    case noAmount
-    case noCurrency
-    case noPaymentMethodConfigId
-}
-
 struct LocaleData: Codable {
     let countryCode: String
     let currencyCode: String
@@ -98,7 +88,6 @@ class KlarnaService: KlarnaServiceProtocol {
     @Dependency private(set) var state: AppStateProtocol
 
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
-
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
@@ -107,7 +96,7 @@ class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.noAmount))
         }
 
-        log(logLevel: .info, message: "amount: \(amount)")
+        log(logLevel: .info, message: "Klarna amount: \(amount)")
 
         guard state.settings.currency != nil else {
             return completion(.failure(KlarnaException.noCurrency))
