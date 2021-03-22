@@ -27,7 +27,7 @@ class FormViewModel: FormViewModelProtocol {
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
-
+    
     var popOnComplete: Bool {
         return state.directDebitFormCompleted
     }
@@ -82,15 +82,16 @@ class FormViewModel: FormViewModelProtocol {
             router.show(.form(type: .address(mandate: mandate)))
         case .address:
             router.popAllAndShow(.confirmMandate)
-        case .cardForm: submit() { error in
-            DispatchQueue.main.async { [weak self] in
-                if (error.exists) {
-                    self?.router.show(.error(message: error!.localizedDescription))
-                } else {
-                    self?.router.show(.success(type: .regular))
+        case .cardForm:
+            submit() { error in
+                DispatchQueue.main.async { [weak self] in
+                    if (error.exists) {
+                        self?.router.show(.error(message: error!.localizedDescription))
+                    } else {
+                        self?.router.show(.success(type: .regular))
+                    }
                 }
             }
-        }
         }
     }
     
