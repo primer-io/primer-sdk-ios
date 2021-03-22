@@ -27,7 +27,6 @@
 		1992B50E8682174542E303612E2E5DD1 /* ApplePay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 316B17EC0C932B2D176F5F7B36DCEE4F /* ApplePay.swift */; };
 		1B02F9CBC4EC340C7F4C49178BE91987 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B6EE618906E757FDCC0AE165C09D135 /* Error.swift */; };
 		1B4F65540E4DB05674B99595B3E57DA4 /* VaultPaymentMethodViewController+ReloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D3D65B29C274D50B92BCC1FD21FD5EA /* VaultPaymentMethodViewController+ReloadDelegate.swift */; };
-		1D6FAA3CDB260CCC04B3B509E4834A99 /* MultiCardIconComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C58A7703542D7EE82CAE0BEB3A140E /* MultiCardIconComponent.swift */; };
 		1F19C0BF1391727021611AD4A1800607 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D718A166C5CB2286AF58D3AC06B2790B /* BundleExtension.swift */; };
 		2A32B9A0A7D975459B062377E5D2957C /* FormType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D27AC76D35AF562F0FB885AFC8F9A18 /* FormType.swift */; };
 		2F19BB6B59093986F1240F93B63B6EF1 /* Pods-PrimerSDK_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 21F4ACB1142B1B9457658584BF5CD35A /* Pods-PrimerSDK_Example-dummy.m */; };
@@ -54,7 +53,6 @@
 		60244CD3546F990B47DE159B17E88E81 /* UITableViewCellExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CD72BBA8E9BA00B4ED0AA6BE48987C /* UITableViewCellExtensions.swift */; };
 		629D40A5C6B6F0FB05014E330377284E /* JSONParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47D79A01244AEC784E133B76E1ACF77 /* JSONParser.swift */; };
 		66B5E6583CDA3E5510AB0939896E4BFE /* PaymentMethodConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B5BE0C1D082E5D5763CDF93D7E8451 /* PaymentMethodConfigService.swift */; };
-		673BBC817A6FECCA6072056762091ED7 /* SingleCardIconComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45545982C3C3FD3FD12A5F3EA1AC8790 /* SingleCardIconComponent.swift */; };
 		68BEF0B4D0DA5B5D803BE0465604901D /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00160D91066209600EDCEFB6BA4EC572 /* Optional+Extensions.swift */; };
 		6988265E83EB6E8E18BDFB4BF6F7D7B3 /* Consolable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B8C736C78BE63B76389378B346DBFC /* Consolable.swift */; };
 		6C9234D13DD9E89C8AC812D1C1290FB5 /* UIViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A13B05C19DB68989BA370FE2A0FB935 /* UIViewExtensions.swift */; };
@@ -181,7 +179,6 @@
 		42D589D344C0419D570BA1369E12C331 /* CardButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardButton.swift; sourceTree = "<group>"; };
 		4314D1CAB1BE3CAB84A4A3CD4156B812 /* CardScannerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardScannerViewController.swift; sourceTree = "<group>"; };
 		44FA9DC2DB58744D611498AE6EDB712E /* FormViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormViewController.swift; sourceTree = "<group>"; };
-		45545982C3C3FD3FD12A5F3EA1AC8790 /* SingleCardIconComponent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SingleCardIconComponent.swift; sourceTree = "<group>"; };
 		464F2AE1BF8321B43956BBCFECC9F73A /* VaultCheckoutView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultCheckoutView.swift; sourceTree = "<group>"; };
 		48627A99264E6679D85F177DBB79DA83 /* Pods-PrimerSDK_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrimerSDK_Tests-Info.plist"; sourceTree = "<group>"; };
 		48CD72BBA8E9BA00B4ED0AA6BE48987C /* UITableViewCellExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITableViewCellExtensions.swift; sourceTree = "<group>"; };
@@ -245,7 +242,6 @@
 		A9B0A85665CCC0ED8DFCCEAAABA8646B /* ErrorViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ErrorViewController.swift; sourceTree = "<group>"; };
 		AA80C9C550CB6B8B521015719AA66526 /* Pods-PrimerSDK_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-PrimerSDK_Example.modulemap"; sourceTree = "<group>"; };
 		ADCF2140D71AAE6714AB654953D42559 /* Localizable.strings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B0C58A7703542D7EE82CAE0BEB3A140E /* MultiCardIconComponent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MultiCardIconComponent.swift; sourceTree = "<group>"; };
 		B1B089FED120D3E3C2DE41CA7F52C9FC /* PrimerSDK.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimerSDK.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		B213690D7118A7EEDB2B9FABF4012646 /* ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReloadDelegate.swift; sourceTree = "<group>"; };
 		B2D7603C76BE649000D1AE04B5075542 /* PaymentMethodConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfig.swift; sourceTree = "<group>"; };
@@ -326,9 +322,7 @@
 			children = (
 				42D589D344C0419D570BA1369E12C331 /* CardButton.swift */,
 				BB7FDA65C258601C76132C5808522CC4 /* ExternalViewModel.swift */,
-				B0C58A7703542D7EE82CAE0BEB3A140E /* MultiCardIconComponent.swift */,
 				A2635CF5EDD6827DFBF2610DC2BA4723 /* PaymentMethodComponent.swift */,
-				45545982C3C3FD3FD12A5F3EA1AC8790 /* SingleCardIconComponent.swift */,
 			);
 			path = Primer;
 			sourceTree = "<group>";
@@ -1019,7 +1013,6 @@
 				54027461DEA25CF56F5ECA9748B27CD4 /* Localizable.strings in Sources */,
 				BEFC97E4233591093BAD8A4A9740062B /* Logger.swift in Sources */,
 				DC7935E9F4664DF01FE2B722F27C4F13 /* Mask.swift in Sources */,
-				1D6FAA3CDB260CCC04B3B509E4834A99 /* MultiCardIconComponent.swift in Sources */,
 				6CB6E59A3851F3054D2A97CC695D6471 /* NetworkService.swift in Sources */,
 				57822CEFD36A5300C49984A543686E4B /* OAuthViewController.swift in Sources */,
 				F0524B921A7DD29B17CCA4AC1BD44812 /* OAuthViewModel.swift in Sources */,
@@ -1048,7 +1041,6 @@
 				14755DCCCD28DD8FF694653B16AD0347 /* RootViewController.swift in Sources */,
 				16841C2B191367FA1BF05147EDC2C605 /* Route.swift in Sources */,
 				5847840C2243BEE7D169BE3668AD1A1A /* ScannerView.swift in Sources */,
-				673BBC817A6FECCA6072056762091ED7 /* SingleCardIconComponent.swift in Sources */,
 				198BA86508B2B31484D2661754395F86 /* StringExtension.swift in Sources */,
 				7D5F145961FA165F387F6BFF1B16B308 /* SuccessMessage.swift in Sources */,
 				BAA74D085226D959BDD594FE57785B68 /* SuccessViewController.swift in Sources */,

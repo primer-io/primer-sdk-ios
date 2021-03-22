@@ -1,10 +1,6 @@
 protocol CardFormViewModelProtocol {
     var flow: PrimerSessionFlow { get }
     func configureView(_ completion: @escaping (Error?) -> Void)
-    func tokenize(
-        instrument: PaymentInstrument,
-        completion: @escaping (Error?) -> Void
-    )
 }
 
 
@@ -31,16 +27,4 @@ class CardFormViewModel: CardFormViewModelProtocol {
         }
     }
     
-    // FIXME: Is this called only by the unit tests?
-    func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
-        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
-        self.tokenizationService.tokenize(request: request) { [weak self] result in
-            switch result {
-            case .failure(let error):
-                completion(error)
-            case .success(let token):
-                Primer.flow.vaulted ? completion(nil) : self?.state.settings.onTokenizeSuccess(token, completion)
-            }
-        }
-    }
 }
