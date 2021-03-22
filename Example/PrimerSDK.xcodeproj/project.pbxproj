@@ -259,9 +259,9 @@
 				607FACEB1AFB9204008FA782 /* Tests.swift */,
 				15F5BFC925FBA7A200426B1C /* Mocks */,
 				15F5BFD925FBA7A200426B1C /* Services */,
-				607FACE91AFB9204008FA782 /* Supporting Files */,
 				15F5BFC025FBA7A200426B1C /* Utils */,
 				15F5BFC225FBA7A200426B1C /* ViewModels */,
+				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
