@@ -20,7 +20,6 @@ class VaultService: VaultServiceProtocol {
             case .failure:
                 completion(PrimerError.VaultFetchFailed)
             case .success(let paymentMethods):
-                print("Response: \(paymentMethods)")
                 self?.state.paymentMethods = paymentMethods.data
                 
                 guard let paymentMethods = self?.state.paymentMethods else { return }

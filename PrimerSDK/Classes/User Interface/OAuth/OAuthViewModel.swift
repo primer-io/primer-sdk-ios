@@ -33,11 +33,13 @@ class OAuthViewModel: OAuthViewModelProtocol {
     private func loadConfig(_ host: OAuthHost, _ completion: @escaping (Result<String, Error>) -> Void) {
         clientTokenService.loadCheckoutConfig({ [weak self] error in
             if (error != nil) {
+                ErrorHandler.shared.handle(error: error!)
                 completion(.failure(PrimerError.PayPalSessionFailed))
                 return
             }
             self?.paymentMethodConfigService.fetchConfig({ [weak self] error in
                 if (error != nil) {
+                    ErrorHandler.shared.handle(error: error!)
                     completion(.failure(PrimerError.PayPalSessionFailed))
                     return
                 }
@@ -67,8 +69,10 @@ class OAuthViewModel: OAuthViewModelProtocol {
     private func generateBillingAgreementConfirmation(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
         paypalService.confirmBillingAgreement({ [weak self] result in
             switch result {
-            case .failure(let error): print("generateBillingAgreementConfirmation", error)
-            case .success: self?.tokenize(host, with: completion)
+            case .failure(let error):
+                log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+            case .success:
+                self?.tokenize(host, with: completion)
             }
         })
     }
@@ -78,9 +82,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
         var instrument = PaymentInstrument()
         
         if (host == .klarna) {
-            
-            print("🔥🔥🔥🔥🔥", host)
-            
+            log(logLevel: .verbose, title: nil, message: "Host: \(host)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
             
             klarnaService.finalizePaymentSession() { [weak self] result in
                 switch result {
@@ -91,27 +93,28 @@ class OAuthViewModel: OAuthViewModelProtocol {
                         sessionData: res.sessionData
                     )
                     
-                    print("🔥🔥🔥🔥🔥", instrument)
+                    log(logLevel: .verbose, title: nil, message: "Instrument: \(instrument)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                     
                     guard let state = self?.state else { return }
                     
                     let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
                     
-                    print("🔥🔥🔥🔥🔥", request)
+                    log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                     
                     self?.tokenizationService.tokenize(request: request) { [weak self] result in
                         switch result {
-                        case .failure(let error): completion(error)
+                        case .failure(let error):
+                            ErrorHandler.shared.handle(error: error)
+                            completion(error)
                         case .success(let token):
-                            
-                            print("🔥🔥🔥🔥🔥 token:", token)
+                            log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                             
                             switch Primer.flow.uxMode {
                             case .VAULT:
-                                print("🔥🔥🔥🔥🔥 vaulting")
+                                log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                                 completion(nil) //self?.onTokenizeSuccess(token, completion)
                             case .CHECKOUT:
-                                print("🔥🔥🔥🔥🔥 paying")
+                                log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                                 self?.onTokenizeSuccess(token, completion)
                             }
                         }
@@ -139,14 +142,15 @@ class OAuthViewModel: OAuthViewModelProtocol {
             
             let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
             
-            print("🔥🔥🔥🔥🔥", request)
+            log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
             
             tokenizationService.tokenize(request: request) { [weak self] result in
                 switch result {
-                case .failure(let error): completion(error)
+                case .failure(let error):
+                    ErrorHandler.shared.handle(error: error)
+                    completion(error)
                 case .success(let token):
-                    
-                    print("🔥🔥🔥🔥🔥 token:", token)
+                    log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                     
                     switch Primer.flow.uxMode {
                     case .VAULT: completion(nil) //self?.onTokenizeSuccess(token, completion)

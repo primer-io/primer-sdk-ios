@@ -18,19 +18,19 @@ class TokenizationService: TokenizationServiceProtocol {
             return onTokenizeSuccess(.failure(PrimerError.TokenizationPreRequestFailed))
         }
         
-        print("🔥🔥🔥🔥🔥 clientToken:", clientToken)
+        log(logLevel: .verbose, title: nil, message: "Client Token: \(clientToken)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         
         guard let pciURL = clientToken.pciUrl else {
             return onTokenizeSuccess(.failure(PrimerError.TokenizationPreRequestFailed))
         }
         
-        print("🔥🔥🔥🔥🔥 pciURL:", pciURL)
+        log(logLevel: .verbose, title: nil, message: "PCI URL: \(pciURL)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         
         guard let url = URL(string: "\(pciURL)/payment-instruments") else {
             return onTokenizeSuccess(.failure(PrimerError.TokenizationPreRequestFailed))
         }
         
-        print("🔥🔥🔥🔥🔥 url:", url)
+        log(logLevel: .verbose, title: nil, message: "URL: \(url)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         
         api.tokenizePaymentMethod(clientToken: clientToken, paymentMethodTokenizationRequest: request) { (result) in
             switch result {
