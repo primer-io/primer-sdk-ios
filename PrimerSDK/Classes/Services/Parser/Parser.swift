@@ -8,5 +8,5 @@
 import Foundation
 
 protocol Parser {
-    func parse<T: Decodable>(_ type: T.Type, from data: Data) throws -> T
+    func parse<T: Decodable>(_ type: T.Type, from data: Data, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) throws -> T
 }
