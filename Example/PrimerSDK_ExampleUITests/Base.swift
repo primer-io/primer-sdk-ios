@@ -21,4 +21,14 @@ class Base: XCTestCase {
     override func tearDown() {
         super.tearDown()
     }
+    
+    func testPresentWallet() throws {
+        let presentWalletButton = app.buttons["walletButton"]
+        XCTAssert(presentWalletButton.exists)
+        presentWalletButton.tap()
+        
+        let addCard = app/*@START_MENU_TOKEN@*/.staticTexts["Add Card"]/*[[".buttons[\"Add Card\"].staticTexts[\"Add Card\"]",".staticTexts[\"Add Card\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        XCTAssert(addCard.exists)
+    }
+    
 }
