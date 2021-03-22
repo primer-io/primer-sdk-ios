@@ -36,7 +36,8 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let vaultedPaymentMethodsResponse):
                 completion(.success(vaultedPaymentMethodsResponse))
-            case .failure:
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.VaultFetchFailed))
             }
         }
@@ -48,7 +49,8 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let vaultedPaymentMethodsResponse):
                 completion(.success(vaultedPaymentMethodsResponse))
-            case .failure:
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.VaultDeleteFailed))
             }
         }
@@ -60,7 +62,8 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let paymentMethodConfig):
                 completion(.success(paymentMethodConfig))
-            case .failure:
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.ConfigFetchFailed))
             }
         }
@@ -72,7 +75,8 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let paymentMethodConfig):
                 completion(.success(paymentMethodConfig))
-            case .failure:
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.ConfigFetchFailed))
             }
         }
@@ -84,7 +88,8 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let payPalCreateOrderResponse):
                 completion(.success(payPalCreateOrderResponse))
-            case .failure:
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.PayPalSessionFailed))
             }
         }
@@ -96,7 +101,8 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let payPalCreateOrderResponse):
                 completion(.success(payPalCreateOrderResponse))
-            case .failure:
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.PayPalSessionFailed))
             }
         }
@@ -108,7 +114,8 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let payPalCreateOrderResponse):
                 completion(.success(payPalCreateOrderResponse))
-            case .failure:
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.PayPalSessionFailed))
             }
         }
@@ -120,7 +127,8 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let klarnaCreatePaymentSessionAPIResponse):
                 completion(.success(klarnaCreatePaymentSessionAPIResponse))
-            case .failure:
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
                 completion(.failure(KlarnaException.failedApiCall))
             }
         }
@@ -132,7 +140,8 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let klarnaFinalizePaymentSessionResponse):
                 completion(.success(klarnaFinalizePaymentSessionResponse))
-            case .failure:
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
                 completion(.failure(KlarnaException.failedApiCall))
             }
         }
@@ -144,7 +153,8 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let paymentMethodToken):
                 completion(.success(paymentMethodToken))
-            case .failure:
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.TokenizationRequestFailed))
             }
         }
