@@ -8,6 +8,10 @@
 @testable import PrimerSDK
 
 class MockKlarnaService: KlarnaServiceProtocol {
+    func createKlarnaCustomerToken(_ completion: @escaping (Result<String, Error>) -> Void) {
+        
+    }
+    
 
     var createPaymentSessionCalled = false
     

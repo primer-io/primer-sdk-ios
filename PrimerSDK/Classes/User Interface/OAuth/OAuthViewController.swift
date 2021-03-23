@@ -188,19 +188,11 @@ class WebViewController: UIViewController, WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
-        // here we handle internally the callback url and call method that call handleOpenURL (not app scheme used)
+        
         if let url = navigationAction.request.url, url.host == "primer.io" || url.host == "api.playground.klarna.com"{
-            //                if self.codeCheck == false {
-            //                    if let code = url.valueOf("code") {
-            //                        Log("Found code: \(code)")
-            //                        codeCheck = true
-            //                        getToken(code: code)
-            //                    }
-            //                } else {
-            //
-            //                }
             
             let val = queryValue(for: "token", of: url)
+            
             log(logLevel: .info, message: "🚀🚀 \(url)")
             
             state.authorizationToken = val
@@ -212,11 +204,8 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             dismiss(animated: true, completion: nil)
             
             return
-            /*  Dismiss your view controller as normal
-             And proceed with OAuth authorization code
-             The code you receive here is not the auth token; For auth token you have to make another api call with the code that you received here and you can procced further
-             */
         }
+        
         decisionHandler(.allow)
     }
     

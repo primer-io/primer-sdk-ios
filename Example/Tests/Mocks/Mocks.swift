@@ -64,6 +64,8 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var orderItems: [OrderItem] = []
+    
     
     var isFullScreenOnly: Bool {
         return false
@@ -115,6 +117,8 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 }
 
 class MockAppState: AppStateProtocol {
+    var customerToken: String?
+    
     var authorizationToken: String?
     
     var sessionId: String?
