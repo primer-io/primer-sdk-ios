@@ -19,4 +19,8 @@ Pod::Spec.new do |spec|
         'PrimerSDK' => ['Sources/PrimerSDK/Resources/*.{strings,xcassets}']
     }
     
+    spec.test_spec 'PrimerSDKTests' do |test_spec|
+        test_spec.source_files = 'Tests/**/*'
+    end
+    
 end
