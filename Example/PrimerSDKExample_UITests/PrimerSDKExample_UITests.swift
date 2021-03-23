@@ -1,14 +1,14 @@
 //
-//  PrimerSDK_ExampleUITests.swift
-//  PrimerSDK_ExampleUITests
+//  PrimerSDKExample_UITests.swift
+//  PrimerSDKExample_UITests
 //
-//  Created by Evangelos Pittas on 22/3/21.
+//  Created by Evangelos Pittas on 23/3/21.
 //  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
 import XCTest
 
-class PrimerSDK_ExampleUITests: XCTestCase {
+class PrimerSDKExample_UITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
