@@ -13,9 +13,9 @@ Pod::Spec.new do |spec|
     spec.swift_version = "4.2"
     spec.ios.deployment_target = '10.0'
     
-    spec.source_files = 'PrimerSDK/Classes/**/*'
+    spec.source_files = 'Sources/PrimerSDK/Classes/**/*'
     spec.resource_bundles = {
-        'PrimerSDK' => ['PrimerSDK/Assets/*.xcassets']
+        'PrimerSDK' => ['Sources/PrimerSDK/Assets/*.xcassets']
     }
     
     # spec.public_header_files = 'Pod/Classes/**/*.h'

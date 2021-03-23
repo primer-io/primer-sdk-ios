@@ -19,10 +19,10 @@
   "platforms": {
     "ios": "10.0"
   },
-  "source_files": "PrimerSDK/Classes/**/*",
+  "source_files": "Sources/PrimerSDK/Classes/**/*",
   "resource_bundles": {
     "PrimerSDK": [
-      "PrimerSDK/Assets/*.xcassets"
+      "Sources/PrimerSDK/Assets/*.xcassets"
     ]
   },
   "swift_version": "4.2"
