@@ -289,10 +289,13 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+        isCalled = true
+        
         guard throwsError == false else {
             completion(.failure(KlarnaException.failedApiCall))
             return
         }
+        
         guard let response = response else { return }
         do {
             let value = try JSONDecoder().decode(KlarnaCustomerTokenAPIResponse.self, from: response)
@@ -305,6 +308,12 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void) {
         isCalled = true
+        
+        guard throwsError == false else {
+            completion(.failure(KlarnaException.failedApiCall))
+            return
+        }
+        
         guard let response = response else { return }
         
         do {
