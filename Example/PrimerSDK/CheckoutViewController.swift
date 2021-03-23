@@ -94,12 +94,16 @@ class CheckoutViewController: UIViewController {
         
         let settings = PrimerSettings(
             delegate: self,
-            amount: 200,
-            currency: .GBP,
+            amount: 600, // todo: make order items override this?
+            currency: .SEK,
+            countryCode: .se,
             urlScheme: "https://primer.io/success",
             urlSchemeIdentifier: "primer",
             isFullScreenOnly: true,
-            businessDetails: businessDetails
+            businessDetails: businessDetails,
+            orderItems: [
+                OrderItem(name: "Fine Socks", unitAmount: 200, quantity: 3)
+            ]
         )
         
         primer = Primer(with: settings)
@@ -226,10 +230,10 @@ class CheckoutViewController: UIViewController {
         primer?.showCheckout(self, flow: .addPayPalToVault)
     }
     @objc private func showKlarnaForm() {
-        primer?.showCheckout(self, flow: .checkoutWithKlarna)
+        primer?.showCheckout(self, flow: .addKlarnaToVault)
     }
     @objc private func showCompleteVaultCheckout() {
-        primer?.showCheckout(self, flow: .default)
+        primer?.showCheckout(self, flow: .defaultWithVault)
     }
     @objc private func showCompleteDirectCheckout() {
         primer?.showCheckout(self, flow: .completeDirectCheckout)
@@ -292,7 +296,6 @@ extension CheckoutViewController: PrimerDelegate {
         
         print("🐳", result)
         
-        
         completion(nil)
         
 //        callApi(request, completion: { result in
@@ -341,6 +344,8 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         case .GOCARDLESS_MANDATE:
             //            cell.textLabel?.text = "Direct Debit"
             subtitle = "Direct Debit"
+        case .KLARNA_CUSTOMER_TOKEN:
+            subtitle = "Klarna Customer Token"
         default:
             cell.textLabel?.text = ""
             subtitle = ""

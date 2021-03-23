@@ -16,6 +16,7 @@ protocol PrimerAPIClientProtocol {
     func payPalStartBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalCreateBillingAgreementResponse, Error>) -> Void)
     func payPalConfirmBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void)
     func klarnaCreatePaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (_ result: Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void)
+    func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
     func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (_ result: Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void)
     func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
 }
@@ -127,6 +128,19 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let klarnaCreatePaymentSessionAPIResponse):
                 completion(.success(klarnaCreatePaymentSessionAPIResponse))
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(KlarnaException.failedApiCall))
+            }
+        }
+    }
+    
+    func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+        let endpoint = PrimerAPI.klarnaCreateCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: klarnaCreateCustomerTokenAPIRequest)
+        networkService.request(endpoint) { (result: Result<KlarnaCustomerTokenAPIResponse, NetworkServiceError>) in
+            switch result {
+            case .success(let klarnaCreateCustomerTokenAPIRequest):
+                completion(.success(klarnaCreateCustomerTokenAPIRequest))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(KlarnaException.failedApiCall))
@@ -273,6 +287,21 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             completion(.failure(error))
         }
     }
+    
+    func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+        guard throwsError == false else {
+            completion(.failure(KlarnaException.failedApiCall))
+            return
+        }
+        guard let response = response else { return }
+        do {
+            let value = try JSONDecoder().decode(KlarnaCustomerTokenAPIResponse.self, from: response)
+            completion(.success(value))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
     
     func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void) {
         isCalled = true

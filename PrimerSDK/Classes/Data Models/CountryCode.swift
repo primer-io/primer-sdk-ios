@@ -521,3 +521,16 @@ extension CountryCode {
     }
 
 }
+
+extension CountryCode {
+    
+    var klarnaLocaleCode: String {
+        switch self {
+        case .gb: return "en-GB"
+        case .se: return "en-SE"
+        case .de: return "en-DE"
+        default: return "n/a"
+        }
+    }
+    
+}
