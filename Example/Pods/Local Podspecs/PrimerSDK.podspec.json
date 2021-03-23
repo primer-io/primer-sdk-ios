@@ -25,5 +25,12 @@
       "Sources/PrimerSDK/Resources/*.{strings,xcassets}"
     ]
   },
+  "testspecs": [
+    {
+      "name": "PrimerSDKTests",
+      "test_type": "unit",
+      "source_files": "Tests/**/*"
+    }
+  ],
   "swift_version": "4.2"
 }
