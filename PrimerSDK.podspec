@@ -15,7 +15,7 @@ Pod::Spec.new do |spec|
     
     spec.source_files = 'Sources/PrimerSDK/Classes/**/*'
     spec.resource_bundles = {
-        'PrimerSDK' => ['Sources/PrimerSDK/Assets/*.xcassets']
+        'PrimerSDK' => ['Sources/PrimerSDK/Resources/*.xcassets']
     }
     
     # spec.public_header_files = 'Pod/Classes/**/*.h'
