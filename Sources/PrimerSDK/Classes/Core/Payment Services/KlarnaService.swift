@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 22/02/2021.
 //
 
+#if canImport(UIKit)
+
 struct LocaleData: Codable {
     let countryCode: String
     let currencyCode: String
@@ -164,3 +166,4 @@ class KlarnaService: KlarnaServiceProtocol {
     }
 }
 
+#endif

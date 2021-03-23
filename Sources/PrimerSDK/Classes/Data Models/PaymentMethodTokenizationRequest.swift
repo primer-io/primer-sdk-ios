@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 import Foundation
 
 struct PaymentMethodTokenizationRequest: Encodable {
@@ -46,3 +49,5 @@ enum TokenType: String, Encodable {
 enum PaymentFlow: String, Encodable {
     case vault = "VAULT"
 }
+
+#endif

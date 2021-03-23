@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 26/2/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 protocol PrimerAPIClientProtocol {
@@ -300,3 +302,4 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
 }
 
+#endif

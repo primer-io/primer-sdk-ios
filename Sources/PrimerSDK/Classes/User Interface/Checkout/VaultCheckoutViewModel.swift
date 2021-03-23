@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 protocol VaultCheckoutViewModelProtocol {
     var paymentMethods: [PaymentMethodToken] { get }
     var mandate: DirectDebitMandate { get }
@@ -83,3 +86,5 @@ extension Int {
         }
     }
 }
+
+#endif

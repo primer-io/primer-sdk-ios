@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 protocol CardScannerViewModelProtocol {
     var theme: PrimerTheme { get }
 }
@@ -11,3 +13,5 @@ class CardScannerViewModel: CardScannerViewModelProtocol {
 class MockCardScannerViewModel: CardScannerViewModelProtocol {
     var theme: PrimerTheme { return PrimerTheme() }
 }
+
+#endif

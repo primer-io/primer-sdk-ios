@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 import AuthenticationServices
 import SafariServices
@@ -220,5 +222,6 @@ class WebViewController: UIViewController, WKNavigationDelegate {
         decisionHandler(.allow)
     }
     
-    
 }
+
+#endif

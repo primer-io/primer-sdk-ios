@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 11/01/2021.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 class RootViewController: UIViewController {
@@ -203,3 +205,5 @@ extension Optional where Wrapped == NSLayoutConstraint {
         self?.constant = UIScreen.main.bounds.height - 40
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 import PassKit
 
 extension ApplePayViewController: PKPaymentAuthorizationViewControllerDelegate {
@@ -94,3 +97,5 @@ extension ApplePayViewController: PKPaymentAuthorizationViewControllerDelegate {
         )
     }
 }
+
+#endif

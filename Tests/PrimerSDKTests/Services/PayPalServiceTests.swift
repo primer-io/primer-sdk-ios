@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 17/01/2021.
 //
 
+#if canImport(UIKit)
+
 import XCTest
 @testable import PrimerSDK
 
@@ -281,3 +283,5 @@ class PayPalServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 }
+
+#endif

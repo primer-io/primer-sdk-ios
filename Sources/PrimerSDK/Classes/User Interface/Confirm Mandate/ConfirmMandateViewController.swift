@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 10/01/2021.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 class ConfirmMandateViewController: UIViewController {
@@ -142,3 +144,5 @@ enum ConfirmMandateFormType: String {
         }
     }
 }
+
+#endif

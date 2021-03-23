@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 21/01/2021.
 //
 
+#if canImport(UIKit)
+
 protocol ConfirmMandateViewModelProtocol {
     var mandate: DirectDebitMandate { get }
     var formCompleted: Bool { get set }
@@ -104,3 +106,5 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
         state.directDebitMandate = DirectDebitMandate()
     }
 }
+
+#endif

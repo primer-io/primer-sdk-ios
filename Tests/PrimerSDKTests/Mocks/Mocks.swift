@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 03/01/2021.
 //
 
+#if canImport(UIKit)
+
 @testable import PrimerSDK
 
 var mockClientToken = DecodedClientToken(
@@ -257,3 +259,5 @@ class MockFormViewModel: FormViewModelProtocol {
         
     }
 }
+
+#endif

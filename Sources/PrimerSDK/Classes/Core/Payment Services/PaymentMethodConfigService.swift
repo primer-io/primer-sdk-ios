@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 protocol PaymentMethodConfigServiceProtocol {
@@ -91,3 +93,5 @@ class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
 //        })
     }
 }
+
+#endif

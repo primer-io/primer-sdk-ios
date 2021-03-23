@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 class TransitionDelegate: NSObject, UIViewControllerTransitioningDelegate {
@@ -5,3 +7,5 @@ class TransitionDelegate: NSObject, UIViewControllerTransitioningDelegate {
         PresentationController(presentedViewController: presented, presenting: presenting)
     }
 }
+
+#endif

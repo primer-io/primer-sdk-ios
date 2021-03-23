@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 protocol OAuthViewModelProtocol {
     var urlSchemeIdentifier: String { get }
     func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void) -> Void
@@ -161,3 +164,5 @@ class OAuthViewModel: OAuthViewModelProtocol {
         }
     }
 }
+
+#endif

@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 26/01/2021.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 class CardButton: UIButton {
@@ -212,3 +214,5 @@ class CardButton: UIButton {
         line.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     }
 }
+
+#endif

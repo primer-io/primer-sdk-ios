@@ -5,10 +5,12 @@
 //  Created by Carl Eriksson on 04/01/2021.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 extension VaultCheckoutViewController: ReloadDelegate {
-    
     func reload() { self.subView.reloadVaultDetails() }
-    
 }
+
+#endif

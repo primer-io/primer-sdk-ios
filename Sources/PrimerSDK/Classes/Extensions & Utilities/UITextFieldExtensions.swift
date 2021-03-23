@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 extension UITextField {
@@ -150,3 +152,5 @@ class PrimerTextField: UITextField {
     }
     
 }
+
+#endif

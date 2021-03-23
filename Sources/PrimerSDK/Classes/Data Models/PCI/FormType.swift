@@ -5,6 +5,7 @@
 //  Created by Carl Eriksson on 24/01/2021.
 //
 
+#if canImport(UIKit)
 
 public enum PrimerFormType: String, CaseIterable {
     case bankAccount
@@ -100,3 +101,5 @@ enum FormType {
         }
     }
 }
+
+#endif

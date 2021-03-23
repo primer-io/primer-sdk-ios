@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 import PassKit
 
@@ -128,3 +130,5 @@ extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
         })
     }
 }
+
+#endif

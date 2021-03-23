@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 22/02/2021.
 //
 
+#if canImport(UIKit)
+
 @testable import PrimerSDK
 
 class MockKlarnaService: KlarnaServiceProtocol {
@@ -21,3 +23,5 @@ class MockKlarnaService: KlarnaServiceProtocol {
     }
     
 }
+
+#endif

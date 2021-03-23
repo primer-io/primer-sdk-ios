@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 protocol ApplePayViewModelProtocol {
     var amount: Int { get }
     var applePayConfigId: String? { get }
@@ -52,3 +55,5 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
         }
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 import UIKit
 
 public enum PaymentMethodType {
@@ -10,3 +13,5 @@ struct PaymentMethod {
     let type: PaymentMethodType
     var details: PaymentInstrument
 }
+
+#endif

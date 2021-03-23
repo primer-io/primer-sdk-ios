@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import UIKit
 
 protocol VaultCheckoutViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
@@ -286,3 +287,5 @@ extension VaultCheckoutView {
         payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
 }
+
+#endif

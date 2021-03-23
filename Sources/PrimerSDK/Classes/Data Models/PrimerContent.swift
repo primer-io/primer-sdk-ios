@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 public struct PrimerContent {
     let ibanForm = IBANFormViewContent()
     let directCheckout = DirectCheckoutViewContent()
@@ -119,3 +122,5 @@ extension FormTopTitles {
         }
     }
 }
+
+#endif

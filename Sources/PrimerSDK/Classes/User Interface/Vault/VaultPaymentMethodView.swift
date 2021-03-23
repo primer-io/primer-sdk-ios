@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 protocol VaultPaymentMethodViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
@@ -94,3 +96,5 @@ extension VaultPaymentMethodView {
         tableView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
     }
 }
+
+#endif

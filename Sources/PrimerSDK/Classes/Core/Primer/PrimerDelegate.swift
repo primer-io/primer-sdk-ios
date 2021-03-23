@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 import UIKit
 
 /**
@@ -40,3 +43,5 @@ class MockPrimerDelegate: PrimerDelegate {
         
     }
 }
+
+#endif

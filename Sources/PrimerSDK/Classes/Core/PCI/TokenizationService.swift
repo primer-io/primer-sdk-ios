@@ -1,6 +1,8 @@
 
 import Foundation
 
+#if canImport(UIKit)
+
 protocol TokenizationServiceProtocol {
     func tokenize(
         request: PaymentMethodTokenizationRequest,
@@ -46,3 +48,5 @@ class TokenizationService: TokenizationServiceProtocol {
         }
     }
 }
+
+#endif

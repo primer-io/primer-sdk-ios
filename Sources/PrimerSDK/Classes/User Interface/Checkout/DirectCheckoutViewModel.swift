@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 protocol DirectCheckoutViewModelProtocol {
     var amountViewModel: AmountViewModel { get }
     var paymentMethods: [PaymentMethodViewModel] { get }
@@ -99,3 +102,5 @@ struct AmountViewModel {
         }
     }
 }
+
+#endif

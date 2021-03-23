@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 18/3/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 internal extension UIDevice {
@@ -88,3 +90,5 @@ internal extension UIDevice {
     }()
 
 }
+
+#endif

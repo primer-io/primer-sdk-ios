@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 16/3/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 class ErrorHandler {
@@ -84,3 +86,5 @@ class ErrorHandler {
     }
     
 }
+
+#endif

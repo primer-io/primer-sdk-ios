@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
+#if canImport(UIKit)
+
 protocol AppStateProtocol: class {
     var settings: PrimerSettingsProtocol { get }
     var viewModels: [PaymentMethodViewModel] { get set }
@@ -56,3 +58,5 @@ struct CardData {
 struct RouterState {
     var formType: FormType?
 }
+
+#endif

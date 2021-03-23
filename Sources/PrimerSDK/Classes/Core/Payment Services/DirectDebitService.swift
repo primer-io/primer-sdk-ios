@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 22/01/2021.
 //
 
+#if canImport(UIKit)
+
 protocol DirectDebitServiceProtocol {
     func createMandate(_ completion: @escaping (Error?) -> Void)
 }
@@ -83,3 +85,5 @@ struct DirectDebitCreateMandateResponse: Codable {
     let mandateId: String
     let mandateScheme: String
 }
+
+#endif

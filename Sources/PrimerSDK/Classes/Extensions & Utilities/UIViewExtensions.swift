@@ -5,6 +5,10 @@
 //  Created by Carl Eriksson on 29/11/2020.
 //
 
+import Foundation
+
+#if canImport(UIKit)
+
 import UIKit
 
 extension UIView {
@@ -157,3 +161,5 @@ extension UIView {
 ////        }
     }
 }
+
+#endif

@@ -4,6 +4,8 @@
 //
 //  Created by Carl Eriksson on 14/02/2021.
 
+#if canImport(UIKit)
+
 import Foundation
 
 protocol FormViewModelProtocol {
@@ -137,3 +139,5 @@ class FormViewModel: FormViewModelProtocol {
         }
     }
 }
+
+#endif

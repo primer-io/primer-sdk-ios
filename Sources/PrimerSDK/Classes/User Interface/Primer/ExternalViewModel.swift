@@ -7,6 +7,8 @@
 
 import Foundation
 
+#if canImport(UIKit)
+
 protocol ExternalViewModelProtocol {
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void)
 }
@@ -46,3 +48,5 @@ class MockExternalViewModel: ExternalViewModelProtocol {
         
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 struct GetVaultedPaymentMethodsResponse: Decodable {
     var data: [PaymentMethodToken]
 }
@@ -219,3 +222,5 @@ public struct VaultData: Codable {
 public struct ThreeDSecureAuthentication: Codable {
     public var responseCode, reasonCode, reasonText, protocolVersion, challengeIssued: String?
 }
+
+#endif

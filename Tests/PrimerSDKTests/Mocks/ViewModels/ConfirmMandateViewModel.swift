@@ -5,8 +5,9 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
-@testable import PrimerSDK
+#if canImport(UIKit)
 
+@testable import PrimerSDK
 
 class MockConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
     var formCompleted: Bool = false
@@ -35,3 +36,5 @@ class MockConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
     
      
 }
+
+#endif
