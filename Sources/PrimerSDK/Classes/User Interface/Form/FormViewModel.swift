@@ -3,7 +3,9 @@
 //  PrimerSDK
 //
 //  Created by Carl Eriksson on 14/02/2021.
-//
+
+import Foundation
+
 protocol FormViewModelProtocol {
     var popOnComplete: Bool { get }
     var mandate: DirectDebitMandate { get }

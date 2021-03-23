@@ -1,3 +1,6 @@
+
+import Foundation
+
 protocol TokenizationServiceProtocol {
     func tokenize(
         request: PaymentMethodTokenizationRequest,
