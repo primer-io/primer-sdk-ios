@@ -117,11 +117,11 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 }
 
 class MockAppState: AppStateProtocol {
-    var customerToken: String?
+    var customerToken: String? = "customerToken"
     
-    var authorizationToken: String?
+    var authorizationToken: String? = "authToken"
     
-    var sessionId: String?
+    var sessionId: String? = "klarnaSessionId123"
     
     var cardData: CardData = CardData(name: "", number: "", expiryYear: "", expiryMonth: "", cvc: "")
     
