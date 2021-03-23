@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewDataSource {
@@ -114,3 +116,5 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
         return cell
     }
 }
+
+#endif

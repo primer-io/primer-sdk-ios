@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 import XCTest
 @testable import PrimerSDK
 
@@ -26,3 +29,5 @@ class Tests: XCTestCase {
     }
     
 }
+
+#endif

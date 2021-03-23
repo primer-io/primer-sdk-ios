@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 protocol ScannerViewDelegate: class {
@@ -104,3 +106,5 @@ extension ScannerView {
         skipButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
     }
 }
+
+#endif

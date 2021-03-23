@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 public class Primer {
@@ -179,3 +181,5 @@ public class Primer {
     }
     
 }
+
+#endif

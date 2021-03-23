@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 21/01/2021.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 protocol ConfirmMandateViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
@@ -210,3 +212,5 @@ class ConfirmMandateTableView: UITableView {
     }
     
 }
+
+#endif

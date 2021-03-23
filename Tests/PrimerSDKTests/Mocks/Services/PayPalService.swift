@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
+#if canImport(UIKit)
+
 @testable import PrimerSDK
 
 class MockPayPalService: PayPalServiceProtocol {
@@ -27,3 +29,5 @@ class MockPayPalService: PayPalServiceProtocol {
         startOrderSessionCalled = true
     }
 }
+
+#endif

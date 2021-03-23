@@ -3,7 +3,9 @@
 //  PrimerSDK
 //
 //  Created by Carl Eriksson on 24/01/2021.
-//
+
+#if canImport(UIKit)
+
 import UIKit
 
 enum FormTextFieldType: Equatable {
@@ -148,3 +150,5 @@ extension FormTextFieldType {
         }
     }
 }
+
+#endif

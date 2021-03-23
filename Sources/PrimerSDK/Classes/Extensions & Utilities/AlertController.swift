@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 17/3/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 class AlertController: UIAlertController {
@@ -38,3 +40,5 @@ private class ClearViewController: UIViewController {
     }
     
 }
+
+#endif

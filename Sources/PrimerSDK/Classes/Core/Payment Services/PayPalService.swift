@@ -1,5 +1,7 @@
 import Foundation
 
+#if canImport(UIKit)
+
 protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
@@ -129,3 +131,5 @@ class PayPalService: PayPalServiceProtocol {
     }
     
 }
+
+#endif

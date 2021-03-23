@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 public class PresentationController: UIPresentationController {
@@ -69,3 +71,5 @@ extension UIView {
         self.layer.mask = mask
     }
 }
+
+#endif

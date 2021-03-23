@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 16/3/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
@@ -195,3 +197,5 @@ struct PrimerErrorResponse: Codable {
     var diagnosticsId: String
     var validationErrors: [String]
 }
+
+#endif

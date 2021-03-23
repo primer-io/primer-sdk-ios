@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 import UIKit
 
 class ApplePayViewController: UIViewController {
@@ -33,3 +36,5 @@ class ApplePayViewController: UIViewController {
     }
     
 }
+
+#endif

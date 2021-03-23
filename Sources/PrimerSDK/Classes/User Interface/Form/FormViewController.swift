@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 24/01/2021.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 class FormViewController: UIViewController {
@@ -41,8 +43,8 @@ class FormViewController: UIViewController {
 
 extension FormViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {   //delegate method
-      textField.resignFirstResponder()
-      return true
+        textField.resignFirstResponder()
+        return true
     }
 }
 
@@ -54,7 +56,7 @@ extension FormViewController: FormViewDelegate {
     }
     
     func openLink() {
-
+        
     }
     
     func submit(_ value: String?, type: FormTextFieldType) {
@@ -93,4 +95,6 @@ extension FormViewController: CardScannerViewControllerDelegate {
         }
     }
 }
+#endif
+
 #endif

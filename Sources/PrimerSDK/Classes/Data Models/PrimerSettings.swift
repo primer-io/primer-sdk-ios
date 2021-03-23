@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 public typealias ClientTokenCallBack = (_ completionHandler: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) -> Void
 public typealias PaymentMethodTokenCallBack = (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
 public typealias CheckoutDismissalCallback = () -> Void
@@ -128,3 +131,5 @@ class MockDelegate: PrimerDelegate {
         
     }
 }
+
+#endif

@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 protocol ClientTokenServiceProtocol {
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void)
 }
@@ -22,3 +24,5 @@ class ClientTokenService: ClientTokenServiceProtocol {
     }
     
 }
+
+#endif

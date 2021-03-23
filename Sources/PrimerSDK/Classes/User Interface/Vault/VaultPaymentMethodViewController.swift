@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import UIKit
 
 class VaultPaymentMethodViewController: UIViewController {
@@ -44,3 +46,5 @@ extension VaultPaymentMethodViewController: VaultPaymentMethodViewDelegate {
         router.show(.oAuth(host: .paypal))
     }
 }
+
+#endif

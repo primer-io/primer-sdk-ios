@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 22/02/2021.
 //
 
+#if canImport(UIKit)
+
 import XCTest
 @testable import PrimerSDK
 
@@ -97,3 +99,5 @@ class KlarnaServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 }
+
+#endif

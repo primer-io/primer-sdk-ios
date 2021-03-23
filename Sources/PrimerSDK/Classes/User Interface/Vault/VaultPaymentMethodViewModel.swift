@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 protocol VaultPaymentMethodViewModelProtocol: class {
     var paymentMethods: [PaymentMethodToken] { get }
     var selectedId: String { get set }
@@ -56,3 +58,5 @@ class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
         
     }
 }
+
+#endif

@@ -5,7 +5,9 @@
 //  Created by Carl Eriksson on 23/01/2021.
 //
 
+#if canImport(UIKit)
 import UIKit
+
 
 extension UITableViewCell {
     func addTitle(_ text: String, theme: PrimerThemeProtocol) {
@@ -31,3 +33,4 @@ extension UITableViewCell {
         contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -32).isActive = true
     }
 }
+#endif

@@ -1,5 +1,7 @@
 import Foundation
 
+#if canImport(UIKit)
+
 protocol VaultServiceProtocol {
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void)
     func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void)
@@ -49,3 +51,5 @@ class VaultService: VaultServiceProtocol {
         }
     }
 }
+
+#endif

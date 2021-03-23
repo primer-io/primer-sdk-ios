@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 13/01/2021.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 class SuccessViewController: UIViewController {
@@ -188,3 +190,5 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
         return getMandateId(screenType).uppercased()
     }
 }
+
+#endif

@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 07/01/2021.
 //
 
+#if canImport(UIKit)
+
 import XCTest
 @testable import PrimerSDK
 
@@ -38,3 +40,5 @@ class ApplePayViewModelTests: XCTestCase {
         XCTAssertEqual(tokenizationService.tokenizeCalled, true)
     }
 }
+
+#endif

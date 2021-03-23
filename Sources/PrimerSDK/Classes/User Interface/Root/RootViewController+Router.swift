@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 14/01/2021.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 protocol RouterDelegate: class {
@@ -139,3 +141,5 @@ fileprivate extension RootViewController {
         
     }
 }
+
+#endif

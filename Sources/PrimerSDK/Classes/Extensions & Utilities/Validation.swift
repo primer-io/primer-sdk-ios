@@ -1,3 +1,6 @@
+
+#if canImport(UIKit)
+
 import UIKit
 
 final class Validation {
@@ -142,3 +145,5 @@ final class Validation {
         return (true, "", false )
     }
 }
+
+#endif

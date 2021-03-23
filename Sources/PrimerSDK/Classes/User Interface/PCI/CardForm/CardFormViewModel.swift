@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 protocol CardFormViewModelProtocol {
     var flow: PrimerSessionFlow { get }
     func configureView(_ completion: @escaping (Error?) -> Void)
@@ -28,3 +30,5 @@ class CardFormViewModel: CardFormViewModelProtocol {
     }
     
 }
+
+#endif

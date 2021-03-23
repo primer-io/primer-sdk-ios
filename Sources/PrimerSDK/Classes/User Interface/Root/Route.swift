@@ -4,6 +4,9 @@
 //
 //  Created by Carl Eriksson on 17/01/2021.
 //
+
+#if canImport(UIKit)
+
 import UIKit
 
 enum OAuthHost {
@@ -91,3 +94,5 @@ enum Route {
         }
     }
 }
+
+#endif
