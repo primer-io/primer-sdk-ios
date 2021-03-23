@@ -22,7 +22,7 @@
   "source_files": "Sources/PrimerSDK/Classes/**/*",
   "resource_bundles": {
     "PrimerSDK": [
-      "Sources/PrimerSDK/Assets/*.xcassets"
+      "Sources/PrimerSDK/Resources/*.xcassets"
     ]
   },
   "swift_version": "4.2"
