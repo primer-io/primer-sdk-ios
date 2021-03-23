@@ -7,8 +7,8 @@ let package = Package(
     name: "PrimerSDK",
     defaultLocalization: "en",
     platforms: [
-            .iOS(.v12)
-        ],
+        .iOS(.v10)
+    ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
