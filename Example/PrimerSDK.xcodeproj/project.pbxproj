@@ -34,6 +34,8 @@
 		1582B990260A3F2900C80BD7 /* TokenizationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */; };
 		1582B991260A3F2900C80BD7 /* ClientTokenServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B977260A3F2900C80BD7 /* ClientTokenServiceTests.swift */; };
 		1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */; };
+		1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B9A1260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift */; };
+		1582B9AD260A402E00C80BD7 /* Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B9AC260A402E00C80BD7 /* Base.swift */; };
 		15F5BFB225FBA37900426B1C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F5BFB125FBA37900426B1C /* ViewController.swift */; };
 		15F5BFB825FBA3C000426B1C /* CapturePaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F5BFB725FBA3C000426B1C /* CapturePaymentViewController.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
@@ -44,6 +46,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1582B9A4260A3FD300C80BD7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 607FACC81AFB9204008FA782 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 607FACCF1AFB9204008FA782;
+			remoteInfo = PrimerSDK_Example;
+		};
 		607FACE61AFB9204008FA782 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 607FACC81AFB9204008FA782 /* Project object */;
@@ -82,9 +91,10 @@
 		1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenizationServiceTests.swift; sourceTree = "<group>"; };
 		1582B977260A3F2900C80BD7 /* ClientTokenServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientTokenServiceTests.swift; sourceTree = "<group>"; };
 		1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PayPalServiceTests.swift; sourceTree = "<group>"; };
-		158D8FBA260A37EC002B1D7F /* PrimerSDK_ExampleUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimerSDK_ExampleUITests.swift; sourceTree = "<group>"; };
-		158D8FBB260A37EC002B1D7F /* Base.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base.swift; sourceTree = "<group>"; };
-		158D8FBC260A37EC002B1D7F /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1582B99F260A3FD300C80BD7 /* PrimerSDKExample_UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimerSDKExample_UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1582B9A1260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerSDKExample_UITests.swift; sourceTree = "<group>"; };
+		1582B9A3260A3FD300C80BD7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1582B9AC260A402E00C80BD7 /* Base.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base.swift; sourceTree = "<group>"; };
 		15F5BFB125FBA37900426B1C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		15F5BFB725FBA3C000426B1C /* CapturePaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturePaymentViewController.swift; sourceTree = "<group>"; };
 		15F5BFFE25FBAFDB00426B1C /* PrimerSDK_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrimerSDK_Example.entitlements; sourceTree = "<group>"; };
@@ -106,6 +116,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1582B99C260A3FD300C80BD7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		607FACCD1AFB9204008FA782 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -216,15 +233,15 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
-		158D8FB9260A37EC002B1D7F /* PrimerSDK_ExampleUITests */ = {
+		1582B9A0260A3FD300C80BD7 /* PrimerSDKExample_UITests */ = {
 			isa = PBXGroup;
 			children = (
-				158D8FBA260A37EC002B1D7F /* PrimerSDK_ExampleUITests.swift */,
-				158D8FBB260A37EC002B1D7F /* Base.swift */,
-				158D8FBC260A37EC002B1D7F /* Info.plist */,
+				1582B9A1260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift */,
+				1582B9AC260A402E00C80BD7 /* Base.swift */,
+				1582B9A3260A3FD300C80BD7 /* Info.plist */,
 			);
-			path = PrimerSDK_ExampleUITests;
-			sourceTree = SOURCE_ROOT;
+			path = PrimerSDKExample_UITests;
+			sourceTree = "<group>";
 		};
 		15F5BFB025FBA35600426B1C /* User Interface */ = {
 			isa = PBXGroup;
@@ -252,7 +269,7 @@
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACD21AFB9204008FA782 /* Example for PrimerSDK */,
 				1582B958260A3F2900C80BD7 /* PrimerSDK_Tests */,
-				158D8FB9260A37EC002B1D7F /* PrimerSDK_ExampleUITests */,
+				1582B9A0260A3FD300C80BD7 /* PrimerSDKExample_UITests */,
 				607FACD11AFB9204008FA782 /* Products */,
 				714FB3DC2580A763B394EB27 /* Pods */,
 				0573E20129715E33CAB2B649 /* Frameworks */,
@@ -264,6 +281,7 @@
 			children = (
 				607FACD01AFB9204008FA782 /* PrimerSDK_Example.app */,
 				607FACE51AFB9204008FA782 /* PrimerSDK_Tests.xctest */,
+				1582B99F260A3FD300C80BD7 /* PrimerSDKExample_UITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -305,6 +323,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1582B99E260A3FD300C80BD7 /* PrimerSDKExample_UITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1582B9A6260A3FD300C80BD7 /* Build configuration list for PBXNativeTarget "PrimerSDKExample_UITests" */;
+			buildPhases = (
+				1582B99B260A3FD300C80BD7 /* Sources */,
+				1582B99C260A3FD300C80BD7 /* Frameworks */,
+				1582B99D260A3FD300C80BD7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1582B9A5260A3FD300C80BD7 /* PBXTargetDependency */,
+			);
+			name = PrimerSDKExample_UITests;
+			productName = PrimerSDKExample_UITests;
+			productReference = 1582B99F260A3FD300C80BD7 /* PrimerSDKExample_UITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		607FACCF1AFB9204008FA782 /* PrimerSDK_Example */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "PrimerSDK_Example" */;
@@ -353,6 +389,12 @@
 				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = CocoaPods;
 				TargetAttributes = {
+					1582B99E260A3FD300C80BD7 = {
+						CreatedOnToolsVersion = 12.4;
+						DevelopmentTeam = N8UN9TR5DY;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 607FACCF1AFB9204008FA782;
+					};
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
 						DevelopmentTeam = N8UN9TR5DY;
@@ -380,11 +422,19 @@
 			targets = (
 				607FACCF1AFB9204008FA782 /* PrimerSDK_Example */,
 				607FACE41AFB9204008FA782 /* PrimerSDK_Tests */,
+				1582B99E260A3FD300C80BD7 /* PrimerSDKExample_UITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1582B99D260A3FD300C80BD7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		607FACCE1AFB9204008FA782 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -470,6 +520,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1582B99B260A3FD300C80BD7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1582B9AD260A402E00C80BD7 /* Base.swift in Sources */,
+				1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		607FACCC1AFB9204008FA782 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -516,6 +575,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1582B9A5260A3FD300C80BD7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 607FACCF1AFB9204008FA782 /* PrimerSDK_Example */;
+			targetProxy = 1582B9A4260A3FD300C80BD7 /* PBXContainerItemProxy */;
+		};
 		607FACE71AFB9204008FA782 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 607FACCF1AFB9204008FA782 /* PrimerSDK_Example */;
@@ -543,6 +607,57 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1582B9A7260A3FD300C80BD7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = N8UN9TR5DY;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = PrimerSDKExample_UITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.primer.PrimerSDKExample-UITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = PrimerSDK_Example;
+			};
+			name = Debug;
+		};
+		1582B9A8260A3FD300C80BD7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N8UN9TR5DY;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = PrimerSDKExample_UITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.primer.PrimerSDKExample-UITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = PrimerSDK_Example;
+			};
+			name = Release;
+		};
 		607FACED1AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -731,6 +846,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1582B9A6260A3FD300C80BD7 /* Build configuration list for PBXNativeTarget "PrimerSDKExample_UITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1582B9A7260A3FD300C80BD7 /* Debug */,
+				1582B9A8260A3FD300C80BD7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "PrimerSDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
