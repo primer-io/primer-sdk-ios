@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LocaleData: Codable {
+struct KlarnaLocaleData: Codable {
     let countryCode: String
     let currencyCode: String
     let localeCode: String
@@ -20,7 +20,7 @@ struct KlarnaCreatePaymentSessionAPIRequest: Codable {
     let sessionType: String
     let redirectUrl: String
     let totalAmount: Int
-    let localeData: LocaleData
+    let localeData: KlarnaLocaleData
     let orderItems: [OrderItem]
 }
 
@@ -39,7 +39,7 @@ struct CreateKlarnaCustomerTokenAPIRequest: Codable {
     let sessionId: String
     let authorizationToken: String
     let description: String
-    let localeData: LocaleData
+    let localeData: KlarnaLocaleData
 }
 
 struct KlarnaCustomerTokenAPIResponse: Codable {
