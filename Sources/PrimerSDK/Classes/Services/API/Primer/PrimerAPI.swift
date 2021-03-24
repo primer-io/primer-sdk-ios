@@ -10,15 +10,17 @@
 import Foundation
 
 enum PrimerAPI: Endpoint {
-    case directDebitCreateMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
+    case fetchConfiguration(clientToken: DecodedClientToken)
     case vaultFetchPaymentMethods(clientToken: DecodedClientToken)
     case vaultDeletePaymentMethod(clientToken: DecodedClientToken, id: String)
+
+    case directDebitCreateMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
     case payPalStartOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest)
     case payPalStartBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest)
     case payPalConfirmBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest)
     case klarnaCreatePaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest)
     case klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
-    case fetchConfiguration(clientToken: DecodedClientToken)
+    
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest)
 }
 
@@ -55,26 +57,26 @@ extension PrimerAPI {
     // MARK: Path
     var path: String {
         switch self {
-        case .directDebitCreateMandate:
-            return "/gocardless/mandates"
         case .vaultDeletePaymentMethod(_, let id):
             return "/payment-instruments/\(id)/vault"
         case .fetchConfiguration:
             return ""
         case .vaultFetchPaymentMethods:
             return "/payment-instruments"
-        case .payPalStartOrderSession:
-            return "/paypal/orders/create"
-        case .payPalStartBillingAgreementSession:
-            return "/paypal/billing-agreements/create-agreement"
-        case .payPalConfirmBillingAgreement:
-            return "/paypal/billing-agreements/confirm-agreement"
-        case .klarnaCreatePaymentSession:
-            return "/klarna/payment-sessions"
-        case .klarnaFinalizePaymentSession:
-            return "/klarna/payment-sessions/finalize"
-        case .tokenizePaymentMethod:
-            return "/payment-instruments"
+        case .payPalStartOrderSession(_, let payPalCreateOrderRequest):
+            return payPalCreateOrderRequest.path
+        case .payPalStartBillingAgreementSession(_, let payPalCreateBillingAgreementRequest):
+            return payPalCreateBillingAgreementRequest.path
+        case .payPalConfirmBillingAgreement(_, let payPalConfirmBillingAgreementRequest):
+            return payPalConfirmBillingAgreementRequest.path
+        case .klarnaCreatePaymentSession(_, let klarnaCreatePaymentSessionAPIRequest):
+            return klarnaCreatePaymentSessionAPIRequest.path
+        case .klarnaFinalizePaymentSession(_, let klarnaFinalizePaymentSessionRequest):
+            return klarnaFinalizePaymentSessionRequest.path
+        case .directDebitCreateMandate(_, let mandateRequest):
+            return mandateRequest.path
+        case .tokenizePaymentMethod(_, let paymentMethodTokenizationRequest):
+            return paymentMethodTokenizationRequest.path
         }
     }
     
