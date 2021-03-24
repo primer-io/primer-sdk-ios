@@ -21,6 +21,7 @@
 		1019EFF96EC96533DE4BAD1D4A728669 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2FBEC5139BA5B37D248AFC65B276CD4 /* AppState.swift */; };
 		14755DCCCD28DD8FF694653B16AD0347 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB59A9B4FF6F76FAAED1F67974B0FAAE /* RootViewController.swift */; };
 		151B61C0260B940D00D0521B /* Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151B61BF260B940D00D0521B /* Klarna.swift */; };
+		151B61CA260B958A00D0521B /* OrderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151B61C9260B958A00D0521B /* OrderItem.swift */; };
 		153312FB4F88716805F55A087147EDFE /* ErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B0A85665CCC0ED8DFCCEAAABA8646B /* ErrorViewController.swift */; };
 		15830F772608C313001160C9 /* ClientTokenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 313D5F6FA2C02A99B84EF1DD9CA83C7B /* ClientTokenService.swift */; };
 		16841C2B191367FA1BF05147EDC2C605 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCBF733156BCC02DCFE30296D183E19 /* Route.swift */; };
@@ -155,6 +156,7 @@
 		0DCBF733156BCC02DCFE30296D183E19 /* Route.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		14FAA50C1A9CDDAF076D12AB0CE364B1 /* UXMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UXMode.swift; sourceTree = "<group>"; };
 		151B61BF260B940D00D0521B /* Klarna.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Klarna.swift; sourceTree = "<group>"; };
+		151B61C9260B958A00D0521B /* OrderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderItem.swift; sourceTree = "<group>"; };
 		15542B527880F3238E547CDA0560B07C /* Localizable.strings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1692639441AC3963EACE12C49486F9E8 /* ImageName.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImageName.swift; sourceTree = "<group>"; };
 		19FA7C1D9831E9A0E012A6A0346FC23A /* DateExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
@@ -584,6 +586,7 @@
 				6FD1C3E8E8D1691711D2A21B6C701415 /* DirectDebitMandate.swift */,
 				1692639441AC3963EACE12C49486F9E8 /* ImageName.swift */,
 				151B61BF260B940D00D0521B /* Klarna.swift */,
+				151B61C9260B958A00D0521B /* OrderItem.swift */,
 				5A6BC7CCD7E7BEDA433D3F48EA4DD97C /* PaymentMethod.swift */,
 				B2D7603C76BE649000D1AE04B5075542 /* PaymentMethodConfig.swift */,
 				4EDFE58E7FF0F99DDD0DF5AD32045C83 /* PaymentMethodToken.swift */,
@@ -982,6 +985,7 @@
 				08A5F2ABB526FA8694047F483C3F37B9 /* CardFormView.swift in Sources */,
 				7484C635B80255CDAC50180628C4B881 /* CardFormViewController+CardScannerViewControllerDelegate.swift in Sources */,
 				447417AC7155CB1FCCF546D0607C6F44 /* CardFormViewController.swift in Sources */,
+				151B61CA260B958A00D0521B /* OrderItem.swift in Sources */,
 				CDC986B94892988D08ABA1124B34F264 /* CardFormViewModel.swift in Sources */,
 				151B61C0260B940D00D0521B /* Klarna.swift in Sources */,
 				FCE16CB2AEF2B80115ECD980282A6CA5 /* CardScannerViewController+SimpleScanDelegate.swift in Sources */,
