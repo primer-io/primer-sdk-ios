@@ -40,7 +40,7 @@ class OAuthViewController: UIViewController {
         viewModel.generateOAuthURL(host, with: { [weak self] result in
             switch result {
             case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
+                _ = ErrorHandler.shared.handle(error: error)
                 let alert = AlertController(title: "ERROR!", message: error.localizedDescription, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
                     self?.dismiss(animated: true, completion: nil)
@@ -143,7 +143,6 @@ extension OAuthViewController: ReloadDelegate {
         })
     }
 }
-
 
 class WebViewController: UIViewController, WKNavigationDelegate {
     
