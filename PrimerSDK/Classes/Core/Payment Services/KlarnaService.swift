@@ -68,7 +68,7 @@ class KlarnaService: KlarnaServiceProtocol {
             sessionType: "HOSTED_PAYMENT_PAGE",
             redirectUrl: "https://primer.io",
             totalAmount: amount,
-            localeData: LocaleData(
+            localeData: KlarnaLocaleData(
                 countryCode: countryCode.rawValue,
                 currencyCode: currency.rawValue,
                 localeCode: countryCode.klarnaLocaleCode
@@ -120,7 +120,7 @@ class KlarnaService: KlarnaServiceProtocol {
             sessionId: sessionId,
             authorizationToken: authorizationToken,
             description: "primer",
-            localeData: LocaleData(
+            localeData: KlarnaLocaleData(
                 countryCode: countryCode.rawValue,
                 currencyCode: currency.rawValue,
                 localeCode: countryCode.klarnaLocaleCode
