@@ -70,23 +70,11 @@ class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.noToken))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA) else {
-            return completion(.failure(KlarnaException.noPaymentMethodConfigId))
-        }
-        
-        guard let authorizationToken = self.state.authorizationToken else {
-            return completion(.failure(KlarnaException.noPaymentMethodConfigId))
-        }
-        
-        guard let sessionId = self.state.sessionId else {
-            return completion(.failure(KlarnaException.noPaymentMethodConfigId))
-        }
-        
-        guard let countryCode = self.state.settings.countryCode else {
-            return completion(.failure(KlarnaException.noPaymentMethodConfigId))
-        }
-        
-        guard let currency = self.state.settings.currency else {
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA),
+              let authorizationToken = self.state.authorizationToken,
+              let sessionId = self.state.sessionId,
+              let countryCode = self.state.settings.countryCode,
+              let currency = self.state.settings.currency else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
@@ -118,11 +106,8 @@ class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.noToken))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA) else {
-            return completion(.failure(KlarnaException.noPaymentMethodConfigId))
-        }
-
-        guard let sessionId = state.sessionId else {
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA),
+              let sessionId = state.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
