@@ -32,6 +32,8 @@ class LegacyViewController: UIViewController {
         button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
         button.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         button.addTarget(self, action: #selector(presentWallet), for: .touchUpInside)
+        button.accessibilityIdentifier = "Present Wallet Button"
+        button.accessibilityTraits = UIAccessibilityTraitButton
     }
     
     @objc private func presentWallet() {
