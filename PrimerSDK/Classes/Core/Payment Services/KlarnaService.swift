@@ -5,31 +5,11 @@
 //  Created by Carl Eriksson on 22/02/2021.
 //
 
-public struct OrderItem: Codable {
-    public let name: String
-    public let unitAmount: Int
-    public let quantity: Int
-    
-    public init(
-        name: String,
-        unitAmount: Int,
-        quantity: Int
-    ) {
-        self.name = name
-        self.unitAmount = unitAmount
-        self.quantity = quantity
-    }
-}
-
-
-
-
 protocol KlarnaServiceProtocol {
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func createKlarnaCustomerToken(_ completion: @escaping (Result<String, Error>) -> Void)
     func finalizePaymentSession(_ completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void)
 }
-
 
 class KlarnaService: KlarnaServiceProtocol {
 
