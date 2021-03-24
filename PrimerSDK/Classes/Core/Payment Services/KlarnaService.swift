@@ -31,15 +31,10 @@ class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.noCurrency))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA) else {
-            return completion(.failure(KlarnaException.noPaymentMethodConfigId))
-        }
-        
-        guard let countryCode = self.state.settings.countryCode else {
-            return completion(.failure(KlarnaException.noPaymentMethodConfigId))
-        }
-        
-        guard let currency = self.state.settings.currency else {
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA),
+              let countryCode = self.state.settings.countryCode,
+              let currency = self.state.settings.currency
+        else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
