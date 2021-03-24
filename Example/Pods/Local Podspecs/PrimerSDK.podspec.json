@@ -19,11 +19,18 @@
   "platforms": {
     "ios": "10.0"
   },
-  "source_files": "PrimerSDK/Classes/**/*",
+  "source_files": "Sources/PrimerSDK/Classes/**/*",
   "resource_bundles": {
     "PrimerSDK": [
-      "PrimerSDK/Assets/*.xcassets"
+      "Sources/PrimerSDK/Resources/*.{strings,xcassets}"
     ]
   },
+  "testspecs": [
+    {
+      "name": "PrimerSDKTests",
+      "test_type": "unit",
+      "source_files": "Tests/**/*"
+    }
+  ],
   "swift_version": "4.2"
 }
