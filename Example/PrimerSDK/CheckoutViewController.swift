@@ -332,13 +332,13 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         var subtitle: String
         
         switch paymentMethodToken.paymentInstrumentType {
-        case .PAYMENT_CARD:
+        case .paymentCard:
             //            cell.textLabel?.text = "Card"
             subtitle = "•••• •••• •••• \(paymentMethodToken.paymentInstrumentData?.last4Digits ?? "••••")"
         case .payPalBillingAgreement:
             //            cell.textLabel?.text = "PayPal"
             subtitle = paymentMethodToken.paymentInstrumentData?.externalPayerInfo?.email ?? ""
-        case .GOCARDLESS_MANDATE:
+        case .goCardlessMandate:
             //            cell.textLabel?.text = "Direct Debit"
             subtitle = "Direct Debit"
         default:
