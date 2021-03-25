@@ -7,8 +7,7 @@ struct PaymentMethodTokenizationRequest: Encodable {
     let tokenType: TokenType?
     let paymentFlow: PaymentFlow?
     let customerId: String?
-    var path: String = "/payment-instruments"
-
+    
     init(paymentInstrument: PaymentInstrument, state: AppStateProtocol) {
         self.paymentInstrument = paymentInstrument
         self.tokenType = .multiUse
