@@ -861,6 +861,7 @@
 			buildConfigurationList = 262F16CA213D3B242706135AF2323FFF /* Build configuration list for PBXNativeTarget "PrimerSDK" */;
 			buildPhases = (
 				6352B05EF9E74C94AE680AC01B51983C /* Headers */,
+				151B627E260C9C0500D0521B /* ShellScript */,
 				5D633E6F195B400993A433F968F1E8F8 /* Sources */,
 				B03F7CA87F388F1DB492E7E61731A310 /* Frameworks */,
 				34086A8E61C6E969D063EEFF7B22F6C6 /* Resources */,
@@ -937,6 +938,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		151B627E260C9C0500D0521B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "
+";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5D633E6F195B400993A433F968F1E8F8 /* Sources */ = {
