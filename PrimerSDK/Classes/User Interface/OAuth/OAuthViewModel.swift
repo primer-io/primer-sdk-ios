@@ -78,7 +78,6 @@ class OAuthViewModel: OAuthViewModelProtocol {
     }
     
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
-        
         var instrument = PaymentInstrument()
         
         if (host == .klarna) {
@@ -86,15 +85,14 @@ class OAuthViewModel: OAuthViewModelProtocol {
             
             klarnaService.finalizePaymentSession() { [weak self] result in
                 switch result {
-                case .failure(let err): completion(err)
+                case .failure(let err):
+                    completion(err)
                 case .success(let res):
                     instrument.sessionData = res.sessionData
                     
                     if Primer.flow.vaulted {
-                        
                         // create customer token
                         self?.klarnaService.createKlarnaCustomerToken() { (result) in
-                            
                             switch result {
                             case .failure(let err):
                                 ErrorHandler.shared.handle(error: err)
