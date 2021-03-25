@@ -18,7 +18,7 @@ class PayPalService: PayPalServiceProtocol {
             return nil
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .PAYPAL) else {
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
             return nil
         }
 
@@ -35,11 +35,11 @@ class PayPalService: PayPalServiceProtocol {
 
     func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         guard let clientToken = state.decodedClientToken else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .PAYPAL) else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
         guard let amount = state.settings.amount else {
@@ -65,7 +65,7 @@ class PayPalService: PayPalServiceProtocol {
         api.payPalStartOrderSession(clientToken: clientToken, payPalCreateOrderRequest: body) { [weak self] (result) in
             switch result {
             case .failure:
-                completion(.failure(PrimerError.PayPalSessionFailed))
+                completion(.failure(PrimerError.payPalSessionFailed))
             case .success(let response):
                 self?.state.orderId = response.orderId
                 completion(.success(response.approvalUrl))
@@ -75,11 +75,11 @@ class PayPalService: PayPalServiceProtocol {
 
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         guard let clientToken = state.decodedClientToken else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .PAYPAL) else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
         guard let urlScheme = state.settings.urlScheme else {
@@ -95,7 +95,7 @@ class PayPalService: PayPalServiceProtocol {
         api.payPalStartBillingAgreementSession(clientToken: clientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure:
-                completion(.failure(PrimerError.PayPalSessionFailed))
+                completion(.failure(PrimerError.payPalSessionFailed))
             case .success(let config):
                 self?.state.billingAgreementToken = config.tokenId
                 completion(.success(config.approvalUrl))
@@ -105,15 +105,15 @@ class PayPalService: PayPalServiceProtocol {
 
     func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
         guard let clientToken = state.decodedClientToken else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .PAYPAL) else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
         guard let tokenId = state.billingAgreementToken else {
-            return completion(.failure(PrimerError.PayPalSessionFailed))
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
         let body = PayPalConfirmBillingAgreementRequest(paymentMethodConfigId: configId, tokenId: tokenId)
@@ -121,7 +121,7 @@ class PayPalService: PayPalServiceProtocol {
         api.payPalConfirmBillingAgreement(clientToken: clientToken, payPalConfirmBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure:
-                completion(.failure(PrimerError.PayPalSessionFailed))
+                completion(.failure(PrimerError.payPalSessionFailed))
             case .success(let response):
                 self?.state.confirmedBillingAgreement = response
                 completion(.success(response))

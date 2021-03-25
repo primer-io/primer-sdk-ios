@@ -34,11 +34,11 @@ line_length: 110
 # they can set both implicitly with an array
 type_body_length:
   - 300 # warning
-  - 400 # error
+  # - 400 # error
 # or they can set both explicitly
 file_length:
   warning: 500
-  error: 1200
+  # error: 1200
 # naming rules can set warnings/errors for min_length and max_length
 # additionally they can set excluded names
 type_name:
@@ -50,7 +50,7 @@ type_name:
   allowed_symbols: ["_"] # these are allowed in type names
 identifier_name:
   min_length: # only min_length
-    error: 4 # only error
+    warning: 3 # only error
   excluded: # excluded via string array
     - id
     - URL

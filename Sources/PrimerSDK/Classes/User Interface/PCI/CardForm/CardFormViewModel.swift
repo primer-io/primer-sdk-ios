@@ -22,7 +22,7 @@ class CardFormViewModel: CardFormViewModelProtocol {
             completion(nil)
         } else {
             clientTokenService.loadCheckoutConfig({ error in
-                if error.exists { return completion(PrimerError.ClientTokenNull) }
+                if error.exists { return completion(PrimerError.clientTokenNull) }
                 completion(nil)
             })
         }

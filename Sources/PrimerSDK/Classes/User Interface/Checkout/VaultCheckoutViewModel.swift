@@ -31,8 +31,8 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         } else {
             return state.paymentMethods.filter {
                 switch $0.paymentInstrumentType {
-                case .GOCARDLESS_MANDATE: return true
-                case .PAYMENT_CARD: return true
+                case .goCardlessMandate: return true
+                case .paymentCard: return true
                 default: return false
                 }
             }

@@ -22,7 +22,7 @@ class PaymentMethodComponent: UIView {
         layer.cornerRadius = theme.cornerRadiusTheme.buttons
 
         switch method.type {
-        case .APPLE_PAY:
+        case .applePay:
             backgroundColor = theme.colorTheme.main2
             label.textColor = theme.colorTheme.text2
             addSubview(label)
@@ -31,7 +31,7 @@ class PaymentMethodComponent: UIView {
             configureIconView(icon: method.toIconName().image, color: .white)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
-        case .PAYMENT_CARD:
+        case .paymentCard:
             layer.borderWidth = 1
             layer.borderColor = theme.colorTheme.disabled1.cgColor
             backgroundColor = theme.colorTheme.main1
@@ -42,14 +42,14 @@ class PaymentMethodComponent: UIView {
             configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
-        case .PAYPAL:
+        case .payPal:
 //            layer.borderWidth = 1
             backgroundColor = UIColor(red: 190/255, green: 228/255, blue: 254/255, alpha: 1)
             //            layer.borderColor = theme.colorTheme.disabled1.cgColor
             addSubview(iconView)
             configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1)
             anchorIconView(inRelationToLabel: false)
-        case .GOCARDLESS_MANDATE:
+        case .goCardlessMandate:
             layer.borderWidth = 1
             layer.borderColor = theme.colorTheme.disabled1.cgColor
             backgroundColor = theme.colorTheme.main1
@@ -60,7 +60,7 @@ class PaymentMethodComponent: UIView {
             configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
-        case .KLARNA:
+        case .klarna:
             backgroundColor = UIColor(red: 255/255, green: 179/255, blue: 199/255, alpha: 1)
             addSubview(iconView)
             configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1)

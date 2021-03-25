@@ -42,7 +42,7 @@ class CardButton: UIButton {
         addCardIcon(image: model.imageName.image)
         addBorder()
 
-        if model.paymentMethodType == .GOCARDLESS_MANDATE {
+        if model.paymentMethodType == .goCardlessMandate {
             addDDMandateLabel(value: model.network)
         } else {
             addNetworkName(value: model.network)

@@ -75,14 +75,14 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
 
     func confirmMandateAndTokenize(_ completion: @escaping (Error?) -> Void) {
         directDebitService.createMandate({ [weak self] error in
-            if error.exists { return completion(PrimerError.DirectDebitSessionFailed) }
+            if error.exists { return completion(PrimerError.directDebitSessionFailed) }
 
             guard let state = self?.state else {
-                return completion(PrimerError.DirectDebitSessionFailed)
+                return completion(PrimerError.directDebitSessionFailed)
             }
 
             guard let onTokenizeSuccess = self?.state.settings.onTokenizeSuccess else {
-                return completion(PrimerError.DirectDebitSessionFailed)
+                return completion(PrimerError.directDebitSessionFailed)
             }
 
             let request = PaymentMethodTokenizationRequest(

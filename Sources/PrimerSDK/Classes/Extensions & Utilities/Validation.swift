@@ -22,7 +22,7 @@ final class Validation {
 
     public func validateIsNotEmpty(entry: String) -> Bool {
         let trimmedString = entry.trimmingCharacters(in: .whitespaces)
-        let isValid = trimmedString.count > 0
+        let isValid = !trimmedString.isEmpty
         return isValid
     }
 

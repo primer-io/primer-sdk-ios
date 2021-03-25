@@ -335,7 +335,7 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         case .PAYMENT_CARD:
             //            cell.textLabel?.text = "Card"
             subtitle = "•••• •••• •••• \(paymentMethodToken.paymentInstrumentData?.last4Digits ?? "••••")"
-        case .PAYPAL_BILLING_AGREEMENT:
+        case .payPalBillingAgreement:
             //            cell.textLabel?.text = "PayPal"
             subtitle = paymentMethodToken.paymentInstrumentData?.externalPayerInfo?.email ?? ""
         case .GOCARDLESS_MANDATE:

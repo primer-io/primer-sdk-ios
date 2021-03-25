@@ -128,16 +128,16 @@ enum NetworkServiceError: PrimerErrorProtocol {
 
 enum PrimerError: PrimerErrorProtocol {
 
-    case ClientTokenNull
-    case CustomerIDNull
-    case PayPalSessionFailed
-    case VaultFetchFailed
-    case VaultDeleteFailed
-    case VaultCreateFailed
-    case DirectDebitSessionFailed
-    case ConfigFetchFailed
-    case TokenizationPreRequestFailed
-    case TokenizationRequestFailed
+    case clientTokenNull
+    case customerIDNull
+    case payPalSessionFailed
+    case vaultFetchFailed
+    case vaultDeleteFailed
+    case vaultCreateFailed
+    case directDebitSessionFailed
+    case configFetchFailed
+    case tokenizationPreRequestFailed
+    case tokenizationRequestFailed
 
     static var errorDomain: String = "primer"
 
@@ -159,25 +159,25 @@ enum PrimerError: PrimerErrorProtocol {
 
     var errorDescription: String? {
         switch self {
-        case .ClientTokenNull:
+        case .clientTokenNull:
             return "Client token is missing.".localized()
-        case .CustomerIDNull:
+        case .customerIDNull:
             return "Customer ID is missing.".localized()
-        case .PayPalSessionFailed:
+        case .payPalSessionFailed:
             return "PayPal checkout session failed. Your account has not been charged.".localized()
-        case .VaultFetchFailed:
+        case .vaultFetchFailed:
             return "Failed to fetch saved payment methods.".localized()
-        case .VaultDeleteFailed:
+        case .vaultDeleteFailed:
             return "Failed to delete saved payment method.".localized()
-        case .VaultCreateFailed:
+        case .vaultCreateFailed:
             return "Failed to save payment method.".localized()
-        case .DirectDebitSessionFailed:
+        case .directDebitSessionFailed:
             return "Failed to create a direct debit mandate.\n\n Please try again.".localized()
-        case .ConfigFetchFailed:
+        case .configFetchFailed:
             return "Failed to setup session.".localized()
-        case .TokenizationPreRequestFailed:
+        case .tokenizationPreRequestFailed:
             return "Failed to complete action. Your payment method was not processed.".localized()
-        case .TokenizationRequestFailed:
+        case .tokenizationRequestFailed:
             return "Connection error, your payment method was not saved. Please try again.".localized()
         }
     }

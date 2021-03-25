@@ -104,7 +104,7 @@ class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.noCurrency))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA) else {
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna) else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
@@ -142,7 +142,7 @@ class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.noToken))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA) else {
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna) else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
