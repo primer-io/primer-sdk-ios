@@ -26,7 +26,6 @@ struct KlarnaCreatePaymentSessionAPIRequest: Codable {
     let totalAmount: Int
     let localeData: LocaleData
     let orderItems: [OrderItem]
-    var path: String = "/klarna/payment-sessions"
 }
 
 struct KlarnaSessionCategory: Codable {
@@ -47,7 +46,6 @@ struct KlarnaCreatePaymentSessionAPIResponse: Codable {
 struct KlarnaFinalizePaymentSessionRequest: Codable {
     let paymentMethodConfigId: String
     let sessionId: String
-    var path: String = "/klarna/payment-sessions/finalize"
 }
 
 struct KlarnaSessionOrderLines: Codable {
