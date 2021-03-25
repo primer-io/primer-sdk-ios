@@ -48,10 +48,10 @@ struct PaymentMethodViewModel {
     func toString() -> String {
         log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         switch type {
-        case .PAYMENT_CARD: return Primer.flow.vaulted ? "Add a new card".localized() : "Pay with card".localized()
-        case .APPLE_PAY: return "Pay"
-        case .PAYPAL: return ""
-        case .GOCARDLESS_MANDATE: return "Bank account"
+        case .paymentCard: return Primer.flow.vaulted ? "Add a new card".localized() : "Pay with card".localized()
+        case .applePay: return "Pay"
+        case .payPal: return ""
+        case .goCardlessMandate: return "Bank account"
         default: return ""
         }
     }
@@ -59,10 +59,10 @@ struct PaymentMethodViewModel {
     func toIconName() -> ImageName {
         log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         switch type {
-        case .APPLE_PAY: return ImageName.appleIcon
-        case .PAYPAL: return  ImageName.paypal3
-        case .GOCARDLESS_MANDATE: return ImageName.rightArrow
-        case .KLARNA: return ImageName.klarna
+        case .applePay: return ImageName.appleIcon
+        case .payPal: return  ImageName.paypal3
+        case .goCardlessMandate: return ImageName.rightArrow
+        case .klarna: return ImageName.klarna
         default: return  ImageName.creditCard
         }
     }

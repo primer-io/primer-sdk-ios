@@ -15,7 +15,7 @@ class TokenizationServiceTests: XCTestCase {
     func test_tokenize_calls_api() throws {
         let expectation = XCTestExpectation(description: "Create PayPal payment sesion | Success")
         
-        let mockedToken = PaymentMethodToken(token: "token", paymentInstrumentType: .PAYMENT_CARD, vaultData: VaultData(customerId: "customerId"))
+        let mockedToken = PaymentMethodToken(token: "token", paymentInstrumentType: .paymentCard, vaultData: VaultData(customerId: "customerId"))
         let data = try JSONEncoder().encode(mockedToken)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState()

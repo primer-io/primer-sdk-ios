@@ -13,6 +13,7 @@ class ErrorHandler {
 
     static var shared = ErrorHandler()
 
+    // swiftlint:disable cyclomatic_complexity
     func handle(error: Error) -> Bool {
         log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
 
@@ -38,25 +39,25 @@ class ErrorHandler {
 
         } else if let primerError = error as? PrimerError {
             switch primerError {
-            case .ClientTokenNull:
+            case .clientTokenNull:
                 break
-            case .CustomerIDNull:
+            case .customerIDNull:
                 break
-            case .PayPalSessionFailed:
+            case .payPalSessionFailed:
                 break
-            case .VaultFetchFailed:
+            case .vaultFetchFailed:
                 break
-            case .VaultDeleteFailed:
+            case .vaultDeleteFailed:
                 break
-            case .VaultCreateFailed:
+            case .vaultCreateFailed:
                 break
-            case .DirectDebitSessionFailed:
+            case .directDebitSessionFailed:
                 break
-            case .ConfigFetchFailed:
+            case .configFetchFailed:
                 break
-            case .TokenizationPreRequestFailed:
+            case .tokenizationPreRequestFailed:
                 break
-            case .TokenizationRequestFailed:
+            case .tokenizationRequestFailed:
                 break
             }
 

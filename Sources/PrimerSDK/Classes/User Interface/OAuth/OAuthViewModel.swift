@@ -36,13 +36,13 @@ class OAuthViewModel: OAuthViewModelProtocol {
         clientTokenService.loadCheckoutConfig({ [weak self] error in
             if error != nil {
                 ErrorHandler.shared.handle(error: error!)
-                completion(.failure(PrimerError.PayPalSessionFailed))
+                completion(.failure(PrimerError.payPalSessionFailed))
                 return
             }
             self?.paymentMethodConfigService.fetchConfig({ [weak self] error in
                 if error != nil {
                     ErrorHandler.shared.handle(error: error!)
-                    completion(.failure(PrimerError.PayPalSessionFailed))
+                    completion(.failure(PrimerError.payPalSessionFailed))
                     return
                 }
                 self?.generateOAuthURL(host, with: completion)

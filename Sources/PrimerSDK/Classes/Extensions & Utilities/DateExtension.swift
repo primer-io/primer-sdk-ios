@@ -88,11 +88,12 @@ extension Date {
 
     var `description`: String {
         get {
-            let PREFERRED_LOCALE = "en_US" // Use whatever locale you prefer!
-            return self.description(with: Locale(identifier: PREFERRED_LOCALE))
+            let preferredLocale = "en_US" // Use whatever locale you prefer!
+            return self.description(with: Locale(identifier: preferredLocale))
         }
     }
 
+    // swiftlint:disable identifier_name
     func toString(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil, calendar: Calendar? = nil) -> String {
         let df = DateFormatter()
         df.dateFormat = f

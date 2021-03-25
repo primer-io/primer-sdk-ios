@@ -19,7 +19,7 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
         return amount
 
     }
-    var applePayConfigId: String? { return state.paymentMethodConfig?.getConfigId(for: .APPLE_PAY) }
+    var applePayConfigId: String? { return state.paymentMethodConfig?.getConfigId(for: .applePay) }
     var currency: Currency {
         guard let currency = state.settings.currency else { fatalError("Apple Pay requires currency value!") }
         return currency

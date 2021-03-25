@@ -27,15 +27,19 @@ enum FormTextFieldType: Equatable {
 
     func validate(_ text: String) -> (Bool, String, Bool) {
         switch self {
-        case .accountNumber: return (text.isValidAccountNumber, "Account number is invalid".localized(), false)
-        case .sortCode: return (text.count > 5, "Sort code is required".localized(), false)
+        case .accountNumber:
+            return (text.isValidAccountNumber, "Account number is invalid".localized(), false)
+        case .sortCode:
+            return (text.count > 5, "Sort code is required".localized(), false)
         case .iban:
             if text.count < 1 {
                 return (false, "IBAN is required".localized(), false)
             }
             return (text.count > 5, "IBAN is too short".localized(), false)
-        case .firstName: return (text.count > 0, "First name is required".localized(), false)
-        case .lastName: return (text.count > 0, "Last name is required".localized(), false)
+        case .firstName:
+            return (!text.isEmpty, "First name is required".localized(), false)
+        case .lastName:
+            return (!text.isEmpty, "Last name is required".localized(), false)
         case .email:
             if text.count < 1 {
                 return (false, "Email text field can't be empty".localized(), false)
@@ -44,17 +48,25 @@ enum FormTextFieldType: Equatable {
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
             return (emailPred.evaluate(with: text), "Email value is invalid".localized(), false)
-        case .addressLine1: return (text.count > 0, "Address is required".localized(), false)
+        case .addressLine1:
+            return (!text.isEmpty, "Address is required".localized(), false)
         case .addressLine2:
-            if text.count > 0 { return (true, "", false) }
+            if !text.isEmpty { return (true, "", false) }
             return (true, "", true)
-        case .city: return (text.count > 0, "City is required".localized(), false)
-        case .country: return (text.count > 0, "Country is required".localized(), false)
-        case .postalCode: return (text.count > 0, "Postal code is required".localized(), false)
-        case .cardholderName: return Validation.nameFieldIsValid(text)
-        case .cardNumber: return Validation.cardFieldIsValid(text)
-        case .expiryDate: return Validation.expiryFieldIsValid(text)
-        case .cvc: return Validation.CVCFieldIsValid(text)
+        case .city:
+            return (!text.isEmpty, "City is required".localized(), false)
+        case .country:
+            return (!text.isEmpty, "Country is required".localized(), false)
+        case .postalCode:
+            return (!text.isEmpty, "Postal code is required".localized(), false)
+        case .cardholderName:
+            return Validation.nameFieldIsValid(text)
+        case .cardNumber:
+            return Validation.cardFieldIsValid(text)
+        case .expiryDate:
+            return Validation.expiryFieldIsValid(text)
+        case .cvc:
+            return Validation.CVCFieldIsValid(text)
         }
     }
 

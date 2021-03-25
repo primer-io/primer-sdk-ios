@@ -128,7 +128,7 @@ class FormViewModel: FormViewModelProtocol {
                 case .completeDirectCheckout:
                     self?.state.settings.onTokenizeSuccess(token, { error in
                         if error.exists {
-                            completion(PrimerError.TokenizationRequestFailed)
+                            completion(PrimerError.tokenizationRequestFailed)
                         } else {
                             completion(nil)
                         }

@@ -13,7 +13,7 @@ class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
 
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
         guard let clientToken = state.decodedClientToken else {
-            return completion(PrimerError.ConfigFetchFailed)
+            return completion(PrimerError.configFetchFailed)
         }
 
         api.fetchConfiguration(clientToken: clientToken) { [weak self] (result) in
@@ -27,17 +27,17 @@ class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
 
                 config.paymentMethods?.forEach({ method in
                     guard let type = method.type else { return }
-                    if type == .GOOGLE_PAY { return }
+                    if type == .googlePay { return }
                     self?.state.viewModels.append(PaymentMethodViewModel(type: type))
                 })
 
                 // ensure Apple Pay is always first if present.
                 guard let viewModels = self?.state.viewModels else { return }
-                if (viewModels.contains(where: { model in model.type == .APPLE_PAY})) {
-                    var arr = viewModels.filter({ model in model.type != .APPLE_PAY})
+                if (viewModels.contains(where: { model in model.type == .applePay})) {
+                    var arr = viewModels.filter({ model in model.type != .applePay})
 
                     if self?.state.settings.applePayEnabled == true {
-                        arr.insert(PaymentMethodViewModel(type: .APPLE_PAY), at: 0)
+                        arr.insert(PaymentMethodViewModel(type: .applePay), at: 0)
                     }
 
                     self?.state.viewModels = arr

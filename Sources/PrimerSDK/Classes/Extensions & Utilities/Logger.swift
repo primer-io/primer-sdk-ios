@@ -11,6 +11,7 @@ public enum LogLevel: Int {
     case verbose = 0, debug, info, warning, error
 }
 
+// swiftlint:disable cyclomatic_complexity
 public func log(logLevel: LogLevel = .info, title: String? = nil, message: String? = nil, prefix: String? = nil, suffix: String? = nil, bundle: String? = nil, file: String? = nil, className: String? = nil, function: String? = nil, line: Int? = nil) {
 
     #if DEBUG
@@ -84,7 +85,7 @@ public func log(logLevel: LogLevel = .info, title: String? = nil, message: Strin
         }
 
         if let suffix = suffix {
-            formattedTitle = formattedTitle + " " + suffix
+            formattedTitle += " " + suffix
         }
 
         log += logLevelSymbol + " " + formattedTitle + "\n"
@@ -99,7 +100,7 @@ public func log(logLevel: LogLevel = .info, title: String? = nil, message: Strin
             }
 
             if let suffix = suffix {
-                formattedMessage = formattedMessage + " " + suffix
+                formattedMessage += " " + suffix
             }
         }
 

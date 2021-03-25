@@ -94,12 +94,12 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
         let option = viewModel.availablePaymentOptions[indexPath.section]
 
         switch option.type {
-        case .APPLE_PAY: router.show(.applePay)
-        case .GOOGLE_PAY: break
-        case .PAYMENT_CARD: router.show(.form(type: .cardForm(theme: theme)))
-        case .PAYPAL: router.show(.oAuth(host: .paypal))
-        case .GOCARDLESS_MANDATE: router.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
-        case .KLARNA: router.show(.oAuth(host: .klarna))
+        case .applePay: router.show(.applePay)
+        case .googlePay: break
+        case .paymentCard: router.show(.form(type: .cardForm(theme: theme)))
+        case .payPal: router.show(.oAuth(host: .paypal))
+        case .goCardlessMandate: router.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
+        case .klarna: router.show(.oAuth(host: .klarna))
         }
     }
 }

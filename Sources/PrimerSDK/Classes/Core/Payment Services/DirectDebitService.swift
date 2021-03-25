@@ -18,11 +18,11 @@ class DirectDebitService: DirectDebitServiceProtocol {
 
     func createMandate(_ completion: @escaping (Error?) -> Void) {
         guard let clientToken = state.decodedClientToken else {
-            return completion(PrimerError.DirectDebitSessionFailed)
+            return completion(PrimerError.directDebitSessionFailed)
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .GOCARDLESS_MANDATE) else {
-            return completion(PrimerError.DirectDebitSessionFailed)
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .goCardlessMandate) else {
+            return completion(PrimerError.directDebitSessionFailed)
         }
 
         let mandate = state.directDebitMandate
@@ -49,7 +49,7 @@ class DirectDebitService: DirectDebitServiceProtocol {
         api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { [weak self] result in
             switch result {
             case .failure:
-                completion(PrimerError.DirectDebitSessionFailed)
+                completion(PrimerError.directDebitSessionFailed)
             case .success(let response):
                 self?.state.mandateId = response.mandateId
                 completion(nil)
