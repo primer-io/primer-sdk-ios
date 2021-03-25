@@ -26,7 +26,6 @@ struct KlarnaCreatePaymentSessionAPIRequest: Codable {
     let totalAmount: Int
     let localeData: LocaleData
     let orderItems: [OrderItem]
-    var path: String = "/klarna/payment-sessions"
 }
 
 struct KlarnaSessionCategory: Codable {
@@ -47,32 +46,56 @@ struct KlarnaCreatePaymentSessionAPIResponse: Codable {
 struct KlarnaFinalizePaymentSessionRequest: Codable {
     let paymentMethodConfigId: String
     let sessionId: String
-    var path: String = "/klarna/payment-sessions/finalize"
 }
 
 struct KlarnaSessionOrderLines: Codable {
     let type: String?
     let name: String?
     let quantity: Int?
-    let unit_price: Int?
-    let total_amount: Int?
-    let total_discount_amount: Int?
+    let unitPrice: Int?
+    let totalAmount: Int?
+    let totalDiscountAmount: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case type = "type"
+        case name = "name"
+        case quantity = "quantity"
+        case unitPrice = "unit_price"
+        case totalAmount = "total_amount"
+        case totalDiscountAmount = "total_discount_amount"
+    }
 }
 
 struct KlarnaSessionMerchantUrls: Codable {
-    let status_update: String
+    let statusUpdate: String
+
+    enum CodingKeys: String, CodingKey {
+        case statusUpdate = "status_update"
+    }
 }
 
 struct KlarnaSessionOptions: Codable {
-    let disable_confirmation_modals: Bool
+    let disableConfirmationModals: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case disableConfirmationModals = "disable_confirmation_modals"
+    }
 }
 
 struct KlarnaSessionData: Codable {
-    let purchase_country: String?
-    let purchase_currency: String?
+    let purchaseCountry: String?
+    let purchaseCurrency: String?
     let locale: String?
-    let order_amount: Int?
-    let order_lines: [KlarnaSessionOrderLines]?
+    let orderAmount: Int?
+    let orderLines: [KlarnaSessionOrderLines]?
+
+    enum CodingKeys: String, CodingKey {
+        case purchaseCountry = "purchase_country"
+        case purchaseCurrency = "purchase_currency"
+        case locale = "locale"
+        case orderAmount = "order_amount"
+        case orderLines = "order_lines"
+    }
 }
 
 struct KlarnaFinalizePaymentSessionresponse: Codable {

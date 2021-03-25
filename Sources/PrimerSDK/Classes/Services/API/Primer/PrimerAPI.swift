@@ -63,20 +63,20 @@ extension PrimerAPI {
             return ""
         case .vaultFetchPaymentMethods:
             return "/payment-instruments"
-        case .payPalStartOrderSession(_, let payPalCreateOrderRequest):
-            return payPalCreateOrderRequest.path
-        case .payPalStartBillingAgreementSession(_, let payPalCreateBillingAgreementRequest):
-            return payPalCreateBillingAgreementRequest.path
-        case .payPalConfirmBillingAgreement(_, let payPalConfirmBillingAgreementRequest):
-            return payPalConfirmBillingAgreementRequest.path
-        case .klarnaCreatePaymentSession(_, let klarnaCreatePaymentSessionAPIRequest):
-            return klarnaCreatePaymentSessionAPIRequest.path
-        case .klarnaFinalizePaymentSession(_, let klarnaFinalizePaymentSessionRequest):
-            return klarnaFinalizePaymentSessionRequest.path
-        case .directDebitCreateMandate(_, let mandateRequest):
-            return mandateRequest.path
-        case .tokenizePaymentMethod(_, let paymentMethodTokenizationRequest):
-            return paymentMethodTokenizationRequest.path
+        case .payPalStartOrderSession:
+            return "/paypal/orders/create"
+        case .payPalStartBillingAgreementSession:
+            return "/paypal/billing-agreements/create-agreement"
+        case .payPalConfirmBillingAgreement:
+            return "/paypal/billing-agreements/confirm-agreement"
+        case .klarnaCreatePaymentSession:
+            return "/klarna/payment-sessions"
+        case .klarnaFinalizePaymentSession:
+            return "/klarna/payment-sessions/finalize"
+        case .directDebitCreateMandate:
+            return "/gocardless/mandates"
+        case .tokenizePaymentMethod:
+            return "/payment-instruments"
         }
     }
 
