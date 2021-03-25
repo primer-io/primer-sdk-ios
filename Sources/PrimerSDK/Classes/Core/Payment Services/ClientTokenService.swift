@@ -5,9 +5,9 @@ protocol ClientTokenServiceProtocol {
 }
 
 class ClientTokenService: ClientTokenServiceProtocol {
-    
+
     @Dependency private(set) var state: AppStateProtocol
-    
+
     /**
     performs asynchronous call passed in by app developer, decodes the returned Base64 Primer client token string and adds it to shared state.
      */
@@ -22,7 +22,7 @@ class ClientTokenService: ClientTokenServiceProtocol {
             }
         })
     }
-    
+
 }
 
 #endif

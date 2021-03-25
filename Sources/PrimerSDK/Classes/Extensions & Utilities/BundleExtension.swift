@@ -10,15 +10,15 @@
 import Foundation
 
 internal extension Bundle {
-    
+
     static var primerFramework: Bundle {
         return Bundle(for: Primer.self)
     }
-    
+
     static var primerFrameworkIdentifier: String {
         return Bundle.primerFramework.bundleIdentifier!
     }
-    
+
 }
 
 #endif

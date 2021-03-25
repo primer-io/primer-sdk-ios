@@ -10,27 +10,27 @@
 import UIKit
 
 class RootViewController: UIViewController {
-    
+
     @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var settings: PrimerSettingsProtocol
     @Dependency private(set) var theme: PrimerThemeProtocol
-    
-    let transitionDelegate = TransitionDelegate()
-    
+
+    weak var transitionDelegate = TransitionDelegate()
+
     lazy var backdropView: UIView = UIView()
-    
+
     let mainView = UIView()
-    
+
     var routes: [UIViewController] = []
     var heights: [CGFloat] = []
-    
+
     weak var topConstraint: NSLayoutConstraint?
     weak var bottomConstraint: NSLayoutConstraint?
     weak var heightConstraint: NSLayoutConstraint?
-    
+
     var hasSetPointOrigin = false
     var currentHeight: CGFloat = 0
-    
+
     init() {
         super.init(nibName: nil, bundle: nil)
         if !settings.isFullScreenOnly {
@@ -38,50 +38,49 @@ class RootViewController: UIViewController {
             self.transitioningDelegate = transitionDelegate
         }
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
         NotificationCenter.default.removeObserver(self)
     }
-    
+
     override func viewDidLoad() {
-        
+
         mainView.backgroundColor = theme.colorTheme.main1
-        
+
         if settings.isFullScreenOnly {
-            
+
         } else {
             self.modalPresentationStyle = .custom
             self.transitioningDelegate = transitionDelegate
         }
-        
+
         view.addSubview(backdropView)
         backdropView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mainView)
         backdropView.pin(to: view)
-        
+
 //        mainView.layer.cornerRadius = 10
         if #available(iOS 13.0, *) {
             mainView.clipsToBounds = true
-            mainView.layer.maskedCorners = [.layerMinXMinYCorner,.layerMaxXMinYCorner]
+            mainView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
             mainView.layer.cornerRadius = theme.cornerRadiusTheme.sheetView
         } else {
             // Fallback on earlier versions
             view.backgroundColor = theme.colorTheme.main1
         }
-        
-        
+
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         bottomConstraint = mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomConstraint?.isActive = true
         heightConstraint?.isActive = true
-        
-        if (settings.isFullScreenOnly) {
+
+        if settings.isFullScreenOnly {
             topConstraint = mainView.topAnchor.constraint(equalTo: view.topAnchor)
             topConstraint?.isActive = true
         } else {
@@ -92,9 +91,9 @@ class RootViewController: UIViewController {
             let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
             mainView.addGestureRecognizer(panGesture)
         }
-        
+
         let router: RouterDelegate = DependencyContainer.resolve()
-        
+
         switch Primer.flow {
         case .completeDirectCheckout:
             router.show(.vaultCheckout)
@@ -115,10 +114,10 @@ class RootViewController: UIViewController {
         case .defaultWithVault:
             router.show(.vaultCheckout)
         }
-        
+
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         backdropView.addGestureRecognizer(tapGesture)
-        
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillShow2),
@@ -132,48 +131,48 @@ class RootViewController: UIViewController {
             object: nil
         )
     }
-    
+
     @objc func keyboardWillShow2(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let newConstant = -keyboardSize.height
             let duration = bottomConstraint!.constant.distance(to: newConstant) < 100 ? 0.0 : 0.5
             bottomConstraint!.constant = newConstant
-            
+
             // adjust top anchor if height extends beyond screen
-            if (currentHeight + keyboardSize.height > UIScreen.main.bounds.height - 40) {
+            if currentHeight + keyboardSize.height > UIScreen.main.bounds.height - 40 {
                 currentHeight = UIScreen.main.bounds.height - (40 + keyboardSize.height)
                 heightConstraint?.constant = UIScreen.main.bounds.height - (40 + keyboardSize.height)
             }
-            
-            UIView.animate(withDuration: duration){
+
+            UIView.animate(withDuration: duration) {
                 self.view.layoutIfNeeded()
             }
         }
     }
-    
+
     @objc func keyboardWillHide2(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             bottomConstraint?.constant += keyboardSize.height
-            UIView.animate(withDuration: 0.5){
+            UIView.animate(withDuration: 0.5) {
                 self.view.layoutIfNeeded()
             }
         }
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         settings.onCheckoutDismiss()
     }
-    
+
     @objc func handleTap(_ sender: UITapGestureRecognizer) {
         dismiss(animated: true, completion: nil)
     }
-    
+
     @objc func panGestureRecognizerAction(sender: UIPanGestureRecognizer) {
         let translation = sender.translation(in: view)
-        
+
         heightConstraint?.constant = currentHeight - translation.y
-        
-        if (currentHeight - translation.y < 220) {
+
+        if currentHeight - translation.y < 220 {
             UIView.animate(withDuration: 0.3) { [weak self] in
                 guard let strongSelf = self else { return }
                 strongSelf.currentHeight = 280
@@ -182,10 +181,9 @@ class RootViewController: UIViewController {
             }
             return
         }
-        
-        
+
         if sender.state == .ended {
-            if (currentHeight - translation.y > UIScreen.main.bounds.height - 80) {
+            if currentHeight - translation.y > UIScreen.main.bounds.height - 80 {
                 UIView.animate(withDuration: 0.3) { [weak self] in
                     guard let strongSelf = self else { return }
                     strongSelf.currentHeight = UIScreen.main.bounds.height - 80
@@ -197,7 +195,7 @@ class RootViewController: UIViewController {
             }
         }
     }
-    
+
 }
 
 extension Optional where Wrapped == NSLayoutConstraint {

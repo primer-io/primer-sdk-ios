@@ -32,7 +32,7 @@ public enum ImageName: String {
         camera,
         error,
         klarna
-    
+
     public var image: UIImage? {
         let frameworkBundle = Bundle(for: Primer.self)
         let bundleURL = frameworkBundle.resourceURL?.appendingPathComponent("PrimerSDK.bundle")

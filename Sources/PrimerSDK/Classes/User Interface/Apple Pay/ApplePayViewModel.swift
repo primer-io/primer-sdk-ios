@@ -1,4 +1,3 @@
-
 #if canImport(UIKit)
 
 protocol ApplePayViewModelProtocol {
@@ -14,7 +13,7 @@ protocol ApplePayViewModelProtocol {
 }
 
 class ApplePayViewModel: ApplePayViewModelProtocol {
-    
+
     var amount: Int {
         guard let amount = state.settings.amount else { fatalError("Apple Pay requires amount value!") }
         return amount
@@ -29,16 +28,16 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
     var countryCode: CountryCode? { return state.settings.countryCode }
     var uxMode: UXMode { return Primer.flow.uxMode }
     var clientToken: DecodedClientToken? { return state.decodedClientToken }
-    
+
     @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
     @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var state: AppStateProtocol
-    
+
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
-    
+
     func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
         let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
         tokenizationService.tokenize(request: request) { [weak self] result in

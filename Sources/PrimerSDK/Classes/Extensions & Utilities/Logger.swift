@@ -12,13 +12,13 @@ public enum LogLevel: Int {
 }
 
 public func log(logLevel: LogLevel = .info, title: String? = nil, message: String? = nil, prefix: String? = nil, suffix: String? = nil, bundle: String? = nil, file: String? = nil, className: String? = nil, function: String? = nil, line: Int? = nil) {
-    
+
     #if DEBUG
     if logLevel.rawValue < LogLevel.debug.rawValue { return }
-    
+
     var log: String = "\n"
     let now = Date()
-    
+
     var logLevelSymbol: String = ""
     switch logLevel {
     case .verbose:
@@ -32,7 +32,7 @@ public func log(logLevel: LogLevel = .info, title: String? = nil, message: Strin
     case .error:
         logLevelSymbol = "🛑"
     }
-    
+
     switch logLevel {
     case .verbose:
         log += "\(logLevelSymbol) [VERBOSE] @ \(now.toString(withFormat: "yyyy-MM-dd'T'HH:mm:ss"))\n"
@@ -45,14 +45,14 @@ public func log(logLevel: LogLevel = .info, title: String? = nil, message: Strin
     case .error:
         log += "\(logLevelSymbol) [ERROR] @ \(now.toString(withFormat: "yyyy-MM-dd'T'HH:mm:ss"))\n"
     }
-    
+
     if bundle != nil || file != nil || className != nil || function != nil || line != nil {
         var logHelpersArray: [String] = []
-        
+
         if let bundle = bundle {
             logHelpersArray.append(bundle)
         }
-        
+
         if let file = file {
             if let formattedFile = file.split(separator: "/").last {
                 logHelpersArray.append(String(formattedFile))
@@ -60,52 +60,52 @@ public func log(logLevel: LogLevel = .info, title: String? = nil, message: Strin
                 logHelpersArray.append(file)
             }
         }
-        
+
         if let className = className {
             logHelpersArray.append(className)
         }
-        
+
         if let function = function {
             logHelpersArray.append(function)
         }
-        
+
         if let line = line {
             logHelpersArray.append(String(line))
         }
-        
+
         log += "\(logLevelSymbol) [\(logHelpersArray.joined(separator: " : "))]\n"
     }
-    
+
     if let title = title {
         var formattedTitle = "\(title)"
-        
+
         if let prefix = prefix {
             formattedTitle = prefix + " " + formattedTitle
         }
-        
+
         if let suffix = suffix {
             formattedTitle = formattedTitle + " " + suffix
         }
-        
+
         log += logLevelSymbol + " " + formattedTitle + "\n"
     }
-    
+
     if let message = message {
         var formattedMessage = message
-        
+
         if title == nil && (prefix != nil || suffix != nil) {
             if let prefix = prefix {
                 formattedMessage = prefix + " " + formattedMessage
             }
-            
+
             if let suffix = suffix {
                 formattedMessage = formattedMessage + " " + suffix
             }
         }
-        
+
         log += logLevelSymbol + " " +  formattedMessage + "\n"
     }
-    
+
     log += "\n"
     print(log)
     #endif

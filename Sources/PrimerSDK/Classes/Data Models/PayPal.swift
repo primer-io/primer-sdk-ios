@@ -16,7 +16,7 @@ struct PayPalCreateOrderRequest: Codable {
     let paymentMethodConfigId: String
     let amount: Int
     let currencyCode: Currency
-    var locale: CountryCode? = nil
+    var locale: CountryCode?
     let returnUrl: String
     let cancelUrl: String
     var path: String = "/paypal/orders/create"
@@ -48,8 +48,6 @@ struct PayPalOrderLink: Decodable {
     let rel: String?
     let method: String?
 }
-
-
 
 struct PayPalConfirmBillingAgreementRequest: Encodable {
     let paymentMethodConfigId, tokenId: String

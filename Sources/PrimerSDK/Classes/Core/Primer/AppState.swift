@@ -29,9 +29,9 @@ protocol AppStateProtocol: class {
 }
 
 class AppState: AppStateProtocol {
-    
+
     @Dependency private(set) var settings: PrimerSettingsProtocol
-    
+
     var viewModels: [PaymentMethodViewModel] = []
     var paymentMethods: [PaymentMethodToken] = []
     var selectedPaymentMethod: String = ""
