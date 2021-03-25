@@ -12,10 +12,10 @@ protocol DirectDebitServiceProtocol {
 }
 
 class DirectDebitService: DirectDebitServiceProtocol {
-    
+
     @Dependency private(set) var api: PrimerAPIClientProtocol
     @Dependency private(set) var state: AppStateProtocol
-    
+
     func createMandate(_ completion: @escaping (Error?) -> Void) {
         guard let clientToken = state.decodedClientToken else {
             return completion(PrimerError.DirectDebitSessionFailed)
@@ -24,9 +24,9 @@ class DirectDebitService: DirectDebitServiceProtocol {
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .GOCARDLESS_MANDATE) else {
             return completion(PrimerError.DirectDebitSessionFailed)
         }
-        
+
         let mandate = state.directDebitMandate
-        
+
         let body = DirectDebitCreateMandateRequest(
             id: configId,
             userDetails: UserDetails(
@@ -45,7 +45,7 @@ class DirectDebitService: DirectDebitServiceProtocol {
                 accountNumber: mandate.accountNumber
             )
         )
-        
+
         api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { [weak self] result in
             switch result {
             case .failure:

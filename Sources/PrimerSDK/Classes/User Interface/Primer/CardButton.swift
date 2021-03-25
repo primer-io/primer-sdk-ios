@@ -10,9 +10,9 @@
 import UIKit
 
 class CardButton: UIButton {
-    
+
     @Dependency private(set) var theme: PrimerThemeProtocol
-    
+
     private var iconView = UIImageView()
     private var networkLabel = UILabel()
     private var cardholderLabel = UILabel()
@@ -20,29 +20,29 @@ class CardButton: UIButton {
     private var expiryLabel = UILabel()
     private var border = UIView()
     private var checkView = UIImageView()
-    
+
     private weak var widthConstraint: NSLayoutConstraint?
     private weak var trailingConstraint: NSLayoutConstraint?
     private weak var leadingConstraint: NSLayoutConstraint?
     private weak var heightConstraint: NSLayoutConstraint?
-    
+
     var showIcon = true
-    
+
     func render(model: CardButtonViewModel?, showIcon: Bool = true) {
         guard let model = model else { return }
 
         addIcon()
-        if (showIcon) {
-            
+        if showIcon {
+
         } else {
             self.showIcon = false
             toggleIcon()
         }
-        
+
         addCardIcon(image: model.imageName.image)
         addBorder()
-        
-        if (model.paymentMethodType == .GOCARDLESS_MANDATE) {
+
+        if model.paymentMethodType == .GOCARDLESS_MANDATE {
             addDDMandateLabel(value: model.network)
         } else {
             addNetworkName(value: model.network)
@@ -50,9 +50,9 @@ class CardButton: UIButton {
             addLast4Digits(value: model.last4)
             addExpiryDetails(value: model.expiry)
         }
-        
+
     }
-    
+
     func reload(model: CardButtonViewModel?) {
         iconView.image = model?.imageName.image
         networkLabel.text = model?.network
@@ -61,26 +61,26 @@ class CardButton: UIButton {
         expiryLabel.text = model?.expiry
         toggleBorder(isSelected: false)
     }
-    
+
     func toggleBorder(isSelected: Bool, isError: Bool = false) {
-        if (isError) { return border.layer.borderColor = theme.colorTheme.error1.cgColor }
+        if isError { return border.layer.borderColor = theme.colorTheme.error1.cgColor }
         border.layer.borderWidth = isSelected ? 1.5 : 1
         border.layer.borderColor = isSelected ? theme.colorTheme.tint1.cgColor : theme.colorTheme.disabled1.cgColor
     }
-    
+
     private func addCardIcon(image: UIImage?) {
         iconView = UIImageView(image: image)
         iconView.clipsToBounds = true
         addSubview(iconView)
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        
-        if (iconView.image == ImageName.bank.image) {
-            
+
+        if iconView.image == ImageName.bank.image {
+
             let tintedIcon = image?.withRenderingMode(.alwaysTemplate)
             iconView.tintColor = theme.colorTheme.tint1
             iconView.image = tintedIcon
-            
+
             iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17).isActive = true
             iconView.heightAnchor.constraint(equalToConstant: 24).isActive = true
             iconView.widthAnchor.constraint(equalToConstant: 24).isActive = true
@@ -90,7 +90,7 @@ class CardButton: UIButton {
             iconView.widthAnchor.constraint(equalToConstant: 38).isActive = true
         }
     }
-    
+
     private func addDDMandateLabel(value: String) {
         let label = UILabel()
         label.text = value
@@ -99,20 +99,20 @@ class CardButton: UIButton {
         label.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 17).isActive = true
         label.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
-    
+
     private func addNetworkName(value: String) {
         networkLabel = UILabel()
         networkLabel.text = value
         addSubview(networkLabel)
         networkLabel.translatesAutoresizingMaskIntoConstraints = false
-        if (iconView.image == ImageName.bank.image?.withRenderingMode(.alwaysTemplate)) {
+        if iconView.image == ImageName.bank.image?.withRenderingMode(.alwaysTemplate) {
             networkLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 17).isActive = true
         } else {
             networkLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 10).isActive = true
         }
         networkLabel.bottomAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
-    
+
     private func addCardholderName(value: String) {
         cardholderLabel = UILabel()
         cardholderLabel.text = value
@@ -123,7 +123,7 @@ class CardButton: UIButton {
         cardholderLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -88).isActive = true
         cardholderLabel.topAnchor.constraint(equalTo: networkLabel.bottomAnchor, constant: 6).isActive = true
     }
-    
+
     private func addLast4Digits(value: String) {
         last4Label = UILabel()
         last4Label.text = value
@@ -133,7 +133,7 @@ class CardButton: UIButton {
         leadingConstraint?.isActive = true
         last4Label.bottomAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
-    
+
     private func addExpiryDetails(value: String) {
         expiryLabel = UILabel()
         expiryLabel.text = value
@@ -143,7 +143,7 @@ class CardButton: UIButton {
         expiryLabel.trailingAnchor.constraint(equalTo: last4Label.trailingAnchor).isActive = true
         expiryLabel.topAnchor.constraint(equalTo: last4Label.bottomAnchor, constant: 6).isActive = true
     }
-    
+
     private func addBorder() {
         border = UIView()
         border.layer.borderColor = theme.colorTheme.disabled1.cgColor
@@ -154,15 +154,15 @@ class CardButton: UIButton {
         border.pin(to: self)
         border.isUserInteractionEnabled = false
     }
-    
+
     private func addIcon() {
         checkView = UIImageView(image: ImageName.check2.image)
-        
+
         // color
         let tintedIcon = ImageName.check2.image?.withRenderingMode(.alwaysTemplate)
         checkView.tintColor = theme.colorTheme.tint1
         checkView.image = tintedIcon
-        
+
         addSubview(checkView)
         checkView.translatesAutoresizingMaskIntoConstraints = false
         checkView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
@@ -173,11 +173,11 @@ class CardButton: UIButton {
         heightConstraint = checkView.heightAnchor.constraint(equalToConstant: 22)
         heightConstraint?.isActive = true
     }
-    
+
     func toggleError(isEnabled: Bool) {
         checkView.image = isEnabled ? ImageName.delete.image : ImageName.check2.image
-        
-        if (checkView.image == ImageName.check2.image) {
+
+        if checkView.image == ImageName.check2.image {
             leadingConstraint?.constant = -14
             trailingConstraint?.constant = 14
             widthConstraint?.constant = 14
@@ -188,21 +188,21 @@ class CardButton: UIButton {
             widthConstraint?.constant = 22
         }
     }
-    
+
     func toggleIcon() {
         trailingConstraint?.constant = showIcon ? -14 : 0
         widthConstraint?.constant = showIcon ? 14 : 0
         heightConstraint?.constant = showIcon ? 14 : 0
     }
-    
+
     func hideIcon(_ val: Bool) {
         checkView.isHidden = !val
     }
-    
+
     func hideBorder() {
         border.isHidden = true
     }
-    
+
     func addSeparatorLine() {
         let line = UIView()
         line.backgroundColor = theme.colorTheme.disabled1

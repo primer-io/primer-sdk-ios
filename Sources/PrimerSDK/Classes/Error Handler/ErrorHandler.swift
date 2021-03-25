@@ -10,12 +10,12 @@
 import Foundation
 
 class ErrorHandler {
-    
+
     static var shared = ErrorHandler()
-    
+
     func handle(error: Error) -> Bool {
         log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-        
+
         if let networkServiceError = error as? NetworkServiceError {
             switch networkServiceError {
             case .invalidURL:
@@ -35,7 +35,7 @@ class ErrorHandler {
             case .underlyingError(let error):
                 break
             }
-            
+
         } else if let primerError = error as? PrimerError {
             switch primerError {
             case .ClientTokenNull:
@@ -77,14 +77,14 @@ class ErrorHandler {
             case .noPaymentMethodConfigId:
                 break
             }
-            
-        } else  {
+
+        } else {
             let nsError = error as NSError
         }
-        
+
         return false
     }
-    
+
 }
 
 #endif

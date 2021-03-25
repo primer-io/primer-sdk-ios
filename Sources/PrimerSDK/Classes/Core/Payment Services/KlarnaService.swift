@@ -79,12 +79,10 @@ struct KlarnaFinalizePaymentSessionresponse: Codable {
     let sessionData: KlarnaSessionData
 }
 
-
 protocol KlarnaServiceProtocol {
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func finalizePaymentSession(_ completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void)
 }
-
 
 class KlarnaService: KlarnaServiceProtocol {
 

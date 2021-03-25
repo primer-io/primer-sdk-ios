@@ -12,7 +12,7 @@ struct DirectDebitMandate {
 
 public struct Address: Codable {
     public var addressLine1, addressLine2, city, state, countryCode, postalCode: String?
-    
+
     public init(
         addressLine1: String? = nil,
         addressLine2: String? = nil,
@@ -28,7 +28,7 @@ public struct Address: Codable {
         self.countryCode = countryCode
         self.postalCode = postalCode
     }
-    
+
     public func toString() -> String {
         return "\(addressLine1 ?? "")\(addressLine2?.withComma ?? "")\(city?.withComma ?? "")\(postalCode?.withComma ?? "")\(countryCode?.withComma ?? "")"
     }
@@ -36,7 +36,7 @@ public struct Address: Codable {
 
 extension String {
     var withComma: String {
-        if (self.count == 0) { return "" }
+        if self.count == 0 { return "" }
         return ", " + self
     }
 }

@@ -10,17 +10,17 @@
 import UIKit
 
 class PaymentMethodComponent: UIView {
-    
+
     @Dependency private(set) var theme: PrimerThemeProtocol
-    
+
     let label = UILabel()
     let iconView = UIImageView()
-    
+
     init(frame: CGRect, method: PaymentMethodViewModel) {
         super.init(frame: frame)
-        
+
         layer.cornerRadius = theme.cornerRadiusTheme.buttons
-        
+
         switch method.type {
         case .APPLE_PAY:
             backgroundColor = theme.colorTheme.main2
@@ -68,7 +68,7 @@ class PaymentMethodComponent: UIView {
         default: break
         }
     }
-    
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
@@ -79,13 +79,13 @@ extension PaymentMethodComponent {
         isBold: Bool = false
     ) {
         label.text = title
-        if (isBold) {
+        if isBold {
             label.font = UIFont.boldSystemFont(ofSize: 20)
         }
     }
-    
+
     func configureIconView(icon: UIImage?, color: UIColor = .black, isMonoColor: Bool = false) {
-        if (isMonoColor) {
+        if isMonoColor {
             let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
             iconView.tintColor = color
             iconView.image = tintedIcon
@@ -103,14 +103,14 @@ extension PaymentMethodComponent {
         label.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         label.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 12).isActive = true
     }
-    
+
     func anchorIconView(inRelationToLabel: Bool) {
         iconView.translatesAutoresizingMaskIntoConstraints = false
 //        iconView.heightAnchor.constraint(equalToConstant: 20).isActive = true
         iconView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         iconView.heightAnchor.constraint(equalToConstant: iconView.intrinsicContentSize.height * 0.75).isActive = true
         iconView.widthAnchor.constraint(equalToConstant: iconView.intrinsicContentSize.width * 0.75).isActive = true
-        if (inRelationToLabel) {
+        if inRelationToLabel {
             iconView.trailingAnchor.constraint(equalTo: label.leadingAnchor, constant: -6).isActive = true
         } else {
             iconView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true

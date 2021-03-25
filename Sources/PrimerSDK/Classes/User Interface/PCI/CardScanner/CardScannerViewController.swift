@@ -15,16 +15,15 @@ protocol CardScannerViewControllerDelegate: class {
 
 @available(iOS 12, *)
 class CardScannerViewController: UIViewController {
-    
-    
+
     let simpleScanVC = SimpleScanViewController.createViewController()
-    
-    let transitionDelegate = TransitionDelegate()
+
+    weak var transitionDelegate = TransitionDelegate()
     @Dependency private(set) var viewModel: CardScannerViewModelProtocol
     @Dependency private(set) var router: RouterDelegate
-    
+
     var scannerView: ScannerView?
-    
+
     weak var delegate: CardScannerViewControllerDelegate?
 
     init() {
@@ -32,18 +31,18 @@ class CardScannerViewController: UIViewController {
         self.modalPresentationStyle = .custom
         self.transitioningDelegate = transitionDelegate
     }
-    
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
+
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
-    
+
     public override func viewDidLoad() {
         scannerView = ScannerView(frame: view.frame, delegate: self, simpleScanView: simpleScanVC.view)
         self.addScannerView()
     }
-    
+
     private func addScannerView() {
         guard let scannerView = scannerView else { return }
         simpleScanVC.delegate = self
@@ -61,7 +60,7 @@ class CardScannerViewController: UIViewController {
         simpleScanVC.blurView.backgroundColor = .none
         simpleScanVC.roiView.backgroundColor = .none
     }
-    
+
     private func removeScannerView() {
         simpleScanVC.willMove(toParent: nil)
         simpleScanVC.removeFromParent()

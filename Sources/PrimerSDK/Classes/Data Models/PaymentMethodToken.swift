@@ -1,4 +1,3 @@
-
 #if canImport(UIKit)
 
 struct GetVaultedPaymentMethodsResponse: Decodable {
@@ -23,7 +22,7 @@ public struct PaymentMethodToken: Codable {
     public var paymentInstrumentData: PaymentInstrumentData?
     public var vaultData: VaultData?
     public var threeDSecureAuthentication: ThreeDSecureAuthentication?
-    
+
     var description: String {
         switch self.paymentInstrumentType {
         case .PAYMENT_CARD:
@@ -35,7 +34,7 @@ public struct PaymentMethodToken: Codable {
         default: return "UNKNOWN"
         }
     }
-    
+
     public var icon: ImageName {
         switch self.paymentInstrumentType {
         case .PAYMENT_CARD:

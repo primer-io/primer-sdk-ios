@@ -26,7 +26,7 @@ enum Route {
     case error(message: String = "")
     case confirmMandate
     case form(type: FormType, closeOnSubmit: Bool = false)
-    
+
     var viewController: UIViewController? {
         switch self {
         #if canImport(CardScan)
@@ -67,7 +67,7 @@ enum Route {
             return FormViewController()
         }
     }
-    
+
     var height: CGFloat {
         switch self {
         #if canImport(CardScan)

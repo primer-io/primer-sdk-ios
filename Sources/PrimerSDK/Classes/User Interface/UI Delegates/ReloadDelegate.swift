@@ -6,6 +6,5 @@
 //
 
 protocol ReloadDelegate: class {
-    func reload() -> Void
+    func reload()
 }
-

@@ -7,40 +7,40 @@ protocol ScannerViewDelegate: class {
 }
 
 class ScannerView: UIView {
-    
+
     @Dependency private(set) var theme: PrimerThemeProtocol
-    
+
     let navBar = UINavigationBar()
     let descriptionLabel = UILabel()
     let skipButton = UIButton()
-    
+
     weak var scannerView: UIView?
     weak var delegate: ScannerViewDelegate?
-    
+
     init(frame: CGRect, delegate: ScannerViewDelegate?, simpleScanView: UIView) {
         self.delegate = delegate
         self.scannerView = simpleScanView
-        
+
         super.init(frame: frame)
-        
+
         guard let scannerView = scannerView else { return }
-        
+
         addSubview(scannerView)
         addSubview(navBar)
         addSubview(descriptionLabel)
         addSubview(skipButton)
-        
+
         configureNavBar()
         configureDescriptionLabel()
         configureScannerView()
         configureSkipButton()
-        
+
         anchorNavBar()
         setSkipButtonConstraints()
         anchorDescriptionLabel()
         setScannerViewConstraints()
     }
-    
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
@@ -58,19 +58,19 @@ extension ScannerView {
         navBar.setItems([navItem], animated: false)
         navBar.topItem?.title = theme.content.scannerView.titleText
     }
-    
+
     @objc private func cancel() { delegate?.cancel() }
-    
+
     private func configureDescriptionLabel() {
         descriptionLabel.text = theme.content.scannerView.descriptionText
         descriptionLabel.textColor = theme.colorTheme.text1
     }
-    
+
     private func configureScannerView() {
         scannerView?.clipsToBounds = true
-        scannerView?.layer.cornerRadius = theme.cornerRadiusTheme.buttons //⚠️
+        scannerView?.layer.cornerRadius = theme.cornerRadiusTheme.buttons // ⚠️
     }
-    
+
     private func configureSkipButton() {
         skipButton.setTitle(theme.content.scannerView.skipButtonText, for: .normal)
         skipButton.setTitleColor(theme.colorTheme.text3, for: .normal)

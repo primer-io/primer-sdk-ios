@@ -14,7 +14,7 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
 }
 
 enum KlarnaException: PrimerErrorProtocol {
-    
+
     case invalidUrl
     case noToken
     case noCoreUrl
@@ -22,9 +22,9 @@ enum KlarnaException: PrimerErrorProtocol {
     case noAmount
     case noCurrency
     case noPaymentMethodConfigId
-    
+
     static var errorDomain: String = "primer.klarna"
-    
+
     var errorCode: Int {
         switch self {
         default:
@@ -32,15 +32,15 @@ enum KlarnaException: PrimerErrorProtocol {
             return 100
         }
     }
-    
-    var errorUserInfo: [String : Any] {
+
+    var errorUserInfo: [String: Any] {
         switch self {
         default:
             // Do we want more information on the errors? E.g. timestamps?
             return [:]
         }
     }
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidUrl:
@@ -59,18 +59,18 @@ enum KlarnaException: PrimerErrorProtocol {
             return "Failed to find Klarna configuration".localized()
         }
     }
-    
+
     var shouldBePresented: Bool {
         switch self {
         default:
             return true
         }
     }
-    
+
 }
 
 enum NetworkServiceError: PrimerErrorProtocol {
-    
+
     case invalidURL
     case unauthorised(_ info: PrimerErrorResponse?)
     case clientError(_ statusCode: Int, info: PrimerErrorResponse?)
@@ -78,9 +78,9 @@ enum NetworkServiceError: PrimerErrorProtocol {
     case noData
     case parsing(_ error: Error, _ data: Data)
     case underlyingError(_ error: Error)            // Use this error when we have received an error JSON from the backend.
-    
+
     static var errorDomain: String = "primer.network"
-    
+
     var errorCode: Int {
         switch self {
         default:
@@ -88,15 +88,15 @@ enum NetworkServiceError: PrimerErrorProtocol {
             return 100
         }
     }
-    
-    var errorUserInfo: [String : Any] {
+
+    var errorUserInfo: [String: Any] {
         switch self {
         default:
             // Do we want more information on the errors? E.g. timestamps?
             return [:]
         }
     }
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidURL:
@@ -116,18 +116,18 @@ enum NetworkServiceError: PrimerErrorProtocol {
             return error.localizedDescription
         }
     }
-    
+
     var shouldBePresented: Bool {
         switch self {
         default:
             return true
         }
     }
-    
+
 }
 
 enum PrimerError: PrimerErrorProtocol {
-    
+
     case ClientTokenNull
     case CustomerIDNull
     case PayPalSessionFailed
@@ -138,9 +138,9 @@ enum PrimerError: PrimerErrorProtocol {
     case ConfigFetchFailed
     case TokenizationPreRequestFailed
     case TokenizationRequestFailed
-    
+
     static var errorDomain: String = "primer"
-    
+
     var errorCode: Int {
         switch self {
         default:
@@ -148,15 +148,15 @@ enum PrimerError: PrimerErrorProtocol {
             return 100
         }
     }
-    
-    var errorUserInfo: [String : Any] {
+
+    var errorUserInfo: [String: Any] {
         switch self {
         default:
             // Do we want more information on the errors? E.g. timestamps?
             return [:]
         }
     }
-    
+
     var errorDescription: String? {
         switch self {
         case .ClientTokenNull:
@@ -181,14 +181,14 @@ enum PrimerError: PrimerErrorProtocol {
             return "Connection error, your payment method was not saved. Please try again.".localized()
         }
     }
-    
+
     var shouldBePresented: Bool {
         switch self {
         default:
             return true
         }
     }
-    
+
 }
 
 struct PrimerErrorResponse: Codable {

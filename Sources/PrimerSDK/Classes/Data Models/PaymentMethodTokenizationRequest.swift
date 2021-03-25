@@ -1,4 +1,3 @@
-
 #if canImport(UIKit)
 
 import Foundation
@@ -9,37 +8,37 @@ struct PaymentMethodTokenizationRequest: Encodable {
     let paymentFlow: PaymentFlow?
     let customerId: String?
     var path: String = "/payment-instruments"
-    
+
     init(paymentInstrument: PaymentInstrument, state: AppStateProtocol) {
         self.paymentInstrument = paymentInstrument
         self.tokenType = .multiUse
         self.paymentFlow = PaymentFlow.vault
         self.customerId = state.settings.customerId
     }
-    
+
 }
 
 struct PaymentInstrument: Encodable {
     // Card
-    var number: String? = nil
-    var cvv: String? = nil
-    var expirationMonth: String? = nil
-    var expirationYear: String? = nil
-    var cardholderName: String? = nil
+    var number: String?
+    var cvv: String?
+    var expirationMonth: String?
+    var expirationYear: String?
+    var cardholderName: String?
     // PayPal
-    var paypalOrderId: String? = nil
-    var paypalBillingAgreementId: String? = nil
-    var shippingAddress: ShippingAddress? = nil
-    var externalPayerInfo: PayPalExternalPayerInfo? = nil
+    var paypalOrderId: String?
+    var paypalBillingAgreementId: String?
+    var shippingAddress: ShippingAddress?
+    var externalPayerInfo: PayPalExternalPayerInfo?
     // Apple Pay
-    var paymentMethodConfigId: String? = nil
-    var token: ApplePayToken? = nil
-    var merchantIdentifier: String? = nil
+    var paymentMethodConfigId: String?
+    var token: ApplePayToken?
+    var merchantIdentifier: String?
     // Direct Debit (GoCardless)
-    var gocardlessMandateId: String? = nil
+    var gocardlessMandateId: String?
     // Klarna payment session
-    var klarnaAuthorizationToken: String? = nil
-    var sessionData: KlarnaSessionData? = nil
+    var klarnaAuthorizationToken: String?
+    var sessionData: KlarnaSessionData?
 }
 
 enum TokenType: String, Encodable {

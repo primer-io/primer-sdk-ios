@@ -11,23 +11,23 @@ import UIKit
 
 class FormViewController: UIViewController {
     let subview: FormView = FormView()
-    
+
     @Dependency private(set) var viewModel: FormViewModelProtocol
-    
+
     weak var reloadDelegate: ReloadDelegate?
-    
+
     var formType: FormType
-    
+
     init() {
         let state: AppStateProtocol = DependencyContainer.resolve()
         formType = state.routerState.formType!
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         view.addSubview(subview)
         subview.delegate = self
@@ -35,43 +35,43 @@ class FormViewController: UIViewController {
         subview.render()
         view.layoutIfNeeded()
     }
-    
+
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
 }
 
 extension FormViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {   //delegate method
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {   // delegate method
         textField.resignFirstResponder()
         return true
     }
 }
 
 extension FormViewController: FormViewDelegate {
-    
+
     func back() {
         view.endEditing(true)
         viewModel.onReturnButtonTapped()
     }
-    
+
     func openLink() {
-        
+
     }
-    
+
     func submit(_ value: String?, type: FormTextFieldType) {
         viewModel.setState(value, type: type)
     }
-    
+
     var submitButtonTitle: String {
         return viewModel.getSubmitButtonTitle(formType: formType)
     }
-    
+
     func onSubmit() {
         view.endEditing(true)
         viewModel.onSubmit(formType: formType)
     }
-    
+
     func onBottomLinkTapped() {
         #if canImport(CardScan)
         viewModel.onBottomLinkTapped(delegate: self)
