@@ -89,12 +89,8 @@ class URLSessionStack: NetworkService {
                 #endif
                 
                 var result: T!
-                switch (endpoint as! PrimerAPI) {
-                case .klarnaFinalizePaymentSession:
-                    result = try self.parser.parse(T.self, from: data, keyDecodingStrategy: .convertFromSnakeCase)
-                default:
-                    result = try self.parser.parse(T.self, from: data, keyDecodingStrategy: nil)
-                }
+                
+                result = try self.parser.parse(T.self, from: data, keyDecodingStrategy: nil)
                 
                 DispatchQueue.main.async { completion(.success(result)) }
             } catch {
