@@ -22,6 +22,7 @@ protocol PrimerSettingsProtocol {
     var hasDisabledSuccessScreen: Bool { get }
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
+    var orderItems: [OrderItem] { get }
 }
 
 /**
@@ -60,6 +61,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     public let hasDisabledSuccessScreen: Bool
     public let businessDetails: BusinessDetails?
     public let directDebitHasNoAmount: Bool
+    public let orderItems: [OrderItem]
     
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return delegate?.clientTokenCallback ?? { completion in }
@@ -89,7 +91,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
         businessDetails: BusinessDetails? = nil,
-        directDebitHasNoAmount: Bool = false
+        directDebitHasNoAmount: Bool = false,
+        orderItems: [OrderItem] = []
     ) {
         self.amount = amount
         self.currency = currency
@@ -105,6 +108,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
         self.businessDetails = businessDetails
         self.directDebitHasNoAmount = directDebitHasNoAmount
+        self.orderItems = orderItems
     }
 }
 

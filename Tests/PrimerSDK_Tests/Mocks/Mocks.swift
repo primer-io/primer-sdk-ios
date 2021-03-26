@@ -66,6 +66,8 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var orderItems: [OrderItem] = []
+    
     
     var isFullScreenOnly: Bool {
         return false
@@ -117,9 +119,11 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 }
 
 class MockAppState: AppStateProtocol {
-    var authorizationToken: String?
+    var customerToken: String? = "customerToken"
     
-    var sessionId: String?
+    var authorizationToken: String? = "authToken"
+    
+    var sessionId: String? = "klarnaSessionId123"
     
     var cardData: CardData = CardData(name: "", number: "", expiryYear: "", expiryMonth: "", cvc: "")
     
