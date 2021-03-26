@@ -1,3 +1,4 @@
+
 Pod::Spec.new do |spec|
     spec.name         = "PrimerSDK"
     spec.version      = "1.2.3"
@@ -13,13 +14,13 @@ Pod::Spec.new do |spec|
     spec.swift_version = "4.2"
     spec.ios.deployment_target = '10.0'
     
-    spec.source_files = 'PrimerSDK/Classes/**/*'
+    spec.source_files = 'Sources/PrimerSDK/Classes/**/*'
     spec.resource_bundles = {
-        'PrimerSDK' => ['PrimerSDK/Assets/*.xcassets']
+        'PrimerSDK' => ['Sources/PrimerSDK/Resources/*.{strings,xcassets}']
     }
     
-    # spec.public_header_files = 'Pod/Classes/**/*.h'
-    # spec.frameworks = 'UIKit', 'MapKit'
-    # spec.dependency 'AFNetworking', '~> 2.3'
+    spec.test_spec 'PrimerSDKTests' do |test_spec|
+        test_spec.source_files = 'Tests/**/*'
+    end
     
 end
