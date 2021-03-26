@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 22/02/2021.
 //
 
+#if canImport(UIKit)
+
 protocol KlarnaServiceProtocol {
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func createKlarnaCustomerToken(_ completion: @escaping (Result<String, Error>) -> Void)

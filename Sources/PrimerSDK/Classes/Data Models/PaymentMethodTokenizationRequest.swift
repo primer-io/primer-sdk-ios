@@ -1,8 +1,6 @@
 
 #if canImport(UIKit)
 
-import Foundation
-
 struct PaymentMethodTokenizationRequest: Encodable {
     let paymentInstrument: PaymentInstrument
     let tokenType: TokenType?
