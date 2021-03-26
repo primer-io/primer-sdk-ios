@@ -1,6 +1,6 @@
 {
   "name": "PrimerSDK",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "summary": "Official iOS SDK for Primer",
   "description": "This library contains the official iOS SDK for Primer. Install this Cocoapod to seemlessly integrate the Primer Checkout & API platform in your app.",
   "homepage": "https://www.primer.io",
@@ -13,17 +13,24 @@
   },
   "source": {
     "git": "https://github.com/primer-io/primer-sdk-ios.git",
-    "tag": "1.2.2"
+    "tag": "1.2.3"
   },
   "swift_versions": "4.2",
   "platforms": {
     "ios": "10.0"
   },
-  "source_files": "PrimerSDK/Classes/**/*",
+  "source_files": "Sources/PrimerSDK/Classes/**/*",
   "resource_bundles": {
     "PrimerSDK": [
-      "PrimerSDK/Assets/*.xcassets"
+      "Sources/PrimerSDK/Resources/*.{strings,xcassets}"
     ]
   },
+  "testspecs": [
+    {
+      "name": "PrimerSDKTests",
+      "test_type": "unit",
+      "source_files": "Tests/**/*"
+    }
+  ],
   "swift_version": "4.2"
 }
