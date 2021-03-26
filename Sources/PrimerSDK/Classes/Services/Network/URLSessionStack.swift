@@ -90,14 +90,17 @@ class URLSessionStack: NetworkService {
                 log(logLevel: .debug, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                 #endif
                 
-                let result = try self.parser.parse(T.self, from: data)
+                var result: T!
+                
+                result = try self.parser.parse(T.self, from: data, keyDecodingStrategy: nil)
+                
                 DispatchQueue.main.async { completion(.success(result)) }
             } catch {
                 if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any?],
                    let primerErrorJSON = json?["error"] as? [String: Any] {
                     let statusCode = (response as! HTTPURLResponse).statusCode
                     
-                    let primerErrorResponse = try? self.parser.parse(PrimerErrorResponse.self, from: try! JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed))
+                    let primerErrorResponse = try? self.parser.parse(PrimerErrorResponse.self, from: try! JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed), keyDecodingStrategy: nil)
                     
                     if statusCode == 401 {
                         let err = NetworkServiceError.unauthorised(primerErrorResponse)

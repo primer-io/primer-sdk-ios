@@ -32,6 +32,8 @@ public struct PaymentMethodToken: Codable {
         case .PAYPAL_ORDER: return "PayPal"
         case .PAYPAL_BILLING_AGREEMENT: return "PayPal"
         case .GOCARDLESS_MANDATE: return "Direct Debit"
+        case .KLARNA_CUSTOMER_TOKEN: return "Klarna Customer Token"
+        case .KLARNA: return "Klarna"
         default: return "UNKNOWN"
         }
     }
@@ -47,6 +49,7 @@ public struct PaymentMethodToken: Codable {
         case .PAYPAL_ORDER: return .paypal2
         case .PAYPAL_BILLING_AGREEMENT: return .paypal2
         case .GOCARDLESS_MANDATE: return .bank
+        case .KLARNA_CUSTOMER_TOKEN: return .klarna
         default: return .creditCard
         }
     }
@@ -74,6 +77,8 @@ extension PaymentMethodToken {
             return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
         case .GOCARDLESS_MANDATE:
             return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+        case .KLARNA_CUSTOMER_TOKEN:
+            return CardButtonViewModel(network: "Klarna Customer Token", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
         default:
             return nil
         }
@@ -106,6 +111,8 @@ struct CardButtonViewModel {
  
  `KLARNA_PAYMENT_SESSION`:
  
+ `KLARNA_CUSTOMER_TOKEN`: Used for vaulted Klarna payment methods.
+ 
  `KLARNA`:
   
  `UNKNOWN`: Unknown payment instrument..
@@ -117,15 +124,16 @@ struct CardButtonViewModel {
  */
 
 public enum PaymentInstrumentType: String {
-    case PAYMENT_CARD = "PAYMENT_CARD"
-    case PAYPAL_ORDER = "PAYPAL_ORDER"
-    case PAYPAL_BILLING_AGREEMENT = "PAYPAL_BILLING_AGREEMENT"
-    case APPLE_PAY = "APPLE_PAY"
-    case GOOGLE_PAY = "GOOGLE_PAY"
-    case GOCARDLESS_MANDATE = "GOCARDLESS_MANDATE"
-    case KLARNA = "KLARNA_AUTHORIZATION_TOKEN"
-    case KLARNA_PAYMENT_SESSION = "KLARNA_PAYMENT_SESSION"
-    case UNKNOWN = "UNKNOWN"
+    case PAYMENT_CARD
+    case PAYPAL_ORDER
+    case PAYPAL_BILLING_AGREEMENT
+    case APPLE_PAY
+    case GOOGLE_PAY
+    case GOCARDLESS_MANDATE
+    case KLARNA
+    case KLARNA_PAYMENT_SESSION
+    case KLARNA_CUSTOMER_TOKEN
+    case UNKNOWN
 }
 
 extension PaymentInstrumentType: Codable {

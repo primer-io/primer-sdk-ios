@@ -19,6 +19,7 @@ enum PrimerAPI: Endpoint {
     case payPalStartBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest)
     case payPalConfirmBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest)
     case klarnaCreatePaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest)
+    case klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest)
     case klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
     
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest)
@@ -34,6 +35,7 @@ extension PrimerAPI {
              .payPalStartBillingAgreementSession(let clientToken, _),
              .payPalConfirmBillingAgreement(let clientToken, _),
              .klarnaCreatePaymentSession(let clientToken, _),
+             .klarnaCreateCustomerToken(let clientToken, _),
              .klarnaFinalizePaymentSession(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else {
                 fatalError("You need to provide the Primer SDK with a client access token fetched from your server.")
@@ -71,6 +73,8 @@ extension PrimerAPI {
             return "/paypal/billing-agreements/confirm-agreement"
         case .klarnaCreatePaymentSession:
             return "/klarna/payment-sessions"
+        case .klarnaCreateCustomerToken:
+            return "/klarna/customer-tokens"
         case .klarnaFinalizePaymentSession:
             return "/klarna/payment-sessions/finalize"
         case .directDebitCreateMandate:
@@ -99,6 +103,7 @@ extension PrimerAPI {
              .payPalStartBillingAgreementSession,
              .payPalConfirmBillingAgreement,
              .klarnaCreatePaymentSession,
+             .klarnaCreateCustomerToken,
              .klarnaFinalizePaymentSession,
              .tokenizePaymentMethod:
             return .post
@@ -121,6 +126,7 @@ extension PrimerAPI {
              .payPalStartBillingAgreementSession(let clientToken, _),
              .payPalConfirmBillingAgreement(let clientToken, _),
              .klarnaCreatePaymentSession(let clientToken, _),
+             .klarnaCreateCustomerToken(let clientToken, _),
              .klarnaFinalizePaymentSession(let clientToken, _),
              .tokenizePaymentMethod(let clientToken, _):
             if let token = clientToken.accessToken {
@@ -152,6 +158,8 @@ extension PrimerAPI {
             return try? JSONEncoder().encode(payPalConfirmBillingAgreementRequest)
         case .klarnaCreatePaymentSession(_, let klarnaCreatePaymentSessionAPIRequest):
             return try? JSONEncoder().encode(klarnaCreatePaymentSessionAPIRequest)
+        case .klarnaCreateCustomerToken(_, let klarnaCreateCustomerTokenAPIRequest):
+            return try? JSONEncoder().encode(klarnaCreateCustomerTokenAPIRequest)
         case .klarnaFinalizePaymentSession(_, let klarnaFinalizePaymentSessionRequest):
             return try? JSONEncoder().encode(klarnaFinalizePaymentSessionRequest)
         case .tokenizePaymentMethod(_, let paymentMethodTokenizationRequest):

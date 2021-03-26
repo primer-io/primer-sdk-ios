@@ -521,3 +521,23 @@ extension CountryCode {
     }
 
 }
+
+extension CountryCode {
+    
+    // todo: enable locale for local languages too.
+    // reference: https://developers.klarna.com/documentation/klarna-payments/in-depth-knowledge/puchase-countries-currencies-locales/
+    var klarnaLocaleCode: String {
+        switch self {
+        case .at, .dk, .fi, .de, .nl, .no, .se, .ch, .us, .au, .gb:
+            return "en-\(self.rawValue)"
+        case .be:
+            return "fr-BE"
+        case .es:
+            return "es-ES"
+        case .it:
+            return "it-IT"
+        default: return "n/a"
+        }
+    }
+    
+}
