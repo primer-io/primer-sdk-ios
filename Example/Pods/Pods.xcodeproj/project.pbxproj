@@ -955,7 +955,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n  echo \"Move to project dir\"\n  cd ../..\n  echo \"Linting...\"\n  swiftlint lint\n  echo \"Finished linting\"\n\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if which swiftlint >/dev/null; then\n  echo \"Move to project dir\"\n  cd ../../Sources\n  echo \"Linting...\"\n  swiftlint lint\n  echo \"Finished linting\"\n\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
