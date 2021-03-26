@@ -59,7 +59,7 @@ public enum PrimerSessionFlow {
         case .completeDirectCheckout:
             return false
         case .checkoutWithKlarna:
-            return true
+            return false
         case .addDirectDebitToVault:
             return true
         case .addKlarnaToVault:

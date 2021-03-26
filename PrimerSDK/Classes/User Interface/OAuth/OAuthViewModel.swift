@@ -53,7 +53,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
             
             if (host == .klarna) {
                 return klarnaService.createPaymentSession(completion)
-//                return completion(.success("https://pay.playground.klarna.com/eu/9IUNvHa"))
+                //                return completion(.success("https://pay.playground.klarna.com/eu/9IUNvHa"))
             }
             
             switch Primer.flow.uxMode {
@@ -77,10 +77,50 @@ class OAuthViewModel: OAuthViewModelProtocol {
         })
     }
     
+    private func generatePaypalPaymentInstrument(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) -> PaymentInstrument? {
+        switch Primer.flow.uxMode {
+        case .CHECKOUT:
+            guard let id = orderId else { return nil }
+            return PaymentInstrument(paypalOrderId: id)
+        case .VAULT:
+            guard let agreement = confirmedBillingAgreement else {
+                generateBillingAgreementConfirmation(host, with: completion)
+                return nil
+            }
+            return PaymentInstrument(
+                paypalBillingAgreementId: agreement.billingAgreementId,
+                shippingAddress: agreement.shippingAddress,
+                externalPayerInfo: agreement.externalPayerInfo
+            )
+        }
+    }
+    
+    func handleTokenization(request: PaymentMethodTokenizationRequest, with completion: @escaping (Error?) -> Void) {
+        tokenizationService.tokenize(request: request) { [weak self] result in
+            switch result {
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(error)
+            case .success(let token):
+                log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                
+                switch Primer.flow.uxMode {
+                case .VAULT:
+                    log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                    completion(nil) //self?.onTokenizeSuccess(token, completion)
+                case .CHECKOUT:
+                    log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                    self?.onTokenizeSuccess(token, completion)
+                }
+            }
+        }
+    }
+    
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
-        var instrument = PaymentInstrument()
         
         if (host == .klarna) {
+            var instrument = PaymentInstrument()
+            
             log(logLevel: .verbose, title: nil, message: "Host: \(host)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
             
             klarnaService.finalizePaymentSession() { [weak self] result in
@@ -108,24 +148,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
                                 
                                 log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                                 
-                                self?.tokenizationService.tokenize(request: request) { [weak self] result in
-                                    switch result {
-                                    case .failure(let error):
-                                        ErrorHandler.shared.handle(error: error)
-                                        completion(error)
-                                    case .success(let token):
-                                        log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                                        
-                                        switch Primer.flow.uxMode {
-                                        case .VAULT:
-                                            log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                                            completion(nil) //self?.onTokenizeSuccess(token, completion)
-                                        case .CHECKOUT:
-                                            log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                                            self?.onTokenizeSuccess(token, completion)
-                                        }
-                                    }
-                                }
+                                self?.handleTokenization(request: request, with: completion)
                             }
                         }
                         
@@ -140,64 +163,20 @@ class OAuthViewModel: OAuthViewModelProtocol {
                         
                         log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                         
-                        self?.tokenizationService.tokenize(request: request) { [weak self] result in
-                            switch result {
-                            case .failure(let error):
-                                ErrorHandler.shared.handle(error: error)
-                                completion(error)
-                            case .success(let token):
-                                log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                                
-                                switch Primer.flow.uxMode {
-                                case .VAULT:
-                                    log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                                    completion(nil) //self?.onTokenizeSuccess(token, completion)
-                                case .CHECKOUT:
-                                    log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                                    self?.onTokenizeSuccess(token, completion)
-                                }
-                            }
-                        }
+                        self?.handleTokenization(request: request, with: completion)
                     }
                     
                 }
             }
             
         } else {
-            switch Primer.flow.uxMode {
-            case .CHECKOUT:
-                guard let id = orderId else { return }
-                instrument = PaymentInstrument(paypalOrderId: id)
-            case .VAULT:
-                guard let agreement = confirmedBillingAgreement else {
-                    generateBillingAgreementConfirmation(host, with: completion)
-                    return
-                }
-                instrument = PaymentInstrument(
-                    paypalBillingAgreementId: agreement.billingAgreementId,
-                    shippingAddress: agreement.shippingAddress,
-                    externalPayerInfo: agreement.externalPayerInfo
-                )
-            }
+            guard let instrument = generatePaypalPaymentInstrument(host, with: completion) else { return }
             
             let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
             
             log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
             
-            tokenizationService.tokenize(request: request) { [weak self] result in
-                switch result {
-                case .failure(let error):
-                    ErrorHandler.shared.handle(error: error)
-                    completion(error)
-                case .success(let token):
-                    log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                    
-                    switch Primer.flow.uxMode {
-                    case .VAULT: completion(nil) //self?.onTokenizeSuccess(token, completion)
-                    case .CHECKOUT: self?.onTokenizeSuccess(token, completion)
-                    }
-                }
-            }
+            handleTokenization(request: request, with: completion)
         }
     }
 }

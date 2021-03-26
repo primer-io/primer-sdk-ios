@@ -94,15 +94,15 @@ class CheckoutViewController: UIViewController {
         
         let settings = PrimerSettings(
             delegate: self,
-            amount: 600, // todo: make order items override this?
-            currency: .SEK,
-            countryCode: .se,
+            amount: 200, // todo: make order items override this?
+            currency: .GBP,
+            countryCode: .gb,
             urlScheme: "https://primer.io/success",
             urlSchemeIdentifier: "primer",
             isFullScreenOnly: true,
             businessDetails: businessDetails,
             orderItems: [
-                OrderItem(name: "Fine Socks", unitAmount: 200, quantity: 3)
+                OrderItem(name: "Fine Socks", unitAmount: 200, quantity: 1)
             ]
         )
         
