@@ -61,6 +61,16 @@
                ReferencedContainer = "container:PrimerSDK.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1582B99E260A3FD300C80BD7"
+               BuildableName = "PrimerSDKExample_UITests.xctest"
+               BlueprintName = "PrimerSDKExample_UITests"
+               ReferencedContainer = "container:PrimerSDK.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
