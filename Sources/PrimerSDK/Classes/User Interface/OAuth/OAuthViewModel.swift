@@ -140,8 +140,9 @@ class OAuthViewModel: OAuthViewModelProtocol {
                             case .failure(let err):
                                 ErrorHandler.shared.handle(error: err)
                                 completion(err)
-                            case .success(let customerTokenId):
-                                instrument.klarnaCustomerToken = customerTokenId
+                            case .success(let response):
+                                instrument.klarnaCustomerToken = response.customerTokenId
+                                instrument.sessionData = response.sessionData
                                 
                                 log(logLevel: .verbose, title: nil, message: "Instrument: \(instrument)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                                 

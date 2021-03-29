@@ -88,6 +88,7 @@ struct KlarnaSessionOptions: Codable {
 }
 
 struct KlarnaSessionData: Codable {
+    let recurringDescription: String?
     let purchaseCountry: String?
     let purchaseCurrency: String?
     let locale: String?
