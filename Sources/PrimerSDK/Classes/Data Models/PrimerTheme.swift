@@ -132,6 +132,8 @@ public struct PrimerLayout {
     public let confirmMandateListItemHeight: CGFloat
     public let confirmMandateListMargin: CGFloat
     public let confirmMandateListTopMargin: CGFloat
+    public let topMargin: CGFloat
+    public let bottomMargin: CGFloat
     
     public init(
         showMainTitle: Bool = true,
@@ -141,7 +143,9 @@ public struct PrimerLayout {
         textFieldHeight: CGFloat = 44.0,
         confirmMandateListItemHeight: CGFloat = 60.0,
         confirmMandateListMargin: CGFloat = 0.0,
-        confirmMandateListTopMargin: CGFloat = 24
+        confirmMandateListTopMargin: CGFloat = 24,
+        topMargin: CGFloat = 0,
+        bottomMargin: CGFloat = 0
     ) {
         self.showMainTitle = showMainTitle
         self.showTopTitle = showTopTitle
@@ -151,6 +155,8 @@ public struct PrimerLayout {
         self.confirmMandateListItemHeight = confirmMandateListItemHeight
         self.confirmMandateListMargin = confirmMandateListMargin
         self.confirmMandateListTopMargin = confirmMandateListTopMargin
+        self.topMargin = topMargin
+        self.bottomMargin = bottomMargin
     }
 }
 

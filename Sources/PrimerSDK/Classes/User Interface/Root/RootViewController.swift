@@ -77,12 +77,12 @@ class RootViewController: UIViewController {
         
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        bottomConstraint = mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        bottomConstraint = mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: theme.layout.bottomMargin)
         bottomConstraint?.isActive = true
         heightConstraint?.isActive = true
         
         if (settings.isFullScreenOnly) {
-            topConstraint = mainView.topAnchor.constraint(equalTo: view.topAnchor)
+            topConstraint = mainView.topAnchor.constraint(equalTo: view.topAnchor, constant: theme.layout.topMargin)
             topConstraint?.isActive = true
         } else {
             heightConstraint = mainView.heightAnchor.constraint(equalToConstant: 400)

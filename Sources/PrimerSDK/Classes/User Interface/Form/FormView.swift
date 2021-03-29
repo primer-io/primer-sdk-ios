@@ -144,7 +144,7 @@ class FormView: UIView {
         if #available(iOS 13.0, *) {
             navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
         } else {
-            navBar.topAnchor.constraint(equalTo: topAnchor, constant: 18).isActive = true
+            navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
         }
         
         navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true

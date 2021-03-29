@@ -85,6 +85,11 @@ class VaultCheckoutView: UIView, ReactiveView {
             savedCardButton.layoutIfNeeded()
         }
     }
+
+    @objc
+    private func back() {
+        delegate?.cancel()
+    }
 }
 
 //MARK: Configuration
@@ -95,6 +100,15 @@ extension VaultCheckoutView {
         let navItem = UINavigationItem()
         //        let doneItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancel))
         //        navItem.leftBarButtonItem = doneItem
+        
+        // set back button item
+        let backItem = UIBarButtonItem()
+        backItem.action = #selector(back)
+        let backBtnImage = ImageName.back.image
+        backItem.tintColor = theme.colorTheme.tint1
+        backItem.image = backBtnImage
+        navItem.leftBarButtonItem = backItem
+        
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)

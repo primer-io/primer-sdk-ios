@@ -46,7 +46,7 @@ struct DirectCheckoutViewContent {
 }
 
 struct VaultCheckoutViewContent {
-    var payButtonText: String { return "Pay".localized() }
+    var payButtonText: String { return "Ok".localized() }
 }
 
 struct VaultPaymentMethodViewContent {

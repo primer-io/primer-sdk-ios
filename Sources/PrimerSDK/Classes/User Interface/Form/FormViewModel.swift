@@ -133,6 +133,14 @@ class FormViewModel: FormViewModelProtocol {
                             completion(nil)
                         }
                     })
+            /*    case .addCardToVault:
+                    self?.state.settings.onTokenizeSuccess(token, { error in
+                        if (error.exists) {
+                            completion(PrimerError.TokenizationRequestFailed)
+                        } else {
+                            completion(nil)
+                        }
+                    })*/
                 default:
                     completion(nil)
                 }

@@ -15,7 +15,14 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
         router.show(.form(type: .cardForm(theme: theme)))
     }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    @objc
+    func selectRow(sender: UIButton) {
+        let buttonPosition = sender.convert(CGPoint.zero, to: self.subView.tableView)
+        guard let indexPath = self.subView.tableView.indexPathForRow(at: buttonPosition) else { return }
+        myTableView(self.subView.tableView, didSelectRowAt: indexPath)
+    }
+
+    private func myTableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if (indexPath.row == viewModel.paymentMethods.count) {
             return
         }
@@ -91,6 +98,8 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
         let token = viewModel.paymentMethods[indexPath.row]
         
         let cardView = CardButton()
+
+        cardView.addTarget(self, action: #selector(selectRow), for: .touchUpInside)
         
         cardView.render(model: token.cardButtonViewModel)
         
