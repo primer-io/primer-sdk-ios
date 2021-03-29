@@ -9,7 +9,7 @@
 
 protocol KlarnaServiceProtocol {
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void)
-    func createKlarnaCustomerToken(_ completion: @escaping (Result<String, Error>) -> Void)
+    func createKlarnaCustomerToken(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
     func finalizePaymentSession(_ completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void)
 }
 
@@ -67,7 +67,7 @@ class KlarnaService: KlarnaServiceProtocol {
         }
     }
     
-    func createKlarnaCustomerToken(_ completion: @escaping (Result<String, Error>) -> Void) {
+    func createKlarnaCustomerToken(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
@@ -84,7 +84,7 @@ class KlarnaService: KlarnaServiceProtocol {
             paymentMethodConfigId: configId,
             sessionId: sessionId,
             authorizationToken: authorizationToken,
-            description: "primer",
+            description: self.state.settings.orderItems[0].name,
             localeData: KlarnaLocaleData(
                 countryCode: countryCode.rawValue,
                 currencyCode: currency.rawValue,
@@ -98,7 +98,7 @@ class KlarnaService: KlarnaServiceProtocol {
                 completion(.failure(KlarnaException.failedApiCall))
             case .success(let response):
                 log(logLevel: .info, message: "\(response)", className: "KlarnaService", function: "createCustomerToken")
-                completion(.success(response.customerTokenId))
+                completion(.success(response))
             }
         }
     }
