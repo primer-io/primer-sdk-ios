@@ -13,7 +13,7 @@ class CheckoutViewController: UIViewController {
     //    let endpoint = "https://arcane-hollows-13383.herokuapp.com"
     let endpoint = "http:localhost:8020"
     
-    let amount = 200
+    let amount = 1000
     
     var listOfVaultedPaymentMethods: [PaymentMethodToken] = []
     var primer: Primer?
@@ -52,27 +52,27 @@ class CheckoutViewController: UIViewController {
             theme = PrimerTheme(
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
                 colorTheme: PrimerDefaultTheme(
-//                    text1: .systemTeal,
-//                    text2: .systemGreen,
-//                    text3: themeColor,
-//                    main1: .systemPurple,
+                    //                    text1: .systemTeal,
+                    //                    text2: .systemGreen,
+                    //                    text3: themeColor,
+                    //                    main1: .systemPurple,
                     tint1: themeColor
-//                    neutral1: .systemPink
+                    //                    neutral1: .systemPink
                 ),
                 darkTheme: PrimerDarkTheme(
                     tint1: themeColor
                 ),
                 layout: PrimerLayout(showTopTitle: true, textFieldHeight: 40),
-//                textFieldTheme: .outlined,
+                //                textFieldTheme: .outlined,
                 fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
             )
         } else {
             theme = PrimerTheme(
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
                 colorTheme: PrimerDefaultTheme(
-//                    text3: themeColor,
+                    //                    text3: themeColor,
                     tint1: .systemBlue
-//                    neutral1: .systemPink
+                    //                    neutral1: .systemPink
                 ),
                 layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
                 textFieldTheme: .outlined,
@@ -94,15 +94,15 @@ class CheckoutViewController: UIViewController {
         
         let settings = PrimerSettings(
             delegate: self,
-            amount: 200, // todo: make order items override this?
+            amount: amount, // todo: make order items override this?
             currency: .GBP,
             countryCode: .gb,
             urlScheme: "https://primer.io/success",
             urlSchemeIdentifier: "primer",
-            isFullScreenOnly: true,
+//            isFullScreenOnly: true,
             businessDetails: businessDetails,
             orderItems: [
-                OrderItem(name: "Fine Socks", unitAmount: 200, quantity: 1)
+                OrderItem(name: "Rent scooter", unitAmount: amount, quantity: 1)
             ]
         )
         
@@ -157,13 +157,13 @@ class CheckoutViewController: UIViewController {
         addCardButton.backgroundColor = .lightGray
         addCardButton.addTarget(self, action: #selector(showCardForm), for: .touchUpInside)
         
-        addPayPalButton.setTitle("Klarna", for: .normal)
+        addPayPalButton.setTitle("Add Klarna", for: .normal)
         addPayPalButton.setTitleColor(.white, for: .normal)
         addPayPalButton.layer.cornerRadius = 16
         addPayPalButton.backgroundColor = .lightGray
         addPayPalButton.addTarget(self, action: #selector(showKlarnaForm), for: .touchUpInside)
         
-        vaultCheckoutButton.setTitle("Open Wallet", for: .normal)
+        vaultCheckoutButton.setTitle("Add Payment Method", for: .normal)
         vaultCheckoutButton.setTitleColor(.white, for: .normal)
         vaultCheckoutButton.layer.cornerRadius = 16
         vaultCheckoutButton.backgroundColor = .lightGray
@@ -286,7 +286,7 @@ extension CheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(token: token, amount: amount, type: type.rawValue)
+        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: "GBP")
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -298,12 +298,12 @@ extension CheckoutViewController: PrimerDelegate {
         
         completion(nil)
         
-//        callApi(request, completion: { result in
-//            switch result {
-//            case .success: completion(nil)
-//            case .failure(let err): completion(err)
-//            }
-//        })
+        //        callApi(request, completion: { result in
+        //            switch result {
+        //            case .success: completion(nil)
+        //            case .failure(let err): completion(err)
+        //            }
+        //        })
     }
 }
 
@@ -319,16 +319,99 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         presentCapturePayment(indexPath.row)
     }
     
+    func addSpinner(_ child: SpinnerViewController) {
+        tableView.isHidden = true
+        addChildViewController(child)
+        child.view.frame = view.frame
+        view.addSubview(child.view)
+        child.didMove(toParentViewController: self)
+    }
+    
+    func removeSpinner(_ child: SpinnerViewController) {
+        child.willMove(toParentViewController: nil)
+        child.view.removeFromSuperview()
+        child.removeFromParentViewController()
+        tableView.isHidden = false
+    }
+    
+    func generateRequest(_ token: PaymentMethodToken, capture: Bool) -> URLRequest? {
+        guard let url = URL(string: "\(endpoint)/authorize") else { return nil }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body = AuthorizationRequest(
+            paymentMethod: token.token!,
+            amount: amount,
+            type: token.paymentInstrumentType.rawValue,
+            capture: capture,
+            currencyCode: "GBP"
+        )
+        
+        do {
+            request.httpBody = try JSONEncoder().encode(body)
+        } catch {
+            return nil
+        }
+        
+        return request
+    }
+    
+    func showResult(error: Bool) {
+        let title = error ? "Error!" : "Success!"
+        let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Close", style: .cancel, handler: nil))
+        self.present(alert, animated: true)
+    }
+    
     private func presentCapturePayment(_ index: Int) {
         let result = listOfVaultedPaymentMethods[index]
-        let type = result.paymentInstrumentType
-        let request = AuthorizationRequest(token: result.token!, amount: amount, type: type.rawValue)
-        delegate?.addToken(request: request)
-        navigationController?.popViewController(animated: true)
+        let alert = UIAlertController(title: "Pay", message: "Capture the payment, or authorize to capture later.", preferredStyle: .alert)
+        let child = SpinnerViewController()
+        
+        alert.addAction(UIAlertAction(title: "Capture", style: .default, handler: { [weak self] _ in
+            self?.addSpinner(child)
+            guard let request = self?.generateRequest(result, capture: true) else { return }
+            self?.callApi(request, completion: { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        self?.removeSpinner(child)
+                        self?.showResult(error: false)
+                    case .failure:
+                        self?.removeSpinner(child)
+                        self?.showResult(error: true)
+                    }
+                }
+            })
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Authorize", style: .default, handler: { [weak self] _ in
+            self?.addSpinner(child)
+            guard let request = self?.generateRequest(result, capture: false) else { return }
+            self?.callApi(request, completion: { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        self?.removeSpinner(child)
+                        self?.showResult(error: false)
+                    case .failure:
+                        self?.removeSpinner(child)
+                        self?.showResult(error: true)
+                    }
+                }
+            })
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
+        
+        self.present(alert, animated: true)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "primerCell")
+        cell.accessoryType = .disclosureIndicator
+        cell.tintColor = .white
         let paymentMethodToken = listOfVaultedPaymentMethods[indexPath.row]
         
         //        var title: String
@@ -393,4 +476,20 @@ extension UITableViewCell {
         title.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -50).isActive = true
     }
     
+}
+
+class SpinnerViewController: UIViewController {
+    var spinner = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+    
+    override func loadView() {
+        view = UIView()
+        view.backgroundColor = UIColor(white: 0, alpha: 0.7)
+        
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.startAnimating()
+        view.addSubview(spinner)
+        
+        spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+    }
 }
