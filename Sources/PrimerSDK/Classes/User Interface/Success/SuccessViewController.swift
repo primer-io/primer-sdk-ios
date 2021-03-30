@@ -55,8 +55,8 @@ class SuccessViewController: UIViewController {
 extension SuccessViewController {
     func configureNavbar() {
         let navItem = UINavigationItem()
-        let backItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(close))
-        backItem.tintColor = theme.colorTheme.tint1
+        let backItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(close))
+        backItem.tintColor = theme.colorTheme.success1
         navItem.leftBarButtonItem = backItem
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
@@ -109,16 +109,18 @@ extension SuccessViewController {
 // MARK: Constraints
 extension SuccessViewController {
     func anchorIcon() {
-        icon.tintColor = theme.colorTheme.tint1
+        icon.tintColor = theme.colorTheme.success1
         icon.translatesAutoresizingMaskIntoConstraints = false
         icon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        icon.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 36).isActive = true
+        icon.bottomAnchor.constraint(equalTo: message.topAnchor, constant: -18).isActive = true
     }
     
     func anchorMessage() {
         message.translatesAutoresizingMaskIntoConstraints = false
-        message.topAnchor.constraint(equalTo: icon.bottomAnchor, constant: 24).isActive = true
+        message.topAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         message.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        message.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: theme.layout.safeMargin + 12).isActive = true
+        message.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -(theme.layout.safeMargin + 12)).isActive = true
     }
     
     func anchorConfirmationMessage() {
@@ -172,7 +174,7 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
         case .directDebit:
             return "Direct debit set up \nsuccessfully".localized()
         default:
-            return "Success!".localized()
+            return "Payment method successfully added to your account".localized()
         }
     }
     
