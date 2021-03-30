@@ -55,7 +55,7 @@ class SuccessViewController: UIViewController {
 extension SuccessViewController {
     func configureNavbar() {
         let navItem = UINavigationItem()
-        let backItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(close))
+        let backItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(close))
         backItem.tintColor = theme.colorTheme.success1
         navItem.leftBarButtonItem = backItem
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
