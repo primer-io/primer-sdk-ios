@@ -30,7 +30,8 @@ var mockSettings = PrimerSettings(
     merchantIdentifier: "mid",
     countryCode: .fr,
     urlScheme: "urlScheme",
-    urlSchemeIdentifier: "urlSchemeIdentifier"
+    urlSchemeIdentifier: "urlSchemeIdentifier",
+    orderItems: [OrderItem(name: "foo", unitAmount: 200, quantity: 1)]
 )
 
 class MockPrimerDelegate: PrimerDelegate {
