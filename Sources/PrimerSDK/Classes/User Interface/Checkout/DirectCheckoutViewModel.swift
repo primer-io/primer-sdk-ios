@@ -52,6 +52,7 @@ struct PaymentMethodViewModel {
         case .applePay: return "Pay"
         case .payPal: return ""
         case .goCardlessMandate: return "Bank account"
+        case .klarna: return ""
         default: return ""
         }
     }

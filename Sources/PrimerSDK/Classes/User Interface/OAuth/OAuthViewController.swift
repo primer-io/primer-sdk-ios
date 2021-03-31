@@ -42,7 +42,7 @@ class OAuthViewController: UIViewController {
         viewModel.generateOAuthURL(host, with: { [weak self] result in
             switch result {
             case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
+                _ = ErrorHandler.shared.handle(error: error)
                 let alert = AlertController(title: "ERROR!", message: error.localizedDescription, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
                     self?.dismiss(animated: true, completion: nil)
@@ -54,11 +54,7 @@ class OAuthViewController: UIViewController {
                     if self?.host == OAuthHost.klarna {
                         self?.presentWebview(urlString)
                     } else {
-                        if #available(iOS 13.0, *) {
-                            self?.createPaymentInstrument(urlString)
-                        } else {
-                            self?.createPaymentInstrumentLegacy(urlString)
-                        }
+                        self?.createPaymentInstrument(urlString)
                     }
                 }
             }
@@ -71,56 +67,54 @@ class OAuthViewController: UIViewController {
         vc.delegate = self
         present(vc, animated: true, completion: nil)
     }
-
-    @available(iOS 13.0, *)
+    
     func createPaymentInstrument(_ urlString: String) {
-        var session: ASWebAuthenticationSession?
-
-        guard let authURL = URL(string: urlString) else {
-            self.dismiss(animated: true, completion: nil)
-            return
+        if #available(iOS 13, *) {
+            var session: ASWebAuthenticationSession?
+            
+            guard let authURL = URL(string: urlString) else {
+                self.dismiss(animated: true, completion: nil)
+                return
+            }
+            
+            session = ASWebAuthenticationSession(
+                url: authURL,
+                callbackURLScheme: "https://primer.io/",
+                completionHandler: { [weak self] (url, error) in
+                    if let error = error {
+                        _ = ErrorHandler.shared.handle(error: error)
+                    }
+                    
+                    if (error is PrimerError) {
+                        self?.router.show(.error())
+                    } else if (error.exists) {
+                        self?.router.pop()
+                    } else {
+                        self?.onOAuthCompleted(callbackURL: url)
+                    }
+                }
+            )
+            
+            session?.presentationContextProvider = self
+            
+            self.session = session
+            
+            session?.start()
+        } else {
+            var session: SFAuthenticationSession?
+            
+            guard let authURL = URL(string: urlString) else { router.show(.error()); return }
+            
+            session = SFAuthenticationSession(
+                url: authURL,
+                callbackURLScheme: viewModel.urlSchemeIdentifier,
+                completionHandler: { [weak self] (url, error) in
+                    error.exists ? self?.router.show(.error()) : self?.onOAuthCompleted(callbackURL: url)
+                }
+            )
+            
+            session?.start()
         }
-
-        session = ASWebAuthenticationSession(
-            url: authURL,
-            callbackURLScheme: "https://primer.io/",
-            completionHandler: { [weak self] (url, error) in
-                if let error = error {
-                    ErrorHandler.shared.handle(error: error)
-                }
-
-                if error is PrimerError {
-                    self?.router.show(.error())
-                } else if error.exists {
-                    self?.router.pop()
-                } else {
-                    self?.onOAuthCompleted(callbackURL: url)
-                }
-            }
-        )
-
-        session?.presentationContextProvider = self
-
-        self.session = session
-
-        session?.start()
-    }
-
-    @available(iOS, deprecated: 12.0)
-    func createPaymentInstrumentLegacy(_ urlString: String) {
-        var session: SFAuthenticationSession?
-
-        guard let authURL = URL(string: urlString) else { router.show(.error()); return }
-
-        session = SFAuthenticationSession(
-            url: authURL,
-            callbackURLScheme: viewModel.urlSchemeIdentifier,
-            completionHandler: { [weak self] (url, error) in
-                error.exists ? self?.router.show(.error()) : self?.onOAuthCompleted(callbackURL: url)
-            }
-        )
-
-        session?.start()
     }
 
     private func onOAuthCompleted(callbackURL: URL?) {
@@ -189,19 +183,11 @@ class WebViewController: UIViewController, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
-        // here we handle internally the callback url and call method that call handleOpenURL (not app scheme used)
+        
         if let url = navigationAction.request.url, url.host == "primer.io" || url.host == "api.playground.klarna.com"{
-            //                if self.codeCheck == false {
-            //                    if let code = url.valueOf("code") {
-            //                        Log("Found code: \(code)")
-            //                        codeCheck = true
-            //                        getToken(code: code)
-            //                    }
-            //                } else {
-            //
-            //                }
-
+            
             let val = queryValue(for: "token", of: url)
+            
             log(logLevel: .info, message: "🚀🚀 \(url)")
 
             state.authorizationToken = val
@@ -213,11 +199,8 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             dismiss(animated: true, completion: nil)
 
             return
-            /*  Dismiss your view controller as normal
-             And proceed with OAuth authorization code
-             The code you receive here is not the auth token; For auth token you have to make another api call with the code that you received here and you can procced further
-             */
         }
+        
         decisionHandler(.allow)
     }
 
