@@ -10,12 +10,12 @@
 @testable import PrimerSDK
 
 class MockKlarnaService: KlarnaServiceProtocol {
-
-    var createPaymentSessionCalled = false
-    
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
-        createPaymentSessionCalled = true
-        completion(.success("redirectUrl"))
+        
+    }
+    
+    func createKlarnaCustomerToken(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+        
     }
     
     func finalizePaymentSession(_ completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void) {

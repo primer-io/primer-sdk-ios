@@ -30,6 +30,8 @@ class CardButton: UIButton {
 
     func render(model: CardButtonViewModel?, showIcon: Bool = true) {
         guard let model = model else { return }
+        
+        log(logLevel: .debug, message: "🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓: \(model)")
 
         addIcon()
         if showIcon {
@@ -41,10 +43,12 @@ class CardButton: UIButton {
 
         addCardIcon(image: model.imageName.image)
         addBorder()
-
-        if model.paymentMethodType == .goCardlessMandate {
+        
+        switch model.paymentMethodType {
+        case .goCardlessMandate,
+             .klarnaCustomerToken:
             addDDMandateLabel(value: model.network)
-        } else {
+        default:
             addNetworkName(value: model.network)
             addCardholderName(value: model.cardholder)
             addLast4Digits(value: model.last4)

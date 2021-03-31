@@ -55,9 +55,9 @@ class URLSessionStack: NetworkService {
         #endif
 
         let dataTask = session.dataTask(with: request) { data, response, error in
+            #if DEBUG                                            
             msg = ""
 
-            #if DEBUG
             if let httpResponse = response as? HTTPURLResponse {
                 msg += "\nStatus: \(httpResponse.statusCode)\nHeaders: \(httpResponse.allHeaderFields as! [String: String])"
             }

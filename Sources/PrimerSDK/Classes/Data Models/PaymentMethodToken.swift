@@ -31,6 +31,8 @@ public struct PaymentMethodToken: Codable {
         case .payPalOrder: return "PayPal"
         case .payPalBillingAgreement: return "PayPal"
         case .goCardlessMandate: return "Direct Debit"
+        case .klarnaCustomerToken: return "Klarna Customer Token"
+        case .klarna: return "Klarna"
         default: return "UNKNOWN"
         }
     }
@@ -46,6 +48,7 @@ public struct PaymentMethodToken: Codable {
         case .payPalOrder: return .paypal2
         case .payPalBillingAgreement: return .paypal2
         case .goCardlessMandate: return .bank
+        case .klarnaCustomerToken: return .klarna
         default: return .creditCard
         }
     }
@@ -73,6 +76,8 @@ extension PaymentMethodToken {
             return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
         case .goCardlessMandate:
             return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+        case .klarnaCustomerToken:
+            return CardButtonViewModel(network: "Klarna Customer Token", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
         default:
             return nil
         }
@@ -105,6 +110,8 @@ struct CardButtonViewModel {
  
  `KLARNA_PAYMENT_SESSION`:
  
+ `KLARNA_CUSTOMER_TOKEN`: Used for vaulted Klarna payment methods.
+ 
  `KLARNA`:
   
  `unknown`: Unknown payment instrument..
@@ -124,6 +131,7 @@ public enum PaymentInstrumentType: String {
     case goCardlessMandate = "GOCARDLESS_MANDATE"
     case klarna = "KLARNA_AUTHORIZATION_TOKEN"
     case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
+    case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"
     case unknown = "UNKNOWN"
 }
 
