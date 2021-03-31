@@ -17,14 +17,14 @@ public enum PrimerFormType: String, CaseIterable {
 }
 
 enum FormType {
-    
+
     case bankAccount(mandate: DirectDebitMandate, popOnComplete: Bool = false)
     case name(mandate: DirectDebitMandate, popOnComplete: Bool = false)
     case iban(mandate: DirectDebitMandate, popOnComplete: Bool = false)
     case email(mandate: DirectDebitMandate, popOnComplete: Bool = false)
     case address(mandate: DirectDebitMandate, popOnComplete: Bool = false)
     case cardForm(theme: PrimerThemeProtocol)
-    
+
     var textFields: [[FormTextFieldType]] {
         switch self {
         case .bankAccount(let mandate, _): return [[.accountNumber(mandate.accountNumber)], [.sortCode(mandate.sortCode)]]
@@ -56,7 +56,7 @@ enum FormType {
             }
         }
     }
-    
+
     var topTitle: String {
         switch self {
         case .bankAccount: return "Add bank account".localized()
@@ -67,7 +67,7 @@ enum FormType {
         case .cardForm: return "Add new card"
         }
     }
-    
+
     var mainTitle: String {
         switch self {
         case .bankAccount: return ""
@@ -78,7 +78,7 @@ enum FormType {
         case .cardForm: return ""
         }
     }
-    
+
     var subtitle: String {
         switch self {
         case .bankAccount: return "Use IBAN instead".localized()
@@ -89,7 +89,7 @@ enum FormType {
         case .cardForm: return ""
         }
     }
-    
+
     var popOnComplete: Bool {
         switch self {
         case .bankAccount(_, let val): return val

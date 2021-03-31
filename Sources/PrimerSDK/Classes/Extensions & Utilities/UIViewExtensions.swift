@@ -12,7 +12,7 @@ import Foundation
 import UIKit
 
 extension UIView {
-    
+
     @IBInspectable var cornerRadius: CGFloat {
         get {
             return layer.cornerRadius
@@ -21,7 +21,7 @@ extension UIView {
             layer.cornerRadius = newValue
         }
     }
-    
+
     @IBInspectable var borderWidth: CGFloat {
         get {
             return layer.borderWidth
@@ -30,7 +30,7 @@ extension UIView {
             layer.borderWidth = newValue
         }
     }
-    
+
     @IBInspectable var borderColor: UIColor? {
         get {
             if let cgColor = layer.borderColor {
@@ -38,13 +38,13 @@ extension UIView {
             } else {
                 return nil
             }
-            
+
         }
         set {
             layer.borderColor = newValue?.cgColor
         }
     }
-    
+
     @IBInspectable var shadowColor: UIColor? {
         get {
             if let cgColor = layer.shadowColor {
@@ -52,13 +52,13 @@ extension UIView {
             } else {
                 return nil
             }
-            
+
         }
         set {
             layer.shadowColor = newValue?.cgColor
         }
     }
-    
+
     @IBInspectable var shadowRadius: CGFloat {
         get {
             return layer.shadowRadius
@@ -67,7 +67,7 @@ extension UIView {
             layer.shadowRadius = newValue
         }
     }
-    
+
     @IBInspectable var shadowOffset: CGSize {
         get {
             return layer.shadowOffset
@@ -76,7 +76,7 @@ extension UIView {
             layer.shadowOffset = newValue
         }
     }
-    
+
     @IBInspectable var shadowOpacity: Float {
         get {
             return layer.shadowOpacity
@@ -85,7 +85,7 @@ extension UIView {
             layer.shadowOpacity = newValue
         }
     }
-    
+
     func toImage() -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0.0)
         defer { UIGraphicsEndImageContext() }
@@ -96,22 +96,22 @@ extension UIView {
         }
         return nil
     }
-    
-    func addShadow(opacity: Float = 0.5, radius: CGFloat = 3, offset: CGSize = CGSize(width: 0, height: 2)){
+
+    func addShadow(opacity: Float = 0.5, radius: CGFloat = 3, offset: CGSize = CGSize(width: 0, height: 2)) {
         self.layer.shadowColor = UIColor.black.cgColor
         self.layer.shadowRadius = radius
         self.layer.shadowOpacity = opacity
         self.layer.shadowOffset = offset
         self.layer.masksToBounds = false
     }
-    
+
     func addBottomShadow() {
         let shadowLayer = CAShapeLayer()
         shadowLayer.masksToBounds = false
         shadowLayer.shadowRadius = 4
         shadowLayer.shadowOpacity = 0.4
         shadowLayer.shadowColor = UIColor.gray.cgColor
-        shadowLayer.shadowOffset = CGSize(width: 1 , height: 1)
+        shadowLayer.shadowOffset = CGSize(width: 1, height: 1)
         shadowLayer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
                                                      y: bounds.maxY,
                                                      width: bounds.width,
@@ -119,14 +119,14 @@ extension UIView {
         shadowLayer.cornerRadius = 8
         self.layer.addSublayer(shadowLayer)
     }
-    
-    func addBottomBorder(_ color: CGColor = UIColor.white.cgColor){
+
+    func addBottomBorder(_ color: CGColor = UIColor.white.cgColor) {
         let bottomLine = CALayer()
         bottomLine.frame = CGRect(x: 0, y: self.frame.size.height + 9, width: self.bounds.width, height: 1)
         bottomLine.backgroundColor = color
         layer.addSublayer(bottomLine)
     }
-    
+
     func shake() {
         let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
         animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
@@ -134,7 +134,7 @@ extension UIView {
         animation.values = [-20.0, 20.0, -20.0, 20.0, -10.0, 10.0, -5.0, 5.0, 0.0 ]
         layer.add(animation, forKey: "shake")
     }
-    
+
     func pin(to superView: UIView) {
         translatesAutoresizingMaskIntoConstraints = false
         topAnchor.constraint(equalTo: superView.topAnchor).isActive = true
@@ -142,7 +142,7 @@ extension UIView {
         trailingAnchor.constraint(equalTo: superView.trailingAnchor).isActive = true
         bottomAnchor.constraint(equalTo: superView.bottomAnchor).isActive = true
     }
-    
+
     @objc
     func keyboardWillShow(notification: NSNotification) {
 //        let height = UIScreen.main.bounds.height - frame.height
@@ -152,7 +152,7 @@ extension UIView {
 ////            }
 //        }
     }
-    
+
     @objc
     func keyboardWillHide(notification: NSNotification) {
 //        let height = UIScreen.main.bounds.height - frame.height

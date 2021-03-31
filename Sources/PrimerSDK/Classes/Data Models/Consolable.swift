@@ -9,7 +9,7 @@ import Foundation
 
 @propertyWrapper
 struct Consolable<T> {
-    
+
     var wrappedValue: T {
         didSet {
             #if DEBUG
@@ -17,7 +17,7 @@ struct Consolable<T> {
             #endif
         }
     }
-    
+
     init(wrappedValue: T) {
         self.wrappedValue = wrappedValue
     }
