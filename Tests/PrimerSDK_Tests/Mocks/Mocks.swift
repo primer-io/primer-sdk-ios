@@ -56,7 +56,7 @@ class MockPrimerDelegate: PrimerDelegate {
     
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
-        if (authorizePaymentFails) { completion(PrimerError.ClientTokenNull) }
+        if (authorizePaymentFails) { completion(PrimerError.clientTokenNull) }
     }
     
     var onCheckoutDismissedCalled = false
@@ -165,8 +165,8 @@ class MockAppState: AppStateProtocol {
             coreUrl: "url",
             pciUrl: "url",
             paymentMethods: [
-                ConfigPaymentMethod(id: "1", type: .KLARNA),
-                ConfigPaymentMethod(id: "2", type: .PAYPAL)
+                ConfigPaymentMethod(id: "1", type: .klarna),
+                ConfigPaymentMethod(id: "2", type: .payPal)
             ]
         )
     ) {

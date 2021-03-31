@@ -53,7 +53,7 @@ public struct PrimerTheme: PrimerThemeProtocol {
     public var content: PrimerContent = PrimerContent()
     public let layout: PrimerLayout
     public let shadowTheme: PrimerShadowTheme = PrimerShadowTheme(color: UIColor.gray.cgColor, opacity: 0.3, radius: 10)
-    
+
     @available(iOS 13.0, *)
     public init(
         cornerRadiusTheme: CornerRadiusTheme = CornerRadiusTheme(),
@@ -69,7 +69,7 @@ public struct PrimerTheme: PrimerThemeProtocol {
         self.fontTheme = fontTheme
         self.layout = layout
     }
-    
+
     @available(iOS, obsoleted: 13.0)
     public init(
         cornerRadiusTheme: CornerRadiusTheme = CornerRadiusTheme(),
@@ -84,12 +84,12 @@ public struct PrimerTheme: PrimerThemeProtocol {
         self.fontTheme = fontTheme
         self.layout = layout
     }
-    
+
 }
 
 public struct CornerRadiusTheme {
     public let buttons, textFields, sheetView, confirmMandateList: CGFloat
-    
+
     public init(
         buttons: CGFloat = 4,
         textFields: CGFloat = 2,
@@ -105,7 +105,7 @@ public struct CornerRadiusTheme {
 
 public struct FontColorTheme {
     public let applePay, creditCard, paypal, total, title, payButton, labels: UIColor
-    
+
     public init(
         applePay: UIColor = .white,
         creditCard: UIColor = .black,
@@ -132,7 +132,7 @@ public struct PrimerLayout {
     public let confirmMandateListItemHeight: CGFloat
     public let confirmMandateListMargin: CGFloat
     public let confirmMandateListTopMargin: CGFloat
-    
+
     public init(
         showMainTitle: Bool = true,
         showTopTitle: Bool = true,
@@ -183,10 +183,10 @@ struct DefaultColorTheme: ColorTheme {
     var neutral1: UIColor { return getColor(light: lightTheme.neutral1, dark: darkTheme.neutral1) }
     var disabled1: UIColor { return getColor(light: lightTheme.disabled1, dark: darkTheme.disabled1) }
     var error1: UIColor { return getColor(light: lightTheme.error1, dark: darkTheme.error1) }
-    
+
     let lightTheme: ColorTheme
     let darkTheme: ColorTheme
-    
+
     init(
         lightTheme: ColorTheme,
         darkTheme: ColorTheme
@@ -194,7 +194,7 @@ struct DefaultColorTheme: ColorTheme {
         self.lightTheme = lightTheme
         self.darkTheme = darkTheme
     }
-    
+
     func getColor(light: UIColor, dark: UIColor) -> UIColor {
         return UIColor { (UITraitCollection: UITraitCollection) -> UIColor in
             if UITraitCollection.userInterfaceStyle == .dark {
@@ -217,7 +217,7 @@ public struct PrimerDefaultTheme: ColorTheme {
     public var neutral1: UIColor
     public var disabled1: UIColor
     public var error1: UIColor
-    
+
     public init(
         text1: UIColor = .black,
         text2: UIColor = .white,
@@ -255,7 +255,7 @@ public struct PrimerDarkTheme: ColorTheme {
     public var neutral1: UIColor
     public var disabled1: UIColor
     public var error1: UIColor
-    
+
     public init(
         text1: UIColor = .white,
         text2: UIColor = .white,
@@ -283,7 +283,7 @@ public struct PrimerDarkTheme: ColorTheme {
 
 public struct PrimerFontTheme {
     let mainTitle: UIFont
-    
+
     public init(
         mainTitle: UIFont = UIFont.systemFont(ofSize: 20)
     ) {

@@ -3,10 +3,10 @@
 import UIKit
 
 public class PresentationController: UIPresentationController {
-    
+
     let blurEffectView: UIVisualEffectView!
     var tapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
-    
+
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
         let blurEffect = UIBlurEffect(style: .dark)
         blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -16,42 +16,42 @@ public class PresentationController: UIPresentationController {
         self.blurEffectView.isUserInteractionEnabled = true
         self.blurEffectView.addGestureRecognizer(tapGestureRecognizer)
     }
-    
+
     //    public override var frameOfPresentedViewInContainerView: CGRect {
     //        return CGRect(
     //            origin: CGPoint(x: 0, y: self.containerView!.frame.height * 0.5),
     //            size: CGSize(width: self.containerView!.frame.width,height: self.containerView!.frame.height * 0.5)
     //        )
     //    }
-    
+
     public override func presentationTransitionWillBegin() {
         self.blurEffectView.alpha = 0
         self.containerView?.addSubview(blurEffectView)
-        self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (UIViewControllerTransitionCoordinatorContext) in
+        self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in
             self.blurEffectView.alpha = 0.7
-        }, completion: { (UIViewControllerTransitionCoordinatorContext) in })
+        }, completion: { (_) in })
     }
-    
+
     public override func dismissalTransitionWillBegin() {
-        self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (UIViewControllerTransitionCoordinatorContext) in
+        self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in
             self.blurEffectView.alpha = 0
-        }, completion: { (UIViewControllerTransitionCoordinatorContext) in
+        }, completion: { (_) in
             self.blurEffectView.removeFromSuperview()
         })
     }
-    
+
     public override func containerViewWillLayoutSubviews() {
         super.containerViewWillLayoutSubviews()
         presentedView!.roundCorners([.topLeft, .topRight], radius: 22)
     }
-    
+
     public override func containerViewDidLayoutSubviews() {
         super.containerViewDidLayoutSubviews()
         presentedView?.frame = frameOfPresentedViewInContainerView
         blurEffectView.frame = containerView!.bounds
     }
-    
-    @objc func dismissController(){
+
+    @objc func dismissController() {
         self.presentedViewController.dismiss(animated: true, completion: nil)
     }
 }
@@ -64,7 +64,7 @@ extension UIView {
         mask.path = path.cgPath
         layer.mask = mask
     }
-    func roundCorners(corners:UIRectCorner, radius: CGFloat) {
+    func roundCorners(corners: UIRectCorner, radius: CGFloat) {
         let path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         let mask = CAShapeLayer()
         mask.path = path.cgPath

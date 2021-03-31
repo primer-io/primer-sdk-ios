@@ -10,7 +10,7 @@
 import UIKit
 
 extension UIButton {
-    
+
     func setBusy(theme: PrimerThemeProtocol) {
         let indicator = UIActivityIndicatorView()
         self.setTitle("", for: .normal)
@@ -19,7 +19,7 @@ extension UIButton {
         indicator.color = theme.colorTheme.text2
         indicator.startAnimating()
     }
-    
+
     func showSpinner(_ color: UIColor = .white) {
         self.isUserInteractionEnabled = false
         self.setTitle("", for: .normal)
@@ -33,17 +33,17 @@ extension UIButton {
         newSpinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
         newSpinner.startAnimating()
     }
-    
+
     func hideSpinner(_ title: String, spinner: UIActivityIndicatorView) {
         spinner.removeFromSuperview()
         self.setTitle(title, for: .normal)
     }
-    
+
     func toggleValidity(_ isValid: Bool, validColor: UIColor, defaultColor: UIColor) {
         self.backgroundColor = isValid ? validColor : defaultColor
         self.isEnabled = isValid
     }
-    
+
 }
 
 #endif

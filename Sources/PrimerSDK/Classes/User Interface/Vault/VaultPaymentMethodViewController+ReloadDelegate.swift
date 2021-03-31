@@ -10,13 +10,13 @@
 import UIKit
 
 extension VaultPaymentMethodViewController: ReloadDelegate {
-    
+
     func reload() {
-        viewModel.reloadVault() { [weak self] error in
+        viewModel.reloadVault { [weak self] _ in
             DispatchQueue.main.async { self?.subView.render() }
         }
     }
-    
+
 }
 
 #endif

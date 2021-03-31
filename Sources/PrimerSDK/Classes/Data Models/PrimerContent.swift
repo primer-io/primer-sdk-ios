@@ -1,4 +1,3 @@
-
 #if canImport(UIKit)
 
 public struct PrimerContent {
@@ -12,7 +11,7 @@ public struct PrimerContent {
     var formMainTitles = FormMainTitles()
     var formTopTitles = FormTopTitles()
     var confirmMandateContent = ConfirmMandateViewContent()
-    
+
     mutating func setTopTitle(_ text: String, for formType: PrimerFormType) {
         switch formType {
         case .address: formTopTitles.address = text
@@ -95,7 +94,7 @@ public struct FormMainTitles {
     mutating func setMainTitle(_ text: String, for formType: PrimerFormType) {
         titles[formType.rawValue] = text
     }
-    
+
     func getMainTitle(for formType: PrimerFormType) -> String {
         return titles[formType.rawValue]!
     }

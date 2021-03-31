@@ -14,7 +14,7 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
 }
 
 enum KlarnaException: PrimerErrorProtocol {
-    
+
     case invalidUrl
     case noToken
     case noCoreUrl
@@ -22,9 +22,9 @@ enum KlarnaException: PrimerErrorProtocol {
     case noAmount
     case noCurrency
     case noPaymentMethodConfigId
-    
+
     static var errorDomain: String = "primer.klarna"
-    
+
     var errorCode: Int {
         switch self {
         default:
@@ -32,15 +32,15 @@ enum KlarnaException: PrimerErrorProtocol {
             return 100
         }
     }
-    
-    var errorUserInfo: [String : Any] {
+
+    var errorUserInfo: [String: Any] {
         switch self {
         default:
             // Do we want more information on the errors? E.g. timestamps?
             return [:]
         }
     }
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidUrl:
@@ -59,18 +59,18 @@ enum KlarnaException: PrimerErrorProtocol {
             return "Failed to find Klarna configuration".localized()
         }
     }
-    
+
     var shouldBePresented: Bool {
         switch self {
         default:
             return true
         }
     }
-    
+
 }
 
 enum NetworkServiceError: PrimerErrorProtocol {
-    
+
     case invalidURL
     case unauthorised(_ info: PrimerErrorResponse?)
     case clientError(_ statusCode: Int, info: PrimerErrorResponse?)
@@ -78,9 +78,9 @@ enum NetworkServiceError: PrimerErrorProtocol {
     case noData
     case parsing(_ error: Error, _ data: Data)
     case underlyingError(_ error: Error)            // Use this error when we have received an error JSON from the backend.
-    
+
     static var errorDomain: String = "primer.network"
-    
+
     var errorCode: Int {
         switch self {
         default:
@@ -88,15 +88,15 @@ enum NetworkServiceError: PrimerErrorProtocol {
             return 100
         }
     }
-    
-    var errorUserInfo: [String : Any] {
+
+    var errorUserInfo: [String: Any] {
         switch self {
         default:
             // Do we want more information on the errors? E.g. timestamps?
             return [:]
         }
     }
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidURL:
@@ -116,31 +116,31 @@ enum NetworkServiceError: PrimerErrorProtocol {
             return error.localizedDescription
         }
     }
-    
+
     var shouldBePresented: Bool {
         switch self {
         default:
             return true
         }
     }
-    
+
 }
 
 enum PrimerError: PrimerErrorProtocol {
-    
-    case ClientTokenNull
-    case CustomerIDNull
-    case PayPalSessionFailed
-    case VaultFetchFailed
-    case VaultDeleteFailed
-    case VaultCreateFailed
-    case DirectDebitSessionFailed
-    case ConfigFetchFailed
-    case TokenizationPreRequestFailed
-    case TokenizationRequestFailed
-    
+
+    case clientTokenNull
+    case customerIDNull
+    case payPalSessionFailed
+    case vaultFetchFailed
+    case vaultDeleteFailed
+    case vaultCreateFailed
+    case directDebitSessionFailed
+    case configFetchFailed
+    case tokenizationPreRequestFailed
+    case tokenizationRequestFailed
+
     static var errorDomain: String = "primer"
-    
+
     var errorCode: Int {
         switch self {
         default:
@@ -148,47 +148,47 @@ enum PrimerError: PrimerErrorProtocol {
             return 100
         }
     }
-    
-    var errorUserInfo: [String : Any] {
+
+    var errorUserInfo: [String: Any] {
         switch self {
         default:
             // Do we want more information on the errors? E.g. timestamps?
             return [:]
         }
     }
-    
+
     var errorDescription: String? {
         switch self {
-        case .ClientTokenNull:
+        case .clientTokenNull:
             return "Client token is missing.".localized()
-        case .CustomerIDNull:
+        case .customerIDNull:
             return "Customer ID is missing.".localized()
-        case .PayPalSessionFailed:
+        case .payPalSessionFailed:
             return "PayPal checkout session failed. Your account has not been charged.".localized()
-        case .VaultFetchFailed:
+        case .vaultFetchFailed:
             return "Failed to fetch saved payment methods.".localized()
-        case .VaultDeleteFailed:
+        case .vaultDeleteFailed:
             return "Failed to delete saved payment method.".localized()
-        case .VaultCreateFailed:
+        case .vaultCreateFailed:
             return "Failed to save payment method.".localized()
-        case .DirectDebitSessionFailed:
+        case .directDebitSessionFailed:
             return "Failed to create a direct debit mandate.\n\n Please try again.".localized()
-        case .ConfigFetchFailed:
+        case .configFetchFailed:
             return "Failed to setup session.".localized()
-        case .TokenizationPreRequestFailed:
+        case .tokenizationPreRequestFailed:
             return "Failed to complete action. Your payment method was not processed.".localized()
-        case .TokenizationRequestFailed:
+        case .tokenizationRequestFailed:
             return "Connection error, your payment method was not saved. Please try again.".localized()
         }
     }
-    
+
     var shouldBePresented: Bool {
         switch self {
         default:
             return true
         }
     }
-    
+
 }
 
 struct PrimerErrorResponse: Codable {
