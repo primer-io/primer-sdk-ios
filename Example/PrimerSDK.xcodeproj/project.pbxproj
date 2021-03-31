@@ -36,6 +36,7 @@
 		1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */; };
 		1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B9A1260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift */; };
 		1582B9AD260A402E00C80BD7 /* Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B9AC260A402E00C80BD7 /* Base.swift */; };
+		15ACE9652614B186004C3EAA /* chocolate_bar_demo.otf in Resources */ = {isa = PBXBuildFile; fileRef = 15ACE9642614B186004C3EAA /* chocolate_bar_demo.otf */; };
 		15F5BFB225FBA37900426B1C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F5BFB125FBA37900426B1C /* ViewController.swift */; };
 		15F5BFB825FBA3C000426B1C /* CapturePaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F5BFB725FBA3C000426B1C /* CapturePaymentViewController.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
@@ -95,6 +96,7 @@
 		1582B9A1260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerSDKExample_UITests.swift; sourceTree = "<group>"; };
 		1582B9A3260A3FD300C80BD7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1582B9AC260A402E00C80BD7 /* Base.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base.swift; sourceTree = "<group>"; };
+		15ACE9642614B186004C3EAA /* chocolate_bar_demo.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = chocolate_bar_demo.otf; sourceTree = "<group>"; };
 		15F5BFB125FBA37900426B1C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		15F5BFB725FBA3C000426B1C /* CapturePaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturePaymentViewController.swift; sourceTree = "<group>"; };
 		15F5BFFE25FBAFDB00426B1C /* PrimerSDK_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrimerSDK_Example.entitlements; sourceTree = "<group>"; };
@@ -243,6 +245,15 @@
 			path = PrimerSDKExample_UITests;
 			sourceTree = "<group>";
 		};
+		15ACE9632614B186004C3EAA /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				15ACE9642614B186004C3EAA /* chocolate_bar_demo.otf */,
+			);
+			name = Fonts;
+			path = Resources/Fonts;
+			sourceTree = "<group>";
+		};
 		15F5BFB025FBA35600426B1C /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
@@ -258,6 +269,7 @@
 		15F5BFBD25FBA44D00426B1C /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				15ACE9632614B186004C3EAA /* Fonts */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 			);
 			name = Resources;
@@ -442,6 +454,7 @@
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
+				15ACE9652614B186004C3EAA /* chocolate_bar_demo.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
