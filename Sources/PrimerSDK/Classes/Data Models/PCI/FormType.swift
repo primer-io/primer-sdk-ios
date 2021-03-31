@@ -68,7 +68,7 @@ enum FormType {
         }
     }
     
-    var mainTitle: String {
+    var mainTitleFont: String {
         switch self {
         case .bankAccount: return ""
         case .name: return ""

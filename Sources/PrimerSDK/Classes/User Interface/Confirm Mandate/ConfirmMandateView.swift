@@ -98,7 +98,7 @@ extension ConfirmMandateView {
     func addTitle() {
         title.text = theme.content.confirmMandateContent.mainTitleText
         title.textColor = theme.colorTheme.text1
-        title.font = theme.fontTheme.mainTitle
+        title.font = theme.fontTheme.mainTitleFont
         title.textAlignment = .center
         title.translatesAutoresizingMaskIntoConstraints = false
         title.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
