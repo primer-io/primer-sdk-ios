@@ -49,12 +49,40 @@ struct PaymentMethodViewModel {
     func toString() -> String {
         log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         switch type {
-        case .PAYMENT_CARD: return Primer.flow.vaulted ? "Add a new card".localized() : "Pay with card".localized()
-        case .APPLE_PAY: return "Pay"
-        case .PAYPAL: return ""
-        case .GOCARDLESS_MANDATE: return "Bank account"
-        case .KLARNA: return ""
-        default: return ""
+        case .PAYMENT_CARD:
+            return Primer.flow.vaulted
+                ? NSLocalizedString("payment-method-type-card-vaulted",
+                                    tableName: nil,
+                                    bundle: Bundle.primerFramework,
+                                    value: "",
+                                    comment: "Add a new card - Payment Method Type (Card Vaulted)")
+                
+                : NSLocalizedString("payment-method-type-card-not-vaulted",
+                                    tableName: nil,
+                                    bundle: Bundle.primerFramework,
+                                    value: "",
+                                    comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+            
+        case .APPLE_PAY:
+            return NSLocalizedString("payment-method-type-apple-pay",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "Pay - Payment Method Type (Apple pay)")
+            
+        case .GOCARDLESS_MANDATE:
+            return NSLocalizedString("payment-method-type-go-cardless",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "Bank account - Payment Method Type (Go Cardless)")
+        
+        case .PAYPAL:
+            return ""
+        case .KLARNA:
+            return ""
+        default:
+            return ""
         }
     }
     

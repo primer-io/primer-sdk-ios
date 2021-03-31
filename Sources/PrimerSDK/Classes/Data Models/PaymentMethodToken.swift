@@ -68,7 +68,12 @@ extension PaymentMethodToken {
                 network: ntwrk,
                 cardholder: cardholder,
                 last4: "•••• \(last4)",
-                expiry: "Expires".localized() + " \(expMonth) / \(expYear.suffix(2))",
+                expiry: NSLocalizedString("primer-saved-card",
+                                          tableName: nil,
+                                          bundle: Bundle.primerFramework,
+                                          value: "",
+                                          comment: "Expires - Saved card")
+                    + " \(expMonth) / \(expYear.suffix(2))",
                 imageName: self.icon,
                 paymentMethodType: self.paymentInstrumentType
             )

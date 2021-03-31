@@ -131,10 +131,21 @@ extension ConfirmMandateView {
     
     func addLegalLabel() {
         guard let business = dataSource?.businessDetails else { return }
+        
         legalLabel.text =
-            "By signing this mandate form, you authorise (C) ".localized() +
-            "\(business.name) " + "to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from ".localized() +
-            "\(business.name)."
+            NSLocalizedString("primer-form-view-confirm-mandate-legal-text-part-1",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "By signing this mandate form, you authorise (C) - ") +
+            " \(business.name) " +
+            NSLocalizedString("primer-form-view-confirm-mandate-legal-text-part-2",
+                              tableName: nil,
+                              bundle: Bundle.primerFramework,
+                              value: "",
+                              comment: "to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from") +
+            " \(business.name)."
+        
         legalLabel.numberOfLines = 0
         legalLabel.lineBreakMode = .byWordWrapping
         legalLabel.font = .systemFont(ofSize: 10)

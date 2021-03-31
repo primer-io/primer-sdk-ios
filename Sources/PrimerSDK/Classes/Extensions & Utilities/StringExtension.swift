@@ -129,15 +129,15 @@ extension String {
         return mutableAttString
     }
     
-    func localized(comment: String? = nil) -> String {
-        return NSLocalizedString(
-            self,
-            tableName: "Localizable",
-            bundle: Bundle.primerFramework,
-            value: self,
-            comment: comment ?? self
-        )
-    }
+//    func localized(comment: String? = nil) -> String {
+//        return NSLocalizedString(
+//            self,
+//            tableName: "Localizable",
+//            bundle: Bundle.primerFramework,
+//            value: self,
+//            comment: comment ?? self
+//        )
+//    }
     
     var isValidAccountNumber: Bool {
         print(!self.isEmpty)
