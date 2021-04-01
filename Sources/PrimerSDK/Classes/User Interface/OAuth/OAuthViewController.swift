@@ -67,16 +67,16 @@ class OAuthViewController: UIViewController {
         vc.delegate = self
         present(vc, animated: true, completion: nil)
     }
-    
+
     func createPaymentInstrument(_ urlString: String) {
         if #available(iOS 13, *) {
             var session: ASWebAuthenticationSession?
-            
+
             guard let authURL = URL(string: urlString) else {
                 self.dismiss(animated: true, completion: nil)
                 return
             }
-            
+
             session = ASWebAuthenticationSession(
                 url: authURL,
                 callbackURLScheme: "https://primer.io/",
@@ -84,7 +84,7 @@ class OAuthViewController: UIViewController {
                     if let error = error {
                         _ = ErrorHandler.shared.handle(error: error)
                     }
-                    
+
                     if (error is PrimerError) {
                         self?.router.show(.error())
                     } else if (error.exists) {
@@ -94,17 +94,17 @@ class OAuthViewController: UIViewController {
                     }
                 }
             )
-            
+
             session?.presentationContextProvider = self
-            
+
             self.session = session
-            
+
             session?.start()
         } else {
             var session: SFAuthenticationSession?
-            
+
             guard let authURL = URL(string: urlString) else { router.show(.error()); return }
-            
+
             session = SFAuthenticationSession(
                 url: authURL,
                 callbackURLScheme: viewModel.urlSchemeIdentifier,
@@ -112,7 +112,7 @@ class OAuthViewController: UIViewController {
                     error.exists ? self?.router.show(.error()) : self?.onOAuthCompleted(callbackURL: url)
                 }
             )
-            
+
             session?.start()
         }
     }
@@ -183,11 +183,11 @@ class WebViewController: UIViewController, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
-        
+
         if let url = navigationAction.request.url, url.host == "primer.io" || url.host == "api.playground.klarna.com"{
-            
+
             let val = queryValue(for: "token", of: url)
-            
+
             log(logLevel: .info, message: "🚀🚀 \(url)")
 
             state.authorizationToken = val
@@ -200,7 +200,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
 
             return
         }
-        
+
         decisionHandler(.allow)
     }
 

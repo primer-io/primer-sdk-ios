@@ -131,7 +131,7 @@ enum ConfirmMandateFormType: String {
                                      value: "",
                                      comment: "NAME - Confirm Mandate Title")
                 .uppercased()
-            
+
         case .email:
             return NSLocalizedString("primer-confirm-mandate-form-email",
                                      tableName: nil,
@@ -139,7 +139,7 @@ enum ConfirmMandateFormType: String {
                                      value: "",
                                      comment: "EMAIL - Confirm Mandate Title")
                 .uppercased()
-            
+
         case .address:
             return NSLocalizedString("primer-confirm-mandate-form-address",
                                      tableName: nil,
@@ -147,7 +147,7 @@ enum ConfirmMandateFormType: String {
                                      value: "",
                                      comment: "ADDRESS - Confirm Mandate Title")
                 .uppercased()
-            
+
         case .iban:
             return NSLocalizedString("primer-confirm-mandate-form-iban",
                                      tableName: nil,
@@ -155,7 +155,7 @@ enum ConfirmMandateFormType: String {
                                      value: "",
                                      comment: "IBAN - Confirm Mandate Title")
                 .uppercased()
-            
+
         }
     }
 

@@ -66,7 +66,7 @@ class KlarnaService: KlarnaServiceProtocol {
             }
         }
     }
-    
+
     func createKlarnaCustomerToken(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
@@ -91,7 +91,7 @@ class KlarnaService: KlarnaServiceProtocol {
                 localeCode: countryCode.klarnaLocaleCode
             )
         )
-        
+
         api.klarnaCreateCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
             switch result {
             case .failure:

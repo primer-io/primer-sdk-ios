@@ -14,7 +14,7 @@ let package = Package(
         .library(
             name: "PrimerSDK",
             targets: ["PrimerSDK"]
-        ),
+        )
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -35,7 +35,7 @@ let package = Package(
             name: "PrimerSDKTests",
             dependencies: ["PrimerSDK"],
             path: "Tests"
-        ),
+        )
     ],
     swiftLanguageVersions: [.v4_2]
 )

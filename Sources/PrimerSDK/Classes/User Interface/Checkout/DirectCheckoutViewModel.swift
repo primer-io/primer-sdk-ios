@@ -55,27 +55,27 @@ struct PaymentMethodViewModel {
                                     bundle: Bundle.primerFramework,
                                     value: "",
                                     comment: "Add a new card - Payment Method Type (Card Vaulted)")
-                
+
                 : NSLocalizedString("payment-method-type-card-not-vaulted",
                                     tableName: nil,
                                     bundle: Bundle.primerFramework,
                                     value: "",
                                     comment: "Pay with card - Payment Method Type (Card Not vaulted)")
-            
+
         case .applePay:
             return NSLocalizedString("payment-method-type-apple-pay",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Pay - Payment Method Type (Apple pay)")
-            
+
         case .goCardlessMandate:
             return NSLocalizedString("payment-method-type-go-cardless",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Bank account - Payment Method Type (Go Cardless)")
-        
+
         case .payPal:
             return ""
         case .klarna:
