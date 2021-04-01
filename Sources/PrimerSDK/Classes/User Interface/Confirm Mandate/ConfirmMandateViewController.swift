@@ -10,18 +10,18 @@
 import UIKit
 
 class ConfirmMandateViewController: UIViewController {
-    
+
     var subView: ConfirmMandateView = ConfirmMandateView()
     @Dependency private(set) var viewModel: ConfirmMandateViewModelProtocol
     @Dependency private(set) var router: RouterDelegate
     @Dependency private(set) var theme: PrimerThemeProtocol
-    
+
     let formTypes: [ConfirmMandateFormType] = [.name, .email, .address, .iban]
-    
+
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
-    
+
     override func viewDidLoad() {
         view.addSubview(subView)
         subView.delegate = self
@@ -30,7 +30,7 @@ class ConfirmMandateViewController: UIViewController {
         subView.render(isBusy: true)
         viewModel.loadConfig({ [weak self] error in
             DispatchQueue.main.async {
-                if (error.exists) {
+                if error.exists {
                     self?.router.show(.error(message: "failed to load session, please close and try again."))
                     return
                 }
@@ -39,7 +39,7 @@ class ConfirmMandateViewController: UIViewController {
         })
         view.layoutIfNeeded()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         viewModel.formCompleted = false
     }
@@ -49,7 +49,7 @@ extension ConfirmMandateViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return formTypes.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
         cell.addTitle(formTypes[indexPath.row].title, theme: theme)
@@ -58,7 +58,7 @@ extension ConfirmMandateViewController: UITableViewDelegate, UITableViewDataSour
         cell.backgroundColor = theme.colorTheme.main1
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         formTypes[indexPath.row].action(viewModel.mandate, router: router)
@@ -69,7 +69,7 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
     var mandate: DirectDebitMandate {
         return viewModel.mandate
     }
-    
+
     func close() {
         dismiss(animated: true, completion: nil)
 //        let alert = UIAlertController(
@@ -86,13 +86,13 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
 //
 //        present(alert, animated: true, completion: nil)
     }
-    
+
     func confirm() {
 //        router.show(.error(message: PrimerError.DirectDebitSessionFailed.rawValue.localized()))
         viewModel.confirmMandateAndTokenize({ [weak self] error in
             DispatchQueue.main.async {
-                if (error.exists) {
-                    self?.router.show(.error(message: PrimerError.DirectDebitSessionFailed.localizedDescription
+                if error.exists {
+                    self?.router.show(.error(message: PrimerError.directDebitSessionFailed.localizedDescription
                     ))
                     return
                 }
@@ -106,7 +106,7 @@ extension ConfirmMandateViewController: ConfirmMandateViewDataSource {
     var businessDetails: BusinessDetails? {
         return viewModel.businessDetails
     }
-    
+
     var amount: String {
         return viewModel.amount
     }
@@ -121,7 +121,7 @@ extension ConfirmMandateViewController: ReloadDelegate {
 
 enum ConfirmMandateFormType: String {
     case name, email, address, iban
-    
+
     var title: String {
         switch self {
         case .name:
@@ -158,7 +158,7 @@ enum ConfirmMandateFormType: String {
             
         }
     }
-    
+
     func content(_ mandate: DirectDebitMandate) -> String {
         switch self {
         case .name: return "\(mandate.firstName ?? "") \(mandate.lastName ?? "")"
@@ -167,8 +167,8 @@ enum ConfirmMandateFormType: String {
         case .iban: return mandate.iban ?? ""
         }
     }
-    
-    func action(_ mandate: DirectDebitMandate, router: RouterDelegate) -> Void {
+
+    func action(_ mandate: DirectDebitMandate, router: RouterDelegate) {
         switch self {
         case .name: return router.show(.form(type: .name(mandate: mandate, popOnComplete: true)))
         case .email: return router.show(.form(type: .email(mandate: mandate, popOnComplete: true)))

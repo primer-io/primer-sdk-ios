@@ -24,7 +24,8 @@ enum FormTextFieldType: Equatable {
     case cardNumber
     case expiryDate
     case cvc
-    
+
+    // swiftlint:disable function_body_length
     func validate(_ text: String) -> (Bool, String, Bool) {
         switch self {
         case .accountNumber:
@@ -65,7 +66,7 @@ enum FormTextFieldType: Equatable {
                     false)
             
         case .firstName:
-            return (text.count > 0,
+            return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-firstname-required",
                                       tableName: nil,
                                       bundle: Bundle.primerFramework,
@@ -74,7 +75,7 @@ enum FormTextFieldType: Equatable {
                     false)
             
         case .lastName:
-            return (text.count > 0,
+            return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-lastname-required",
                                       tableName: nil,
                                       bundle: Bundle.primerFramework,
@@ -89,7 +90,7 @@ enum FormTextFieldType: Equatable {
                                           comment: "Email text field can't be empty - Form Validation"),
                         false)
             }
-            
+
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
             return (emailPred.evaluate(with: text),
@@ -101,7 +102,7 @@ enum FormTextFieldType: Equatable {
                     false)
             
         case .addressLine1:
-            return (text.count > 0,
+            return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-address-required",
                                       tableName: nil,
                                       bundle: Bundle.primerFramework,
@@ -109,11 +110,11 @@ enum FormTextFieldType: Equatable {
                                       comment: "Address is required - Form Validation"),
                     false)
         case .addressLine2:
-            if (text.count > 0) { return (true, "", false) }
+            if !text.isEmpty { return (true, "", false) }
             return (true, "", true)
             
         case .city:
-            return (text.count > 0,
+            return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-city-required",
                                       tableName: nil,
                                       bundle: Bundle.primerFramework,
@@ -122,7 +123,7 @@ enum FormTextFieldType: Equatable {
                     false)
             
         case .country:
-            return (text.count > 0,
+            return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-country-required",
                                       tableName: nil,
                                       bundle: Bundle.primerFramework,
@@ -131,7 +132,7 @@ enum FormTextFieldType: Equatable {
                     false)
             
         case .postalCode:
-            return (text.count > 0,
+            return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-postal-code-required",
                                       tableName: nil,
                                       bundle: Bundle.primerFramework,
@@ -152,7 +153,7 @@ enum FormTextFieldType: Equatable {
             return Validation.CVCFieldIsValid(text)
         }
     }
-    
+
     var title: String {
         switch self {
         case .accountNumber:
@@ -261,7 +262,7 @@ enum FormTextFieldType: Equatable {
                                      comment: "CVC - Form Text Field Title (CVC)")
         }
     }
-    
+
     var placeHolder: String {
         switch self {
         case .accountNumber:
@@ -370,7 +371,7 @@ enum FormTextFieldType: Equatable {
                                      comment: "e.g. 123 - Form Text Field Placeholder (CVC)")
         }
     }
-    
+
     var mask: Mask? {
         switch self {
         case .accountNumber: return Mask(pattern: "########")
@@ -390,7 +391,7 @@ enum FormTextFieldType: Equatable {
         case .cvc: return Mask(pattern: "####")
         }
     }
-    
+
     var initialValue: String {
         switch self {
         case .accountNumber(let val): return val ?? ""

@@ -14,34 +14,34 @@ protocol ReactiveView: UIView {
 }
 
 class VaultPaymentMethodView: UIView, ReactiveView {
-    
+
     @Dependency private(set) var theme: PrimerThemeProtocol
-    
+
     let indicator = UIActivityIndicatorView()
     let navBar = UINavigationBar()
     let tableView = UITableView()
-    
+
     weak var delegate: VaultPaymentMethodViewDelegate?
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         addSubview(navBar)
         addSubview(tableView)
     }
-    
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func render(isBusy: Bool = false) {
         configureNavBar()
         configureTableView()
-        
+
         anchorNavBar()
         anchorTableView()
     }
 }
 
-//MARK: Configuration
+// MARK: Configuration
 extension VaultPaymentMethodView {
     private func configureNavBar() {
         navBar.backgroundColor = theme.colorTheme.main1
@@ -62,11 +62,11 @@ extension VaultPaymentMethodView {
         navBar.setItems([navItem], animated: false)
         navBar.topItem?.title = theme.content.vaultPaymentMethodView.mainTitleText
     }
-    
+
     @objc private func cancel() { delegate?.cancel() }
-    
+
     @objc private func edit() { delegate?.edit() }
-    
+
     private func configureTableView() {
         tableView.delegate = delegate
         tableView.dataSource = delegate
@@ -76,18 +76,18 @@ extension VaultPaymentMethodView {
         tableView.rowHeight = 64
         tableView.alwaysBounceVertical = false
     }
-    
+
     @objc private func showCardForm() { }
 }
 
-//MARK: Anchoring
+// MARK: Anchoring
 extension VaultPaymentMethodView {
     private func anchorNavBar() {
         navBar.translatesAutoresizingMaskIntoConstraints = false
         navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
         navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     }
-    
+
     private func anchorTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 12).isActive = true

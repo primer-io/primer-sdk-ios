@@ -14,9 +14,9 @@ protocol VaultCheckoutViewDataSource: class {
 }
 
 class VaultCheckoutView: UIView, ReactiveView {
-    
+
     @Dependency private(set) var theme: PrimerThemeProtocol
-    
+
     let indicator = UIActivityIndicatorView()
     let navBar = UINavigationBar()
     let amountLabelView = UILabel()
@@ -27,17 +27,17 @@ class VaultCheckoutView: UIView, ReactiveView {
     let payButton = UIButton()
     let seeAllLinkLabel = UILabel()
     let fadeView = UIView()
-    
+
     var selected = false
-    
+
     let vaulted: Bool = Primer.flow.vaulted
-    
+
     weak var delegate: VaultCheckoutViewDelegate?
     weak var dataSource: VaultCheckoutViewDataSource?
-    
+
     weak var heightConstraint: NSLayoutConstraint?
     weak var topConstraint: NSLayoutConstraint?
-    
+
     func render(isBusy: Bool = false) {
         addSubview(indicator)
         addSubview(navBar)
@@ -49,11 +49,11 @@ class VaultCheckoutView: UIView, ReactiveView {
         addSubview(seeAllLinkLabel)
         addSubview(fadeView)
         addSubview(payButton)
-        
+
         subviews.forEach { $0.isHidden = isBusy }
         indicator.isHidden = !isBusy
-        
-        if (isBusy) {
+
+        if isBusy {
             indicator.pin(to: self)
             indicator.startAnimating()
         } else {
@@ -65,29 +65,29 @@ class VaultCheckoutView: UIView, ReactiveView {
             configureSavedCardButton()
             configureSeeAllLinkLabel()
             configureOtherMethodsTitleLabel()
-            
+
             addFadeView()
-            
+
             anchorNavBar()
             anchorTableView()
             anchorPayButton()
             indicator.stopAnimating()
         }
     }
-    
+
     func reloadVaultDetails() {
-        if (vaulted) {
+        if vaulted {
             configureSavedCardTitleLabel()
             configureSavedCardButton()
             configureSeeAllLinkLabel()
-            configureOtherMethodsTitleLabel() 
+            configureOtherMethodsTitleLabel()
             payButton.isHidden = true
             savedCardButton.layoutIfNeeded()
         }
     }
 }
 
-//MARK: Configuration
+// MARK: Configuration
 extension VaultCheckoutView {
     private func configureNavBar() {
         //        guard let theme = delegate?.theme else { return }
@@ -104,11 +104,11 @@ extension VaultCheckoutView {
                                                   value: "",
                                                   comment: "Choose payment method - Vault Checkout Navigation Bar Title")
     }
-    
+
     @objc private func cancel() {
         delegate?.cancel()
     }
-    
+
     private func configureAmountLabelView() {
         amountLabelView.text = dataSource?.amount
         amountLabelView.font = .boldSystemFont(ofSize: 32)
@@ -116,7 +116,7 @@ extension VaultCheckoutView {
         amountLabelView.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 6).isActive = true
         amountLabelView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
     }
-    
+
     private func configureSavedCardTitleLabel() {
         if (vaulted) {
             if (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true) {
@@ -136,14 +136,14 @@ extension VaultCheckoutView {
         savedCardTitleLabel.topAnchor.constraint(equalTo: amountLabelView.bottomAnchor, constant: vaulted ? 12 : 0).isActive = true
         savedCardTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
     }
-    
+
     private func configureSavedCardButton() {
         savedCardButton.translatesAutoresizingMaskIntoConstraints = false
         savedCardButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
         savedCardButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
-        
+
         if let buttonViewModel = dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel {
-            if (vaulted) {
+            if vaulted {
                 topConstraint = savedCardButton.topAnchor.constraint(equalTo: savedCardTitleLabel.bottomAnchor, constant: 12)
                 heightConstraint = savedCardButton.heightAnchor.constraint(equalToConstant: 64)
                 savedCardButton.addTarget(self, action: #selector(toggleSavedCardSelected), for: .touchUpInside)
@@ -158,11 +158,11 @@ extension VaultCheckoutView {
             topConstraint = savedCardButton.topAnchor.constraint(equalTo: savedCardTitleLabel.bottomAnchor, constant: 0)
             heightConstraint = savedCardButton.heightAnchor.constraint(equalToConstant: 0)
         }
-        
+
         heightConstraint?.isActive = true
         topConstraint?.isActive = true
     }
-    
+
     @objc private func toggleSavedCardSelected() {
         UIView.animate(withDuration: 0.25, animations: {[weak self] in
             guard let strongSelf = self else { return }
@@ -174,13 +174,13 @@ extension VaultCheckoutView {
             strongSelf.layoutIfNeeded()
         })
     }
-    
+
     private func toggleFadeView(isEnabled: Bool) {
         let val: CGFloat = isEnabled ? 0.5 : 0.0
         fadeView.backgroundColor = theme.colorTheme.main1.withAlphaComponent(val)
         fadeView.isUserInteractionEnabled = isEnabled
     }
-    
+
     private func addFadeView() {
         fadeView.isUserInteractionEnabled = false
         fadeView.translatesAutoresizingMaskIntoConstraints = false
@@ -189,7 +189,7 @@ extension VaultCheckoutView {
         fadeView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         fadeView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
     }
-    
+
     private func configureSeeAllLinkLabel() {
         seeAllLinkLabel.translatesAutoresizingMaskIntoConstraints = false
         if (vaulted) {
@@ -216,13 +216,13 @@ extension VaultCheckoutView {
         } else {
             seeAllLinkLabel.topAnchor.constraint(equalTo: savedCardButton.bottomAnchor, constant: 0).isActive = true
         }
-        
+
     }
-    
+
     @objc private func openVault() {
         delegate?.openVault()
     }
-    
+
     private func configureOtherMethodsTitleLabel() {
         otherMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         if (vaulted) {
@@ -236,7 +236,7 @@ extension VaultCheckoutView {
                     : ""
                 otherMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
                 otherMethodsTitleLabel.font = .systemFont(ofSize: 12, weight: .light)
-                
+
                 otherMethodsTitleLabel.topAnchor.constraint(equalTo: seeAllLinkLabel.bottomAnchor, constant: 24).isActive = true
                 otherMethodsTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
             } else {
@@ -247,7 +247,7 @@ extension VaultCheckoutView {
             otherMethodsTitleLabel.topAnchor.constraint(equalTo: seeAllLinkLabel.bottomAnchor, constant: 0).isActive = true
         }
     }
-    
+
     private func configureTableView() {
         tableView.delegate = delegate
         tableView.dataSource = delegate
@@ -259,7 +259,7 @@ extension VaultCheckoutView {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell3")
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell4")
     }
-    
+
     func configurePayButton() {
         payButton.layer.cornerRadius = 12
         payButton.setTitle(theme.content.vaultCheckout.payButtonText, for: .normal)
@@ -272,9 +272,9 @@ extension VaultCheckoutView {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.centerYAnchor.constraint(equalTo: payButton.centerYAnchor).isActive = true
         imageView.trailingAnchor.constraint(equalTo: payButton.trailingAnchor, constant: -16).isActive = true
-        payButton.isHidden = true //before it's toggled, hide
+        payButton.isHidden = true // before it's toggled, hide
     }
-    
+
     @objc private func onTap(sender: UIButton) {
         payButton.isEnabled = false
         log(logLevel: .verbose, title: nil, message: "Paying", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
@@ -283,14 +283,14 @@ extension VaultCheckoutView {
     }
 }
 
-//MARK: Anchoring
+// MARK: Anchoring
 extension VaultCheckoutView {
     private func anchorNavBar() {
         navBar.translatesAutoresizingMaskIntoConstraints = false
         navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
         navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     }
-    
+
     private func anchorTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: otherMethodsTitleLabel.bottomAnchor).isActive = true
@@ -298,7 +298,7 @@ extension VaultCheckoutView {
         tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
         tableView.heightAnchor.constraint(equalToConstant: 400).isActive = true
     }
-    
+
     private func anchorPayButton() {
         payButton.translatesAutoresizingMaskIntoConstraints = false
         payButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30).isActive = true

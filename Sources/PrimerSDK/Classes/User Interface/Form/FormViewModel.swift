@@ -13,33 +13,33 @@ protocol FormViewModelProtocol {
     var mandate: DirectDebitMandate { get }
     func getSubmitButtonTitle(formType: FormType) -> String
     func setState(_ value: String?, type: FormTextFieldType)
-    func onSubmit(formType: FormType) -> Void
+    func onSubmit(formType: FormType)
     #if canImport(CardScan)
-    func onBottomLinkTapped(delegate: CardScannerViewControllerDelegate) -> Void
+    func onBottomLinkTapped(delegate: CardScannerViewControllerDelegate)
     #endif
     func submit(completion: @escaping (PrimerError?) -> Void)
-    func onReturnButtonTapped() -> Void
+    func onReturnButtonTapped()
 }
 
 class FormViewModel: FormViewModelProtocol {
-    
+
     @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
     @Dependency private(set) var router: RouterDelegate
     @Dependency private(set) var theme: PrimerThemeProtocol
-    
+
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
-    
+
     var popOnComplete: Bool {
         return state.directDebitFormCompleted
     }
-    
+
     var mandate: DirectDebitMandate {
         return state.directDebitMandate
     }
-    
+
     func getSubmitButtonTitle(formType: FormType) -> String {
         switch formType {
         case .cardForm:
@@ -57,7 +57,7 @@ class FormViewModel: FormViewModelProtocol {
                                      comment: "Next - Form View (Sumbit button text)")
         }
     }
-    
+
     func setState(_ value: String?, type: FormTextFieldType) {
         switch type {
         case .iban: state.directDebitMandate.iban = value?.withoutWhiteSpace
@@ -82,10 +82,10 @@ class FormViewModel: FormViewModelProtocol {
         case .cvc: state.cardData.cvc = value ?? ""
         }
     }
-    
+
     func onSubmit(formType: FormType) {
-        if (popOnComplete) { return router.pop() }
-        
+        if popOnComplete { return router.pop() }
+
         switch formType {
         case .iban:
             router.show(.confirmMandate)
@@ -98,9 +98,9 @@ class FormViewModel: FormViewModelProtocol {
         case .address:
             router.popAllAndShow(.confirmMandate)
         case .cardForm:
-            submit() { error in
+            submit { error in
                 DispatchQueue.main.async { [weak self] in
-                    if (error.exists) {
+                    if error.exists {
                         self?.router.show(.error(message: error!.localizedDescription))
                     } else {
                         self?.router.show(.success(type: .regular))
@@ -109,17 +109,17 @@ class FormViewModel: FormViewModelProtocol {
             }
         }
     }
-    
+
     #if canImport(CardScan)
     func onBottomLinkTapped(delegate: CardScannerViewControllerDelegate) {
         router.show(.cardScanner(delegate: delegate))
     }
     #endif
-    
+
     func onReturnButtonTapped() {
         router.pop()
     }
-    
+
     func submit(completion: @escaping (PrimerError?) -> Void) {
         let instrument = PaymentInstrument(
             number: state.cardData.number,
@@ -138,8 +138,8 @@ class FormViewModel: FormViewModelProtocol {
                 switch Primer.flow {
                 case .completeDirectCheckout:
                     self?.state.settings.onTokenizeSuccess(token, { error in
-                        if (error.exists) {
-                            completion(PrimerError.TokenizationRequestFailed)
+                        if error.exists {
+                            completion(PrimerError.tokenizationRequestFailed)
                         } else {
                             completion(nil)
                         }

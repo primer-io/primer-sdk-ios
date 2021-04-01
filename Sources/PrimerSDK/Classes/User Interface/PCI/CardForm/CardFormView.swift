@@ -5,18 +5,18 @@
 ////  Created by Carl Eriksson on 29/11/2020.
 ////
 //
-//import UIKit
+// import UIKit
 //
-//protocol CardFormViewDelegate: class {
+// protocol CardFormViewDelegate: class {
 //    func cancel()
 //    func showScanner()
 //    func validateCardName(_ text: String?, updateTextField: Bool)
 //    func validateCardNumber(_ text: String?, updateTextField: Bool)
 //    func validateExpiry(_ text: String?, updateTextField: Bool)
 //    func validateCVC(_ text: String?, updateTextField: Bool)
-//}
+// }
 //
-//class CardFormView: UIView {
+// class CardFormView: UIView {
 //    
 //    @Dependency private(set) var theme: PrimerThemeProtocol
 //    
@@ -69,10 +69,10 @@
 //    }
 //    
 //    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-//}
+// }
 //
-//// MARK: Configuration
-//extension CardFormView {
+// MARK: Configuration
+// extension CardFormView {
 //    private func configureNavBar() {
 //        let navItem = UINavigationItem()
 //        let backItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
@@ -278,11 +278,11 @@
 //    }
 //    
 //    @objc private func showScanner() { delegate?.showScanner() }
-//}
+// }
 //
-//// MARK: Anchoring
+// MARK: Anchoring
 //
-//extension CardFormView {
+// extension CardFormView {
 //    private func anchorNavBar() {
 //        navBar.translatesAutoresizingMaskIntoConstraints = false
 //        navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
@@ -324,4 +324,4 @@
 //        submitButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
 //        submitButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
 //    }
-//}
+// }
