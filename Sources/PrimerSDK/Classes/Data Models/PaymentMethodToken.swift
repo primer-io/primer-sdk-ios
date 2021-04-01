@@ -1,4 +1,3 @@
-
 #if canImport(UIKit)
 
 struct GetVaultedPaymentMethodsResponse: Decodable {
@@ -23,33 +22,33 @@ public struct PaymentMethodToken: Codable {
     public var paymentInstrumentData: PaymentInstrumentData?
     public var vaultData: VaultData?
     public var threeDSecureAuthentication: ThreeDSecureAuthentication?
-    
+
     var description: String {
         switch self.paymentInstrumentType {
-        case .PAYMENT_CARD:
+        case .paymentCard:
             let last4 = self.paymentInstrumentData?.last4Digits ?? "••••"
             return "•••• •••• •••• \(last4)"
-        case .PAYPAL_ORDER: return "PayPal"
-        case .PAYPAL_BILLING_AGREEMENT: return "PayPal"
-        case .GOCARDLESS_MANDATE: return "Direct Debit"
-        case .KLARNA_CUSTOMER_TOKEN: return "Klarna Customer Token"
-        case .KLARNA: return "Klarna"
+        case .payPalOrder: return "PayPal"
+        case .payPalBillingAgreement: return "PayPal"
+        case .goCardlessMandate: return "Direct Debit"
+        case .klarnaCustomerToken: return "Klarna Customer Token"
+        case .klarna: return "Klarna"
         default: return "UNKNOWN"
         }
     }
-    
+
     public var icon: ImageName {
         switch self.paymentInstrumentType {
-        case .PAYMENT_CARD:
+        case .paymentCard:
             guard let network = self.paymentInstrumentData?.network else { return .creditCard }
             switch network {
             case "Visa": return .visa
             default: return .creditCard
             }
-        case .PAYPAL_ORDER: return .paypal2
-        case .PAYPAL_BILLING_AGREEMENT: return .paypal2
-        case .GOCARDLESS_MANDATE: return .bank
-        case .KLARNA_CUSTOMER_TOKEN: return .klarna
+        case .payPalOrder: return .paypal2
+        case .payPalBillingAgreement: return .paypal2
+        case .goCardlessMandate: return .bank
+        case .klarnaCustomerToken: return .klarna
         default: return .creditCard
         }
     }
@@ -58,7 +57,7 @@ public struct PaymentMethodToken: Codable {
 extension PaymentMethodToken {
     var cardButtonViewModel: CardButtonViewModel? {
         switch self.paymentInstrumentType {
-        case .PAYMENT_CARD:
+        case .paymentCard:
             guard let ntwrk = self.paymentInstrumentData?.network else { return nil }
             guard let cardholder = self.paymentInstrumentData?.cardholderName else { return nil }
             guard let last4 = self.paymentInstrumentData?.last4Digits else { return nil }
@@ -77,12 +76,12 @@ extension PaymentMethodToken {
                 imageName: self.icon,
                 paymentMethodType: self.paymentInstrumentType
             )
-        case .PAYPAL_BILLING_AGREEMENT:
+        case .payPalBillingAgreement:
             guard let cardholder = self.paymentInstrumentData?.externalPayerInfo?.email else { return nil }
             return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
-        case .GOCARDLESS_MANDATE:
+        case .goCardlessMandate:
             return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
-        case .KLARNA_CUSTOMER_TOKEN:
+        case .klarnaCustomerToken:
             return CardButtonViewModel(network: "Klarna Customer Token", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
         default:
             return nil
@@ -120,7 +119,7 @@ struct CardButtonViewModel {
  
  `KLARNA`:
   
- `UNKNOWN`: Unknown payment instrument..
+ `unknown`: Unknown payment instrument..
  
  - Author:
  Primer
@@ -129,21 +128,21 @@ struct CardButtonViewModel {
  */
 
 public enum PaymentInstrumentType: String {
-    case PAYMENT_CARD
-    case PAYPAL_ORDER
-    case PAYPAL_BILLING_AGREEMENT
-    case APPLE_PAY
-    case GOOGLE_PAY
-    case GOCARDLESS_MANDATE
-    case KLARNA
-    case KLARNA_PAYMENT_SESSION
-    case KLARNA_CUSTOMER_TOKEN
-    case UNKNOWN
+    case paymentCard = "PAYMENT_CARD"
+    case payPalOrder = "PAYPAL_ORDER"
+    case payPalBillingAgreement = "PAYPAL_BILLING_AGREEMENT"
+    case applePay = "APPLE_PAY"
+    case googlePay = "GOOGLE_PAY"
+    case goCardlessMandate = "GOCARDLESS_MANDATE"
+    case klarna = "KLARNA_AUTHORIZATION_TOKEN"
+    case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
+    case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"
+    case unknown = "UNKNOWN"
 }
 
 extension PaymentInstrumentType: Codable {
     public init(from decoder: Decoder) throws {
-        self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .UNKNOWN
+        self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
     }
 }
 

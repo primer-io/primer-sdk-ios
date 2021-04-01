@@ -1,4 +1,4 @@
-//inspired by https://gist.github.com/proxpero/f7ddfd721a0d0d6159589916185d9dc9
+// inspired by https://gist.github.com/proxpero/f7ddfd721a0d0d6159589916185d9dc9
 
 public enum CountryCode: String, Codable {
     case af = "AF"

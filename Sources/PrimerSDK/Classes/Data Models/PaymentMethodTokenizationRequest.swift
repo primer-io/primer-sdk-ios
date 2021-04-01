@@ -1,4 +1,3 @@
-
 #if canImport(UIKit)
 
 struct PaymentMethodTokenizationRequest: Encodable {
@@ -13,27 +12,27 @@ struct PaymentMethodTokenizationRequest: Encodable {
         self.paymentFlow = Primer.flow.vaulted ? .vault : nil
         self.customerId = Primer.flow.vaulted ? state.settings.customerId : nil
     }
-    
+
 }
 
 struct PaymentInstrument: Encodable {
     // Card
-    var number: String? = nil
-    var cvv: String? = nil
-    var expirationMonth: String? = nil
-    var expirationYear: String? = nil
-    var cardholderName: String? = nil
+    var number: String?
+    var cvv: String?
+    var expirationMonth: String?
+    var expirationYear: String?
+    var cardholderName: String?
     // PayPal
-    var paypalOrderId: String? = nil
-    var paypalBillingAgreementId: String? = nil
-    var shippingAddress: ShippingAddress? = nil
-    var externalPayerInfo: PayPalExternalPayerInfo? = nil
+    var paypalOrderId: String?
+    var paypalBillingAgreementId: String?
+    var shippingAddress: ShippingAddress?
+    var externalPayerInfo: PayPalExternalPayerInfo?
     // Apple Pay
-    var paymentMethodConfigId: String? = nil
-    var token: ApplePayToken? = nil
-    var merchantIdentifier: String? = nil
+    var paymentMethodConfigId: String?
+    var token: ApplePayToken?
+    var merchantIdentifier: String?
     // Direct Debit (GoCardless)
-    var gocardlessMandateId: String? = nil
+    var gocardlessMandateId: String?
     // Klarna payment session
     var klarnaAuthorizationToken: String? = nil
     // Klarna customer token

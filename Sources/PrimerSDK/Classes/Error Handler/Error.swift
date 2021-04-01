@@ -14,7 +14,7 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
 }
 
 enum KlarnaException: PrimerErrorProtocol {
-    
+
     case invalidUrl
     case noToken
     case noCoreUrl
@@ -22,9 +22,9 @@ enum KlarnaException: PrimerErrorProtocol {
     case noAmount
     case noCurrency
     case noPaymentMethodConfigId
-    
+
     static var errorDomain: String = "primer.klarna"
-    
+
     var errorCode: Int {
         switch self {
         default:
@@ -32,15 +32,15 @@ enum KlarnaException: PrimerErrorProtocol {
             return 100
         }
     }
-    
-    var errorUserInfo: [String : Any] {
+
+    var errorUserInfo: [String: Any] {
         switch self {
         default:
             // Do we want more information on the errors? E.g. timestamps?
             return [:]
         }
     }
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidUrl:
@@ -92,18 +92,18 @@ enum KlarnaException: PrimerErrorProtocol {
                                      comment: "Failed to find Klarna configuration - Error message")
         }
     }
-    
+
     var shouldBePresented: Bool {
         switch self {
         default:
             return true
         }
     }
-    
+
 }
 
 enum NetworkServiceError: PrimerErrorProtocol {
-    
+
     case invalidURL
     case unauthorised(_ info: PrimerErrorResponse?)
     case clientError(_ statusCode: Int, info: PrimerErrorResponse?)
@@ -111,9 +111,9 @@ enum NetworkServiceError: PrimerErrorProtocol {
     case noData
     case parsing(_ error: Error, _ data: Data)
     case underlyingError(_ error: Error)            // Use this error when we have received an error JSON from the backend.
-    
+
     static var errorDomain: String = "primer.network"
-    
+
     var errorCode: Int {
         switch self {
         default:
@@ -121,15 +121,15 @@ enum NetworkServiceError: PrimerErrorProtocol {
             return 100
         }
     }
-    
-    var errorUserInfo: [String : Any] {
+
+    var errorUserInfo: [String: Any] {
         switch self {
         default:
             // Do we want more information on the errors? E.g. timestamps?
             return [:]
         }
     }
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidURL:
@@ -175,31 +175,31 @@ enum NetworkServiceError: PrimerErrorProtocol {
             return error.localizedDescription
         }
     }
-    
+
     var shouldBePresented: Bool {
         switch self {
         default:
             return true
         }
     }
-    
+
 }
 
 enum PrimerError: PrimerErrorProtocol {
-    
-    case ClientTokenNull
-    case CustomerIDNull
-    case PayPalSessionFailed
-    case VaultFetchFailed
-    case VaultDeleteFailed
-    case VaultCreateFailed
-    case DirectDebitSessionFailed
-    case ConfigFetchFailed
-    case TokenizationPreRequestFailed
-    case TokenizationRequestFailed
-    
+
+    case clientTokenNull
+    case customerIDNull
+    case payPalSessionFailed
+    case vaultFetchFailed
+    case vaultDeleteFailed
+    case vaultCreateFailed
+    case directDebitSessionFailed
+    case configFetchFailed
+    case tokenizationPreRequestFailed
+    case tokenizationRequestFailed
+
     static var errorDomain: String = "primer"
-    
+
     var errorCode: Int {
         switch self {
         default:
@@ -207,81 +207,81 @@ enum PrimerError: PrimerErrorProtocol {
             return 100
         }
     }
-    
-    var errorUserInfo: [String : Any] {
+
+    var errorUserInfo: [String: Any] {
         switch self {
         default:
             // Do we want more information on the errors? E.g. timestamps?
             return [:]
         }
     }
-    
+
     var errorDescription: String? {
         switch self {
-        case .ClientTokenNull:
+        case .clientTokenNull:
             return NSLocalizedString("primer-error-message-client-token-missing",
                                      tableName: nil,
                                      bundle: Bundle.primerFramework,
                                      value: "",
                                      comment: "Client token is missing - Primer error message")
             
-        case .CustomerIDNull:
+        case .customerIDNull:
             return NSLocalizedString("primer-error-message-customer-id-missing",
                                      tableName: nil,
                                      bundle: Bundle.primerFramework,
                                      value: "",
                                      comment: "Customer ID is missing - Primer error message")
             
-        case .PayPalSessionFailed:
+        case .payPalSessionFailed:
             return NSLocalizedString("primer-error-message-paypal-needs-recharge",
                                      tableName: nil,
                                      bundle: Bundle.primerFramework,
                                      value: "",
                                      comment: "PayPal checkout session failed. Your account has not been charged. - Primer error message")
             
-        case .VaultFetchFailed:
+        case .vaultFetchFailed:
             return NSLocalizedString("primer-error-message-failed-to-fetch-saved-payment-methods",
                                      tableName: nil,
                                      bundle: Bundle.primerFramework,
                                      value: "",
                                      comment: "Failed to fetch saved payment methods - Primer error message")
             
-        case .VaultDeleteFailed:
+        case .vaultDeleteFailed:
             return NSLocalizedString("primer-error-message-failed-to-delete-saved-payment-method",
                                      tableName: nil,
                                      bundle: Bundle.primerFramework,
                                      value: "",
                                      comment: "Failed to delete saved payment method - Primer error message")
             
-        case .VaultCreateFailed:
+        case .vaultCreateFailed:
             return NSLocalizedString("primer-error-message-failed-to-save-payment-method",
                                      tableName: nil,
                                      bundle: Bundle.primerFramework,
                                      value: "",
                                      comment: "Failed to save payment method - Primer error message")
             
-        case .DirectDebitSessionFailed:
+        case .directDebitSessionFailed:
             return NSLocalizedString("primer-error-message-failed-to-create-direct-debit-mandate",
                                      tableName: nil,
                                      bundle: Bundle.primerFramework,
                                      value: "",
                                      comment: "Failed to create a direct debit mandate.\n\n Please try again. - Primer error message")
             
-        case .ConfigFetchFailed:
+        case .configFetchFailed:
             return NSLocalizedString("primer-error-message-failed-to-setup-session",
                                      tableName: nil,
                                      bundle: Bundle.primerFramework,
                                      value: "",
                                      comment: "Failed to setup session - Primer error message")
             
-        case .TokenizationPreRequestFailed:
+        case .tokenizationPreRequestFailed:
             return NSLocalizedString("primer-error-message-failed-to-complete-action",
                                      tableName: nil,
                                      bundle: Bundle.primerFramework,
                                      value: "",
                                      comment: "Failed to complete action. Your payment method was not processed. - Primer error message")
             
-        case .TokenizationRequestFailed:
+        case .tokenizationRequestFailed:
             return NSLocalizedString("primer-error-message-failed-to-save-payment",
                                      tableName: nil,
                                      bundle: Bundle.primerFramework,
@@ -289,14 +289,14 @@ enum PrimerError: PrimerErrorProtocol {
                                      comment: "Connection error, your payment method was not saved. Please try again. - Primer error message")
         }
     }
-    
+
     var shouldBePresented: Bool {
         switch self {
         default:
             return true
         }
     }
-    
+
 }
 
 struct PrimerErrorResponse: Codable {

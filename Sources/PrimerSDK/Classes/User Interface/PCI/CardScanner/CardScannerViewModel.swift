@@ -6,7 +6,7 @@ protocol CardScannerViewModelProtocol {
 
 class CardScannerViewModel: CardScannerViewModelProtocol {
     var theme: PrimerTheme { return settings.theme }
-    
+
     @Dependency private(set) var settings: PrimerSettingsProtocol
 }
 

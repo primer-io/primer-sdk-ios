@@ -25,7 +25,7 @@ final class DependencyContainer {
     static func resolve<T>() -> T {
         shared.resolve()
     }
-    
+
     static func clear() {
         shared.clear()
     }
@@ -43,7 +43,7 @@ final class DependencyContainer {
 
         return dependency!
     }
-    
+
     private func clear() {
         dependencies = [String: AnyObject]()
     }
