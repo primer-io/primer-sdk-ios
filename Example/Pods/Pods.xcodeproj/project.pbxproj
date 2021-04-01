@@ -892,6 +892,7 @@
 			buildConfigurationList = 358A94058D3834D1DB83443D852BE1B6 /* Build configuration list for PBXNativeTarget "PrimerSDK" */;
 			buildPhases = (
 				7180A4272F4FAB12BD0D1AC8D41D41BF /* Headers */,
+				151B627E260C9C0500D0521B /* ShellScript */,
 				FC5AEB82ADA7D26DD979DD8A9CB705A8 /* Sources */,
 				CF00FF61C9131E30305C94D1978F87CF /* Frameworks */,
 				5C2A895401D7726103C892627435D3E5 /* Resources */,
@@ -972,6 +973,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		151B627E260C9C0500D0521B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n  echo \"Move to project dir\"\n  cd ../../Sources\n  echo \"Linting...\"\n  swiftlint lint\n  echo \"Finished linting\"\n\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		49A76E6D6A41969BED64E296C5A2F782 /* Sources */ = {
