@@ -135,7 +135,7 @@ extension ConfirmMandateView {
         legalLabel.text =
             NSLocalizedString("primer-form-view-confirm-mandate-legal-text-part-1",
                                      tableName: nil,
-                                     bundle: Bundle.primerFramework,
+                                     bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "By signing this mandate form, you authorise (C) - ") +
             " \(business.name) " +
