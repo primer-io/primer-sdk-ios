@@ -44,19 +44,19 @@ struct ThreeDSecureCustomer: Codable {
 }
 
 struct ThreeDSecureDevice: Codable {
-    struct Web {
-        let colorDepth: Int
-        let javaEnabled: Bool
-        let language: String
-        let screenHeight: Int
-        let screenWidth: Int
-        let timezoneOffset: Int
-        let userAgent: String
-    }
-    
-    struct App {
-        let device: String
-    }
+//    struct Web {
+//        let colorDepth: Int
+//        let javaEnabled: Bool
+//        let language: String
+//        let screenHeight: Int
+//        let screenWidth: Int
+//        let timezoneOffset: Int
+//        let userAgent: String
+//    }
+//
+//    struct App {
+        let sdkTransactionId: String
+//    }
 }
 
 struct ThreeDSecureAddress: Codable {
@@ -80,4 +80,93 @@ struct ThreeDSecureCustomerAccount: Codable {
     let updatedAt: String?
     let passwordUpdatedAt: String?
     let purchaseCount: Int?
+}
+
+enum ThreeDSecureResponseCode: String, Codable {
+    case notPerformed = "NOT_PERFORMED"
+    case skipped = "SKIPPED"
+    case authSuccess = "AUTH_SUCCESS"
+    case authFailed = "AUTH_FAILED"
+    case challenge = "CHALLENGE"
+    case METHOD = "METHOD"
+}
+
+enum ThreeDSecureSkippedCode: String, Codable {
+    case gatewayUnavailable = "GATEWAY_UNAVAILABLE"
+    case disabledByMerchant = "DISABLED_BY_MERCHANT"
+    case notSupportedByIssuer = "NOT_SUPPORTED_BY_ISSUER"
+    case failedToNegotiate = "FAILED_TO_NEGOTIATE"
+    case unknownACSResponse = "UNKNOWN_ACS_RESPONSE"
+    case threeDSServerError = "3DS_SERVER_ERROR"
+    case acquirerNotConfigured = "ACQUIRER_NOT_CONFIGURED"
+    case acquirerNotParticipating = "ACQUIRER_NOT_PARTICIPATING"
+    
+}
+
+struct ThreeDSecureBeginAuthResponse: Codable {
+    let authentication: ThreeDSecureBeginAuthResponseAuthentication
+    
+    enum CodingKeys: String, CodingKey {
+        case authentication = "authentication"
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        authentication = try container.decode(ThreeDSSkippedAPIResponse.self, forKey: .authentication)
+    }
+}
+
+//struct ThreeDSecureBeginAuthResponse<T: ThreeDSecureBeginAuthResponseAuthentication>: Codable {
+//    let authentication: T
+//}
+
+protocol ThreeDSecureBeginAuthResponseAuthentication: Codable {}
+
+struct ThreeDSSkippedAPIResponse: ThreeDSecureBeginAuthResponseAuthentication, Codable {
+    let responseCode: ThreeDSecureResponseCode
+    let protocolVersion: String?
+    let transactionId: String?
+    let acsOperatorId: String?
+    let acsReferenceNumber: String?
+    let acsTransactionId: String?
+    let dsReferenceNumber: String?
+    let dsTransactionId: String?
+    let eci: String?
+    let skippedReasonCode: ThreeDSecureSkippedCode
+    let skippedReasonText: String
+}
+
+struct ThreeDSMethodAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
+    let responseCode: ThreeDSecureResponseCode
+    let protocolVersion: String
+    let transactionId: String
+    let acsOperatorId: String?
+    let acsReferenceNumber: String?
+    let acsTransactionId: String?
+    let dsReferenceNumber: String?
+    let dsTransactionId: String?
+    let eci: String?
+    let acsMethodUrl: String?
+    let notificationUrl: String?
+    let statusUrl: String?
+}
+
+struct ThreeDSBrowserV2ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
+    let responseCode: ThreeDSecureResponseCode
+    let protocolVersion: String
+    let transactionId: String?
+    let acsOperatorId: String?
+    let acsReferenceNumber: String?
+    let acsTransactionId: String
+    let dsReferenceNumber: String?
+    let dsTransactionId: String
+    let eci: String?
+    let acsChallengeUrl: String
+    let acsChallengeMandated: String
+    let statusUrl: String
+    let challengeWindowSize: String
 }
