@@ -21,8 +21,9 @@
   },
   "source_files": "Sources/PrimerSDK/Classes/**/*.{h,m,swift}",
   "resource_bundles": {
-    "PrimerSDK": [
-      "Sources/PrimerSDK/Resources/*.{strings,xcassets}"
+    "PrimerResources": [
+      "Sources/PrimerSDK/Resources/*.xcassets",
+      "Sources/PrimerSDK/Resources/Localizable/*"
     ]
   },
   "testspecs": [

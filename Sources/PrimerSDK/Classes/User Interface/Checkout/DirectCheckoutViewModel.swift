@@ -65,14 +65,14 @@ struct PaymentMethodViewModel {
         case .applePay:
             return NSLocalizedString("payment-method-type-apple-pay",
                                      tableName: nil,
-                                     bundle: Bundle.primerFramework,
+                                     bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Pay - Payment Method Type (Apple pay)")
             
         case .goCardlessMandate:
             return NSLocalizedString("payment-method-type-go-cardless",
                                      tableName: nil,
-                                     bundle: Bundle.primerFramework,
+                                     bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Bank account - Payment Method Type (Go Cardless)")
         
