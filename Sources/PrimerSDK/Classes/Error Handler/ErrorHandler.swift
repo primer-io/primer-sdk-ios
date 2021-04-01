@@ -59,6 +59,8 @@ class ErrorHandler {
                 break
             case .tokenizationRequestFailed:
                 break
+            case .threeDSFailed:
+                break
             }
 
         } else if let klarnaException = error as? KlarnaException {

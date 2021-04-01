@@ -21,6 +21,7 @@ protocol PrimerAPIClientProtocol {
     func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
     func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (_ result: Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void)
     func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
+    func threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest, completion: @escaping (_ result: Result<ThreeDSecureBeginAuthResponse, Error>) -> Void)
 }
 
 class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -172,6 +173,19 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.tokenizationRequestFailed))
+            }
+        }
+    }
+    
+    func threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest, completion: @escaping (_ result: Result<ThreeDSecureBeginAuthResponse, Error>) -> Void) {
+        let endpoint = PrimerAPI.threeDSecureBeginAuthentication(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
+        networkService.request(endpoint) { (result: Result<ThreeDSecureBeginAuthResponse, NetworkServiceError>) in
+            switch result {
+            case .success(let threeDSecureBeginAuthResponse):
+                completion(.success(threeDSecureBeginAuthResponse))
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(PrimerError.threeDSFailed))
             }
         }
     }
@@ -332,6 +346,18 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
         do {
             let value = try JSONDecoder().decode(PaymentMethodToken.self, from: response)
+            completion(.success(value))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    func threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest, completion: @escaping (_ result: Result<ThreeDSecureBeginAuthResponse, Error>) -> Void) {
+        isCalled = true
+        guard let response = response else { return }
+
+        do {
+            let value = try JSONDecoder().decode(ThreeDSecureBeginAuthResponse.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
