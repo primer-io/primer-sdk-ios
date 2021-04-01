@@ -42,8 +42,19 @@ class FormViewModel: FormViewModelProtocol {
 
     func getSubmitButtonTitle(formType: FormType) -> String {
         switch formType {
-        case .cardForm: return "Add card".localized()
-        default: return "Next".localized()
+        case .cardForm:
+            return NSLocalizedString("primer-form-view-card-submit-button-text",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "Add card - Card Form View (Sumbit button text)")
+            
+        default:
+            return NSLocalizedString("primer-form-view-submit-button-text",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "Next - Form View (Sumbit button text)")
         }
     }
 

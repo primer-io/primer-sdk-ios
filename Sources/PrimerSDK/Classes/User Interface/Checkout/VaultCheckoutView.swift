@@ -98,7 +98,11 @@ extension VaultCheckoutView {
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
-        navBar.topItem?.title = "Choose payment method".localized()
+        navBar.topItem?.title = NSLocalizedString("primer-vault-checkout-nav-bar-title",
+                                                  tableName: nil,
+                                                  bundle: Bundle.primerFramework,
+                                                  value: "",
+                                                  comment: "Choose payment method - Vault Checkout Navigation Bar Title")
     }
 
     @objc private func cancel() {
@@ -114,9 +118,14 @@ extension VaultCheckoutView {
     }
 
     private func configureSavedCardTitleLabel() {
-        if vaulted {
-            if dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true {
-                savedCardTitleLabel.text = "SAVED CARD".localized()
+        if (vaulted) {
+            if (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true) {
+                savedCardTitleLabel.text = NSLocalizedString("primer-vault-checkout-card-title",
+                                                             tableName: nil,
+                                                             bundle: Bundle.primerFramework,
+                                                             value: "",
+                                                             comment: "SAVED CARD - Vault Checkout Card Title")
+                
                 savedCardTitleLabel.textColor = theme.colorTheme.secondaryText1
                 savedCardTitleLabel.font = .systemFont(ofSize: 12, weight: .light)
             } else {
@@ -183,10 +192,16 @@ extension VaultCheckoutView {
 
     private func configureSeeAllLinkLabel() {
         seeAllLinkLabel.translatesAutoresizingMaskIntoConstraints = false
-        if vaulted {
-            if dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true {
-
-                seeAllLinkLabel.text = vaulted ? "See All".localized() : ""
+        if (vaulted) {
+            if (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true) {
+                
+                seeAllLinkLabel.text = vaulted
+                    ? NSLocalizedString("primer-vault-checkout-see-all",
+                                        tableName: nil,
+                                        bundle: Bundle.primerFramework,
+                                        value: "",
+                                        comment: "See All - Vault Checkout See All Button")
+                    : ""
                 seeAllLinkLabel.font = .systemFont(ofSize: 14)
                 seeAllLinkLabel.textColor = theme.colorTheme.text3
                 let tapRecogniser = UITapGestureRecognizer(target: self, action: #selector(openVault))
@@ -210,9 +225,15 @@ extension VaultCheckoutView {
 
     private func configureOtherMethodsTitleLabel() {
         otherMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        if vaulted {
-            if dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true {
-                otherMethodsTitleLabel.text = vaulted ? "OTHER WAYS TO PAY".localized() : ""
+        if (vaulted) {
+            if (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true) {
+                otherMethodsTitleLabel.text = vaulted
+                    ? NSLocalizedString("primer-vault-checkout-other-methods",
+                                        tableName: nil,
+                                        bundle: Bundle.primerFramework,
+                                        value: "",
+                                        comment: "OTHER WAYS TO PAY - Vault Checkout Other Methods Title")
+                    : ""
                 otherMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
                 otherMethodsTitleLabel.font = .systemFont(ofSize: 12, weight: .light)
 
