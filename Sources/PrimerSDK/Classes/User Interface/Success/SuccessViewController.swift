@@ -175,7 +175,7 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Direct debit set up \nsuccessfully - Success Screen Title (Direct Debit)")
-            
+
         default:
             return NSLocalizedString("primer-success-screen-setup-success",
                                      tableName: nil,

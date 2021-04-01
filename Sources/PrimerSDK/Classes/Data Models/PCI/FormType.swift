@@ -65,35 +65,35 @@ enum FormType {
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Add bank account - Form Type Navigation Bar Title (Bank account)")
-            
+
         case .name:
             return NSLocalizedString("primer-form-type-top-title-name",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Add bank account - Form Type Navigation Bar Title (Name)")
-            
+
         case .iban:
             return NSLocalizedString("primer-form-type-top-title-iban",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Add bank account - Form Type Navigation Bar Title (IBAN)")
-            
+
         case .email:
             return NSLocalizedString("primer-form-type-top-title-email",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Add bank account - Form Type Navigation Bar Title (Email)")
-            
+
         case .address:
             return NSLocalizedString("primer-form-type-top-title-address",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Add bank account - Form Type Navigation Bar Title (Address)")
-            
+
         case .cardForm:
             return NSLocalizedString("primer-form-type-top-title-card-form",
                                      tableName: nil,
@@ -127,21 +127,21 @@ enum FormType {
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Use IBAN instead - Form Type Subtitle (Bank account)")
-            
+
         case .name:
             return NSLocalizedString("primer-form-type-subtitle-name",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Add bank account - Form Type Subtitle (Name)")
-            
+
         case .iban:
             return NSLocalizedString("primer-form-type-subtitle-iban",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Use an account number instead - Form Type Subtitle (IBAN)")
-            
+
         case .email: return ""
         case .address: return ""
         case .cardForm: return ""

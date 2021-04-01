@@ -48,7 +48,7 @@ class FormViewModel: FormViewModelProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "",
                                      comment: "Add card - Card Form View (Sumbit button text)")
-            
+
         default:
             return NSLocalizedString("primer-form-view-submit-button-text",
                                      tableName: nil,

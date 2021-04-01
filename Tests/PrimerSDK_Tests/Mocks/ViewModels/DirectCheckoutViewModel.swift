@@ -13,11 +13,11 @@ class MockDirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
     var amountViewModel: AmountViewModel {
         return AmountViewModel(amount: 200, currency: .EUR)
     }
-    
+
     var paymentMethods: [PaymentMethodViewModel] = []
-    
+
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
-        
+
     }
 }
 

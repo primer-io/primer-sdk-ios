@@ -11,26 +11,26 @@ import XCTest
 @testable import PrimerSDK
 
 class DirectCheckoutViewModelTests: XCTestCase {
-    
+
     override func tearDown() {
         DependencyContainer.clear()
     }
-    
+
     func test_loadCheckoutConfig_calls_clientTokenService_if_client_token_nil() throws {
         let clientTokenService = MockClientTokenService()
         let state = MockAppState(decodedClientToken: nil)
-        
+
         MockLocator.registerDependencies()
         DependencyContainer.register(state as AppStateProtocol)
         DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)
-        
+
         let viewModel = DirectCheckoutViewModel()
-        
-        viewModel.loadCheckoutConfig({ error in })
-        
+
+        viewModel.loadCheckoutConfig({ _ in })
+
         XCTAssertEqual(clientTokenService.loadCheckoutConfigCalled, true)
     }
-    
+
 }
 
 #endif

@@ -9,27 +9,27 @@ import UIKit
 import PrimerSDK
 
 class CheckoutViewController: UIViewController {
-    
+
     //    let endpoint = "https://arcane-hollows-13383.herokuapp.com"
     let endpoint = "http:localhost:8020"
-    
+
     let amount = 200
-    
+
     var listOfVaultedPaymentMethods: [PaymentMethodToken] = []
     var primer: Primer?
-    
+
     weak var delegate: ViewControllerDelegate?
-    
+
     let tableView = UITableView()
     let addCardButton = UIButton()
     let addPayPalButton = UIButton()
     let vaultCheckoutButton = UIButton()
     let directCheckoutButton = UIButton()
     let directDebitButton = UIButton()
-    
+
     override func viewDidLoad() {
         title = "Wallet"
-        
+
         if #available(iOS 12.0, *) {
             if traitCollection.userInterfaceStyle == .light {
                 view.backgroundColor = .white
@@ -43,11 +43,11 @@ class CheckoutViewController: UIViewController {
             // Fallback on earlier versions
             view.backgroundColor = .white
         }
-        
+
         var theme: PrimerTheme
-        
+
         let themeColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
-        
+
         if #available(iOS 13.0, *) {
             theme = PrimerTheme(
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
@@ -79,7 +79,7 @@ class CheckoutViewController: UIViewController {
                 fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
             )
         }
-        
+
         let businessDetails = BusinessDetails(
             name: "My Business",
             address: Address(
@@ -91,7 +91,7 @@ class CheckoutViewController: UIViewController {
                 postalCode: "75001"
             )
         )
-        
+
         let settings = PrimerSettings(
             delegate: self,
             amount: 200, // todo: make order items override this?
@@ -105,9 +105,9 @@ class CheckoutViewController: UIViewController {
                 OrderItem(name: "Fine Socks", unitAmount: 200, quantity: 1)
             ]
         )
-        
+
         primer = Primer(with: settings)
-        
+
         primer?.setDirectDebitDetails(
             firstName: "John",
             lastName: "Doe",
@@ -122,9 +122,9 @@ class CheckoutViewController: UIViewController {
                 postalCode: "75001"
             )
         )
-        
+
         primer?.setTheme(theme: theme)
-        
+
         // primer showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) -> Void
         // primer fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void)
         //
@@ -133,12 +133,12 @@ class CheckoutViewController: UIViewController {
         view.addSubview(addPayPalButton)
         view.addSubview(vaultCheckoutButton)
         view.addSubview(directDebitButton)
-        
+
         //
         tableView.delegate = self
         tableView.dataSource = self
         let footer = UIView()
-        
+
         if #available(iOS 12.0, *) {
             if traitCollection.userInterfaceStyle == .light {
                 footer.backgroundColor = .white
@@ -148,65 +148,65 @@ class CheckoutViewController: UIViewController {
         } else {
             footer.backgroundColor = .white
         }
-        
+
         tableView.tableFooterView = footer
-        
+
         addCardButton.setTitle("Add Card", for: .normal)
         addCardButton.setTitleColor(.white, for: .normal)
         addCardButton.layer.cornerRadius = 16
         addCardButton.backgroundColor = .lightGray
         addCardButton.addTarget(self, action: #selector(showCardForm), for: .touchUpInside)
-        
+
         addPayPalButton.setTitle("Klarna", for: .normal)
         addPayPalButton.setTitleColor(.white, for: .normal)
         addPayPalButton.layer.cornerRadius = 16
         addPayPalButton.backgroundColor = .lightGray
         addPayPalButton.addTarget(self, action: #selector(showKlarnaForm), for: .touchUpInside)
-        
+
         vaultCheckoutButton.setTitle("Open Wallet", for: .normal)
         vaultCheckoutButton.setTitleColor(.white, for: .normal)
         vaultCheckoutButton.layer.cornerRadius = 16
         vaultCheckoutButton.backgroundColor = .lightGray
         vaultCheckoutButton.addTarget(self, action: #selector(showCompleteVaultCheckout), for: .touchUpInside)
-        
+
         directDebitButton.setTitle("Add Direct Debit", for: .normal)
         directDebitButton.setTitleColor(.white, for: .normal)
         directDebitButton.layer.cornerRadius = 16
         directDebitButton.backgroundColor = .lightGray
         directDebitButton.addTarget(self, action: #selector(showDirectDebit), for: .touchUpInside)
-        
+
         //
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: addCardButton.topAnchor).isActive = true
-        
+
         addCardButton.translatesAutoresizingMaskIntoConstraints = false
         addCardButton.bottomAnchor.constraint(equalTo: addPayPalButton.topAnchor, constant: -12).isActive = true
         addCardButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         addCardButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
-        
+
         addPayPalButton.translatesAutoresizingMaskIntoConstraints = false
         addPayPalButton.bottomAnchor.constraint(equalTo: vaultCheckoutButton.topAnchor, constant: -12).isActive = true
         addPayPalButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         addPayPalButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
-        
+
         vaultCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
         vaultCheckoutButton.bottomAnchor.constraint(equalTo: directDebitButton.topAnchor, constant: -12).isActive = true
         vaultCheckoutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         vaultCheckoutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
-        
+
         directDebitButton.translatesAutoresizingMaskIntoConstraints = false
         directDebitButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -48).isActive = true
         directDebitButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         directDebitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
-        
+
         fetchPaymentMethods()
     }
-    
+
     func fetchPaymentMethods() {
-        primer?.fetchVaultedPaymentMethods() { [weak self] result in
+        primer?.fetchVaultedPaymentMethods { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .failure: print("Error!")
@@ -218,11 +218,11 @@ class CheckoutViewController: UIViewController {
             }
         }
     }
-    
+
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
-    
+
     @objc private func showCardForm() {
         primer?.showCheckout(self, flow: .addCardToVault)
     }
@@ -249,7 +249,7 @@ extension CheckoutViewController: PrimerDelegate {
     func onCheckoutDismissed() {
         fetchPaymentMethods()
     }
-    
+
     func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
         guard let url = URL(string: "\(endpoint)/client-token") else {
             return completion(.failure(NetworkError.missingParams))
@@ -271,33 +271,33 @@ extension CheckoutViewController: PrimerDelegate {
             }
         })
     }
-    
+
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         guard let token = result.token else { return completion(NetworkError.missingParams) }
-        
+
         guard let url = URL(string: "\(endpoint)/authorize") else {
             return completion(NetworkError.missingParams)
         }
-        
+
         let type = result.paymentInstrumentType
-        
+
         var request = URLRequest(url: url)
-        
+
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+
         let body = AuthorizationRequest(token: token, amount: amount, type: type.rawValue)
-        
+
         do {
             request.httpBody = try JSONEncoder().encode(body)
         } catch {
             return completion(NetworkError.missingParams)
         }
-        
+
         print("🐳", result)
-        
+
         completion(nil)
-        
+
 //        callApi(request, completion: { result in
 //            switch result {
 //            case .success: completion(nil)
@@ -313,12 +313,12 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return listOfVaultedPaymentMethods.count
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         presentCapturePayment(indexPath.row)
     }
-    
+
     private func presentCapturePayment(_ index: Int) {
         let result = listOfVaultedPaymentMethods[index]
         let type = result.paymentInstrumentType
@@ -326,14 +326,14 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         delegate?.addToken(request: request)
         navigationController?.popViewController(animated: true)
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "primerCell")
         let paymentMethodToken = listOfVaultedPaymentMethods[indexPath.row]
-        
+
         //        var title: String
         var subtitle: String
-        
+
         switch paymentMethodToken.paymentInstrumentType {
         case .paymentCard:
             //            cell.textLabel?.text = "Card"
@@ -350,10 +350,10 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
             cell.textLabel?.text = ""
             subtitle = ""
         }
-        
+
         cell.addIcon(paymentMethodToken.icon.image)
         cell.addTitle(subtitle)
-        
+
         if #available(iOS 12.0, *) {
             if traitCollection.userInterfaceStyle == .light {
                 cell.backgroundColor = .white
@@ -363,14 +363,13 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         } else {
             cell.backgroundColor = .white
         }
-        
-        
+
         return cell
     }
 }
 
 extension UITableViewCell {
-    
+
     func addIcon(_ icon: UIImage?) {
         let imageView = UIImageView(image: icon)
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -380,7 +379,7 @@ extension UITableViewCell {
         imageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
         imageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20).isActive = true
     }
-    
+
     func addTitle(_ text: String) {
         let title = UILabel()
         title.text = text
@@ -392,5 +391,5 @@ extension UITableViewCell {
         title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 60).isActive = true
         title.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -50).isActive = true
     }
-    
+
 }

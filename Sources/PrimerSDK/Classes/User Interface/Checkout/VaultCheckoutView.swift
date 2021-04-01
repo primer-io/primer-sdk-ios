@@ -125,7 +125,7 @@ extension VaultCheckoutView {
                                                              bundle: Bundle.primerFramework,
                                                              value: "",
                                                              comment: "SAVED CARD - Vault Checkout Card Title")
-                
+
                 savedCardTitleLabel.textColor = theme.colorTheme.secondaryText1
                 savedCardTitleLabel.font = .systemFont(ofSize: 12, weight: .light)
             } else {
@@ -194,7 +194,7 @@ extension VaultCheckoutView {
         seeAllLinkLabel.translatesAutoresizingMaskIntoConstraints = false
         if (vaulted) {
             if (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true) {
-                
+
                 seeAllLinkLabel.text = vaulted
                     ? NSLocalizedString("primer-vault-checkout-see-all",
                                         tableName: nil,
