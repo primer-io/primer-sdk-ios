@@ -170,9 +170,18 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
     func getTitle(_ screenType: SuccessScreenType?) -> String {
         switch screenType {
         case .directDebit:
-            return "Direct debit set up \nsuccessfully".localized()
+            return NSLocalizedString("primer-success-screen-direct-debit-setup-success",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "Direct debit set up \nsuccessfully - Success Screen Title (Direct Debit)")
+            
         default:
-            return "Success!".localized()
+            return NSLocalizedString("primer-success-screen-setup-success",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "Success! - Success Screen Title")
         }
     }
 
@@ -180,7 +189,11 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
         switch screenType {
         case .directDebit:
             guard let name = state.settings.businessDetails?.name else { return "" }
-            return name + " " + "will appear on your bank statement when payments are taken against the Direct Debit."
+            return name + " " + NSLocalizedString("primer-success-screen-confirmation-message",
+                                                  tableName: nil,
+                                                  bundle: Bundle.primerFramework,
+                                                  value: "",
+                                                  comment: "@payment_method_name will appear on your bank statement when payments are taken against the Direct Debit. - Success Screen Confirmation Message")
         default:
             return ""
         }

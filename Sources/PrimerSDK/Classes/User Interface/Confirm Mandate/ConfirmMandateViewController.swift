@@ -123,7 +123,40 @@ enum ConfirmMandateFormType: String {
     case name, email, address, iban
 
     var title: String {
-        return self.rawValue.localized().uppercased()
+        switch self {
+        case .name:
+            return NSLocalizedString("primer-confirm-mandate-form-title",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "NAME - Confirm Mandate Title")
+                .uppercased()
+            
+        case .email:
+            return NSLocalizedString("primer-confirm-mandate-form-email",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "EMAIL - Confirm Mandate Title")
+                .uppercased()
+            
+        case .address:
+            return NSLocalizedString("primer-confirm-mandate-form-address",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "ADDRESS - Confirm Mandate Title")
+                .uppercased()
+            
+        case .iban:
+            return NSLocalizedString("primer-confirm-mandate-form-iban",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "IBAN - Confirm Mandate Title")
+                .uppercased()
+            
+        }
     }
 
     func content(_ mandate: DirectDebitMandate) -> String {
