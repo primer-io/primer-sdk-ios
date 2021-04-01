@@ -23,11 +23,14 @@ enum PrimerAPI: Endpoint {
     case klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
 
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest)
+    
+    case threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest)
 }
 
 extension PrimerAPI {
 
     // MARK: Base URL
+    
     var baseURL: String {
         switch self {
         case .directDebitCreateMandate(let clientToken, _),
@@ -43,7 +46,8 @@ extension PrimerAPI {
             return urlStr
         case .vaultDeletePaymentMethod(let clientToken, _),
              .vaultFetchPaymentMethods(let clientToken),
-             .tokenizePaymentMethod(let clientToken, _):
+             .tokenizePaymentMethod(let clientToken, _),
+             .threeDSecureBeginAuthentication(let clientToken, _, _):
             guard let urlStr = clientToken.pciUrl else {
                 fatalError("You need to provide the Primer SDK with a client access token fetched from your server.")
             }
@@ -57,6 +61,7 @@ extension PrimerAPI {
     }
 
     // MARK: Path
+    
     var path: String {
         switch self {
         case .vaultDeletePaymentMethod(_, let id):
@@ -81,16 +86,20 @@ extension PrimerAPI {
             return "/gocardless/mandates"
         case .tokenizePaymentMethod:
             return "/payment-instruments"
+        case .threeDSecureBeginAuthentication(_, let paymentMethodToken, _):
+            return "/3ds/\(paymentMethodToken.token!)/auth"
         }
     }
 
     // MARK: Port
     // (not needed atm since port is included in the base URL provided by the access token)
+    
     var port: Int? {
         return nil
     }
 
     // MARK: HTTP Method
+    
     var method: HTTPMethod {
         switch self {
         case .vaultDeletePaymentMethod:
@@ -105,12 +114,14 @@ extension PrimerAPI {
              .klarnaCreatePaymentSession,
              .klarnaCreateCustomerToken,
              .klarnaFinalizePaymentSession,
-             .tokenizePaymentMethod:
+             .tokenizePaymentMethod,
+             .threeDSecureBeginAuthentication:
             return .post
         }
     }
 
     // MARK: Headers
+    
     var headers: [String: String]? {
         var headers: [String: String] = [
             "Content-Type": "application/json",
@@ -128,7 +139,8 @@ extension PrimerAPI {
              .klarnaCreatePaymentSession(let clientToken, _),
              .klarnaCreateCustomerToken(let clientToken, _),
              .klarnaFinalizePaymentSession(let clientToken, _),
-             .tokenizePaymentMethod(let clientToken, _):
+             .tokenizePaymentMethod(let clientToken, _),
+             .threeDSecureBeginAuthentication(let clientToken, _, _):
             if let token = clientToken.accessToken {
                 headers["Primer-Client-Token"] = token
             }
@@ -138,6 +150,7 @@ extension PrimerAPI {
     }
 
     // MARK: Query Parameters
+    
     var queryParameters: [String: String]? {
         switch self {
         default:
@@ -146,6 +159,7 @@ extension PrimerAPI {
     }
 
     // MARK: HTTP Body
+    
     var body: Data? {
         switch self {
         case .directDebitCreateMandate(_, let mandateRequest):
@@ -164,6 +178,8 @@ extension PrimerAPI {
             return try? JSONEncoder().encode(klarnaFinalizePaymentSessionRequest)
         case .tokenizePaymentMethod(_, let paymentMethodTokenizationRequest):
             return try? JSONEncoder().encode(paymentMethodTokenizationRequest)
+        case .threeDSecureBeginAuthentication(_, _, let threeDSecureBeginAuthRequest):
+            return try? JSONEncoder().encode(threeDSecureBeginAuthRequest)
         case .vaultDeletePaymentMethod,
              .fetchConfiguration,
              .vaultFetchPaymentMethods:

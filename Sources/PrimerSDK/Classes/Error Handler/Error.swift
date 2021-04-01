@@ -197,6 +197,7 @@ enum PrimerError: PrimerErrorProtocol {
     case configFetchFailed
     case tokenizationPreRequestFailed
     case tokenizationRequestFailed
+    case threeDSFailed
 
     static var errorDomain: String = "primer"
 
@@ -287,6 +288,12 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerFramework,
                                      value: "",
                                      comment: "Connection error, your payment method was not saved. Please try again. - Primer error message")
+        case .threeDSFailed:
+            return NSLocalizedString("primer-error-message-3ds-failed",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "3DS failed - Primer error message")
         }
     }
 
