@@ -55,7 +55,7 @@ class URLSessionStack: NetworkService {
         #endif
 
         let dataTask = session.dataTask(with: request) { data, response, error in
-            #if DEBUG                                            
+            #if DEBUG
             msg = ""
 
             if let httpResponse = response as? HTTPURLResponse {
