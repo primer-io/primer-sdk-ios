@@ -170,3 +170,88 @@ struct ThreeDSBrowserV2ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthen
     let statusUrl: String
     let challengeWindowSize: String
 }
+
+struct ThreeDSAppV2ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
+    let responseCode: ThreeDSecureResponseCode
+    let protocolVersion: String
+    let transactionId: String?
+    let acsOperatorId: String?
+    let acsReferenceNumber: String?
+    let acsTransactionId: String
+    let dsReferenceNumber: String?
+    let dsTransactionId: String
+    let eci: String?
+    let acsRenderingType: String
+    let acsSignedContent: String
+    let acsChallengeMandated: String
+    let statusUrl: String
+}
+
+struct ThreeDSBrowserV1ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
+    let responseCode: ThreeDSecureResponseCode
+    let protocolVersion: String
+    let transactionId: String?
+    let acsOperatorId: String?
+    let acsReferenceNumber: String?
+    let acsTransactionId: String?
+    let dsReferenceNumber: String?
+    let dsTransactionId: String?
+    let eci: String?
+    let acsChallengeUrl: String
+    let acsChallengeData: String
+    let statusUrl: String
+    let notificationUrl: String
+    let challengeWindowSize: String
+}
+
+enum ThreeDSecureDeclinedReasonCode: String, Codable {
+    case unknown = "UNKNOWN"
+    case rejectedByIssuer = "REJECTED_BY_ISSUER"
+    case cardAuthenticationFailed = "CARD_AUTHENTICATION_FAILED"
+    case unknownDevice = "UNKNOWN_DEVICE"
+    case unsupportedDevice = "UNSUPPORTED_DEVICE"
+    case exceedsAuthenticationFrequencyLimit = "EXCEEDS_AUTHENTICATION_FREQUENCY_LIMIT"
+    case expiredCard = "EXPIRED_CARD"
+    case invalidCardNumber = "INVALID_CARD_NUMBER"
+    case invalidTransaction = "INVALID_TRANSACTION"
+    case noCardRecord = "NO_CARD_RECORD"
+    case securityFailure = "SECURITY_FAILURE"
+    case stolenCard = "STOLEN_CARD"
+    case suspectedFraud = "SUSPECTED_FRAUD"
+    case transactionNotPermittedToCardholder = "TRANSACTION_NOT_PERMITTED_TO_CARDHOLDER"
+    case cardholderNotEnrolledInService = "CARDHOLDER_NOT_ENROLLED_IN_SERVICE"
+    case transactionTimedOutAtTheACS = "TRANSACTION_TIMED_OUT_AT_THE_ACS"
+    case lowConfidence = "LOW_CONFIDENCE"
+    case mediumConfidence = "MEDIUM_CONFIDENCE"
+    case highConfidence = "HIGH_CONFIDENCE"
+    case veryHighConfidence = "VERY_HIGH_CONFIDENCE"
+    case exceedsACSMaximumChallenges = "EXCEEDS_ACS_MAXIMUM_CHALLENGES"
+    case nonPaymentNotSupported = "NON_PAYMENT_NOT_SUPPORTED"
+    case threeRINotSupported = "THREE_RI_NOT_SUPPORTED"
+    case acsTechnicalIssue = "ACS_TECHNICAL_ISSUE"
+    case decoupledRequiredByACS = "DECOUPLED_REQUIRED_BY_ACS"
+    case decoupledMaxExpiryExceeded = "DECOUPLED_MAX_EXPIRY_EXCEEDED"
+    case decoupledAuthenticationInsufficientTime = "DECOUPLED_AUTHENTICATION_INSUFFICIENT_TIME"
+    case authenticationAttemptedButNotPerformedByCardholder = "AUTHENTICATION_ATTEMPTED_BUT_NOT_PERFORMED_BY_CARDHOLDER"
+    case acsTimedOut = "ACS_TIMED_OUT"
+    case invalidACSResponse = "INVALID_ACS_RESPONSE"
+    case acsSystemErrorResponse = "ACS_SYSTEM_ERROR_RESPONSE"
+    case errorGeneratingCAVV = "ERROR_GENERATING_CAVV"
+    case protocolVersionNotSupported = "PROTOCOL_VERSION_NOT_SUPPORTED"
+    case transactionExcludedFromAttemptsProcessing = "TRANSACTION_EXCLUDED_FROM_ATTEMPTS_PROCESSING"
+    case requestedProgramNotSupported = "REQUESTED_PROGRAM_NOT_SUPPORTED"
+}
+
+struct ThreeDSDeclinedAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
+    let responseCode: ThreeDSecureResponseCode
+    let protocolVersion: String
+    let transactionId: String?
+    let acsOperatorId: String?
+    let acsReferenceNumber: String?
+    let acsTransactionId: String?
+    let dsReferenceNumber: String?
+    let dsTransactionId: String?
+    let eci: String?
+    let declinedReasonCode: ThreeDSecureDeclinedReasonCode
+    let declinedReasonText: String
+}
