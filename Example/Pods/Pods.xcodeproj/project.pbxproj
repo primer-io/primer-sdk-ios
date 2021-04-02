@@ -19,6 +19,8 @@
 		15ACE9D62615AA99004C3EAA /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 15ACE9CF2615AA99004C3EAA /* .gitkeep */; };
 		15ACE9D72615AA99004C3EAA /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 15ACE9D02615AA99004C3EAA /* Icons.xcassets */; };
 		15ACE9D82615AA99004C3EAA /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 15ACE9D22615AA99004C3EAA /* Localizable.strings */; };
+		15ACEA842615E42C004C3EAA /* ThreeDService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACEA832615E42C004C3EAA /* ThreeDService.swift */; };
+		15ACEA922615E7DB004C3EAA /* 3DS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACEA912615E7DB004C3EAA /* 3DS.swift */; };
 		16DE9A7D74D40E142013537306A3A0FA /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4825212F105DDE53B5F239ECA5D3F601 /* BundleExtension.swift */; };
 		1B842E362DA9C8CE4AEE83960DACA441 /* DependencyInjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030814DF77A6EADFB5946C9945369D51 /* DependencyInjection.swift */; };
 		1B9D1CC27D6CC573D73ECAD5635309DA /* FormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB2913FC7E26E0A02FA5E61E50BBFFF /* FormView.swift */; };
@@ -157,6 +159,8 @@
 		15ACE9D32615AA99004C3EAA /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		15ACE9D42615AA99004C3EAA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		15ACE9D52615AA99004C3EAA /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		15ACEA832615E42C004C3EAA /* ThreeDService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDService.swift; sourceTree = "<group>"; };
+		15ACEA912615E7DB004C3EAA /* 3DS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3DS.swift; sourceTree = "<group>"; };
 		175ECA4BB0D68FCC9CF2542A66E311FE /* PrimerSDK-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "PrimerSDK-dummy.m"; sourceTree = "<group>"; };
 		1991E8F590AF3E716D08CD69B855FB71 /* DirectCheckoutViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DirectCheckoutViewModel.swift; sourceTree = "<group>"; };
 		19A8CB68D57D47A7D9DBFB2B883F91F5 /* JSONParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JSONParser.swift; sourceTree = "<group>"; };
@@ -366,6 +370,7 @@
 			isa = PBXGroup;
 			children = (
 				A4699843DFDDD511F6027B91A5D206C3 /* Payment Services */,
+				15ACEA822615E411004C3EAA /* 3DS */,
 				2F0B8C9EEC408A5FF536DBDA8A81813C /* PCI */,
 				7ACE28A35F90CC47C8E1BE9FDEB4D6FF /* Primer */,
 			);
@@ -390,6 +395,14 @@
 				15ACE9D22615AA99004C3EAA /* Localizable.strings */,
 			);
 			path = Localizable;
+			sourceTree = "<group>";
+		};
+		15ACEA822615E411004C3EAA /* 3DS */ = {
+			isa = PBXGroup;
+			children = (
+				15ACEA832615E42C004C3EAA /* ThreeDService.swift */,
+			);
+			path = 3DS;
 			sourceTree = "<group>";
 		};
 		1B6409743934898A7C9A6A413BB5FB3E /* Primer */ = {
@@ -465,12 +478,12 @@
 		34B4D66AA3DB7BBD74E8C289C83F7B29 /* PrimerSDK */ = {
 			isa = PBXGroup;
 			children = (
-				15ACE9CE2615AA99004C3EAA /* Resources */,
 				1548BE7AA2F51F3901CFD999E6422ADA /* Core */,
 				DC07D00846E9187DF3EB05D3AE8ABD8F /* Data Models */,
 				B4302C8F39E2F52FE5B2C3A0223008E7 /* Error Handler */,
 				2BDE1E31EABCB155E51C31C3FE04C9D2 /* Extensions & Utilities */,
 				5E27283C98539FA62425AAEE49B30084 /* Pod */,
+				15ACE9CE2615AA99004C3EAA /* Resources */,
 				A49B4FA5C962B318A8FD55C2E44EC49B /* Services */,
 				32307178B238DAE5B3D030045C51F17B /* Support Files */,
 				EA7CE5097EDABD02F6E54F1F17CA23E8 /* User Interface */,
@@ -718,6 +731,7 @@
 				D49810D9B0DF31509968A8F822FFF20B /* SuccessMessage.swift */,
 				6B45B17D3CFB6C49D5863A669CDDD967 /* UXMode.swift */,
 				105D05EB742DA22157846C82ADCB681F /* PCI */,
+				15ACEA912615E7DB004C3EAA /* 3DS.swift */,
 			);
 			name = "Data Models";
 			path = "Sources/PrimerSDK/Classes/Data Models";
@@ -1027,8 +1041,10 @@
 				ADBBE5F1CF034A2A4A8636AC89F8CD68 /* ApplePayViewController+PassKit.swift in Sources */,
 				80F1514A54A8AF6A16AB1D17018BA75D /* ApplePayViewController.swift in Sources */,
 				A6172B7F72A1371FDAFF7E655D3489B2 /* ApplePayViewModel.swift in Sources */,
+				15ACEA842615E42C004C3EAA /* ThreeDService.swift in Sources */,
 				6004E481FF53FAC3862769BDFF5A3D0A /* AppState.swift in Sources */,
 				16DE9A7D74D40E142013537306A3A0FA /* BundleExtension.swift in Sources */,
+				15ACEA922615E7DB004C3EAA /* 3DS.swift in Sources */,
 				8D217ED50CB833750DE506992D27DD84 /* CardButton.swift in Sources */,
 				695A53CEB4436BA189717FCA1AE3D077 /* CardFormView.swift in Sources */,
 				7F9B8D0E411BB44332B92E296776371C /* CardFormViewController+CardScannerViewControllerDelegate.swift in Sources */,
