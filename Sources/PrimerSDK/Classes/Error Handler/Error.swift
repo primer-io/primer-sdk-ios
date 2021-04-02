@@ -185,6 +185,45 @@ enum NetworkServiceError: PrimerErrorProtocol {
 
 }
 
+enum ThreeDSError: PrimerErrorProtocol {
+    var shouldBePresented: Bool {
+        return false
+    }
+    
+    
+    case failedToParseResponse
+    
+    static var errorDomain: String = "primer.3DS"
+    
+    var errorCode: Int {
+        switch self {
+        default:
+            // Define API error codes with Android & Web
+            return 100
+        }
+    }
+    
+    var errorUserInfo: [String: Any] {
+        switch self {
+        default:
+            // Do we want more information on the errors? E.g. timestamps?
+            return [:]
+        }
+    }
+    
+    var errorDescription: String? {
+        switch self {
+        case .failedToParseResponse:
+            return NSLocalizedString("primer-3DS-error-message-failed-to-parse-response",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "Failed to parse 3DS response - Primer error message")
+        }
+    }
+    
+}
+
 enum PrimerError: PrimerErrorProtocol {
 
     case clientTokenNull
