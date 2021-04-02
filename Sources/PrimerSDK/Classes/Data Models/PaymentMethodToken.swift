@@ -222,17 +222,4 @@ public struct VaultData: Codable {
     public var customerId: String?
 }
 
-/**
- If available, it contains information on the 3DSecure authentication associated with this payment method token/instrument.
- 
- - Author:
- Primer
- - Version:
- 1.2.2
- */
-
-public struct ThreeDSecureAuthentication: Codable {
-    public var responseCode, reasonCode, reasonText, protocolVersion, challengeIssued: String?
-}
-
 #endif

@@ -105,9 +105,11 @@ enum ThreeDSecureSkippedCode: String, Codable {
 
 struct ThreeDSecureBeginAuthResponse: Codable {
     let authentication: ThreeDSecureBeginAuthResponseAuthentication
+    let token: ThreeDSecureBeginAuthResponseToken
     
     enum CodingKeys: String, CodingKey {
-        case authentication = "authentication"
+        case authentication
+        case token
     }
     
     func encode(to encoder: Encoder) throws {
@@ -116,7 +118,27 @@ struct ThreeDSecureBeginAuthResponse: Codable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        authentication = try container.decode(ThreeDSSkippedAPIResponse.self, forKey: .authentication)
+        
+        if let threeDSDeclinedAPIResponse = (try? container.decode(ThreeDSDeclinedAPIResponse.self, forKey: .authentication)) {
+            authentication = threeDSDeclinedAPIResponse
+        } else if let threeDSSkippedAPIResponse = try? container.decode(ThreeDSSkippedAPIResponse.self, forKey: .authentication) {
+            authentication = threeDSSkippedAPIResponse
+        } else if let threeDSAppV2ChallengeAPIResponse = try? container.decode(ThreeDSAppV2ChallengeAPIResponse.self, forKey: .authentication) {
+            authentication = threeDSAppV2ChallengeAPIResponse
+        } else if let threeDSMethodAPIResponse = try? container.decode(ThreeDSMethodAPIResponse.self, forKey: .authentication) {
+            authentication = threeDSMethodAPIResponse
+        } else if let threeDSBrowserV2ChallengeAPIResponse = try? container.decode(ThreeDSBrowserV2ChallengeAPIResponse.self, forKey: .authentication) {
+            authentication = threeDSBrowserV2ChallengeAPIResponse
+        } else if let threeDSBrowserV1ChallengeAPIResponse = try? container.decode(ThreeDSBrowserV1ChallengeAPIResponse.self, forKey: .authentication) {
+            authentication = threeDSBrowserV1ChallengeAPIResponse
+        } else if let threeDSSuccessAPIResponse = try? container.decode(ThreeDSSuccessAPIResponse.self, forKey: .authentication) {
+            authentication = threeDSSuccessAPIResponse
+        } else {
+            let err = ThreeDSError.failedToParseResponse
+            throw err
+        }
+        
+        token = try container.decode(ThreeDSecureBeginAuthResponseToken.self, forKey: .token)
     }
 }
 
@@ -254,4 +276,42 @@ struct ThreeDSDeclinedAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
     let eci: String?
     let declinedReasonCode: ThreeDSecureDeclinedReasonCode
     let declinedReasonText: String
+}
+
+struct ThreeDSSuccessAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
+    let responseCode: ThreeDSecureResponseCode?
+    let protocolVersion: String
+    let transactionId: String?
+    let acsOperatorId: String?
+    let acsReferenceNumber: String?
+    let acsTransactionId: String?
+    let dsReferenceNumber: String?
+    let dsTransactionId: String?
+    let eci: String?
+    let cryptogram: String
+    let xid: String?
+}
+
+struct ThreeDSecureBeginAuthResponseToken: Codable {
+    let token: String
+    let analyticsId: String
+    let tokenType: String
+    let paymentInstrumentType: PaymentInstrumentType
+    let paymentInstrumentData: PaymentInstrumentData
+    let vaultData: VaultData?
+    let threeDSecureAuthentication: ThreeDSecureAuthentication?
+}
+
+/**
+ If available, it contains information on the 3DSecure authentication associated with this payment method token/instrument.
+ 
+ - Author:
+ Primer
+ - Version:
+ 1.2.2
+ */
+
+public struct ThreeDSecureAuthentication: Codable {
+    let responseCode: String
+    let reasonCode, reasonText, protocolVersion, challengeIssued: String?
 }
