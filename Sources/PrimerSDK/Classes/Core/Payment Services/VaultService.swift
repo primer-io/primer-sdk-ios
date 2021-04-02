@@ -34,18 +34,30 @@ class VaultService: VaultServiceProtocol {
                     if let paymentMethod = paymentMethods.first {
                         let threeDS2Service: ThreeDS_SDK.ThreeDS2Service = ThreeDS2ServiceSDK()
                         
-                        
-                        do {
-                            let configParameters = ConfigParameters()
-                            try configParameters.addParam(group:nil, paramName:"license-key", paramValue: Primer.netceteraLicenseKey)
-                            try threeDS2Service.initialize(configParameters, locale: nil, uiCustomization: nil)
-                            let warnings = try threeDS2Service.getWarnings()
-                            for w in warnings {
-                                print("Warning \(w.getID()) [\(w.getSeverity().rawValue)]: \(w.getMessage())")
+                        let service = ThreeDSecureService()
+                        service.initializeSDK {
+                            service.verifyWarnings { (err) in
+                                service.netceteraAuth()
                             }
-                        } catch {
-                            print(error)
+                        } errorHandler: { (err) in
+                            
                         }
+
+//                        service.netceteraAuth()
+//                        do {
+//                            let configParameters = ConfigParameters()
+//                            try configParameters.addParam(group:nil, paramName:"license-key", paramValue: Primer.netceteraLicenseKey)
+//                            try threeDS2Service.initialize(configParameters, locale: nil, uiCustomization: nil)
+//                            let warnings = try threeDS2Service.getWarnings()
+//                            for w in warnings {
+//                                print("Warning \(w.getID()) [\(w.getSeverity().rawValue)]: \(w.getMessage())")
+//                            }
+//                            
+//                            let service = ThreeDSecureService()
+//                            service.netceteraAuth()
+//                        } catch {
+//                            print(error)
+//                        }
                         
                         
                         
