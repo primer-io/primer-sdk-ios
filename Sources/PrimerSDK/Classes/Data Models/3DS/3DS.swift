@@ -24,7 +24,36 @@ enum ThreeDSecureTestScenario: String, Codable {
 }
 
 struct ThreeDSecureBeginAuthRequest: Codable {
-    let testScenario: ThreeDSecureTestScenario?
+    
+    static var demoAuthRequest: ThreeDSecureBeginAuthRequest {
+        let threeDSecureBeginAuthRequest = ThreeDSecureBeginAuthRequest(testScenario: .threeDS_V2_FRICTIONLESS_PASS,
+                                                                        amount: 100,
+                                                                        currencyCode: .EUR,
+                                                                        orderId: "test_id",
+                                                                        customer: ThreeDSecureCustomer(name: "Evangelos",
+                                                                                                       email: "evangelos@primer.io",
+                                                                                                       homePhone: nil,
+                                                                                                       mobilePhone: nil,
+                                                                                                       workPhone: nil),
+                                                                        device: ThreeDSecureDevice(sdkTransactionId: ""),
+                                                                        billingAddress: ThreeDSecureAddress(title: nil,
+                                                                                                            firstName: nil,
+                                                                                                            lastName: nil,
+                                                                                                            email: nil,
+                                                                                                            phoneNumber: nil,
+                                                                                                            addressLine1: "my address line 1",
+                                                                                                            addressLine2: nil,
+                                                                                                            addressLine3: nil,
+                                                                                                            city: "Athens",
+                                                                                                            state: nil,
+                                                                                                            countryCode: .gr,
+                                                                                                            postalCode: "11472"),
+                                                                        shippingAddress: nil,
+                                                                        customerAccount: nil)
+        return threeDSecureBeginAuthRequest
+    }
+    
+    var testScenario: ThreeDSecureTestScenario?
     let amount: Int
     let currencyCode: Currency
     let orderId: String
@@ -44,19 +73,19 @@ struct ThreeDSecureCustomer: Codable {
 }
 
 struct ThreeDSecureDevice: Codable {
-//    struct Web {
-//        let colorDepth: Int
-//        let javaEnabled: Bool
-//        let language: String
-//        let screenHeight: Int
-//        let screenWidth: Int
-//        let timezoneOffset: Int
-//        let userAgent: String
-//    }
-//
-//    struct App {
-        let sdkTransactionId: String
-//    }
+    //    struct Web {
+    //        let colorDepth: Int
+    //        let javaEnabled: Bool
+    //        let language: String
+    //        let screenHeight: Int
+    //        let screenWidth: Int
+    //        let timezoneOffset: Int
+    //        let userAgent: String
+    //    }
+    //
+    //    struct App {
+    let sdkTransactionId: String
+    //    }
 }
 
 struct ThreeDSecureAddress: Codable {

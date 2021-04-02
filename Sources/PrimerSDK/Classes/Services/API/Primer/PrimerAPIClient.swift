@@ -26,7 +26,7 @@ protocol PrimerAPIClientProtocol {
 
 class PrimerAPIClient: PrimerAPIClientProtocol {
 
-    private let networkService: NetworkService
+    internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
 
@@ -173,19 +173,6 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.tokenizationRequestFailed))
-            }
-        }
-    }
-    
-    func threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest, completion: @escaping (_ result: Result<ThreeDSecureBeginAuthResponse, Error>) -> Void) {
-        let endpoint = PrimerAPI.threeDSecureBeginAuthentication(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
-        networkService.request(endpoint) { (result: Result<ThreeDSecureBeginAuthResponse, NetworkServiceError>) in
-            switch result {
-            case .success(let threeDSecureBeginAuthResponse):
-                completion(.success(threeDSecureBeginAuthResponse))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(PrimerError.threeDSFailed))
             }
         }
     }
@@ -346,18 +333,6 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
         do {
             let value = try JSONDecoder().decode(PaymentMethodToken.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-    
-    func threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest, completion: @escaping (_ result: Result<ThreeDSecureBeginAuthResponse, Error>) -> Void) {
-        isCalled = true
-        guard let response = response else { return }
-
-        do {
-            let value = try JSONDecoder().decode(ThreeDSecureBeginAuthResponse.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
