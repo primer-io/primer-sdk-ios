@@ -18,6 +18,7 @@ Pod::Spec.new do |spec|
     spec.resource_bundles = {
         'PrimerSDK' => ['Sources/PrimerSDK/Resources/*.{strings,xcassets}']
     }
+    spec.vendored_frameworks = 'Sources/PrimerSDK/Resources/Frameworks/ThreeDS_SDK.framework'
     
     spec.test_spec 'PrimerSDKTests' do |test_spec|
         test_spec.source_files = 'Tests/**/*.{h,m,swift}'

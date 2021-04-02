@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  PrimerSDK: fe5c8fc7ce150af35168aaef58cb6ceb6265a1ee
+  PrimerSDK: b36c58a52f85cb51d36adf9e5fa630677fcdc8d5
 
 PODFILE CHECKSUM: b843e4a9cd4936a82c825fa2e39462abcd196c6c
 

@@ -25,6 +25,7 @@
       "Sources/PrimerSDK/Resources/*.{strings,xcassets}"
     ]
   },
+  "vendored_frameworks": "Sources/PrimerSDK/Resources/Frameworks/ThreeDS_SDK.framework",
   "testspecs": [
     {
       "name": "PrimerSDKTests",
