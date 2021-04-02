@@ -33,11 +33,13 @@ public class Primer {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
         if clearOnDestroy { clearDependencies() }
     }
+    
+    static var netceteraLicenseKey = "eyJhbGciOiJSUzI1NiJ9.eyJ2ZXJzaW9uIjoyLCJ2YWxpZC11bnRpbCI6IjIwMjEtMDUtMDEiLCJuYW1lIjoiUHJpbWVyYXBpIiwibW9kdWxlIjoiM0RTIn0.KApslhwEYRCwD6stnKzzgYJkrZv_aojvoVohpvmsPdc8n7TrMjikJ9FZNRmAaXspGCW3nZQfKaw88G_w5vNl7b_jXtpWxztX3JMsRnxjteCa2h-XMOmHPJzA7_ivX-hI62JCn3mduRkfnDpBaoe-X7DSP9Z4K-VNhBqQ9vvhVR9IXkwblrGdsCRowxOwPsItuyBxWtyQ1lQsC-VWPNGYmL1P8JSxPVQkm3NtWBNkSGWohNH2563Mz2ob1kq7vF6oDJaQaR45JC6unpluSx4JYIihdZvHqUOvgB-uFn9IloBQEaaArM6Q06Ps_e3MRQxKLI47h2EIlyv0BKlpMg5a-g"
 
     public init(with settings: PrimerSettings) {
         let configParameters = ConfigParameters()
         do {
-            try configParameters.addParam(group:nil, paramName:"license-key", paramValue:"eyJhbGciOiJSUzI1NiJ9.eyJ2ZXJzaW9uIjoyLCJ2YWxpZC11bnRpbCI6IjIwMjEtMDUtMDEiLCJuYW1lIjoiUHJpbWVyYXBpIiwibW9kdWxlIjoiM0RTIn0.KApslhwEYRCwD6stnKzzgYJkrZv_aojvoVohpvmsPdc8n7TrMjikJ9FZNRmAaXspGCW3nZQfKaw88G_w5vNl7b_jXtpWxztX3JMsRnxjteCa2h-XMOmHPJzA7_ivX-hI62JCn3mduRkfnDpBaoe-X7DSP9Z4K-VNhBqQ9vvhVR9IXkwblrGdsCRowxOwPsItuyBxWtyQ1lQsC-VWPNGYmL1P8JSxPVQkm3NtWBNkSGWohNH2563Mz2ob1kq7vF6oDJaQaR45JC6unpluSx4JYIihdZvHqUOvgB-uFn9IloBQEaaArM6Q06Ps_e3MRQxKLI47h2EIlyv0BKlpMg5a-g")
+            try configParameters.addParam(group:nil, paramName:"license-key", paramValue: Primer.netceteraLicenseKey)
         } catch {
             print(error)
         }
