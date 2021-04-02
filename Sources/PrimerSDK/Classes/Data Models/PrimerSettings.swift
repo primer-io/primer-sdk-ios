@@ -61,7 +61,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     public let businessDetails: BusinessDetails?
     public let directDebitHasNoAmount: Bool
     public let orderItems: [OrderItem]
-    
+
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return delegate?.clientTokenCallback ?? { _ in }
     }

@@ -5,7 +5,7 @@ struct PaymentMethodTokenizationRequest: Encodable {
     let tokenType: TokenType?
     let paymentFlow: PaymentFlow?
     let customerId: String?
-    
+
     init(paymentInstrument: PaymentInstrument, state: AppStateProtocol) {
         self.paymentInstrument = paymentInstrument
         self.tokenType = Primer.flow.vaulted ? .multiUse : .singleUse
@@ -34,10 +34,10 @@ struct PaymentInstrument: Encodable {
     // Direct Debit (GoCardless)
     var gocardlessMandateId: String?
     // Klarna payment session
-    var klarnaAuthorizationToken: String? = nil
+    var klarnaAuthorizationToken: String?
     // Klarna customer token
-    var klarnaCustomerToken: String? = nil
-    var sessionData: KlarnaSessionData? = nil
+    var klarnaCustomerToken: String?
+    var sessionData: KlarnaSessionData?
 }
 
 enum TokenType: String, Encodable {
