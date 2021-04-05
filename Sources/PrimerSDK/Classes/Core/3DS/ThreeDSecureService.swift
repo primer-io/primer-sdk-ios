@@ -23,7 +23,7 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
     
     let threeDS2Service: ThreeDS_SDK.ThreeDS2Service = ThreeDS2ServiceSDK()
     
-    func initializeSDK(succesHandler: @escaping () -> Void, errorHandler: @escaping (Error?) -> Void) {
+    func initializeSDK(completion: @escaping (Result<Void, Error>) -> Void) {
         let configParameters = ConfigParameters()
         do {
             try configParameters.addParam(group: nil,
@@ -34,18 +34,19 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
             try threeDS2Service.initialize(configParameters,
                                            locale: nil,
                                            uiCustomization: nil)
-            succesHandler()
+            completion(.success(()))
         } catch {
-            errorHandler(error)
+            completion(.failure(error))
         }
     }
     
-    func verifyWarnings(errorHandler: @escaping (Error?) -> Void) {
+    func verifyWarnings(completion: @escaping (Result<Void, Error>) -> Void) {
         var sdkWarnings: [Warning] = []
         do {
             sdkWarnings = try threeDS2Service.getWarnings()
         } catch {
-            errorHandler(error)
+            completion(.success(()))
+            return
         }
         
         if !sdkWarnings.isEmpty {
@@ -56,23 +57,36 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
             }
             
             let err = NSError(domain: "netcetera", code: 100, userInfo: [NSLocalizedDescriptionKey: message])
-            errorHandler(err)
+//            completion(.failure(err))
+            completion(.success(()))
+        } else {
+            completion(.success(()))
         }
     }
     
-    func netceteraAuth() {
+    func netceteraAuth(paymentMethod: PaymentMethodToken, completion: @escaping (Result<String, Error>) -> Void) {
         do {
-            let directoryServerId = ThreeDSecureService.directoryServerIdFor(scheme: .visa())
+            var scheme: Scheme!
+            switch paymentMethod.paymentInstrumentData?.binData?.network?.lowercased() {
+            case "visa":
+                scheme = .visa()
+            default:
+                fatalError()
+            }
+            
+            let directoryServerId = ThreeDSecureService.directoryServerIdFor(scheme: scheme)
             let transaction = try threeDS2Service.createTransaction(directoryServerId: directoryServerId,
                                                                     messageVersion: "2.1.0")
             print(transaction)
             let transactionParameters = try transaction.getAuthenticationRequestParameters()
             print(transactionParameters)
-            let sdkId = transactionParameters.getSDKAppID()
+//            let sdkId = transactionParameters.getSDKAppID()
             let sdkTransactionId = transactionParameters.getSDKTransactionId()
             print(sdkTransactionId)
+            completion(.success(sdkTransactionId))
         } catch {
             print(error)
+            completion(.failure(error))
         }
         
     }
