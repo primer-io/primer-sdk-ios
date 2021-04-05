@@ -9,24 +9,24 @@ import Foundation
 
 enum ThreeDSecureTestScenario: String, Codable {
     // swiftlint:disable identifier_name
-    case three3DS_V2_METHOD_TIMEOUT = "3DS_V2_METHOD_TIMEOUT"
-    case threeDS_V2_FRICTIONLESS_NO_METHOD = "3DS_V2_FRICTIONLESS_NO_METHOD"
-    case threeDS_V2_FRICTIONLESS_PASS = "3DS_V2_FRICTIONLESS_PASS"
-    case threeDS_V2_MANUAL_CHALLENGE_PASS = "3DS_V2_MANUAL_CHALLENGE_PASS"
-    case threeDS_V2_AUTO_CHALLENGE_PASS = "3DS_V2_AUTO_CHALLENGE_PASS"
-    case threeDS_V2_AUTO_CHALLENGE_FAIL = "3DS_V2_AUTO_CHALLENGE_FAIL"
-    case threeDS_V2_AUTO_CHALLENGE_PASS_NO_METHOD = "3DS_V2_AUTO_CHALLENGE_PASS_NO_METHOD"
-    case threeDS_V2_FRICTIONLESS_FAILURE_N = "3DS_V2_FRICTIONLESS_FAILURE_N"
-    case threeDS_V2_FRICTIONLESS_FAILURE_U = "3DS_V2_FRICTIONLESS_FAILURE_U"
-    case threeDS_V2_FRICTIONLESS_FAILURE_R = "3DS_V2_FRICTIONLESS_FAILURE_R"
-    case threeDS_V2_FRICTIONLESS_FAILURE_ATTEMPTED = "3DS_V2_FRICTIONLESS_FAILURE_ATTEMPTED"
-    case threeDS_V2_DS_TIMEOUT = "3DS_V2_DS_TIMEOUT"
+    case three3DS2MethodTimeout = "3DS_V2_METHOD_TIMEOUT"
+    case threeDS2FrictionlessNoMethod = "3DS_V2_FRICTIONLESS_NO_METHOD"
+    case threeDS2FrictionlessPass = "3DS_V2_FRICTIONLESS_PASS"
+    case threeDS2ManualChallengePass = "3DS_V2_MANUAL_CHALLENGE_PASS"
+    case threeDS2AutoChallengePass = "3DS_V2_AUTO_CHALLENGE_PASS"
+    case threeDS2AutoChallengeFail = "3DS_V2_AUTO_CHALLENGE_FAIL"
+    case threeDS2AutoChallengePassNoMethod = "3DS_V2_AUTO_CHALLENGE_PASS_NO_METHOD"
+    case threeDS2FrictionlessFailureN = "3DS_V2_FRICTIONLESS_FAILURE_N"
+    case threeDS2FrictionlessFailureU = "3DS_V2_FRICTIONLESS_FAILURE_U"
+    case threeDS2FrictionlessFailureR = "3DS_V2_FRICTIONLESS_FAILURE_R"
+    case threeDS2FrictionlessFailureAttempted = "3DS_V2_FRICTIONLESS_FAILURE_ATTEMPTED"
+    case threeDS2DSTimeout = "3DS_V2_DS_TIMEOUT"
 }
 
 struct ThreeDSecureBeginAuthRequest: Codable {
     
     static var demoAuthRequest: ThreeDSecureBeginAuthRequest {
-        let threeDSecureBeginAuthRequest = ThreeDSecureBeginAuthRequest(testScenario: .threeDS_V2_FRICTIONLESS_PASS,
+        let threeDSecureBeginAuthRequest = ThreeDSecureBeginAuthRequest(testScenario: .threeDS2FrictionlessPass,
                                                                         amount: 100,
                                                                         currencyCode: .EUR,
                                                                         orderId: "test_id",
@@ -54,11 +54,12 @@ struct ThreeDSecureBeginAuthRequest: Codable {
     }
     
     var testScenario: ThreeDSecureTestScenario?
-    let amount: Int
+    var amount: Int
     let currencyCode: Currency
     let orderId: String
     let customer: ThreeDSecureCustomer
-    let device: ThreeDSecureDevice
+    var device: ThreeDSecureDevice
+    var deviceChannel: String?
     let billingAddress: ThreeDSecureAddress
     let shippingAddress: ThreeDSecureAddress?
     let customerAccount: ThreeDSecureCustomerAccount?

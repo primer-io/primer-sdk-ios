@@ -15,6 +15,7 @@ class VaultService: VaultServiceProtocol {
     @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var api: PrimerAPIClientProtocol
 
+    // swiftlint:disable cyclomatic_complexity
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
         guard let clientToken = state.decodedClientToken else {
             return completion(PrimerError.vaultFetchFailed)
@@ -32,57 +33,58 @@ class VaultService: VaultServiceProtocol {
                 if !paymentMethods.isEmpty {
                     print(paymentMethods)
                     if let paymentMethod = paymentMethods.first {
-                        let threeDS2Service: ThreeDS_SDK.ThreeDS2Service = ThreeDS2ServiceSDK()
+                        print(paymentMethod)
                         
                         let service = ThreeDSecureService()
-                        service.initializeSDK {
-                            service.verifyWarnings { (err) in
-                                service.netceteraAuth()
-                            }
-                        } errorHandler: { (err) in
-                            
-                        }
-
-//                        service.netceteraAuth()
-//                        do {
-//                            let configParameters = ConfigParameters()
-//                            try configParameters.addParam(group:nil, paramName:"license-key", paramValue: Primer.netceteraLicenseKey)
-//                            try threeDS2Service.initialize(configParameters, locale: nil, uiCustomization: nil)
-//                            let warnings = try threeDS2Service.getWarnings()
-//                            for w in warnings {
-//                                print("Warning \(w.getID()) [\(w.getSeverity().rawValue)]: \(w.getMessage())")
-//                            }
-//                            
-//                            let service = ThreeDSecureService()
-//                            service.netceteraAuth()
-//                        } catch {
-//                            print(error)
-//                        }
-                        
-                        
-                        
-                        var req = ThreeDSecureBeginAuthRequest.demoAuthRequest
-                        req.testScenario = ThreeDSecureTestScenario.threeDS_V2_AUTO_CHALLENGE_FAIL
-                        
-                        let threeDSService = ThreeDSecureService()
-                        threeDSService.threeDSecureBeginAuthentication(paymentMethodToken: paymentMethod,
-                                                                       threeDSecureBeginAuthRequest: req) { (res, err) in
-                            if let err = err {
-                                print(err)
-                            } else if let val = res?.authentication as? ThreeDSSkippedAPIResponse {
-                                print(val)
-                            } else if let val = res?.authentication as? ThreeDSMethodAPIResponse {
-                                print(val)
-                            } else if let val = res?.authentication as? ThreeDSBrowserV2ChallengeAPIResponse {
-                                print(val)
-                            } else if let val = res?.authentication as? ThreeDSAppV2ChallengeAPIResponse {
-                                print(val)
-                            } else if let val = res?.authentication as? ThreeDSBrowserV1ChallengeAPIResponse {
-                                print(val)
-                            } else if let val = res?.authentication as? ThreeDSDeclinedAPIResponse {
-                                print(val)
-                            } else if let val = res?.authentication as? ThreeDSSuccessAPIResponse {
-                                print(val)
+                        service.initializeSDK { (initResult) in
+                            switch initResult {
+                            case .success:
+                                service.verifyWarnings { (verifyResult) in
+                                    print(verifyResult)
+                                    switch verifyResult {
+                                    case .success:
+                                        service.netceteraAuth(paymentMethod: paymentMethod) { (authResult) in
+                                            switch authResult {
+                                            case .success(let sdkTransactionId):
+                                                print("3DS SDK transaction ID: \(sdkTransactionId)")
+                                                
+                                                let threeDSecureDevice = ThreeDSecureDevice(sdkTransactionId: sdkTransactionId)
+                                                var req = ThreeDSecureBeginAuthRequest.demoAuthRequest
+                                                req.testScenario = ThreeDSecureTestScenario.threeDS2FrictionlessPass
+                                                req.device = threeDSecureDevice
+//                                                req.deviceChannel = "02"
+                                                req.amount = 20001
+                                                
+                                                service.threeDSecureBeginAuthentication(paymentMethodToken: paymentMethod,
+                                                                                               threeDSecureBeginAuthRequest: req) { (res, err) in
+                                                    if let err = err {
+                                                        print(err)
+                                                    } else if let val = res?.authentication as? ThreeDSSkippedAPIResponse {
+                                                        print(val)
+                                                    } else if let val = res?.authentication as? ThreeDSMethodAPIResponse {
+                                                        print(val)
+                                                    } else if let val = res?.authentication as? ThreeDSBrowserV2ChallengeAPIResponse {
+                                                        print(val)
+                                                    } else if let val = res?.authentication as? ThreeDSAppV2ChallengeAPIResponse {
+                                                        print(val)
+                                                    } else if let val = res?.authentication as? ThreeDSBrowserV1ChallengeAPIResponse {
+                                                        print(val)
+                                                    } else if let val = res?.authentication as? ThreeDSDeclinedAPIResponse {
+                                                        print(val)
+                                                    } else if let val = res?.authentication as? ThreeDSSuccessAPIResponse {
+                                                        print(val)
+                                                    }
+                                                }
+                                            case .failure(let err):
+                                                break
+                                            }
+                                        }
+                                    case .failure(let err):
+                                        break
+                                    }
+                                }
+                            case .failure(let err):
+                                break
                             }
                         }
                     }
