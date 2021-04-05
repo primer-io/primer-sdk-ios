@@ -80,8 +80,12 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
             print(transaction)
             let transactionParameters = try transaction.getAuthenticationRequestParameters()
             print(transactionParameters)
-//            let sdkId = transactionParameters.getSDKAppID()
+            let sdkId = transactionParameters.getSDKAppID()
             let sdkTransactionId = transactionParameters.getSDKTransactionId()
+            let sdkMaxTimeout = 10
+            let sdkEncData = transactionParameters.getDeviceData()
+            let sdkEphemeralKey = transactionParameters.getSDKEphemeralPublicKey()
+            let sdkReferenceNumber = transactionParameters.getSDKReferenceNumber()
             print(sdkTransactionId)
             completion(.success(sdkTransactionId))
         } catch {
