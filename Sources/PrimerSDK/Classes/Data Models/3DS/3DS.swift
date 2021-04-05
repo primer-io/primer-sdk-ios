@@ -26,7 +26,7 @@ enum ThreeDSecureTestScenario: String, Codable {
 struct ThreeDSecureBeginAuthRequest: Codable {
     
     static var demoAuthRequest: ThreeDSecureBeginAuthRequest {
-        let threeDSecureBeginAuthRequest = ThreeDSecureBeginAuthRequest(testScenario: .threeDS2FrictionlessPass,
+        let threeDSecureBeginAuthRequest = ThreeDSecureBeginAuthRequest(testScenario: nil,
                                                                         amount: 100,
                                                                         currencyCode: .EUR,
                                                                         orderId: "test_id",
@@ -59,7 +59,6 @@ struct ThreeDSecureBeginAuthRequest: Codable {
     let orderId: String
     let customer: ThreeDSecureCustomer
     var device: ThreeDSecureDevice
-    var deviceChannel: String?
     let billingAddress: ThreeDSecureAddress
     let shippingAddress: ThreeDSecureAddress?
     let customerAccount: ThreeDSecureCustomerAccount?
