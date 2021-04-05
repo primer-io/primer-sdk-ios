@@ -137,7 +137,7 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.klarnaCreateCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: klarnaCreateCustomerTokenAPIRequest)
         networkService.request(endpoint) { (result: Result<KlarnaCustomerTokenAPIResponse, NetworkServiceError>) in
@@ -150,7 +150,7 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (_ result: Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void) {
         let endpoint = PrimerAPI.klarnaFinalizePaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: klarnaFinalizePaymentSessionRequest)
         networkService.request(endpoint) { (result: Result<KlarnaFinalizePaymentSessionresponse, NetworkServiceError>) in
@@ -290,15 +290,15 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             completion(.failure(error))
         }
     }
-    
+
     func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         isCalled = true
-        
+
         guard throwsError == false else {
             completion(.failure(KlarnaException.failedApiCall))
             return
         }
-        
+
         guard let response = response else { return }
         do {
             let value = try JSONDecoder().decode(KlarnaCustomerTokenAPIResponse.self, from: response)
@@ -307,16 +307,15 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             completion(.failure(error))
         }
     }
-    
-    
+
     func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void) {
         isCalled = true
-        
+
         guard throwsError == false else {
             completion(.failure(KlarnaException.failedApiCall))
             return
         }
-        
+
         guard let response = response else { return }
 
         do {

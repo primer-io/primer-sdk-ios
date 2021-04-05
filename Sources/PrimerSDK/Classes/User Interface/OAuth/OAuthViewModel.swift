@@ -78,7 +78,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
             }
         })
     }
-    
+
     private func generatePaypalPaymentInstrument(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) -> PaymentInstrument? {
         switch Primer.flow.uxMode {
         case .CHECKOUT:
@@ -96,7 +96,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
             )
         }
     }
-    
+
     func handleTokenization(request: PaymentMethodTokenizationRequest, with completion: @escaping (Error?) -> Void) {
         tokenizationService.tokenize(request: request) { [weak self] result in
             switch result {
@@ -105,11 +105,11 @@ class OAuthViewModel: OAuthViewModelProtocol {
                 completion(error)
             case .success(let token):
                 log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                
+
                 switch Primer.flow.uxMode {
                 case .VAULT:
                     log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                    completion(nil) //self?.onTokenizeSuccess(token, completion)
+                    completion(nil) // self?.onTokenizeSuccess(token, completion)
                 case .CHECKOUT:
                     log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                     self?.onTokenizeSuccess(token, completion)
@@ -117,12 +117,12 @@ class OAuthViewModel: OAuthViewModelProtocol {
             }
         }
     }
-    
+
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
-        
+
         if (host == .klarna) {
             var instrument = PaymentInstrument()
-            
+
             log(logLevel: .verbose, title: nil, message: "Host: \(host)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
             klarnaService.finalizePaymentSession { [weak self] result in
@@ -131,10 +131,10 @@ class OAuthViewModel: OAuthViewModelProtocol {
                     completion(err)
                 case .success(let res):
                     instrument.sessionData = res.sessionData
-                    
+
                     if Primer.flow.vaulted {
                         // create customer token
-                        self?.klarnaService.createKlarnaCustomerToken() { (result) in
+                        self?.klarnaService.createKlarnaCustomerToken { (result) in
                             switch result {
                             case .failure(let err):
                                 ErrorHandler.shared.handle(error: err)
@@ -142,30 +142,30 @@ class OAuthViewModel: OAuthViewModelProtocol {
                             case .success(let response):
                                 instrument.klarnaCustomerToken = response.customerTokenId
                                 instrument.sessionData = response.sessionData
-                                
+
                                 log(logLevel: .verbose, title: nil, message: "Instrument: \(instrument)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                                
+
                                 guard let state = self?.state else { return }
-                                
+
                                 let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
-                                
+
                                 log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                                
+
                                 self?.handleTokenization(request: request, with: completion)
                             }
                         }
-                        
+
                     } else {
                         instrument.klarnaAuthorizationToken = self?.state.authorizationToken
-                        
+
                         log(logLevel: .verbose, title: nil, message: "Instrument: \(instrument)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                        
+
                         guard let state = self?.state else { return }
-                        
+
                         let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
-                        
+
                         log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                        
+
                         self?.handleTokenization(request: request, with: completion)
                     }
 
@@ -174,11 +174,11 @@ class OAuthViewModel: OAuthViewModelProtocol {
 
         } else {
             guard let instrument = generatePaypalPaymentInstrument(host, with: completion) else { return }
-            
+
             let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
 
             log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-            
+
             handleTokenization(request: request, with: completion)
         }
     }

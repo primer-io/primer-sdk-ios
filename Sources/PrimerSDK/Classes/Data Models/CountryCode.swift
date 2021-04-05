@@ -523,7 +523,7 @@ extension CountryCode {
 }
 
 extension CountryCode {
-    
+
     // todo: enable locale for local languages too.
     // reference: https://developers.klarna.com/documentation/klarna-payments/in-depth-knowledge/puchase-countries-currencies-locales/
     var klarnaLocaleCode: String {
@@ -539,5 +539,5 @@ extension CountryCode {
         default: return "n/a"
         }
     }
-    
+
 }
