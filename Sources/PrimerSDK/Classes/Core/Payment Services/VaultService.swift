@@ -50,10 +50,10 @@ class VaultService: VaultServiceProtocol {
                                                 
                                                 let threeDSecureDevice = ThreeDSecureDevice(sdkTransactionId: sdkTransactionId)
                                                 var req = ThreeDSecureBeginAuthRequest.demoAuthRequest
-                                                req.testScenario = ThreeDSecureTestScenario.threeDS2FrictionlessPass
+//                                                req.testScenario = ThreeDSecureTestScenario.threeDS2FrictionlessPass
                                                 req.device = threeDSecureDevice
 //                                                req.deviceChannel = "02"
-                                                req.amount = 20001
+                                                req.amount = 20000
                                                 
                                                 service.threeDSecureBeginAuthentication(paymentMethodToken: paymentMethod,
                                                                                                threeDSecureBeginAuthRequest: req) { (res, err) in
