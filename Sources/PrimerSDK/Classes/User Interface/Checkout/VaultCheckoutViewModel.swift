@@ -56,7 +56,7 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
                 self?.vaultService.loadVaultedPaymentMethods(completion)
             })
         } else {
-            clientTokenService.loadCheckoutConfig({ [weak self] error in
+            clientTokenService.loadCheckoutConfig({ [weak self] _ in
                 self?.paymentMethodConfigService.fetchConfig({ [weak self] _ in
                     self?.vaultService.loadVaultedPaymentMethods(completion)
                 })
