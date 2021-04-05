@@ -71,7 +71,7 @@ final class Validation {
         let containsNotOnlyNumbers = number.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) != nil
         if containsNotOnlyNumbers { return (false, "Card number can only have digits", false) }
 
-        let containsTooFewDigits = number.count < 16
+        let containsTooFewDigits = number.count < 13
         if containsTooFewDigits { return (false, "Card number is too short", false ) }
 
         let isNotALuhnNumber = !shared.luhnCheck(number)
