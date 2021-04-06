@@ -152,11 +152,11 @@ class FormView: UIView {
 
     private func configureTitle() {
         guard let delegate = delegate else { return }
-        if theme.layout.showMainTitle {
-            title.text = delegate.formType.mainTitle
+        if (theme.layout.showMainTitle) {
+            title.text = delegate.formType.mainTitleFont
         }
         title.textAlignment = .center
-        title.font = theme.fontTheme.mainTitle
+        title.font = theme.fontTheme.mainTitleFont
         title.textColor = theme.colorTheme.text1
     }
 
