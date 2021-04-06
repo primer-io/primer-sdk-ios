@@ -83,7 +83,7 @@ extension SuccessViewController {
         message.numberOfLines = 0
         message.textAlignment = .center
         message.textColor = theme.colorTheme.text1
-        message.font = .systemFont(ofSize: 20)
+        message.font = theme.fontTheme.successMessageFont
     }
 
     func configureConfirmationMessage() {
