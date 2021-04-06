@@ -33,7 +33,7 @@ class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.noCurrency))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA),
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
               let countryCode = self.state.settings.countryCode,
               let currency = self.state.settings.currency
         else {
@@ -66,13 +66,13 @@ class KlarnaService: KlarnaServiceProtocol {
             }
         }
     }
-    
+
     func createKlarnaCustomerToken(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA),
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
               let authorizationToken = self.state.authorizationToken,
               let sessionId = self.state.sessionId,
               let countryCode = self.state.settings.countryCode,
@@ -91,7 +91,7 @@ class KlarnaService: KlarnaServiceProtocol {
                 localeCode: countryCode.klarnaLocaleCode
             )
         )
-        
+
         api.klarnaCreateCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
             switch result {
             case .failure:
@@ -108,7 +108,7 @@ class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.noToken))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .KLARNA),
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
               let sessionId = state.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }

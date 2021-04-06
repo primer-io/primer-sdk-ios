@@ -1,4 +1,3 @@
-
 #if canImport(UIKit)
 
 public typealias ClientTokenCallBack = (_ completionHandler: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) -> Void
@@ -62,21 +61,21 @@ public class PrimerSettings: PrimerSettingsProtocol {
     public let businessDetails: BusinessDetails?
     public let directDebitHasNoAmount: Bool
     public let orderItems: [OrderItem]
-    
+
     public var clientTokenRequestCallback: ClientTokenCallBack {
-        return delegate?.clientTokenCallback ?? { completion in }
+        return delegate?.clientTokenCallback ?? { _ in }
     }
-    
+
     public var onTokenizeSuccess: PaymentMethodTokenCallBack {
-        return delegate?.authorizePayment ?? { result, completion in }
+        return delegate?.authorizePayment ?? { _, _ in }
     }
-    
+
     public var onCheckoutDismiss: CheckoutDismissalCallback {
         return delegate?.onCheckoutDismissed ?? {}
     }
-    
+
     weak var delegate: PrimerDelegate?
-    
+
     public init(
         delegate: PrimerDelegate,
         amount: Int? = nil,
@@ -115,7 +114,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
 public struct BusinessDetails: Codable {
     public var name: String
     public var address: Address
-    
+
     public init(name: String, address: Address) {
         self.name = name
         self.address = address
@@ -124,15 +123,15 @@ public struct BusinessDetails: Codable {
 
 class MockDelegate: PrimerDelegate {
     func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
-        
+
     }
-    
+
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-        
+
     }
-    
+
     func onCheckoutDismissed() {
-        
+
     }
 }
 

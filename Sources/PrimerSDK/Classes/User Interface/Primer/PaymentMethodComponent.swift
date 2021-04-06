@@ -10,19 +10,19 @@
 import UIKit
 
 class PaymentMethodComponent: UIView {
-    
+
     @Dependency private(set) var theme: PrimerThemeProtocol
-    
+
     let label = UILabel()
     let iconView = UIImageView()
-    
+
     init(frame: CGRect, method: PaymentMethodViewModel) {
         super.init(frame: frame)
-        
+
         layer.cornerRadius = theme.cornerRadiusTheme.buttons
-        
+
         switch method.type {
-        case .APPLE_PAY:
+        case .applePay:
             backgroundColor = theme.colorTheme.main2
             label.textColor = theme.colorTheme.text2
             addSubview(label)
@@ -31,7 +31,7 @@ class PaymentMethodComponent: UIView {
             configureIconView(icon: method.toIconName().image, color: .white)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
-        case .PAYMENT_CARD:
+        case .paymentCard:
             layer.borderWidth = 1
             layer.borderColor = theme.colorTheme.disabled1.cgColor
             backgroundColor = theme.colorTheme.main1
@@ -42,14 +42,14 @@ class PaymentMethodComponent: UIView {
             configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
-        case .PAYPAL:
+        case .payPal:
 //            layer.borderWidth = 1
             backgroundColor = UIColor(red: 190/255, green: 228/255, blue: 254/255, alpha: 1)
             //            layer.borderColor = theme.colorTheme.disabled1.cgColor
             addSubview(iconView)
             configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1)
             anchorIconView(inRelationToLabel: false)
-        case .GOCARDLESS_MANDATE:
+        case .goCardlessMandate:
             layer.borderWidth = 1
             layer.borderColor = theme.colorTheme.disabled1.cgColor
             backgroundColor = theme.colorTheme.main1
@@ -60,7 +60,7 @@ class PaymentMethodComponent: UIView {
             configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
-        case .KLARNA:
+        case .klarna:
             backgroundColor = UIColor(red: 255/255, green: 179/255, blue: 199/255, alpha: 1)
             addSubview(iconView)
             configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1)
@@ -68,7 +68,7 @@ class PaymentMethodComponent: UIView {
         default: break
         }
     }
-    
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
@@ -79,13 +79,13 @@ extension PaymentMethodComponent {
         isBold: Bool = false
     ) {
         label.text = title
-        if (isBold) {
+        if isBold {
             label.font = UIFont.boldSystemFont(ofSize: 20)
         }
     }
-    
+
     func configureIconView(icon: UIImage?, color: UIColor = .black, isMonoColor: Bool = false) {
-        if (isMonoColor) {
+        if isMonoColor {
             let tintedIcon = icon?.withRenderingMode(.alwaysTemplate)
             iconView.tintColor = color
             iconView.image = tintedIcon
@@ -103,14 +103,14 @@ extension PaymentMethodComponent {
         label.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         label.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 12).isActive = true
     }
-    
+
     func anchorIconView(inRelationToLabel: Bool) {
         iconView.translatesAutoresizingMaskIntoConstraints = false
 //        iconView.heightAnchor.constraint(equalToConstant: 20).isActive = true
         iconView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         iconView.heightAnchor.constraint(equalToConstant: iconView.intrinsicContentSize.height * 0.75).isActive = true
         iconView.widthAnchor.constraint(equalToConstant: iconView.intrinsicContentSize.width * 0.75).isActive = true
-        if (inRelationToLabel) {
+        if inRelationToLabel {
             iconView.trailingAnchor.constraint(equalTo: label.leadingAnchor, constant: -6).isActive = true
         } else {
             iconView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
