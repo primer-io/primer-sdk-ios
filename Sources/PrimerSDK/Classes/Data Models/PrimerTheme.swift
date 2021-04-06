@@ -282,12 +282,15 @@ public struct PrimerDarkTheme: ColorTheme {
 }
 
 public struct PrimerFontTheme {
-    let mainTitle: UIFont
-
+    let mainTitleFont: UIFont
+    let successMessageFont: UIFont
+    
     public init(
-        mainTitle: UIFont = UIFont.systemFont(ofSize: 20)
+        mainTitleFont: UIFont = UIFont.systemFont(ofSize: 20),
+        successMessageFont: UIFont = .systemFont(ofSize: 20)
     ) {
-        self.mainTitle = mainTitle
+        self.mainTitleFont = mainTitleFont
+        self.successMessageFont = successMessageFont
     }
 }
 

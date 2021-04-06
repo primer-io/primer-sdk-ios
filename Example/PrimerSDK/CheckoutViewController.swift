@@ -64,7 +64,7 @@ class CheckoutViewController: UIViewController {
                 ),
                 layout: PrimerLayout(showTopTitle: true, textFieldHeight: 40),
 //                textFieldTheme: .outlined,
-                fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
+                fontTheme: PrimerFontTheme(mainTitleFont: .boldSystemFont(ofSize: 24), successMessageFont: UIFont(name: "ChocolateBarDemo", size: 20.0)!)
             )
         } else {
             theme = PrimerTheme(
@@ -76,7 +76,7 @@ class CheckoutViewController: UIViewController {
                 ),
                 layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
                 textFieldTheme: .outlined,
-                fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
+                fontTheme: PrimerFontTheme(mainTitleFont: .boldSystemFont(ofSize: 24), successMessageFont: UIFont(name: "ChocolateBarDemo", size: 20.0)!)
             )
         }
 
