@@ -14,17 +14,17 @@ protocol ExternalViewModelProtocol {
 }
 
 class ExternalViewModel: ExternalViewModelProtocol {
-    
+
     @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var vaultService: VaultServiceProtocol
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
-    
+
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
 
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
-        if (state.decodedClientToken.exists) {
+        if state.decodedClientToken.exists {
             vaultService.loadVaultedPaymentMethods({ [weak self] error in
                 if let error = error { completion(.failure(error)) }
                 guard let paymentMethods = self?.state.paymentMethods else { return }
@@ -45,7 +45,7 @@ class ExternalViewModel: ExternalViewModelProtocol {
 
 class MockExternalViewModel: ExternalViewModelProtocol {
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
-        
+
     }
 }
 

@@ -9,9 +9,9 @@ import UIKit
 
 class CapturePaymentViewController: UIViewController {
     let subView = CapturePaymentView()
-    
+
     var request: AuthorizationRequest?
-    
+
     override func viewDidLoad() {
         view.backgroundColor = .white
         subView.translatesAutoresizingMaskIntoConstraints = false
@@ -25,22 +25,22 @@ class CapturePaymentViewController: UIViewController {
         subView.addButton()
         subView.button.addTarget(self, action: #selector(authorizePayment), for: .touchUpInside)
     }
-    
+
     @objc func authorizePayment() {
         print("loading 🤖")
         guard let body = request else { return }
         guard let url = URL(string: "http://localhost:8020/authorize") else { return }
         var request = URLRequest(url: url)
-        
+
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+
         do {
             request.httpBody = try JSONEncoder().encode(body)
         } catch {
             return
         }
-        
+
         callApi(request, completion: { result in
             switch result {
             case .success:
@@ -53,7 +53,6 @@ class CapturePaymentViewController: UIViewController {
     }
 }
 
-
 // MARK: View
 
 class CapturePaymentView: UIView {
@@ -61,7 +60,7 @@ class CapturePaymentView: UIView {
 }
 
 extension CapturePaymentView {
-    
+
     func addLabel(_ amount: Int) {
         let label = UILabel()
         label.text = amount.asCurrency
@@ -72,7 +71,7 @@ extension CapturePaymentView {
         label.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         label.bottomAnchor.constraint(equalTo: centerYAnchor, constant: -24).isActive = true
     }
-    
+
     func addButton() {
         button.setTitle("Pay", for: .normal)
         button.setTitleColor(.white, for: .normal)

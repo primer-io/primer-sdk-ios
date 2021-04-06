@@ -10,12 +10,12 @@ struct ConfigPaymentMethod: Codable {
 }
 
 enum ConfigPaymentMethodType: String, Codable {
-    case APPLE_PAY = "APPLE_PAY"
-    case PAYPAL = "PAYPAL"
-    case PAYMENT_CARD = "PAYMENT_CARD"
-    case GOOGLE_PAY = "GOOGLE_PAY"
-    case GOCARDLESS_MANDATE = "GOCARDLESS"
-    case KLARNA = "KLARNA"
+    case applePay = "APPLE_PAY"
+    case payPal = "PAYPAL"
+    case paymentCard = "PAYMENT_CARD"
+    case googlePay = "GOOGLE_PAY"
+    case goCardlessMandate = "GOCARDLESS"
+    case klarna = "KLARNA"
 }
 
 extension PaymentMethodConfig {

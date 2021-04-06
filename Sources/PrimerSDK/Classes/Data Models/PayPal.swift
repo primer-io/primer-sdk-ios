@@ -3,20 +3,30 @@ struct PayPalPurchaseUnit: Encodable {
 }
 
 struct PayPalAmount: Encodable {
-    let currency_code: String
+    let currencyCode: String
     let value: String
+
+    enum CodingKeys: String, CodingKey {
+        case currencyCode = "currency_code"
+        case value = "value"
+    }
 }
 
 struct PayPalApplicationContext: Codable {
-    let return_url: String
-    let cancel_url: String
+    let returnUrl: String
+    let cancelUrl: String
+
+    enum CodingKeys: String, CodingKey {
+        case returnUrl = "return_url"
+        case cancelUrl = "cancel_url"
+    }
 }
 
 struct PayPalCreateOrderRequest: Codable {
     let paymentMethodConfigId: String
     let amount: Int
     let currencyCode: Currency
-    var locale: CountryCode? = nil
+    var locale: CountryCode?
     let returnUrl: String
     let cancelUrl: String
 }
@@ -46,8 +56,6 @@ struct PayPalOrderLink: Decodable {
     let rel: String?
     let method: String?
 }
-
-
 
 struct PayPalConfirmBillingAgreementRequest: Encodable {
     let paymentMethodConfigId, tokenId: String

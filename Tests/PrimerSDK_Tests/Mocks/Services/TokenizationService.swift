@@ -11,10 +11,10 @@
 
 class MockTokenizationService: TokenizationServiceProtocol {
     var tokenizeCalled = false
-    
+
     func tokenize(request: PaymentMethodTokenizationRequest, onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void) {
         tokenizeCalled = true
-        let token = PaymentMethodToken(token: "tokenID", paymentInstrumentType: .PAYMENT_CARD, vaultData: VaultData())
+        let token = PaymentMethodToken(token: "tokenID", paymentInstrumentType: .paymentCard, vaultData: VaultData())
         return onTokenizeSuccess(.success(token))
     }
 }

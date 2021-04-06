@@ -11,13 +11,13 @@
 
 class MockClientTokenService: ClientTokenServiceProtocol {
     let tokenIsNil: Bool
-    
+
     init (tokenIsNil: Bool = false) {
         self.tokenIsNil = tokenIsNil
     }
-    
+
     var decodedClientToken: DecodedClientToken? {
-        if (tokenIsNil) { return nil }
+        if tokenIsNil { return nil }
         return DecodedClientToken(
             accessToken: "bla",
             configurationUrl: "bla",
@@ -29,9 +29,9 @@ class MockClientTokenService: ClientTokenServiceProtocol {
             env: "bla"
         )
     }
-    
+
     var loadCheckoutConfigCalled = false
-    
+
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
         loadCheckoutConfigCalled = true
     }

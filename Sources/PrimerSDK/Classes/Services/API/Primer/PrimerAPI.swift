@@ -21,12 +21,12 @@ enum PrimerAPI: Endpoint {
     case klarnaCreatePaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest)
     case klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest)
     case klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
-    
+
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest)
 }
 
 extension PrimerAPI {
-    
+
     // MARK: Base URL
     var baseURL: String {
         switch self {
@@ -55,7 +55,7 @@ extension PrimerAPI {
             return urlStr
         }
     }
-    
+
     // MARK: Path
     var path: String {
         switch self {
@@ -83,13 +83,13 @@ extension PrimerAPI {
             return "/payment-instruments"
         }
     }
-    
+
     // MARK: Port
     // (not needed atm since port is included in the base URL provided by the access token)
     var port: Int? {
         return nil
     }
-    
+
     // MARK: HTTP Method
     var method: HTTPMethod {
         switch self {
@@ -109,9 +109,9 @@ extension PrimerAPI {
             return .post
         }
     }
-    
+
     // MARK: Headers
-    var headers: [String : String]? {
+    var headers: [String: String]? {
         var headers: [String: String] = [
             "Content-Type": "application/json",
             "Primer-SDK-Version": "1.0.0-beta.0",
@@ -133,18 +133,18 @@ extension PrimerAPI {
                 headers["Primer-Client-Token"] = token
             }
         }
-        
+
         return headers
     }
-    
+
     // MARK: Query Parameters
-    var queryParameters: [String : String]? {
+    var queryParameters: [String: String]? {
         switch self {
         default:
             return nil
         }
     }
-    
+
     // MARK: HTTP Body
     var body: Data? {
         switch self {
@@ -170,7 +170,7 @@ extension PrimerAPI {
             return nil
         }
     }
-    
+
 }
 
 #endif
