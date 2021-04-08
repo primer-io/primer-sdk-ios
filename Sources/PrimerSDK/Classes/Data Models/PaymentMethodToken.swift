@@ -70,7 +70,7 @@ extension PaymentMethodToken {
                 expiry: NSLocalizedString("primer-saved-card",
                                           tableName: nil,
                                           bundle: Bundle.primerFramework,
-                                          value: "",
+                                          value: "Expires - Saved card",
                                           comment: "Expires - Saved card")
                     + " \(expMonth) / \(expYear.suffix(2))",
                 imageName: self.icon,

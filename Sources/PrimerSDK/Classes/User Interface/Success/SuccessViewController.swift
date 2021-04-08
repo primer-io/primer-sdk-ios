@@ -175,14 +175,14 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
             return NSLocalizedString("primer-success-screen-direct-debit-setup-success",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Direct debit set up \nsuccessfully",
                                      comment: "Direct debit set up \nsuccessfully - Success Screen Title (Direct Debit)")
 
         default:
             return NSLocalizedString("primer-success-screen-setup-success",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Success!",
                                      comment: "Success! - Success Screen Title")
         }
     }
@@ -194,7 +194,7 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
             return name + " " + NSLocalizedString("primer-success-screen-confirmation-message",
                                                   tableName: nil,
                                                   bundle: Bundle.primerFramework,
-                                                  value: "",
+                                                  value: "will appear on your bank statement when payments are taken against the Direct Debit.",
                                                   comment: "@payment_method_name will appear on your bank statement when payments are taken against the Direct Debit. - Success Screen Confirmation Message")
         default:
             return ""
