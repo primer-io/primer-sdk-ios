@@ -1,7 +1,7 @@
-//import UIKit
-//import AuthenticationServices
+// import UIKit
+// import AuthenticationServices
 //
-//class CardFormViewController: UIViewController {
+// class CardFormViewController: UIViewController {
 //    let indicator = UIActivityIndicatorView()
 //    private let validation = Validation()
 //    private let spinner = UIActivityIndicatorView()
@@ -124,9 +124,9 @@
 //        return validations.contains(true)
 //        
 //    }
-//}
+// }
 //
-//extension CardFormViewController: CardFormViewDelegate {
+// extension CardFormViewController: CardFormViewDelegate {
 //    func validateCardName(_ text: String?, updateTextField: Bool) {
 //        let nameIsNotValid = Validation.nameFieldIsValid(text)
 //        
@@ -172,4 +172,4 @@
 //    
 //    func showScanner() { router.show(.cardScanner(delegate: self)) }
 //    
-//}
+// }

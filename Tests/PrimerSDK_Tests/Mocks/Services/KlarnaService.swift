@@ -11,17 +11,17 @@
 
 class MockKlarnaService: KlarnaServiceProtocol {
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
-        
+
     }
-    
+
     func createKlarnaCustomerToken(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
-        
+
     }
-    
+
     func finalizePaymentSession(_ completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void) {
-        
+
     }
-    
+
 }
 
 #endif

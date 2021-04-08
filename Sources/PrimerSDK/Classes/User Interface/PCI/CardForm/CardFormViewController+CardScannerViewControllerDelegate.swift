@@ -1,4 +1,4 @@
-//extension CardFormViewController: CardScannerViewControllerDelegate {
+// extension CardFormViewController: CardScannerViewControllerDelegate {
 //    func setScannedCardDetails(with cardDetails: PrimerCreditCardDetails) {
 //        guard let cardFormView = self.cardFormView else { return }
 //        cardFormView.nameTF.text = cardDetails.name
@@ -9,4 +9,4 @@
 //        guard let month = cardDetails.expiryMonth else { return }
 //        cardFormView.expTF.text = month + "/" + year
 //    }
-//}
+// }

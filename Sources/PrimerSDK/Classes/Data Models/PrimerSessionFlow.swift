@@ -35,7 +35,7 @@
  */
 
 public enum PrimerSessionFlow {
-    
+
     case `default`
     case defaultWithVault
     case completeDirectCheckout
@@ -45,7 +45,7 @@ public enum PrimerSessionFlow {
     case addKlarnaToVault
     case addDirectDebit
     case checkoutWithKlarna
-    
+
     var vaulted: Bool {
         switch self {
         case .addCardToVault:
@@ -68,7 +68,7 @@ public enum PrimerSessionFlow {
             return true
         }
     }
-    
+
     var uxMode: UXMode {
         switch self {
         case .addCardToVault:
