@@ -20,7 +20,7 @@ protocol Endpoint {
     var body: Data? { get }
 }
 
-//extension Endpoint {
+// extension Endpoint {
 //    var scheme: String {
 //        return "http"
 //    }
@@ -28,7 +28,7 @@ protocol Endpoint {
 //    var port: Int? {
 //        return nil
 //    }
-//}
+// }
 
 enum HTTPMethod: String {
     case get = "GET"

@@ -9,11 +9,8 @@ import Foundation
 
 class JSONParser: Parser {
     private let jsonDecoder = JSONDecoder()
-    
-    func parse<T: Decodable>(_ type: T.Type, from data: Data, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) throws -> T {
-        if let keyDecodingStrategy = keyDecodingStrategy  {
-            jsonDecoder.keyDecodingStrategy = keyDecodingStrategy
-        }
+
+    func parse<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
         return try jsonDecoder.decode(T.self, from: data)
     }
 }
