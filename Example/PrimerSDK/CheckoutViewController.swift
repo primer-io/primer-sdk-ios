@@ -10,8 +10,8 @@ import PrimerSDK
 
 class CheckoutViewController: UIViewController {
 
-    //    let endpoint = "https://arcane-hollows-13383.herokuapp.com"
-    let endpoint = "http:localhost:8020"
+    let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
+//    let endpoint = "http:localhost:8020"
 
     let amount = 200
 
@@ -251,12 +251,21 @@ extension CheckoutViewController: PrimerDelegate {
     }
 
     func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
-        guard let url = URL(string: "\(endpoint)/client-token") else {
+        guard let url = URL(string: "\(endpoint)/clientToken") else {
             return completion(.failure(NetworkError.missingParams))
         }
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body = ClientTokenRequest(customerId: "customer123")
+        
+        do {
+            request.httpBody = try JSONEncoder().encode(body)
+        } catch {
+            return completion(.failure(NetworkError.missingParams))
+        }
+        
         callApi(request, completion: { result in
             switch result {
             case .success(let data):
@@ -275,7 +284,7 @@ extension CheckoutViewController: PrimerDelegate {
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         guard let token = result.token else { return completion(NetworkError.missingParams) }
 
-        guard let url = URL(string: "\(endpoint)/authorize") else {
+        guard let url = URL(string: "\(endpoint)/transaction") else {
             return completion(NetworkError.missingParams)
         }
 
@@ -335,7 +344,7 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func generateRequest(_ token: PaymentMethodToken, capture: Bool) -> URLRequest? {
-        guard let url = URL(string: "\(endpoint)/authorize") else { return nil }
+        guard let url = URL(string: "\(endpoint)/transaction") else { return nil }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -491,4 +500,8 @@ class SpinnerViewController: UIViewController {
         spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
+}
+
+struct ClientTokenRequest: Codable {
+    let customerId: String
 }
