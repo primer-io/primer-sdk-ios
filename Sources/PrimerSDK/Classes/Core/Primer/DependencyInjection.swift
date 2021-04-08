@@ -39,7 +39,10 @@ final class DependencyContainer {
         let key = String(describing: T.self)
         let dependency = dependencies[key] as? T
 
-        precondition(dependency != nil, "No dependency found for \(key)! must register a dependency before resolve.")
+        precondition(
+            dependency != nil,
+            "No dependency found for \(key)! must register a dependency before resolve."
+        )
 
         return dependency!
     }

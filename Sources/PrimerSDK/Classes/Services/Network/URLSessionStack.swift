@@ -171,7 +171,11 @@ class URLSessionStack: NetworkService {
 
 extension URLSessionStack {
     private func url(for endpoint: Endpoint) -> URL? {
-        guard let baseUrl = URL(string: endpoint.baseURL) else { return nil }
+        
+        guard let urlStr = endpoint.baseURL else { return nil }
+        
+        guard let baseUrl = URL(string: urlStr) else { return nil }
+        
         return baseUrl.appendingPathComponent(endpoint.path)
 
 //        var urlComponents = URLComponents()
