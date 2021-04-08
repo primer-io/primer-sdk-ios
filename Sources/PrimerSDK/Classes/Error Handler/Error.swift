@@ -47,48 +47,48 @@ enum KlarnaException: PrimerErrorProtocol {
             return NSLocalizedString("primer-klarna-error-message-failed-url-construction",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Failed to construct URL",
                                      comment: "Failed to construct URL - Error message")
         case .noToken:
             return NSLocalizedString("primer-klarna-error-message-failed-to-find-client-token",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Failed to find client token",
                                      comment: "Failed to find client token - Error message")
 
         case .noCoreUrl:
             return NSLocalizedString("primer-klarna-error-message-failed-to-find-base-url",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Failed to find Core Base URL",
                                      comment: "Failed to find Core Base URL - Error message")
 
         case .failedApiCall:
             return NSLocalizedString("primer-klarna-error-message-api-request-failed",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "API request failed",
                                      comment: "API request failed - Error message")
 
         case .noAmount:
             return NSLocalizedString("primer-klarna-error-message-failed-to-find-amount",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Failed to find amount",
                                      comment: "Failed to find amount - Error message")
 
         case .noCurrency:
             return NSLocalizedString("primer-klarna-error-message-failed-to-find-currency",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Failed to find currency",
                                      comment: "Failed to find currency - Error message")
 
         case .noPaymentMethodConfigId:
             return NSLocalizedString("primer-klarna-error-message-failed-to-find-klarna-configuration",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Failed to find Klarna configuration",
                                      comment: "Failed to find Klarna configuration - Error message")
         }
     }
