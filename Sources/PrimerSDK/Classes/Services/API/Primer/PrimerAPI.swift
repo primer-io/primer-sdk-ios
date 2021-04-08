@@ -28,7 +28,7 @@ enum PrimerAPI: Endpoint {
 extension PrimerAPI {
 
     // MARK: Base URL
-    var baseURL: String {
+    var baseURL: String? {
         switch self {
         case .directDebitCreateMandate(let clientToken, _),
              .payPalStartOrderSession(let clientToken, _),
@@ -37,21 +37,15 @@ extension PrimerAPI {
              .klarnaCreatePaymentSession(let clientToken, _),
              .klarnaCreateCustomerToken(let clientToken, _),
              .klarnaFinalizePaymentSession(let clientToken, _):
-            guard let urlStr = clientToken.coreUrl else {
-                fatalError("You need to provide the Primer SDK with a client access token fetched from your server.")
-            }
+            guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .vaultDeletePaymentMethod(let clientToken, _),
              .vaultFetchPaymentMethods(let clientToken),
              .tokenizePaymentMethod(let clientToken, _):
-            guard let urlStr = clientToken.pciUrl else {
-                fatalError("You need to provide the Primer SDK with a client access token fetched from your server.")
-            }
+            guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
         case .fetchConfiguration(let clientToken):
-            guard let urlStr = clientToken.configurationUrl else {
-                fatalError("You need to provide the Primer SDK with a client access token fetched from your server.")
-            }
+            guard let urlStr = clientToken.configurationUrl else { return nil }
             return urlStr
         }
     }

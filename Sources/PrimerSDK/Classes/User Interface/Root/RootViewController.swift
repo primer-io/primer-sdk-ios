@@ -39,9 +39,7 @@ class RootViewController: UIViewController {
         }
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
@@ -133,7 +131,9 @@ class RootViewController: UIViewController {
     }
 
     @objc func keyboardWillShow2(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+        if let keyboardSize = (
+            notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        )?.cgRectValue {
             let newConstant = -keyboardSize.height
             let duration = bottomConstraint!.constant.distance(to: newConstant) < 100 ? 0.0 : 0.5
             bottomConstraint!.constant = newConstant
@@ -151,7 +151,9 @@ class RootViewController: UIViewController {
     }
 
     @objc func keyboardWillHide2(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+        if let keyboardSize = (
+            notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        )?.cgRectValue {
             bottomConstraint?.constant += keyboardSize.height
             UIView.animate(withDuration: 0.5) {
                 self.view.layoutIfNeeded()

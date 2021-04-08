@@ -191,7 +191,6 @@ class MockLocator {
         DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(MockKlarnaService() as KlarnaServiceProtocol)
         DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
-        DependencyContainer.register(MockCardFormViewModel() as CardFormViewModelProtocol)
         DependencyContainer.register(MockCardScannerViewModel() as CardScannerViewModelProtocol)
         DependencyContainer.register(MockDirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
         DependencyContainer.register(MockOAuthViewModel() as OAuthViewModelProtocol)
