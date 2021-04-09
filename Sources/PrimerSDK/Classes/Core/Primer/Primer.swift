@@ -30,7 +30,6 @@ public class Primer {
      */
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
-        if clearOnDestroy { clearDependencies() }
     }
 
     public init(with settings: PrimerSettings) {

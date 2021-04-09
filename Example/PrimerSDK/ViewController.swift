@@ -173,9 +173,11 @@ extension ViewController: ViewControllerDelegate {
 ///
 // MARK: API
 struct AuthorizationRequest: Encodable {
-    let token: String
+    let paymentMethod: String
     let amount: Int
-    let type: String
+    let type: String?
+    var capture: Bool
+    let currencyCode: String
 }
 
 enum NetworkError: Error {

@@ -11,7 +11,7 @@ import Foundation
 
 protocol Endpoint {
 //    var scheme: String { get }
-    var baseURL: String { get }
+    var baseURL: String? { get }
     var port: Int? { get }
     var path: String { get }
     var method: HTTPMethod { get }

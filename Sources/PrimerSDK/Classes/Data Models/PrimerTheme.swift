@@ -169,6 +169,7 @@ public protocol ColorTheme {
     var neutral1: UIColor { get } //
     var disabled1: UIColor { get }
     var error1: UIColor { get }
+    var success1: UIColor { get } // success message icon and navbar
 }
 
 @available(iOS 13.0, *)
@@ -183,7 +184,8 @@ struct DefaultColorTheme: ColorTheme {
     var neutral1: UIColor { return getColor(light: lightTheme.neutral1, dark: darkTheme.neutral1) }
     var disabled1: UIColor { return getColor(light: lightTheme.disabled1, dark: darkTheme.disabled1) }
     var error1: UIColor { return getColor(light: lightTheme.error1, dark: darkTheme.error1) }
-
+    var success1: UIColor { return getColor(light: lightTheme.success1, dark: darkTheme.success1) }
+    
     let lightTheme: ColorTheme
     let darkTheme: ColorTheme
 
@@ -217,7 +219,8 @@ public struct PrimerDefaultTheme: ColorTheme {
     public var neutral1: UIColor
     public var disabled1: UIColor
     public var error1: UIColor
-
+    public var success1: UIColor
+    
     public init(
         text1: UIColor = .black,
         text2: UIColor = .white,
@@ -228,7 +231,8 @@ public struct PrimerDefaultTheme: ColorTheme {
         tint1: UIColor = .systemBlue,
         neutral1: UIColor = .lightGray,
         disabled1: UIColor = .lightGray,
-        error1: UIColor = .systemRed
+        error1: UIColor = .systemRed,
+        success1: UIColor = .systemBlue
     ) {
         self.text1 = text1
         self.text2 = text2
@@ -240,6 +244,7 @@ public struct PrimerDefaultTheme: ColorTheme {
         self.neutral1 = neutral1
         self.disabled1 = disabled1
         self.error1 = error1
+        self.success1 = success1
     }
 }
 
@@ -255,7 +260,8 @@ public struct PrimerDarkTheme: ColorTheme {
     public var neutral1: UIColor
     public var disabled1: UIColor
     public var error1: UIColor
-
+    public var success1: UIColor
+    
     public init(
         text1: UIColor = .white,
         text2: UIColor = .white,
@@ -266,7 +272,8 @@ public struct PrimerDarkTheme: ColorTheme {
         tint1: UIColor = .systemBlue,
         neutral1: UIColor = .systemGray3,
         disabled1: UIColor = .systemGray3,
-        error1: UIColor = .systemRed
+        error1: UIColor = .systemRed,
+        success1: UIColor = .systemBlue
     ) {
         self.text1 = text1
         self.text2 = text2
@@ -278,6 +285,7 @@ public struct PrimerDarkTheme: ColorTheme {
         self.neutral1 = neutral1
         self.disabled1 = disabled1
         self.error1 = error1
+        self.success1 = success1
     }
 }
 

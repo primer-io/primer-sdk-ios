@@ -10,7 +10,7 @@
 @testable import PrimerSDK
 
 class MockDirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
-    var amountViewModel: AmountViewModel {
+    var amountViewModel: AmountViewModel? {
         return AmountViewModel(amount: 200, currency: .EUR)
     }
 

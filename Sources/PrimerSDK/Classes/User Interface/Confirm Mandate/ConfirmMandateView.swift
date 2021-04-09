@@ -136,13 +136,13 @@ extension ConfirmMandateView {
             NSLocalizedString("primer-form-view-confirm-mandate-legal-text-part-1",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "By signing this mandate form, you authorise (C) - ",
                                      comment: "By signing this mandate form, you authorise (C) - ") +
             " \(business.name) " +
             NSLocalizedString("primer-form-view-confirm-mandate-legal-text-part-2",
                               tableName: nil,
                               bundle: Bundle.primerFramework,
-                              value: "",
+                              value: "to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from",
                               comment: "to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from") +
             " \(business.name)."
 
