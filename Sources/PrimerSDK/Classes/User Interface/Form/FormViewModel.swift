@@ -135,7 +135,7 @@ class FormViewModel: FormViewModelProtocol {
                 ErrorHandler.shared.handle(error: error)
                 completion(error)
             case .success(let token):
-                switch Primer.flow {
+                switch Primer.shared.flow {
                 case .completeDirectCheckout:
                     self?.state.settings.onTokenizeSuccess(token, { error in
                         if error.exists {

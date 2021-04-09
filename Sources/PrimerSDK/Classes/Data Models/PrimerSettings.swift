@@ -63,21 +63,18 @@ public class PrimerSettings: PrimerSettingsProtocol {
     public let orderItems: [OrderItem]
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
-        return delegate?.clientTokenCallback ?? { _ in }
+        return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
     }
 
     public var onTokenizeSuccess: PaymentMethodTokenCallBack {
-        return delegate?.authorizePayment ?? { _, _ in }
+        return Primer.shared.delegate?.authorizePayment ?? { _, _ in }
     }
 
     public var onCheckoutDismiss: CheckoutDismissalCallback {
-        return delegate?.onCheckoutDismissed ?? {}
+        return Primer.shared.delegate?.onCheckoutDismissed ?? {}
     }
 
-    weak var delegate: PrimerDelegate?
-
     public init(
-        delegate: PrimerDelegate,
         amount: Int? = nil,
         currency: Currency? = nil,
         theme: PrimerTheme = PrimerTheme(),
@@ -102,7 +99,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.countryCode = countryCode
         self.urlScheme = urlScheme
         self.urlSchemeIdentifier = urlSchemeIdentifier
-        self.delegate = delegate
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
         self.businessDetails = businessDetails

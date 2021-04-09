@@ -12,6 +12,7 @@ import PrimerSDK
 
 extension CheckoutViewController {
     func initPrimer() {
+        Primer.shared.delegate = self
 
         let (finalAmount, items) = generateAmountAndOrderItems()
         let theme = generatePrimerTheme()
@@ -19,7 +20,6 @@ extension CheckoutViewController {
         let isFullScreenOnly = false
 
         let settings = PrimerSettings(
-            delegate: self,
             amount: finalAmount,
             currency: .SEK,
             countryCode: .se,
@@ -29,12 +29,10 @@ extension CheckoutViewController {
             businessDetails: businessDetails,
             orderItems: items
         )
-
-        primer = Primer(with: settings)
         
         setDirectDebit()
 
-        primer?.setTheme(theme: theme)
+        Primer.shared.setTheme(theme: theme)
     }
     
     private func generatePrimerTheme() -> PrimerTheme {
@@ -92,7 +90,7 @@ extension CheckoutViewController {
     }
     
     private func setDirectDebit() {
-        primer?.setDirectDebitDetails(
+        Primer.shared.setDirectDebitDetails(
             firstName: "John",
             lastName: "Doe",
             email: "test@mail.com",

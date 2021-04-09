@@ -16,7 +16,6 @@ class CheckoutViewController: UIViewController {
     let amount = 200
 
     var listOfVaultedPaymentMethods: [PaymentMethodToken] = []
-    var primer: Primer?
 
     weak var delegate: ViewControllerDelegate?
 
@@ -37,7 +36,7 @@ class CheckoutViewController: UIViewController {
     }
     
     func fetchPaymentMethods() {
-        primer?.fetchVaultedPaymentMethods { [weak self] result in
+        Primer.shared.fetchVaultedPaymentMethods { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .failure: print("Error!")
@@ -145,21 +144,21 @@ extension CheckoutViewController {
     }
 
     @objc private func showCardForm() {
-        primer?.showCheckout(self, flow: .addCardToVault)
+        Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
     @objc private func showPayPalForm() {
-        primer?.showCheckout(self, flow: .addPayPalToVault)
+        Primer.shared.showCheckout(self, flow: .addPayPalToVault)
     }
     @objc private func showKlarnaForm() {
-        primer?.showCheckout(self, flow: .addKlarnaToVault)
+        Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
     }
     @objc private func showCompleteVaultCheckout() {
-        primer?.showCheckout(self, flow: .defaultWithVault)
+        Primer.shared.showCheckout(self, flow: .defaultWithVault)
     }
     @objc private func showCompleteDirectCheckout() {
-        primer?.showCheckout(self, flow: .completeDirectCheckout)
+        Primer.shared.showCheckout(self, flow: .completeDirectCheckout)
     }
     @objc private func showDirectDebit() {
-        primer?.showCheckout(self, flow: .addDirectDebit)
+        Primer.shared.showCheckout(self, flow: .addDirectDebit)
     }
 }

@@ -2,6 +2,10 @@
 
 import UIKit
 
+// swiftlint:disable identifier_name
+private let _Primer = Primer()
+// swiftlint:enable identifier_name
+
 public class Primer {
 
     /**
@@ -13,11 +17,13 @@ public class Primer {
      - Version:
      1.2.2
      */
-    static var flow: PrimerSessionFlow = .completeDirectCheckout
+    public var flow: PrimerSessionFlow = .completeDirectCheckout
 
     public var clearOnDestroy: Bool = true
 
     private var root: RootViewController?
+    
+    public var delegate: PrimerDelegate?
 
     /**
      Intialise Primer with the settings object before calling any of the other methods.
@@ -28,11 +34,17 @@ public class Primer {
      
      - Version: 1.2.2
      */
+    
+    public static var shared: Primer {
+        return _Primer
+    }
+    
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
 
-    public init(with settings: PrimerSettings) {
+    fileprivate init() {
+        let settings = PrimerSettings()
         setDependencies(settings: settings)
     }
 
@@ -157,7 +169,7 @@ public class Primer {
         let router: RouterDelegate = DependencyContainer.resolve()
         router.setRoot(root!)
         guard let root = self.root else { return }
-        Primer.flow = flow
+        Primer.shared.flow = flow
         controller.present(root, animated: true)
     }
 

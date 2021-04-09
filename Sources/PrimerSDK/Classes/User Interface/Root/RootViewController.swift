@@ -88,7 +88,7 @@ class RootViewController: UIViewController {
 
     private func bindFirstFlowView() {
         let router: RouterDelegate = DependencyContainer.resolve()
-        switch Primer.flow {
+        switch Primer.shared.flow {
         case .completeDirectCheckout:
             router.show(.vaultCheckout)
         case .default:
