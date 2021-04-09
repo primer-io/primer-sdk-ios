@@ -8,10 +8,10 @@
 import Foundation
 
 internal extension URL {
-    
+
     var urlParameters: [String: Any] {
         var dict = [String: Any]()
-        
+
         if let components = URLComponents(url: self, resolvingAgainstBaseURL: false) {
             if let queryItems = components.queryItems {
                 for item in queryItems {
@@ -23,5 +23,5 @@ internal extension URL {
             return [:]
         }
     }
-    
+
 }

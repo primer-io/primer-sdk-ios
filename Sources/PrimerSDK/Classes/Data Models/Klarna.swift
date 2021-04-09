@@ -68,7 +68,7 @@ struct KlarnaSessionOrderLines: Codable {
     let unitPrice: Int?
     let totalAmount: Int?
     let totalDiscountAmount: Int?
-    
+
     enum CodingKeys: String, CodingKey {
         case type = "type"
         case name = "name"

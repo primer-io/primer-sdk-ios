@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 func +(_ lhs: DateComponents, _ rhs: DateComponents) -> DateComponents {
     return combineComponents(lhs, rhs)
 }
@@ -62,7 +61,7 @@ func -(_ lhs: Date, _ rhs: Date) -> DateComponents {
 }
 
 extension Date {
-    
+
     init(year: Int,
          month: Int,
          day: Int,
@@ -80,20 +79,21 @@ extension Date {
         components.timeZone = timeZone
         self = Calendar.current.date(from: components)!
     }
-    
+
     init(dateString: String, dateFormat: String = "yyyy-MM-dd HH:mm:ss") {
         let formatter = DateFormatter()
         formatter.dateFormat = dateFormat
         self = formatter.date(from: dateString)!
     }
-    
+
     var `description`: String {
         get {
-            let PREFERRED_LOCALE = "en_US" // Use whatever locale you prefer!
-            return self.description(with: Locale(identifier: PREFERRED_LOCALE))
+            let preferredLocale = "en_US" // Use whatever locale you prefer!
+            return self.description(with: Locale(identifier: preferredLocale))
         }
     }
-    
+
+    // swiftlint:disable identifier_name
     func toString(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil, calendar: Calendar? = nil) -> String {
         let df = DateFormatter()
         df.dateFormat = f
@@ -102,24 +102,24 @@ extension Date {
         df.calendar = calendar == nil ? Calendar(identifier: .gregorian) : calendar!
         return df.string(from: self)
     }
-    
+
     var startOfDay: Date {
         return Calendar.current.startOfDay(for: self)
     }
-    
+
     var startOfMonth: Date {
         let calendar = Calendar(identifier: .gregorian)
         let components = calendar.dateComponents([.year, .month], from: self)
         return  calendar.date(from: components)!
     }
-    
+
     var endOfDay: Date {
         var components = DateComponents()
         components.day = 1
         components.second = -1
         return Calendar.current.date(byAdding: components, to: startOfDay)!
     }
-    
+
     var endOfMonth: Date {
         var components = DateComponents()
         components.month = 1
@@ -129,13 +129,13 @@ extension Date {
 }
 
 extension DateComponents {
-  
+
   var fromNow: Date {
     return Calendar.current.date(byAdding: self, to: Date())!
   }
-  
+
   var ago: Date {
     return Calendar.current.date(byAdding: -self, to: Date())!
   }
-  
+
 }
