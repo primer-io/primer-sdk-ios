@@ -73,6 +73,11 @@ public class PrimerSettings: PrimerSettingsProtocol {
     public var onCheckoutDismiss: CheckoutDismissalCallback {
         return Primer.shared.delegate?.onCheckoutDismissed ?? {}
     }
+    
+    deinit {
+        print("**********\n**********\n**********\n")
+        print("")
+    }
 
     public init(
         amount: Int? = nil,

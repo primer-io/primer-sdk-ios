@@ -51,6 +51,11 @@ class AppState: AppStateProtocol {
     var authorizationToken: String?
     var customerToken: String?
     var sessionId: String?
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: AppState")
+        log(logLevel: .debug, message: "")
+    }
 }
 
 struct CardData {

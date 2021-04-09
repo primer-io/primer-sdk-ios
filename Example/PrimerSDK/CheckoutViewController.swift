@@ -146,18 +146,23 @@ extension CheckoutViewController {
     @objc private func showCardForm() {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
+    
     @objc private func showPayPalForm() {
         Primer.shared.showCheckout(self, flow: .addPayPalToVault)
     }
+    
     @objc private func showKlarnaForm() {
         Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
     }
+    
     @objc private func showCompleteVaultCheckout() {
         Primer.shared.showCheckout(self, flow: .defaultWithVault)
     }
+    
     @objc private func showCompleteDirectCheckout() {
         Primer.shared.showCheckout(self, flow: .completeDirectCheckout)
     }
+    
     @objc private func showDirectDebit() {
         Primer.shared.showCheckout(self, flow: .addDirectDebit)
     }
