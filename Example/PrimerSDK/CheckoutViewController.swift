@@ -22,7 +22,7 @@ class CheckoutViewController: UIViewController {
 
     let tableView = UITableView()
     let addCardButton = UIButton()
-    let addPayPalButton = UIButton()
+    let addKlarnaButton = UIButton()
     let vaultCheckoutButton = UIButton()
     let directCheckoutButton = UIButton()
     let directDebitButton = UIButton()
@@ -73,7 +73,7 @@ extension CheckoutViewController {
         
         view.addSubview(tableView)
         view.addSubview(addCardButton)
-        view.addSubview(addPayPalButton)
+        view.addSubview(addKlarnaButton)
         view.addSubview(vaultCheckoutButton)
         view.addSubview(directDebitButton)
 
@@ -99,11 +99,11 @@ extension CheckoutViewController {
         addCardButton.backgroundColor = .lightGray
         addCardButton.addTarget(self, action: #selector(showCardForm), for: .touchUpInside)
 
-        addPayPalButton.setTitle("Klarna", for: .normal)
-        addPayPalButton.setTitleColor(.white, for: .normal)
-        addPayPalButton.layer.cornerRadius = 16
-        addPayPalButton.backgroundColor = .lightGray
-        addPayPalButton.addTarget(self, action: #selector(showKlarnaForm), for: .touchUpInside)
+        addKlarnaButton.setTitle("Klarna", for: .normal)
+        addKlarnaButton.setTitleColor(.white, for: .normal)
+        addKlarnaButton.layer.cornerRadius = 16
+        addKlarnaButton.backgroundColor = .lightGray
+        addKlarnaButton.addTarget(self, action: #selector(showKlarnaForm), for: .touchUpInside)
 
         vaultCheckoutButton.setTitle("Open Wallet", for: .normal)
         vaultCheckoutButton.setTitleColor(.white, for: .normal)
@@ -124,14 +124,14 @@ extension CheckoutViewController {
         tableView.bottomAnchor.constraint(equalTo: addCardButton.topAnchor).isActive = true
 
         addCardButton.translatesAutoresizingMaskIntoConstraints = false
-        addCardButton.bottomAnchor.constraint(equalTo: addPayPalButton.topAnchor, constant: -12).isActive = true
+        addCardButton.bottomAnchor.constraint(equalTo: addKlarnaButton.topAnchor, constant: -12).isActive = true
         addCardButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         addCardButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
 
-        addPayPalButton.translatesAutoresizingMaskIntoConstraints = false
-        addPayPalButton.bottomAnchor.constraint(equalTo: vaultCheckoutButton.topAnchor, constant: -12).isActive = true
-        addPayPalButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
-        addPayPalButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
+        addKlarnaButton.translatesAutoresizingMaskIntoConstraints = false
+        addKlarnaButton.bottomAnchor.constraint(equalTo: vaultCheckoutButton.topAnchor, constant: -12).isActive = true
+        addKlarnaButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
+        addKlarnaButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
 
         vaultCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
         vaultCheckoutButton.bottomAnchor.constraint(equalTo: directDebitButton.topAnchor, constant: -12).isActive = true
