@@ -28,7 +28,7 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
     
     var merchantIdentifier: String? { return state.settings.merchantIdentifier }
     var countryCode: CountryCode? { return state.settings.countryCode }
-    var uxMode: UXMode { return Primer.flow.uxMode }
+    var uxMode: UXMode { return Primer.shared.flow.uxMode }
     var clientToken: DecodedClientToken? { return state.decodedClientToken }
 
     @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
@@ -48,7 +48,7 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
                 ErrorHandler.shared.handle(error: error)
                 completion(error)
             case .success(let token):
-                switch Primer.flow {
+                switch Primer.shared.flow {
                 case .completeDirectCheckout: self?.state.settings.onTokenizeSuccess(token, completion)
                 default: completion(nil)
                 }

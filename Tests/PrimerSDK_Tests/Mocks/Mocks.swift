@@ -21,7 +21,6 @@ var mockClientToken = DecodedClientToken(
 )
 
 var mockSettings = PrimerSettings(
-    delegate: MockPrimerDelegate(),
     amount: 200,
     currency: .EUR,
     theme: PrimerTheme(),
