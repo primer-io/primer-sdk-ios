@@ -25,7 +25,7 @@ final class DependencyContainer {
     static func resolve<T>() -> T {
         shared.resolve()
     }
-    
+
     static func clear() {
         shared.clear()
     }
@@ -39,11 +39,14 @@ final class DependencyContainer {
         let key = String(describing: T.self)
         let dependency = dependencies[key] as? T
 
-        precondition(dependency != nil, "No dependency found for \(key)! must register a dependency before resolve.")
+        precondition(
+            dependency != nil,
+            "No dependency found for \(key)! must register a dependency before resolve."
+        )
 
         return dependency!
     }
-    
+
     private func clear() {
         dependencies = [String: AnyObject]()
     }

@@ -31,28 +31,28 @@ class MockVaultService: VaultServiceProtocol {
 //            )
 //        ]
 //    }
-    
+
     var paymentMethodVMs: [PaymentMethodToken] {
         return []
     }
-    
+
     let paymentMethodsIsEmpty: Bool
-    
+
     var selectedPaymentMethod: String = "tokenId"
-    
+
     init(paymentMethodsIsEmpty: Bool = false, selectedPaymentMethod: String = "tokenId") {
         self.paymentMethodsIsEmpty = paymentMethodsIsEmpty
         self.selectedPaymentMethod = selectedPaymentMethod
     }
-    
+
     var loadVaultedPaymentMethodsCalled = false
-    
+
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
         loadVaultedPaymentMethodsCalled = true
     }
-    
+
     var deleteVaultedPaymentMethodCalled = false
-    
+
     func deleteVaultedPaymentMethod(with id: String, _ onDeletetionSuccess: @escaping (Error?) -> Void) {
         deleteVaultedPaymentMethodCalled = true
     }

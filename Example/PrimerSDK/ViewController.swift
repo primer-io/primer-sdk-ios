@@ -1,23 +1,22 @@
 import UIKit
-//import PrimerSDK
-//import AuthenticationServices
+// import PrimerSDK
+// import AuthenticationServices
 import MapKit
 
 protocol ViewControllerDelegate: class {
     func addToken(request: AuthorizationRequest)
 }
 
-
 class LegacyViewController: UIViewController {
     let button = UIButton()
-    
+
     var request: AuthorizationRequest?
-    
+
     override func viewDidLoad() {
 
         title = "Primer"
         view.backgroundColor = .white
-        
+
         // button
         view.addSubview(button)
         button.backgroundColor = .white
@@ -35,7 +34,7 @@ class LegacyViewController: UIViewController {
         button.accessibilityIdentifier = "Present Wallet Button"
         button.accessibilityTraits = UIAccessibilityTraitButton
     }
-    
+
     @objc private func presentWallet() {
         let vc = CheckoutViewController()
         vc.delegate = self
@@ -49,22 +48,22 @@ extension LegacyViewController: ViewControllerDelegate {
     }
 }
 
-//@available(iOS 13.0, *)
-class ViewController: UIViewController  {
-    
+// @available(iOS 13.0, *)
+class ViewController: UIViewController {
+
     let button = UIButton()
     let scanButton = UIButton()
     let imageView = UIImageView(image: UIImage(named: "credit-card"))
     let titleLabel = UILabel()
     let map = MKMapView()
-    
+
     var request: AuthorizationRequest?
-    
+
     override func viewDidLoad() {
         title = "Primer"
         view.backgroundColor = .white
-        
-        //map
+
+        // map
         view.addSubview(map)
         map.translatesAutoresizingMaskIntoConstraints = false
         map.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -75,7 +74,7 @@ class ViewController: UIViewController  {
         //
         let initialLocation = CLLocation(latitude: 51.510067, longitude: -0.133869)
         map.centerToLocation(initialLocation)
-        
+
         // button
         view.addSubview(button)
         button.backgroundColor = .white
@@ -91,7 +90,7 @@ class ViewController: UIViewController  {
         button.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24).isActive = true
         button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         button.addTarget(self, action: #selector(presentWallet), for: .touchUpInside)
-        
+
         //
         let image = UIImage(named: "credit-card")
         let imageView = UIImageView(image: image)
@@ -101,37 +100,37 @@ class ViewController: UIViewController  {
         imageView.centerXAnchor.constraint(equalTo: button.centerXAnchor).isActive = true
         imageView.centerYAnchor.constraint(equalTo: button.centerYAnchor).isActive = true
     }
-    
+
     @objc private func presentWallet() {
         let vc = CheckoutViewController()
         vc.delegate = self
         navigationController?.pushViewController(vc, animated: true)
     }
-    
+
     @objc func authorizePayment() {
         let indicator = UIActivityIndicatorView()
-        
+
         indicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(indicator)
         indicator.color = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
         indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         indicator.startAnimating()
-        
+
         //
         guard let body = request else { return }
         guard let url = URL(string: "http://localhost:8020/authorize") else { return }
         var request = URLRequest(url: url)
-        
+
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+
         do {
             request.httpBody = try JSONEncoder().encode(body)
         } catch {
             return
         }
-        
+
         callApi(request, completion: { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -140,7 +139,7 @@ class ViewController: UIViewController  {
                     indicator.removeFromSuperview()
                     let alert = UIAlertController(title: "Success!", message: "Your payment was successful.", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: {
-                        action in
+                        _ in
                         // Called when user taps outside
                     }))
                     self?.present(alert, animated: true, completion: nil)
@@ -148,7 +147,7 @@ class ViewController: UIViewController  {
             }
         })
     }
-    
+
 }
 
 private extension MKMapView {
@@ -164,36 +163,21 @@ private extension MKMapView {
     }
 }
 
-//@available(iOS 13.0, *)
+// @available(iOS 13.0, *)
 extension ViewController: ViewControllerDelegate {
     func addToken(request: AuthorizationRequest) {
         self.request = request
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ///
-//MARK: API
+// MARK: API
 struct AuthorizationRequest: Encodable {
-    let token: String
+    let paymentMethod: String
     let amount: Int
-    let type: String
+    let type: String?
+    var capture: Bool
+    let currencyCode: String
 }
 
 enum NetworkError: Error {
@@ -206,33 +190,33 @@ enum NetworkError: Error {
 }
 
 extension UIViewController {
-    
+
     func callApi(_ req: URLRequest, completion: @escaping (_ result: Result<Data, Error>) -> Void) {
         URLSession.shared.dataTask(with: req, completionHandler: { (data, response, err) in
-            
+
             if err != nil {
                 completion(.failure(NetworkError.serverError))
                 return
             }
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 completion(.failure(NetworkError.invalidResponse))
                 return
             }
-            
+
             if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
                 completion(.failure(NetworkError.invalidResponse))
                 return
             }
-            
+
             guard let data = data else {
                 completion(.failure(NetworkError.invalidResponse))
                 return
             }
-            
+
             completion(.success(data))
-            
+
         }).resume()
     }
-    
+
 }

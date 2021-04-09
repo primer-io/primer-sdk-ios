@@ -11,7 +11,7 @@ public struct OrderItem: Codable {
     public let name: String
     public let unitAmount: Int
     public let quantity: Int
-    
+
     public init(
         name: String,
         unitAmount: Int,
