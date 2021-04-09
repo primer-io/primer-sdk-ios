@@ -5,16 +5,24 @@ import PassKit
 extension ApplePayViewController: PKPaymentAuthorizationViewControllerDelegate {
 
     func onApplePayButtonPressed() {
-        let paymentItem = PKPaymentSummaryItem.init(label: "Primer Store", amount: NSDecimalNumber(value: viewModel.amount / 100))
+
+        guard let amount = viewModel.amount else { return }
+        
+        let paymentItem = PKPaymentSummaryItem.init(
+            label: "Primer Store",
+            amount: NSDecimalNumber(value: amount / 100)
+        )
+
         let paymentNetworks = [PKPaymentNetwork.amex, .discover, .masterCard, .visa]
 
         if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: paymentNetworks) {
 
             guard let countryCode = viewModel.countryCode else { return }
             guard let merchantIdentifier = viewModel.merchantIdentifier else { return }
+            guard let currency = viewModel.currency else { return }
 
             let request = PKPaymentRequest()
-            request.currencyCode = viewModel.currency.rawValue
+            request.currencyCode = currency.rawValue
             request.countryCode = countryCode.rawValue
             request.merchantIdentifier = merchantIdentifier
             request.merchantCapabilities = PKMerchantCapability.capability3DS

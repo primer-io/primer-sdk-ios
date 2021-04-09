@@ -1,24 +1,22 @@
 #if canImport(UIKit)
 
 protocol OAuthViewModelProtocol {
-    var urlSchemeIdentifier: String { get }
+    var urlSchemeIdentifier: String? { get }
     func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void)
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void)
 }
 
 class OAuthViewModel: OAuthViewModelProtocol {
 
-    var urlSchemeIdentifier: String {
-        guard let identifier = state.settings.urlSchemeIdentifier else {
-            fatalError("OAuth requires URL scheme identifier!")
-        }
-
-        return identifier
+    var urlSchemeIdentifier: String? {
+        return state.settings.urlSchemeIdentifier
     }
 
     private var clientToken: DecodedClientToken? { return state.decodedClientToken }
     private var orderId: String? { return state.orderId }
-    private var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? { return state.confirmedBillingAgreement }
+    private var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? {
+        return state.confirmedBillingAgreement
+    }
     private var onTokenizeSuccess: PaymentMethodTokenCallBack { return state.settings.onTokenizeSuccess }
 
     @Dependency private(set) var paypalService: PayPalServiceProtocol

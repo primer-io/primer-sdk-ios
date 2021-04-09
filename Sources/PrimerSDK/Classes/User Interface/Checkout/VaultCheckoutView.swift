@@ -98,10 +98,11 @@ extension VaultCheckoutView {
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
+
         navBar.topItem?.title = NSLocalizedString("primer-vault-checkout-nav-bar-title",
                                                   tableName: nil,
                                                   bundle: Bundle.primerFramework,
-                                                  value: "",
+                                                  value: "Choose payment method",
                                                   comment: "Choose payment method - Vault Checkout Navigation Bar Title")
     }
 
@@ -123,7 +124,7 @@ extension VaultCheckoutView {
                 savedCardTitleLabel.text = NSLocalizedString("primer-vault-checkout-card-title",
                                                              tableName: nil,
                                                              bundle: Bundle.primerFramework,
-                                                             value: "",
+                                                             value: "SAVED CARD",
                                                              comment: "SAVED CARD - Vault Checkout Card Title")
 
                 savedCardTitleLabel.textColor = theme.colorTheme.secondaryText1
@@ -199,7 +200,7 @@ extension VaultCheckoutView {
                     ? NSLocalizedString("primer-vault-checkout-see-all",
                                         tableName: nil,
                                         bundle: Bundle.primerFramework,
-                                        value: "",
+                                        value: "See All",
                                         comment: "See All - Vault Checkout See All Button")
                     : ""
                 seeAllLinkLabel.font = .systemFont(ofSize: 14)
@@ -231,7 +232,7 @@ extension VaultCheckoutView {
                     ? NSLocalizedString("primer-vault-checkout-other-methods",
                                         tableName: nil,
                                         bundle: Bundle.primerFramework,
-                                        value: "",
+                                        value: "OTHER WAYS TO PAY",
                                         comment: "OTHER WAYS TO PAY - Vault Checkout Other Methods Title")
                     : ""
                 otherMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1

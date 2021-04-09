@@ -43,15 +43,15 @@ class PayPalService: PayPalServiceProtocol {
         }
 
         guard let amount = state.settings.amount else {
-            fatalError("Paypal checkout requires amount value!")
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
         guard let currency = state.settings.currency else {
-            fatalError("Paypal checkout requires currency value!")
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
         guard let urlScheme = state.settings.urlScheme else {
-            fatalError("Paypal checkout requires URL Scheme value!")
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
         let body = PayPalCreateOrderRequest(
@@ -83,7 +83,7 @@ class PayPalService: PayPalServiceProtocol {
         }
 
         guard let urlScheme = state.settings.urlScheme else {
-            fatalError("Paypal checkout requires URL Scheme value!")
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
         let body = PayPalCreateBillingAgreementRequest(
