@@ -11,6 +11,7 @@ import PrimerSDK
 // Initialise Primer
 
 extension CheckoutViewController {
+    
     func initPrimer() {
         Primer.shared.delegate = self
 
@@ -32,6 +33,7 @@ extension CheckoutViewController {
         
         setDirectDebit()
 
+        Primer.shared.setSettings(settings: settings)
         Primer.shared.setTheme(theme: theme)
     }
     
