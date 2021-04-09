@@ -7,40 +7,16 @@ private let _Primer = Primer()
 // swiftlint:enable identifier_name
 
 public class Primer {
+    
+    public weak var delegate: PrimerDelegate?
 
-    /**
-     Change this variable depending on the flow that you want to use on the drop-in UI. Defaults on the direct checkout flow.
-     See **PrimerSessionFlow** for possible values.
-     
-     - Author:
-     Primer
-     - Version:
-     1.2.2
-     */
-    public var flow: PrimerSessionFlow = .completeDirectCheckout
-
-    public var clearOnDestroy: Bool = true
-
+    private(set) var flow: PrimerSessionFlow = .completeDirectCheckout
     private var root: RootViewController?
     
-    public var delegate: PrimerDelegate?
-
-    /**
-     Intialise Primer with the settings object before calling any of the other methods.
-     
-     - Parameter settings: Primer settings object
-     
-     - Author: Primer
-     
-     - Version: 1.2.2
-     */
+    // MARK: - INITIALIZATION
     
     public static var shared: Primer {
         return _Primer
-    }
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
 
     fileprivate init() {
@@ -57,7 +33,7 @@ public class Primer {
      
      - Version: 1.2.2
      */
-    public func setDependencies(settings: PrimerSettings) {
+    internal func setDependencies(settings: PrimerSettings) {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         DependencyContainer.register(settings.theme as PrimerThemeProtocol)
         DependencyContainer.register(FormType.cardForm(theme: settings.theme) as FormType)
@@ -82,17 +58,11 @@ public class Primer {
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
     }
-
-    /**
-     Force the SDK to clear all dependencies
-     
-     - Author:
-     Primer
-     - Version:
-     1.2.2
-     */
-    public func clearDependencies() {
-        DependencyContainer.clear()
+    
+    public func setSettings(settings: PrimerSettings) {
+        self.setDependencies(settings: settings)
+//        DependencyContainer.register(settings as PrimerSettingsProtocol)
+//        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
     }
 
     /**
