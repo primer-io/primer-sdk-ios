@@ -14,9 +14,16 @@ struct Dependency<T> {
     }
 }
 
+// swiftlint:disable identifier_name
+private let _DependencyContainer = DependencyContainer()
+// swiftlint:enable identifier_name
+
 final class DependencyContainer {
     private var dependencies = [String: AnyObject]()
-    private static var shared = DependencyContainer()
+
+    static var shared: DependencyContainer {
+        return _DependencyContainer
+    }
 
     static func register<T>(_ dependency: T) {
         shared.register(dependency)
@@ -24,10 +31,6 @@ final class DependencyContainer {
 
     static func resolve<T>() -> T {
         shared.resolve()
-    }
-
-    static func clear() {
-        shared.clear()
     }
 
     private func register<T>(_ dependency: T) {
@@ -47,7 +50,4 @@ final class DependencyContainer {
         return dependency!
     }
 
-    private func clear() {
-        dependencies = [String: AnyObject]()
-    }
 }
