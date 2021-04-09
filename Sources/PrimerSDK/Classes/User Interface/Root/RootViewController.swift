@@ -15,12 +15,12 @@ class RootViewController: UIViewController {
     @Dependency private(set) var settings: PrimerSettingsProtocol
     @Dependency private(set) var theme: PrimerThemeProtocol
 
-    weak var transitionDelegate = TransitionDelegate()
+    weak var transitionDelegate: TransitionDelegate?
 
     lazy var backdropView: UIView = UIView()
 
     let mainView = UIView()
-
+    
     var routes: [UIViewController] = []
     var heights: [CGFloat] = []
 
@@ -35,7 +35,7 @@ class RootViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         if !settings.isFullScreenOnly {
             self.modalPresentationStyle = .custom
-            self.transitioningDelegate = transitionDelegate
+            self.transitioningDelegate = self
         }
     }
 
@@ -49,27 +49,15 @@ class RootViewController: UIViewController {
     override func viewDidLoad() {
 
         mainView.backgroundColor = theme.colorTheme.main1
-
-        if settings.isFullScreenOnly {
-
-        } else {
-            self.modalPresentationStyle = .custom
-            self.transitioningDelegate = transitionDelegate
-        }
-
         view.addSubview(backdropView)
         backdropView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mainView)
         backdropView.pin(to: view)
 
-//        mainView.layer.cornerRadius = 10
         if #available(iOS 13.0, *) {
             mainView.clipsToBounds = true
-            mainView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            mainView.layer.maskedCorners = [.layerMinXMinYCorner,.layerMaxXMinYCorner]
             mainView.layer.cornerRadius = theme.cornerRadiusTheme.sheetView
-        } else {
-            // Fallback on earlier versions
-            view.backgroundColor = theme.colorTheme.main1
         }
 
         mainView.translatesAutoresizingMaskIntoConstraints = false
@@ -77,7 +65,6 @@ class RootViewController: UIViewController {
         bottomConstraint = mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomConstraint?.isActive = true
         heightConstraint?.isActive = true
-
         if settings.isFullScreenOnly {
             topConstraint = mainView.topAnchor.constraint(equalTo: view.topAnchor)
             topConstraint?.isActive = true
@@ -86,12 +73,21 @@ class RootViewController: UIViewController {
             heightConstraint?.isActive = true
             self.modalPresentationStyle = .custom
             self.transitioningDelegate = transitionDelegate
-            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
+            let panGesture = UIPanGestureRecognizer(
+                target: self,
+                action: #selector(panGestureRecognizerAction)
+            )
             mainView.addGestureRecognizer(panGesture)
         }
 
-        let router: RouterDelegate = DependencyContainer.resolve()
+        bindFirstFlowView()
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        backdropView.addGestureRecognizer(tapGesture)
+        addKeyboardObservers()
+    }
 
+    private func bindFirstFlowView() {
+        let router: RouterDelegate = DependencyContainer.resolve()
         switch Primer.flow {
         case .completeDirectCheckout:
             router.show(.vaultCheckout)
@@ -102,20 +98,26 @@ class RootViewController: UIViewController {
         case .addPayPalToVault:
             router.show(.oAuth(host: .paypal))
         case .addDirectDebit:
-            router.show(.form(type: .iban(mandate: state.directDebitMandate, popOnComplete: true), closeOnSubmit: false))
+            router.show(
+                .form(
+                    type: .iban(mandate: state.directDebitMandate, popOnComplete: true),
+                    closeOnSubmit: false)
+            )
         case .checkoutWithKlarna:
             router.show(.oAuth(host: .klarna))
         case .addDirectDebitToVault:
-            router.show(.form(type: .iban(mandate: state.directDebitMandate, popOnComplete: true), closeOnSubmit: false))
+            router.show(
+                .form(
+                    type: .iban(mandate: state.directDebitMandate, popOnComplete: true),
+                    closeOnSubmit: false)
+            )
         case .addKlarnaToVault:
             router.show(.oAuth(host: .klarna))
         case .defaultWithVault:
             router.show(.vaultCheckout)
         }
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        backdropView.addGestureRecognizer(tapGesture)
-
+    }
+    private func addKeyboardObservers() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillShow2),
@@ -129,7 +131,6 @@ class RootViewController: UIViewController {
             object: nil
         )
     }
-
     @objc func keyboardWillShow2(notification: NSNotification) {
         if let keyboardSize = (
             notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
@@ -137,19 +138,15 @@ class RootViewController: UIViewController {
             let newConstant = -keyboardSize.height
             let duration = bottomConstraint!.constant.distance(to: newConstant) < 100 ? 0.0 : 0.5
             bottomConstraint!.constant = newConstant
-
-            // adjust top anchor if height extends beyond screen
             if currentHeight + keyboardSize.height > UIScreen.main.bounds.height - 40 {
                 currentHeight = UIScreen.main.bounds.height - (40 + keyboardSize.height)
                 heightConstraint?.constant = UIScreen.main.bounds.height - (40 + keyboardSize.height)
             }
-
             UIView.animate(withDuration: duration) {
                 self.view.layoutIfNeeded()
             }
         }
     }
-
     @objc func keyboardWillHide2(notification: NSNotification) {
         if let keyboardSize = (
             notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
@@ -160,11 +157,9 @@ class RootViewController: UIViewController {
             }
         }
     }
-
     override func viewWillDisappear(_ animated: Bool) {
         settings.onCheckoutDismiss()
     }
-
     @objc func handleTap(_ sender: UITapGestureRecognizer) {
         dismiss(animated: true, completion: nil)
     }
@@ -197,12 +192,17 @@ class RootViewController: UIViewController {
             }
         }
     }
-
 }
 
 extension Optional where Wrapped == NSLayoutConstraint {
     mutating func setFullScreen() {
         self?.constant = UIScreen.main.bounds.height - 40
+    }
+}
+
+extension RootViewController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        PresentationController(presentedViewController: presented, presenting: presenting)
     }
 }
 
