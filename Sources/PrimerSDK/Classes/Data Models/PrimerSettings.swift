@@ -74,10 +74,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         return Primer.shared.delegate?.onCheckoutDismissed ?? {}
     }
     
-    deinit {
-        print("**********\n**********\n**********\n")
-        print("")
-    }
+    deinit {}
 
     public init(
         amount: Int? = nil,
