@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="ORN-tn-RVh">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -25,6 +24,195 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="-191" y="133"/>
+        </scene>
+        <!--App View Controller-->
+        <scene sceneID="8CA-lH-fba">
+            <objects>
+                <viewController id="Hsc-Wl-Q65" customClass="AppViewController" customModule="PrimerSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Hc4-ia-dRw"/>
+                        <viewControllerLayoutGuide type="bottom" id="MWG-lh-a11"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="P7R-MC-LKq">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
+                                <rect key="frame" x="118.5" y="318.5" width="138" height="30"/>
+                                <state key="normal" title="Initialize Primer SDK"/>
+                                <connections>
+                                    <segue destination="rv5-RJ-1cA" kind="show" id="lRu-Go-hvr"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerY" secondItem="P7R-MC-LKq" secondAttribute="centerY" id="A4C-4q-2Y2"/>
+                            <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerX" secondItem="P7R-MC-LKq" secondAttribute="centerX" id="uIm-xc-nvN"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="kYZ-5n-R2a"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="AfA-pm-mcm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1703.2" y="132.68365817091455"/>
+        </scene>
+        <!--Merchant Checkout View Controller-->
+        <scene sceneID="Hnl-Pi-aw2">
+            <objects>
+                <viewController storyboardIdentifier="MerchantCheckoutViewController" id="rv5-RJ-1cA" customClass="MerchantCheckoutViewController" customModule="PrimerSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ih5-6I-Tgq"/>
+                        <viewControllerLayoutGuide type="bottom" id="Y9U-da-1f0"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="1AU-v5-4lz">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="5Bg-Yz-vOr">
+                                <rect key="frame" x="0.0" y="64" width="375" height="315"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="PaymentMethodCell" rowHeight="40" id="hfT-yD-Z4D" customClass="PaymentMethodCell" customModule="PrimerSDK_Example" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="40"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hfT-yD-Z4D" id="vfo-wa-jVh">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fMG-7w-kbM">
+                                                    <rect key="frame" x="20" y="10" width="28" height="20"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="28" id="Qta-qB-mCY"/>
+                                                        <constraint firstAttribute="height" constant="20" id="bAT-Fk-z3Z"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JNC-tf-ocd">
+                                                    <rect key="frame" x="58" y="10" width="297" height="20.5"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="JNC-tf-ocd" firstAttribute="centerY" secondItem="fMG-7w-kbM" secondAttribute="centerY" id="48L-9f-70m"/>
+                                                <constraint firstItem="JNC-tf-ocd" firstAttribute="leading" secondItem="fMG-7w-kbM" secondAttribute="trailing" constant="10" id="Hwy-ge-hNX"/>
+                                                <constraint firstAttribute="trailing" secondItem="JNC-tf-ocd" secondAttribute="trailing" constant="20" id="ILt-qA-zaB"/>
+                                                <constraint firstAttribute="bottom" secondItem="fMG-7w-kbM" secondAttribute="bottom" constant="10" id="OhE-yv-ixk"/>
+                                                <constraint firstItem="fMG-7w-kbM" firstAttribute="top" secondItem="vfo-wa-jVh" secondAttribute="top" constant="10" id="Tlz-ci-eqA"/>
+                                                <constraint firstItem="fMG-7w-kbM" firstAttribute="leading" secondItem="vfo-wa-jVh" secondAttribute="leading" constant="20" id="siI-E2-9rD"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="paymentMethodImageView" destination="fMG-7w-kbM" id="hPC-MD-AhZ"/>
+                                            <outlet property="paymentMethodTitleLabel" destination="JNC-tf-ocd" id="P5K-Dl-eSS"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="rv5-RJ-1cA" id="ya1-2V-egY"/>
+                                    <outlet property="delegate" destination="rv5-RJ-1cA" id="2rD-Pr-okV"/>
+                                </connections>
+                            </tableView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Fpg-xO-ASt">
+                                <rect key="frame" x="36" y="399" width="303" height="248"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a9R-Y4-8Wy">
+                                        <rect key="frame" x="0.0" y="0.0" width="303" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="bCg-Mf-iQH"/>
+                                        </constraints>
+                                        <state key="normal" title="Add Card"/>
+                                        <connections>
+                                            <action selector="addCardButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="1Rq-07-l4q"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c4R-g7-act">
+                                        <rect key="frame" x="0.0" y="52" width="303" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="88i-4F-9qJ"/>
+                                        </constraints>
+                                        <state key="normal" title="Add PayPal"/>
+                                        <connections>
+                                            <action selector="addPayPalButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="M1v-pc-iTK"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xhR-QE-h6v">
+                                        <rect key="frame" x="0.0" y="104" width="303" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="9OY-3P-D9G"/>
+                                        </constraints>
+                                        <state key="normal" title="Add Klarna"/>
+                                        <connections>
+                                            <action selector="addKlarnaButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="Bw5-Zu-mYy"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kGA-CG-n4Z">
+                                        <rect key="frame" x="0.0" y="156" width="303" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="QZ3-J2-zch"/>
+                                        </constraints>
+                                        <state key="normal" title="Add Direct Debit"/>
+                                        <connections>
+                                            <action selector="addDirectDebitButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="WuM-xL-jOz"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pnm-Mo-3XH">
+                                        <rect key="frame" x="0.0" y="208" width="303" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="9Ss-wu-T5y"/>
+                                        </constraints>
+                                        <state key="normal" title="Open Wallet"/>
+                                        <connections>
+                                            <action selector="openWalletButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="elO-qq-DSN"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="leading" secondItem="1AU-v5-4lz" secondAttribute="leading" id="5sw-ep-7bL"/>
+                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="leading" secondItem="1AU-v5-4lz" secondAttribute="leadingMargin" constant="20" id="7ft-US-D2G"/>
+                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="top" secondItem="5Bg-Yz-vOr" secondAttribute="bottom" constant="20" id="9iO-nh-s03"/>
+                            <constraint firstItem="Y9U-da-1f0" firstAttribute="top" secondItem="Fpg-xO-ASt" secondAttribute="bottom" constant="20" id="J3Q-UE-2ox"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Fpg-xO-ASt" secondAttribute="trailing" constant="20" id="Zwa-lM-9Fh"/>
+                            <constraint firstAttribute="trailing" secondItem="5Bg-Yz-vOr" secondAttribute="trailing" id="fsd-nq-idO"/>
+                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="top" secondItem="Ih5-6I-Tgq" secondAttribute="bottom" constant="20" id="zJI-wZ-1q5"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="0lO-Kc-k9w"/>
+                    <connections>
+                        <outlet property="tableView" destination="5Bg-Yz-vOr" id="BdS-K3-eOb"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IiI-j4-1kq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2688.8000000000002" y="132.68365817091455"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="k2f-Pv-jbT">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ORN-tn-RVh" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="M8m-le-4rJ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Hsc-Wl-Q65" kind="relationship" relationship="rootViewController" id="2rP-Z2-ExU"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="yp9-KC-hhD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="764" y="132.68365817091455"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>
