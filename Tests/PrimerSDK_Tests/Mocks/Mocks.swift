@@ -232,6 +232,10 @@ class MockRouter: RouterDelegate {
 }
 
 class MockFormViewModel: FormViewModelProtocol {
+    func loadConfig(_ completion: @escaping (Error?) -> Void) {
+        
+    }
+    
     var popOnComplete: Bool = false
 
     func getSubmitButtonTitle(formType: FormType) -> String {

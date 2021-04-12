@@ -32,6 +32,12 @@ class FormViewController: UIViewController {
         subview.pin(to: view)
         subview.render()
         view.layoutIfNeeded()
+        
+        viewModel.loadConfig({ [weak self] _ in
+            DispatchQueue.main.async {
+
+            }
+        })
     }
 
     deinit {

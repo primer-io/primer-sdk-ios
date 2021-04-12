@@ -9,6 +9,7 @@
 import Foundation
 
 protocol FormViewModelProtocol {
+    func loadConfig(_ completion: @escaping (Error?) -> Void)
     var popOnComplete: Bool { get }
     var mandate: DirectDebitMandate { get }
     func getSubmitButtonTitle(formType: FormType) -> String
@@ -24,12 +25,23 @@ protocol FormViewModelProtocol {
 class FormViewModel: FormViewModelProtocol {
 
     @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
     @Dependency private(set) var router: RouterDelegate
     @Dependency private(set) var theme: PrimerThemeProtocol
 
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    }
+    
+    func loadConfig(_ completion: @escaping (Error?) -> Void) {
+//        if state.decodedClientToken.exists {
+//            paymentMethodConfigService.fetchConfig({ [weak self] _ in
+//                self?.vaultService.loadVaultedPaymentMethods(completion)
+//            })
+//        } else {
+        clientTokenService.loadCheckoutConfig(completion)
+//        }
     }
 
     var popOnComplete: Bool {
