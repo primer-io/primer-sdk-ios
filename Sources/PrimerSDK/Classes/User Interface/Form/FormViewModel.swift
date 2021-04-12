@@ -29,19 +29,24 @@ class FormViewModel: FormViewModelProtocol {
     @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
     @Dependency private(set) var router: RouterDelegate
     @Dependency private(set) var theme: PrimerThemeProtocol
+    @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
 
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
     
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
-//        if state.decodedClientToken.exists {
-//            paymentMethodConfigService.fetchConfig({ [weak self] _ in
-//                self?.vaultService.loadVaultedPaymentMethods(completion)
-//            })
-//        } else {
-        clientTokenService.loadCheckoutConfig(completion)
-//        }
+        if state.decodedClientToken.exists {
+            paymentMethodConfigService.fetchConfig(completion)
+        } else {
+            clientTokenService.loadCheckoutConfig { (err) in
+                if let err = err {
+                    completion(err)
+                } else {
+                    self.paymentMethodConfigService.fetchConfig(completion)
+                }
+            }
+        }
     }
 
     var popOnComplete: Bool {
