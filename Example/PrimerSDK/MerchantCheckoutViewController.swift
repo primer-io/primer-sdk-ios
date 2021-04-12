@@ -25,8 +25,8 @@ class MerchantCheckoutViewController: UIViewController {
         title = "Primer"
         
         Primer.shared.delegate = self
-//        fetchPaymentMethods()
         configurePrimer()
+        fetchPaymentMethods()
     }
     
     func configurePrimer() {
@@ -36,8 +36,6 @@ class MerchantCheckoutViewController: UIViewController {
             amount: finalAmount,
             currency: .SEK,
             countryCode: .se,
-            urlScheme: "https://primer.io/success",
-            urlSchemeIdentifier: "primer",
             isFullScreenOnly: true,
             businessDetails: businessDetails,
             orderItems: items
@@ -46,7 +44,7 @@ class MerchantCheckoutViewController: UIViewController {
         
         let theme = generatePrimerTheme()
         Primer.shared.setTheme(theme: theme)
-        
+
         Primer.shared.setDirectDebitDetails(
             firstName: "John",
             lastName: "Doe",
@@ -61,18 +59,12 @@ class MerchantCheckoutViewController: UIViewController {
                 postalCode: "75001"
             )
         )
-        
-        Primer.shared.setFormTopTitle("Test", for: .bankAccount)
     }
 
     // MARK: - ACTIONS
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
-    }
-    
-    @IBAction func addPayPalButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .addPayPalToVault)
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
