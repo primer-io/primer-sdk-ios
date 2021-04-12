@@ -8,13 +8,14 @@ private let _Primer = Primer()
 
 public class Primer {
     
+    // MARK: - PROPERTIES
+    
     public weak var delegate: PrimerDelegate?
-
     private(set) var flow: PrimerSessionFlow = .completeDirectCheckout
     private var root: RootViewController?
-    
+
     // MARK: - INITIALIZATION
-    
+
     public static var shared: Primer {
         return _Primer
     }
@@ -58,48 +59,76 @@ public class Primer {
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
     }
-    
-    public func setSettings(settings: PrimerSettings) {
-        self.setDependencies(settings: settings)
-//        DependencyContainer.register(settings as PrimerSettingsProtocol)
-//        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
-    }
+
+    // MARK: - CONFIGURATION
 
     /**
-     Refresh theme after SDK initialization
+     Set the Primer's SDK settings
      
      - Author:
      Primer
      - Version:
-     1.2.2
+     1.4.0
+     */
+    public func setSettings(settings: PrimerSettings) {
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
+
+//        let currentSettingsProtocol: PrimerSettingsProtocol = DependencyContainer.resolve()
+//        let currentSettings = currentSettingsProtocol as! PrimerSettings
+//        currentSettings.amount = settings.amount
+//        currentSettings.currency = settings.currency
+//        currentSettings.merchantIdentifier = settings.merchantIdentifier
+//        currentSettings.countryCode = settings.countryCode
+//        currentSettings.applePayEnabled = settings.applePayEnabled
+//        currentSettings.customerId = settings.customerId
+//        currentSettings.theme = settings.theme
+//        currentSettings.urlScheme = settings.urlScheme
+//        currentSettings.urlSchemeIdentifier = settings.urlSchemeIdentifier
+//        currentSettings.isFullScreenOnly = settings.isFullScreenOnly
+//        currentSettings.hasDisabledSuccessScreen = settings.hasDisabledSuccessScreen
+//        currentSettings.businessDetails = settings.businessDetails
+//        currentSettings.directDebitHasNoAmount = settings.directDebitHasNoAmount
+//        currentSettings.orderItems = settings.orderItems
+    }
+
+    /**
+     Set the Primer's SDK theme
+     
+     - Author:
+     Primer
+     - Version:
+     1.4.0
      */
     public func setTheme(theme: PrimerTheme) {
         DependencyContainer.register(theme as PrimerThemeProtocol)
     }
 
     /**
-     Set top title on direct debit form
+     Set form's top title
      
      - Author:
      Primer
      - Version:
-     1.2.2
+     1.4.0
      */
     public func setFormTopTitle(_ text: String, for formType: PrimerFormType) {
-        var theme: PrimerTheme = DependencyContainer.resolve()
+        let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
+        var theme = themeProtocol as! PrimerTheme
         theme.content.formTopTitles.setTopTitle(text, for: formType)
     }
 
     /**
-     Set main title on direct debit form
+     Set form's main title
      
      - Author:
      Primer
      - Version:
-     1.2.2
+     1.4.0
      */
     public func setFormMainTitle(_ text: String, for formType: PrimerFormType) {
-        var theme: PrimerTheme = DependencyContainer.resolve()
+        let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
+        var theme = themeProtocol as! PrimerTheme
         theme.content.formMainTitles.setMainTitle(text, for: formType)
     }
 
@@ -109,7 +138,7 @@ public class Primer {
      - Author:
      Primer
      - Version:
-     1.2.2
+     1.4.0
      */
     public func setDirectDebitDetails(
         firstName: String,
@@ -132,7 +161,7 @@ public class Primer {
      - Author:
      Primer
      - Version:
-     1.2.2
+     1.4.0
      */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
         root = RootViewController()
@@ -149,7 +178,7 @@ public class Primer {
      - Author:
      Primer
      - Version:
-     1.2.2
+     1.4.0
      */
     public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
         let externalViewModel: ExternalViewModelProtocol = DependencyContainer.resolve()

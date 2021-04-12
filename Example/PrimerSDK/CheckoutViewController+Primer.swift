@@ -35,6 +35,7 @@ extension CheckoutViewController {
 
         Primer.shared.setSettings(settings: settings)
         Primer.shared.setTheme(theme: theme)
+        Primer.shared.setFormTopTitle("Test", for: .bankAccount)
     }
     
     private func generatePrimerTheme() -> PrimerTheme {

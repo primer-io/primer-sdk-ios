@@ -47,20 +47,20 @@ protocol PrimerSettingsProtocol {
  */
 
 public class PrimerSettings: PrimerSettingsProtocol {
-    public let amount: Int?
-    public let currency: Currency?
-    public let merchantIdentifier: String?
-    public let countryCode: CountryCode?
-    public let applePayEnabled: Bool
-    public let customerId: String?
-    public let theme: PrimerTheme
-    public let urlScheme: String?
-    public let urlSchemeIdentifier: String?
-    public let isFullScreenOnly: Bool
-    public let hasDisabledSuccessScreen: Bool
-    public let businessDetails: BusinessDetails?
-    public let directDebitHasNoAmount: Bool
-    public let orderItems: [OrderItem]
+    internal(set) public var amount: Int?
+    internal(set) public var currency: Currency?
+    internal(set) public var merchantIdentifier: String?
+    internal(set) public var countryCode: CountryCode?
+    internal(set) public var applePayEnabled: Bool
+    internal(set) public var customerId: String?
+    internal(set) public var theme: PrimerTheme
+    internal(set) public var urlScheme: String?
+    internal(set) public var urlSchemeIdentifier: String?
+    internal(set) public var isFullScreenOnly: Bool
+    internal(set) public var hasDisabledSuccessScreen: Bool
+    internal(set) public var businessDetails: BusinessDetails?
+    internal(set) public var directDebitHasNoAmount: Bool
+    internal(set) public var orderItems: [OrderItem]
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
