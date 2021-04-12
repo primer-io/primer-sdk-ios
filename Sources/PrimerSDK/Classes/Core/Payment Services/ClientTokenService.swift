@@ -14,7 +14,8 @@ class ClientTokenService: ClientTokenServiceProtocol {
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
         state.settings.clientTokenRequestCallback({ [weak self] result in
             switch result {
-            case .failure: completion(PrimerError.clientTokenNull)
+            case .failure:
+                completion(PrimerError.clientTokenNull)
             case .success(let token):
                 guard let clientToken = token.clientToken else { return completion(PrimerError.clientTokenNull) }
                 self?.state.decodedClientToken = clientToken.decodeClientTokenBase64()
