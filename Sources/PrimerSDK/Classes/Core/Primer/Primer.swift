@@ -71,25 +71,25 @@ public class Primer {
      1.4.0
      */
     public func setSettings(settings: PrimerSettings) {
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
-        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
+//        DependencyContainer.register(settings as PrimerSettingsProtocol)
+//        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
 
-//        let currentSettingsProtocol: PrimerSettingsProtocol = DependencyContainer.resolve()
-//        let currentSettings = currentSettingsProtocol as! PrimerSettings
-//        currentSettings.amount = settings.amount
-//        currentSettings.currency = settings.currency
-//        currentSettings.merchantIdentifier = settings.merchantIdentifier
-//        currentSettings.countryCode = settings.countryCode
-//        currentSettings.applePayEnabled = settings.applePayEnabled
-//        currentSettings.customerId = settings.customerId
-//        currentSettings.theme = settings.theme
-//        currentSettings.urlScheme = settings.urlScheme
-//        currentSettings.urlSchemeIdentifier = settings.urlSchemeIdentifier
-//        currentSettings.isFullScreenOnly = settings.isFullScreenOnly
-//        currentSettings.hasDisabledSuccessScreen = settings.hasDisabledSuccessScreen
-//        currentSettings.businessDetails = settings.businessDetails
-//        currentSettings.directDebitHasNoAmount = settings.directDebitHasNoAmount
-//        currentSettings.orderItems = settings.orderItems
+        let currentSettingsProtocol: PrimerSettingsProtocol = DependencyContainer.resolve()
+        let currentSettings = currentSettingsProtocol as! PrimerSettings
+        currentSettings.amount = settings.amount
+        currentSettings.currency = settings.currency
+        currentSettings.merchantIdentifier = settings.merchantIdentifier
+        currentSettings.countryCode = settings.countryCode
+        currentSettings.applePayEnabled = settings.applePayEnabled
+        currentSettings.customerId = settings.customerId
+        currentSettings.theme = settings.theme
+        currentSettings.urlScheme = settings.urlScheme
+        currentSettings.urlSchemeIdentifier = settings.urlSchemeIdentifier
+        currentSettings.isFullScreenOnly = settings.isFullScreenOnly
+        currentSettings.hasDisabledSuccessScreen = settings.hasDisabledSuccessScreen
+        currentSettings.businessDetails = settings.businessDetails
+        currentSettings.directDebitHasNoAmount = settings.directDebitHasNoAmount
+        currentSettings.orderItems = settings.orderItems
     }
 
     /**
