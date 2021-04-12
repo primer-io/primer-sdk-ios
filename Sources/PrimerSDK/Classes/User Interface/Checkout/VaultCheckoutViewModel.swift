@@ -41,10 +41,10 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     var selectedPaymentMethodId: String { return state.selectedPaymentMethod }
 
+    @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var vaultService: VaultServiceProtocol
     @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    @Dependency private(set) var state: AppStateProtocol
 
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
