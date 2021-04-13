@@ -81,6 +81,7 @@ extension SuccessViewController {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         
+        message.accessibilityIdentifier = "success_screen_message_label"
         message.text = viewModel.getTitle(screenType)
         message.numberOfLines = 0
         message.textAlignment = .center
