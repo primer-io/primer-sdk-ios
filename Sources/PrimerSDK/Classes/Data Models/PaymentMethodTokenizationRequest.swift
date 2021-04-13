@@ -1,16 +1,18 @@
 #if canImport(UIKit)
 
 struct PaymentMethodTokenizationRequest: Encodable {
+    
     let paymentInstrument: PaymentInstrument
     let tokenType: TokenType?
     let paymentFlow: PaymentFlow?
     let customerId: String?
 
     init(paymentInstrument: PaymentInstrument, state: AppStateProtocol) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         self.paymentInstrument = paymentInstrument
         self.tokenType = Primer.shared.flow.vaulted ? .multiUse : .singleUse
         self.paymentFlow = Primer.shared.flow.vaulted ? .vault : nil
-        self.customerId = Primer.shared.flow.vaulted ? state.settings.customerId : nil
+        self.customerId = Primer.shared.flow.vaulted ? settings.customerId : nil
     }
 
 }

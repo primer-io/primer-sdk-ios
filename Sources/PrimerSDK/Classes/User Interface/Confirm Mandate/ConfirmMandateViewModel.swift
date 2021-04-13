@@ -28,17 +28,17 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
     }
 
     var businessDetails: BusinessDetails? {
-        return state.settings.businessDetails
+        return settings.businessDetails
     }
 
     var amount: String {
-        if state.settings.directDebitHasNoAmount { return "" }
+        if settings.directDebitHasNoAmount { return "" }
 
-        guard let amount = state.settings.amount else {
+        guard let amount = settings.amount else {
             return ""
         }
 
-        guard let currency = state.settings.currency else {
+        guard let currency = settings.currency else {
             return ""
         }
 
@@ -46,6 +46,7 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
     }
 
     @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
     @Dependency private(set) var directDebitService: DirectDebitServiceProtocol
     @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
     @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
@@ -81,7 +82,7 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
                 return completion(PrimerError.directDebitSessionFailed)
             }
 
-            guard let onTokenizeSuccess = self?.state.settings.onTokenizeSuccess else {
+            guard let onTokenizeSuccess = self?.settings.onTokenizeSuccess else {
                 return completion(PrimerError.directDebitSessionFailed)
             }
 

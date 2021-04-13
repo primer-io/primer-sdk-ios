@@ -15,7 +15,7 @@ protocol ApplePayViewModelProtocol {
 class ApplePayViewModel: ApplePayViewModelProtocol {
 
     var amount: Int? {
-        return state.settings.amount
+        return settings.amount
     }
     
     var applePayConfigId: String? {
@@ -23,11 +23,11 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
     }
 
     var currency: Currency? {
-        return state.settings.currency
+        return settings.currency
     }
     
-    var merchantIdentifier: String? { return state.settings.merchantIdentifier }
-    var countryCode: CountryCode? { return state.settings.countryCode }
+    var merchantIdentifier: String? { return settings.merchantIdentifier }
+    var countryCode: CountryCode? { return settings.countryCode }
     var uxMode: UXMode { return Primer.shared.flow.uxMode }
     var clientToken: DecodedClientToken? { return state.decodedClientToken }
 
@@ -35,6 +35,7 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
     @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
 
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
@@ -49,7 +50,7 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
                 completion(error)
             case .success(let token):
                 switch Primer.shared.flow {
-                case .completeDirectCheckout: self?.state.settings.onTokenizeSuccess(token, completion)
+                case .completeDirectCheckout: self?.settings.onTokenizeSuccess(token, completion)
                 default: completion(nil)
                 }
             }

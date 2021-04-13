@@ -11,7 +11,6 @@ protocol PrimerSettingsProtocol {
     var countryCode: CountryCode? { get }
     var applePayEnabled: Bool { get }
     var customerId: String? { get }
-    var theme: PrimerTheme { get }
     var clientTokenRequestCallback: ClientTokenCallBack { get }
     var onTokenizeSuccess: PaymentMethodTokenCallBack { get }
     var onCheckoutDismiss: CheckoutDismissalCallback { get }
@@ -53,7 +52,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var countryCode: CountryCode?
     internal(set) public var applePayEnabled: Bool
     internal(set) public var customerId: String?
-    internal(set) public var theme: PrimerTheme
     internal(set) public var urlScheme: String?
     internal(set) public var urlSchemeIdentifier: String?
     internal(set) public var isFullScreenOnly: Bool
@@ -79,7 +77,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
     public init(
         amount: Int? = nil,
         currency: Currency? = nil,
-        theme: PrimerTheme = PrimerTheme(),
         applePayEnabled: Bool = false,
         customerId: String? = nil,
         merchantIdentifier: String? = nil,
@@ -94,7 +91,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
     ) {
         self.amount = amount
         self.currency = currency
-        self.theme = theme
         self.applePayEnabled = applePayEnabled
         self.customerId = customerId
         self.merchantIdentifier = merchantIdentifier

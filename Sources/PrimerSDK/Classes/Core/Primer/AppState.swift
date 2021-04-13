@@ -8,7 +8,6 @@
 #if canImport(UIKit)
 
 protocol AppStateProtocol: class {
-    var settings: PrimerSettingsProtocol { get }
     var viewModels: [PaymentMethodViewModel] { get set }
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethod: String { get set }
@@ -30,8 +29,6 @@ protocol AppStateProtocol: class {
 }
 
 class AppState: AppStateProtocol {
-
-    @Dependency private(set) var settings: PrimerSettingsProtocol
 
     var viewModels: [PaymentMethodViewModel] = []
     var paymentMethods: [PaymentMethodToken] = []

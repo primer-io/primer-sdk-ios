@@ -168,6 +168,7 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
     }
 
     @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
 
     func getTitle(_ screenType: SuccessScreenType?) -> String {
         switch screenType {
@@ -190,7 +191,7 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
     func getConfirmationMessage(_ screenType: SuccessScreenType?) -> String {
         switch screenType {
         case .directDebit:
-            guard let name = state.settings.businessDetails?.name else { return "" }
+            guard let name = settings.businessDetails?.name else { return "" }
             return name + " " + NSLocalizedString("primer-success-screen-confirmation-message",
                                                   tableName: nil,
                                                   bundle: Bundle.primerFramework,

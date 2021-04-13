@@ -36,8 +36,8 @@ public class Primer {
      */
     internal func setDependencies(settings: PrimerSettings) {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
-        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
-        DependencyContainer.register(FormType.cardForm(theme: settings.theme) as FormType)
+        DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
+//        DependencyContainer.register(FormType.cardForm(theme: settings.theme) as FormType)
         DependencyContainer.register(Router() as RouterDelegate)
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
@@ -70,26 +70,37 @@ public class Primer {
      - Version:
      1.4.0
      */
-    public func setSettings(settings: PrimerSettings) {
+//    public func setSettings(settings: PrimerSettings) {
 //        DependencyContainer.register(settings as PrimerSettingsProtocol)
-//        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
-
-        let currentSettingsProtocol: PrimerSettingsProtocol = DependencyContainer.resolve()
-        let currentSettings = currentSettingsProtocol as! PrimerSettings
-        currentSettings.amount = settings.amount
-        currentSettings.currency = settings.currency
-        currentSettings.merchantIdentifier = settings.merchantIdentifier
-        currentSettings.countryCode = settings.countryCode
-        currentSettings.applePayEnabled = settings.applePayEnabled
-        currentSettings.customerId = settings.customerId
-        currentSettings.theme = settings.theme
-        currentSettings.urlScheme = settings.urlScheme
-        currentSettings.urlSchemeIdentifier = settings.urlSchemeIdentifier
-        currentSettings.isFullScreenOnly = settings.isFullScreenOnly
-        currentSettings.hasDisabledSuccessScreen = settings.hasDisabledSuccessScreen
-        currentSettings.businessDetails = settings.businessDetails
-        currentSettings.directDebitHasNoAmount = settings.directDebitHasNoAmount
-        currentSettings.orderItems = settings.orderItems
+////        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
+//
+////        let currentSettingsProtocol: PrimerSettingsProtocol = DependencyContainer.resolve()
+////        let currentSettings = currentSettingsProtocol as! PrimerSettings
+////        currentSettings.amount = settings.amount
+////        currentSettings.currency = settings.currency
+////        currentSettings.merchantIdentifier = settings.merchantIdentifier
+////        currentSettings.countryCode = settings.countryCode
+////        currentSettings.applePayEnabled = settings.applePayEnabled
+////        currentSettings.customerId = settings.customerId
+////        currentSettings.theme = settings.theme
+////        currentSettings.urlScheme = settings.urlScheme
+////        currentSettings.urlSchemeIdentifier = settings.urlSchemeIdentifier
+////        currentSettings.isFullScreenOnly = settings.isFullScreenOnly
+////        currentSettings.hasDisabledSuccessScreen = settings.hasDisabledSuccessScreen
+////        currentSettings.businessDetails = settings.businessDetails
+////        currentSettings.directDebitHasNoAmount = settings.directDebitHasNoAmount
+////        currentSettings.orderItems = settings.orderItems
+//    }
+    
+    public func configure(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
+        if let settings = settings {
+            DependencyContainer.register(DependencyContainer.register(settings as PrimerSettingsProtocol))
+        }
+        
+        if let theme = theme {
+            DependencyContainer.register(theme as PrimerThemeProtocol)
+            DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
+        }
     }
 
     /**
