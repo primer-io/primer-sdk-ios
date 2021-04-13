@@ -11,10 +11,6 @@ import UIKit
 
 class RootViewController: UIViewController {
 
-    @Dependency private(set) var state: AppStateProtocol
-    @Dependency private(set) var settings: PrimerSettingsProtocol
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     weak var transitionDelegate: TransitionDelegate?
 
     lazy var backdropView: UIView = UIView()
@@ -33,6 +29,8 @@ class RootViewController: UIViewController {
 
     init() {
         super.init(nibName: nil, bundle: nil)
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         if !settings.isFullScreenOnly {
             self.modalPresentationStyle = .custom
             self.transitioningDelegate = self
@@ -47,6 +45,8 @@ class RootViewController: UIViewController {
     }
 
     override func viewDidLoad() {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         mainView.backgroundColor = theme.colorTheme.main1
         view.addSubview(backdropView)
@@ -87,7 +87,10 @@ class RootViewController: UIViewController {
     }
 
     private func bindFirstFlowView() {
+        let state: AppStateProtocol = DependencyContainer.resolve()
         let router: RouterDelegate = DependencyContainer.resolve()
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         switch Primer.shared.flow {
         case .completeDirectCheckout:
             router.show(.vaultCheckout)
@@ -117,6 +120,7 @@ class RootViewController: UIViewController {
             router.show(.vaultCheckout)
         }
     }
+    
     private func addKeyboardObservers() {
         NotificationCenter.default.addObserver(
             self,
@@ -131,7 +135,9 @@ class RootViewController: UIViewController {
             object: nil
         )
     }
-    @objc func keyboardWillShow2(notification: NSNotification) {
+    
+    @objc
+    func keyboardWillShow2(notification: NSNotification) {
         if let keyboardSize = (
             notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
         )?.cgRectValue {
@@ -147,7 +153,9 @@ class RootViewController: UIViewController {
             }
         }
     }
-    @objc func keyboardWillHide2(notification: NSNotification) {
+    
+    @objc
+    func keyboardWillHide2(notification: NSNotification) {
         if let keyboardSize = (
             notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
         )?.cgRectValue {
@@ -157,14 +165,19 @@ class RootViewController: UIViewController {
             }
         }
     }
+    
     override func viewWillDisappear(_ animated: Bool) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.onCheckoutDismiss()
     }
-    @objc func handleTap(_ sender: UITapGestureRecognizer) {
+    
+    @objc
+    func handleTap(_ sender: UITapGestureRecognizer) {
         dismiss(animated: true, completion: nil)
     }
 
-    @objc func panGestureRecognizerAction(sender: UIPanGestureRecognizer) {
+    @objc
+    func panGestureRecognizerAction(sender: UIPanGestureRecognizer) {
         let translation = sender.translation(in: view)
 
         heightConstraint?.constant = currentHeight - translation.y

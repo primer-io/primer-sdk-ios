@@ -15,8 +15,6 @@ protocol ReactiveView: UIView {
 
 class VaultPaymentMethodView: UIView, ReactiveView {
 
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     let indicator = UIActivityIndicatorView()
     let navBar = UINavigationBar()
     let tableView = UITableView()
@@ -44,6 +42,8 @@ class VaultPaymentMethodView: UIView, ReactiveView {
 // MARK: Configuration
 extension VaultPaymentMethodView {
     private func configureNavBar() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         navBar.backgroundColor = theme.colorTheme.main1
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem()
@@ -68,6 +68,8 @@ extension VaultPaymentMethodView {
     @objc private func edit() { delegate?.edit() }
 
     private func configureTableView() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         tableView.delegate = delegate
         tableView.dataSource = delegate
         tableView.layer.cornerRadius = 8.0
