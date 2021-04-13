@@ -71,5 +71,17 @@ class Base: XCTestCase {
         app.tables.buttons.containing(.staticText, identifier:"•••• 1111").firstMatch.tap()
         app.alerts["Confirmation"].scrollViews.otherElements.buttons["Delete"].tap()
     }
+    
+    func testInitKlarna() throws {
+        try testPresentWallet()
+        
+        app/*@START_MENU_TOKEN@*/.buttons["add_klarna_button"]/*[[".buttons[\"Add Klarna\"]",".buttons[\"add_klarna_button\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        
+        let klarnaBuyButton = app.webViews.webViews.webViews/*@START_MENU_TOKEN@*/.buttons["Buy"]/*[[".otherElements.matching(identifier: \"Complete your purchase\").buttons[\"Buy\"]",".buttons[\"Buy\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        let exists = NSPredicate(format: "exists == 1")
+        
+        expectation(for: exists, evaluatedWith: klarnaBuyButton, handler: nil)
+        waitForExpectations(timeout: 10, handler: nil)
+    }
 
 }

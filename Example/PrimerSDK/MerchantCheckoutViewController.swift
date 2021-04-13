@@ -26,7 +26,7 @@ class MerchantCheckoutViewController: UIViewController {
         
         Primer.shared.delegate = self
         configurePrimer()
-        fetchPaymentMethods()
+//        fetchPaymentMethods()
     }
     
     func configurePrimer() {
