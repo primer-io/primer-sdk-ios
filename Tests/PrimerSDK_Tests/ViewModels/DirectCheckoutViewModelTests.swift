@@ -13,7 +13,7 @@ import XCTest
 class DirectCheckoutViewModelTests: XCTestCase {
 
     override func tearDown() {
-        DependencyContainer.clear()
+//        Dependency Container.clear()
     }
 
     func test_loadCheckoutConfig_calls_clientTokenService_if_client_token_nil() throws {

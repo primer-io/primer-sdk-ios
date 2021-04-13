@@ -12,11 +12,14 @@ protocol DirectDebitServiceProtocol {
 }
 
 class DirectDebitService: DirectDebitServiceProtocol {
-
-    @Dependency private(set) var api: PrimerAPIClientProtocol
-    @Dependency private(set) var state: AppStateProtocol
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 
     func createMandate(_ completion: @escaping (Error?) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         guard let clientToken = state.decodedClientToken else {
             return completion(PrimerError.directDebitSessionFailed)
         }
@@ -45,13 +48,15 @@ class DirectDebitService: DirectDebitServiceProtocol {
                 accountNumber: mandate.accountNumber
             )
         )
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
         api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { [weak self] result in
             switch result {
             case .failure:
                 completion(PrimerError.directDebitSessionFailed)
             case .success(let response):
-                self?.state.mandateId = response.mandateId
+                state.mandateId = response.mandateId
                 completion(nil)
             }
         }

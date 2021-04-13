@@ -27,6 +27,8 @@ class ApplePayViewModelTests: XCTestCase {
     }
 
     func test_tokenize_calls_tokenizationService_passes_error() throws {
+        let expectation = XCTestExpectation(description: "Tokenization | Error")
+        
         let tokenizationService = MockTokenizationService()
         let paymentInstrument = PaymentInstrument()
 
@@ -35,9 +37,12 @@ class ApplePayViewModelTests: XCTestCase {
 
         let viewModel = ApplePayViewModel()
 
-        viewModel.tokenize(instrument: paymentInstrument) { _ in }
+        viewModel.tokenize(instrument: paymentInstrument) { _ in
+            XCTAssertEqual(tokenizationService.tokenizeCalled, true)
+            expectation.fulfill()
+        }
 
-        XCTAssertEqual(tokenizationService.tokenizeCalled, true)
+        wait(for: [expectation], timeout: 10)
     }
 }
 

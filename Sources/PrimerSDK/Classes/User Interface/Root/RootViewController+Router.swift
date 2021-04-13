@@ -20,6 +20,10 @@ protocol RouterDelegate: class {
 class Router: RouterDelegate {
 
     weak var root: RootViewController?
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 
     func setRoot(_ root: RootViewController) {
         self.root = root
@@ -30,8 +34,9 @@ class Router: RouterDelegate {
         guard let vc = route.viewController else { return }
 
         if vc is SuccessViewController {
-
-            if root.settings.hasDisabledSuccessScreen {
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            if settings.hasDisabledSuccessScreen {
                 return root.dismiss(animated: true, completion: nil)
             }
 
@@ -59,11 +64,13 @@ class Router: RouterDelegate {
 
 fileprivate extension RootViewController {
     func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5) {
-
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         UIView.animate(withDuration: 0.25, animations: {[weak self] in
             guard let strongSelf = self else { return }
 
-            if strongSelf.settings.isFullScreenOnly {
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            if settings.isFullScreenOnly {
 //                strongSelf.view.layoutIfNeeded()
             } else {
                 strongSelf.heightConstraint?.constant = height
@@ -130,7 +137,9 @@ fileprivate extension RootViewController {
         // animate to previous height
         UIView.animate(withDuration: 0.25, animations: {[weak self] in
             guard let strongSelf = self else { return }
-            if strongSelf.settings.isFullScreenOnly {
+            
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            if settings.isFullScreenOnly {
                 strongSelf.heightConstraint.setFullScreen()
                 strongSelf.view.layoutIfNeeded()
             } else {

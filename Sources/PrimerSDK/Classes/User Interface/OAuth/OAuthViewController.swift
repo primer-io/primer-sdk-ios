@@ -8,10 +8,6 @@ import WebKit
 @available(iOS 11.0, *)
 class OAuthViewController: UIViewController {
 
-    @Dependency private(set) var viewModel: OAuthViewModelProtocol
-    @Dependency private(set) var theme: PrimerThemeProtocol
-    @Dependency private(set) var router: RouterDelegate
-
     let indicator = UIActivityIndicatorView()
     var session: Any?
     var host: OAuthHost
@@ -31,6 +27,8 @@ class OAuthViewController: UIViewController {
 
     override func viewDidLoad() {
         view.addSubview(indicator)
+        
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         indicator.color = theme.colorTheme.disabled1
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
@@ -39,6 +37,7 @@ class OAuthViewController: UIViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
+        let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.generateOAuthURL(host, with: { [weak self] result in
             switch result {
             case .failure(let error):
@@ -84,11 +83,13 @@ class OAuthViewController: UIViewController {
                     if let error = error {
                         _ = ErrorHandler.shared.handle(error: error)
                     }
+                    
+                    let router: RouterDelegate = DependencyContainer.resolve()
 
                     if (error is PrimerError) {
-                        self?.router.show(.error())
+                        router.show(.error())
                     } else if (error.exists) {
-                        self?.router.pop()
+                        router.pop()
                     } else {
                         self?.onOAuthCompleted(callbackURL: url)
                     }
@@ -103,13 +104,19 @@ class OAuthViewController: UIViewController {
         } else {
             var session: SFAuthenticationSession?
 
-            guard let authURL = URL(string: urlString) else { router.show(.error()); return }
+            guard let authURL = URL(string: urlString) else {
+                let router: RouterDelegate = DependencyContainer.resolve()
+                router.show(.error())
+                return
+            }
 
+            let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
             session = SFAuthenticationSession(
                 url: authURL,
                 callbackURLScheme: viewModel.urlSchemeIdentifier,
                 completionHandler: { [weak self] (url, error) in
-                    error.exists ? self?.router.show(.error()) : self?.onOAuthCompleted(callbackURL: url)
+                    let router: RouterDelegate = DependencyContainer.resolve()
+                    error.exists ? router.show(.error()) : self?.onOAuthCompleted(callbackURL: url)
                 }
             )
 
@@ -118,9 +125,12 @@ class OAuthViewController: UIViewController {
     }
 
     private func onOAuthCompleted(callbackURL: URL?) {
+        let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
+        
         viewModel.tokenize(host, with: { [weak self] error in
             DispatchQueue.main.async {
-                error.exists ? self?.router.show(.error()) : self?.router.show(.success(type: .regular))
+                let router: RouterDelegate = DependencyContainer.resolve()
+                error.exists ? router.show(.error()) : router.show(.success(type: .regular))
             }
         })
     }
@@ -138,17 +148,17 @@ extension OAuthViewController: ASWebAuthenticationPresentationContextProviding {
 @available(iOS 11.0, *)
 extension OAuthViewController: ReloadDelegate {
     func reload() {
+        let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.tokenize(host, with: { [weak self] error in
             DispatchQueue.main.async {
-                error.exists ? self?.router.show(.error()) : self?.router.show(.success(type: .regular))
+                let router: RouterDelegate = DependencyContainer.resolve()
+                error.exists ? router.show(.error()) : router.show(.success(type: .regular))
             }
         })
     }
 }
 
 class WebViewController: UIViewController, WKNavigationDelegate {
-
-    @Dependency private(set) var state: AppStateProtocol
 
     weak var delegate: ReloadDelegate?
 
@@ -189,6 +199,8 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             let val = queryValue(for: "token", of: url)
 
             log(logLevel: .info, message: "🚀🚀 \(url)")
+            
+            let state: AppStateProtocol = DependencyContainer.resolve()
 
             state.authorizationToken = val
 

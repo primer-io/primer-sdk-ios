@@ -171,37 +171,9 @@ class URLSessionStack: NetworkService {
 
 extension URLSessionStack {
     private func url(for endpoint: Endpoint) -> URL? {
-        
         guard let urlStr = endpoint.baseURL else { return nil }
-        
         guard let baseUrl = URL(string: urlStr) else { return nil }
-        
         return baseUrl.appendingPathComponent(endpoint.path)
-
-//        var urlComponents = URLComponents()
-//        urlComponents.scheme = endpoint.sc
-//
-//        let host = endpoint.baseURL
-//        if endpoint.baseURL.starts(with: "https://") {
-//            urlComponents.scheme = "https"
-//            urlComponents.host = String(host.dropFirst(8))
-//        } else {
-//            urlComponents.scheme = "http"
-//            urlComponents.host = String(host.dropFirst(7))
-//        }
-//
-//        urlComponents.path = endpoint.path
-////        urlComponents.scheme = endpoint.scheme
-////        urlComponents.host = endpoint.baseURL
-////        urlComponents.port = endpoint.port
-//
-//        if let queryItems = endpoint.queryParameters {
-//            urlComponents.queryItems = queryItems.map({ URLQueryItem(name: $0, value: $1) })
-//        }
-//
-//        print(urlComponents.url)
-//
-//        return urlComponents.url!
     }
 }
 

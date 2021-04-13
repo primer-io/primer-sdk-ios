@@ -8,27 +8,32 @@ protocol VaultServiceProtocol {
 }
 
 class VaultService: VaultServiceProtocol {
-
-    @Dependency private(set) var state: AppStateProtocol
-    @Dependency private(set) var api: PrimerAPIClientProtocol
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         guard let clientToken = state.decodedClientToken else {
             return completion(PrimerError.vaultFetchFailed)
         }
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
         api.vaultFetchPaymentMethods(clientToken: clientToken) { [weak self] (result) in
             switch result {
             case .failure:
                 completion(PrimerError.vaultFetchFailed)
             case .success(let paymentMethods):
-                self?.state.paymentMethods = paymentMethods.data
+                state.paymentMethods = paymentMethods.data
 
-                guard let paymentMethods = self?.state.paymentMethods else { return }
+                let paymentMethods = state.paymentMethods
 
-                if self?.state.selectedPaymentMethod.isEmpty == true && paymentMethods.isEmpty == false {
+                if state.selectedPaymentMethod.isEmpty == true && paymentMethods.isEmpty == false {
                     guard let id = paymentMethods[0].token else { return }
-                    self?.state.selectedPaymentMethod = id
+                    state.selectedPaymentMethod = id
                 }
 
                 completion(nil)
@@ -37,9 +42,13 @@ class VaultService: VaultServiceProtocol {
     }
 
     func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         guard let clientToken = state.decodedClientToken else {
             return completion(PrimerError.vaultDeleteFailed)
         }
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
         api.vaultDeletePaymentMethod(clientToken: clientToken, id: id) { (result) in
             switch result {

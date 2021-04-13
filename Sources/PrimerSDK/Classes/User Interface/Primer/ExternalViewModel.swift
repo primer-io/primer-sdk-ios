@@ -15,27 +15,29 @@ protocol ExternalViewModelProtocol {
 
 class ExternalViewModel: ExternalViewModelProtocol {
 
-    @Dependency private(set) var state: AppStateProtocol
-    @Dependency private(set) var vaultService: VaultServiceProtocol
-    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
-
     deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         if state.decodedClientToken.exists {
+            let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
             vaultService.loadVaultedPaymentMethods({ [weak self] error in
                 if let error = error { completion(.failure(error)) }
-                guard let paymentMethods = self?.state.paymentMethods else { return }
+                let paymentMethods = state.paymentMethods
                 completion(.success(paymentMethods))
             })
         } else {
+            let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
             clientTokenService.loadCheckoutConfig({ [weak self] error in
                 if let error = error { completion(.failure(error)) }
-                self?.vaultService.loadVaultedPaymentMethods({ [weak self] error in
+                
+                let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                vaultService.loadVaultedPaymentMethods({ [weak self] error in
                     if let error = error { completion(.failure(error)) }
-                    guard let paymentMethods = self?.state.paymentMethods else { return }
+                    let paymentMethods = state.paymentMethods
                     completion(.success(paymentMethods))
                 })
             })

@@ -12,10 +12,14 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
     }
 
     @objc private func showCardForm(_ sender: UIButton) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        let router: RouterDelegate = DependencyContainer.resolve()
         router.show(.form(type: .cardForm(theme: theme)))
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        
         if indexPath.row == viewModel.paymentMethods.count {
             return
         }
@@ -41,7 +45,8 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 
             alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
-                self?.viewModel.deletePaymentMethod(with: methodId, and: { [weak self] _ in
+                let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+                viewModel.deletePaymentMethod(with: methodId, and: { [weak self] _ in
                     DispatchQueue.main.async { self?.subView.tableView.reloadData() }
                 })
             }))
@@ -55,6 +60,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
     }
 
     @objc private func deleteMethod(sender: UIButton) {
+        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         guard let methodId = viewModel.paymentMethods[sender.tag].token else { return }
         viewModel.deletePaymentMethod(with: methodId, and: { [weak self] _ in
             DispatchQueue.main.async { self?.subView.tableView.reloadData() }
@@ -62,10 +68,14 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         return viewModel.paymentMethods.count + 1
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        
         let cell = UITableViewCell()
 
         if indexPath.row == viewModel.paymentMethods.count {

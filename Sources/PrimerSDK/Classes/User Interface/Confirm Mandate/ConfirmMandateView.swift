@@ -21,8 +21,6 @@ protocol ConfirmMandateViewDataSource: class {
 
 class ConfirmMandateView: UIView {
 
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     internal let indicator = UIActivityIndicatorView()
     private let navBar = UINavigationBar()
     private let title = UILabel()
@@ -36,6 +34,8 @@ class ConfirmMandateView: UIView {
     weak var dataSource: ConfirmMandateViewDataSource?
 
     func render(isBusy: Bool = false) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         addSubview(navBar)
         addSubview(title)
         addSubview(tableView)
@@ -71,6 +71,8 @@ extension ConfirmMandateView {
     }
 
     func addNavbar() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(close))
         backItem.tintColor = theme.colorTheme.tint1
@@ -96,6 +98,8 @@ extension ConfirmMandateView {
     }
 
     func addTitle() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         title.text = theme.content.confirmMandateContent.mainTitleText
         title.textColor = theme.colorTheme.text1
         title.font = theme.fontTheme.mainTitleFont
@@ -108,6 +112,8 @@ extension ConfirmMandateView {
     }
 
     func addTableView() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         tableView.render()
         tableView.delegate = delegate
         tableView.dataSource = delegate
@@ -119,6 +125,8 @@ extension ConfirmMandateView {
     }
 
     func addCompanyLabel() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         guard let business = dataSource?.businessDetails else { return }
         companyLabel.text = business.name + ", " + business.address.toString()
         companyLabel.numberOfLines = 0
@@ -130,6 +138,8 @@ extension ConfirmMandateView {
     }
 
     func addLegalLabel() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         guard let business = dataSource?.businessDetails else { return }
 
         legalLabel.text =
@@ -157,6 +167,8 @@ extension ConfirmMandateView {
     }
 
     func addAmountLabel() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         guard let amount = dataSource?.amount else { return }
         amountLabel.text = amount
         amountLabel.font = .boldSystemFont(ofSize: 32)
@@ -169,6 +181,8 @@ extension ConfirmMandateView {
     }
 
     func addConfirmButton() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         button.setTitle(theme.content.confirmMandateContent.submitButtonLabelText, for: .normal)
         button.setTitleColor(theme.colorTheme.text2, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
@@ -192,6 +206,8 @@ extension ConfirmMandateView {
     }
 
     @objc private func onConfirm() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         indicator.removeFromSuperview()
         addSubview(indicator)
         button.setTitle("", for: .normal)
@@ -205,9 +221,9 @@ extension ConfirmMandateView {
 
 class ConfirmMandateTableView: UITableView {
 
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     func render() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         rowHeight = theme.layout.confirmMandateListItemHeight
         backgroundColor = theme.colorTheme.main1
         layer.cornerRadius = theme.cornerRadiusTheme.confirmMandateList
