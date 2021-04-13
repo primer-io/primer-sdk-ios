@@ -22,6 +22,7 @@
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
                                 <rect key="frame" x="118.5" y="318.5" width="138" height="30"/>
+                                <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
                                 <state key="normal" title="Initialize Primer SDK"/>
                                 <connections>
                                     <segue destination="rv5-RJ-1cA" kind="show" id="lRu-Go-hvr"/>
@@ -102,6 +103,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a9R-Y4-8Wy">
                                         <rect key="frame" x="0.0" y="0.0" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="add_card_button"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="bCg-Mf-iQH"/>
                                         </constraints>
@@ -115,6 +117,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xhR-QE-h6v">
                                         <rect key="frame" x="0.0" y="52" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="add_klarna_button"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="9OY-3P-D9G"/>
                                         </constraints>
@@ -128,6 +131,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kGA-CG-n4Z">
                                         <rect key="frame" x="0.0" y="104" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="add_direct_debit_button"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="QZ3-J2-zch"/>
                                         </constraints>
@@ -141,6 +145,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pnm-Mo-3XH">
                                         <rect key="frame" x="0.0" y="156" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="open_wallet_button"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="9Ss-wu-T5y"/>
                                         </constraints>
