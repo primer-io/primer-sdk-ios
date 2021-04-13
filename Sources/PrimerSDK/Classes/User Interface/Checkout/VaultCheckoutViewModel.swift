@@ -12,20 +12,25 @@ protocol VaultCheckoutViewModelProtocol {
 
 class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     var mandate: DirectDebitMandate {
+        let state: AppStateProtocol = DependencyContainer.resolve()
         return state.directDebitMandate
     }
 
     var availablePaymentOptions: [PaymentMethodViewModel] {
+        let state: AppStateProtocol = DependencyContainer.resolve()
         return state.viewModels
     }
 
     var amountStringed: String {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         guard let amount = settings.amount else { return "" }
         guard let currency = settings.currency else { return "" }
         return amount.toCurrencyString(currency: currency)
     }
 
     var paymentMethods: [PaymentMethodToken] {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         if #available(iOS 11.0, *) {
             return state.paymentMethods
         } else {
@@ -39,38 +44,44 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         }
     }
 
-    var selectedPaymentMethodId: String { return state.selectedPaymentMethod }
-
-    @Dependency private(set) var state: AppStateProtocol
-    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
-    @Dependency private(set) var vaultService: VaultServiceProtocol
-    @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    @Dependency private(set) var settings: PrimerSettingsProtocol
+    var selectedPaymentMethodId: String {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.selectedPaymentMethod
+    }
 
     deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
         if state.decodedClientToken.exists {
+            let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
             paymentMethodConfigService.fetchConfig({ [weak self] _ in
-                self?.vaultService.loadVaultedPaymentMethods(completion)
+                let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                vaultService.loadVaultedPaymentMethods(completion)
             })
         } else {
+            let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
             clientTokenService.loadCheckoutConfig({ [weak self] _ in
-                self?.paymentMethodConfigService.fetchConfig({ [weak self] _ in
-                    self?.vaultService.loadVaultedPaymentMethods(completion)
+                let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                paymentMethodConfigService.fetchConfig({ [weak self] _ in
+                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                    vaultService.loadVaultedPaymentMethods(completion)
                 })
             })
         }
     }
 
     func authorizePayment(_ completion: @escaping (Error?) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
         guard let selectedToken = state.paymentMethods.first(where: { token in
             guard let tokenId = token.token else { return false }
             return tokenId == state.selectedPaymentMethod
         }) else { return }
-        self.settings.onTokenizeSuccess(selectedToken, completion)
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        settings.onTokenizeSuccess(selectedToken, completion)
     }
 
 }

@@ -50,8 +50,7 @@ class AppState: AppStateProtocol {
     var sessionId: String?
     
     deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: AppState")
-        log(logLevel: .debug, message: "")
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 }
 

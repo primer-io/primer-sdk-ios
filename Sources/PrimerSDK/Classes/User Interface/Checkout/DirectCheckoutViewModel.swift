@@ -9,10 +9,12 @@ protocol DirectCheckoutViewModelProtocol {
 class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
     
     private var amount: Int? {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         return settings.amount
     }
     
     private var currency: Currency? {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         return settings.currency
     }
 
@@ -21,25 +23,33 @@ class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
             return nil
         }
         
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         var model = AmountViewModel(amount: amount, currency: currency)
         
         model.disabled = settings.directDebitHasNoAmount
         
         return model
     }
-    var paymentMethods: [PaymentMethodViewModel] { return state.viewModels }
-
-    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
-    @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    @Dependency private(set) var state: AppStateProtocol
-    @Dependency private(set) var settings: PrimerSettingsProtocol
+    var paymentMethods: [PaymentMethodViewModel] {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.viewModels
+    }
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         if state.decodedClientToken.exists {
+            let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
             paymentMethodConfigService.fetchConfig(completion)
         } else {
+            let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
             clientTokenService.loadCheckoutConfig({ [weak self] _ in
-                self?.paymentMethodConfigService.fetchConfig(completion)
+                let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                paymentMethodConfigService.fetchConfig(completion)
             })
         }
     }

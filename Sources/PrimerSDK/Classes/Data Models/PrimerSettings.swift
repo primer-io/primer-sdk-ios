@@ -72,7 +72,9 @@ public class PrimerSettings: PrimerSettingsProtocol {
         return Primer.shared.delegate?.onCheckoutDismissed ?? {}
     }
     
-    deinit {}
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 
     public init(
         amount: Int? = nil,

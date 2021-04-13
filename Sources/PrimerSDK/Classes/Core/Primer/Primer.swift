@@ -22,7 +22,7 @@ public class Primer {
 
     fileprivate init() {
         let settings = PrimerSettings()
-        setDependencies(settings: settings)
+        setDependencies(settings: settings, theme: PrimerTheme())
     }
 
     /**
@@ -34,10 +34,10 @@ public class Primer {
      
      - Version: 1.2.2
      */
-    internal func setDependencies(settings: PrimerSettings) {
+    internal func setDependencies(settings: PrimerSettings, theme: PrimerTheme) {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
-        DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
-//        DependencyContainer.register(FormType.cardForm(theme: settings.theme) as FormType)
+        DependencyContainer.register(theme as PrimerThemeProtocol)
+        DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
         DependencyContainer.register(Router() as RouterDelegate)
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
@@ -93,14 +93,24 @@ public class Primer {
 //    }
     
     public func configure(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
+        var newSettings: PrimerSettings!
         if let settings = settings {
-            DependencyContainer.register(DependencyContainer.register(settings as PrimerSettingsProtocol))
+            newSettings = settings
+        } else {
+            let settingsProtocol: PrimerSettingsProtocol = DependencyContainer.resolve()
+            newSettings = (settingsProtocol as! PrimerSettings)
         }
         
+        var newTheme: PrimerTheme!
         if let theme = theme {
-            DependencyContainer.register(theme as PrimerThemeProtocol)
-            DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
+            newTheme = theme
+        } else {
+            let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
+            newTheme = (themeProtocol as! PrimerTheme)
         }
+        
+        setDependencies(settings: newSettings, theme: newTheme)
+        print("")
     }
 
     /**
@@ -112,7 +122,7 @@ public class Primer {
      1.4.0
      */
     public func setTheme(theme: PrimerTheme) {
-        DependencyContainer.register(theme as PrimerThemeProtocol)
+//        DependencyContainer.register(theme as PrimerThemeProtocol)
     }
 
     /**

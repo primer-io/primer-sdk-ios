@@ -11,8 +11,6 @@ import UIKit
 
 class CardButton: UIButton {
 
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     private var iconView = UIImageView()
     private var networkLabel = UILabel()
     private var cardholderLabel = UILabel()
@@ -67,6 +65,7 @@ class CardButton: UIButton {
     }
 
     func toggleBorder(isSelected: Bool, isError: Bool = false) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         if isError { return border.layer.borderColor = theme.colorTheme.error1.cgColor }
         border.layer.borderWidth = isSelected ? 1.5 : 1
         border.layer.borderColor = isSelected ? theme.colorTheme.tint1.cgColor : theme.colorTheme.disabled1.cgColor
@@ -80,7 +79,8 @@ class CardButton: UIButton {
         iconView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
 
         if iconView.image == ImageName.bank.image {
-
+            let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+            
             let tintedIcon = image?.withRenderingMode(.alwaysTemplate)
             iconView.tintColor = theme.colorTheme.tint1
             iconView.image = tintedIcon
@@ -149,6 +149,8 @@ class CardButton: UIButton {
     }
 
     private func addBorder() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         border = UIView()
         border.layer.borderColor = theme.colorTheme.disabled1.cgColor
         border.layer.borderWidth = 1
@@ -160,6 +162,8 @@ class CardButton: UIButton {
     }
 
     private func addIcon() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         checkView = UIImageView(image: ImageName.check2.image)
 
         // color
@@ -208,6 +212,8 @@ class CardButton: UIButton {
     }
 
     func addSeparatorLine() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         let line = UIView()
         line.backgroundColor = theme.colorTheme.disabled1
         line.translatesAutoresizingMaskIntoConstraints = false

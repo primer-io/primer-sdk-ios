@@ -5,12 +5,14 @@ protocol CardScannerViewModelProtocol {
 }
 
 class CardScannerViewModel: CardScannerViewModelProtocol {
-    var theme: PrimerTheme { return _theme as! PrimerTheme }
-
-    @Dependency private(set) var settings: PrimerSettingsProtocol
-    // swiftlint:disable identifier_name
-    @Dependency private var _theme: PrimerThemeProtocol
-    // swiftlint:enable identifier_name
+    var theme: PrimerTheme {
+        let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
+        return themeProtocol as! PrimerTheme
+    }
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 }
 
 class MockCardScannerViewModel: CardScannerViewModelProtocol {
