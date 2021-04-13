@@ -63,66 +63,23 @@ public class Primer {
     // MARK: - CONFIGURATION
 
     /**
-     Set the Primer's SDK settings
+     Configure SDK's settings and/or theme
      
      - Author:
      Primer
      - Version:
      1.4.0
      */
-//    public func setSettings(settings: PrimerSettings) {
-//        DependencyContainer.register(settings as PrimerSettingsProtocol)
-////        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
-//
-////        let currentSettingsProtocol: PrimerSettingsProtocol = DependencyContainer.resolve()
-////        let currentSettings = currentSettingsProtocol as! PrimerSettings
-////        currentSettings.amount = settings.amount
-////        currentSettings.currency = settings.currency
-////        currentSettings.merchantIdentifier = settings.merchantIdentifier
-////        currentSettings.countryCode = settings.countryCode
-////        currentSettings.applePayEnabled = settings.applePayEnabled
-////        currentSettings.customerId = settings.customerId
-////        currentSettings.theme = settings.theme
-////        currentSettings.urlScheme = settings.urlScheme
-////        currentSettings.urlSchemeIdentifier = settings.urlSchemeIdentifier
-////        currentSettings.isFullScreenOnly = settings.isFullScreenOnly
-////        currentSettings.hasDisabledSuccessScreen = settings.hasDisabledSuccessScreen
-////        currentSettings.businessDetails = settings.businessDetails
-////        currentSettings.directDebitHasNoAmount = settings.directDebitHasNoAmount
-////        currentSettings.orderItems = settings.orderItems
-//    }
     
     public func configure(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
-        var newSettings: PrimerSettings!
         if let settings = settings {
-            newSettings = settings
-        } else {
-            let settingsProtocol: PrimerSettingsProtocol = DependencyContainer.resolve()
-            newSettings = (settingsProtocol as! PrimerSettings)
+            DependencyContainer.register(settings as PrimerSettingsProtocol)
         }
-        
-        var newTheme: PrimerTheme!
-        if let theme = theme {
-            newTheme = theme
-        } else {
-            let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-            newTheme = (themeProtocol as! PrimerTheme)
-        }
-        
-        setDependencies(settings: newSettings, theme: newTheme)
-        print("")
-    }
 
-    /**
-     Set the Primer's SDK theme
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
-    public func setTheme(theme: PrimerTheme) {
-//        DependencyContainer.register(theme as PrimerThemeProtocol)
+        if let theme = theme {
+            DependencyContainer.register(theme as PrimerThemeProtocol)
+            DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
+        }
     }
 
     /**
