@@ -17,25 +17,26 @@ class KlarnaService: KlarnaServiceProtocol {
 
     @Dependency private(set) var api: PrimerAPIClientProtocol
     @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
 
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
 
-        guard let amount = state.settings.amount else {
+        guard let amount = settings.amount else {
             return completion(.failure(KlarnaException.noAmount))
         }
 
         log(logLevel: .info, message: "Klarna amount: \(amount)")
 
-        guard state.settings.currency != nil else {
+        guard settings.currency != nil else {
             return completion(.failure(KlarnaException.noCurrency))
         }
 
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
-              let countryCode = self.state.settings.countryCode,
-              let currency = self.state.settings.currency
+              let countryCode = self.settings.countryCode,
+              let currency = self.settings.currency
         else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
@@ -50,7 +51,7 @@ class KlarnaService: KlarnaServiceProtocol {
                 currencyCode: currency.rawValue,
                 localeCode: countryCode.klarnaLocaleCode
             ),
-            orderItems: self.state.settings.orderItems
+            orderItems: self.settings.orderItems
         )
 
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "createPaymentSession")
@@ -75,8 +76,8 @@ class KlarnaService: KlarnaServiceProtocol {
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
               let authorizationToken = self.state.authorizationToken,
               let sessionId = self.state.sessionId,
-              let countryCode = self.state.settings.countryCode,
-              let currency = self.state.settings.currency else {
+              let countryCode = self.settings.countryCode,
+              let currency = self.settings.currency else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
@@ -84,7 +85,7 @@ class KlarnaService: KlarnaServiceProtocol {
             paymentMethodConfigId: configId,
             sessionId: sessionId,
             authorizationToken: authorizationToken,
-            description: self.state.settings.orderItems[0].name,
+            description: self.settings.orderItems[0].name,
             localeData: KlarnaLocaleData(
                 countryCode: countryCode.rawValue,
                 currencyCode: currency.rawValue,

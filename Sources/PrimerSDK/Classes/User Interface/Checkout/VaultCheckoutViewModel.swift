@@ -20,8 +20,8 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     }
 
     var amountStringed: String {
-        guard let amount = state.settings.amount else { return "" }
-        guard let currency = state.settings.currency else { return "" }
+        guard let amount = settings.amount else { return "" }
+        guard let currency = settings.currency else { return "" }
         return amount.toCurrencyString(currency: currency)
     }
 
@@ -45,6 +45,7 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var vaultService: VaultServiceProtocol
     @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
 
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
@@ -69,7 +70,7 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
             guard let tokenId = token.token else { return false }
             return tokenId == state.selectedPaymentMethod
         }) else { return }
-        self.state.settings.onTokenizeSuccess(selectedToken, completion)
+        self.settings.onTokenizeSuccess(selectedToken, completion)
     }
 
 }

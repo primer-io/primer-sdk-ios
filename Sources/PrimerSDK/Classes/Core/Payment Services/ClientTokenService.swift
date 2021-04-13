@@ -7,12 +7,13 @@ protocol ClientTokenServiceProtocol {
 class ClientTokenService: ClientTokenServiceProtocol {
 
     @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
 
     /**
     performs asynchronous call passed in by app developer, decodes the returned Base64 Primer client token string and adds it to shared state.
      */
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
-        state.settings.clientTokenRequestCallback({ [weak self] result in
+        settings.clientTokenRequestCallback({ [weak self] result in
             switch result {
             case .failure:
                 completion(PrimerError.clientTokenNull)

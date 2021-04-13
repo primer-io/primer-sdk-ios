@@ -25,6 +25,7 @@ protocol FormViewModelProtocol {
 class FormViewModel: FormViewModelProtocol {
 
     @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
     @Dependency private(set) var router: RouterDelegate
@@ -154,7 +155,7 @@ class FormViewModel: FormViewModelProtocol {
             case .success(let token):
                 switch Primer.shared.flow {
                 case .completeDirectCheckout:
-                    self?.state.settings.onTokenizeSuccess(token, { error in
+                    self?.settings.onTokenizeSuccess(token, { error in
                         if error.exists {
                             completion(PrimerError.tokenizationRequestFailed)
                         } else {

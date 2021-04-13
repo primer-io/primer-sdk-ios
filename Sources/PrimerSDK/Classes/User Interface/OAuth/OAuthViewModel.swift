@@ -9,7 +9,7 @@ protocol OAuthViewModelProtocol {
 class OAuthViewModel: OAuthViewModelProtocol {
 
     var urlSchemeIdentifier: String? {
-        return state.settings.urlSchemeIdentifier
+        return settings.urlSchemeIdentifier
     }
 
     private var clientToken: DecodedClientToken? { return state.decodedClientToken }
@@ -17,7 +17,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
     private var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? {
         return state.confirmedBillingAgreement
     }
-    private var onTokenizeSuccess: PaymentMethodTokenCallBack { return state.settings.onTokenizeSuccess }
+    private var onTokenizeSuccess: PaymentMethodTokenCallBack { return settings.onTokenizeSuccess }
 
     @Dependency private(set) var paypalService: PayPalServiceProtocol
     @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
@@ -25,6 +25,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
     @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
     @Dependency private(set) var klarnaService: KlarnaServiceProtocol
     @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
 
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")

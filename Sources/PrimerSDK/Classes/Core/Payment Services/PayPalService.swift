@@ -12,6 +12,7 @@ class PayPalService: PayPalServiceProtocol {
 
     @Dependency private(set) var api: PrimerAPIClientProtocol
     @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
 
     private func prepareUrlAndTokenAndId(path: String) -> (DecodedClientToken, URL, String)? {
         guard let clientToken = state.decodedClientToken else {
@@ -42,15 +43,15 @@ class PayPalService: PayPalServiceProtocol {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let amount = state.settings.amount else {
+        guard let amount = settings.amount else {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let currency = state.settings.currency else {
+        guard let currency = settings.currency else {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let urlScheme = state.settings.urlScheme else {
+        guard let urlScheme = settings.urlScheme else {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
@@ -82,7 +83,7 @@ class PayPalService: PayPalServiceProtocol {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let urlScheme = state.settings.urlScheme else {
+        guard let urlScheme = settings.urlScheme else {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 

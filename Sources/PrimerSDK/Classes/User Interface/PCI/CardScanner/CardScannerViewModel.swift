@@ -5,9 +5,12 @@ protocol CardScannerViewModelProtocol {
 }
 
 class CardScannerViewModel: CardScannerViewModelProtocol {
-    var theme: PrimerTheme { return settings.theme }
+    var theme: PrimerTheme { return _theme as! PrimerTheme }
 
     @Dependency private(set) var settings: PrimerSettingsProtocol
+    // swiftlint:disable identifier_name
+    @Dependency private var _theme: PrimerThemeProtocol
+    // swiftlint:enable identifier_name
 }
 
 class MockCardScannerViewModel: CardScannerViewModelProtocol {

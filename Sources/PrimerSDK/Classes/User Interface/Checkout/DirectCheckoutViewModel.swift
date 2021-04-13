@@ -9,11 +9,11 @@ protocol DirectCheckoutViewModelProtocol {
 class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
     
     private var amount: Int? {
-        return state.settings.amount
+        return settings.amount
     }
     
     private var currency: Currency? {
-        return state.settings.currency
+        return settings.currency
     }
 
     var amountViewModel: AmountViewModel? {
@@ -23,7 +23,7 @@ class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
         
         var model = AmountViewModel(amount: amount, currency: currency)
         
-        model.disabled = state.settings.directDebitHasNoAmount
+        model.disabled = settings.directDebitHasNoAmount
         
         return model
     }
@@ -32,6 +32,7 @@ class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
     @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
     @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
     @Dependency private(set) var state: AppStateProtocol
+    @Dependency private(set) var settings: PrimerSettingsProtocol
 
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
         if state.decodedClientToken.exists {

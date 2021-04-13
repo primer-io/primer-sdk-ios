@@ -40,7 +40,7 @@ class MerchantCheckoutViewController: UIViewController {
             businessDetails: businessDetails,
             orderItems: items
         )
-        Primer.shared.setSettings(settings: settings)
+        Primer.shared.configure(settings: settings)
         
         let theme = generatePrimerTheme()
         Primer.shared.setTheme(theme: theme)

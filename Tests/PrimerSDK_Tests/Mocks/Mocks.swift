@@ -23,7 +23,6 @@ var mockClientToken = DecodedClientToken(
 var mockSettings = PrimerSettings(
     amount: 200,
     currency: .EUR,
-    theme: PrimerTheme(),
     applePayEnabled: false,
     customerId: "cid",
     merchantIdentifier: "mid",
