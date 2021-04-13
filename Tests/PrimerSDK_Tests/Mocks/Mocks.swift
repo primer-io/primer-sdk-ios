@@ -21,10 +21,8 @@ var mockClientToken = DecodedClientToken(
 )
 
 var mockSettings = PrimerSettings(
-    delegate: MockPrimerDelegate(),
     amount: 200,
     currency: .EUR,
-    theme: PrimerTheme(),
     applePayEnabled: false,
     customerId: "cid",
     merchantIdentifier: "mid",
@@ -135,8 +133,6 @@ class MockAppState: AppStateProtocol {
 
     var mandateId: String?
 
-    var settings: PrimerSettingsProtocol = MockPrimerSettings()
-
     var viewModels: [PaymentMethodViewModel] = []
 
     var paymentMethods: [PaymentMethodToken] = []
@@ -158,7 +154,6 @@ class MockAppState: AppStateProtocol {
     var approveURL: String? = "approveUrl"
 
     init(
-        settings: PrimerSettingsProtocol = mockSettings,
         decodedClientToken: DecodedClientToken? = mockClientToken,
         paymentMethodConfig: PaymentMethodConfig? = PaymentMethodConfig(
             coreUrl: "url",
@@ -169,7 +164,6 @@ class MockAppState: AppStateProtocol {
             ]
         )
     ) {
-        self.settings = settings
         self.decodedClientToken = decodedClientToken
         self.paymentMethodConfig = paymentMethodConfig
     }
@@ -233,6 +227,10 @@ class MockRouter: RouterDelegate {
 }
 
 class MockFormViewModel: FormViewModelProtocol {
+    func loadConfig(_ completion: @escaping (Error?) -> Void) {
+        
+    }
+    
     var popOnComplete: Bool = false
 
     func getSubmitButtonTitle(formType: FormType) -> String {

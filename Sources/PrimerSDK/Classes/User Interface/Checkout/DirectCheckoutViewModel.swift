@@ -9,11 +9,13 @@ protocol DirectCheckoutViewModelProtocol {
 class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
     
     private var amount: Int? {
-        return state.settings.amount
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return settings.amount
     }
     
     private var currency: Currency? {
-        return state.settings.currency
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return settings.currency
     }
 
     var amountViewModel: AmountViewModel? {
@@ -21,24 +23,33 @@ class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
             return nil
         }
         
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         var model = AmountViewModel(amount: amount, currency: currency)
         
-        model.disabled = state.settings.directDebitHasNoAmount
+        model.disabled = settings.directDebitHasNoAmount
         
         return model
     }
-    var paymentMethods: [PaymentMethodViewModel] { return state.viewModels }
-
-    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
-    @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    @Dependency private(set) var state: AppStateProtocol
+    var paymentMethods: [PaymentMethodViewModel] {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.viewModels
+    }
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         if state.decodedClientToken.exists {
+            let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
             paymentMethodConfigService.fetchConfig(completion)
         } else {
+            let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
             clientTokenService.loadCheckoutConfig({ [weak self] _ in
-                self?.paymentMethodConfigService.fetchConfig(completion)
+                let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                paymentMethodConfigService.fetchConfig(completion)
             })
         }
     }
@@ -55,7 +66,7 @@ struct PaymentMethodViewModel {
         log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         switch type {
         case .paymentCard:
-            return Primer.flow.vaulted
+            return Primer.shared.flow.vaulted
                 ? NSLocalizedString("payment-method-type-card-vaulted",
                                     tableName: nil,
                                     bundle: Bundle.primerFramework,

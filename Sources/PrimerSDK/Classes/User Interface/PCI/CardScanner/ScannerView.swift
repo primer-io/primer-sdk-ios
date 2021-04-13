@@ -8,8 +8,6 @@ protocol ScannerViewDelegate: class {
 
 class ScannerView: UIView {
 
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     let navBar = UINavigationBar()
     let descriptionLabel = UILabel()
     let skipButton = UIButton()
@@ -48,6 +46,7 @@ class ScannerView: UIView {
 
 extension ScannerView {
     private func configureNavBar() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         navBar.backgroundColor = theme.colorTheme.main1
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
@@ -62,16 +61,19 @@ extension ScannerView {
     @objc private func cancel() { delegate?.cancel() }
 
     private func configureDescriptionLabel() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         descriptionLabel.text = theme.content.scannerView.descriptionText
         descriptionLabel.textColor = theme.colorTheme.text1
     }
 
     private func configureScannerView() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         scannerView?.clipsToBounds = true
         scannerView?.layer.cornerRadius = theme.cornerRadiusTheme.buttons // ⚠️
     }
 
     private func configureSkipButton() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         skipButton.setTitle(theme.content.scannerView.skipButtonText, for: .normal)
         skipButton.setTitleColor(theme.colorTheme.text3, for: .normal)
         skipButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
@@ -87,12 +89,14 @@ extension ScannerView {
         navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     }
     private func anchorDescriptionLabel() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 18).isActive = true
         descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
         descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
     }
     private func setScannerViewConstraints() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         scannerView?.translatesAutoresizingMaskIntoConstraints = false
         scannerView?.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         scannerView?.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20).isActive = true

@@ -8,11 +8,8 @@ class VaultPaymentMethodViewController: UIViewController {
     var showDeleteIcon = false
 
     var subView: VaultPaymentMethodView = VaultPaymentMethodView()
-    @Dependency private(set) var viewModel: VaultPaymentMethodViewModelProtocol
-    @Dependency private(set) var theme: PrimerThemeProtocol
 
     weak var delegate: ReloadDelegate?
-    @Dependency private(set) var router: RouterDelegate
 
     deinit {
         log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
@@ -38,10 +35,12 @@ extension VaultPaymentMethodViewController: VaultPaymentMethodViewDelegate {
     }
 
     func cancel() {
+        let router: RouterDelegate = DependencyContainer.resolve()
         router.pop()
     }
 
     func showPayPal() {
+        let router: RouterDelegate = DependencyContainer.resolve()
         router.show(.oAuth(host: .paypal))
     }
 }

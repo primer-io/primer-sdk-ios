@@ -5,7 +5,7 @@ import PassKit
 extension ApplePayViewController: PKPaymentAuthorizationViewControllerDelegate {
 
     func onApplePayButtonPressed() {
-
+        let viewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
         guard let amount = viewModel.amount else { return }
         
         let paymentItem = PKPaymentSummaryItem.init(
@@ -51,6 +51,8 @@ extension ApplePayViewController: PKPaymentAuthorizationViewControllerDelegate {
             let paymentData = try JSONDecoder().decode(ApplePayTokenPaymentData.self, from: payment.token.paymentData)
 
             guard let network = payment.token.paymentMethod.network else { return nil }
+            
+            let viewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
             guard let merchantIdentifier = viewModel.merchantIdentifier else { return nil }
 
             let method = ApplePayTokenPaymentMethod(
@@ -66,7 +68,7 @@ extension ApplePayViewController: PKPaymentAuthorizationViewControllerDelegate {
             )
 
             let instrument = PaymentInstrument(
-                paymentMethodConfigId: self.viewModel.applePayConfigId,
+                paymentMethodConfigId: viewModel.applePayConfigId,
                 token: token,
                 merchantIdentifier: merchantIdentifier
             )
@@ -81,6 +83,8 @@ extension ApplePayViewController: PKPaymentAuthorizationViewControllerDelegate {
     func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
 
         guard let instrument = createPaymentInstrument(with: payment) else { return }
+        
+        let viewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
 
         viewModel.tokenize(
             instrument: instrument,
