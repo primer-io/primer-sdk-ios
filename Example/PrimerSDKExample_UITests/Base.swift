@@ -9,7 +9,7 @@
 import XCTest
 
 class Base: XCTestCase {
-
+    
     let app = XCUIApplication()
 
     override func setUp() {
@@ -23,12 +23,11 @@ class Base: XCTestCase {
     }
 
     func testPresentWallet() throws {
-        let presentWalletButton = app.buttons["walletButton"]
-        XCTAssert(presentWalletButton.exists)
-        presentWalletButton.tap()
-
-        let addCard = app/*@START_MENU_TOKEN@*/.staticTexts["Add Card"]/*[[".buttons[\"Add Card\"].staticTexts[\"Add Card\"]",".staticTexts[\"Add Card\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
-        XCTAssert(addCard.exists)
+        let initSDKButton = app.buttons["initialize_primer_sdk"]
+        initSDKButton.tap()
+        
+        let addCardButton = app/*@START_MENU_TOKEN@*/.buttons["add_card_button"]/*[[".buttons[\"Add Card\"]",".buttons[\"add_card_button\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        XCTAssert(addCardButton.exists)
     }
 
 }
