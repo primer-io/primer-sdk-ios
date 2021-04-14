@@ -20,16 +20,16 @@ extension MerchantCheckoutViewController {
     }
     
     internal func addSpinner(_ child: SpinnerViewController) {
-        addChildViewController(child)
+        addChild(child)
         child.view.frame = view.frame
         view.addSubview(child.view)
-        child.didMove(toParentViewController: self)
+        child.didMove(toParent: self)
     }
     
     internal func removeSpinner(_ child: SpinnerViewController) {
-        child.willMove(toParentViewController: nil)
+        child.willMove(toParent: nil)
         child.view.removeFromSuperview()
-        child.removeFromParentViewController()
+        child.removeFromParent()
     }
     
 }

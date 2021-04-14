@@ -7,6 +7,8 @@
 
 #if canImport(UIKit)
 
+import Foundation
+
 public enum PrimerFormType: String, CaseIterable {
     case bankAccount
     case name
@@ -110,7 +112,7 @@ enum FormType {
         case .iban: return
             NSLocalizedString("primer-form-type-main-title-sepa-direct-debit-mandate",
                               tableName: nil,
-                              bundle: Bundle.primerFramework,
+                              bundle: Bundle.primerResources,
                               value: "SEPA Direct Debit Mandate",
                               comment: "SEPA Direct Debit Mandate - Form Type Main Title (Direct Debit)")
         case .email: return ""
