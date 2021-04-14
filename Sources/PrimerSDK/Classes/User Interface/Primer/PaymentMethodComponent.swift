@@ -11,13 +11,13 @@ import UIKit
 
 class PaymentMethodComponent: UIView {
 
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     let label = UILabel()
     let iconView = UIImageView()
 
     init(frame: CGRect, method: PaymentMethodViewModel) {
         super.init(frame: frame)
+        
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         layer.cornerRadius = theme.cornerRadiusTheme.buttons
 

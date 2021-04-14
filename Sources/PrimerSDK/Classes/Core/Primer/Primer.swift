@@ -2,38 +2,27 @@
 
 import UIKit
 
+// swiftlint:disable identifier_name
+private let _Primer = Primer()
+// swiftlint:enable identifier_name
+
 public class Primer {
-
-    /**
-     Change this variable depending on the flow that you want to use on the drop-in UI. Defaults on the direct checkout flow.
-     See **PrimerSessionFlow** for possible values.
-     
-     - Author:
-     Primer
-     - Version:
-     1.2.2
-     */
-    static var flow: PrimerSessionFlow = .completeDirectCheckout
-
-    public var clearOnDestroy: Bool = true
-
+    
+    // MARK: - PROPERTIES
+    
+    public weak var delegate: PrimerDelegate?
+    private(set) var flow: PrimerSessionFlow = .completeDirectCheckout
     private var root: RootViewController?
 
-    /**
-     Intialise Primer with the settings object before calling any of the other methods.
-     
-     - Parameter settings: Primer settings object
-     
-     - Author: Primer
-     
-     - Version: 1.2.2
-     */
-    deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+    // MARK: - INITIALIZATION
+
+    public static var shared: Primer {
+        return _Primer
     }
 
-    public init(with settings: PrimerSettings) {
-        setDependencies(settings: settings)
+    fileprivate init() {
+        let settings = PrimerSettings()
+        setDependencies(settings: settings, theme: PrimerTheme())
     }
 
     /**
@@ -45,10 +34,10 @@ public class Primer {
      
      - Version: 1.2.2
      */
-    public func setDependencies(settings: PrimerSettings) {
+    internal func setDependencies(settings: PrimerSettings, theme: PrimerTheme) {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
-        DependencyContainer.register(settings.theme as PrimerThemeProtocol)
-        DependencyContainer.register(FormType.cardForm(theme: settings.theme) as FormType)
+        DependencyContainer.register(theme as PrimerThemeProtocol)
+        DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
         DependencyContainer.register(Router() as RouterDelegate)
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
@@ -71,53 +60,53 @@ public class Primer {
         DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
     }
 
+    // MARK: - CONFIGURATION
+
     /**
-     Force the SDK to clear all dependencies
+     Configure SDK's settings and/or theme
      
      - Author:
      Primer
      - Version:
-     1.2.2
+     1.4.0
      */
-    public func clearDependencies() {
-        DependencyContainer.clear()
+    
+    public func configure(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
+        if let settings = settings {
+            DependencyContainer.register(settings as PrimerSettingsProtocol)
+        }
+
+        if let theme = theme {
+            DependencyContainer.register(theme as PrimerThemeProtocol)
+            DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
+        }
     }
 
     /**
-     Refresh theme after SDK initialization
+     Set form's top title
      
      - Author:
      Primer
      - Version:
-     1.2.2
-     */
-    public func setTheme(theme: PrimerTheme) {
-        DependencyContainer.register(theme as PrimerThemeProtocol)
-    }
-
-    /**
-     Set top title on direct debit form
-     
-     - Author:
-     Primer
-     - Version:
-     1.2.2
+     1.4.0
      */
     public func setFormTopTitle(_ text: String, for formType: PrimerFormType) {
-        var theme: PrimerTheme = DependencyContainer.resolve()
+        let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
+        var theme = themeProtocol as! PrimerTheme
         theme.content.formTopTitles.setTopTitle(text, for: formType)
     }
 
     /**
-     Set main title on direct debit form
+     Set form's main title
      
      - Author:
      Primer
      - Version:
-     1.2.2
+     1.4.0
      */
     public func setFormMainTitle(_ text: String, for formType: PrimerFormType) {
-        var theme: PrimerTheme = DependencyContainer.resolve()
+        let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
+        var theme = themeProtocol as! PrimerTheme
         theme.content.formMainTitles.setMainTitle(text, for: formType)
     }
 
@@ -127,7 +116,7 @@ public class Primer {
      - Author:
      Primer
      - Version:
-     1.2.2
+     1.4.0
      */
     public func setDirectDebitDetails(
         firstName: String,
@@ -150,14 +139,14 @@ public class Primer {
      - Author:
      Primer
      - Version:
-     1.2.2
+     1.4.0
      */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
         root = RootViewController()
         let router: RouterDelegate = DependencyContainer.resolve()
         router.setRoot(root!)
         guard let root = self.root else { return }
-        Primer.flow = flow
+        Primer.shared.flow = flow
         controller.present(root, animated: true)
     }
 
@@ -167,7 +156,7 @@ public class Primer {
      - Author:
      Primer
      - Version:
-     1.2.2
+     1.4.0
      */
     public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
         let externalViewModel: ExternalViewModelProtocol = DependencyContainer.resolve()

@@ -10,14 +10,17 @@ protocol TokenizationServiceProtocol {
 }
 
 class TokenizationService: TokenizationServiceProtocol {
-
-    @Dependency private(set) var api: PrimerAPIClientProtocol
-    @Dependency private(set) var state: AppStateProtocol
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 
     func tokenize(
         request: PaymentMethodTokenizationRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void
     ) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         guard let clientToken = state.decodedClientToken else {
             return onTokenizeSuccess(.failure(PrimerError.tokenizationPreRequestFailed))
         }
@@ -35,6 +38,8 @@ class TokenizationService: TokenizationServiceProtocol {
         }
 
         log(logLevel: .verbose, title: nil, message: "URL: \(url)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
         api.tokenizePaymentMethod(clientToken: clientToken, paymentMethodTokenizationRequest: request) { (result) in
             switch result {
