@@ -7,6 +7,8 @@
 
 #if canImport(UIKit)
 
+import Foundation
+
 public enum PrimerFormType: String, CaseIterable {
     case bankAccount
     case name

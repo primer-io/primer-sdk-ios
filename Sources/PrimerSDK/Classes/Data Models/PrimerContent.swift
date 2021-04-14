@@ -1,5 +1,7 @@
 #if canImport(UIKit)
 
+import Foundation
+
 public struct PrimerContent {
     let ibanForm = IBANFormViewContent()
     let directCheckout = DirectCheckoutViewContent()
