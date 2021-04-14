@@ -94,7 +94,7 @@ class URLSessionStack: NetworkService {
                 DispatchQueue.main.async { completion(.success(result)) }
             } catch {
                 if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any?],
-                   let primerErrorJSON = json?["error"] as? [String: Any] {
+                   let primerErrorJSON = json["error"] as? [String: Any] {
                     let statusCode = (response as! HTTPURLResponse).statusCode
 
                     let primerErrorResponse = try? self.parser.parse(PrimerErrorResponse.self, from: try! JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed))
