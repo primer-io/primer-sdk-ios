@@ -36,7 +36,7 @@ class MerchantCheckoutViewController: UIViewController {
             amount: finalAmount,
             currency: .SEK,
             countryCode: .se,
-            isFullScreenOnly: true,
+            isFullScreenOnly: false,
             businessDetails: businessDetails,
             orderItems: items
         )
