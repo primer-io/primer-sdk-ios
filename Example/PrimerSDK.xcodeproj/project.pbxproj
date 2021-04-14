@@ -19,7 +19,6 @@
 		1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B966260A3F2900C80BD7 /* ClientTokenService.swift */; };
 		1582B984260A3F2900C80BD7 /* TokenizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B967260A3F2900C80BD7 /* TokenizationService.swift */; };
 		1582B985260A3F2900C80BD7 /* KlarnaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B968260A3F2900C80BD7 /* KlarnaService.swift */; };
-		1582B986260A3F2900C80BD7 /* ApplePayViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B96A260A3F2900C80BD7 /* ApplePayViewModelTests.swift */; };
 		1582B987260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */; };
 		1582B988260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */; };
 		1582B989260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B96D260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift */; };
@@ -81,7 +80,6 @@
 		1582B966260A3F2900C80BD7 /* ClientTokenService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientTokenService.swift; sourceTree = "<group>"; };
 		1582B967260A3F2900C80BD7 /* TokenizationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
 		1582B968260A3F2900C80BD7 /* KlarnaService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KlarnaService.swift; sourceTree = "<group>"; };
-		1582B96A260A3F2900C80BD7 /* ApplePayViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplePayViewModelTests.swift; sourceTree = "<group>"; };
 		1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewModelTests.swift; sourceTree = "<group>"; };
 		1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultCheckoutViewModelTests.swift; sourceTree = "<group>"; };
 		1582B96D260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectCheckoutViewModelTests.swift; sourceTree = "<group>"; };
@@ -214,7 +212,6 @@
 		1582B969260A3F2900C80BD7 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				1582B96A260A3F2900C80BD7 /* ApplePayViewModelTests.swift */,
 				1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */,
 				1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */,
 				1582B96D260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift */,
@@ -642,7 +639,6 @@
 				1582B97A260A3F2900C80BD7 /* ConfirmMandateViewModel.swift in Sources */,
 				1582B98C260A3F2900C80BD7 /* Tests.swift in Sources */,
 				1582B981260A3F2900C80BD7 /* PayPalService.swift in Sources */,
-				1582B986260A3F2900C80BD7 /* ApplePayViewModelTests.swift in Sources */,
 				1582B991260A3F2900C80BD7 /* ClientTokenServiceTests.swift in Sources */,
 				1582B98E260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift in Sources */,
 				1582B97C260A3F2900C80BD7 /* DirectCheckoutViewModel.swift in Sources */,
@@ -816,6 +812,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = "";
 			};
 			name = Debug;
 		};
@@ -865,6 +862,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = "";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -883,7 +881,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.primerapi.PrimerSDKExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -901,7 +899,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.primerapi.PrimerSDKExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
