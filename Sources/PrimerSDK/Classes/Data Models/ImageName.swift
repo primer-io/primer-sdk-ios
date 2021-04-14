@@ -34,7 +34,7 @@ public enum ImageName: String {
         klarna
 
     public var image: UIImage? {
-        guard let image = UIImage(named: rawValue, in: Bundle.module, compatibleWith: nil) else {
+        guard let image = UIImage(named: rawValue, in: Bundle.primerResources, compatibleWith: nil) else {
             return nil
         }
         return image
