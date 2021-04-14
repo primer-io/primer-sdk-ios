@@ -151,7 +151,7 @@ extension ConfirmMandateView {
             " \(business.name) " +
             NSLocalizedString("primer-form-view-confirm-mandate-legal-text-part-2",
                               tableName: nil,
-                              bundle: Bundle.primerFramework,
+                              bundle: Bundle.primerResources,
                               value: "to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from",
                               comment: "to send instructions to your bank to debit your account and (B) your bank to debit your account in accordance with the instructions from") +
             " \(business.name)."

@@ -71,7 +71,7 @@ extension PaymentMethodToken {
                 last4: "•••• \(last4)",
                 expiry: NSLocalizedString("primer-saved-card",
                                           tableName: nil,
-                                          bundle: Bundle.primerFramework,
+                                          bundle: Bundle.primerResources,
                                           value: "Expires",
                                           comment: "Expires - Saved card")
                     + " \(expMonth) / \(expYear.suffix(2))",
