@@ -1,5 +1,7 @@
 #if canImport(UIKit)
 
+import Foundation
+
 protocol DirectCheckoutViewModelProtocol {
     var amountViewModel: AmountViewModel? { get }
     var paymentMethods: [PaymentMethodViewModel] { get }
