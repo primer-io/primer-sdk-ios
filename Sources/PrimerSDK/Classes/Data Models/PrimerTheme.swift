@@ -45,7 +45,8 @@ public protocol PrimerThemeProtocol {
  1.2.2
  */
 
-public struct PrimerTheme: PrimerThemeProtocol {
+public class PrimerTheme: PrimerThemeProtocol {
+    
     public let cornerRadiusTheme: CornerRadiusTheme
     public let colorTheme: ColorTheme
     public let textFieldTheme: PrimerTextFieldTheme
@@ -54,6 +55,10 @@ public struct PrimerTheme: PrimerThemeProtocol {
     public let layout: PrimerLayout
     public let shadowTheme: PrimerShadowTheme = PrimerShadowTheme(color: UIColor.gray.cgColor, opacity: 0.3, radius: 10)
 
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
     @available(iOS 13.0, *)
     public init(
         cornerRadiusTheme: CornerRadiusTheme = CornerRadiusTheme(),

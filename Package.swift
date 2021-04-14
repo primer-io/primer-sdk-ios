@@ -30,11 +30,6 @@ let package = Package(
             resources: [
                 .process("Resources")
             ]
-        ),
-        .testTarget(
-            name: "PrimerSDKTests",
-            dependencies: ["PrimerSDK"],
-            path: "Tests"
         )
     ],
     swiftLanguageVersions: [.v4_2]

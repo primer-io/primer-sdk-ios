@@ -5,9 +5,14 @@ protocol CardScannerViewModelProtocol {
 }
 
 class CardScannerViewModel: CardScannerViewModelProtocol {
-    var theme: PrimerTheme { return settings.theme }
-
-    @Dependency private(set) var settings: PrimerSettingsProtocol
+    var theme: PrimerTheme {
+        let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
+        return themeProtocol as! PrimerTheme
+    }
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 }
 
 class MockCardScannerViewModel: CardScannerViewModelProtocol {

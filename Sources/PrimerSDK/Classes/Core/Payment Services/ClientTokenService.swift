@@ -5,19 +5,25 @@ protocol ClientTokenServiceProtocol {
 }
 
 class ClientTokenService: ClientTokenServiceProtocol {
-
-    @Dependency private(set) var state: AppStateProtocol
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 
     /**
     performs asynchronous call passed in by app developer, decodes the returned Base64 Primer client token string and adds it to shared state.
      */
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
-        state.settings.clientTokenRequestCallback({ [weak self] result in
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+        settings.clientTokenRequestCallback({ [weak self] result in
             switch result {
-            case .failure: completion(PrimerError.clientTokenNull)
+            case .failure:
+                completion(PrimerError.clientTokenNull)
             case .success(let token):
                 guard let clientToken = token.clientToken else { return completion(PrimerError.clientTokenNull) }
-                self?.state.decodedClientToken = clientToken.decodeClientTokenBase64()
+                state.decodedClientToken = clientToken.decodeClientTokenBase64()
                 completion(nil)
             }
         })

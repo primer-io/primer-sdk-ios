@@ -20,9 +20,6 @@ class SuccessViewController: UIViewController {
     let referenceTitle = UILabel()
     let reference = UILabel()
 
-    @Dependency private(set) var viewModel: SuccessScreenViewModelProtocol
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     override func viewDidLoad() {
         view.addSubview(navBar)
         view.addSubview(icon)
@@ -54,6 +51,8 @@ class SuccessViewController: UIViewController {
 // MARK: Configuration
 extension SuccessViewController {
     func configureNavbar() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(close))
         backItem.tintColor = theme.colorTheme.success1
@@ -79,6 +78,10 @@ extension SuccessViewController {
     }
 
     func configureMessage() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
+        
+        message.accessibilityIdentifier = "success_screen_message_label"
         message.text = viewModel.getTitle(screenType)
         message.numberOfLines = 0
         message.textAlignment = .center
@@ -87,6 +90,7 @@ extension SuccessViewController {
     }
 
     func configureConfirmationMessage() {
+        let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         confirmationMessage.text = viewModel.getConfirmationMessage(screenType)
         confirmationMessage.numberOfLines = 0
         confirmationMessage.font = .systemFont(ofSize: 13)
@@ -94,6 +98,8 @@ extension SuccessViewController {
     }
 
     func configureReferenceTitle() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         if screenType != .directDebit { return }
         referenceTitle.text = "Reference".uppercased()
         referenceTitle.textColor = theme.colorTheme.neutral1
@@ -101,6 +107,7 @@ extension SuccessViewController {
     }
 
     func configureReference() {
+        let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         reference.text = viewModel.getReference(screenType)
         reference.font = .systemFont(ofSize: 17)
     }
@@ -109,6 +116,8 @@ extension SuccessViewController {
 // MARK: Constraints
 extension SuccessViewController {
     func anchorIcon() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         icon.tintColor = theme.colorTheme.success1
         icon.translatesAutoresizingMaskIntoConstraints = false
         icon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -116,6 +125,8 @@ extension SuccessViewController {
     }
 
     func anchorMessage() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         message.translatesAutoresizingMaskIntoConstraints = false
         message.topAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         message.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -124,6 +135,8 @@ extension SuccessViewController {
     }
 
     func anchorConfirmationMessage() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         confirmationMessage.translatesAutoresizingMaskIntoConstraints = false
         confirmationMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         confirmationMessage.topAnchor.constraint(equalTo: message.bottomAnchor, constant: 24).isActive = true
@@ -160,14 +173,18 @@ protocol SuccessScreenViewModelProtocol: class {
 class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
 
     var mandate: DirectDebitMandate {
+        let state: AppStateProtocol = DependencyContainer.resolve()
         return state.directDebitMandate
+    }
+        
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     func getMandateId(_ screenType: SuccessScreenType?) -> String {
+        let state: AppStateProtocol = DependencyContainer.resolve()
         return state.mandateId ?? ""
     }
-
-    @Dependency private(set) var state: AppStateProtocol
 
     func getTitle(_ screenType: SuccessScreenType?) -> String {
         switch screenType {
@@ -188,9 +205,11 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
     }
 
     func getConfirmationMessage(_ screenType: SuccessScreenType?) -> String {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
         switch screenType {
         case .directDebit:
-            guard let name = state.settings.businessDetails?.name else { return "" }
+            guard let name = settings.businessDetails?.name else { return "" }
             return name + " " + NSLocalizedString("primer-success-screen-confirmation-message",
                                                   tableName: nil,
                                                   bundle: Bundle.primerFramework,

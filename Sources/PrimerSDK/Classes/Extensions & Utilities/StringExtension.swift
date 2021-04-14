@@ -92,11 +92,10 @@ extension String {
                 let decodedString = String(data: decodedData, encoding: .utf8)!
                 if decodedString.contains("\"accessToken\":") {
                     do {
-                        print(decodedString)
                         let token = try JSONDecoder().decode(DecodedClientToken.self, from: decodedData)
                         return token
                     } catch {
-                        print("error!")
+                        log(logLevel: .error, title: "PARSER", message: "Failed to parse client token", prefix: nil, suffix: nil, bundle: Bundle.primerFrameworkIdentifier, file: #file, className: nil, function: #function, line: #line)
                     }
                 }
             }
@@ -130,7 +129,6 @@ extension String {
     }
 
     var isValidAccountNumber: Bool {
-        print(!self.isEmpty)
         return !self.isEmpty
     }
 

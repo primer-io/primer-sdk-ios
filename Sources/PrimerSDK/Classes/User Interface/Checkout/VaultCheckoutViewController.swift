@@ -8,10 +8,6 @@ class VaultCheckoutViewController: UIViewController {
     var subView: VaultCheckoutView = VaultCheckoutView()
     var tokenSelectedForPayment: PaymentMethodToken?
 
-    @Dependency private(set) var viewModel: VaultCheckoutViewModelProtocol
-    @Dependency private(set) var router: RouterDelegate
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     private let loadingIndicator = UIActivityIndicatorView()
     private weak var transitionDelegate = TransitionDelegate()
 
@@ -21,6 +17,8 @@ class VaultCheckoutViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
 
         view.addSubview(subView)
         subView.delegate = self
@@ -39,12 +37,14 @@ class VaultCheckoutViewController: UIViewController {
 
 extension VaultCheckoutViewController: VaultCheckoutViewDataSource {
     var selectedSavedPaymentMethod: PaymentMethodToken? {
+        let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         return viewModel.paymentMethods.first(where: { paymentMethod in
             return paymentMethod.token == viewModel.selectedPaymentMethodId
         })
     }
 
     var amount: String? {
+        let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         return viewModel.amountStringed
     }
 }
@@ -53,6 +53,7 @@ extension VaultCheckoutViewController: VaultCheckoutViewDataSource {
 extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSource {
 
     func numberOfSections(in tableView: UITableView) -> Int {
+        let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         return viewModel.availablePaymentOptions.count
     }
 
@@ -73,6 +74,9 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         let cell = UITableViewCell(style: .default, reuseIdentifier: "cell5")
 
         let option = viewModel.availablePaymentOptions[indexPath.section]
@@ -89,17 +93,27 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let router: RouterDelegate = DependencyContainer.resolve()
+        let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         tableView.deselectRow(at: indexPath, animated: true)
 
         let option = viewModel.availablePaymentOptions[indexPath.section]
 
         switch option.type {
-        case .applePay: router.show(.applePay)
-        case .googlePay: break
-        case .paymentCard: router.show(.form(type: .cardForm(theme: theme)))
-        case .payPal: router.show(.oAuth(host: .paypal))
-        case .goCardlessMandate: router.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
-        case .klarna: router.show(.oAuth(host: .klarna))
+        case .applePay:
+            router.show(.applePay)
+        case .googlePay:
+            break
+        case .paymentCard:
+            router.show(.form(type: .cardForm(theme: theme)))
+        case .payPal:
+            router.show(.oAuth(host: .paypal))
+        case .goCardlessMandate:
+            router.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
+        case .klarna:
+            router.show(.oAuth(host: .klarna))
         }
     }
 }
@@ -107,10 +121,12 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
 // MARK: VaultCheckoutViewDelegate
 extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
     func openVault() {
+        let router: RouterDelegate = DependencyContainer.resolve()
         router.show(.vaultPaymentMethods(delegate: self))
     }
 
     func cancel() {
+        let router: RouterDelegate = DependencyContainer.resolve()
         router.pop()
     }
 
@@ -119,13 +135,15 @@ extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
     }
 
     func pay() {
+        let router: RouterDelegate = DependencyContainer.resolve()
+        let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         viewModel.authorizePayment({ [weak self] error in
             DispatchQueue.main.async {
                 if error.exists {
-                    self?.router.show(.error())
+                    router.show(.error())
                     return
                 }
-                self?.router.show(.success(type: .regular))
+                router.show(.success(type: .regular))
             }
         })
     }

@@ -19,8 +19,6 @@ class CardScannerViewController: UIViewController {
     let simpleScanVC = SimpleScanViewController.createViewController()
 
     weak var transitionDelegate = TransitionDelegate()
-    @Dependency private(set) var viewModel: CardScannerViewModelProtocol
-    @Dependency private(set) var router: RouterDelegate
 
     var scannerView: ScannerView?
 
