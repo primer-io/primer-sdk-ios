@@ -61,14 +61,14 @@ class FormViewModel: FormViewModelProtocol {
         case .cardForm:
             return NSLocalizedString("primer-form-view-card-submit-button-text",
                                      tableName: nil,
-                                     bundle: Bundle.module,
+                                     bundle: Bundle.primerResources,
                                      value: "Add card",
                                      comment: "Add card - Card Form View (Sumbit button text)")
 
         default:
             return NSLocalizedString("primer-form-view-submit-button-text",
                                      tableName: nil,
-                                     bundle: Bundle.module,
+                                     bundle: Bundle.primerResources,
                                      value: "Next",
                                      comment: "Next - Form View (Sumbit button text)")
         }
