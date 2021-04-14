@@ -71,27 +71,27 @@ struct PaymentMethodViewModel {
             return Primer.shared.flow.vaulted
                 ? NSLocalizedString("payment-method-type-card-vaulted",
                                     tableName: nil,
-                                    bundle: Bundle.primerResources,
+                                    bundle: Bundle.module,
                                     value: "Add a new card",
                                     comment: "Add a new card - Payment Method Type (Card Vaulted)")
 
                 : NSLocalizedString("payment-method-type-card-not-vaulted",
                                     tableName: nil,
-                                    bundle: Bundle.primerResources,
+                                    bundle: Bundle.module,
                                     value: "Pay with card",
                                     comment: "Pay with card - Payment Method Type (Card Not vaulted)")
 
         case .applePay:
             return NSLocalizedString("payment-method-type-apple-pay",
                                      tableName: nil,
-                                     bundle: Bundle.primerResources,
+                                     bundle: Bundle.module,
                                      value: "Pay",
                                      comment: "Pay - Payment Method Type (Apple pay)")
 
         case .goCardlessMandate:
             return NSLocalizedString("payment-method-type-go-cardless",
                                      tableName: nil,
-                                     bundle: Bundle.primerResources,
+                                     bundle: Bundle.module,
                                      value: "Bank account",
                                      comment: "Bank account - Payment Method Type (Go Cardless)")
 

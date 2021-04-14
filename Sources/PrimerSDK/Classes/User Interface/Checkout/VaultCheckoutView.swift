@@ -99,7 +99,7 @@ extension VaultCheckoutView {
 
         navBar.topItem?.title = NSLocalizedString("primer-vault-checkout-nav-bar-title",
                                                   tableName: nil,
-                                                  bundle: Bundle.primerResources,
+                                                  bundle: Bundle.module,
                                                   value: "Choose payment method",
                                                   comment: "Choose payment method - Vault Checkout Navigation Bar Title")
     }
@@ -125,7 +125,7 @@ extension VaultCheckoutView {
             if (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true) {
                 savedCardTitleLabel.text = NSLocalizedString("primer-vault-checkout-card-title",
                                                              tableName: nil,
-                                                             bundle: Bundle.primerResources,
+                                                             bundle: Bundle.module,
                                                              value: "SAVED CARD",
                                                              comment: "SAVED CARD - Vault Checkout Card Title")
 
@@ -207,7 +207,7 @@ extension VaultCheckoutView {
                 seeAllLinkLabel.text = vaulted
                     ? NSLocalizedString("primer-vault-checkout-see-all",
                                         tableName: nil,
-                                        bundle: Bundle.primerResources,
+                                        bundle: Bundle.module,
                                         value: "See All",
                                         comment: "See All - Vault Checkout See All Button")
                     : ""
@@ -241,7 +241,7 @@ extension VaultCheckoutView {
                 otherMethodsTitleLabel.text = vaulted
                     ? NSLocalizedString("primer-vault-checkout-other-methods",
                                         tableName: nil,
-                                        bundle: Bundle.primerResources,
+                                        bundle: Bundle.module,
                                         value: "OTHER WAYS TO PAY",
                                         comment: "OTHER WAYS TO PAY - Vault Checkout Other Methods Title")
                     : ""
