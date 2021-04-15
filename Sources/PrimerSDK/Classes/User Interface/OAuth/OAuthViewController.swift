@@ -61,10 +61,10 @@ class OAuthViewController: UIViewController {
     }
 
     private func presentWebview(_ urlString: String) {
-        let vc = WebViewController()
-        vc.url = URL(string: urlString)
-        vc.delegate = self
-        present(vc, animated: true, completion: nil)
+        let webViewController = WebViewController()
+        webViewController.url = URL(string: urlString)
+        webViewController.delegate = self
+        present(webViewController, animated: true, completion: nil)
     }
 
     func createPaymentInstrument(_ urlString: String) {
@@ -175,7 +175,16 @@ class WebViewController: UIViewController, WKNavigationDelegate {
     override func viewDidLoad() {
         webView.scrollView.bounces = false
         if let url = url {
-            let request = URLRequest(url: url)
+            let state: AppStateProtocol = DependencyContainer.resolve()
+
+            let clientToken = state.decodedClientToken!
+            
+            var request = URLRequest(url: url)
+            request.allHTTPHeaderFields = [
+                "Content-Type": "application/json",
+                "Primer-SDK-Version": "1.0.0-beta.0",
+                "Primer-SDK-Client": "IOS_NATIVE"
+            ]
             webView.load(request)
         }
     }
@@ -186,12 +195,19 @@ class WebViewController: UIViewController, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
+        
+        let allowedHosts: [String] = [
+            "primer.io",
+//            "api.playground.klarna.com",
+//            "api.sandbox.primer.io"
+        ]
 
-        if let url = navigationAction.request.url, url.host == "primer.io" || url.host == "api.playground.klarna.com"{
+        if let url = navigationAction.request.url, let host = url.host, allowedHosts.contains(host) {
 
             let val = url.queryParameterValue(for: "token")
 
             log(logLevel: .info, message: "🚀🚀 \(url)")
+            log(logLevel: .info, message: "🚀🚀 token \(val)")
             
             let state: AppStateProtocol = DependencyContainer.resolve()
 

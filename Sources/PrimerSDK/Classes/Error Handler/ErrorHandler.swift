@@ -77,6 +77,12 @@ class ErrorHandler {
                 break
             case .noPaymentMethodConfigId:
                 break
+            case .undefinedSessionType:
+                break
+            case .noCountryCode:
+                break
+            case .missingOrderItems:
+                break
             }
 
         } else {

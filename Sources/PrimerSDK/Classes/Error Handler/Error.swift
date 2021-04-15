@@ -17,11 +17,14 @@ enum KlarnaException: PrimerErrorProtocol {
 
     case invalidUrl
     case noToken
+    case undefinedSessionType
     case noCoreUrl
     case failedApiCall
     case noAmount
     case noCurrency
+    case noCountryCode
     case noPaymentMethodConfigId
+    case missingOrderItems
 
     static var errorDomain: String = "primer.klarna"
 
@@ -55,6 +58,13 @@ enum KlarnaException: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Failed to find client token",
                                      comment: "Failed to find client token - Error message")
+            
+        case .undefinedSessionType:
+            return NSLocalizedString("primer-klarna-error-message-undefined-session-type",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Undefined session type",
+                                     comment: "Undefined Klarna session type - Error message")
 
         case .noCoreUrl:
             return NSLocalizedString("primer-klarna-error-message-failed-to-find-base-url",
@@ -83,6 +93,13 @@ enum KlarnaException: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Failed to find currency",
                                      comment: "Failed to find currency - Error message")
+            
+        case .noCountryCode:
+            return NSLocalizedString("primer-klarna-error-message-failed-to-find-country-code",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Failed to find currency",
+                                     comment: "Failed to find country code - Error message")
 
         case .noPaymentMethodConfigId:
             return NSLocalizedString("primer-klarna-error-message-failed-to-find-klarna-configuration",
@@ -90,6 +107,13 @@ enum KlarnaException: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Failed to find Klarna configuration",
                                      comment: "Failed to find Klarna configuration - Error message")
+            
+        case .missingOrderItems:
+            return NSLocalizedString("primer-klarna-error-message-missing-order-items",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Failed to find Klarna order items",
+                                     comment: "Failed to find Klarna order items - Error message")
         }
     }
 

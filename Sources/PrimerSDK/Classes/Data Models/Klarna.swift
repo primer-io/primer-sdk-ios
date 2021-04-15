@@ -7,28 +7,37 @@
 
 import Foundation
 
+public enum KlarnaSessionType: String, Codable {
+    case hostedPaymentPage = "HOSTED_PAYMENT_PAGE"
+    case recurringPayment = "RECURRING_PAYMENT"
+}
+
 struct KlarnaLocaleData: Codable {
     let countryCode: String
-    let currencyCode: String
-    let localeCode: String
+    let currencyCode: String?
+    let localeCode: String?
 }
 
 // MARK: CREATE PAYMENT SESSION DATA MODELS
 
 struct KlarnaCreatePaymentSessionAPIRequest: Codable {
     let paymentMethodConfigId: String
-    let sessionType: String
-    let redirectUrl: String
-    let totalAmount: Int
+    let sessionType: KlarnaSessionType
     let localeData: KlarnaLocaleData
-    let orderItems: [OrderItem]
+    let description: String?
+    let redirectUrl: String?
+    let totalAmount: Int?
+    let orderItems: [OrderItem]?
 }
 
 struct KlarnaCreatePaymentSessionAPIResponse: Codable {
+    var sessionType: KlarnaSessionType {
+        return hppSessionId == nil ? .recurringPayment : .hostedPaymentPage
+    }
     let clientToken: String
     let sessionId: String
     let categories: [KlarnaSessionCategory]
-    let hppSessionId: String
+    let hppSessionId: String?
     let hppRedirectUrl: String
 }
 
