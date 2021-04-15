@@ -30,15 +30,11 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        let businessDetails = generateBusinessDetails()
-
         let settings = PrimerSettings(
             currency: .SEK,
             countryCode: .se,
             klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: "Scooter Rental",
-            isFullScreenOnly: false,
-            businessDetails: businessDetails
+            klarnaPaymentDescription: "Scooter Rental"
         )
         Primer.shared.configure(settings: settings)
         
