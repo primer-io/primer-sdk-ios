@@ -65,6 +65,8 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var klarnaSessionType: KlarnaSessionType?
+    
     var orderItems: [OrderItem] = []
 
     var isFullScreenOnly: Bool {
