@@ -32,7 +32,7 @@ enum FormTextFieldType: Equatable {
             return (text.isValidAccountNumber,
                     NSLocalizedString("primer-form-validation-account-number-invalid",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
+                                      bundle: Bundle.primerResources,
                                       value: "Account number is invalid",
                                       comment: "Account number is invalid - Form Validation"),
                     false)
@@ -41,7 +41,7 @@ enum FormTextFieldType: Equatable {
             return (text.count > 5,
                     NSLocalizedString("primer-form-validation-sort-code-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
+                                      bundle: Bundle.primerResources,
                                       value: "Sort code is required",
                                       comment: "Sort code is required - Form Validation"),
                     false)
@@ -51,7 +51,7 @@ enum FormTextFieldType: Equatable {
                 return (false,
                         NSLocalizedString("primer-form-validation-iban-required",
                                           tableName: nil,
-                                          bundle: Bundle.primerFramework,
+                                          bundle: Bundle.primerResources,
                                           value: "IBAN is required",
                                           comment: "IBAN is required - Form Validation"),
                         false)
@@ -60,7 +60,7 @@ enum FormTextFieldType: Equatable {
             return (text.count > 5,
                     NSLocalizedString("primer-form-validation-iban-too-short",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
+                                      bundle: Bundle.primerResources,
                                       value: "IBAN is too short",
                                       comment: "IBAN is too short - Form Validation"),
                     false)
@@ -69,7 +69,7 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-firstname-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
+                                      bundle: Bundle.primerResources,
                                       value: "First name is required",
                                       comment: "First name is required - Form Validation"),
                     false)
@@ -78,7 +78,7 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-lastname-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
+                                      bundle: Bundle.primerResources,
                                       value: "Last name is required",
                                       comment: "Last name is required - Form Validation"),
                     false)
@@ -88,7 +88,7 @@ enum FormTextFieldType: Equatable {
                 return (false,
                         NSLocalizedString("primer-form-validation-email-required",
                                           tableName: nil,
-                                          bundle: Bundle.primerFramework,
+                                          bundle: Bundle.primerResources,
                                           value: "Email text field can't be empty",
                                           comment: "Email text field can't be empty - Form Validation"),
                         false)
@@ -99,7 +99,7 @@ enum FormTextFieldType: Equatable {
             return (emailPred.evaluate(with: text),
                     NSLocalizedString("primer-form-validation-email-invalid",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
+                                      bundle: Bundle.primerResources,
                                       value: "Email value is invalid",
                                       comment: "Email value is invalid - Form Validation"),
                     false)
@@ -108,7 +108,7 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-address-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
+                                      bundle: Bundle.primerResources,
                                       value: "Address is required",
                                       comment: "Address is required - Form Validation"),
                     false)
@@ -120,7 +120,7 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-city-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
+                                      bundle: Bundle.primerResources,
                                       value: "City is required",
                                       comment: "City is required - Form Validation"),
                     false)
@@ -129,7 +129,7 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-country-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
+                                      bundle: Bundle.primerResources,
                                       value: "Country is required",
                                       comment: "Country is required - Form Validation"),
                     false)
@@ -138,7 +138,7 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-postal-code-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
+                                      bundle: Bundle.primerResources,
                                       value: "Postal code is required",
                                       comment: "Postal code is required - Form Validation"),
                     false)
