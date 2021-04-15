@@ -184,19 +184,12 @@ class WebViewController: UIViewController, WKNavigationDelegate {
         delegate?.reload()
     }
 
-    func queryValue(for name: String, of url: URL?) -> String? {
-        guard let url = url,
-              let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              let queryItem = urlComponents.queryItems?.last(where: {$0.name == name}) else { return nil }
-        return queryItem.value
-    }
-
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
 
         if let url = navigationAction.request.url, url.host == "primer.io" || url.host == "api.playground.klarna.com"{
 
-            let val = queryValue(for: "token", of: url)
+            let val = url.queryParameterValue(for: "token")
 
             log(logLevel: .info, message: "🚀🚀 \(url)")
             
