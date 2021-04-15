@@ -10,6 +10,8 @@ protocol PrimerSettingsProtocol {
     var merchantIdentifier: String? { get }
     var countryCode: CountryCode? { get }
     var applePayEnabled: Bool { get }
+    var klarnaSessionType: KlarnaSessionType? { get }
+    var klarnaPaymentDescription: String? { get }
     var customerId: String? { get }
     var clientTokenRequestCallback: ClientTokenCallBack { get }
     var onTokenizeSuccess: PaymentMethodTokenCallBack { get }
@@ -51,6 +53,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var merchantIdentifier: String?
     internal(set) public var countryCode: CountryCode?
     internal(set) public var applePayEnabled: Bool
+    internal(set) public var klarnaSessionType: KlarnaSessionType?
+    internal(set) public var klarnaPaymentDescription: String?
     internal(set) public var customerId: String?
     internal(set) public var urlScheme: String?
     internal(set) public var urlSchemeIdentifier: String?
@@ -77,12 +81,14 @@ public class PrimerSettings: PrimerSettingsProtocol {
     }
 
     public init(
+        merchantIdentifier: String? = nil,
+        customerId: String? = nil,
         amount: Int? = nil,
         currency: Currency? = nil,
-        applePayEnabled: Bool = false,
-        customerId: String? = nil,
-        merchantIdentifier: String? = nil,
         countryCode: CountryCode? = nil,
+        applePayEnabled: Bool = false,
+        klarnaSessionType: KlarnaSessionType? = nil,
+        klarnaPaymentDescription: String? = nil,
         urlScheme: String? = nil,
         urlSchemeIdentifier: String? = nil,
         isFullScreenOnly: Bool = false,
@@ -94,6 +100,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.amount = amount
         self.currency = currency
         self.applePayEnabled = applePayEnabled
+        self.klarnaSessionType = klarnaSessionType
+        self.klarnaPaymentDescription = klarnaPaymentDescription
         self.customerId = customerId
         self.merchantIdentifier = merchantIdentifier
         self.countryCode = countryCode
