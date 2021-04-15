@@ -21,42 +21,66 @@ class KlarnaService: KlarnaServiceProtocol {
 
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        
+
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
-        
+
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-        guard let amount = settings.amount else {
-            return completion(.failure(KlarnaException.noAmount))
-        }
-
-        log(logLevel: .info, message: "Klarna amount: \(amount)")
-
-        guard settings.currency != nil else {
-            return completion(.failure(KlarnaException.noCurrency))
-        }
-
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
-              let countryCode = settings.countryCode,
-              let currency = settings.currency
-        else {
+        
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna) else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
+        guard let klarnaSessionType = settings.klarnaSessionType else {
+            return completion(.failure(KlarnaException.undefinedSessionType))
+        }
+        
+        guard let countryCode = settings.countryCode else {
+            return completion(.failure(KlarnaException.noCountryCode))
+        }
+        
+        guard let currency = settings.currency else {
+            return completion(.failure(KlarnaException.noCurrency))
+        }
+        
+        var amount = settings.amount
+        
+        var orderItems: [OrderItem]? = nil
+                        
+        if case .hostedPaymentPage = klarnaSessionType {
+            if amount == nil {
+                return completion(.failure(KlarnaException.noAmount))
+            }
+            
+            if settings.currency == nil {
+                return completion(.failure(KlarnaException.noCurrency))
+            }
+            
+            if settings.orderItems.isEmpty {
+                return completion(.failure(KlarnaException.missingOrderItems))
+            }
+            
+            orderItems = settings.orderItems
+
+            log(logLevel: .info, message: "Klarna amount: \(amount!) \(settings.currency!.rawValue)")
+            
+        } else if case .recurringPayment = klarnaSessionType {
+            // Do not send amount for recurring payments, even if it's set
+            amount = nil
+        }
+        
         let body = KlarnaCreatePaymentSessionAPIRequest(
             paymentMethodConfigId: configId,
-            sessionType: "HOSTED_PAYMENT_PAGE",
-            redirectUrl: "https://primer.io",
-            totalAmount: amount,
+            sessionType: klarnaSessionType,
             localeData: KlarnaLocaleData(
                 countryCode: countryCode.rawValue,
                 currencyCode: currency.rawValue,
-                localeCode: countryCode.klarnaLocaleCode
-            ),
-            orderItems: settings.orderItems
-        )
+                localeCode: countryCode.klarnaLocaleCode),
+            description: klarnaSessionType == .recurringPayment ? (settings.klarnaPaymentDescription ?? "Pay as you go") : nil,
+            redirectUrl: "https://primer.io/success",
+            totalAmount: amount,
+            orderItems: orderItems)
 
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "createPaymentSession")
         
@@ -95,7 +119,7 @@ class KlarnaService: KlarnaServiceProtocol {
             paymentMethodConfigId: configId,
             sessionId: sessionId,
             authorizationToken: authorizationToken,
-            description: settings.orderItems[0].name,
+            description: settings.klarnaPaymentDescription ?? (settings.orderItems.first?.name ?? ""),
             localeData: KlarnaLocaleData(
                 countryCode: countryCode.rawValue,
                 currencyCode: currency.rawValue,
