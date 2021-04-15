@@ -21,12 +21,12 @@ var mockClientToken = DecodedClientToken(
 )
 
 var mockSettings = PrimerSettings(
+    merchantIdentifier: "mid",
+    customerId: "cid",
     amount: 200,
     currency: .EUR,
-    applePayEnabled: false,
-    customerId: "cid",
-    merchantIdentifier: "mid",
     countryCode: .fr,
+    applePayEnabled: false,
     urlScheme: "urlScheme",
     urlSchemeIdentifier: "urlSchemeIdentifier",
     orderItems: [OrderItem(name: "foo", unitAmount: 200, quantity: 1)]
@@ -65,6 +65,8 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var klarnaPaymentDescription: String?
+    
     var klarnaSessionType: KlarnaSessionType?
     
     var orderItems: [OrderItem] = []

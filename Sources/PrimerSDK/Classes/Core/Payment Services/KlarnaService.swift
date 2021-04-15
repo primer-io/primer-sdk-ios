@@ -40,6 +40,10 @@ class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.noCountryCode))
         }
         
+        guard let currency = settings.currency else {
+            return completion(.failure(KlarnaException.noCurrency))
+        }
+        
         var amount = settings.amount
         
         var orderItems: [OrderItem]? = nil
@@ -71,9 +75,9 @@ class KlarnaService: KlarnaServiceProtocol {
             sessionType: klarnaSessionType,
             localeData: KlarnaLocaleData(
                 countryCode: countryCode.rawValue,
-                currencyCode: settings.currency?.rawValue,
+                currencyCode: currency.rawValue,
                 localeCode: countryCode.klarnaLocaleCode),
-            description: klarnaSessionType == .recurringPayment ? "Pay as you go" : nil,
+            description: klarnaSessionType == .recurringPayment ? (settings.klarnaPaymentDescription ?? "Pay as you go") : nil,
             redirectUrl: "https://primer.io/success",
             totalAmount: amount,
             orderItems: orderItems)
@@ -115,7 +119,7 @@ class KlarnaService: KlarnaServiceProtocol {
             paymentMethodConfigId: configId,
             sessionId: sessionId,
             authorizationToken: authorizationToken,
-            description: settings.orderItems[0].name,
+            description: settings.klarnaPaymentDescription ?? (settings.orderItems.first?.name ?? ""),
             localeData: KlarnaLocaleData(
                 countryCode: countryCode.rawValue,
                 currencyCode: currency.rawValue,
