@@ -30,15 +30,13 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        let (finalAmount, items) = generateAmountAndOrderItems()
         let businessDetails = generateBusinessDetails()
         let settings = PrimerSettings(
-            amount: finalAmount,
             currency: .SEK,
+            klarnaSessionType: .recurringPayment,
             countryCode: .se,
             isFullScreenOnly: false,
-            businessDetails: businessDetails,
-            orderItems: items
+            businessDetails: businessDetails
         )
         Primer.shared.configure(settings: settings)
         
