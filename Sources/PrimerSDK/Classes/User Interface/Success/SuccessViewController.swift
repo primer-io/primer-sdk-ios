@@ -212,7 +212,7 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
             guard let name = settings.businessDetails?.name else { return "" }
             return name + " " + NSLocalizedString("primer-success-screen-confirmation-message",
                                                   tableName: nil,
-                                                  bundle: Bundle.primerFramework,
+                                                  bundle: Bundle.primerResources,
                                                   value: "will appear on your bank statement when payments are taken against the Direct Debit.",
                                                   comment: "@payment_method_name will appear on your bank statement when payments are taken against the Direct Debit. - Success Screen Confirmation Message")
         default:
