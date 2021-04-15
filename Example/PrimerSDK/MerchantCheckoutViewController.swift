@@ -26,19 +26,15 @@ class MerchantCheckoutViewController: UIViewController {
         
         Primer.shared.delegate = self
         configurePrimer()
-//        fetchPaymentMethods()
+        fetchPaymentMethods()
     }
     
     func configurePrimer() {
-        let (finalAmount, items) = generateAmountAndOrderItems()
-        let businessDetails = generateBusinessDetails()
         let settings = PrimerSettings(
-            amount: finalAmount,
             currency: .SEK,
             countryCode: .se,
-            isFullScreenOnly: false,
-            businessDetails: businessDetails,
-            orderItems: items
+            klarnaSessionType: .recurringPayment,
+            klarnaPaymentDescription: "Scooter Rental"
         )
         Primer.shared.configure(settings: settings)
         

@@ -194,13 +194,20 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Direct debit set up \nsuccessfully",
                                      comment: "Direct debit set up \nsuccessfully - Success Screen Title (Direct Debit)")
-
         default:
-            return NSLocalizedString("primer-success-screen-setup-success",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Success!",
-                                     comment: "Success! - Success Screen Title")
+            if Primer.shared.flow.vaulted {
+                return NSLocalizedString("primer-success-screen-vault-setup-success",
+                                         tableName: nil,
+                                         bundle: Bundle.primerResources,
+                                         value: "A new payment method has been successfully added!",
+                                         comment: "A new payment method has been successfully added! - Success Screen Title")
+            } else {
+                return NSLocalizedString("primer-success-screen-setup-success",
+                                         tableName: nil,
+                                         bundle: Bundle.primerResources,
+                                         value: "Success!",
+                                         comment: "Success! - Success Screen Title")
+            }
         }
     }
 
