@@ -31,7 +31,7 @@ struct PaymentInstrument: Encodable {
     var externalPayerInfo: PayPalExternalPayerInfo?
     // Apple Pay
     var paymentMethodConfigId: String?
-    var token: ApplePayToken?
+    var token: ApplePayPaymentResponseToken?
     var merchantIdentifier: String?
     // Direct Debit (GoCardless)
     var gocardlessMandateId: String?

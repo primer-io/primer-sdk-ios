@@ -45,6 +45,8 @@ public enum PrimerSessionFlow {
     case addKlarnaToVault
     case addDirectDebit
     case checkoutWithKlarna
+    case addApplePay
+    case payWithApplePay
 
     var vaulted: Bool {
         switch self {
@@ -66,6 +68,10 @@ public enum PrimerSessionFlow {
             return true
         case .defaultWithVault:
             return true
+        case .addApplePay:
+            return true
+        case .payWithApplePay:
+            return false
         }
     }
 
@@ -89,6 +95,10 @@ public enum PrimerSessionFlow {
             return .VAULT
         case .defaultWithVault:
             return .VAULT
+        case .addApplePay:
+            return .VAULT
+        case .payWithApplePay:
+            return .CHECKOUT
         }
     }
 }

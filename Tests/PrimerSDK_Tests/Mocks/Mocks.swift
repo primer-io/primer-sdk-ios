@@ -65,6 +65,10 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var merchantCapabilities: [MerchantCapability]?
+    
+    var supportedNetworks: [PaymentNetwork]?
+    
     var klarnaPaymentDescription: String?
     
     var klarnaSessionType: KlarnaSessionType?
