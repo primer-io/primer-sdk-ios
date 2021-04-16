@@ -323,6 +323,170 @@ enum PrimerError: PrimerErrorProtocol {
 
 }
 
+enum PaymentException: PrimerErrorProtocol {
+    
+    case missingConfigurationId
+    case missingClientToken
+    case missingCountryCode
+    case missingCurrency
+    case missingAmount
+    case missingOrderItems
+    case missingPrimerDelegate
+    
+    var shouldBePresented: Bool {
+        return false
+    }
+    
+    static var errorDomain: String = "primer.payments"
+
+    var errorCode: Int {
+        switch self {
+        default:
+            // Define API error codes with Android & Web
+            return 100
+        }
+    }
+
+    var errorUserInfo: [String: Any] {
+        switch self {
+        default:
+            // Do we want more information on the errors? E.g. timestamps?
+            return [:]
+        }
+    }
+
+    var errorDescription: String? {
+        switch self {
+        case .missingConfigurationId:
+            return NSLocalizedString("primer-payments-error-message-missing-config-id",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Configuration ID is missing from settings. Please provide a configuration ID.",
+                                     comment: "Configuration ID is missing from settings. Please provide a configuration ID. - Error message")
+            
+        case .missingClientToken:
+            return NSLocalizedString("primer-payments-error-message-missing-client-token",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Client token is missing. Please provide a client token from your backend.",
+                                     comment: "Client token is missing. Please provide a client token from your backend. - Error message")
+            
+        case .missingCountryCode:
+            return NSLocalizedString("primer-payments-error-message-missing-country-code",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Country code is missing. Please provide a country code in settings.",
+                                     comment: "Country code is missing. Please provide a country code in settings. - Error message")
+            
+        case .missingCurrency:
+            return NSLocalizedString("primer-payments-error-message-missing-currency",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Currency is missing. Please provide currency in settings.",
+                                     comment: "Currency is missing. Please provide currency in settings. - Error message")
+            
+        case .missingAmount:
+            return NSLocalizedString("primer-payments-error-message-missing-amount",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Amount is missing. Please provide an amount in settings.",
+                                     comment: "Amount is missing. Please provide an amount in settings. - Error message")
+            
+        case .missingOrderItems:
+            return NSLocalizedString("primer-payments-error-message-missing-order-items",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Order items are missing. Please provide some order items in settings.",
+                                     comment: "Order items are missing. Please provide some order items in settings. - Error message")
+        case .missingPrimerDelegate:
+            return NSLocalizedString("primer-payments-error-message-missing-primer-delegate",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Primer delegate is missing. Please set the delegate of Primer.",
+                                     comment: "Primer delegate is missing. Please set the delegate of Primer. - Error message")
+        }
+    }
+    
+}
+
+enum AppleException: PrimerErrorProtocol {
+    
+    case cancelled
+    case missingSupportedPaymentNetworks
+    case missingMerchantCapabilities
+    case missingMerchantIdentifier
+    case unableToMakePaymentsOnProvidedNetworks
+    case unableToPresentApplePay
+    
+    var shouldBePresented: Bool {
+        return false
+    }
+    
+    static var errorDomain: String = "primer.apple"
+
+    var errorCode: Int {
+        switch self {
+        default:
+            // Define API error codes with Android & Web
+            return 100
+        }
+    }
+
+    var errorUserInfo: [String: Any] {
+        switch self {
+        default:
+            // Do we want more information on the errors? E.g. timestamps?
+            return [:]
+        }
+    }
+
+    var errorDescription: String? {
+        switch self {
+        case .cancelled:
+            return NSLocalizedString("primer-apple-error-message-cancelled",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Apple Pay was cancelled",
+                                     comment: "Apple Pay was cancelled. - Error message")
+            
+        case .missingSupportedPaymentNetworks:
+            return NSLocalizedString("primer-apple-error-message-missing-supported-payment-networks",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Supported networks are missing from settings. Please provide some supported payment networks.",
+                                     comment: "Supported networks are missing from settings. Please provide some supported payment networks. - Error message")
+            
+        case .missingMerchantCapabilities:
+            return NSLocalizedString("primer-apple-error-message-missing-merchant-capabilities",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Merchant capabilities are missing from settings. Please provide some merchant capabilities.",
+                                     comment: "Merchant capabilities are missing from settings. Please provide some merchant capabilities. - Error message")
+            
+        case .missingMerchantIdentifier:
+            return NSLocalizedString("primer-apple-error-message-missing-merchant-identifier",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Merchant identifier is missing from settings. Please provide a merchant identifier that is also included in your entitlements.",
+                                     comment: "Merchant identifier is missing from settings. Please provide a merchant identifier that is also included in your entitlements. - Error message")
+            
+        case .unableToMakePaymentsOnProvidedNetworks:
+            return NSLocalizedString("primer-apple-error-message-unable-to-make-payment-on-payment-networks",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Unable to make payments on provided payment networks.",
+                                     comment: "Unable to make payments on provided payment networks. - Error message")
+        case .unableToPresentApplePay:
+            return NSLocalizedString("primer-apple-error-message-unable-to-present-apple-pay",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Unable to present Apple Pay.",
+                                     comment: "Unable to present Apple Pay. - Error message")
+        }
+    }
+    
+}
+
 struct PrimerErrorResponse: Codable {
     var errorId: String
     var `description`: String
