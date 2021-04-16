@@ -1,5 +1,6 @@
 #if canImport(UIKit)
 
+import PassKit
 import UIKit
 
 // swiftlint:disable identifier_name
@@ -48,7 +49,7 @@ public class Primer {
         DependencyContainer.register(TokenizationService() as TokenizationServiceProtocol)
         DependencyContainer.register(DirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(KlarnaService() as KlarnaServiceProtocol)
-        DependencyContainer.register(ApplePayViewModel() as ApplePayViewModelProtocol)
+        DependencyContainer.register(ApplePayService() as ApplePayServiceProtocol)
         DependencyContainer.register(CardScannerViewModel() as CardScannerViewModelProtocol)
         DependencyContainer.register(DirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
         DependencyContainer.register(OAuthViewModel() as OAuthViewModelProtocol)
@@ -142,12 +143,24 @@ public class Primer {
      1.4.0
      */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
-        root = RootViewController()
-        let router: RouterDelegate = DependencyContainer.resolve()
-        router.setRoot(root!)
-        guard let root = self.root else { return }
-        Primer.shared.flow = flow
-        controller.present(root, animated: true)
+        if case .payWithApplePay = flow {
+            let appleService: ApplePayServiceProtocol = DependencyContainer.resolve()
+            appleService.payWithApple { (result) in
+                switch result {
+                case .success(let response):
+                    print(response)
+                case .failure(let err):
+                    print(err)
+                }
+            }
+        } else {
+            root = RootViewController()
+            let router: RouterDelegate = DependencyContainer.resolve()
+            router.setRoot(root!)
+            guard let root = self.root else { return }
+            Primer.shared.flow = flow
+            controller.present(root, animated: true)
+        }
     }
 
     /**

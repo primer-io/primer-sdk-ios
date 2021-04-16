@@ -23,6 +23,8 @@ protocol PrimerSettingsProtocol {
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
     var orderItems: [OrderItem] { get }
+    var supportedNetworks: [PaymentNetwork]? { get }
+    var merchantCapabilities: [MerchantCapability]? { get }
 }
 
 /**
@@ -48,6 +50,7 @@ protocol PrimerSettingsProtocol {
  */
 
 public class PrimerSettings: PrimerSettingsProtocol {
+    
     internal(set) public var amount: Int?
     internal(set) public var currency: Currency?
     internal(set) public var merchantIdentifier: String?
@@ -63,6 +66,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var businessDetails: BusinessDetails?
     internal(set) public var directDebitHasNoAmount: Bool
     internal(set) public var orderItems: [OrderItem]
+    internal(set) public var supportedNetworks: [PaymentNetwork]?
+    internal(set) public var merchantCapabilities: [MerchantCapability]?
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
@@ -95,7 +100,9 @@ public class PrimerSettings: PrimerSettingsProtocol {
         hasDisabledSuccessScreen: Bool = false,
         businessDetails: BusinessDetails? = nil,
         directDebitHasNoAmount: Bool = false,
-        orderItems: [OrderItem] = []
+        orderItems: [OrderItem] = [],
+        supportedNetworks: [PaymentNetwork]? = nil,
+        merchantCapabilities: [MerchantCapability]? = nil
     ) {
         self.amount = amount
         self.currency = currency
@@ -112,6 +119,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.businessDetails = businessDetails
         self.directDebitHasNoAmount = directDebitHasNoAmount
         self.orderItems = orderItems
+        self.supportedNetworks = supportedNetworks
+        self.merchantCapabilities = merchantCapabilities
     }
 }
 

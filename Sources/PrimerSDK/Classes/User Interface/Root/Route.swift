@@ -12,6 +12,7 @@ import UIKit
 enum OAuthHost {
     case paypal
     case klarna
+    case applePay
 }
 
 enum Route {

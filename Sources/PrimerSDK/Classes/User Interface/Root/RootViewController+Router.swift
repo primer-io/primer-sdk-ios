@@ -41,7 +41,6 @@ class Router: RouterDelegate {
             }
 
             root.view.endEditing(true)
-
         }
 
         root.add(vc, height: route.height)

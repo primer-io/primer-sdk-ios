@@ -31,10 +31,23 @@ class MerchantCheckoutViewController: UIViewController {
     
     func configurePrimer() {
         let settings = PrimerSettings(
-            currency: .SEK,
-            countryCode: .se,
-            klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: "Scooter Rental"
+            merchantIdentifier: "merchant.primer.dev.evangelos",
+            customerId: nil,
+            amount: nil,
+            currency: .EUR,
+            countryCode: .fr,
+            applePayEnabled: false,
+            klarnaSessionType: nil,
+            klarnaPaymentDescription: nil,
+            urlScheme: nil,
+            urlSchemeIdentifier: nil,
+            isFullScreenOnly: true,
+            hasDisabledSuccessScreen: false,
+            businessDetails: generateBusinessDetails(),
+            directDebitHasNoAmount: false,
+            orderItems: [OrderItem(name: "Shoes", unitAmount: 9999, quantity: 1)],
+            supportedNetworks: [.masterCard, .visa],
+            merchantCapabilities: [.capability3DS]
         )
         Primer.shared.configure(settings: settings)
         
@@ -69,6 +82,10 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addDirectDebitButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addDirectDebitToVault)
+    }
+    
+    @IBAction func addApplePayButtonTapped(_ sender: Any) {
+        Primer.shared.showCheckout(self, flow: .payWithApplePay)
     }
     
     @IBAction func openWalletButtonTapped(_ sender: Any) {

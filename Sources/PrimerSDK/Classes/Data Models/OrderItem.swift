@@ -6,11 +6,16 @@
 //
 
 import Foundation
+import PassKit
 
 public struct OrderItem: Codable {
     public let name: String
     public let unitAmount: Int
     public let quantity: Int
+    
+    public var applePayItem: PKPaymentSummaryItem {
+        return PKPaymentSummaryItem(label: name, amount: NSDecimalNumber(value: Double(unitAmount)/100))
+    }
 
     public init(
         name: String,

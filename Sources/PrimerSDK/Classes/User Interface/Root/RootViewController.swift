@@ -118,6 +118,10 @@ class RootViewController: UIViewController {
             router.show(.oAuth(host: .klarna))
         case .defaultWithVault:
             router.show(.vaultCheckout)
+        case .addApplePay:
+            router.show(.oAuth(host: .applePay))
+        case .payWithApplePay:
+            router.show(.oAuth(host: .applePay))
         }
     }
     
