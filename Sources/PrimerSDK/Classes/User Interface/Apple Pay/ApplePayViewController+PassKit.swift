@@ -48,32 +48,33 @@ extension ApplePayViewController: PKPaymentAuthorizationViewControllerDelegate {
 
     private func createPaymentInstrument(with payment: PKPayment) -> PaymentInstrument? {
         do {
-            let paymentData = try JSONDecoder().decode(ApplePayTokenPaymentData.self, from: payment.token.paymentData)
-
-            guard let network = payment.token.paymentMethod.network else { return nil }
-            
-            let viewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
-            guard let merchantIdentifier = viewModel.merchantIdentifier else { return nil }
-
-            let method = ApplePayTokenPaymentMethod(
-                displayName: payment.token.paymentMethod.displayName!,
-                network: network.rawValue,
-                type: "\(payment.token.paymentMethod.type.rawValue)"
-            )
-
-            let token = ApplePayToken(
-                paymentData: paymentData,
-                paymentMethod: method,
-                transactionIdentifier: payment.token.transactionIdentifier
-            )
-
-            let instrument = PaymentInstrument(
-                paymentMethodConfigId: viewModel.applePayConfigId,
-                token: token,
-                merchantIdentifier: merchantIdentifier
-            )
-
-            return instrument
+            return nil
+//            let paymentData = try JSONDecoder().decode(ApplePayPaymentResponsePaymentData.self, from: payment.token.paymentData)
+//
+//            guard let network = payment.token.paymentMethod.network else { return nil }
+//
+//            let viewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
+//            guard let merchantIdentifier = viewModel.merchantIdentifier else { return nil }
+//
+//            let method = ApplePayPaymentResponsePaymentMethod(
+//                displayName: payment.token.paymentMethod.displayName!
+////                network: network.rawValue,
+////                type: "\(payment.token.paymentMethod.type.rawValue)"
+//            )
+//
+//            let token = ApplePayPaymentResponseToken(
+//                paymentMethod: paymentData,
+//                transactionIdentifier: method,
+//                paymentData: payment.token.transactionIdentifier
+//            )
+//
+//            let instrument = PaymentInstrument(
+//                paymentMethodConfigId: viewModel.applePayConfigId,
+//                token: token,
+//                merchantIdentifier: merchantIdentifier
+//            )
+//
+//            return instrument
         } catch {
             return nil
         }
