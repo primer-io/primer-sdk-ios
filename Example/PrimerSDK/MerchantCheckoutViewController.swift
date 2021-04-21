@@ -112,6 +112,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         })
     }
     
+    func tokenAddedToVault(_ token: String) {
+        print("Token added: \(token)")
+    }
+    
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         guard let token = result.token else { return completion(NetworkError.missingParams) }
 
