@@ -49,6 +49,10 @@ class MockPrimerDelegate: PrimerDelegate {
         guard let data = tokenData else { return }
         completion(.success(data))
     }
+    
+    func tokenAddedToVault(_ token: String) {
+        
+    }
 
     var authorizePaymentCalled = false
 
