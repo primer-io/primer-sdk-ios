@@ -123,11 +123,11 @@ extension VaultCheckoutView {
         
         if (vaulted) {
             if (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true) {
-                savedCardTitleLabel.text = NSLocalizedString("primer-vault-checkout-card-title",
+                savedCardTitleLabel.text = NSLocalizedString("primer-vault-checkout-payment-method-title",
                                                              tableName: nil,
                                                              bundle: Bundle.primerResources,
-                                                             value: "SAVED CARD",
-                                                             comment: "SAVED CARD - Vault Checkout Card Title")
+                                                             value: "SAVED PAYMENT METHOD",
+                                                             comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
 
                 savedCardTitleLabel.textColor = theme.colorTheme.secondaryText1
                 savedCardTitleLabel.font = .systemFont(ofSize: 12, weight: .light)
