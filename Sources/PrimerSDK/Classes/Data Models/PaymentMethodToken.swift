@@ -97,7 +97,6 @@ struct CardButtonViewModel {
     let paymentMethodType: PaymentInstrumentType
 }
 
-// FIXME: Add description for Klarna
 /**
  Enum exposing available payment methods
   
