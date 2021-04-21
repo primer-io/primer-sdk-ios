@@ -112,6 +112,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         })
     }
     
+    func tokenAddedToVault(_ token: PaymentMethodToken) {
+        print("Token added: \(token)")
+    }
+    
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         guard let token = result.token else { return completion(NetworkError.missingParams) }
 
@@ -166,7 +170,7 @@ extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDele
             let title = "Direct Debit"
             cell.configure(title: title, image: paymentMethod.icon.image!)
         case .klarnaCustomerToken:
-            let title = "Klarna Customer Token"
+            let title = paymentMethod.paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token"
             cell.configure(title: title, image: paymentMethod.icon.image!)
         default:
             cell.configure(title: "", image: nil)

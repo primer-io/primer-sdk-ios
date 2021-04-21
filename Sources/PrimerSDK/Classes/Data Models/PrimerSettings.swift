@@ -126,8 +126,13 @@ public struct BusinessDetails: Codable {
 }
 
 class MockDelegate: PrimerDelegate {
+    
     func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
 
+    }
+    
+    func tokenAddedToVault(_ token: PaymentMethodToken) {
+            
     }
 
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
@@ -137,6 +142,7 @@ class MockDelegate: PrimerDelegate {
     func onCheckoutDismissed() {
 
     }
+    
 }
 
 #endif
