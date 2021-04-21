@@ -60,15 +60,15 @@ class MerchantCheckoutViewController: UIViewController {
     // MARK: - ACTIONS
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .default)
+        Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .checkoutWithKlarna)
+        Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
     }
     
     @IBAction func addDirectDebitButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .completeDirectCheckout)
+        Primer.shared.showCheckout(self, flow: .addDirectDebitToVault)
     }
     
     @IBAction func openWalletButtonTapped(_ sender: Any) {
