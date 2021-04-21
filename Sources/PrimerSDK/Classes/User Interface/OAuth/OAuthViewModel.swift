@@ -124,6 +124,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
                 switch Primer.shared.flow.uxMode {
                 case .VAULT:
                     log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                    
                     completion(nil) // self?.onTokenizeSuccess(token, completion)
                 case .CHECKOUT:
                     log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)

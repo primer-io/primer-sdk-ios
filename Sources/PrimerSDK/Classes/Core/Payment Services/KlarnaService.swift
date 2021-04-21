@@ -134,10 +134,6 @@ class KlarnaService: KlarnaServiceProtocol {
             case .failure:
                 completion(.failure(KlarnaException.failedApiCall))
             case .success(let response):
-                if Primer.shared.flow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault(response.customerTokenId)
-                }
-                
                 log(logLevel: .info, message: "\(response)", className: "KlarnaService", function: "createCustomerToken")
                 completion(.success(response))
             }
