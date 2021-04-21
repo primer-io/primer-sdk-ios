@@ -60,15 +60,15 @@ class MerchantCheckoutViewController: UIViewController {
     // MARK: - ACTIONS
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .addCardToVault)
+        Primer.shared.showCheckout(self, flow: .default)
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
+        Primer.shared.showCheckout(self, flow: .checkoutWithKlarna)
     }
     
     @IBAction func addDirectDebitButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .addDirectDebitToVault)
+        Primer.shared.showCheckout(self, flow: .completeDirectCheckout)
     }
     
     @IBAction func openWalletButtonTapped(_ sender: Any) {
@@ -112,7 +112,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         })
     }
     
-    func tokenAddedToVault(_ token: String) {
+    func tokenAddedToVault(_ token: PaymentMethodToken) {
         print("Token added: \(token)")
     }
     

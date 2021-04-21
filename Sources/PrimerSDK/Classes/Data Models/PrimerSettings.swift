@@ -131,7 +131,7 @@ class MockDelegate: PrimerDelegate {
 
     }
     
-    func tokenAddedToVault(_ token: String) {
+    func tokenAddedToVault(_ token: PaymentMethodToken) {
             
     }
 
