@@ -60,8 +60,10 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
                 completion(error)
             case .success(let token):
                 switch Primer.shared.flow {
-                case .completeDirectCheckout: settings.onTokenizeSuccess(token, completion)
-                default: completion(nil)
+                case .completeDirectCheckout:
+                    settings.onTokenizeSuccess(token, completion)
+                default:
+                    completion(nil)
                 }
             }
         }
