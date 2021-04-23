@@ -69,6 +69,8 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var isInitialLoadingHidden: Bool = false
+    
     var klarnaPaymentDescription: String?
     
     var klarnaSessionType: KlarnaSessionType?
