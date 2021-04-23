@@ -211,6 +211,7 @@ enum NetworkServiceError: PrimerErrorProtocol {
 
 enum PrimerError: PrimerErrorProtocol {
 
+    case generic
     case clientTokenNull
     case customerIDNull
     case payPalSessionFailed
@@ -221,6 +222,7 @@ enum PrimerError: PrimerErrorProtocol {
     case configFetchFailed
     case tokenizationPreRequestFailed
     case tokenizationRequestFailed
+    case failedToLoadSession
 
     static var errorDomain: String = "primer"
 
@@ -242,6 +244,13 @@ enum PrimerError: PrimerErrorProtocol {
 
     var errorDescription: String? {
         switch self {
+        case .generic:
+            return NSLocalizedString("primer-error-message-generic",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Something went wrong",
+                                     comment: "Something went wrong - Primer error message")
+            
         case .clientTokenNull:
             return NSLocalizedString("primer-error-message-client-token-missing",
                                      tableName: nil,
@@ -311,6 +320,12 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Connection error, your payment method was not saved. Please try again.",
                                      comment: "Connection error, your payment method was not saved. Please try again. - Primer error message")
+        case .failedToLoadSession:
+            return NSLocalizedString("primer-error-message-failed-to-load-session",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Failed to load session, please close and try again.",
+                                     comment: "Failed to load session, please close and try again. - Primer error message")
         }
     }
 
