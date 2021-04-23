@@ -47,8 +47,16 @@ class RootViewController: UIViewController {
     override func viewDidLoad() {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
+        switch Primer.shared.flow {
+        case .addKlarnaToVault,
+             .addPayPalToVault,
+             .checkoutWithKlarna:
+            mainView.backgroundColor = settings.isInitialLoadingHidden ? .clear : theme.colorTheme.main1
+        default:
+            mainView.backgroundColor = theme.colorTheme.main1
+        }
 
-        mainView.backgroundColor = theme.colorTheme.main1
         view.addSubview(backdropView)
         backdropView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mainView)

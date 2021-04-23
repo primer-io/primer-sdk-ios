@@ -28,7 +28,17 @@ public class PresentationController: UIPresentationController {
         self.blurEffectView.alpha = 0
         self.containerView?.addSubview(blurEffectView)
         self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in
-            self.blurEffectView.alpha = 0.7
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            switch Primer.shared.flow {
+            case .addKlarnaToVault,
+                 .addPayPalToVault,
+                 .checkoutWithKlarna:
+                self.blurEffectView.alpha = settings.isInitialLoadingHidden ? 0 : 0.7
+            default:
+                self.blurEffectView.alpha = 0.7
+            }
+            
         }, completion: { (_) in })
     }
 
