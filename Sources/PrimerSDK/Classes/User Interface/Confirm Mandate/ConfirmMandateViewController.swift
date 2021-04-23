@@ -31,7 +31,7 @@ class ConfirmMandateViewController: UIViewController {
             DispatchQueue.main.async {
                 if error.exists {
                     let router: RouterDelegate = DependencyContainer.resolve()
-                    router.show(.error(message: "failed to load session, please close and try again."))
+                    router.show(.error(error: PrimerError.failedToLoadSession))
                     return
                 }
                 self?.subView.render()
@@ -101,7 +101,7 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()
                 if error.exists {
-                    router.show(.error(message: PrimerError.directDebitSessionFailed.localizedDescription))
+                    router.show(.error(error: PrimerError.directDebitSessionFailed))
                     return
                 } else {
                     router.show(.success(type: .directDebit))
