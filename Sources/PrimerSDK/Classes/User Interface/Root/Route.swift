@@ -58,6 +58,7 @@ enum Route {
             vc.screenType = screenType
             return vc
         case .error(let error):
+            Primer.shared.delegate?.checkoutFailed(with: error)
             return ErrorViewController(message: error.localizedDescription)
         case .confirmMandate:
             return ConfirmMandateViewController()
