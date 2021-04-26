@@ -69,7 +69,11 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        return viewModel.paymentMethods.count + 1
+        
+        /// TODO(at): Only return the number of saved payment instruments while we figure the design
+        return viewModel.paymentMethods.count
+        
+        // return viewModel.paymentMethods.count + 1 /* "Add card" button */
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
