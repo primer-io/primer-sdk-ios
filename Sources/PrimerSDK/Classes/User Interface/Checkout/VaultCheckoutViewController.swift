@@ -140,7 +140,7 @@ extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
         viewModel.authorizePayment({ [weak self] error in
             DispatchQueue.main.async {
                 if error.exists {
-                    router.show(.error())
+                    router.show(.error(error: PrimerError.generic))
                     return
                 }
                 router.show(.success(type: .regular))
