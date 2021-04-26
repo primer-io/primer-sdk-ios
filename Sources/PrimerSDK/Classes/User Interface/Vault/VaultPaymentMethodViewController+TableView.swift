@@ -63,7 +63,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
                 self?.subView.tableView.reloadData()
                 
                 // Going back if no payment method remains
-                if viewModel.paymentMethods.count == 0 {
+                if viewModel.paymentMethods.isEmpty {
                     self?.cancel()
                 }
             }
