@@ -70,19 +70,6 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
         })
     }
 
-    @objc private func deleteMethod(sender: UIButton) {
-        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        guard let methodId = viewModel.paymentMethods[sender.tag].token else { return }
-        viewModel.deletePaymentMethod(with: methodId, and: { [weak self] _ in
-            DispatchQueue.main.async {
-                self?.subView.tableView.reloadData()
-                if viewModel.paymentMethods.count == 0 {
-                    self?.cancel()
-                }
-            }
-        })
-    }
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         
