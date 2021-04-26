@@ -51,6 +51,7 @@ public struct PaymentMethodToken: Codable {
             guard let network = self.paymentInstrumentData?.network else { return .creditCard }
             switch network {
             case "Visa": return .visa
+            case "Mastercard": return .masterCard
             default: return .creditCard
             }
         case .payPalOrder: return .paypal2
