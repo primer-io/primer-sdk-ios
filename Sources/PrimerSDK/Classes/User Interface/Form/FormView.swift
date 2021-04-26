@@ -9,7 +9,7 @@
 
 import UIKit
 
-let ENABLE_CARD_SCANNER = false
+let enableCardScanner = false
 
 protocol FormViewDelegate: class, UITextFieldDelegate {
     var formType: FormType { get }
@@ -105,7 +105,7 @@ class FormView: UIView {
         if let formType = delegate?.formType {
             switch formType {
             case .cardForm:
-                if ENABLE_CARD_SCANNER {
+                if enableCardScanner {
                     configureScannerButton()
                 }
             default: break
