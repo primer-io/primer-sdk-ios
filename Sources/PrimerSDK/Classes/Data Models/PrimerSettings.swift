@@ -23,6 +23,7 @@ protocol PrimerSettingsProtocol {
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
     var orderItems: [OrderItem] { get }
+    var isInitialLoadingHidden: Bool { get }
 }
 
 /**
@@ -63,6 +64,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var businessDetails: BusinessDetails?
     internal(set) public var directDebitHasNoAmount: Bool
     internal(set) public var orderItems: [OrderItem]
+    internal(set) public var isInitialLoadingHidden: Bool
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
@@ -95,7 +97,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         hasDisabledSuccessScreen: Bool = false,
         businessDetails: BusinessDetails? = nil,
         directDebitHasNoAmount: Bool = false,
-        orderItems: [OrderItem] = []
+        orderItems: [OrderItem] = [],
+        isInitialLoadingHidden: Bool = false
     ) {
         self.amount = amount
         self.currency = currency
@@ -112,6 +115,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.businessDetails = businessDetails
         self.directDebitHasNoAmount = directDebitHasNoAmount
         self.orderItems = orderItems
+        self.isInitialLoadingHidden = isInitialLoadingHidden
     }
 }
 
