@@ -34,7 +34,9 @@ class MerchantCheckoutViewController: UIViewController {
             currency: .SEK,
             countryCode: .se,
             klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: "Scooter Rental"
+            klarnaPaymentDescription: "Scooter Rental",
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true
         )
         Primer.shared.configure(settings: settings)
         

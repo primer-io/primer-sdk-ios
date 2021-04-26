@@ -32,16 +32,21 @@ class Router: RouterDelegate {
     func show(_ route: Route) {
         guard let root = self.root else { return }
         guard let vc = route.viewController else { return }
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         if vc is SuccessViewController {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
             if settings.hasDisabledSuccessScreen {
                 return root.dismiss(animated: true, completion: nil)
             }
 
             root.view.endEditing(true)
 
+        } else if vc is ErrorViewController {
+            if settings.hasDisabledSuccessScreen {
+                return root.dismiss(animated: true, completion: nil)
+            }
+            
+            root.view.endEditing(true)
         }
 
         root.add(vc, height: route.height)
