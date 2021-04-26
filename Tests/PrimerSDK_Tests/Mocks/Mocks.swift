@@ -66,6 +66,10 @@ class MockPrimerDelegate: PrimerDelegate {
     func onCheckoutDismissed() {
         onCheckoutDismissedCalled = true
     }
+    
+    func checkoutFailed(with error: Error) {
+        
+    }
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {

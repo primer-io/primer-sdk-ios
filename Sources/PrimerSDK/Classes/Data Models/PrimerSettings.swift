@@ -147,6 +147,10 @@ class MockDelegate: PrimerDelegate {
 
     }
     
+    func checkoutFailed(with error: Error) {
+        
+    }
+    
 }
 
 #endif

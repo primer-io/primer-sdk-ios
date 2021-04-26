@@ -120,8 +120,8 @@ class FormViewModel: FormViewModelProtocol {
         case .cardForm:
             submit { error in
                 DispatchQueue.main.async { [weak self] in
-                    if error.exists {
-                        router.show(.error(message: error!.localizedDescription))
+                    if let error = error {
+                        router.show(.error(error: error))
                     } else {
                         router.show(.success(type: .regular))
                     }
