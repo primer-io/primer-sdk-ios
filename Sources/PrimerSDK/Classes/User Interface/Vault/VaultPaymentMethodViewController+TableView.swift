@@ -45,10 +45,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 
             alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
-                let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-                viewModel.deletePaymentMethod(with: methodId, and: { [weak self] _ in
-                    DispatchQueue.main.async { self?.subView.tableView.reloadData() }
-                })
+                self?.deletePaymentMethod(methodId)
             }))
 
             alert.show()
@@ -58,12 +55,31 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 10
     }
+    
+    private func deletePaymentMethod(_ paymentMethodToken: String) {
+        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        viewModel.deletePaymentMethod(with: paymentMethodToken, and: { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.subView.tableView.reloadData()
+                
+                // Going back if no payment method remains
+                if viewModel.paymentMethods.count == 0 {
+                    self?.cancel()
+                }
+            }
+        })
+    }
 
     @objc private func deleteMethod(sender: UIButton) {
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         guard let methodId = viewModel.paymentMethods[sender.tag].token else { return }
         viewModel.deletePaymentMethod(with: methodId, and: { [weak self] _ in
-            DispatchQueue.main.async { self?.subView.tableView.reloadData() }
+            DispatchQueue.main.async {
+                self?.subView.tableView.reloadData()
+                if viewModel.paymentMethods.count == 0 {
+                    self?.cancel()
+                }
+            }
         })
     }
 
