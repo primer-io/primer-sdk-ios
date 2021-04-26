@@ -145,6 +145,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         fetchPaymentMethods()
     }
     
+    func checkoutFailed(with error: Error) {
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\nError: \(error as NSError)")
+    }
+    
 }
 
 // MARK: - TABLE VIEW DATA SOURCE & DELEGATE

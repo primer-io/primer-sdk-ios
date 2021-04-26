@@ -29,6 +29,7 @@ public protocol PrimerDelegate: class {
     func tokenAddedToVault(_ token: PaymentMethodToken)
     func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     func onCheckoutDismissed()
+    func checkoutFailed(with error: Error)
 }
 
 class MockPrimerDelegate: PrimerDelegate {
@@ -47,6 +48,10 @@ class MockPrimerDelegate: PrimerDelegate {
 
     func onCheckoutDismissed() {
 
+    }
+    
+    func checkoutFailed(with error: Error) {
+        
     }
     
 }

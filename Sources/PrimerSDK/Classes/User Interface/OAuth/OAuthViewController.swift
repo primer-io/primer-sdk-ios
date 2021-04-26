@@ -87,7 +87,7 @@ class OAuthViewController: UIViewController {
                     let router: RouterDelegate = DependencyContainer.resolve()
 
                     if (error is PrimerError) {
-                        router.show(.error())
+                        router.show(.error(error: error!))
                     } else if (error.exists) {
                         router.pop()
                     } else {
@@ -106,7 +106,7 @@ class OAuthViewController: UIViewController {
 
             guard let authURL = URL(string: urlString) else {
                 let router: RouterDelegate = DependencyContainer.resolve()
-                router.show(.error())
+                router.show(.error(error: PrimerError.generic))
                 return
             }
 
@@ -116,7 +116,7 @@ class OAuthViewController: UIViewController {
                 callbackURLScheme: viewModel.urlSchemeIdentifier,
                 completionHandler: { [weak self] (url, error) in
                     let router: RouterDelegate = DependencyContainer.resolve()
-                    error.exists ? router.show(.error()) : self?.onOAuthCompleted(callbackURL: url)
+                    error.exists ? router.show(.error(error: PrimerError.generic)) : self?.onOAuthCompleted(callbackURL: url)
                 }
             )
 
@@ -130,7 +130,7 @@ class OAuthViewController: UIViewController {
         viewModel.tokenize(host, with: { [weak self] error in
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()
-                error.exists ? router.show(.error()) : router.show(.success(type: .regular))
+                error.exists ? router.show(.error(error: PrimerError.generic)) : router.show(.success(type: .regular))
             }
         })
     }
@@ -152,7 +152,7 @@ extension OAuthViewController: ReloadDelegate {
         viewModel.tokenize(host, with: { [weak self] error in
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()
-                error.exists ? router.show(.error()) : router.show(.success(type: .regular))
+                error.exists ? router.show(.error(error: PrimerError.generic)) : router.show(.success(type: .regular))
             }
         })
     }
