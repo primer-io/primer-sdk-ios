@@ -66,9 +66,15 @@ class MockPrimerDelegate: PrimerDelegate {
     func onCheckoutDismissed() {
         onCheckoutDismissedCalled = true
     }
+    
+    func checkoutFailed(with error: Error) {
+        
+    }
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var isInitialLoadingHidden: Bool = false
+    
     var klarnaPaymentDescription: String?
     
     var klarnaSessionType: KlarnaSessionType?
