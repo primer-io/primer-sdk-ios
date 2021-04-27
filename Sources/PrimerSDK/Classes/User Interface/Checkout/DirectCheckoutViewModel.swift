@@ -111,6 +111,7 @@ struct PaymentMethodViewModel {
         case .payPal: return  ImageName.paypal3
         case .goCardlessMandate: return ImageName.rightArrow
         case .klarna: return ImageName.klarna
+        case .paymentCard: return ImageName.creditCard
         default: return  ImageName.creditCard
         }
     }
