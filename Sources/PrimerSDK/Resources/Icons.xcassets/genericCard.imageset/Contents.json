@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "credit-card.png",
+      "filename" : "Generic Card.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "credit-card@2x.png",
+      "filename" : "Generic Card@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "credit-card@3x.png",
+      "filename" : "Generic Card@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

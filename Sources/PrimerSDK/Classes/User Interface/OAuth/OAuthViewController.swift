@@ -34,6 +34,11 @@ class OAuthViewController: UIViewController {
         indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         indicator.startAnimating()
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        if settings.isInitialLoadingHidden {
+            indicator.isHidden = true
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -61,6 +66,15 @@ class OAuthViewController: UIViewController {
     }
 
     private func presentWebview(_ urlString: String) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        let routerDelegate: RouterDelegate = DependencyContainer.resolve()
+        let router = routerDelegate as! Router
+        let rootViewController = router.root
+        
+        UIView.animate(withDuration: 0.3) {
+            (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.7
+        }
+        
         let webViewController = WebViewController()
         webViewController.url = URL(string: urlString)
         webViewController.delegate = self
@@ -87,7 +101,7 @@ class OAuthViewController: UIViewController {
                     let router: RouterDelegate = DependencyContainer.resolve()
 
                     if (error is PrimerError) {
-                        router.show(.error())
+                        router.show(.error(error: error!))
                     } else if (error.exists) {
                         router.pop()
                     } else {
@@ -106,7 +120,7 @@ class OAuthViewController: UIViewController {
 
             guard let authURL = URL(string: urlString) else {
                 let router: RouterDelegate = DependencyContainer.resolve()
-                router.show(.error())
+                router.show(.error(error: PrimerError.generic))
                 return
             }
 
@@ -116,7 +130,7 @@ class OAuthViewController: UIViewController {
                 callbackURLScheme: viewModel.urlSchemeIdentifier,
                 completionHandler: { [weak self] (url, error) in
                     let router: RouterDelegate = DependencyContainer.resolve()
-                    error.exists ? router.show(.error()) : self?.onOAuthCompleted(callbackURL: url)
+                    error.exists ? router.show(.error(error: PrimerError.generic)) : self?.onOAuthCompleted(callbackURL: url)
                 }
             )
 
@@ -130,7 +144,7 @@ class OAuthViewController: UIViewController {
         viewModel.tokenize(host, with: { [weak self] error in
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()
-                error.exists ? router.show(.error()) : router.show(.success(type: .regular))
+                error.exists ? router.show(.error(error: PrimerError.generic)) : router.show(.success(type: .regular))
             }
         })
     }
@@ -152,7 +166,7 @@ extension OAuthViewController: ReloadDelegate {
         viewModel.tokenize(host, with: { [weak self] error in
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()
-                error.exists ? router.show(.error()) : router.show(.success(type: .regular))
+                error.exists ? router.show(.error(error: PrimerError.generic)) : router.show(.success(type: .regular))
             }
         })
     }
@@ -217,6 +231,24 @@ class WebViewController: UIViewController, WKNavigationDelegate {
 
             decisionHandler(.cancel)
 
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            let routerDelegate: RouterDelegate = DependencyContainer.resolve()
+            let router = routerDelegate as! Router
+            let rootViewController = router.root
+            
+            if settings.hasDisabledSuccessScreen == false && settings.isInitialLoadingHidden == true {
+                let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+                rootViewController?.mainView.backgroundColor = theme.colorTheme.main1
+                if #available(iOS 11.0, *) {
+                    (rootViewController?.children.first as? OAuthViewController)?.indicator.isHidden = false
+                }
+                
+            } else if settings.hasDisabledSuccessScreen && settings.isInitialLoadingHidden {
+                UIView.animate(withDuration: 0.3) {
+                    (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.0
+                }
+            }
+            
             dismiss(animated: true, completion: nil)
 
             return
