@@ -18,6 +18,7 @@ public enum ImageName: String {
         masterCard,
         visa,
         creditCard,
+        genericCard,
         check,
         check2,
         success,
