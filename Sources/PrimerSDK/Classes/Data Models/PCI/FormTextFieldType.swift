@@ -32,8 +32,8 @@ enum FormTextFieldType: Equatable {
             return (text.isValidAccountNumber,
                     NSLocalizedString("primer-form-validation-account-number-invalid",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
-                                      value: "",
+                                      bundle: Bundle.primerResources,
+                                      value: "Account number is invalid",
                                       comment: "Account number is invalid - Form Validation"),
                     false)
 
@@ -41,8 +41,8 @@ enum FormTextFieldType: Equatable {
             return (text.count > 5,
                     NSLocalizedString("primer-form-validation-sort-code-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
-                                      value: "",
+                                      bundle: Bundle.primerResources,
+                                      value: "Sort code is required",
                                       comment: "Sort code is required - Form Validation"),
                     false)
 
@@ -51,8 +51,8 @@ enum FormTextFieldType: Equatable {
                 return (false,
                         NSLocalizedString("primer-form-validation-iban-required",
                                           tableName: nil,
-                                          bundle: Bundle.primerFramework,
-                                          value: "",
+                                          bundle: Bundle.primerResources,
+                                          value: "IBAN is required",
                                           comment: "IBAN is required - Form Validation"),
                         false)
             }
@@ -60,8 +60,8 @@ enum FormTextFieldType: Equatable {
             return (text.count > 5,
                     NSLocalizedString("primer-form-validation-iban-too-short",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
-                                      value: "",
+                                      bundle: Bundle.primerResources,
+                                      value: "IBAN is too short",
                                       comment: "IBAN is too short - Form Validation"),
                     false)
 
@@ -69,8 +69,8 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-firstname-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
-                                      value: "",
+                                      bundle: Bundle.primerResources,
+                                      value: "First name is required",
                                       comment: "First name is required - Form Validation"),
                     false)
 
@@ -78,8 +78,8 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-lastname-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
-                                      value: "",
+                                      bundle: Bundle.primerResources,
+                                      value: "Last name is required",
                                       comment: "Last name is required - Form Validation"),
                     false)
 
@@ -87,6 +87,9 @@ enum FormTextFieldType: Equatable {
             if (text.count < 1) {
                 return (false,
                         NSLocalizedString("primer-form-validation-email-required",
+                                          tableName: nil,
+                                          bundle: Bundle.primerResources,
+                                          value: "Email text field can't be empty",
                                           comment: "Email text field can't be empty - Form Validation"),
                         false)
             }
@@ -96,8 +99,8 @@ enum FormTextFieldType: Equatable {
             return (emailPred.evaluate(with: text),
                     NSLocalizedString("primer-form-validation-email-invalid",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
-                                      value: "",
+                                      bundle: Bundle.primerResources,
+                                      value: "Email value is invalid",
                                       comment: "Email value is invalid - Form Validation"),
                     false)
 
@@ -105,8 +108,8 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-address-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
-                                      value: "",
+                                      bundle: Bundle.primerResources,
+                                      value: "Address is required",
                                       comment: "Address is required - Form Validation"),
                     false)
         case .addressLine2:
@@ -117,8 +120,8 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-city-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
-                                      value: "",
+                                      bundle: Bundle.primerResources,
+                                      value: "City is required",
                                       comment: "City is required - Form Validation"),
                     false)
 
@@ -126,8 +129,8 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-country-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
-                                      value: "",
+                                      bundle: Bundle.primerResources,
+                                      value: "Country is required",
                                       comment: "Country is required - Form Validation"),
                     false)
 
@@ -135,8 +138,8 @@ enum FormTextFieldType: Equatable {
             return (!text.isEmpty,
                     NSLocalizedString("primer-form-validation-postal-code-required",
                                       tableName: nil,
-                                      bundle: Bundle.primerFramework,
-                                      value: "",
+                                      bundle: Bundle.primerResources,
+                                      value: "Postal code is required",
                                       comment: "Postal code is required - Form Validation"),
                     false)
 
@@ -160,105 +163,105 @@ enum FormTextFieldType: Equatable {
             return NSLocalizedString("primer-form-text-field-title-account-number",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Account number",
                                      comment: "Account number - Form Text Field Title (Account number)")
 
         case .sortCode:
             return NSLocalizedString("primer-form-text-field-title-sort-code",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Sort code",
                                      comment: "Sort code - Form Text Field Title (Sort code)")
 
         case .iban:
             return NSLocalizedString("primer-form-text-field-title-iban",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "IBAN",
                                      comment: "IBAN - Form Text Field Title (IBAN)")
 
         case .firstName:
             return NSLocalizedString("primer-form-text-field-title-first-name",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "First name",
                                      comment: "First name - Form Text Field Title (First name)")
 
         case .lastName:
             return NSLocalizedString("primer-form-text-field-title-last-name",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Last name",
                                      comment: "Last name - Form Text Field Title (Last name)")
 
         case .email:
             return NSLocalizedString("primer-form-text-field-title-email",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Email",
                                      comment: "Email - Form Text Field Title (Email)")
 
         case .addressLine1:
             return NSLocalizedString("primer-form-text-field-title-address-line-1",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Address line 1",
                                      comment: "Address line 1 - Form Text Field Title (Address line 1)")
 
         case .addressLine2:
             return NSLocalizedString("primer-form-text-field-title-address-line-2",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Address line 2",
                                      comment: "Address line 2 - Form Text Field Title (Address line 2)")
 
         case .city:
             return NSLocalizedString("primer-form-text-field-title-city",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "City",
                                      comment: "City - Form Text Field Title (City)")
 
         case .country:
             return NSLocalizedString("primer-form-text-field-title-country",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Country",
                                      comment: "Country - Form Text Field Title (Country)")
 
         case .postalCode:
             return NSLocalizedString("primer-form-text-field-title-postal-code",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Postal Code",
                                      comment: "Postal Code - Form Text Field Title (Postal code)")
 
         case .cardholderName:
             return NSLocalizedString("primer-form-text-field-title-cardholder-name",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Cardholder name",
                                      comment: "Cardholder name - Form Text Field Title (Cardholder name)")
 
         case .cardNumber:
             return NSLocalizedString("primer-form-text-field-title-card-number",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Card number",
                                      comment: "Card number - Form Text Field Title (Card number)")
 
         case .expiryDate:
             return NSLocalizedString("primer-form-text-field-title-expiry-date",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Expiry date",
                                      comment: "Expiry date - Form Text Field Title (Expiry date)")
 
         case .cvc:
             return NSLocalizedString("primer-form-text-field-title-cvc",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "CVC",
                                      comment: "CVC - Form Text Field Title (CVC)")
         }
     }
@@ -269,105 +272,105 @@ enum FormTextFieldType: Equatable {
             return NSLocalizedString("primer-form-text-field-placeholder-account-number",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. 12345678",
                                      comment: "e.g. 12345678 - Form Text Field Placeholder (Account number)")
 
         case .sortCode:
             return NSLocalizedString("primer-form-text-field-placeholder-sort-code",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. 60-83-71",
                                      comment: "e.g. 60-83-71 - Form Text Field Placeholder (Sort code)")
 
         case .iban:
             return NSLocalizedString("primer-form-text-field-placeholder-iban",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. FR14 2004 1010 0505000...",
                                      comment: "e.g. FR14 2004 1010 0505000... - Form Text Field Placeholder (IBAN)")
 
         case .firstName:
             return NSLocalizedString("primer-form-text-field-placeholder-firstname",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. John",
                                      comment: "e.g. John - Form Text Field Placeholder (First name)")
 
         case .lastName:
             return NSLocalizedString("primer-form-text-field-placeholder-lastname",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. Doe",
                                      comment: "e.g. Doe - Form Text Field Placeholder (Last name)")
 
         case .email:
             return NSLocalizedString("primer-form-text-field-placeholder-email",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. john@mail.com",
                                      comment: "e.g. john@mail.com - Form Text Field Placeholder (Email)")
 
         case .addressLine1:
             return NSLocalizedString("primer-form-text-field-placeholder-address-line-1",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. Apartment 5, 14 Some Street",
                                      comment: "e.g. Apartment 5, 14 Some Street - Form Text Field Placeholder (Addres line 1)")
 
         case .addressLine2:
             return NSLocalizedString("primer-form-text-field-placeholder-address-line-2",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "(optional)",
                                      comment: "(optional) - Form Text Field Placeholder (Addres line 2)")
 
         case .city:
             return NSLocalizedString("primer-form-text-field-placeholder-city",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. Paris",
                                      comment: "e.g. Paris - Form Text Field Placeholder (City)")
 
         case .country:
             return NSLocalizedString("primer-form-text-field-placeholder-country",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. France",
                                      comment: "e.g. France - Form Text Field Placeholder (Country)")
 
         case .postalCode:
             return NSLocalizedString("primer-form-text-field-placeholder-postal-code",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. 75001",
                                      comment: "e.g. 75001 - Form Text Field Placeholder (Postal code)")
 
         case .cardholderName:
             return NSLocalizedString("primer-form-text-field-placeholder-cardholder",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. John Doe",
                                      comment: "e.g. John Doe - Form Text Field Placeholder (Cardholder name)")
 
         case .cardNumber:
             return NSLocalizedString("primer-form-text-field-placeholder-cardnumber",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. 4242 4242 4242 4242",
                                      comment: "e.g. 4242 4242 4242 4242 - Form Text Field Placeholder (Card number)")
 
         case .expiryDate:
             return NSLocalizedString("primer-form-text-field-placeholder-expiry",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. 09/23",
                                      comment: "e.g. 09/23 - Form Text Field Placeholder (Expiry date)")
 
         case .cvc:
             return NSLocalizedString("primer-form-text-field-placeholder-cvc",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "e.g. 123",
                                      comment: "e.g. 123 - Form Text Field Placeholder (CVC)")
         }
     }

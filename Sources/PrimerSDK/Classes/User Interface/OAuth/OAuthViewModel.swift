@@ -1,67 +1,80 @@
 #if canImport(UIKit)
 
 protocol OAuthViewModelProtocol {
-    var urlSchemeIdentifier: String { get }
+    var urlSchemeIdentifier: String? { get }
     func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void)
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void)
 }
 
 class OAuthViewModel: OAuthViewModelProtocol {
 
-    var urlSchemeIdentifier: String {
-        guard let identifier = state.settings.urlSchemeIdentifier else {
-            fatalError("OAuth requires URL scheme identifier!")
-        }
-
-        return identifier
+    var urlSchemeIdentifier: String? {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return settings.urlSchemeIdentifier
     }
 
-    private var clientToken: DecodedClientToken? { return state.decodedClientToken }
-    private var orderId: String? { return state.orderId }
-    private var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? { return state.confirmedBillingAgreement }
-    private var onTokenizeSuccess: PaymentMethodTokenCallBack { return state.settings.onTokenizeSuccess }
-
-    @Dependency private(set) var paypalService: PayPalServiceProtocol
-    @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
-    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
-    @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    @Dependency private(set) var klarnaService: KlarnaServiceProtocol
-    @Dependency private(set) var state: AppStateProtocol
+    private var clientToken: DecodedClientToken? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.decodedClientToken
+    }
+    private var orderId: String? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.orderId
+    }
+    private var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.confirmedBillingAgreement
+    }
+    private var onTokenizeSuccess: PaymentMethodTokenCallBack {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return settings.onTokenizeSuccess
+    }
 
     deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     private func loadConfig(_ host: OAuthHost, _ completion: @escaping (Result<String, Error>) -> Void) {
+        let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
         clientTokenService.loadCheckoutConfig({ [weak self] error in
             if error != nil {
                 ErrorHandler.shared.handle(error: error!)
                 completion(.failure(PrimerError.payPalSessionFailed))
-                return
+            } else {
+                let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                paymentMethodConfigService.fetchConfig({ [weak self] error in
+                    if error != nil {
+                        ErrorHandler.shared.handle(error: error!)
+                        completion(.failure(PrimerError.payPalSessionFailed))
+                    } else {
+                        self?.generateOAuthURL(host, with: completion)
+                    }
+                    
+                })
             }
-            self?.paymentMethodConfigService.fetchConfig({ [weak self] error in
-                if error != nil {
-                    ErrorHandler.shared.handle(error: error!)
-                    completion(.failure(PrimerError.payPalSessionFailed))
-                    return
-                }
-                self?.generateOAuthURL(host, with: completion)
-            })
         })
     }
 
     func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         if clientToken != nil && state.paymentMethodConfig != nil {
 
             if host == .klarna {
+                let klarnaService: KlarnaServiceProtocol = DependencyContainer.resolve()
                 return klarnaService.createPaymentSession(completion)
                 //                return completion(.success("https://pay.playground.klarna.com/eu/9IUNvHa"))
+            } else {
+                let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
+                
+                switch Primer.shared.flow.uxMode {
+                case .CHECKOUT:
+                    paypalService.startOrderSession(completion)
+                case .VAULT:
+                    paypalService.startBillingAgreementSession(completion)
+                }
             }
-
-            switch Primer.flow.uxMode {
-            case .CHECKOUT: paypalService.startOrderSession(completion)
-            case .VAULT: paypalService.startBillingAgreementSession(completion)
-            }
+            
         } else {
             loadConfig(host, completion)
             return
@@ -69,6 +82,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
     }
 
     private func generateBillingAgreementConfirmation(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
+        let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
         paypalService.confirmBillingAgreement({ [weak self] result in
             switch result {
             case .failure(let error):
@@ -80,7 +94,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
     }
 
     private func generatePaypalPaymentInstrument(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) -> PaymentInstrument? {
-        switch Primer.flow.uxMode {
+        switch Primer.shared.flow.uxMode {
         case .CHECKOUT:
             guard let id = orderId else { return nil }
             return PaymentInstrument(paypalOrderId: id)
@@ -98,6 +112,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
     }
 
     func handleTokenization(request: PaymentMethodTokenizationRequest, with completion: @escaping (Error?) -> Void) {
+        let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
         tokenizationService.tokenize(request: request) { [weak self] result in
             switch result {
             case .failure(let error):
@@ -106,9 +121,10 @@ class OAuthViewModel: OAuthViewModelProtocol {
             case .success(let token):
                 log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
-                switch Primer.flow.uxMode {
+                switch Primer.shared.flow.uxMode {
                 case .VAULT:
                     log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                    
                     completion(nil) // self?.onTokenizeSuccess(token, completion)
                 case .CHECKOUT:
                     log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
@@ -125,6 +141,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
 
             log(logLevel: .verbose, title: nil, message: "Host: \(host)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
+            let klarnaService: KlarnaServiceProtocol = DependencyContainer.resolve()
             klarnaService.finalizePaymentSession { [weak self] result in
                 switch result {
                 case .failure(let err):
@@ -132,9 +149,9 @@ class OAuthViewModel: OAuthViewModelProtocol {
                 case .success(let res):
                     instrument.sessionData = res.sessionData
 
-                    if Primer.flow.vaulted {
+                    if Primer.shared.flow.vaulted {
                         // create customer token
-                        self?.klarnaService.createKlarnaCustomerToken { (result) in
+                        klarnaService.createKlarnaCustomerToken { (result) in
                             switch result {
                             case .failure(let err):
                                 ErrorHandler.shared.handle(error: err)
@@ -145,7 +162,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
 
                                 log(logLevel: .verbose, title: nil, message: "Instrument: \(instrument)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
-                                guard let state = self?.state else { return }
+                                let state: AppStateProtocol = DependencyContainer.resolve()
 
                                 let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
 
@@ -156,11 +173,10 @@ class OAuthViewModel: OAuthViewModelProtocol {
                         }
 
                     } else {
-                        instrument.klarnaAuthorizationToken = self?.state.authorizationToken
+                        let state: AppStateProtocol = DependencyContainer.resolve()
+                        instrument.klarnaAuthorizationToken = state.authorizationToken
 
                         log(logLevel: .verbose, title: nil, message: "Instrument: \(instrument)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-
-                        guard let state = self?.state else { return }
 
                         let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
 
@@ -174,6 +190,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
 
         } else {
             guard let instrument = generatePaypalPaymentInstrument(host, with: completion) else { return }
+            let state: AppStateProtocol = DependencyContainer.resolve()
 
             let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
 

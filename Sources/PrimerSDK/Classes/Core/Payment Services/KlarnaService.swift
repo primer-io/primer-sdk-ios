@@ -14,46 +14,77 @@ protocol KlarnaServiceProtocol {
 }
 
 class KlarnaService: KlarnaServiceProtocol {
-
-    @Dependency private(set) var api: PrimerAPIClientProtocol
-    @Dependency private(set) var state: AppStateProtocol
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
 
-        guard let amount = state.settings.amount else {
-            return completion(.failure(KlarnaException.noAmount))
-        }
-
-        log(logLevel: .info, message: "Klarna amount: \(amount)")
-
-        guard state.settings.currency != nil else {
-            return completion(.failure(KlarnaException.noCurrency))
-        }
-
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
-              let countryCode = self.state.settings.countryCode,
-              let currency = self.state.settings.currency
-        else {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna) else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
+        guard let klarnaSessionType = settings.klarnaSessionType else {
+            return completion(.failure(KlarnaException.undefinedSessionType))
+        }
+        
+        guard let countryCode = settings.countryCode else {
+            return completion(.failure(KlarnaException.noCountryCode))
+        }
+        
+        guard let currency = settings.currency else {
+            return completion(.failure(KlarnaException.noCurrency))
+        }
+        
+        var amount = settings.amount
+        
+        var orderItems: [OrderItem]? = nil
+                        
+        if case .hostedPaymentPage = klarnaSessionType {
+            if amount == nil {
+                return completion(.failure(KlarnaException.noAmount))
+            }
+            
+            if settings.currency == nil {
+                return completion(.failure(KlarnaException.noCurrency))
+            }
+            
+            if settings.orderItems.isEmpty {
+                return completion(.failure(KlarnaException.missingOrderItems))
+            }
+            
+            orderItems = settings.orderItems
+
+            log(logLevel: .info, message: "Klarna amount: \(amount!) \(settings.currency!.rawValue)")
+            
+        } else if case .recurringPayment = klarnaSessionType {
+            // Do not send amount for recurring payments, even if it's set
+            amount = nil
+        }
+        
         let body = KlarnaCreatePaymentSessionAPIRequest(
             paymentMethodConfigId: configId,
-            sessionType: "HOSTED_PAYMENT_PAGE",
-            redirectUrl: "https://primer.io",
-            totalAmount: amount,
+            sessionType: klarnaSessionType,
             localeData: KlarnaLocaleData(
                 countryCode: countryCode.rawValue,
                 currencyCode: currency.rawValue,
-                localeCode: countryCode.klarnaLocaleCode
-            ),
-            orderItems: self.state.settings.orderItems
-        )
+                localeCode: countryCode.klarnaLocaleCode),
+            description: klarnaSessionType == .recurringPayment ? (settings.klarnaPaymentDescription ?? "Pay as you go") : nil,
+            redirectUrl: "https://primer.io/success",
+            totalAmount: amount,
+            orderItems: orderItems)
 
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "createPaymentSession")
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
         api.klarnaCreatePaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
             switch result {
@@ -61,22 +92,26 @@ class KlarnaService: KlarnaServiceProtocol {
                 completion(.failure(KlarnaException.failedApiCall))
             case .success(let response):
                 log(logLevel: .info, message: "\(response)", className: "KlarnaService", function: "createPaymentSession")
-                self?.state.sessionId = response.sessionId
+                state.sessionId = response.sessionId
                 completion(.success(response.hppRedirectUrl))
             }
         }
     }
 
     func createKlarnaCustomerToken(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
-              let authorizationToken = self.state.authorizationToken,
-              let sessionId = self.state.sessionId,
-              let countryCode = self.state.settings.countryCode,
-              let currency = self.state.settings.currency else {
+              let authorizationToken = state.authorizationToken,
+              let sessionId = state.sessionId,
+              let countryCode = settings.countryCode,
+              let currency = settings.currency else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
@@ -84,13 +119,15 @@ class KlarnaService: KlarnaServiceProtocol {
             paymentMethodConfigId: configId,
             sessionId: sessionId,
             authorizationToken: authorizationToken,
-            description: self.state.settings.orderItems[0].name,
+            description: settings.klarnaPaymentDescription ?? (settings.orderItems.first?.name ?? ""),
             localeData: KlarnaLocaleData(
                 countryCode: countryCode.rawValue,
                 currencyCode: currency.rawValue,
                 localeCode: countryCode.klarnaLocaleCode
             )
         )
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
         api.klarnaCreateCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
             switch result {
@@ -104,6 +141,8 @@ class KlarnaService: KlarnaServiceProtocol {
     }
 
     func finalizePaymentSession(_ completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
@@ -116,6 +155,8 @@ class KlarnaService: KlarnaServiceProtocol {
         let body = KlarnaFinalizePaymentSessionRequest(paymentMethodConfigId: configId, sessionId: sessionId)
 
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
         api.klarnaFinalizePaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {

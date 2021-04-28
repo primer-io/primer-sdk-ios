@@ -7,6 +7,8 @@
 
 #if canImport(UIKit)
 
+import Foundation
+
 public enum PrimerFormType: String, CaseIterable {
     case bankAccount
     case name
@@ -63,42 +65,42 @@ enum FormType {
             return NSLocalizedString("primer-form-type-top-title-account",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Add bank account",
                                      comment: "Add bank account - Form Type Navigation Bar Title (Bank account)")
 
         case .name:
             return NSLocalizedString("primer-form-type-top-title-name",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Add bank account",
                                      comment: "Add bank account - Form Type Navigation Bar Title (Name)")
 
         case .iban:
             return NSLocalizedString("primer-form-type-top-title-iban",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Add bank account",
                                      comment: "Add bank account - Form Type Navigation Bar Title (IBAN)")
 
         case .email:
             return NSLocalizedString("primer-form-type-top-title-email",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Add bank account",
                                      comment: "Add bank account - Form Type Navigation Bar Title (Email)")
 
         case .address:
             return NSLocalizedString("primer-form-type-top-title-address",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Add bank account",
                                      comment: "Add bank account - Form Type Navigation Bar Title (Address)")
 
         case .cardForm:
             return NSLocalizedString("primer-form-type-top-title-card-form",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Add new card",
                                      comment: "Add new card - Form Type Navigation Bar Title (Card Form)")
         }
     }
@@ -110,8 +112,8 @@ enum FormType {
         case .iban: return
             NSLocalizedString("primer-form-type-main-title-sepa-direct-debit-mandate",
                               tableName: nil,
-                              bundle: Bundle.primerFramework,
-                              value: "",
+                              bundle: Bundle.primerResources,
+                              value: "SEPA Direct Debit Mandate",
                               comment: "SEPA Direct Debit Mandate - Form Type Main Title (Direct Debit)")
         case .email: return ""
         case .address: return ""
@@ -125,21 +127,21 @@ enum FormType {
             return NSLocalizedString("primer-form-type-subtitle-use-iban",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Use IBAN instead",
                                      comment: "Use IBAN instead - Form Type Subtitle (Bank account)")
 
         case .name:
             return NSLocalizedString("primer-form-type-subtitle-name",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Add bank account",
                                      comment: "Add bank account - Form Type Subtitle (Name)")
 
         case .iban:
             return NSLocalizedString("primer-form-type-subtitle-iban",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Use an account number instead",
                                      comment: "Use an account number instead - Form Type Subtitle (IBAN)")
 
         case .email: return ""

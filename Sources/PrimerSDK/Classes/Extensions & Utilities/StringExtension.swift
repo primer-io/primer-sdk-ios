@@ -49,7 +49,6 @@ extension String {
     }
 
     var isValidEmail: Bool {
-        // FIXME: Maybe find (or construct 😆) a better regex
         let emailRegEx = "(?:[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}~-]+(?:\\.[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}" +
             "~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\" +
             "x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[\\p{L}0-9](?:[a-" +
@@ -92,11 +91,10 @@ extension String {
                 let decodedString = String(data: decodedData, encoding: .utf8)!
                 if decodedString.contains("\"accessToken\":") {
                     do {
-                        print(decodedString)
                         let token = try JSONDecoder().decode(DecodedClientToken.self, from: decodedData)
                         return token
                     } catch {
-                        print("error!")
+                        log(logLevel: .error, title: "PARSER", message: "Failed to parse client token", prefix: nil, suffix: nil, bundle: Bundle.primerFrameworkIdentifier, file: #file, className: nil, function: #function, line: #line)
                     }
                 }
             }
@@ -130,7 +128,6 @@ extension String {
     }
 
     var isValidAccountNumber: Bool {
-        print(!self.isEmpty)
         return !self.isEmpty
     }
 

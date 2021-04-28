@@ -9,6 +9,8 @@
 
 import UIKit
 
+let enableCardScanner = false
+
 protocol FormViewDelegate: class, UITextFieldDelegate {
     var formType: FormType { get }
     var submitButtonTitle: String { get }
@@ -20,8 +22,6 @@ protocol FormViewDelegate: class, UITextFieldDelegate {
 }
 
 class FormView: UIView {
-
-    @Dependency private(set) var theme: PrimerThemeProtocol
 
     // MARK: - PROPERTIES
 
@@ -104,7 +104,10 @@ class FormView: UIView {
 
         if let formType = delegate?.formType {
             switch formType {
-            case .cardForm: configureScannerButton()
+            case .cardForm:
+                if enableCardScanner {
+                    configureScannerButton()
+                }
             default: break
             }
         }
@@ -112,6 +115,7 @@ class FormView: UIView {
 
     private func configureNavbar() {
         guard let delegate = delegate else { return }
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         // set background color
         navBar.backgroundColor = theme.colorTheme.main1
@@ -152,6 +156,8 @@ class FormView: UIView {
 
     private func configureTitle() {
         guard let delegate = delegate else { return }
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         if (theme.layout.showMainTitle) {
             title.text = delegate.formType.mainTitleFont
         }
@@ -253,6 +259,8 @@ class FormView: UIView {
 
     private func configureLink() {
         guard let delegate = delegate else { return }
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         link.text = delegate.formType.subtitle
         link.font = .systemFont(ofSize: 15)
         link.textColor = theme.colorTheme.tint1
@@ -263,6 +271,8 @@ class FormView: UIView {
     }
 
     private func configureButton() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         button.setTitle(delegate?.submitButtonTitle, for: .normal)
         button.setTitleColor(theme.colorTheme.text2, for: .normal)
         button.layer.cornerRadius = theme.cornerRadiusTheme.buttons
@@ -285,6 +295,8 @@ class FormView: UIView {
     }
 
     private func configureScannerButton() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         scannerButton.setTitle("Scan card", for: .normal)
         scannerButton.setTitleColor(theme.colorTheme.tint1, for: .normal)
         scannerButton.titleLabel?.font = .systemFont(ofSize: 15)
@@ -326,6 +338,8 @@ class FormView: UIView {
     }
 
     func anchorTitle() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         title.translatesAutoresizingMaskIntoConstraints = false
         title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
         title.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
@@ -333,6 +347,8 @@ class FormView: UIView {
     }
 
     func anchorTextField(_ textField: UITextField) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         textField.translatesAutoresizingMaskIntoConstraints = false
 
         let column: Int = textField.tag % 10
@@ -378,6 +394,8 @@ class FormView: UIView {
     }
 
     func anchorLink() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         link.translatesAutoresizingMaskIntoConstraints = false
         link.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
         link.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
@@ -386,6 +404,8 @@ class FormView: UIView {
     }
 
     func anchorButton() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         button.translatesAutoresizingMaskIntoConstraints = false
         button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
         button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
@@ -490,11 +510,15 @@ class FormView: UIView {
     }
 
     private func validateForm() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         let isAllValid = validatedFields.allSatisfy({ row in return row.allSatisfy { return $0 == true } })
         button.toggleValidity(isAllValid, validColor: theme.colorTheme.tint1, defaultColor: theme.colorTheme.disabled1)
     }
 
     @objc private func onButtonPressed(_ button: UIButton) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         textFields.forEach { row in
             row.forEach {
                 guard let textField = $0 as? PrimerTextField else { return }

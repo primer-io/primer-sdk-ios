@@ -15,8 +15,6 @@ protocol VaultCheckoutViewDataSource: class {
 
 class VaultCheckoutView: UIView, ReactiveView {
 
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     let indicator = UIActivityIndicatorView()
     let navBar = UINavigationBar()
     let amountLabelView = UILabel()
@@ -30,7 +28,7 @@ class VaultCheckoutView: UIView, ReactiveView {
 
     var selected = false
 
-    let vaulted: Bool = Primer.flow.vaulted
+    let vaulted: Bool = Primer.shared.flow.vaulted
 
     weak var delegate: VaultCheckoutViewDelegate?
     weak var dataSource: VaultCheckoutViewDataSource?
@@ -98,10 +96,11 @@ extension VaultCheckoutView {
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
+
         navBar.topItem?.title = NSLocalizedString("primer-vault-checkout-nav-bar-title",
                                                   tableName: nil,
-                                                  bundle: Bundle.primerFramework,
-                                                  value: "",
+                                                  bundle: Bundle.primerResources,
+                                                  value: "Choose payment method",
                                                   comment: "Choose payment method - Vault Checkout Navigation Bar Title")
     }
 
@@ -110,6 +109,8 @@ extension VaultCheckoutView {
     }
 
     private func configureAmountLabelView() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         amountLabelView.text = dataSource?.amount
         amountLabelView.font = .boldSystemFont(ofSize: 32)
         amountLabelView.translatesAutoresizingMaskIntoConstraints = false
@@ -118,13 +119,15 @@ extension VaultCheckoutView {
     }
 
     private func configureSavedCardTitleLabel() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         if (vaulted) {
             if (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true) {
-                savedCardTitleLabel.text = NSLocalizedString("primer-vault-checkout-card-title",
+                savedCardTitleLabel.text = NSLocalizedString("primer-vault-checkout-payment-method-title",
                                                              tableName: nil,
-                                                             bundle: Bundle.primerFramework,
-                                                             value: "",
-                                                             comment: "SAVED CARD - Vault Checkout Card Title")
+                                                             bundle: Bundle.primerResources,
+                                                             value: "SAVED PAYMENT METHOD",
+                                                             comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
 
                 savedCardTitleLabel.textColor = theme.colorTheme.secondaryText1
                 savedCardTitleLabel.font = .systemFont(ofSize: 12, weight: .light)
@@ -138,6 +141,8 @@ extension VaultCheckoutView {
     }
 
     private func configureSavedCardButton() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         savedCardButton.translatesAutoresizingMaskIntoConstraints = false
         savedCardButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
         savedCardButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
@@ -176,6 +181,8 @@ extension VaultCheckoutView {
     }
 
     private func toggleFadeView(isEnabled: Bool) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         let val: CGFloat = isEnabled ? 0.5 : 0.0
         fadeView.backgroundColor = theme.colorTheme.main1.withAlphaComponent(val)
         fadeView.isUserInteractionEnabled = isEnabled
@@ -191,6 +198,8 @@ extension VaultCheckoutView {
     }
 
     private func configureSeeAllLinkLabel() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         seeAllLinkLabel.translatesAutoresizingMaskIntoConstraints = false
         if (vaulted) {
             if (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true) {
@@ -198,8 +207,8 @@ extension VaultCheckoutView {
                 seeAllLinkLabel.text = vaulted
                     ? NSLocalizedString("primer-vault-checkout-see-all",
                                         tableName: nil,
-                                        bundle: Bundle.primerFramework,
-                                        value: "",
+                                        bundle: Bundle.primerResources,
+                                        value: "See All",
                                         comment: "See All - Vault Checkout See All Button")
                     : ""
                 seeAllLinkLabel.font = .systemFont(ofSize: 14)
@@ -224,14 +233,16 @@ extension VaultCheckoutView {
     }
 
     private func configureOtherMethodsTitleLabel() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         otherMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         if (vaulted) {
             if (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true) {
                 otherMethodsTitleLabel.text = vaulted
                     ? NSLocalizedString("primer-vault-checkout-other-methods",
                                         tableName: nil,
-                                        bundle: Bundle.primerFramework,
-                                        value: "",
+                                        bundle: Bundle.primerResources,
+                                        value: "OTHER WAYS TO PAY",
                                         comment: "OTHER WAYS TO PAY - Vault Checkout Other Methods Title")
                     : ""
                 otherMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
@@ -249,6 +260,8 @@ extension VaultCheckoutView {
     }
 
     private func configureTableView() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         tableView.delegate = delegate
         tableView.dataSource = delegate
         tableView.layer.cornerRadius = 8.0
@@ -261,6 +274,8 @@ extension VaultCheckoutView {
     }
 
     func configurePayButton() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         payButton.layer.cornerRadius = 12
         payButton.setTitle(theme.content.vaultCheckout.payButtonText, for: .normal)
         payButton.setTitleColor(theme.colorTheme.text2, for: .normal)
@@ -292,6 +307,8 @@ extension VaultCheckoutView {
     }
 
     private func anchorTableView() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: otherMethodsTitleLabel.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
@@ -300,6 +317,8 @@ extension VaultCheckoutView {
     }
 
     private func anchorPayButton() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         payButton.translatesAutoresizingMaskIntoConstraints = false
         payButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30).isActive = true
         payButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true

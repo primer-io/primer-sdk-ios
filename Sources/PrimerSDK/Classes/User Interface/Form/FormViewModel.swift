@@ -9,6 +9,7 @@
 import Foundation
 
 protocol FormViewModelProtocol {
+    func loadConfig(_ completion: @escaping (Error?) -> Void)
     var popOnComplete: Bool { get }
     var mandate: DirectDebitMandate { get }
     func getSubmitButtonTitle(formType: FormType) -> String
@@ -22,22 +23,37 @@ protocol FormViewModelProtocol {
 }
 
 class FormViewModel: FormViewModelProtocol {
-
-    @Dependency private(set) var state: AppStateProtocol
-    @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
-    @Dependency private(set) var router: RouterDelegate
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
-    deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
-    }
-
+    
     var popOnComplete: Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
         return state.directDebitFormCompleted
     }
 
     var mandate: DirectDebitMandate {
+        let state: AppStateProtocol = DependencyContainer.resolve()
         return state.directDebitMandate
+    }
+
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
+    func loadConfig(_ completion: @escaping (Error?) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        if state.decodedClientToken.exists {
+            let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+            paymentMethodConfigService.fetchConfig(completion)
+        } else {
+            let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
+            clientTokenService.loadCheckoutConfig { (err) in
+                if let err = err {
+                    completion(err)
+                } else {
+                    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    paymentMethodConfigService.fetchConfig(completion)
+                }
+            }
+        }
     }
 
     func getSubmitButtonTitle(formType: FormType) -> String {
@@ -46,19 +62,21 @@ class FormViewModel: FormViewModelProtocol {
             return NSLocalizedString("primer-form-view-card-submit-button-text",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Add card",
                                      comment: "Add card - Card Form View (Sumbit button text)")
 
         default:
             return NSLocalizedString("primer-form-view-submit-button-text",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "Next",
                                      comment: "Next - Form View (Sumbit button text)")
         }
     }
 
     func setState(_ value: String?, type: FormTextFieldType) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         switch type {
         case .iban: state.directDebitMandate.iban = value?.withoutWhiteSpace
         case .accountNumber: state.directDebitMandate.accountNumber = value
@@ -84,6 +102,8 @@ class FormViewModel: FormViewModelProtocol {
     }
 
     func onSubmit(formType: FormType) {
+        let router: RouterDelegate = DependencyContainer.resolve()
+        
         if popOnComplete { return router.pop() }
 
         switch formType {
@@ -100,10 +120,10 @@ class FormViewModel: FormViewModelProtocol {
         case .cardForm:
             submit { error in
                 DispatchQueue.main.async { [weak self] in
-                    if error.exists {
-                        self?.router.show(.error(message: error!.localizedDescription))
+                    if let error = error {
+                        router.show(.error(error: error))
                     } else {
-                        self?.router.show(.success(type: .regular))
+                        router.show(.success(type: .regular))
                     }
                 }
             }
@@ -117,10 +137,13 @@ class FormViewModel: FormViewModelProtocol {
     #endif
 
     func onReturnButtonTapped() {
+        let router: RouterDelegate = DependencyContainer.resolve()
         router.pop()
     }
 
     func submit(completion: @escaping (PrimerError?) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         let instrument = PaymentInstrument(
             number: state.cardData.number,
             cvv: state.cardData.cvc,
@@ -129,15 +152,18 @@ class FormViewModel: FormViewModelProtocol {
             cardholderName: state.cardData.name
         )
         let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
-        self.tokenizationService.tokenize(request: request) { [weak self] result in
+        
+        let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
+        tokenizationService.tokenize(request: request) { [weak self] result in
             switch result {
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(error)
             case .success(let token):
-                switch Primer.flow {
+                switch Primer.shared.flow {
                 case .completeDirectCheckout:
-                    self?.state.settings.onTokenizeSuccess(token, { error in
+                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                    settings.onTokenizeSuccess(token, { error in
                         if error.exists {
                             completion(PrimerError.tokenizationRequestFailed)
                         } else {

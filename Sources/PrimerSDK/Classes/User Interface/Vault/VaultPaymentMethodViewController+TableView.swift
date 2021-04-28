@@ -12,10 +12,14 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
     }
 
     @objc private func showCardForm(_ sender: UIButton) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        let router: RouterDelegate = DependencyContainer.resolve()
         router.show(.form(type: .cardForm(theme: theme)))
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        
         if indexPath.row == viewModel.paymentMethods.count {
             return
         }
@@ -41,9 +45,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 
             alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
-                self?.viewModel.deletePaymentMethod(with: methodId, and: { [weak self] _ in
-                    DispatchQueue.main.async { self?.subView.tableView.reloadData() }
-                })
+                self?.deletePaymentMethod(methodId)
             }))
 
             alert.show()
@@ -53,19 +55,34 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 10
     }
-
-    @objc private func deleteMethod(sender: UIButton) {
-        guard let methodId = viewModel.paymentMethods[sender.tag].token else { return }
-        viewModel.deletePaymentMethod(with: methodId, and: { [weak self] _ in
-            DispatchQueue.main.async { self?.subView.tableView.reloadData() }
+    
+    private func deletePaymentMethod(_ paymentMethodToken: String) {
+        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        viewModel.deletePaymentMethod(with: paymentMethodToken, and: { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.subView.tableView.reloadData()
+                
+                // Going back if no payment method remains
+                if viewModel.paymentMethods.isEmpty {
+                    self?.cancel()
+                }
+            }
         })
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.paymentMethods.count + 1
+        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        
+        // TODO: Only return the number of saved payment instruments while we figure the design
+        return viewModel.paymentMethods.count
+        
+        // return viewModel.paymentMethods.count + 1 /* "Add card" button */
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        
         let cell = UITableViewCell()
 
         if indexPath.row == viewModel.paymentMethods.count {

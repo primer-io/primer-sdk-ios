@@ -58,8 +58,6 @@ class PrimerTextField: UITextField {
 
     private var icon = UIImageView()
 
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     var padding: CGFloat = 12
 
     override init(frame: CGRect) {
@@ -73,6 +71,8 @@ class PrimerTextField: UITextField {
         setLeftPaddingPoints(padding)
         configureErrorMessage()
         configureLabel()
+        
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         switch theme.textFieldTheme {
         case .underlined:
@@ -87,11 +87,11 @@ class PrimerTextField: UITextField {
         renderSubViews(validationState: .default)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func renderSubViews(validationState: TextFieldState, showIcon: Bool = true) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         let color = validationState.getColor(theme: theme)
 
         // border
