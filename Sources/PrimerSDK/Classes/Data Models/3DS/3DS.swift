@@ -35,7 +35,7 @@ struct ThreeDSecureBeginAuthRequest: Codable {
                                                                                                        homePhone: nil,
                                                                                                        mobilePhone: nil,
                                                                                                        workPhone: nil),
-                                                                        device: ThreeDSecureDevice(sdkTransactionId: ""),
+                                                                        device: nil,
                                                                         billingAddress: ThreeDSecureAddress(title: nil,
                                                                                                             firstName: nil,
                                                                                                             lastName: nil,
@@ -58,7 +58,7 @@ struct ThreeDSecureBeginAuthRequest: Codable {
     let currencyCode: Currency
     let orderId: String
     let customer: ThreeDSecureCustomer
-    var device: ThreeDSecureDevice
+    var device: ThreeDSecureAuthData?
     let billingAddress: ThreeDSecureAddress
     let shippingAddress: ThreeDSecureAddress?
     let customerAccount: ThreeDSecureCustomerAccount?
