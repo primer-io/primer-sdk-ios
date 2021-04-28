@@ -50,15 +50,15 @@ class VaultService: VaultServiceProtocol {
                                     case .success:
                                         service.netceteraAuth(paymentMethod: paymentMethod) { (authResult) in
                                             switch authResult {
-                                            case .success(let sdkTransactionId):
-                                                print("3DS SDK transaction ID: \(sdkTransactionId)")
+                                            case .success(let threeDSecureAuthData):
+                                                print("3DS SDK Data: \(threeDSecureAuthData)")
                                                 
-                                                let threeDSecureDevice = ThreeDSecureDevice(sdkTransactionId: sdkTransactionId)
+//                                                let threeDSecureDevice = ThreeDSecureDevice(sdkTransactionId: sdkTransactionId)
                                                 var req = ThreeDSecureBeginAuthRequest.demoAuthRequest
-//                                                req.testScenario = ThreeDSecureTestScenario.threeDS2FrictionlessPass
-                                                req.device = threeDSecureDevice
-//                                                req.deviceChannel = "02"
-                                                req.amount = 20000
+                                                req.testScenario = ThreeDSecureTestScenario.threeDS2AutoChallengePass
+                                                req.device = threeDSecureAuthData
+//                                                req.deviceChannel = "03"
+                                                req.amount = 20005
                                                 
                                                 service.threeDSecureBeginAuthentication(paymentMethodToken: paymentMethod,
                                                                                                threeDSecureBeginAuthRequest: req) { (res, err) in
