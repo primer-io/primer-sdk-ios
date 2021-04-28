@@ -5,7 +5,6 @@ import UIKit
 class ApplePayViewController: UIViewController {
     private let indicator = UIActivityIndicatorView()
 
-    @Dependency private(set) var viewModel: ApplePayViewModelProtocol
     weak var transitionDelegate = TransitionDelegate()
 
     init() {

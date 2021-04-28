@@ -39,6 +39,8 @@ class ErrorHandler {
 
         } else if let primerError = error as? PrimerError {
             switch primerError {
+            case .generic:
+                break
             case .clientTokenNull:
                 break
             case .customerIDNull:
@@ -61,6 +63,8 @@ class ErrorHandler {
                 break
             case .threeDSFailed:
                 break
+            case .failedToLoadSession:
+                break
             }
 
         } else if let klarnaException = error as? KlarnaException {
@@ -78,6 +82,12 @@ class ErrorHandler {
             case .noCurrency:
                 break
             case .noPaymentMethodConfigId:
+                break
+            case .undefinedSessionType:
+                break
+            case .noCountryCode:
+                break
+            case .missingOrderItems:
                 break
             }
 

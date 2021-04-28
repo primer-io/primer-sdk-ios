@@ -16,9 +16,13 @@ internal extension Bundle {
     }
 
     static var primerResources: Bundle {
+        #if COCOAPODS
         let frameworkBundle = Bundle(for: Primer.self)
         let bundleURL = frameworkBundle.resourceURL?.appendingPathComponent("PrimerResources.bundle")
         return Bundle(url: bundleURL!)!
+        #else
+        return Bundle.module
+        #endif
     }
 
     static var primerFrameworkIdentifier: String {

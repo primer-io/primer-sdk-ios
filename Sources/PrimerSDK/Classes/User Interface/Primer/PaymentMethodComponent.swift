@@ -11,13 +11,13 @@ import UIKit
 
 class PaymentMethodComponent: UIView {
 
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     let label = UILabel()
     let iconView = UIImageView()
 
     init(frame: CGRect, method: PaymentMethodViewModel) {
         super.init(frame: frame)
+        
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         layer.cornerRadius = theme.cornerRadiusTheme.buttons
 
@@ -28,7 +28,7 @@ class PaymentMethodComponent: UIView {
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString(), isBold: true)
-            configureIconView(icon: method.toIconName().image, color: .white)
+            configureIconView(icon: method.toIconName()?.image, color: .white)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         case .paymentCard:
@@ -39,7 +39,7 @@ class PaymentMethodComponent: UIView {
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString())
-            configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1, isMonoColor: true)
+            configureIconView(icon: method.toIconName()?.image, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         case .payPal:
@@ -47,7 +47,7 @@ class PaymentMethodComponent: UIView {
             backgroundColor = UIColor(red: 190/255, green: 228/255, blue: 254/255, alpha: 1)
             //            layer.borderColor = theme.colorTheme.disabled1.cgColor
             addSubview(iconView)
-            configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1)
+            configureIconView(icon: method.toIconName()?.image, color: theme.colorTheme.text1)
             anchorIconView(inRelationToLabel: false)
         case .goCardlessMandate:
             layer.borderWidth = 1
@@ -57,13 +57,13 @@ class PaymentMethodComponent: UIView {
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString())
-            configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1, isMonoColor: true)
+            configureIconView(icon: method.toIconName()?.image, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         case .klarna:
             backgroundColor = UIColor(red: 255/255, green: 179/255, blue: 199/255, alpha: 1)
             addSubview(iconView)
-            configureIconView(icon: method.toIconName().image, color: theme.colorTheme.text1)
+            configureIconView(icon: method.toIconName()?.image, color: theme.colorTheme.text1)
             anchorIconView(inRelationToLabel: false)
         default: break
         }

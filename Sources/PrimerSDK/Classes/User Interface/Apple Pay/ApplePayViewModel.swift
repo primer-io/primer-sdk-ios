@@ -1,9 +1,9 @@
 #if canImport(UIKit)
 
 protocol ApplePayViewModelProtocol {
-    var amount: Int { get }
+    var amount: Int? { get }
     var applePayConfigId: String? { get }
-    var currency: Currency { get }
+    var currency: Currency? { get }
     var merchantIdentifier: String? { get }
     var countryCode: CountryCode? { get }
     func tokenize(
@@ -14,41 +14,56 @@ protocol ApplePayViewModelProtocol {
 
 class ApplePayViewModel: ApplePayViewModelProtocol {
 
-    var amount: Int {
-        guard let amount = state.settings.amount else { fatalError("Apple Pay requires amount value!") }
-        return amount
-
+    var amount: Int? {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return settings.amount
     }
-    var applePayConfigId: String? { return state.paymentMethodConfig?.getConfigId(for: .applePay) }
-    var currency: Currency {
-        guard let currency = state.settings.currency else { fatalError("Apple Pay requires currency value!") }
-        return currency
+    
+    var applePayConfigId: String? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.paymentMethodConfig?.getConfigId(for: .applePay)
     }
-    var merchantIdentifier: String? { return state.settings.merchantIdentifier }
-    var countryCode: CountryCode? { return state.settings.countryCode }
-    var uxMode: UXMode { return Primer.flow.uxMode }
-    var clientToken: DecodedClientToken? { return state.decodedClientToken }
 
-    @Dependency private(set) var tokenizationService: TokenizationServiceProtocol
-    @Dependency private(set) var paymentMethodConfigService: PaymentMethodConfigServiceProtocol
-    @Dependency private(set) var clientTokenService: ClientTokenServiceProtocol
-    @Dependency private(set) var state: AppStateProtocol
+    var currency: Currency? {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return settings.currency
+    }
+    
+    var merchantIdentifier: String? {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return settings.merchantIdentifier
+    }
+    var countryCode: CountryCode? {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return settings.countryCode
+    }
+    var uxMode: UXMode { return Primer.shared.flow.uxMode }
+    var clientToken: DecodedClientToken? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.decodedClientToken
+    }
 
     deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
         let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
         tokenizationService.tokenize(request: request) { [weak self] result in
             switch result {
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(error)
             case .success(let token):
-                switch Primer.flow {
-                case .completeDirectCheckout: self?.state.settings.onTokenizeSuccess(token, completion)
-                default: completion(nil)
+                switch Primer.shared.flow {
+                case .completeDirectCheckout:
+                    settings.onTokenizeSuccess(token, completion)
+                default:
+                    completion(nil)
                 }
             }
         }

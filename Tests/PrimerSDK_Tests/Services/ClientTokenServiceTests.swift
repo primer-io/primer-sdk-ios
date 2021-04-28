@@ -30,11 +30,11 @@ class ClientTokenServiceTests: XCTestCase {
             expectation.fulfill()
         })
 
-        let state = MockAppState(settings: settings)
-
         MockLocator.registerDependencies()
+        let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
-
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        
         let service = ClientTokenService()
 
         service.loadCheckoutConfig({ _ in })

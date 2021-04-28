@@ -15,16 +15,12 @@ class ErrorViewController: UIViewController {
     let icon = UIImageView(image: ImageName.error.image?.withRenderingMode(.alwaysTemplate))
     let message = UILabel()
 
-    @Dependency private(set) var theme: PrimerThemeProtocol
-
     init(message: String) {
         super.init(nibName: nil, bundle: nil)
         self.message.text = message
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
 
@@ -49,6 +45,8 @@ class ErrorViewController: UIViewController {
 extension ErrorViewController {
 
     func configureNavbar() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(close))
         backItem.tintColor = theme.colorTheme.tint1
@@ -82,6 +80,7 @@ extension ErrorViewController {
 extension ErrorViewController {
 
     func anchorIcon() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         icon.tintColor = theme.colorTheme.error1
         icon.translatesAutoresizingMaskIntoConstraints = false
         icon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -91,6 +90,7 @@ extension ErrorViewController {
     }
 
     func anchorMessage() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         message.translatesAutoresizingMaskIntoConstraints = false
         message.topAnchor.constraint(equalTo: icon.bottomAnchor, constant: 36).isActive = true
         message.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true

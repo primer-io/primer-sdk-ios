@@ -12,8 +12,6 @@ import UIKit
 class FormViewController: UIViewController {
     let subview: FormView = FormView()
 
-    @Dependency private(set) var viewModel: FormViewModelProtocol
-
     weak var reloadDelegate: ReloadDelegate?
 
     var formType: FormType
@@ -24,9 +22,7 @@ class FormViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
         view.addSubview(subview)
@@ -34,6 +30,13 @@ class FormViewController: UIViewController {
         subview.pin(to: view)
         subview.render()
         view.layoutIfNeeded()
+        
+        let viewModel: FormViewModelProtocol = DependencyContainer.resolve()
+        viewModel.loadConfig({ [weak self] _ in
+            DispatchQueue.main.async {
+
+            }
+        })
     }
 
     deinit {
@@ -52,6 +55,7 @@ extension FormViewController: FormViewDelegate {
 
     func back() {
         view.endEditing(true)
+        let viewModel: FormViewModelProtocol = DependencyContainer.resolve()
         viewModel.onReturnButtonTapped()
     }
 
@@ -60,15 +64,18 @@ extension FormViewController: FormViewDelegate {
     }
 
     func submit(_ value: String?, type: FormTextFieldType) {
+        let viewModel: FormViewModelProtocol = DependencyContainer.resolve()
         viewModel.setState(value, type: type)
     }
 
     var submitButtonTitle: String {
+        let viewModel: FormViewModelProtocol = DependencyContainer.resolve()
         return viewModel.getSubmitButtonTitle(formType: formType)
     }
 
     func onSubmit() {
         view.endEditing(true)
+        let viewModel: FormViewModelProtocol = DependencyContainer.resolve()
         viewModel.onSubmit(formType: formType)
     }
 

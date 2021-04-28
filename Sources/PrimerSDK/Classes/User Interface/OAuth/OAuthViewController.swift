@@ -8,10 +8,6 @@ import WebKit
 @available(iOS 11.0, *)
 class OAuthViewController: UIViewController {
 
-    @Dependency private(set) var viewModel: OAuthViewModelProtocol
-    @Dependency private(set) var theme: PrimerThemeProtocol
-    @Dependency private(set) var router: RouterDelegate
-
     let indicator = UIActivityIndicatorView()
     var session: Any?
     var host: OAuthHost
@@ -31,14 +27,22 @@ class OAuthViewController: UIViewController {
 
     override func viewDidLoad() {
         view.addSubview(indicator)
+        
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         indicator.color = theme.colorTheme.disabled1
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         indicator.startAnimating()
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        if settings.isInitialLoadingHidden {
+            indicator.isHidden = true
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
+        let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.generateOAuthURL(host, with: { [weak self] result in
             switch result {
             case .failure(let error):
@@ -62,10 +66,19 @@ class OAuthViewController: UIViewController {
     }
 
     private func presentWebview(_ urlString: String) {
-        let vc = WebViewController()
-        vc.url = URL(string: urlString)
-        vc.delegate = self
-        present(vc, animated: true, completion: nil)
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        let routerDelegate: RouterDelegate = DependencyContainer.resolve()
+        let router = routerDelegate as! Router
+        let rootViewController = router.root
+        
+        UIView.animate(withDuration: 0.3) {
+            (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.7
+        }
+        
+        let webViewController = WebViewController()
+        webViewController.url = URL(string: urlString)
+        webViewController.delegate = self
+        present(webViewController, animated: true, completion: nil)
     }
 
     func createPaymentInstrument(_ urlString: String) {
@@ -84,11 +97,13 @@ class OAuthViewController: UIViewController {
                     if let error = error {
                         _ = ErrorHandler.shared.handle(error: error)
                     }
+                    
+                    let router: RouterDelegate = DependencyContainer.resolve()
 
                     if (error is PrimerError) {
-                        self?.router.show(.error())
+                        router.show(.error(error: error!))
                     } else if (error.exists) {
-                        self?.router.pop()
+                        router.pop()
                     } else {
                         self?.onOAuthCompleted(callbackURL: url)
                     }
@@ -103,13 +118,19 @@ class OAuthViewController: UIViewController {
         } else {
             var session: SFAuthenticationSession?
 
-            guard let authURL = URL(string: urlString) else { router.show(.error()); return }
+            guard let authURL = URL(string: urlString) else {
+                let router: RouterDelegate = DependencyContainer.resolve()
+                router.show(.error(error: PrimerError.generic))
+                return
+            }
 
+            let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
             session = SFAuthenticationSession(
                 url: authURL,
                 callbackURLScheme: viewModel.urlSchemeIdentifier,
                 completionHandler: { [weak self] (url, error) in
-                    error.exists ? self?.router.show(.error()) : self?.onOAuthCompleted(callbackURL: url)
+                    let router: RouterDelegate = DependencyContainer.resolve()
+                    error.exists ? router.show(.error(error: PrimerError.generic)) : self?.onOAuthCompleted(callbackURL: url)
                 }
             )
 
@@ -118,9 +139,12 @@ class OAuthViewController: UIViewController {
     }
 
     private func onOAuthCompleted(callbackURL: URL?) {
+        let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
+        
         viewModel.tokenize(host, with: { [weak self] error in
             DispatchQueue.main.async {
-                error.exists ? self?.router.show(.error()) : self?.router.show(.success(type: .regular))
+                let router: RouterDelegate = DependencyContainer.resolve()
+                error.exists ? router.show(.error(error: PrimerError.generic)) : router.show(.success(type: .regular))
             }
         })
     }
@@ -138,17 +162,17 @@ extension OAuthViewController: ASWebAuthenticationPresentationContextProviding {
 @available(iOS 11.0, *)
 extension OAuthViewController: ReloadDelegate {
     func reload() {
+        let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.tokenize(host, with: { [weak self] error in
             DispatchQueue.main.async {
-                error.exists ? self?.router.show(.error()) : self?.router.show(.success(type: .regular))
+                let router: RouterDelegate = DependencyContainer.resolve()
+                error.exists ? router.show(.error(error: PrimerError.generic)) : router.show(.success(type: .regular))
             }
         })
     }
 }
 
 class WebViewController: UIViewController, WKNavigationDelegate {
-
-    @Dependency private(set) var state: AppStateProtocol
 
     weak var delegate: ReloadDelegate?
 
@@ -165,7 +189,16 @@ class WebViewController: UIViewController, WKNavigationDelegate {
     override func viewDidLoad() {
         webView.scrollView.bounces = false
         if let url = url {
-            let request = URLRequest(url: url)
+            let state: AppStateProtocol = DependencyContainer.resolve()
+
+            let clientToken = state.decodedClientToken!
+            
+            var request = URLRequest(url: url)
+            request.allHTTPHeaderFields = [
+                "Content-Type": "application/json",
+                "Primer-SDK-Version": "1.0.0-beta.0",
+                "Primer-SDK-Client": "IOS_NATIVE"
+            ]
             webView.load(request)
         }
     }
@@ -174,21 +207,23 @@ class WebViewController: UIViewController, WKNavigationDelegate {
         delegate?.reload()
     }
 
-    func queryValue(for name: String, of url: URL?) -> String? {
-        guard let url = url,
-              let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              let queryItem = urlComponents.queryItems?.last(where: {$0.name == name}) else { return nil }
-        return queryItem.value
-    }
-
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
+        
+        let allowedHosts: [String] = [
+            "primer.io",
+//            "api.playground.klarna.com",
+//            "api.sandbox.primer.io"
+        ]
 
-        if let url = navigationAction.request.url, url.host == "primer.io" || url.host == "api.playground.klarna.com"{
+        if let url = navigationAction.request.url, let host = url.host, allowedHosts.contains(host) {
 
-            let val = queryValue(for: "token", of: url)
+            let val = url.queryParameterValue(for: "token")
 
             log(logLevel: .info, message: "🚀🚀 \(url)")
+            log(logLevel: .info, message: "🚀🚀 token \(val)")
+            
+            let state: AppStateProtocol = DependencyContainer.resolve()
 
             state.authorizationToken = val
 
@@ -196,6 +231,24 @@ class WebViewController: UIViewController, WKNavigationDelegate {
 
             decisionHandler(.cancel)
 
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            let routerDelegate: RouterDelegate = DependencyContainer.resolve()
+            let router = routerDelegate as! Router
+            let rootViewController = router.root
+            
+            if settings.hasDisabledSuccessScreen == false && settings.isInitialLoadingHidden == true {
+                let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+                rootViewController?.mainView.backgroundColor = theme.colorTheme.main1
+                if #available(iOS 11.0, *) {
+                    (rootViewController?.children.first as? OAuthViewController)?.indicator.isHidden = false
+                }
+                
+            } else if settings.hasDisabledSuccessScreen && settings.isInitialLoadingHidden {
+                UIView.animate(withDuration: 0.3) {
+                    (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.0
+                }
+            }
+            
             dismiss(animated: true, completion: nil)
 
             return

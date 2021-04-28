@@ -12,9 +12,6 @@ import UIKit
 class ConfirmMandateViewController: UIViewController {
 
     var subView: ConfirmMandateView = ConfirmMandateView()
-    @Dependency private(set) var viewModel: ConfirmMandateViewModelProtocol
-    @Dependency private(set) var router: RouterDelegate
-    @Dependency private(set) var theme: PrimerThemeProtocol
 
     let formTypes: [ConfirmMandateFormType] = [.name, .email, .address, .iban]
 
@@ -28,10 +25,13 @@ class ConfirmMandateViewController: UIViewController {
         subView.dataSource = self
         subView.pin(to: view)
         subView.render(isBusy: true)
+        
+        let viewModel: ConfirmMandateViewModelProtocol = DependencyContainer.resolve()
         viewModel.loadConfig({ [weak self] error in
             DispatchQueue.main.async {
                 if error.exists {
-                    self?.router.show(.error(message: "failed to load session, please close and try again."))
+                    let router: RouterDelegate = DependencyContainer.resolve()
+                    router.show(.error(error: PrimerError.failedToLoadSession))
                     return
                 }
                 self?.subView.render()
@@ -41,6 +41,7 @@ class ConfirmMandateViewController: UIViewController {
     }
 
     override func viewWillDisappear(_ animated: Bool) {
+        var viewModel: ConfirmMandateViewModelProtocol = DependencyContainer.resolve()
         viewModel.formCompleted = false
     }
 }
@@ -51,6 +52,9 @@ extension ConfirmMandateViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let viewModel: ConfirmMandateViewModelProtocol = DependencyContainer.resolve()
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
         cell.addTitle(formTypes[indexPath.row].title, theme: theme)
         cell.addContent(formTypes[indexPath.row].content(viewModel.mandate), theme: theme)
@@ -60,6 +64,9 @@ extension ConfirmMandateViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let viewModel: ConfirmMandateViewModelProtocol = DependencyContainer.resolve()
+        let router: RouterDelegate = DependencyContainer.resolve()
+        
         tableView.deselectRow(at: indexPath, animated: true)
         formTypes[indexPath.row].action(viewModel.mandate, router: router)
     }
@@ -67,6 +74,7 @@ extension ConfirmMandateViewController: UITableViewDelegate, UITableViewDataSour
 
 extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
     var mandate: DirectDebitMandate {
+        let viewModel: ConfirmMandateViewModelProtocol = DependencyContainer.resolve()
         return viewModel.mandate
     }
 
@@ -88,15 +96,16 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
     }
 
     func confirm() {
-//        router.show(.error(message: PrimerError.DirectDebitSessionFailed.rawValue.localized()))
+        let viewModel: ConfirmMandateViewModelProtocol = DependencyContainer.resolve()
         viewModel.confirmMandateAndTokenize({ [weak self] error in
             DispatchQueue.main.async {
+                let router: RouterDelegate = DependencyContainer.resolve()
                 if error.exists {
-                    self?.router.show(.error(message: PrimerError.directDebitSessionFailed.localizedDescription
-                    ))
+                    router.show(.error(error: PrimerError.directDebitSessionFailed))
                     return
+                } else {
+                    router.show(.success(type: .directDebit))
                 }
-                self?.router.show(.success(type: .directDebit))
             }
         })
     }
@@ -104,10 +113,12 @@ extension ConfirmMandateViewController: ConfirmMandateViewDelegate {
 
 extension ConfirmMandateViewController: ConfirmMandateViewDataSource {
     var businessDetails: BusinessDetails? {
+        let viewModel: ConfirmMandateViewModelProtocol = DependencyContainer.resolve()
         return viewModel.businessDetails
     }
 
     var amount: String {
+        let viewModel: ConfirmMandateViewModelProtocol = DependencyContainer.resolve()
         return viewModel.amount
     }
 }
@@ -128,7 +139,7 @@ enum ConfirmMandateFormType: String {
             return NSLocalizedString("primer-confirm-mandate-form-title",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "NAME",
                                      comment: "NAME - Confirm Mandate Title")
                 .uppercased()
 
@@ -136,7 +147,7 @@ enum ConfirmMandateFormType: String {
             return NSLocalizedString("primer-confirm-mandate-form-email",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "EMAIL",
                                      comment: "EMAIL - Confirm Mandate Title")
                 .uppercased()
 
@@ -144,7 +155,7 @@ enum ConfirmMandateFormType: String {
             return NSLocalizedString("primer-confirm-mandate-form-address",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "ADDRESS",
                                      comment: "ADDRESS - Confirm Mandate Title")
                 .uppercased()
 
@@ -152,7 +163,7 @@ enum ConfirmMandateFormType: String {
             return NSLocalizedString("primer-confirm-mandate-form-iban",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "",
+                                     value: "IBAN",
                                      comment: "IBAN - Confirm Mandate Title")
                 .uppercased()
 

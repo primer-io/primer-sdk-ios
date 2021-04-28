@@ -10,7 +10,7 @@
 @testable import PrimerSDK
 
 class MockOAuthViewModel: OAuthViewModelProtocol {
-    var urlSchemeIdentifier: String { return "urlSchemeIdentifier" }
+    var urlSchemeIdentifier: String? { return "urlSchemeIdentifier" }
 
     var generateOAuthURLCalled = false
     var tokenizeCalled = false

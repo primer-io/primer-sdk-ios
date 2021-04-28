@@ -10,8 +10,9 @@ protocol PrimerSettingsProtocol {
     var merchantIdentifier: String? { get }
     var countryCode: CountryCode? { get }
     var applePayEnabled: Bool { get }
+    var klarnaSessionType: KlarnaSessionType? { get }
+    var klarnaPaymentDescription: String? { get }
     var customerId: String? { get }
-    var theme: PrimerTheme { get }
     var clientTokenRequestCallback: ClientTokenCallBack { get }
     var onTokenizeSuccess: PaymentMethodTokenCallBack { get }
     var onCheckoutDismiss: CheckoutDismissalCallback { get }
@@ -22,6 +23,7 @@ protocol PrimerSettingsProtocol {
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
     var orderItems: [OrderItem] { get }
+    var isInitialLoadingHidden: Bool { get }
 }
 
 /**
@@ -47,67 +49,73 @@ protocol PrimerSettingsProtocol {
  */
 
 public class PrimerSettings: PrimerSettingsProtocol {
-    public let amount: Int?
-    public let currency: Currency?
-    public let merchantIdentifier: String?
-    public let countryCode: CountryCode?
-    public let applePayEnabled: Bool
-    public let customerId: String?
-    public let theme: PrimerTheme
-    public let urlScheme: String?
-    public let urlSchemeIdentifier: String?
-    public let isFullScreenOnly: Bool
-    public let hasDisabledSuccessScreen: Bool
-    public let businessDetails: BusinessDetails?
-    public let directDebitHasNoAmount: Bool
-    public let orderItems: [OrderItem]
+    internal(set) public var amount: Int?
+    internal(set) public var currency: Currency?
+    internal(set) public var merchantIdentifier: String?
+    internal(set) public var countryCode: CountryCode?
+    internal(set) public var applePayEnabled: Bool
+    internal(set) public var klarnaSessionType: KlarnaSessionType?
+    internal(set) public var klarnaPaymentDescription: String?
+    internal(set) public var customerId: String?
+    internal(set) public var urlScheme: String?
+    internal(set) public var urlSchemeIdentifier: String?
+    internal(set) public var isFullScreenOnly: Bool
+    internal(set) public var hasDisabledSuccessScreen: Bool
+    internal(set) public var businessDetails: BusinessDetails?
+    internal(set) public var directDebitHasNoAmount: Bool
+    internal(set) public var orderItems: [OrderItem]
+    internal(set) public var isInitialLoadingHidden: Bool
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
-        return delegate?.clientTokenCallback ?? { _ in }
+        return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
     }
 
     public var onTokenizeSuccess: PaymentMethodTokenCallBack {
-        return delegate?.authorizePayment ?? { _, _ in }
+        return Primer.shared.delegate?.authorizePayment ?? { _, _ in }
     }
 
     public var onCheckoutDismiss: CheckoutDismissalCallback {
-        return delegate?.onCheckoutDismissed ?? {}
+        return Primer.shared.delegate?.onCheckoutDismissed ?? {}
+    }
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
-    weak var delegate: PrimerDelegate?
-
     public init(
-        delegate: PrimerDelegate,
+        merchantIdentifier: String? = nil,
+        customerId: String? = nil,
         amount: Int? = nil,
         currency: Currency? = nil,
-        theme: PrimerTheme = PrimerTheme(),
-        applePayEnabled: Bool = false,
-        customerId: String? = nil,
-        merchantIdentifier: String? = nil,
         countryCode: CountryCode? = nil,
+        applePayEnabled: Bool = false,
+        klarnaSessionType: KlarnaSessionType? = nil,
+        klarnaPaymentDescription: String? = nil,
         urlScheme: String? = nil,
         urlSchemeIdentifier: String? = nil,
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
         businessDetails: BusinessDetails? = nil,
         directDebitHasNoAmount: Bool = false,
-        orderItems: [OrderItem] = []
+        orderItems: [OrderItem] = [],
+        isInitialLoadingHidden: Bool = false
     ) {
         self.amount = amount
         self.currency = currency
-        self.theme = theme
         self.applePayEnabled = applePayEnabled
+        self.klarnaSessionType = klarnaSessionType
+        self.klarnaPaymentDescription = klarnaPaymentDescription
         self.customerId = customerId
         self.merchantIdentifier = merchantIdentifier
         self.countryCode = countryCode
         self.urlScheme = urlScheme
         self.urlSchemeIdentifier = urlSchemeIdentifier
-        self.delegate = delegate
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
         self.businessDetails = businessDetails
         self.directDebitHasNoAmount = directDebitHasNoAmount
         self.orderItems = orderItems
+        self.isInitialLoadingHidden = isInitialLoadingHidden
     }
 }
 
@@ -122,8 +130,13 @@ public struct BusinessDetails: Codable {
 }
 
 class MockDelegate: PrimerDelegate {
+    
     func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
 
+    }
+    
+    func tokenAddedToVault(_ token: PaymentMethodToken) {
+            
     }
 
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
@@ -133,6 +146,11 @@ class MockDelegate: PrimerDelegate {
     func onCheckoutDismissed() {
 
     }
+    
+    func checkoutFailed(with error: Error) {
+        
+    }
+    
 }
 
 #endif

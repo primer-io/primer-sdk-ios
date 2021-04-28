@@ -21,14 +21,12 @@ var mockClientToken = DecodedClientToken(
 )
 
 var mockSettings = PrimerSettings(
-    delegate: MockPrimerDelegate(),
+    merchantIdentifier: "mid",
+    customerId: "cid",
     amount: 200,
     currency: .EUR,
-    theme: PrimerTheme(),
-    applePayEnabled: false,
-    customerId: "cid",
-    merchantIdentifier: "mid",
     countryCode: .fr,
+    applePayEnabled: false,
     urlScheme: "urlScheme",
     urlSchemeIdentifier: "urlSchemeIdentifier",
     orderItems: [OrderItem(name: "foo", unitAmount: 200, quantity: 1)]
@@ -51,6 +49,10 @@ class MockPrimerDelegate: PrimerDelegate {
         guard let data = tokenData else { return }
         completion(.success(data))
     }
+    
+    func tokenAddedToVault(_ token: PaymentMethodToken) {
+        
+    }
 
     var authorizePaymentCalled = false
 
@@ -64,9 +66,19 @@ class MockPrimerDelegate: PrimerDelegate {
     func onCheckoutDismissed() {
         onCheckoutDismissedCalled = true
     }
+    
+    func checkoutFailed(with error: Error) {
+        
+    }
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var isInitialLoadingHidden: Bool = false
+    
+    var klarnaPaymentDescription: String?
+    
+    var klarnaSessionType: KlarnaSessionType?
+    
     var orderItems: [OrderItem] = []
 
     var isFullScreenOnly: Bool {
@@ -135,8 +147,6 @@ class MockAppState: AppStateProtocol {
 
     var mandateId: String?
 
-    var settings: PrimerSettingsProtocol = MockPrimerSettings()
-
     var viewModels: [PaymentMethodViewModel] = []
 
     var paymentMethods: [PaymentMethodToken] = []
@@ -158,7 +168,6 @@ class MockAppState: AppStateProtocol {
     var approveURL: String? = "approveUrl"
 
     init(
-        settings: PrimerSettingsProtocol = mockSettings,
         decodedClientToken: DecodedClientToken? = mockClientToken,
         paymentMethodConfig: PaymentMethodConfig? = PaymentMethodConfig(
             coreUrl: "url",
@@ -169,7 +178,6 @@ class MockAppState: AppStateProtocol {
             ]
         )
     ) {
-        self.settings = settings
         self.decodedClientToken = decodedClientToken
         self.paymentMethodConfig = paymentMethodConfig
     }
@@ -191,7 +199,6 @@ class MockLocator {
         DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(MockKlarnaService() as KlarnaServiceProtocol)
         DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
-        DependencyContainer.register(MockCardFormViewModel() as CardFormViewModelProtocol)
         DependencyContainer.register(MockCardScannerViewModel() as CardScannerViewModelProtocol)
         DependencyContainer.register(MockDirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
         DependencyContainer.register(MockOAuthViewModel() as OAuthViewModelProtocol)
@@ -234,6 +241,10 @@ class MockRouter: RouterDelegate {
 }
 
 class MockFormViewModel: FormViewModelProtocol {
+    func loadConfig(_ completion: @escaping (Error?) -> Void) {
+        
+    }
+    
     var popOnComplete: Bool = false
 
     func getSubmitButtonTitle(formType: FormType) -> String {
