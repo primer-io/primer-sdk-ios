@@ -106,8 +106,10 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
                     completion(error)
                 case .success(let token):
                     state.directDebitMandate = DirectDebitMandate(address: Address())
-                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    settings.onTokenizeSuccess(token, completion)
+                    // FIXME: Please review this carefully. I believe that the authorizePayment delegate method should not be called since Direct Debit can only be vaulted. 
+                    completion(nil)
+//                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+//                    settings.authorizePayment(token, completion)
                 }
             }
         })
