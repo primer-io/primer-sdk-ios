@@ -49,8 +49,8 @@ class RootViewController: UIViewController {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         switch Primer.shared.flow {
-        case .addKlarnaToVault,
-             .addPayPalToVault,
+        case .vaultKlarna,
+             .vaultPayPal,
              .checkoutWithKlarna:
             mainView.backgroundColor = settings.isInitialLoadingHidden ? .clear : theme.colorTheme.main1
         default:
@@ -100,15 +100,14 @@ class RootViewController: UIViewController {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         switch Primer.shared.flow {
-        case .completeDirectCheckout:
+        case .primerCheckout:
             router.show(.vaultCheckout)
-        case .default:
-            router.show(.vaultCheckout)
-        case .addCardToVault:
+        case .vaultCard, .checkoutWithCard:
             router.show(.form(type: .cardForm(theme: theme)))
-        case .addPayPalToVault:
+        case .vaultPayPal,
+             .checkoutWithPayPal:
             router.show(.oAuth(host: .paypal))
-        case .addDirectDebit:
+        case .vaultDirectDebit:
             router.show(
                 .form(
                     type: .iban(mandate: state.directDebitMandate, popOnComplete: true),
@@ -116,15 +115,15 @@ class RootViewController: UIViewController {
             )
         case .checkoutWithKlarna:
             router.show(.oAuth(host: .klarna))
-        case .addDirectDebitToVault:
-            router.show(
-                .form(
-                    type: .iban(mandate: state.directDebitMandate, popOnComplete: true),
-                    closeOnSubmit: false)
-            )
-        case .addKlarnaToVault:
+//        case .addDirectDebitToVault:
+//            router.show(
+//                .form(
+//                    type: .iban(mandate: state.directDebitMandate, popOnComplete: true),
+//                    closeOnSubmit: false)
+//            )
+        case .vaultKlarna:
             router.show(.oAuth(host: .klarna))
-        case .defaultWithVault:
+        case .primerWithVault:
             router.show(.vaultCheckout)
         }
     }

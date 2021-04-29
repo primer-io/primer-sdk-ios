@@ -14,7 +14,7 @@ protocol PrimerSettingsProtocol {
     var klarnaPaymentDescription: String? { get }
     var customerId: String? { get }
     var clientTokenRequestCallback: ClientTokenCallBack { get }
-    var onTokenizeSuccess: PaymentMethodTokenCallBack { get }
+    var authorizePayment: PaymentMethodTokenCallBack { get }
     var onCheckoutDismiss: CheckoutDismissalCallback { get }
     var urlScheme: String? { get }
     var urlSchemeIdentifier: String? { get }
@@ -70,7 +70,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
     }
 
-    public var onTokenizeSuccess: PaymentMethodTokenCallBack {
+    internal var authorizePayment: PaymentMethodTokenCallBack {
         return Primer.shared.delegate?.authorizePayment ?? { _, _ in }
     }
 

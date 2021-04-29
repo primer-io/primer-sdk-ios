@@ -31,8 +31,8 @@ public class PresentationController: UIPresentationController {
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
             switch Primer.shared.flow {
-            case .addKlarnaToVault,
-                 .addPayPalToVault,
+            case .vaultKlarna,
+                 .vaultPayPal,
                  .checkoutWithKlarna:
                 self.blurEffectView.alpha = settings.isInitialLoadingHidden ? 0 : 0.7
             default:
