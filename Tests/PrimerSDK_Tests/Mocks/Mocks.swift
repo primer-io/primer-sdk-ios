@@ -115,17 +115,17 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 
     var clientTokenRequestCallback: ClientTokenCallBack
 
-    var onTokenizeSuccess: PaymentMethodTokenCallBack
+    var authorizePayment: PaymentMethodTokenCallBack
 
     var onCheckoutDismiss: CheckoutDismissalCallback
 
     init(
         clientTokenRequestCallback: @escaping ClientTokenCallBack = { _ in },
-        onTokenizeSuccess: @escaping PaymentMethodTokenCallBack = { _, _  in },
+        authorizePayment: @escaping PaymentMethodTokenCallBack = { _, _  in },
         onCheckoutDismiss: @escaping CheckoutDismissalCallback = { }
     ) {
         self.clientTokenRequestCallback = clientTokenRequestCallback
-        self.onTokenizeSuccess = onTokenizeSuccess
+        self.authorizePayment = authorizePayment
         self.onCheckoutDismiss = onCheckoutDismiss
     }
 }

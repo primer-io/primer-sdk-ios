@@ -25,9 +25,9 @@ class OAuthViewModel: OAuthViewModelProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.confirmedBillingAgreement
     }
-    private var onTokenizeSuccess: PaymentMethodTokenCallBack {
+    private var authorizePayment: PaymentMethodTokenCallBack {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        return settings.onTokenizeSuccess
+        return settings.authorizePayment
     }
 
     deinit {
@@ -128,7 +128,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
                     completion(nil) // self?.onTokenizeSuccess(token, completion)
                 case .CHECKOUT:
                     log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                    self?.onTokenizeSuccess(token, completion)
+                    self?.authorizePayment(token, completion)
                 }
             }
         }

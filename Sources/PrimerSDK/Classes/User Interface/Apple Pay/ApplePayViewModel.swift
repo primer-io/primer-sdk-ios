@@ -59,12 +59,8 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
                 ErrorHandler.shared.handle(error: error)
                 completion(error)
             case .success(let token):
-                switch Primer.shared.flow {
-                case .completeDirectCheckout:
-                    settings.onTokenizeSuccess(token, completion)
-                default:
-                    completion(nil)
-                }
+                // This is Apple Pay, it always gonna be checkout
+                settings.authorizePayment(token, completion)
             }
         }
     }

@@ -36,58 +36,61 @@
 
 public enum PrimerSessionFlow {
 
-    case `default`
-    case defaultWithVault
-    case completeDirectCheckout
-    case addPayPalToVault
-    case addCardToVault
-    case addDirectDebitToVault
-    case addKlarnaToVault
-    case addDirectDebit
+    case primerWithVault
+    case primerCheckout
+    case vaultCard
+    case checkoutWithCard
+    case vaultPayPal
+    case checkoutWithPayPal
+    case vaultDirectDebit
+    case vaultKlarna
     case checkoutWithKlarna
-
+    
     var vaulted: Bool {
         switch self {
-        case .addCardToVault:
+        case .primerWithVault:
             return true
-        case .addPayPalToVault:
+        case .vaultCard:
             return true
-        case .default:
+        case .checkoutWithCard:
             return false
-        case .addDirectDebit:
+        case .vaultPayPal:
             return true
-        case .completeDirectCheckout:
+        case .checkoutWithPayPal:
             return false
+        case .vaultDirectDebit:
+            return true
+        case .vaultKlarna:
+            return true
         case .checkoutWithKlarna:
             return false
-        case .addDirectDebitToVault:
-            return true
-        case .addKlarnaToVault:
-            return true
-        case .defaultWithVault:
-            return true
+        case .primerCheckout:
+            return false
+        
         }
     }
 
     var uxMode: UXMode {
         switch self {
-        case .addCardToVault:
+        case .vaultCard:
             return .VAULT
-        case .addPayPalToVault:
-            return .VAULT
-        case .default:
+        case .checkoutWithCard:
             return .CHECKOUT
-        case .addDirectDebit:
+        case .vaultPayPal:
             return .VAULT
-        case .completeDirectCheckout:
+        case .checkoutWithPayPal:
+            return .CHECKOUT
+        case .vaultDirectDebit:
+            return .VAULT
+        case .primerCheckout:
             return .CHECKOUT
         case .checkoutWithKlarna:
             return .CHECKOUT
-        case .addDirectDebitToVault:
+//        case .addDirectDebitToVault:
+//            return .VAULT
+        case .vaultKlarna:
             return .VAULT
-        case .addKlarnaToVault:
-            return .VAULT
-        case .defaultWithVault:
+        case .primerWithVault:
             return .VAULT
         }
     }
