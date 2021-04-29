@@ -54,7 +54,7 @@ extension ErrorViewController {
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
-        navBar.topItem?.title = "Error!"
+//        navBar.topItem?.title = ""
         navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: theme.colorTheme.text1]
         navBar.translatesAutoresizingMaskIntoConstraints = false
 
@@ -69,7 +69,11 @@ extension ErrorViewController {
 
     func configureMessage() {
         if !message.text.exists {
-            message.text = "Error, please close checkout and retry!"
+            message.text = NSLocalizedString("primer-error-screen-message",
+                                             tableName: nil,
+                                             bundle: Bundle.primerResources,
+                                             value: "Your payment method couldn't\nbe added. Please try again.",
+                                             comment: "Your payment method couldn't\nbe added. Please try again. - Primer error screen message")
         }
         message.numberOfLines = 0
         message.textAlignment = .center

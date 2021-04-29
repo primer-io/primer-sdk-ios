@@ -35,13 +35,14 @@ class MerchantCheckoutViewController: UIViewController {
             countryCode: .se,
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: "Scooter Rental",
+            isFullScreenOnly: true,
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
         )
         Primer.shared.configure(settings: settings)
         
-//        let theme = generatePrimerTheme()
-//        Primer.shared.configure(theme: theme)
+        let theme = generatePrimerTheme()
+        Primer.shared.configure(theme: theme)
 
         Primer.shared.setDirectDebitDetails(
             firstName: "John",

@@ -102,7 +102,7 @@ extension ConfirmMandateView {
         
         title.text = theme.content.confirmMandateContent.mainTitleText
         title.textColor = theme.colorTheme.text1
-        title.font = theme.fontTheme.mainTitleFont
+        title.font = theme.fontTheme.mainTitle
         title.textAlignment = .center
         title.translatesAutoresizingMaskIntoConstraints = false
         title.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
