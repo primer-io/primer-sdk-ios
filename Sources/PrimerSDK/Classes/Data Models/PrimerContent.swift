@@ -110,8 +110,8 @@ struct VaultPaymentMethodViewContent {
     var mainTitleText: String { return NSLocalizedString("primer-vault-payment-method-saved-payment-methods",
                                                          tableName: nil,
                                                          bundle: Bundle.primerResources,
-                                                         value: "Saved payment methods",
-                                                         comment: "Saved payment methods - Vault Payment Method (Main title text)") }
+                                                         value: "SAVED PAYMENT METHODS",
+                                                         comment: "SAVED PAYMENT METHODS - Vault Payment Method (Main title text)") }
 
     var editButtonText: String { return NSLocalizedString("primer-vault-payment-method-edit",
                                                           tableName: nil,
