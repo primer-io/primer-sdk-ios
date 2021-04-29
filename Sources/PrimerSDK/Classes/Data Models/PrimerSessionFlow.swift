@@ -86,8 +86,6 @@ public enum PrimerSessionFlow {
             return .CHECKOUT
         case .checkoutWithKlarna:
             return .CHECKOUT
-//        case .addDirectDebitToVault:
-//            return .VAULT
         case .vaultKlarna:
             return .VAULT
         case .primerWithVault:

@@ -115,12 +115,6 @@ class RootViewController: UIViewController {
             )
         case .checkoutWithKlarna:
             router.show(.oAuth(host: .klarna))
-//        case .addDirectDebitToVault:
-//            router.show(
-//                .form(
-//                    type: .iban(mandate: state.directDebitMandate, popOnComplete: true),
-//                    closeOnSubmit: false)
-//            )
         case .vaultKlarna:
             router.show(.oAuth(host: .klarna))
         case .primerWithVault:
