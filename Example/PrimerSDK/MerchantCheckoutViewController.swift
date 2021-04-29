@@ -31,11 +31,14 @@ class MerchantCheckoutViewController: UIViewController {
     
     func configurePrimer() {
         let settings = PrimerSettings(
+            amount: generateAmountAndOrderItems().0,
             currency: .SEK,
             countryCode: .se,
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: "Scooter Rental",
+            urlScheme: "primer",
             hasDisabledSuccessScreen: true,
+            orderItems: generateAmountAndOrderItems().1,
             isInitialLoadingHidden: true
         )
         Primer.shared.configure(settings: settings)
@@ -62,11 +65,11 @@ class MerchantCheckoutViewController: UIViewController {
     // MARK: - ACTIONS
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .primerCheckout)
+        Primer.shared.showCheckout(self, flow: .vaultCard)
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .primerWithVault)
+        Primer.shared.showCheckout(self, flow: .vaultKlarna)
     }
     
     @IBAction func addDirectDebitButtonTapped(_ sender: Any) {
