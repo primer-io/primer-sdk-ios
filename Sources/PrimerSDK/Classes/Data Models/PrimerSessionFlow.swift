@@ -48,23 +48,16 @@ public enum PrimerSessionFlow {
     
     var vaulted: Bool {
         switch self {
-        case .primerWithVault:
+        case .primerWithVault,
+             .vaultCard,
+             .vaultPayPal,
+             .vaultDirectDebit,
+             .vaultKlarna:
             return true
-        case .vaultCard:
-            return true
-        case .checkoutWithCard:
-            return false
-        case .vaultPayPal:
-            return true
-        case .checkoutWithPayPal:
-            return false
-        case .vaultDirectDebit:
-            return true
-        case .vaultKlarna:
-            return true
-        case .checkoutWithKlarna:
-            return false
-        case .primerCheckout:
+        case .checkoutWithCard,
+             .checkoutWithPayPal,
+             .checkoutWithKlarna,
+             .primerCheckout:
             return false
         
         }
@@ -72,24 +65,17 @@ public enum PrimerSessionFlow {
 
     var uxMode: UXMode {
         switch self {
-        case .vaultCard:
+        case .vaultCard,
+             .vaultPayPal,
+             .vaultDirectDebit,
+             .vaultKlarna,
+             .primerWithVault:
             return .VAULT
-        case .checkoutWithCard:
+        case .checkoutWithCard,
+             .checkoutWithPayPal,
+             .primerCheckout,
+             .checkoutWithKlarna:
             return .CHECKOUT
-        case .vaultPayPal:
-            return .VAULT
-        case .checkoutWithPayPal:
-            return .CHECKOUT
-        case .vaultDirectDebit:
-            return .VAULT
-        case .primerCheckout:
-            return .CHECKOUT
-        case .checkoutWithKlarna:
-            return .CHECKOUT
-        case .vaultKlarna:
-            return .VAULT
-        case .primerWithVault:
-            return .VAULT
         }
     }
 }
