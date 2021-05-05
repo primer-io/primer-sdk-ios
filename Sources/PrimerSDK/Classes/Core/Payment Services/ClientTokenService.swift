@@ -22,8 +22,8 @@ class ClientTokenService: ClientTokenServiceProtocol {
             case .failure:
                 completion(PrimerError.clientTokenNull)
             case .success(let token):
-                guard let decodedJWTToken = token.decodedJWTToken,
-                      let expDate = decodedJWTToken.expDate
+                guard let jwtTokenPayload = token.jwtTokenPayload,
+                      let expDate = jwtTokenPayload.expDate
                 else {
                     Primer.shared.delegate?.checkoutFailed(with: PrimerError.clientTokenNull)
                     return completion(PrimerError.clientTokenNull)
@@ -34,8 +34,8 @@ class ClientTokenService: ClientTokenServiceProtocol {
                     return completion(PrimerError.tokenExpired)
                 }
                 
-                if let decodedJWTToken = token.decodedJWTToken {
-                    state.decodedClientToken = decodedJWTToken
+                if let jwtTokenPayload = token.jwtTokenPayload {
+                    state.decodedClientToken = jwtTokenPayload
                 } else {
                     completion(PrimerError.clientTokenNull)
                 }
