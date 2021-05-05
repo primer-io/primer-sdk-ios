@@ -100,7 +100,7 @@ extension ConfirmMandateView {
     func addTitle() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
-        title.text = theme.content.confirmMandateContent.mainTitleText
+        title.text = theme.content.confirmMandateContent.mainTitleText.uppercased()
         title.textColor = theme.colorTheme.text1
         title.font = theme.fontTheme.mainTitle
         title.textAlignment = .center
