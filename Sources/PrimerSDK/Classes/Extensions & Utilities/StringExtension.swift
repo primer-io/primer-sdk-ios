@@ -82,6 +82,17 @@ extension String {
         }
         return sum % 10 == 0
     }
+    
+    var decodedJWTToken: [String: Any]? {
+        let components = self.split(separator: ".")
+        if components.count < 2 { return nil }
+        let segment = String(components[1]).padding(toLength: ((String(components[1]).count+3)/4)*4,
+                                                              withPad: "=",
+                                                              startingAt: 0)
+        guard !segment.isEmpty, let data = Data(base64Encoded: segment) else { return nil }
+        guard let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else { return nil }
+        return json
+    }
 
     func decodeClientTokenBase64() -> DecodedClientToken {
         let bytes = self.components(separatedBy: ".")
