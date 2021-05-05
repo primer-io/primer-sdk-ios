@@ -88,9 +88,6 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
         let directDebitService: DirectDebitServiceProtocol = DependencyContainer.resolve()
         directDebitService.createMandate({ [weak self] error in
             if error.exists { return completion(PrimerError.directDebitSessionFailed) }
-            
-            
-            
 
             let state: AppStateProtocol = DependencyContainer.resolve()
             let request = PaymentMethodTokenizationRequest(
@@ -106,10 +103,9 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
                     completion(error)
                 case .success(let token):
                     state.directDebitMandate = DirectDebitMandate(address: Address())
-                    // FIXME: Please review this carefully. I believe that the authorizePayment delegate method should not be called since Direct Debit can only be vaulted. 
+                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                    settings.authorizePayment(token, completion)
                     completion(nil)
-//                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-//                    settings.authorizePayment(token, completion)
                 }
             }
         })
