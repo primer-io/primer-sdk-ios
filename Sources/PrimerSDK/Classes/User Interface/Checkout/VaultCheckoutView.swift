@@ -244,8 +244,8 @@ extension VaultCheckoutView {
                     ? NSLocalizedString("primer-vault-checkout-other-methods",
                                         tableName: nil,
                                         bundle: Bundle.primerResources,
-                                        value: "OTHER WAYS TO PAY",
-                                        comment: "OTHER WAYS TO PAY - Vault Checkout Other Methods Title")
+                                        value: "Other ways to pay",
+                                        comment: "Other ways to pay - Vault Checkout Other Methods Title").uppercased()
                     : ""
                 otherMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
                 otherMethodsTitleLabel.font = .systemFont(ofSize: 12, weight: .light)
