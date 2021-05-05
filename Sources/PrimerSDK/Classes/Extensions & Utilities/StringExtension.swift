@@ -83,7 +83,7 @@ extension String {
         return sum % 10 == 0
     }
     
-    var decodedJWTToken: DecodedClientToken? {
+    var jwtTokenPayload: DecodedClientToken? {
         let components = self.split(separator: ".")
         if components.count < 2 { return nil }
         let segment = String(components[1]).padding(toLength: ((String(components[1]).count+3)/4)*4,
