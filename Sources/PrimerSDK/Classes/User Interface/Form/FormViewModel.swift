@@ -161,7 +161,7 @@ class FormViewModel: FormViewModelProtocol {
                 completion(error)
             case .success(let token):
                 switch Primer.shared.flow {
-                case .primerCheckout,
+                case .checkout,
                      .checkoutWithCard,
                      .checkoutWithKlarna:
                     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()

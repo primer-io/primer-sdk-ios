@@ -11,7 +11,7 @@ public class Primer {
     // MARK: - PROPERTIES
     
     public weak var delegate: PrimerDelegate?
-    private(set) var flow: PrimerSessionFlow = .primerCheckout
+    private(set) var flow: PrimerSessionFlow = .checkout
     private var root: RootViewController?
 
     // MARK: - INITIALIZATION

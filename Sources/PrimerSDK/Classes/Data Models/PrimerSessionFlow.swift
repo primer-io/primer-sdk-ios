@@ -36,8 +36,8 @@
 
 public enum PrimerSessionFlow {
 
-    case primerWithVault
-    case primerCheckout
+    case vault
+    case checkout
     case vaultCard
     case checkoutWithCard
     case vaultPayPal
@@ -48,16 +48,16 @@ public enum PrimerSessionFlow {
     
     var vaulted: Bool {
         switch self {
-        case .primerWithVault,
+        case .vault,
              .vaultCard,
              .vaultPayPal,
              .vaultDirectDebit,
              .vaultKlarna:
             return true
-        case .checkoutWithCard,
+        case .checkout,
+             .checkoutWithCard,
              .checkoutWithPayPal,
-             .checkoutWithKlarna,
-             .primerCheckout:
+             .checkoutWithKlarna:
             return false
         
         }
@@ -65,15 +65,15 @@ public enum PrimerSessionFlow {
 
     var uxMode: UXMode {
         switch self {
-        case .vaultCard,
+        case .vault,
+             .vaultCard,
              .vaultPayPal,
              .vaultDirectDebit,
-             .vaultKlarna,
-             .primerWithVault:
+             .vaultKlarna:
             return .VAULT
-        case .checkoutWithCard,
+        case .checkout,
+             .checkoutWithCard,
              .checkoutWithPayPal,
-             .primerCheckout,
              .checkoutWithKlarna:
             return .CHECKOUT
         }
