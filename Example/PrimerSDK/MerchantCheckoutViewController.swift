@@ -77,7 +77,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func openWalletButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .primerWithVault)
+        Primer.shared.showCheckout(self, flow: .vault)
     }
     
 }

@@ -100,7 +100,7 @@ class RootViewController: UIViewController {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         switch Primer.shared.flow {
-        case .primerCheckout:
+        case .checkout:
             router.show(.vaultCheckout)
         case .vaultCard, .checkoutWithCard:
             router.show(.form(type: .cardForm(theme: theme)))
@@ -117,7 +117,7 @@ class RootViewController: UIViewController {
             router.show(.oAuth(host: .klarna))
         case .vaultKlarna:
             router.show(.oAuth(host: .klarna))
-        case .primerWithVault:
+        case .vault:
             router.show(.vaultCheckout)
         }
     }
