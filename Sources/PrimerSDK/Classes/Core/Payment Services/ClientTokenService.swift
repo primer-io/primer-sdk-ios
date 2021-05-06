@@ -36,6 +36,7 @@ class ClientTokenService: ClientTokenServiceProtocol {
                 
                 if let jwtTokenPayload = token.jwtTokenPayload {
                     state.decodedClientToken = jwtTokenPayload
+                    completion(nil)
                 } else {
                     completion(PrimerError.clientTokenNull)
                 }
