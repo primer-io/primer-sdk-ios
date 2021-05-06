@@ -22,7 +22,21 @@ class ClientTokenService: ClientTokenServiceProtocol {
             case .failure:
                 completion(PrimerError.clientTokenNull)
             case .success(let token):
-                guard let clientToken = token.clientToken else { return completion(PrimerError.clientTokenNull) }
+                guard let clientToken = token.clientToken,
+                      let decoded = clientToken.decodedJWTToken,
+                      let exp = decoded["exp"] as? Int
+                else {
+                    Primer.shared.delegate?.checkoutFailed(with: PrimerError.clientTokenNull)
+                    return completion(PrimerError.clientTokenNull)
+                }
+
+                let expDate = Date(timeIntervalSince1970: Double(exp))
+                
+                if expDate < Date() {
+                    Primer.shared.delegate?.checkoutFailed(with: PrimerError.tokenExpired)
+                    return completion(PrimerError.tokenExpired)
+                }
+                
                 state.decodedClientToken = clientToken.decodeClientTokenBase64()
                 completion(nil)
             }
