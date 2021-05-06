@@ -45,6 +45,8 @@ class ErrorHandler {
                 break
             case .customerIDNull:
                 break
+            case .tokenExpired:
+                break
             case .payPalSessionFailed:
                 break
             case .vaultFetchFailed:

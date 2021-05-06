@@ -32,11 +32,16 @@ class ExternalViewModel: ExternalViewModelProtocol {
         } else {
             let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
             clientTokenService.loadCheckoutConfig({ [weak self] error in
-                if let error = error { completion(.failure(error)) }
+                if let error = error {
+                    return completion(.failure(error))
+                }
                 
                 let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
                 vaultService.loadVaultedPaymentMethods({ [weak self] error in
-                    if let error = error { completion(.failure(error)) }
+                    if let error = error {
+                        return completion(.failure(error))
+                    }
+                    
                     let paymentMethods = state.paymentMethods
                     completion(.success(paymentMethods))
                 })
