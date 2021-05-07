@@ -52,6 +52,7 @@ class OAuthViewController: UIViewController {
 //                    self?.dismiss(animated: true, completion: nil)
 //                }))
 //                alert.show()
+                Primer.shared.delegate?.checkoutFailed(with: error)
             case .success(let urlString):
                 DispatchQueue.main.async {
                     // if klarna show webview, otherwise oauth
