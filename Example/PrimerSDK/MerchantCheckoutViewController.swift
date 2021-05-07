@@ -26,7 +26,7 @@ class MerchantCheckoutViewController: UIViewController {
         
         Primer.shared.delegate = self
         configurePrimer()
-        fetchPaymentMethods()
+//        fetchPaymentMethods()
     }
     
     func configurePrimer() {
@@ -83,7 +83,7 @@ class MerchantCheckoutViewController: UIViewController {
 
 extension MerchantCheckoutViewController: PrimerDelegate {
     
-    func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
+    func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
         guard let url = URL(string: "\(endpoint)/clientToken") else {
             return completion(.failure(NetworkError.missingParams))
         }
@@ -103,9 +103,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             switch result {
             case .success(let data):
                 do {
-                    let token = try JSONDecoder().decode(CreateClientTokenResponse.self, from: data)
+                    let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
                     print("🚀🚀🚀 token:", token)
                     completion(.success(token))
+                    
                 } catch {
                     completion(.failure(NetworkError.serializationError))
                 }

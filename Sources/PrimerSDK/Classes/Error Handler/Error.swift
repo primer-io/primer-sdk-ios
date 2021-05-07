@@ -214,6 +214,7 @@ enum PrimerError: PrimerErrorProtocol {
     case generic
     case clientTokenNull
     case customerIDNull
+    case tokenExpired
     case payPalSessionFailed
     case vaultFetchFailed
     case vaultDeleteFailed
@@ -264,6 +265,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Customer ID is missing",
                                      comment: "Customer ID is missing - Primer error message")
+            
+        case .tokenExpired:
+            return NSLocalizedString("primer-error-message-token-expired",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Token has expired",
+                                     comment: "Token has expired - DX error message")
 
         case .payPalSessionFailed:
             return NSLocalizedString("primer-error-message-paypal-needs-recharge",

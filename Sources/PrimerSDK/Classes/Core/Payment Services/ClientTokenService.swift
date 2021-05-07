@@ -1,5 +1,7 @@
 #if canImport(UIKit)
 
+import Foundation
+
 protocol ClientTokenServiceProtocol {
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void)
 }
@@ -22,9 +24,24 @@ class ClientTokenService: ClientTokenServiceProtocol {
             case .failure:
                 completion(PrimerError.clientTokenNull)
             case .success(let token):
-                guard let clientToken = token.clientToken else { return completion(PrimerError.clientTokenNull) }
-                state.decodedClientToken = clientToken.decodeClientTokenBase64()
-                completion(nil)
+                guard let jwtTokenPayload = token.jwtTokenPayload,
+                      let expDate = jwtTokenPayload.expDate
+                else {
+                    Primer.shared.delegate?.checkoutFailed(with: PrimerError.clientTokenNull)
+                    return completion(PrimerError.clientTokenNull)
+                }
+                
+                if expDate < Date() {
+                    Primer.shared.delegate?.checkoutFailed(with: PrimerError.tokenExpired)
+                    return completion(PrimerError.tokenExpired)
+                }
+                
+                if let jwtTokenPayload = token.jwtTokenPayload {
+                    state.decodedClientToken = jwtTokenPayload
+                    completion(nil)
+                } else {
+                    completion(PrimerError.clientTokenNull)
+                }
             }
         })
     }
