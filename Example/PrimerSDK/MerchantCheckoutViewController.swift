@@ -24,6 +24,25 @@ class MerchantCheckoutViewController: UIViewController {
     let bgThread2 = DispatchQueue(label: "test2", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
     let bgThread3 = DispatchQueue(label: "test3", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
     
+    let klarnaConfigurations: [PrimerSettings] = [
+        PrimerSettings(
+            currency: .SEK,
+            countryCode: .se,
+            klarnaSessionType: .recurringPayment,
+            klarnaPaymentDescription: "Scooter Rental",
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true
+        ),
+        PrimerSettings(
+            currency: .SEK,
+            countryCode: .se,
+            klarnaSessionType: .recurringPayment,
+            klarnaPaymentDescription: "Scooter Rental",
+            hasDisabledSuccessScreen: false,
+            isInitialLoadingHidden: false
+        )
+    ]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer"
@@ -73,9 +92,22 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
     
+    var klarnaNumberOfTimesPresented = 0
+    
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
-        bgThread2.async {
-            Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
+        if klarnaNumberOfTimesPresented == 1 {
+            bgThread2.async {
+                Primer.shared.configure(settings: self.klarnaConfigurations[1])
+                self.fetchPaymentMethods()
+                Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
+                self.klarnaNumberOfTimesPresented += 1
+            }
+            
+        } else {
+            bgThread2.async {
+                Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
+                self.klarnaNumberOfTimesPresented += 1
+            }
         }
     }
     
