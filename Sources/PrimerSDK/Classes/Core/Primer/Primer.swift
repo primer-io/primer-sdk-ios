@@ -142,12 +142,14 @@ public class Primer {
      1.4.0
      */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
-        root = RootViewController()
-        let router: RouterDelegate = DependencyContainer.resolve()
-        router.setRoot(root!)
-        guard let root = self.root else { return }
-        Primer.shared.flow = flow
-        controller.present(root, animated: true)
+        DispatchQueue.main.async { [weak self] in
+            self?.root = RootViewController()
+            guard let root = self?.root else { return }
+            let router: RouterDelegate = DependencyContainer.resolve()
+            router.setRoot(root)
+            Primer.shared.flow = flow
+            controller.present(root, animated: true)
+        }
     }
 
     /**
