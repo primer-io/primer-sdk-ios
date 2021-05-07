@@ -15,8 +15,8 @@ class ClientTokenServiceTests: XCTestCase {
     func test_loadCheckoutConfig_calls_clientTokenRequestCallback() throws {
         let expectation = XCTestExpectation(description: "Load checkout config")
 
-        let accessToken = "7651512a-d12e-46e1-b58c-d8c3afc8c8ee"
-        let response = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3NUb2tlbiI6Ijc2NTE1MTJhLWQxMmUtNDZlMS1iNThjLWQ4YzNhZmM4YzhlZSIsImNvbmZpZ3VyYXRpb25VcmwiOiJodHRwczovL2FwaS5zYW5kYm94LnByaW1lci5pby9jbGllbnQtc2RrL2NvbmZpZ3VyYXRpb24iLCJwYXltZW50RmxvdyI6IlBSRUZFUl9WQVVMVCIsInRocmVlRFNlY3VyZUluaXRVcmwiOiJodHRwczovL3NvbmdiaXJkc3RhZy5jYXJkaW5hbGNvbW1lcmNlLmNvbS9jYXJkaW5hbGNydWlzZS92MS9zb25nYmlyZC5qcyIsInRocmVlRFNlY3VyZVRva2VuIjoiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUo5LmV5SnFkR2tpT2lJMFpEUTFPRFF5TkMwd01ESmpMVFJpTlRjdFlUYzNZeTA1Tm1abFptUTNOekl3WTJJaUxDSnBZWFFpT2pFMk1EY3hPRFkzTXpnc0ltbHpjeUk2SWpWbFlqVmlZV1ZqWlRabFl6Y3lObVZoTldaaVlUZGxOU0lzSWs5eVoxVnVhWFJKWkNJNklqVmxZalZpWVRReFpEUTRabUprTmpBNE9EaGlPR1UwTkNKOS4wRVk0alV6RFBUVUE1Y1VaZ3F1d0lvZDRvM2l1SzRYbmY4TUtXQnoxSHEwIiwiY29yZVVybCI6Imh0dHBzOi8vYXBpLnNhbmRib3gucHJpbWVyLmlvIiwicGNpVXJsIjoiaHR0cHM6Ly9hcGkuc2FuZGJveC5wcmltZXIuaW8iLCJlbnYiOiJTQU5EQk9YIn0.s08j_MIxosYNTfUNtLnJELxeLqRVryPvFtdZfEjie08"
+        let accessToken = "dcc4b565-fc62-445f-a379-a7f07dc90937"
+        let response = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MjA0NTI2MDksImFjY2Vzc1Rva2VuIjoiZGNjNGI1NjUtZmM2Mi00NDVmLWEzNzktYTdmMDdkYzkwOTM3IiwiYW5hbHl0aWNzVXJsIjoiaHR0cHM6Ly9hbmFseXRpY3MuYXBpLnNhbmRib3guY29yZS5wcmltZXIuaW8vbWl4cGFuZWwiLCJpbnRlbnQiOiJDSEVDS09VVCIsImNvbmZpZ3VyYXRpb25VcmwiOiJodHRwczovL2FwaS5zYW5kYm94LnByaW1lci5pby9jbGllbnQtc2RrL2NvbmZpZ3VyYXRpb24iLCJjb3JlVXJsIjoiaHR0cHM6Ly9hcGkuc2FuZGJveC5wcmltZXIuaW8iLCJwY2lVcmwiOiJodHRwczovL3Nkay5hcGkuc2FuZGJveC5wcmltZXIuaW8iLCJlbnYiOiJTQU5EQk9YIiwidGhyZWVEU2VjdXJlSW5pdFVybCI6Imh0dHBzOi8vc29uZ2JpcmRzdGFnLmNhcmRpbmFsY29tbWVyY2UuY29tL2NhcmRpbmFsY3J1aXNlL3YxL3NvbmdiaXJkLmpzIiwidGhyZWVEU2VjdXJlVG9rZW4iOiJleUowZVhBaU9pSktWMVFpTENKaGJHY2lPaUpJVXpJMU5pSjkuZXlKcWRHa2lPaUpoWlRSaVltRTRNUzFqTm1WakxUUTJZVGt0WVdRell5MWhNV0V3T1RJMk1UYzBPVEVpTENKcFlYUWlPakUyTWpBek5qWXlNRGtzSW1semN5STZJalZsWWpWaVlXVmpaVFpsWXpjeU5tVmhOV1ppWVRkbE5TSXNJazl5WjFWdWFYUkpaQ0k2SWpWbFlqVmlZVFF4WkRRNFptSmtOakE0T0RoaU9HVTBOQ0o5LmlIbGhjbWRMVE1sVURKMXREY0hFVkhjT01hZUstUUJTTGFXczJVVVJnOGsiLCJwYXltZW50RmxvdyI6IlBSRUZFUl9WQVVMVCJ9.7v55XlO8zpIjsKTtMDtowdT2nfyULuLNTaw-B1qEi2I"
 
         var clientTokenRequestCallbackCalled = false
 
@@ -34,9 +34,13 @@ class ClientTokenServiceTests: XCTestCase {
         
         let service = ClientTokenService()
 
-        service.loadCheckoutConfig({ _ in })
-
-        XCTAssertEqual(state.decodedClientToken?.accessToken, accessToken)
+        service.loadCheckoutConfig { (err) in
+            if let err = err {
+                XCTAssert(false)
+            } else {
+                XCTAssertEqual(state.decodedClientToken?.accessToken, accessToken)
+            }
+        }
 
         wait(for: [expectation], timeout: 10.0)
     }
