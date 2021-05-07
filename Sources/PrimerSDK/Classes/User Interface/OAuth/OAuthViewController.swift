@@ -28,18 +28,16 @@ class OAuthViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.addSubview(indicator)
-        
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        indicator.color = theme.colorTheme.disabled1
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        indicator.startAnimating()
-        
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        if settings.isInitialLoadingHidden {
-            indicator.isHidden = true
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
+        if !settings.isInitialLoadingHidden {
+            view.addSubview(indicator)
+            indicator.color = theme.colorTheme.disabled1
+            indicator.translatesAutoresizingMaskIntoConstraints = false
+            indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+            indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            indicator.startAnimating()
         }
     }
 
