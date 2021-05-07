@@ -72,7 +72,7 @@ class RootViewController: UIViewController {
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         bottomConstraint = mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomConstraint?.isActive = true
-        heightConstraint?.isActive = true
+        
         if settings.isFullScreenOnly {
             topConstraint = mainView.topAnchor.constraint(equalTo: view.topAnchor)
             topConstraint?.isActive = true
