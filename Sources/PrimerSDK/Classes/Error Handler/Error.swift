@@ -219,6 +219,7 @@ enum PrimerError: PrimerErrorProtocol {
     case vaultFetchFailed
     case vaultDeleteFailed
     case vaultCreateFailed
+    case requestFailed
     case directDebitSessionFailed
     case configFetchFailed
     case tokenizationPreRequestFailed
@@ -334,6 +335,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Failed to load session, please close and try again.",
                                      comment: "Failed to load session, please close and try again. - Primer error message")
+            
+        case .requestFailed:
+            return NSLocalizedString("primer-error-message-request-failed",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Failed to make request",
+                                     comment: "Failed to make request, please close and try again. - Primer error message")
         }
     }
 

@@ -38,14 +38,19 @@ class OAuthViewModel: OAuthViewModelProtocol {
         let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
         clientTokenService.loadCheckoutConfig({ err in
             if let err = err {
-                ErrorHandler.shared.handle(error: err)
-                completion(.failure(PrimerError.payPalSessionFailed))
+                _ = ErrorHandler.shared.handle(error: err)
+                if err is PrimerError {
+                    completion(.failure(err))
+                } else {
+                    completion(.failure(PrimerError.configFetchFailed))
+                }
+                
             } else {
                 let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
                 paymentMethodConfigService.fetchConfig({ [weak self] err in
                     if let err = err {
                         ErrorHandler.shared.handle(error: err)
-                        completion(.failure(PrimerError.payPalSessionFailed))
+                        completion(.failure(PrimerError.requestFailed))
                     } else {
                         self?.generateOAuthURL(host, with: completion)
                     }
