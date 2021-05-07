@@ -61,11 +61,11 @@ class OAuthViewModel: OAuthViewModelProtocol {
 
     func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        
+
         if clientToken != nil && state.paymentMethodConfig != nil {
             if host == .klarna {
                 let klarnaService: KlarnaServiceProtocol = DependencyContainer.resolve()
-                return klarnaService.createPaymentSession(completion)
+                klarnaService.createPaymentSession(completion)
 
             } else {
                 let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
@@ -80,7 +80,6 @@ class OAuthViewModel: OAuthViewModelProtocol {
 
         } else {
             loadConfig(host, completion)
-            return
         }
     }
 
@@ -139,7 +138,6 @@ class OAuthViewModel: OAuthViewModelProtocol {
     }
 
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
-
         if (host == .klarna) {
             var instrument = PaymentInstrument()
 
@@ -188,10 +186,9 @@ class OAuthViewModel: OAuthViewModelProtocol {
 
                         self?.handleTokenization(request: request, with: completion)
                     }
-
                 }
             }
-
+        
         } else {
             guard let instrument = generatePaypalPaymentInstrument(host, with: completion) else { return }
             let state: AppStateProtocol = DependencyContainer.resolve()
