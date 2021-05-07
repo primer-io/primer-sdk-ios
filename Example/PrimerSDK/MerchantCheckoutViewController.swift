@@ -20,13 +20,21 @@ class MerchantCheckoutViewController: UIViewController {
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     let amount = 200
     
+    let bgThread1 = DispatchQueue(label: "test1", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
+    let bgThread2 = DispatchQueue(label: "test2", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
+    let bgThread3 = DispatchQueue(label: "test3", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer"
         
-        Primer.shared.delegate = self
-        configurePrimer()
-//        fetchPaymentMethods()
+        bgThread1.async {
+            Primer.shared.delegate = self
+            self.configurePrimer()
+//            self.fetchPaymentMethods()
+        }
+        
+//
     }
     
     func configurePrimer() {
@@ -66,7 +74,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
-        DispatchQueue.global(qos: .background).async {
+        bgThread2.async {
             Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
         }
     }
@@ -107,10 +115,16 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 do {
                     let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
                     print("🚀🚀🚀 token:", token)
-                    completion(.success(token))
-                    
+                    self.bgThread3.async {
+                        completion(.success(token))
+                    }
+
+
                 } catch {
-                    completion(.failure(NetworkError.serializationError))
+                    self.bgThread3.async {
+                        completion(.failure(NetworkError.serializationError))
+                    }
+                    
                 }
             case .failure(let err): completion(.failure(err))
             }
