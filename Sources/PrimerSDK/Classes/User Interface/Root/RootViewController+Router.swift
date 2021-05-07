@@ -69,6 +69,8 @@ class Router: RouterDelegate {
 }
 
 fileprivate extension RootViewController {
+    
+    // FIXME: Can't all this logic be resolved with a UINavigationController?
     func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         

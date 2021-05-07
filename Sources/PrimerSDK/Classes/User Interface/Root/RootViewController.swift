@@ -176,6 +176,8 @@ class RootViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        // FIXME: That can lead to a buggy behaviour. viewWillDisappear is not called only
+        // when vc is dismissed.
         settings.onCheckoutDismiss()
     }
     
