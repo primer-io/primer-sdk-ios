@@ -45,6 +45,10 @@ class KlarnaService: KlarnaServiceProtocol {
         }
         
         var amount = settings.amount
+        if amount == nil && Primer.shared.flow == .checkoutWithKlarna {
+            return completion(.failure(KlarnaException.noAmount))
+        }
+        
         
         var orderItems: [OrderItem]? = nil
                         
