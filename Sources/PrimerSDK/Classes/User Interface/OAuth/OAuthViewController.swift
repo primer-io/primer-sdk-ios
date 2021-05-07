@@ -184,18 +184,13 @@ class WebViewController: UIViewController, WKNavigationDelegate {
     var url: URL?
     var klarnaWebViewCompletion: ((String?, Error?) -> Void)?
 
-    override func loadView() {
-        super.loadView()
-        
-        webView.scrollView.bounces = false
-        webView.navigationDelegate = self
-        self.view = webView
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
         webView.scrollView.bounces = false
+        webView.navigationDelegate = self
+        self.view = webView
+        
         if let url = url {
             let state: AppStateProtocol = DependencyContainer.resolve()
 
