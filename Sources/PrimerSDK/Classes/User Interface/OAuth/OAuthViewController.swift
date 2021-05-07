@@ -115,6 +115,7 @@ class OAuthViewController: UIViewController {
         present(webViewController, animated: true, completion: nil)
     }
 
+    // PayPal
     func createPaymentInstrument(_ urlString: String) {
         if #available(iOS 13, *) {
             var session: ASWebAuthenticationSession?
@@ -176,6 +177,7 @@ class OAuthViewController: UIViewController {
         }
     }
 
+    // PayPal
     private func onOAuthCompleted(callbackURL: URL?) {
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         
@@ -206,6 +208,7 @@ extension OAuthViewController: ASWebAuthenticationPresentationContextProviding {
 
 @available(iOS 11.0, *)
 extension OAuthViewController: ReloadDelegate {
+    // Not used in Klarna, check PayPal
     func reload() {
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.tokenize(host, with: { err in
@@ -257,10 +260,6 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             webView.load(request)
         }
     }
-
-//    override func viewWillDisappear(_ animated: Bool) {
-//        delegate?.reload()
-//    }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
