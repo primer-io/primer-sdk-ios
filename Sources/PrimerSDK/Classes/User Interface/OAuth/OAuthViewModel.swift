@@ -36,15 +36,15 @@ class OAuthViewModel: OAuthViewModelProtocol {
 
     private func loadConfig(_ host: OAuthHost, _ completion: @escaping (Result<String, Error>) -> Void) {
         let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-        clientTokenService.loadCheckoutConfig({ [weak self] error in
-            if error != nil {
-                ErrorHandler.shared.handle(error: error!)
+        clientTokenService.loadCheckoutConfig({ err in
+            if let err = err {
+                ErrorHandler.shared.handle(error: err)
                 completion(.failure(PrimerError.payPalSessionFailed))
             } else {
                 let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                paymentMethodConfigService.fetchConfig({ [weak self] error in
-                    if error != nil {
-                        ErrorHandler.shared.handle(error: error!)
+                paymentMethodConfigService.fetchConfig({ [weak self] err in
+                    if let err = err {
+                        ErrorHandler.shared.handle(error: err)
                         completion(.failure(PrimerError.payPalSessionFailed))
                     } else {
                         self?.generateOAuthURL(host, with: completion)
@@ -87,6 +87,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
             switch result {
             case .failure(let error):
                 log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                completion(PrimerError.payPalSessionFailed)
             case .success:
                 self?.tokenize(host, with: completion)
             }
