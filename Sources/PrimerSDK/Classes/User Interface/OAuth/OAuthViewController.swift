@@ -182,6 +182,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
     let webView = WKWebView()
 
     var url: URL?
+    // Maybe refactor to delegate.
     var klarnaWebViewCompletion: ((String?, Error?) -> Void)?
 
     override func viewDidLoad() {
@@ -233,6 +234,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
 
             log(logLevel: .info, message: "🚀🚀🚀 \(state.authorizationToken ?? "n/a")")
 
+            // Cancels navigation
             decisionHandler(.cancel)
 
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -254,11 +256,15 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             }
             
             dismiss(animated: true, completion: nil)
-
-            return
+            
+        } else {
+            // Allow navigation to continue
+            decisionHandler(.allow)
         }
-
-        decisionHandler(.allow)
+    }
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        
     }
     
 }
