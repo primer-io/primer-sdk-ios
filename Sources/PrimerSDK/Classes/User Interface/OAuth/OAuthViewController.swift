@@ -26,6 +26,8 @@ class OAuthViewController: UIViewController {
     }
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
         view.addSubview(indicator)
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -42,6 +44,8 @@ class OAuthViewController: UIViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.generateOAuthURL(host, with: { [weak self] result in
             switch result {
