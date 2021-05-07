@@ -87,8 +87,6 @@ class OAuthViewController: UIViewController {
                 let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
                 viewModel.tokenize(host, with: { err in
                     DispatchQueue.main.async {
-                        let router: RouterDelegate = DependencyContainer.resolve()
-
                         if let err = err {
                             _ = ErrorHandler.shared.handle(error: err)
                             router.show(.error(error: PrimerError.generic))
@@ -100,9 +98,6 @@ class OAuthViewController: UIViewController {
             }
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            let routerDelegate: RouterDelegate = DependencyContainer.resolve()
-            let router = routerDelegate as! Router
-            let rootViewController = router.root
             
             if settings.hasDisabledSuccessScreen == false && settings.isInitialLoadingHidden == true {
                 let theme: PrimerThemeProtocol = DependencyContainer.resolve()
