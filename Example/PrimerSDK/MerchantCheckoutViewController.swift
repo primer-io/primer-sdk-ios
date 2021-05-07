@@ -66,7 +66,9 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
+        DispatchQueue.global(qos: .background).async {
+            Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
+        }
     }
     
     @IBAction func addDirectDebitButtonTapped(_ sender: Any) {
