@@ -280,6 +280,13 @@ class WebViewController: UIViewController, WKNavigationDelegate {
 
         if let url = navigationAction.request.url, let host = url.host, allowedHosts.contains(host) {
             let val = url.queryParameterValue(for: "token")
+            
+            if (val ?? "").isEmpty || val == "undefined" {
+                let err = PrimerError.clientTokenNull
+                klarnaWebViewCompletion?(nil, err)
+                decisionHandler(.cancel)
+                return
+            }
 
             log(logLevel: .info, message: "🚀🚀 \(url)")
             log(logLevel: .info, message: "🚀🚀 token \(val)")
