@@ -78,6 +78,9 @@ class OAuthViewController: UIViewController {
         let webViewController = WebViewController()
         webViewController.url = URL(string: urlString)
         webViewController.delegate = self
+        webViewController.klarnaWebViewCompletion = { [weak self] (urlStr, err) in
+            
+        }
         present(webViewController, animated: true, completion: nil)
     }
 
@@ -179,6 +182,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
     let webView = WKWebView()
 
     var url: URL?
+    var klarnaWebViewCompletion: ((String?, Error?) -> Void)?
 
     override func loadView() {
         webView.scrollView.bounces = false
@@ -203,9 +207,9 @@ class WebViewController: UIViewController, WKNavigationDelegate {
         }
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        delegate?.reload()
-    }
+//    override func viewWillDisappear(_ animated: Bool) {
+//        delegate?.reload()
+//    }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
@@ -226,6 +230,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             let state: AppStateProtocol = DependencyContainer.resolve()
 
             state.authorizationToken = val
+            klarnaWebViewCompletion?(val, nil)
 
             log(logLevel: .info, message: "🚀🚀🚀 \(state.authorizationToken ?? "n/a")")
 
@@ -256,7 +261,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
 
         decisionHandler(.allow)
     }
-
+    
 }
 
 #endif
