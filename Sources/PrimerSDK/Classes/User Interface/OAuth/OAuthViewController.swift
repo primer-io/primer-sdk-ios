@@ -79,8 +79,45 @@ class OAuthViewController: UIViewController {
         let webViewController = WebViewController()
         webViewController.url = URL(string: urlString)
         webViewController.delegate = self
-        webViewController.klarnaWebViewCompletion = { [weak self] (urlStr, err) in
+        webViewController.klarnaWebViewCompletion = { [weak self] (token, err) in
+            if let err = err {
+                router.show(.error(error: PrimerError.generic))
+                
+            } else {
+                guard let host = self?.host else {
+                    let error = PrimerError.failedToLoadSession
+                    router.show(.error(error: error))
+                    return
+                }
+                
+                let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
+                viewModel.tokenize(host, with: { [weak self] error in
+                    DispatchQueue.main.async {
+                        let router: RouterDelegate = DependencyContainer.resolve()
+                        error.exists ? router.show(.error(error: PrimerError.generic)) : router.show(.success(type: .regular))
+                    }
+                })
+            }
             
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            let routerDelegate: RouterDelegate = DependencyContainer.resolve()
+            let router = routerDelegate as! Router
+            let rootViewController = router.root
+            
+            if settings.hasDisabledSuccessScreen == false && settings.isInitialLoadingHidden == true {
+                let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+                rootViewController?.mainView.backgroundColor = theme.colorTheme.main1
+                if #available(iOS 11.0, *) {
+                    (rootViewController?.children.first as? OAuthViewController)?.indicator.isHidden = false
+                }
+                
+            } else if settings.hasDisabledSuccessScreen && settings.isInitialLoadingHidden {
+                UIView.animate(withDuration: 0.3) {
+                    (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.0
+                }
+            }
+            
+            self?.dismiss(animated: true, completion: nil)
         }
         present(webViewController, animated: true, completion: nil)
     }
@@ -210,15 +247,15 @@ class WebViewController: UIViewController, WKNavigationDelegate {
         super.viewDidLoad()
         
         webView.scrollView.bounces = false
+        
+        // Control which sites can be visited
         webView.navigationDelegate = self
+        
         self.view = webView
         
         if let url = url {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-
-            let clientToken = state.decodedClientToken!
-            
             var request = URLRequest(url: url)
+            request.timeoutInterval = 4
             request.allHTTPHeaderFields = [
                 "Content-Type": "application/json",
                 "Primer-SDK-Version": "1.0.0-beta.0",
@@ -242,7 +279,6 @@ class WebViewController: UIViewController, WKNavigationDelegate {
         ]
 
         if let url = navigationAction.request.url, let host = url.host, allowedHosts.contains(host) {
-
             let val = url.queryParameterValue(for: "token")
 
             log(logLevel: .info, message: "🚀🚀 \(url)")
@@ -250,6 +286,8 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             
             let state: AppStateProtocol = DependencyContainer.resolve()
 
+            // FIXME: WebView should be agnostic of state and not set it. Debug what happens on
+            // PayPal case befire removing.
             state.authorizationToken = val
             klarnaWebViewCompletion?(val, nil)
 
@@ -257,26 +295,6 @@ class WebViewController: UIViewController, WKNavigationDelegate {
 
             // Cancels navigation
             decisionHandler(.cancel)
-
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            let routerDelegate: RouterDelegate = DependencyContainer.resolve()
-            let router = routerDelegate as! Router
-            let rootViewController = router.root
-            
-            if settings.hasDisabledSuccessScreen == false && settings.isInitialLoadingHidden == true {
-                let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-                rootViewController?.mainView.backgroundColor = theme.colorTheme.main1
-                if #available(iOS 11.0, *) {
-                    (rootViewController?.children.first as? OAuthViewController)?.indicator.isHidden = false
-                }
-                
-            } else if settings.hasDisabledSuccessScreen && settings.isInitialLoadingHidden {
-                UIView.animate(withDuration: 0.3) {
-                    (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.0
-                }
-            }
-            
-            dismiss(animated: true, completion: nil)
             
         } else {
             // Allow navigation to continue
@@ -284,8 +302,17 @@ class WebViewController: UIViewController, WKNavigationDelegate {
         }
     }
     
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        let nsError = error as NSError
+        if !(nsError.code == -1002) {
+            // Code -1002 means bad URL redirect. Klarna is redirecting to bankid:// which is considered a bad URL
+            // Not sure yet if we have to do that only for bankid://
+            klarnaWebViewCompletion?(nil, error)
+        }
+    }
+    
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        
+        klarnaWebViewCompletion?(nil, error)
     }
     
 }
