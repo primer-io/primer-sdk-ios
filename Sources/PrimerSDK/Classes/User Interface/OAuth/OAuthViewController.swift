@@ -39,10 +39,6 @@ class OAuthViewController: UIViewController {
             indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             indicator.startAnimating()
         }
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.generateOAuthURL(host, with: { [weak self] result in
