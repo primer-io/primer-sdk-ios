@@ -255,7 +255,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
         
         if let url = url {
             var request = URLRequest(url: url)
-            request.timeoutInterval = 4
+            request.timeoutInterval = 60
             request.allHTTPHeaderFields = [
                 "Content-Type": "application/json",
                 "Primer-SDK-Version": "1.0.0-beta.0",
