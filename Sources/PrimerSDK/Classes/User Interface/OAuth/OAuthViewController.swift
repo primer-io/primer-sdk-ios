@@ -51,11 +51,6 @@ class OAuthViewController: UIViewController {
             switch result {
             case .failure(let error):
                 _ = ErrorHandler.shared.handle(error: error)
-//                let alert = AlertController(title: "ERROR!", message: error.localizedDescription, preferredStyle: .alert)
-//                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
-//                    self?.dismiss(animated: true, completion: nil)
-//                }))
-//                alert.show()
                 Primer.shared.delegate?.checkoutFailed(with: error)
             case .success(let urlString):
                 DispatchQueue.main.async {
