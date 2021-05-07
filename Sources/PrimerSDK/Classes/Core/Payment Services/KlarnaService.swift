@@ -77,7 +77,7 @@ class KlarnaService: KlarnaServiceProtocol {
                 countryCode: countryCode.rawValue,
                 currencyCode: currency.rawValue,
                 localeCode: countryCode.klarnaLocaleCode),
-            description: klarnaSessionType == .recurringPayment ? (settings.klarnaPaymentDescription ?? "Pay as you go") : nil,
+            description: klarnaSessionType == .recurringPayment ? settings.klarnaPaymentDescription : nil,
             redirectUrl: "https://primer.io/success",
             totalAmount: amount,
             orderItems: orderItems)
@@ -119,7 +119,7 @@ class KlarnaService: KlarnaServiceProtocol {
             paymentMethodConfigId: configId,
             sessionId: sessionId,
             authorizationToken: authorizationToken,
-            description: settings.klarnaPaymentDescription ?? (settings.orderItems.first?.name ?? ""),
+            description: settings.klarnaPaymentDescription,
             localeData: KlarnaLocaleData(
                 countryCode: countryCode.rawValue,
                 currencyCode: currency.rawValue,
