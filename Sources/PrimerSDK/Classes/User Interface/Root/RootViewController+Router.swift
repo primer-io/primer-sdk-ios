@@ -34,6 +34,7 @@ class Router: RouterDelegate {
         guard let vc = route.viewController else { return }
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
+        // FIXME: No decisions on UI elements
         if vc is SuccessViewController {
             if settings.hasDisabledSuccessScreen {
                 return root.dismiss(animated: true, completion: nil)
