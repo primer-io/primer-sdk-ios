@@ -47,11 +47,12 @@ class OAuthViewController: UIViewController {
             switch result {
             case .failure(let error):
                 _ = ErrorHandler.shared.handle(error: error)
-                let alert = AlertController(title: "ERROR!", message: error.localizedDescription, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
-                    self?.dismiss(animated: true, completion: nil)
-                }))
-                alert.show()
+//                let alert = AlertController(title: "ERROR!", message: error.localizedDescription, preferredStyle: .alert)
+//                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
+//                    self?.dismiss(animated: true, completion: nil)
+//                }))
+//                alert.show()
+                Primer.shared.delegate?.checkoutFailed(with: error)
             case .success(let urlString):
                 DispatchQueue.main.async {
                     // if klarna show webview, otherwise oauth
@@ -128,9 +129,13 @@ class OAuthViewController: UIViewController {
             session = SFAuthenticationSession(
                 url: authURL,
                 callbackURLScheme: viewModel.urlSchemeIdentifier,
-                completionHandler: { [weak self] (url, error) in
-                    let router: RouterDelegate = DependencyContainer.resolve()
-                    error.exists ? router.show(.error(error: PrimerError.generic)) : self?.onOAuthCompleted(callbackURL: url)
+                completionHandler: { [weak self] (url, err) in
+                    if let err = err {
+                        let router: RouterDelegate = DependencyContainer.resolve()
+                        router.show(.error(error: PrimerError.generic))
+                    } else {
+                        self?.onOAuthCompleted(callbackURL: url)
+                    }
                 }
             )
 
@@ -141,10 +146,17 @@ class OAuthViewController: UIViewController {
     private func onOAuthCompleted(callbackURL: URL?) {
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         
-        viewModel.tokenize(host, with: { [weak self] error in
+        viewModel.tokenize(host, with: { err in
+            // FIXME: Is switching to the main thread really needed here? If it's needed by the Router that's handling
+            // various UI procedeures, shouldn't it be moved in there?
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()
-                error.exists ? router.show(.error(error: PrimerError.generic)) : router.show(.success(type: .regular))
+                
+                if let err = err {
+                    router.show(.error(error: PrimerError.generic))
+                } else {
+                    router.show(.success(type: .regular))
+                }
             }
         })
     }
@@ -163,10 +175,19 @@ extension OAuthViewController: ASWebAuthenticationPresentationContextProviding {
 extension OAuthViewController: ReloadDelegate {
     func reload() {
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-        viewModel.tokenize(host, with: { [weak self] error in
+        viewModel.tokenize(host, with: { err in
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()
-                error.exists ? router.show(.error(error: PrimerError.generic)) : router.show(.success(type: .regular))
+                
+                if let err = err {
+                    _ = ErrorHandler.shared.handle(error: err)
+                    // FIXME: I'm not feeling comfortable doing nothing with the error, showing an error screen and passing a generic error
+                    // to the developer from the Router (which has not information about it). Also, this means that the Router is taking
+                    // a decision based on a UI element (i.e. whether the vc is of type ErrorViewController).
+                    router.show(.error(error: PrimerError.generic))
+                } else {
+                    router.show(.success(type: .regular))
+                }
             }
         })
     }
