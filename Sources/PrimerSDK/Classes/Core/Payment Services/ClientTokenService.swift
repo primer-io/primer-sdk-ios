@@ -1,5 +1,7 @@
 #if canImport(UIKit)
 
+import Foundation
+
 protocol ClientTokenServiceProtocol {
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void)
 }

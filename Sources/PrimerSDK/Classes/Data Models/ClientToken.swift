@@ -1,3 +1,5 @@
+import Foundation
+
 struct DecodedClientToken: Decodable {
     var accessToken: String?
     var exp: Int?
