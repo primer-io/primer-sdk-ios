@@ -144,37 +144,38 @@ class OAuthViewModel: OAuthViewModelProtocol {
             log(logLevel: .verbose, title: nil, message: "Host: \(host)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
             let klarnaService: KlarnaServiceProtocol = DependencyContainer.resolve()
-            klarnaService.finalizePaymentSession { [weak self] result in
-                switch result {
-                case .failure(let err):
-                    completion(err)
-                case .success(let res):
-                    instrument.sessionData = res.sessionData
 
-                    if Primer.shared.flow.vaulted {
-                        // create customer token
-                        klarnaService.createKlarnaCustomerToken { (result) in
-                            switch result {
-                            case .failure(let err):
-                                ErrorHandler.shared.handle(error: err)
-                                completion(err)
-                            case .success(let response):
-                                instrument.klarnaCustomerToken = response.customerTokenId
-                                instrument.sessionData = response.sessionData
+            if Primer.shared.flow.vaulted {
+                // create customer token
+                klarnaService.createKlarnaCustomerToken { [weak self] (result) in
+                    switch result {
+                    case .failure(let err):
+                        _ = ErrorHandler.shared.handle(error: err)
+                        completion(err)
+                    case .success(let response):
+                        instrument.klarnaCustomerToken = response.customerTokenId
+                        instrument.sessionData = response.sessionData
 
-                                log(logLevel: .verbose, title: nil, message: "Instrument: \(instrument)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                        log(logLevel: .verbose, title: nil, message: "Instrument: \(instrument)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
-                                let state: AppStateProtocol = DependencyContainer.resolve()
+                        let state: AppStateProtocol = DependencyContainer.resolve()
 
-                                let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+                        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
 
-                                log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                        log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
-                                self?.handleTokenization(request: request, with: completion)
-                            }
-                        }
+                        self?.handleTokenization(request: request, with: completion)
+                    }
+                }
 
-                    } else {
+            } else {
+                klarnaService.finalizePaymentSession { [weak self] result in
+                    switch result {
+                    case .failure(let err):
+                        completion(err)
+                    case .success(let res):
+                        instrument.sessionData = res.sessionData
+
                         let state: AppStateProtocol = DependencyContainer.resolve()
                         instrument.klarnaAuthorizationToken = state.authorizationToken
 
