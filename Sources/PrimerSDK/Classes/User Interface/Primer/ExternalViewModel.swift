@@ -24,27 +24,30 @@ class ExternalViewModel: ExternalViewModelProtocol {
         
         if state.decodedClientToken.exists {
             let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-            vaultService.loadVaultedPaymentMethods({ [weak self] error in
-                if let error = error { completion(.failure(error)) }
-                let paymentMethods = state.paymentMethods
-                completion(.success(paymentMethods))
+            vaultService.loadVaultedPaymentMethods({ err in
+                if let err = err {
+                    completion(.failure(err))
+                } else {
+                    let paymentMethods = state.paymentMethods
+                    completion(.success(paymentMethods))
+                }
             })
         } else {
             let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.loadCheckoutConfig({ [weak self] error in
-                if let error = error {
-                    return completion(.failure(error))
+            clientTokenService.loadCheckoutConfig({ err in
+                if let err = err {
+                    completion(.failure(err))
+                } else {
+                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                    vaultService.loadVaultedPaymentMethods({ err in
+                        if let err = err {
+                            completion(.failure(err))
+                        } else {
+                            let paymentMethods = state.paymentMethods
+                            completion(.success(paymentMethods))
+                        }
+                    })
                 }
-                
-                let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                vaultService.loadVaultedPaymentMethods({ [weak self] error in
-                    if let error = error {
-                        return completion(.failure(error))
-                    }
-                    
-                    let paymentMethods = state.paymentMethods
-                    completion(.success(paymentMethods))
-                })
             })
         }
     }
