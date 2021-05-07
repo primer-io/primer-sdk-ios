@@ -29,7 +29,6 @@ class MerchantCheckoutViewController: UIViewController {
             currency: .SEK,
             countryCode: .se,
             klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: "Scooter Rental",
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
         ),
@@ -37,7 +36,6 @@ class MerchantCheckoutViewController: UIViewController {
             currency: .SEK,
             countryCode: .se,
             klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: "Scooter Rental",
             hasDisabledSuccessScreen: false,
             isInitialLoadingHidden: false
         )
@@ -61,7 +59,6 @@ class MerchantCheckoutViewController: UIViewController {
             currency: .SEK,
             countryCode: .se,
             klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: "Scooter Rental",
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
         )
