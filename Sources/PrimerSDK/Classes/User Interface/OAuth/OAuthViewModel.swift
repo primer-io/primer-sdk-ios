@@ -44,17 +44,16 @@ class OAuthViewModel: OAuthViewModelProtocol {
                 } else {
                     completion(.failure(PrimerError.configFetchFailed))
                 }
-                
+
             } else {
                 let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
                 paymentMethodConfigService.fetchConfig({ [weak self] err in
                     if let err = err {
-                        ErrorHandler.shared.handle(error: err)
+                        _ = ErrorHandler.shared.handle(error: err)
                         completion(.failure(PrimerError.requestFailed))
                     } else {
                         self?.generateOAuthURL(host, with: completion)
                     }
-                    
                 })
             }
         })
@@ -64,14 +63,13 @@ class OAuthViewModel: OAuthViewModelProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         if clientToken != nil && state.paymentMethodConfig != nil {
-
             if host == .klarna {
                 let klarnaService: KlarnaServiceProtocol = DependencyContainer.resolve()
                 return klarnaService.createPaymentSession(completion)
-                //                return completion(.success("https://pay.playground.klarna.com/eu/9IUNvHa"))
+
             } else {
                 let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
-                
+
                 switch Primer.shared.flow.uxMode {
                 case .CHECKOUT:
                     paypalService.startOrderSession(completion)
@@ -79,7 +77,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
                     paypalService.startBillingAgreementSession(completion)
                 }
             }
-            
+
         } else {
             loadConfig(host, completion)
             return
