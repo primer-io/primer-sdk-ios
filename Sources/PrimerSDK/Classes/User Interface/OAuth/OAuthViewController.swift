@@ -61,11 +61,10 @@ class OAuthViewController: UIViewController {
     }
 
     private func presentWebview(_ urlString: String) {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         let routerDelegate: RouterDelegate = DependencyContainer.resolve()
         let router = routerDelegate as! Router
         let rootViewController = router.root
-        
+
         UIView.animate(withDuration: 0.3) {
             (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.7
         }
@@ -73,8 +72,9 @@ class OAuthViewController: UIViewController {
         let webViewController = WebViewController()
         webViewController.url = URL(string: urlString)
         webViewController.delegate = self
-        webViewController.klarnaWebViewCompletion = { [weak self] (token, err) in
+        webViewController.klarnaWebViewCompletion = { [weak self] (_, err) in
             if let err = err {
+                _ = ErrorHandler.shared.handle(error: err)
                 router.show(.error(error: PrimerError.generic))
                 
             } else {
@@ -85,10 +85,16 @@ class OAuthViewController: UIViewController {
                 }
                 
                 let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-                viewModel.tokenize(host, with: { [weak self] error in
+                viewModel.tokenize(host, with: { err in
                     DispatchQueue.main.async {
                         let router: RouterDelegate = DependencyContainer.resolve()
-                        error.exists ? router.show(.error(error: PrimerError.generic)) : router.show(.success(type: .regular))
+
+                        if let err = err {
+                            _ = ErrorHandler.shared.handle(error: err)
+                            router.show(.error(error: PrimerError.generic))
+                        } else {
+                            router.show(.success(type: .regular))
+                        }
                     }
                 })
             }
@@ -101,10 +107,8 @@ class OAuthViewController: UIViewController {
             if settings.hasDisabledSuccessScreen == false && settings.isInitialLoadingHidden == true {
                 let theme: PrimerThemeProtocol = DependencyContainer.resolve()
                 rootViewController?.mainView.backgroundColor = theme.colorTheme.main1
-                if #available(iOS 11.0, *) {
-                    (rootViewController?.children.first as? OAuthViewController)?.indicator.isHidden = false
-                }
-                
+                (rootViewController?.children.first as? OAuthViewController)?.indicator.isHidden = false
+
             } else if settings.hasDisabledSuccessScreen && settings.isInitialLoadingHidden {
                 UIView.animate(withDuration: 0.3) {
                     (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.0
