@@ -27,12 +27,10 @@ class ClientTokenService: ClientTokenServiceProtocol {
                 guard let jwtTokenPayload = token.jwtTokenPayload,
                       let expDate = jwtTokenPayload.expDate
                 else {
-                    Primer.shared.delegate?.checkoutFailed(with: PrimerError.clientTokenNull)
                     return completion(PrimerError.clientTokenNull)
                 }
                 
                 if expDate < Date() {
-                    Primer.shared.delegate?.checkoutFailed(with: PrimerError.tokenExpired)
                     return completion(PrimerError.tokenExpired)
                 }
                 
