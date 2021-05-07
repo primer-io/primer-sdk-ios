@@ -42,13 +42,14 @@ class OAuthViewController: UIViewController {
         
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.generateOAuthURL(host, with: { [weak self] result in
-            switch result {
-            case .failure(let error):
-                _ = ErrorHandler.shared.handle(error: error)
-                Primer.shared.delegate?.checkoutFailed(with: error)
-            case .success(let urlString):
-                DispatchQueue.main.async {
-                    // if klarna show webview, otherwise oauth
+            DispatchQueue.main.async {
+                switch result {
+                case .failure(let error):
+                    _ = ErrorHandler.shared.handle(error: error)
+                    Primer.shared.delegate?.checkoutFailed(with: error)
+                    
+                case .success(let urlString):
+                    // if Klarna show WebView, otherwise OAuth
                     if self?.host == OAuthHost.klarna {
                         self?.presentWebview(urlString)
                     } else {
