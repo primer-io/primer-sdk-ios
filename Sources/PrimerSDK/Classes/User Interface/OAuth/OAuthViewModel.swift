@@ -137,6 +137,9 @@ class OAuthViewModel: OAuthViewModelProtocol {
         }
     }
 
+    // FIXME: This function is just the first step of tokenization for Klarna (fetches session data first).
+    // The actual tokenization call takes place in handleTokenization above.
+    // Merge with handleTokenization, as they're one.
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
         if (host == .klarna) {
             var instrument = PaymentInstrument()
