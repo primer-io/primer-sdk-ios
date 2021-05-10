@@ -41,7 +41,16 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             webView.load(request)
         }
     }
-
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        if isBeingDismissed && klarnaWebViewCompletion != nil {
+            let err = PrimerError.userCancelled
+            klarnaWebViewCompletion?(nil, err)
+        }
+    }
+    
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
         
@@ -57,6 +66,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             if (val ?? "").isEmpty || val == "undefined" {
                 let err = PrimerError.clientTokenNull
                 klarnaWebViewCompletion?(nil, err)
+                klarnaWebViewCompletion = nil
                 decisionHandler(.cancel)
                 return
             }
@@ -70,6 +80,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             // PayPal case befire removing.
             state.authorizationToken = val
             klarnaWebViewCompletion?(val, nil)
+            klarnaWebViewCompletion = nil
 
             log(logLevel: .info, message: "🚀🚀🚀 \(state.authorizationToken ?? "n/a")")
 
@@ -88,11 +99,13 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             // Code -1002 means bad URL redirect. Klarna is redirecting to bankid:// which is considered a bad URL
             // Not sure yet if we have to do that only for bankid://
             klarnaWebViewCompletion?(nil, error)
+            klarnaWebViewCompletion = nil
         }
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         klarnaWebViewCompletion?(nil, error)
+        klarnaWebViewCompletion = nil
     }
     
 }
