@@ -225,6 +225,7 @@ enum PrimerError: PrimerErrorProtocol {
     case tokenizationPreRequestFailed
     case tokenizationRequestFailed
     case failedToLoadSession
+    case userCancelled
 
     static var errorDomain: String = "primer"
 
@@ -342,6 +343,12 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Failed to make request",
                                      comment: "Failed to make request, please close and try again. - Primer error message")
+        case .userCancelled:
+            return NSLocalizedString("primer-error-message-user-cancelled",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "User cancelled",
+                                     comment: "User cancelled. - Primer error message")
         }
     }
 
