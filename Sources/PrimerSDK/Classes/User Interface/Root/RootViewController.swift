@@ -176,10 +176,13 @@ class RootViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        // FIXME: That can lead to a buggy behaviour. viewWillDisappear is not called only
-        // when vc is dismissed.
-        settings.onCheckoutDismiss()
+        
+        if isBeingDismissed {
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            // FIXME: Quick fix for now. It still should be handled by our logic instead of
+            // the view controller's life-cycle.
+            settings.onCheckoutDismiss()
+        }
     }
     
     @objc
