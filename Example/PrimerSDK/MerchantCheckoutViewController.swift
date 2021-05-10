@@ -20,10 +20,6 @@ class MerchantCheckoutViewController: UIViewController {
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     let amount = 200
     
-    let bgThread1 = DispatchQueue(label: "test1", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
-    let bgThread2 = DispatchQueue(label: "test2", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
-    let bgThread3 = DispatchQueue(label: "test3", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
-    
     let klarnaConfigurations: [PrimerSettings] = [
         PrimerSettings(
             currency: .SEK,
@@ -45,13 +41,9 @@ class MerchantCheckoutViewController: UIViewController {
         super.viewDidLoad()
         title = "Primer"
         
-        bgThread1.async {
-            Primer.shared.delegate = self
-            self.configurePrimer()
-//            self.fetchPaymentMethods()
-        }
-        
-//
+        Primer.shared.delegate = self
+        self.configurePrimer()
+        self.fetchPaymentMethods()
     }
     
     func configurePrimer() {
@@ -92,20 +84,7 @@ class MerchantCheckoutViewController: UIViewController {
     var klarnaNumberOfTimesPresented = 0
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
-        if klarnaNumberOfTimesPresented == 1 {
-            bgThread2.async {
-                Primer.shared.configure(settings: self.klarnaConfigurations[1])
-                self.fetchPaymentMethods()
-                Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
-                self.klarnaNumberOfTimesPresented += 1
-            }
-            
-        } else {
-            bgThread2.async {
-                Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
-                self.klarnaNumberOfTimesPresented += 1
-            }
-        }
+        Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
     }
     
     @IBAction func addDirectDebitButtonTapped(_ sender: Any) {
@@ -144,15 +123,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 do {
                     let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
                     print("🚀🚀🚀 token:", token)
-                    self.bgThread3.async {
-                        completion(.success(token))
-                    }
-
+                    completion(.success(token))
 
                 } catch {
-                    self.bgThread3.async {
-                        completion(.failure(NetworkError.serializationError))
-                    }
+                    completion(.failure(NetworkError.serializationError))
                     
                 }
             case .failure(let err): completion(.failure(err))
