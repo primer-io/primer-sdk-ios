@@ -74,7 +74,7 @@ class OAuthViewController: UIViewController {
         webViewController.klarnaWebViewCompletion = { [weak self] (_, err) in
             if let err = err {
                 _ = ErrorHandler.shared.handle(error: err)
-                router.show(.error(error: PrimerError.generic))
+                router.show(.error(error: err))
                 
             } else {
                 guard let host = self?.host else {
