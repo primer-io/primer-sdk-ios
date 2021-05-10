@@ -20,6 +20,21 @@ class MerchantCheckoutViewController: UIViewController {
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     let amount = 200
     
+    let vaultPayPalSettings = PrimerSettings(
+        currency: .GBP,
+        countryCode: .gb,
+        urlScheme: "primer://",
+        urlSchemeIdentifier: "primer"
+    )
+    
+    let vaultKlarnaSettings = PrimerSettings(
+        currency: .SEK,
+        countryCode: .se,
+        klarnaSessionType: .recurringPayment,
+        hasDisabledSuccessScreen: true,
+        isInitialLoadingHidden: true
+    )
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer"
@@ -30,15 +45,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        let settings = PrimerSettings(
-            currency: .SEK,
-            countryCode: .se,
-            klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: "Scooter Rental",
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true
-        )
-        Primer.shared.configure(settings: settings)
+        Primer.shared.configure(settings: vaultKlarnaSettings)
         
         let theme = generatePrimerTheme()
         Primer.shared.configure(theme: theme)
