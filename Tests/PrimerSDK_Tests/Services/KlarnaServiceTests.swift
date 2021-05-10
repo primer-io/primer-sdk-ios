@@ -53,6 +53,34 @@ class KlarnaServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
     
+    func test_create_klarna_payment_session_without_config_fetched() throws {
+        let expectation = XCTestExpectation(description: "Create Klarna payment session | Failure: no config id")
+        
+        MockLocator.registerDependencies()
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        state.paymentMethodConfig = nil
+
+        let service = KlarnaService()
+        service.createPaymentSession { (result) in
+            switch result {
+            case .failure(let err):
+                if let klarnaErr = err as? KlarnaException, case KlarnaException.noPaymentMethodConfigId = klarnaErr {
+                    XCTAssert(true)
+                } else {
+                    XCTAssert(false, "Test should have failed with error 'noPaymentMethodConfigId' but failed with: \(err)")
+                }
+                
+            case .success(let urlString):
+                XCTAssert(false, "Test should have failed with error 'noPaymentMethodConfigId' but succeeded with url: \(urlString)")
+
+            }
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 10.0)
+    }
+    
     func test_create_klarna_payment_session_without_currency() throws {
         let expectation = XCTestExpectation(description: "Create Klarna payment session | Failure: no currency")
         
