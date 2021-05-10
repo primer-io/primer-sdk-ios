@@ -65,6 +65,8 @@ class ErrorHandler {
                 break
             case .failedToLoadSession:
                 break
+            case .missingURLScheme:
+                break
             }
 
         } else if let klarnaException = error as? KlarnaException {
