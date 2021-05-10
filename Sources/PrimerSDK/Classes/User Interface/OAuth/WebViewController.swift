@@ -61,6 +61,15 @@ class WebViewController: UIViewController, WKNavigationDelegate {
         ]
 
         if let url = navigationAction.request.url, let host = url.host, allowedHosts.contains(host) {
+            let urlStateParameter = url.queryParameterValue(for: "state")
+            if urlStateParameter == "cancel" {
+                let err = PrimerError.userCancelled
+                klarnaWebViewCompletion?(nil, err)
+                klarnaWebViewCompletion = nil
+                decisionHandler(.cancel)
+                return
+            }
+            
             let val = url.queryParameterValue(for: "token")
             
             if (val ?? "").isEmpty || val == "undefined" {
