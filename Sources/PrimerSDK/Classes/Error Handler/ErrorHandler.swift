@@ -67,6 +67,8 @@ class ErrorHandler {
                 break
             case .requestFailed:
                 break
+            case .userCancelled:
+                break
             }
 
         } else if let klarnaException = error as? KlarnaException {
