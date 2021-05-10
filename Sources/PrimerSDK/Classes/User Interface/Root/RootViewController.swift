@@ -93,6 +93,17 @@ class RootViewController: UIViewController {
         backdropView.addGestureRecognizer(tapGesture)
         addKeyboardObservers()
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if isBeingDismissed {
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            // FIXME: Quick fix for now. It still should be handled by our logic instead of
+            // the view controller's life-cycle.
+            settings.onCheckoutDismiss()
+        }
+    }
 
     private func bindFirstFlowView() {
         let state: AppStateProtocol = DependencyContainer.resolve()
@@ -171,17 +182,6 @@ class RootViewController: UIViewController {
             UIView.animate(withDuration: 0.5) {
                 self.view.layoutIfNeeded()
             }
-        }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        if isBeingDismissed {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            // FIXME: Quick fix for now. It still should be handled by our logic instead of
-            // the view controller's life-cycle.
-            settings.onCheckoutDismiss()
         }
     }
     
