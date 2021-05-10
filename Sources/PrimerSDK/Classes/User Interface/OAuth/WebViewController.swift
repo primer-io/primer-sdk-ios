@@ -104,7 +104,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         let nsError = error as NSError
-        if !(nsError.code == -1002) {
+        if !(nsError.domain == "NSURLErrorDomain" && nsError.code == -1002) {
             // Code -1002 means bad URL redirect. Klarna is redirecting to bankid:// which is considered a bad URL
             // Not sure yet if we have to do that only for bankid://
             klarnaWebViewCompletion?(nil, error)
