@@ -37,7 +37,7 @@ class ApplePayViewModel: ApplePayViewModelProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         return settings.countryCode
     }
-    var uxMode: UXMode { return Primer.shared.flow.uxMode }
+    var uxMode: UXMode { return Primer.shared.flow.internalSessionFlow.uxMode }
     var clientToken: DecodedClientToken? {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.decodedClientToken

@@ -160,7 +160,7 @@ class FormViewModel: FormViewModelProtocol {
                 ErrorHandler.shared.handle(error: error)
                 completion(error)
             case .success(let token):
-                switch Primer.shared.flow {
+                switch Primer.shared.flow.internalSessionFlow {
                 case .checkout,
                      .checkoutWithCard,
                      .checkoutWithKlarna:

@@ -30,7 +30,7 @@ public class PresentationController: UIPresentationController {
         self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
-            switch Primer.shared.flow {
+            switch Primer.shared.flow.internalSessionFlow {
             case .vaultKlarna,
                  .vaultPayPal,
                  .checkoutWithKlarna:

@@ -72,7 +72,7 @@ struct PaymentMethodViewModel {
         log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         switch type {
         case .paymentCard:
-            return Primer.shared.flow.vaulted
+            return Primer.shared.flow.internalSessionFlow.vaulted
                 ? NSLocalizedString("payment-method-type-card-vaulted",
                                     tableName: nil,
                                     bundle: Bundle.primerResources,

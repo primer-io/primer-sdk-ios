@@ -10,9 +10,9 @@ struct PaymentMethodTokenizationRequest: Encodable {
     init(paymentInstrument: PaymentInstrument, state: AppStateProtocol) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         self.paymentInstrument = paymentInstrument
-        self.tokenType = Primer.shared.flow.vaulted ? .multiUse : .singleUse
-        self.paymentFlow = Primer.shared.flow.vaulted ? .vault : nil
-        self.customerId = Primer.shared.flow.vaulted ? settings.customerId : nil
+        self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : .singleUse
+        self.paymentFlow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
+        self.customerId = Primer.shared.flow.internalSessionFlow.vaulted ? settings.customerId : nil
     }
 
 }
