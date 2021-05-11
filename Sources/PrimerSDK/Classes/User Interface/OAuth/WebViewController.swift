@@ -72,7 +72,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
             
             let val = url.queryParameterValue(for: "token")
             
-            if (val ?? "").isEmpty || val == "undefined" {
+            if (val ?? "").isEmpty || val == "undefined" || val == "null" {
                 let err = PrimerError.clientTokenNull
                 klarnaWebViewCompletion?(nil, err)
                 klarnaWebViewCompletion = nil
