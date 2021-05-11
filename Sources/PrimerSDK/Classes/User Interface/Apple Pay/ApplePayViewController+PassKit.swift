@@ -89,21 +89,21 @@ extension ApplePayViewController: PKPaymentAuthorizationViewControllerDelegate {
         viewModel.tokenize(
             instrument: instrument,
             completion: { error in
-                DispatchQueue.main.async {
-                    var alert: AlertController
-
-                    if let error = error {
-                        alert = AlertController(title: "Error!", message: error.localizedDescription, preferredStyle: .alert)
-                    } else {
-                        alert = AlertController(title: "Success!", message: "Purchase completed.", preferredStyle: .alert)
-                    }
-
-                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: { _ in
-                        self.dismiss(animated: true, completion: nil)
-                    }))
-
-                    alert.show()
-                }
+//                DispatchQueue.main.async {
+//                    var alert: AlertController
+//
+//                    if let error = error {
+//                        alert = AlertController(title: "Error!", message: error.localizedDescription, preferredStyle: .alert)
+//                    } else {
+//                        alert = AlertController(title: "Success!", message: "Purchase completed.", preferredStyle: .alert)
+//                    }
+//
+//                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: { _ in
+//                        self.dismiss(animated: true, completion: nil)
+//                    }))
+//
+//                    alert.show()
+//                }
             }
         )
     }

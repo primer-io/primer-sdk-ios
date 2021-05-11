@@ -20,13 +20,31 @@ class MerchantCheckoutViewController: UIViewController {
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     let amount = 200
     
+    
+    let klarnaConfigurations: [PrimerSettings] = [
+        PrimerSettings(
+            currency: .SEK,
+            countryCode: .se,
+            klarnaSessionType: .recurringPayment,
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true
+        ),
+        PrimerSettings(
+            currency: .SEK,
+            countryCode: .se,
+            klarnaSessionType: .recurringPayment,
+            hasDisabledSuccessScreen: false,
+            isInitialLoadingHidden: false
+        )
+    ]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer"
         
         Primer.shared.delegate = self
-        configurePrimer()
-//        fetchPaymentMethods()
+        self.configurePrimer()
+        self.fetchPaymentMethods()
     }
     
     func configurePrimer() {
@@ -34,7 +52,6 @@ class MerchantCheckoutViewController: UIViewController {
             currency: .SEK,
             countryCode: .se,
             klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: "Scooter Rental",
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
         )
@@ -64,6 +81,8 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func addCardButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
+    
+    var klarnaNumberOfTimesPresented = 0
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
@@ -106,9 +125,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
                     print("🚀🚀🚀 token:", token)
                     completion(.success(token))
-                    
+
                 } catch {
                     completion(.failure(NetworkError.serializationError))
+                    
                 }
             case .failure(let err): completion(.failure(err))
             }
