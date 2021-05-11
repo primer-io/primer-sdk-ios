@@ -225,6 +225,7 @@ enum PrimerError: PrimerErrorProtocol {
     case tokenizationPreRequestFailed
     case tokenizationRequestFailed
     case failedToLoadSession
+    case missingURLScheme
     case userCancelled
 
     static var errorDomain: String = "primer"
@@ -337,6 +338,12 @@ enum PrimerError: PrimerErrorProtocol {
                                      value: "Failed to load session, please close and try again.",
                                      comment: "Failed to load session, please close and try again. - Primer error message")
             
+        case .missingURLScheme:
+            return NSLocalizedString("primer-error-message-missing-url-scheme",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "URL scheme & scheme identifier are missing from the settings.",
+                                     comment: "URL scheme & scheme identifier are missing from the settings. - Primer error message")
         case .requestFailed:
             return NSLocalizedString("primer-error-message-request-failed",
                                      tableName: nil,
