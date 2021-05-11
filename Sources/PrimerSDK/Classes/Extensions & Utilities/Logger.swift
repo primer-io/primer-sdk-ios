@@ -13,6 +13,10 @@ public enum LogLevel: Int {
 
 // swiftlint:disable cyclomatic_complexity
 public func log(logLevel: LogLevel = .info, title: String? = nil, message: String? = nil, prefix: String? = nil, suffix: String? = nil, bundle: String? = nil, file: String? = nil, className: String? = nil, function: String? = nil, line: Int? = nil) {
+    
+    if !ProcessInfo.processInfo.arguments.contains("-PrimerDebugEnabled") {
+        return
+    }
 
     #if DEBUG
     if logLevel.rawValue < LogLevel.debug.rawValue { return }
