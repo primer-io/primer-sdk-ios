@@ -66,6 +66,7 @@ class ErrorHandler {
             case .failedToLoadSession:
                 break
             case .missingURLScheme:
+                break
             case .requestFailed:
                 break
             case .userCancelled:
