@@ -1,6 +1,6 @@
 #if canImport(UIKit)
 
-public typealias ClientTokenCallBack = (_ completionHandler: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) -> Void
+public typealias ClientTokenCallBack = (_ completionHandler: @escaping (Result<String, Error>) -> Void) -> Void
 public typealias PaymentMethodTokenCallBack = (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
 public typealias CheckoutDismissalCallback = () -> Void
 
@@ -131,7 +131,7 @@ public struct BusinessDetails: Codable {
 
 class MockDelegate: PrimerDelegate {
     
-    func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
+    func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
 
     }
     

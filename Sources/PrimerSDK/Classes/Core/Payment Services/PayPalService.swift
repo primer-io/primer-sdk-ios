@@ -96,7 +96,7 @@ class PayPalService: PayPalServiceProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         guard let urlScheme = settings.urlScheme else {
-            return completion(.failure(PrimerError.payPalSessionFailed))
+            return completion(.failure(PrimerError.missingURLScheme))
         }
 
         let body = PayPalCreateBillingAgreementRequest(
