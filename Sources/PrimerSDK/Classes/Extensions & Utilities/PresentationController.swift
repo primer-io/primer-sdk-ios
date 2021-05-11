@@ -67,6 +67,7 @@ public class PresentationController: UIPresentationController {
 }
 
 extension UIView {
+    
     func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
         let path = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners,
                                 cornerRadii: CGSize(width: radius, height: radius))
@@ -74,12 +75,14 @@ extension UIView {
         mask.path = path.cgPath
         layer.mask = mask
     }
+    
     func roundCorners(corners: UIRectCorner, radius: CGFloat) {
         let path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         let mask = CAShapeLayer()
         mask.path = path.cgPath
         self.layer.mask = mask
     }
+    
 }
 
 #endif
