@@ -28,7 +28,7 @@ class VaultCheckoutView: UIView, ReactiveView {
 
     var selected = false
 
-    let vaulted: Bool = Primer.shared.flow.vaulted
+    let vaulted: Bool = Primer.shared.flow.internalSessionFlow.vaulted
 
     weak var delegate: VaultCheckoutViewDelegate?
     weak var dataSource: VaultCheckoutViewDataSource?

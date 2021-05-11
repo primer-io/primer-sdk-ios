@@ -48,7 +48,7 @@ class RootViewController: UIViewController {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
-        switch Primer.shared.flow {
+        switch Primer.shared.flow.internalSessionFlow {
         case .vaultKlarna,
              .vaultPayPal,
              .checkoutWithKlarna:
@@ -110,7 +110,7 @@ class RootViewController: UIViewController {
         let router: RouterDelegate = DependencyContainer.resolve()
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
-        switch Primer.shared.flow {
+        switch Primer.shared.flow.internalSessionFlow {
         case .checkout:
             router.show(.vaultCheckout)
         case .vaultCard, .checkoutWithCard:

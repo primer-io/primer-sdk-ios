@@ -195,7 +195,7 @@ class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
                                      value: "Direct debit set up \nsuccessfully",
                                      comment: "Direct debit set up \nsuccessfully - Success Screen Title (Direct Debit)")
         default:
-            if Primer.shared.flow.vaulted {
+            if Primer.shared.flow.internalSessionFlow.vaulted {
                 return NSLocalizedString("primer-success-screen-vault-setup-success",
                                          tableName: nil,
                                          bundle: Bundle.primerResources,

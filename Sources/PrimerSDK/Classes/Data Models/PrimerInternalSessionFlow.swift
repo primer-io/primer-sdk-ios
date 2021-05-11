@@ -35,6 +35,41 @@
  */
 
 public enum PrimerSessionFlow {
+    case `default`
+    case defaultWithVault
+    case completeDirectCheckout
+    case addPayPalToVault
+    case addCardToVault
+    case addDirectDebitToVault
+    case addKlarnaToVault
+    case addDirectDebit
+    case checkoutWithKlarna
+
+    internal var internalSessionFlow: PrimerInternalSessionFlow {
+        switch self {
+        case .default:
+            return .checkout
+        case .defaultWithVault:
+            return .vault
+        case .completeDirectCheckout:
+            return .checkoutWithCard
+        case .addPayPalToVault:
+            return .vaultPayPal
+        case .addCardToVault:
+            return .vaultCard
+        case .addDirectDebitToVault:
+            return .vaultDirectDebit
+        case .addKlarnaToVault:
+            return .vaultKlarna
+        case .addDirectDebit:
+            return .vaultDirectDebit
+        case .checkoutWithKlarna:
+            return .checkoutWithKlarna
+        }
+    }
+}
+
+internal enum PrimerInternalSessionFlow {
 
     case vault
     case checkout
