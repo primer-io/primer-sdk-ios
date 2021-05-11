@@ -47,7 +47,7 @@ struct CreateKlarnaCustomerTokenAPIRequest: Codable {
     let paymentMethodConfigId: String
     let sessionId: String
     let authorizationToken: String
-    let description: String
+    let description: String?
     let localeData: KlarnaLocaleData
 }
 

@@ -209,10 +209,10 @@
 		1582B969260A3F2900C80BD7 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */,
-				1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */,
 				1582B96D260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift */,
 				1582B96E260A3F2900C80BD7 /* OAuthViewModelTests.swift */,
+				1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */,
+				1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -228,11 +228,11 @@
 		1582B973260A3F2900C80BD7 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */,
-				1582B975260A3F2900C80BD7 /* KlarnaServiceTests.swift */,
-				1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */,
 				1582B977260A3F2900C80BD7 /* ClientTokenServiceTests.swift */,
+				1582B975260A3F2900C80BD7 /* KlarnaServiceTests.swift */,
+				1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */,
 				1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */,
+				1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
