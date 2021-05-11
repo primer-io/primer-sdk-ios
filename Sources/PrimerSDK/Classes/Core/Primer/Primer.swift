@@ -21,8 +21,10 @@ public class Primer {
     }
 
     fileprivate init() {
-        let settings = PrimerSettings()
-        setDependencies(settings: settings, theme: PrimerTheme())
+        DispatchQueue.main.async { [weak self] in
+            let settings = PrimerSettings()
+            self?.setDependencies(settings: settings, theme: PrimerTheme())
+        }
     }
 
     /**
@@ -72,13 +74,15 @@ public class Primer {
      */
     
     public func configure(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
-        if let settings = settings {
-            DependencyContainer.register(settings as PrimerSettingsProtocol)
-        }
+        DispatchQueue.main.async {
+            if let settings = settings {
+                DependencyContainer.register(settings as PrimerSettingsProtocol)
+            }
 
-        if let theme = theme {
-            DependencyContainer.register(theme as PrimerThemeProtocol)
-            DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
+            if let theme = theme {
+                DependencyContainer.register(theme as PrimerThemeProtocol)
+                DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
+            }
         }
     }
 
@@ -91,9 +95,11 @@ public class Primer {
      1.4.0
      */
     public func setFormTopTitle(_ text: String, for formType: PrimerFormType) {
-        let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-        var theme = themeProtocol as! PrimerTheme
-        theme.content.formTopTitles.setTopTitle(text, for: formType)
+        DispatchQueue.main.async {
+            let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
+            var theme = themeProtocol as! PrimerTheme
+            theme.content.formTopTitles.setTopTitle(text, for: formType)
+        }
     }
 
     /**
@@ -105,9 +111,11 @@ public class Primer {
      1.4.0
      */
     public func setFormMainTitle(_ text: String, for formType: PrimerFormType) {
-        let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-        var theme = themeProtocol as! PrimerTheme
-        theme.content.formMainTitles.setMainTitle(text, for: formType)
+        DispatchQueue.main.async {
+            let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
+            var theme = themeProtocol as! PrimerTheme
+            theme.content.formMainTitles.setMainTitle(text, for: formType)
+        }
     }
 
     /**
@@ -125,12 +133,14 @@ public class Primer {
         iban: String,
         address: Address
     ) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        state.directDebitMandate.firstName = firstName
-        state.directDebitMandate.lastName = lastName
-        state.directDebitMandate.email = email
-        state.directDebitMandate.iban = iban
-        state.directDebitMandate.address = address
+        DispatchQueue.main.async {
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            state.directDebitMandate.firstName = firstName
+            state.directDebitMandate.lastName = lastName
+            state.directDebitMandate.email = email
+            state.directDebitMandate.iban = iban
+            state.directDebitMandate.address = address
+        }
     }
 
     /**
@@ -142,12 +152,14 @@ public class Primer {
      1.4.0
      */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
-        root = RootViewController()
-        let router: RouterDelegate = DependencyContainer.resolve()
-        router.setRoot(root!)
-        guard let root = self.root else { return }
-        Primer.shared.flow = flow
-        controller.present(root, animated: true)
+        DispatchQueue.main.async { [weak self] in
+            self?.root = RootViewController()
+            guard let root = self?.root else { return }
+            let router: RouterDelegate = DependencyContainer.resolve()
+            router.setRoot(root)
+            Primer.shared.flow = flow
+            controller.present(root, animated: true)
+        }
     }
 
     /**
@@ -159,13 +171,17 @@ public class Primer {
      1.4.0
      */
     public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
-        let externalViewModel: ExternalViewModelProtocol = DependencyContainer.resolve()
-        externalViewModel.fetchVaultedPaymentMethods(completion)
+        DispatchQueue.main.async {
+            let externalViewModel: ExternalViewModelProtocol = DependencyContainer.resolve()
+            externalViewModel.fetchVaultedPaymentMethods(completion)
+        }
     }
 
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
-        root?.dismiss(animated: true, completion: nil)
+        DispatchQueue.main.async { [weak self] in
+            self?.root?.dismiss(animated: true, completion: nil)
+        }
     }
 
 }

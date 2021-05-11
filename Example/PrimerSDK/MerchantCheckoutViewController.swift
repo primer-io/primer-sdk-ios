@@ -40,8 +40,8 @@ class MerchantCheckoutViewController: UIViewController {
         title = "Primer"
         
         Primer.shared.delegate = self
-        configurePrimer()
-//        fetchPaymentMethods()
+        self.configurePrimer()
+        self.fetchPaymentMethods()
     }
     
     func configurePrimer() {
@@ -71,6 +71,8 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func addCardButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
+    
+    var klarnaNumberOfTimesPresented = 0
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
@@ -113,9 +115,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
                     print("🚀🚀🚀 token:", token)
                     completion(.success(token))
-                    
+
                 } catch {
                     completion(.failure(NetworkError.serializationError))
+                    
                 }
             case .failure(let err): completion(.failure(err))
             }
