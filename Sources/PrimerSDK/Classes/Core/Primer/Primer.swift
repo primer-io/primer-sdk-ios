@@ -156,6 +156,12 @@ public class Primer {
             self?.root = RootViewController()
             guard let root = self?.root else { return }
             let router: RouterDelegate = DependencyContainer.resolve()
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            if flow.internalSessionFlow.vaulted {
+                (settings as! PrimerSettings).amount = nil
+            }
+                        
             router.setRoot(root)
             Primer.shared.flow = flow
             controller.present(root, animated: true)
