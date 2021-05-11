@@ -18,7 +18,7 @@ class WebViewController: UIViewController, WKNavigationDelegate {
 
     var url: URL?
     // Maybe refactor to delegate.
-    var klarnaWebViewCompletion: ((String?, Error?) -> Void)?
+    var klarnaWebViewCompletion: ((_ klarnaToken: String?, _ error: Error?) -> Void)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
