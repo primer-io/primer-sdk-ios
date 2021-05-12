@@ -23,6 +23,7 @@
 		15508A5A26298AB300517EDF /* PaymentNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15508A5926298AB300517EDF /* PaymentNetwork.swift */; };
 		15508A64262994F600517EDF /* ApplePayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15508A63262994F600517EDF /* ApplePayService.swift */; };
 		15A1D3B2DC0ABFB7AE0DF983BE5009D3 /* UserDefaultsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441A677A6666C6F529C6BD1FE784C7E8 /* UserDefaultsExtension.swift */; };
+		15BF84DF26495A5100395210 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BF84DE26495A5100395210 /* WebViewController.swift */; };
 		1896C5AA029AB2440A6FFA0ECC2640DC /* sv.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 0F9B735D925E964A0E52A3F01B245351 /* sv.lproj */; };
 		19211D68A2D873B7976E14FB92234EEE /* DirectCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EE848224C84F9C6948689492BA5462 /* DirectCheckoutViewModel.swift */; };
 		1A60B6BBA559F1322717B72A88957081 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CA371A7EAA13DB36954022D44CA6F3 /* Route.swift */; };
@@ -163,6 +164,7 @@
 		144599F293A9ECAF47681A3707264A7F /* PrimerSDK-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerSDK-prefix.pch"; sourceTree = "<group>"; };
 		15508A5926298AB300517EDF /* PaymentNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentNetwork.swift; sourceTree = "<group>"; };
 		15508A63262994F600517EDF /* ApplePayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayService.swift; sourceTree = "<group>"; };
+		15BF84DE26495A5100395210 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		174C412E3BB6379DFDF096236251C595 /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		1765BB07E9C04E3557F1A6B899F9A544 /* UITableViewCellExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITableViewCellExtensions.swift; sourceTree = "<group>"; };
 		1896A45E1388D7E65D09937DD0B030B1 /* PrimerSDK-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerSDK-umbrella.h"; sourceTree = "<group>"; };
@@ -768,6 +770,7 @@
 			children = (
 				1DB1BEDB00594145F1B93177973662BF /* OAuthViewController.swift */,
 				31F2C4B7A32C398FBAE4187BECBE340E /* OAuthViewModel.swift */,
+				15BF84DE26495A5100395210 /* WebViewController.swift */,
 			);
 			path = OAuth;
 			sourceTree = "<group>";
@@ -1012,6 +1015,7 @@
 				5EFEC937904BE71F380D61FEACDD81A6 /* KlarnaService.swift in Sources */,
 				47D715F0F4AFED22533A8F508A314201 /* Logger.swift in Sources */,
 				E2996940F6F31B32F68C133422CCCE24 /* Mask.swift in Sources */,
+				15BF84DF26495A5100395210 /* WebViewController.swift in Sources */,
 				62F2DAF1C7024B40E89590CFA3968CB5 /* NetworkService.swift in Sources */,
 				AC44E1229A72275E30D3006FD6AA9EE0 /* OAuthViewController.swift in Sources */,
 				1169543F9D457680BF91B15ADAE05732 /* OAuthViewModel.swift in Sources */,

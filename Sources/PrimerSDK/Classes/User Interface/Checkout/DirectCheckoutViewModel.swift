@@ -49,9 +49,13 @@ class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
             paymentMethodConfigService.fetchConfig(completion)
         } else {
             let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.loadCheckoutConfig({ [weak self] _ in
-                let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                paymentMethodConfigService.fetchConfig(completion)
+            clientTokenService.loadCheckoutConfig({ err in
+                if let err = err {
+                    completion(err)
+                } else {
+                    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    paymentMethodConfigService.fetchConfig(completion)
+                }
             })
         }
     }
@@ -104,14 +108,15 @@ struct PaymentMethodViewModel {
         }
     }
 
-    func toIconName() -> ImageName {
+    func toIconName() -> ImageName? {
         log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         switch type {
-        case .applePay: return ImageName.appleIcon
-        case .payPal: return  ImageName.paypal3
-        case .goCardlessMandate: return ImageName.rightArrow
-        case .klarna: return ImageName.klarna
-        default: return  ImageName.creditCard
+        case .applePay: return .appleIcon
+        case .payPal: return  .paypal3
+        case .goCardlessMandate: return .rightArrow
+        case .klarna: return .klarna
+        case .paymentCard: return .creditCard
+        default: return nil
         }
     }
 

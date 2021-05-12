@@ -30,22 +30,29 @@ public struct PaymentMethodToken: Codable {
         case .paymentCard:
             let last4 = self.paymentInstrumentData?.last4Digits ?? "••••"
             return "•••• •••• •••• \(last4)"
-        case .payPalOrder: return "PayPal"
-        case .payPalBillingAgreement: return "PayPal"
-        case .goCardlessMandate: return "Direct Debit"
-        case .klarnaCustomerToken: return "Klarna Customer Token"
-        case .klarna: return "Klarna"
-        default: return "UNKNOWN"
+        case .payPalOrder:
+            return "PayPal"
+        case .payPalBillingAgreement:
+            return "PayPal"
+        case .goCardlessMandate:
+            return "Direct Debit"
+        case .klarnaCustomerToken:
+            return paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token"
+        case .klarna:
+            return paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna"
+        default:
+            return "UNKNOWN"
         }
     }
 
     public var icon: ImageName {
         switch self.paymentInstrumentType {
         case .paymentCard:
-            guard let network = self.paymentInstrumentData?.network else { return .creditCard }
+            guard let network = self.paymentInstrumentData?.network else { return .genericCard }
             switch network {
             case "Visa": return .visa
-            default: return .creditCard
+            case "Mastercard": return .masterCard
+            default: return .genericCard
             }
         case .payPalOrder: return .paypal2
         case .payPalBillingAgreement: return .paypal2
@@ -84,7 +91,14 @@ extension PaymentMethodToken {
         case .goCardlessMandate:
             return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
         case .klarnaCustomerToken:
-            return CardButtonViewModel(network: "Klarna Customer Token", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+            return CardButtonViewModel(
+                network: paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token",
+                cardholder: "",
+                last4: "",
+                expiry: "",
+                imageName: self.icon,
+                paymentMethodType: self.paymentInstrumentType
+            )
         default:
             return nil
         }
@@ -97,7 +111,6 @@ struct CardButtonViewModel {
     let paymentMethodType: PaymentInstrumentType
 }
 
-// FIXME: Add description for Klarna
 /**
  Enum exposing available payment methods
   
@@ -159,19 +172,21 @@ extension PaymentInstrumentType: Codable {
  */
 
 public struct PaymentInstrumentData: Codable {
-    public var paypalBillingAgreementId: String?
-    public var last4Digits: String?
-    public var expirationMonth: String?
-    public var expirationYear: String?
-    public var cardholderName: String?
-    public var network: String?
-    public var isNetworkTokenized: Bool?
-    public var externalPayerInfo: ExternalPayerInfo?
-    public var shippingAddress: ShippingAddress?
-    public var binData: BinData?
-    public var threeDSecureAuthentication: ThreeDSecureAuthentication?
-    public var gocardlessMandateId: String?
-    public var authorizationToken: String?
+    public let paypalBillingAgreementId: String?
+    public let last4Digits: String?
+    public let expirationMonth: String?
+    public let expirationYear: String?
+    public let cardholderName: String?
+    public let network: String?
+    public let isNetworkTokenized: Bool?
+    public let klarnaCustomerToken: String?
+    public let sessionData: KlarnaSessionData?
+    public let externalPayerInfo: ExternalPayerInfo?
+    public let shippingAddress: ShippingAddress?
+    public let binData: BinData?
+    public let threeDSecureAuthentication: ThreeDSecureAuthentication?
+    public let gocardlessMandateId: String?
+    public let authorizationToken: String?
 }
 
 /**

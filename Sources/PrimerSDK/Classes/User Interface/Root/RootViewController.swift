@@ -47,8 +47,16 @@ class RootViewController: UIViewController {
     override func viewDidLoad() {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
+        switch Primer.shared.flow {
+        case .addKlarnaToVault,
+             .addPayPalToVault,
+             .checkoutWithKlarna:
+            mainView.backgroundColor = settings.isInitialLoadingHidden ? .clear : theme.colorTheme.main1
+        default:
+            mainView.backgroundColor = theme.colorTheme.main1
+        }
 
-        mainView.backgroundColor = theme.colorTheme.main1
         view.addSubview(backdropView)
         backdropView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mainView)
@@ -64,7 +72,7 @@ class RootViewController: UIViewController {
         mainView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         bottomConstraint = mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomConstraint?.isActive = true
-        heightConstraint?.isActive = true
+        
         if settings.isFullScreenOnly {
             topConstraint = mainView.topAnchor.constraint(equalTo: view.topAnchor)
             topConstraint?.isActive = true
@@ -84,6 +92,17 @@ class RootViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         backdropView.addGestureRecognizer(tapGesture)
         addKeyboardObservers()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if isBeingDismissed {
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            // FIXME: Quick fix for now. It still should be handled by our logic instead of
+            // the view controller's life-cycle.
+            settings.onCheckoutDismiss()
+        }
     }
 
     private func bindFirstFlowView() {
@@ -168,11 +187,6 @@ class RootViewController: UIViewController {
                 self.view.layoutIfNeeded()
             }
         }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        settings.onCheckoutDismiss()
     }
     
     @objc

@@ -32,14 +32,21 @@ class Router: RouterDelegate {
     func show(_ route: Route) {
         guard let root = self.root else { return }
         guard let vc = route.viewController else { return }
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
+        // FIXME: No decisions on UI elements
         if vc is SuccessViewController {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
             if settings.hasDisabledSuccessScreen {
                 return root.dismiss(animated: true, completion: nil)
             }
 
+            root.view.endEditing(true)
+
+        } else if vc is ErrorViewController {
+            if settings.hasDisabledSuccessScreen {
+                return root.dismiss(animated: true, completion: nil)
+            }
+            
             root.view.endEditing(true)
         }
 
@@ -62,6 +69,8 @@ class Router: RouterDelegate {
 }
 
 fileprivate extension RootViewController {
+    
+    // FIXME: Can't all this logic be resolved with a UINavigationController?
     func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         

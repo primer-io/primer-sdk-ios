@@ -1,6 +1,6 @@
 #if canImport(UIKit)
 
-public typealias ClientTokenCallBack = (_ completionHandler: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) -> Void
+public typealias ClientTokenCallBack = (_ completionHandler: @escaping (Result<String, Error>) -> Void) -> Void
 public typealias PaymentMethodTokenCallBack = (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
 public typealias CheckoutDismissalCallback = () -> Void
 
@@ -25,6 +25,7 @@ protocol PrimerSettingsProtocol {
     var orderItems: [OrderItem] { get }
     var supportedNetworks: [PaymentNetwork]? { get }
     var merchantCapabilities: [MerchantCapability]? { get }
+    var isInitialLoadingHidden: Bool { get }
 }
 
 /**
@@ -68,6 +69,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var orderItems: [OrderItem]
     internal(set) public var supportedNetworks: [PaymentNetwork]?
     internal(set) public var merchantCapabilities: [MerchantCapability]?
+    internal(set) public var isInitialLoadingHidden: Bool
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
@@ -102,7 +104,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         directDebitHasNoAmount: Bool = false,
         orderItems: [OrderItem] = [],
         supportedNetworks: [PaymentNetwork]? = nil,
-        merchantCapabilities: [MerchantCapability]? = nil
+        merchantCapabilities: [MerchantCapability]? = nil,
+        isInitialLoadingHidden: Bool = false
     ) {
         self.amount = amount
         self.currency = currency
@@ -121,6 +124,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.orderItems = orderItems
         self.supportedNetworks = supportedNetworks
         self.merchantCapabilities = merchantCapabilities
+        self.isInitialLoadingHidden = isInitialLoadingHidden
     }
 }
 
@@ -135,8 +139,13 @@ public struct BusinessDetails: Codable {
 }
 
 class MockDelegate: PrimerDelegate {
-    func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
+    
+    func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
 
+    }
+    
+    func tokenAddedToVault(_ token: PaymentMethodToken) {
+            
     }
 
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
@@ -146,6 +155,11 @@ class MockDelegate: PrimerDelegate {
     func onCheckoutDismissed() {
 
     }
+    
+    func checkoutFailed(with error: Error) {
+        
+    }
+    
 }
 
 #endif

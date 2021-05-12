@@ -46,6 +46,11 @@ class TokenizationService: TokenizationServiceProtocol {
             case .failure:
                 onTokenizeSuccess(.failure( PrimerError.tokenizationRequestFailed ))
             case .success(let paymentMethodToken):
+                if case .VAULT = Primer.shared.flow.uxMode {
+                    DispatchQueue.main.async {
+                        Primer.shared.delegate?.tokenAddedToVault(paymentMethodToken)
+                    }
+                }
                 onTokenizeSuccess(.success(paymentMethodToken))
 
             }

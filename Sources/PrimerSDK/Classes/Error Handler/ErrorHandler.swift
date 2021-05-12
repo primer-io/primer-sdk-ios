@@ -39,9 +39,13 @@ class ErrorHandler {
 
         } else if let primerError = error as? PrimerError {
             switch primerError {
+            case .generic:
+                break
             case .clientTokenNull:
                 break
             case .customerIDNull:
+                break
+            case .tokenExpired:
                 break
             case .payPalSessionFailed:
                 break
@@ -58,6 +62,14 @@ class ErrorHandler {
             case .tokenizationPreRequestFailed:
                 break
             case .tokenizationRequestFailed:
+                break
+            case .failedToLoadSession:
+                break
+            case .missingURLScheme:
+                break
+            case .requestFailed:
+                break
+            case .userCancelled:
                 break
             }
 

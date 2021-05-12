@@ -47,7 +47,7 @@ struct CreateKlarnaCustomerTokenAPIRequest: Codable {
     let paymentMethodConfigId: String
     let sessionId: String
     let authorizationToken: String
-    let description: String
+    let description: String?
     let localeData: KlarnaLocaleData
 }
 
@@ -70,13 +70,13 @@ struct KlarnaSessionCategory: Codable {
     let standardAssetUrl: String
 }
 
-struct KlarnaSessionOrderLines: Codable {
-    let type: String?
-    let name: String?
-    let quantity: Int?
-    let unitPrice: Int?
-    let totalAmount: Int?
-    let totalDiscountAmount: Int?
+public struct KlarnaSessionOrderLines: Codable {
+    public let type: String?
+    public let name: String?
+    public let quantity: Int?
+    public let unitPrice: Int?
+    public let totalAmount: Int?
+    public let totalDiscountAmount: Int?
 
     enum CodingKeys: String, CodingKey {
         case type = "type"
@@ -96,29 +96,29 @@ struct KlarnaSessionOptions: Codable {
     let disableConfirmationModals: Bool
 }
 
-struct KlarnaSessionData: Codable {
-    let recurringDescription: String?
-    let purchaseCountry: String?
-    let purchaseCurrency: String?
-    let locale: String?
-    let orderAmount: Int?
-    let orderLines: [KlarnaSessionOrderLines]
-    let billingAddress: KlarnaBillingAddress?
+public struct KlarnaSessionData: Codable {
+    public let recurringDescription: String?
+    public let purchaseCountry: String?
+    public let purchaseCurrency: String?
+    public let locale: String?
+    public let orderAmount: Int?
+    public let orderLines: [KlarnaSessionOrderLines]
+    public let billingAddress: KlarnaBillingAddress?
 }
 
-struct KlarnaBillingAddress: Codable {
-    let addressLine1: String?
-    let addressLine2: String?
-    let addressLine3: String?
-    let city: String?
-    let countryCode: String?
-    let email: String?
-    let firstName: String?
-    let lastName: String?
-    let phoneNumber: String?
-    let postalCode: String?
-    let state: String?
-    let title: String?
+public struct KlarnaBillingAddress: Codable {
+    public let addressLine1: String?
+    public let addressLine2: String?
+    public let addressLine3: String?
+    public let city: String?
+    public let countryCode: String?
+    public let email: String?
+    public let firstName: String?
+    public let lastName: String?
+    public let phoneNumber: String?
+    public let postalCode: String?
+    public let state: String?
+    public let title: String?
 }
 
 struct KlarnaFinalizePaymentSessionresponse: Codable {
