@@ -71,6 +71,13 @@ class VaultCheckoutView: UIView, ReactiveView {
             anchorPayButton()
             indicator.stopAnimating()
         }
+        
+        navBar.isHidden = true
+        amountLabelView.isHidden = true
+        savedCardTitleLabel.isHidden = true
+        savedCardButton.isHidden = true
+        seeAllLinkLabel.isHidden = true
+//        otherMethodsTitleLabel.isHidden = true
     }
 
     func reloadVaultDetails() {
@@ -248,7 +255,7 @@ extension VaultCheckoutView {
                 otherMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
                 otherMethodsTitleLabel.font = .systemFont(ofSize: 12, weight: .light)
 
-                otherMethodsTitleLabel.topAnchor.constraint(equalTo: seeAllLinkLabel.bottomAnchor, constant: 24).isActive = true
+                otherMethodsTitleLabel.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 0).isActive = true
                 otherMethodsTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
             } else {
                 otherMethodsTitleLabel.text = ""
