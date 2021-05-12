@@ -28,9 +28,9 @@ class ApplePayViewController: UIViewController {
     }
 
     func displayDefaultAlert(title: String?, message: String?) {
-        let alert = AlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        alert.show()
+//        let alert = AlertController(title: title, message: message, preferredStyle: .alert)
+//        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//        alert.show()
     }
 
 }
