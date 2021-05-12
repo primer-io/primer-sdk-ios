@@ -35,6 +35,27 @@ class MerchantCheckoutViewController: UIViewController {
         isInitialLoadingHidden: true
     )
     
+    let applePaySettings = PrimerSettings(
+        merchantIdentifier: "merchant.primer.dev.evangelos",
+        currency: .EUR,
+        countryCode: .fr,
+        applePayEnabled: true,
+        businessDetails: BusinessDetails(
+            name: "My Business",
+            address: Address(
+                addressLine1: "107 Rue",
+                addressLine2: nil,
+                city: "Paris",
+                state: nil,
+                countryCode: "FR",
+                postalCode: "75001"
+            )
+        ),
+        orderItems: [OrderItem(name: "Shoes", unitAmount: 9999, quantity: 1)],
+        supportedNetworks: [.masterCard, .visa],
+        merchantCapabilities: [.capability3DS]
+    )
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer"
@@ -45,26 +66,26 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        let settings = PrimerSettings(
-            merchantIdentifier: "merchant.primer.dev.evangelos",
-            customerId: nil,
-            amount: nil,
-            currency: .EUR,
-            countryCode: .fr,
-            applePayEnabled: false,
-            klarnaSessionType: nil,
-            klarnaPaymentDescription: nil,
-            urlScheme: nil,
-            urlSchemeIdentifier: nil,
-            isFullScreenOnly: true,
-            hasDisabledSuccessScreen: false,
-            businessDetails: generateBusinessDetails(),
-            directDebitHasNoAmount: false,
-            orderItems: [OrderItem(name: "Shoes", unitAmount: 9999, quantity: 1)],
-            supportedNetworks: [.masterCard, .visa],
-            merchantCapabilities: [.capability3DS]
-        )
-        Primer.shared.configure(settings: settings)
+//        let settings = PrimerSettings(
+//            merchantIdentifier: "merchant.primer.dev.evangelos",
+//            customerId: nil,
+//            amount: nil,
+//            currency: .EUR,
+//            countryCode: .fr,
+//            applePayEnabled: false,
+//            klarnaSessionType: nil,
+//            klarnaPaymentDescription: nil,
+//            urlScheme: nil,
+//            urlSchemeIdentifier: nil,
+//            isFullScreenOnly: true,
+//            hasDisabledSuccessScreen: false,
+//            businessDetails: generateBusinessDetails(),
+//            directDebitHasNoAmount: false,
+//            orderItems: [OrderItem(name: "Shoes", unitAmount: 9999, quantity: 1)],
+//            supportedNetworks: [.masterCard, .visa],
+//            merchantCapabilities: [.capability3DS]
+//        )
+        Primer.shared.configure(settings: applePaySettings)
         
         let theme = generatePrimerTheme()
         Primer.shared.configure(theme: theme)
