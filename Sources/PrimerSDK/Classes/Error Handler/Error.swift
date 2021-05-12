@@ -253,16 +253,20 @@ enum PrimerError: PrimerErrorProtocol {
     case generic
     case clientTokenNull
     case customerIDNull
+    case tokenExpired
     case payPalSessionFailed
     case vaultFetchFailed
     case vaultDeleteFailed
     case vaultCreateFailed
+    case requestFailed
     case directDebitSessionFailed
     case configFetchFailed
     case tokenizationPreRequestFailed
     case tokenizationRequestFailed
     case threeDSFailed
     case failedToLoadSession
+    case missingURLScheme
+    case userCancelled
 
     static var errorDomain: String = "primer"
 
@@ -304,6 +308,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Customer ID is missing",
                                      comment: "Customer ID is missing - Primer error message")
+            
+        case .tokenExpired:
+            return NSLocalizedString("primer-error-message-token-expired",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Token has expired",
+                                     comment: "Token has expired - DX error message")
 
         case .payPalSessionFailed:
             return NSLocalizedString("primer-error-message-paypal-needs-recharge",
@@ -372,6 +383,25 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Failed to load session, please close and try again.",
                                      comment: "Failed to load session, please close and try again. - Primer error message")
+            
+        case .missingURLScheme:
+            return NSLocalizedString("primer-error-message-missing-url-scheme",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "URL scheme & scheme identifier are missing from the settings.",
+                                     comment: "URL scheme & scheme identifier are missing from the settings. - Primer error message")
+        case .requestFailed:
+            return NSLocalizedString("primer-error-message-request-failed",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Failed to make request",
+                                     comment: "Failed to make request, please close and try again. - Primer error message")
+        case .userCancelled:
+            return NSLocalizedString("primer-error-message-user-cancelled",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "User cancelled",
+                                     comment: "User cancelled. - Primer error message")
         }
     }
 

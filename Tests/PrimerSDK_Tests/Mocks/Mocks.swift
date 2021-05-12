@@ -34,20 +34,23 @@ var mockSettings = PrimerSettings(
 
 class MockPrimerDelegate: PrimerDelegate {
 
-    var tokenData: CreateClientTokenResponse?
+    var token: String?
     var authorizePaymentFails: Bool
 
-    init(tokenData: CreateClientTokenResponse? = nil, authorizePaymentFails: Bool = false) {
-        self.tokenData = tokenData
+    init(token: String? = nil, authorizePaymentFails: Bool = false) {
+        self.token = token
         self.authorizePaymentFails = authorizePaymentFails
     }
 
     var clientTokenCallbackCalled = false
 
-    func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
+    func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
         clientTokenCallbackCalled = true
-        guard let data = tokenData else { return }
-        completion(.success(data))
+        guard let token = token else {
+            // FIXME: Throw error
+            return
+        }
+        completion(.success(token))
     }
     
     func tokenAddedToVault(_ token: PaymentMethodToken) {
