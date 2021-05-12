@@ -28,7 +28,17 @@ public class PresentationController: UIPresentationController {
         self.blurEffectView.alpha = 0
         self.containerView?.addSubview(blurEffectView)
         self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in
-            self.blurEffectView.alpha = 0.7
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            switch Primer.shared.flow {
+            case .addKlarnaToVault,
+                 .addPayPalToVault,
+                 .checkoutWithKlarna:
+                self.blurEffectView.alpha = settings.isInitialLoadingHidden ? 0 : 0.7
+            default:
+                self.blurEffectView.alpha = 0.7
+            }
+            
         }, completion: { (_) in })
     }
 
@@ -57,6 +67,7 @@ public class PresentationController: UIPresentationController {
 }
 
 extension UIView {
+    
     func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
         let path = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners,
                                 cornerRadii: CGSize(width: radius, height: radius))
@@ -64,12 +75,14 @@ extension UIView {
         mask.path = path.cgPath
         layer.mask = mask
     }
+    
     func roundCorners(corners: UIRectCorner, radius: CGFloat) {
         let path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         let mask = CAShapeLayer()
         mask.path = path.cgPath
         self.layer.mask = mask
     }
+    
 }
 
 #endif

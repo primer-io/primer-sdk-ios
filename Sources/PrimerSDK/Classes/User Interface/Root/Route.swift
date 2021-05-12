@@ -24,7 +24,7 @@ enum Route {
     case oAuth(host: OAuthHost)
     case applePay
     case success(type: SuccessScreenType)
-    case error(message: String = "")
+    case error(error: Error)
     case confirmMandate
     case form(type: FormType, closeOnSubmit: Bool = false)
 
@@ -58,8 +58,9 @@ enum Route {
             let vc = SuccessViewController()
             vc.screenType = screenType
             return vc
-        case .error(let message):
-            return ErrorViewController(message: message)
+        case .error(let error):
+            Primer.shared.delegate?.checkoutFailed(with: error)
+            return ErrorViewController(message: error.localizedDescription)
         case .confirmMandate:
             return ConfirmMandateViewController()
         case .form(let type, _):

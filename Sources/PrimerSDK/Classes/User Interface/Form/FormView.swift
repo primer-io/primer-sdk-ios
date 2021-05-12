@@ -9,6 +9,8 @@
 
 import UIKit
 
+let enableCardScanner = false
+
 protocol FormViewDelegate: class, UITextFieldDelegate {
     var formType: FormType { get }
     var submitButtonTitle: String { get }
@@ -102,7 +104,10 @@ class FormView: UIView {
 
         if let formType = delegate?.formType {
             switch formType {
-            case .cardForm: configureScannerButton()
+            case .cardForm:
+                if enableCardScanner {
+                    configureScannerButton()
+                }
             default: break
             }
         }

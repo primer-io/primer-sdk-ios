@@ -49,7 +49,6 @@ extension String {
     }
 
     var isValidEmail: Bool {
-        // FIXME: Maybe find (or construct 😆) a better regex
         let emailRegEx = "(?:[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}~-]+(?:\\.[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}" +
             "~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\" +
             "x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[\\p{L}0-9](?:[a-" +
@@ -83,25 +82,16 @@ extension String {
         }
         return sum % 10 == 0
     }
-
-    func decodeClientTokenBase64() -> DecodedClientToken {
-        let bytes = self.components(separatedBy: ".")
-        for element in bytes {
-            // decode element, add necessary padding to base64 to ensure it's a multiple of 4 (required by Swift foundation)
-            if let decodedData = Data(base64Encoded: element.padding(toLength: ((element.count + 3) / 4) * 4, withPad: "=", startingAt: 0)) {
-                let decodedString = String(data: decodedData, encoding: .utf8)!
-                if decodedString.contains("\"accessToken\":") {
-                    do {
-                        let token = try JSONDecoder().decode(DecodedClientToken.self, from: decodedData)
-                        return token
-                    } catch {
-                        log(logLevel: .error, title: "PARSER", message: "Failed to parse client token", prefix: nil, suffix: nil, bundle: Bundle.primerFrameworkIdentifier, file: #file, className: nil, function: #function, line: #line)
-                    }
-                }
-            }
-
-        }
-        return DecodedClientToken()
+    
+    var jwtTokenPayload: DecodedClientToken? {
+        let components = self.split(separator: ".")
+        if components.count < 2 { return nil }
+        let segment = String(components[1]).padding(toLength: ((String(components[1]).count+3)/4)*4,
+                                                              withPad: "=",
+                                                              startingAt: 0)
+        guard !segment.isEmpty, let data = Data(base64Encoded: segment) else { return nil }
+        
+        return try? JSONParser().parse(DecodedClientToken.self, from: data)
     }
 
     func toDate(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil) -> Date? {

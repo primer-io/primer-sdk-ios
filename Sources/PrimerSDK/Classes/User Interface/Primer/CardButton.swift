@@ -74,6 +74,8 @@ class CardButton: UIButton {
     private func addCardIcon(image: UIImage?) {
         iconView = UIImageView(image: image)
         iconView.clipsToBounds = true
+        iconView.contentMode = .scaleAspectFit
+        
         addSubview(iconView)
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
