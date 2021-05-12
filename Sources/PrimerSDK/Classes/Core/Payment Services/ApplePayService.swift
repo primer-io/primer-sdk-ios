@@ -93,7 +93,7 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
                             let instrument = PaymentInstrument(
                                 paymentMethodConfigId: applePayConfigId,
                                 token: applePayPaymentResponse.token,
-                                merchantIdentifier: merchantIdentifier
+                                sourceConfig: ApplePaySourceConfig(merchantId: merchantIdentifier)
                             )
                             
                             self.tokenize(instrument: instrument) { (err) in
