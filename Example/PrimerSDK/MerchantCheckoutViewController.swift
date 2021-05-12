@@ -22,25 +22,32 @@ class MerchantCheckoutViewController: UIViewController {
 
     let amount = 200
     
+    let vaultPayPalSettings = PrimerSettings(
+        currency: .GBP,
+        countryCode: .gb,
+        urlScheme: "primer://",
+        urlSchemeIdentifier: "primer"
+    )
+    
+    let vaultKlarnaSettings = PrimerSettings(
+        currency: .SEK,
+        countryCode: .se,
+        klarnaSessionType: .recurringPayment,
+        hasDisabledSuccessScreen: true,
+        isInitialLoadingHidden: true
+    )
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer"
         
         Primer.shared.delegate = self
-        configurePrimer()
-        fetchPaymentMethods()
+        self.configurePrimer()
+        self.fetchPaymentMethods()
     }
     
     func configurePrimer() {
-        let settings = PrimerSettings(
-            currency: .SEK,
-            countryCode: .se,
-            klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: "Scooter Rental",
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true
-        )
-        Primer.shared.configure(settings: settings)
+        Primer.shared.configure(settings: vaultKlarnaSettings)
         
         let theme = generatePrimerTheme()
         Primer.shared.configure(theme: theme)
@@ -67,6 +74,8 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
     
+    var klarnaNumberOfTimesPresented = 0
+    
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
     }
@@ -85,7 +94,7 @@ class MerchantCheckoutViewController: UIViewController {
 
 extension MerchantCheckoutViewController: PrimerDelegate {
     
-    func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
+    func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
         guard let url = URL(string: "\(endpoint)/clientToken") else {
             return completion(.failure(NetworkError.missingParams))
         }
@@ -105,11 +114,13 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             switch result {
             case .success(let data):
                 do {
-                    let token = try JSONDecoder().decode(CreateClientTokenResponse.self, from: data)
+                    let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
                     print("🚀🚀🚀 token:", token)
                     completion(.success(token))
+
                 } catch {
                     completion(.failure(NetworkError.serializationError))
+                    
                 }
             case .failure(let err): completion(.failure(err))
             }

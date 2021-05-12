@@ -24,7 +24,6 @@
 		1582B989260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B96D260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift */; };
 		1582B98A260A3F2900C80BD7 /* OAuthViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B96E260A3F2900C80BD7 /* OAuthViewModelTests.swift */; };
 		1582B98B260A3F2900C80BD7 /* MaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B970260A3F2900C80BD7 /* MaskTests.swift */; };
-		1582B98C260A3F2900C80BD7 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B971260A3F2900C80BD7 /* Tests.swift */; };
 		1582B98E260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */; };
 		1582B98F260A3F2900C80BD7 /* KlarnaServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B975260A3F2900C80BD7 /* KlarnaServiceTests.swift */; };
 		1582B990260A3F2900C80BD7 /* TokenizationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */; };
@@ -85,7 +84,6 @@
 		1582B96D260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectCheckoutViewModelTests.swift; sourceTree = "<group>"; };
 		1582B96E260A3F2900C80BD7 /* OAuthViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OAuthViewModelTests.swift; sourceTree = "<group>"; };
 		1582B970260A3F2900C80BD7 /* MaskTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MaskTests.swift; sourceTree = "<group>"; };
-		1582B971260A3F2900C80BD7 /* Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		1582B972260A3F2900C80BD7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigServiceTests.swift; sourceTree = "<group>"; };
 		1582B975260A3F2900C80BD7 /* KlarnaServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KlarnaServiceTests.swift; sourceTree = "<group>"; };
@@ -166,7 +164,6 @@
 				1582B959260A3F2900C80BD7 /* Mocks */,
 				1582B969260A3F2900C80BD7 /* ViewModels */,
 				1582B96F260A3F2900C80BD7 /* Utils */,
-				1582B971260A3F2900C80BD7 /* Tests.swift */,
 				1582B972260A3F2900C80BD7 /* Info.plist */,
 				1582B973260A3F2900C80BD7 /* Services */,
 			);
@@ -212,10 +209,10 @@
 		1582B969260A3F2900C80BD7 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */,
-				1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */,
 				1582B96D260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift */,
 				1582B96E260A3F2900C80BD7 /* OAuthViewModelTests.swift */,
+				1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */,
+				1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -231,11 +228,11 @@
 		1582B973260A3F2900C80BD7 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */,
-				1582B975260A3F2900C80BD7 /* KlarnaServiceTests.swift */,
-				1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */,
 				1582B977260A3F2900C80BD7 /* ClientTokenServiceTests.swift */,
+				1582B975260A3F2900C80BD7 /* KlarnaServiceTests.swift */,
+				1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */,
 				1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */,
+				1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -639,7 +636,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1582B97A260A3F2900C80BD7 /* ConfirmMandateViewModel.swift in Sources */,
-				1582B98C260A3F2900C80BD7 /* Tests.swift in Sources */,
 				1582B981260A3F2900C80BD7 /* PayPalService.swift in Sources */,
 				1582B991260A3F2900C80BD7 /* ClientTokenServiceTests.swift in Sources */,
 				1582B98E260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift in Sources */,
