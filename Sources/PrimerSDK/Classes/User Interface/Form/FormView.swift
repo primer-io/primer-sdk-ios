@@ -140,7 +140,8 @@ class FormView: UIView {
 
         // add top title if theme toggled true
         if theme.layout.showTopTitle {
-            navBar.topItem?.title = delegate.formType.topTitle
+            // FIXME: This custom navigation bar does not have a title at the moment. You're assuming that the topItem is the nav bar's title's label, when it actually is the left bar button.
+            navBar.topItem?.title = "delegate.formType.topTitle"
         }
 
         navBar.translatesAutoresizingMaskIntoConstraints = false
@@ -159,10 +160,10 @@ class FormView: UIView {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         if (theme.layout.showMainTitle) {
-            title.text = delegate.formType.mainTitleFont
+            title.text = delegate.formType.mainTitle
         }
         title.textAlignment = .center
-        title.font = theme.fontTheme.mainTitleFont
+        title.font = theme.fontTheme.mainTitle
         title.textColor = theme.colorTheme.text1
     }
 

@@ -102,7 +102,9 @@ extension VaultCheckoutView {
         //        navItem.leftBarButtonItem = doneItem
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
-        navBar.setItems([navItem], animated: false)
+        let titleItem = UINavigationItem(title: "Test")
+        navBar.setItems([navItem, titleItem], animated: false)
+        
 
         navBar.topItem?.title = NSLocalizedString("primer-vault-checkout-nav-bar-title",
                                                   tableName: nil,
