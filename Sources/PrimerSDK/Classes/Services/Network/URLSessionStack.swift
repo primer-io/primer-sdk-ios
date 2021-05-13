@@ -22,6 +22,7 @@ class URLSessionStack: NetworkService {
 
     // MARK: - Network Stack logic
 
+    // swiftlint:disable function_body_length
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) {
         guard let url = url(for: endpoint) else {
             completion(.failure(.invalidURL))
@@ -41,8 +42,14 @@ class URLSessionStack: NetworkService {
 
         if let data = endpoint.body {
             request.httpBody = data
+            let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
+            let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+            var jsonStr: String?
+            if jsonData != nil {
+                jsonStr = String(data: jsonData!, encoding: .utf8 )
+            }
             #if DEBUG
-            msg += "\nBody: \((try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) ?? [:])"
+            msg += "\nBody:\n\(jsonStr ?? "Empty body")"
             #endif
         }
 
@@ -85,8 +92,14 @@ class URLSessionStack: NetworkService {
 
             do {
                 #if DEBUG
-                let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                msg += "\nData: \(json ?? "nil")"
+                let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+                var jsonStr: String?
+                if jsonData != nil {
+                    jsonStr = String(data: jsonData!, encoding: .utf8 )
+                }
+                
+                msg += "\nBody:\n\(jsonStr ?? "Empty body")"
                 log(logLevel: .debug, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                 #endif
 
