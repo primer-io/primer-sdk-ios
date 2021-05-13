@@ -76,8 +76,8 @@ struct PaymentMethodViewModel {
                 ? NSLocalizedString("payment-method-type-card-vaulted",
                                     tableName: nil,
                                     bundle: Bundle.primerResources,
-                                    value: "Add a new card",
-                                    comment: "Add a new card - Payment Method Type (Card Vaulted)")
+                                    value: "Add new card",
+                                    comment: "Add new card - Payment Method Type (Card Vaulted)")
 
                 : NSLocalizedString("payment-method-type-card-not-vaulted",
                                     tableName: nil,
