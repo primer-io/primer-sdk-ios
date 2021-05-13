@@ -57,18 +57,30 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         if state.decodedClientToken.exists {
             let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            paymentMethodConfigService.fetchConfig({ [weak self] _ in
-                let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                vaultService.loadVaultedPaymentMethods(completion)
+            paymentMethodConfigService.fetchConfig({ err in
+                if let err = err {
+                    completion(err)
+                } else {
+                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                    vaultService.loadVaultedPaymentMethods(completion)
+                }
             })
         } else {
             let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.loadCheckoutConfig({ [weak self] _ in
-                let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                paymentMethodConfigService.fetchConfig({ [weak self] _ in
-                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                    vaultService.loadVaultedPaymentMethods(completion)
-                })
+            clientTokenService.loadCheckoutConfig({ err in
+                if let err = err {
+                    completion(err)
+                } else {
+                    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    paymentMethodConfigService.fetchConfig({ err in
+                        if let err = err {
+                            completion(err)
+                        } else {
+                            let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                            vaultService.loadVaultedPaymentMethods(completion)
+                        }
+                    })
+                }
             })
         }
     }

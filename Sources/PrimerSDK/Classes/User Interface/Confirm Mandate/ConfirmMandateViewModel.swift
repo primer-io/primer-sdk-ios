@@ -65,49 +65,57 @@ class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
         
         if state.decodedClientToken.exists {
             let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            paymentMethodConfigService.fetchConfig({ [weak self] error in
-                if error.exists { return completion(error) }
-                let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                vaultService.loadVaultedPaymentMethods(completion)
+            paymentMethodConfigService.fetchConfig({ err in
+                if let err = err {
+                    completion(err)
+                } else {
+                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                    vaultService.loadVaultedPaymentMethods(completion)
+                }
             })
         } else {
             let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.loadCheckoutConfig({ [weak self] error in
-                if error.exists { return completion(error) }
-                let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                paymentMethodConfigService.fetchConfig({ [weak self] error in
-                    if error.exists { return completion(error) }
-                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                    vaultService.loadVaultedPaymentMethods(completion)
-                })
+            clientTokenService.loadCheckoutConfig({ err in
+                if let err = err {
+                    completion(err)
+                } else {
+                    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    paymentMethodConfigService.fetchConfig({ err in
+                        if let err = err {
+                            completion(err)
+                        } else {
+                            let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                            vaultService.loadVaultedPaymentMethods(completion)
+                        }
+                    })
+                }
             })
         }
     }
 
     func confirmMandateAndTokenize(_ completion: @escaping (Error?) -> Void) {
         let directDebitService: DirectDebitServiceProtocol = DependencyContainer.resolve()
-        directDebitService.createMandate({ [weak self] error in
-            if error.exists { return completion(PrimerError.directDebitSessionFailed) }
-            
-            
-            
+        directDebitService.createMandate({ err in
+            if err != nil {
+                completion(PrimerError.directDebitSessionFailed)
+            } else {
+                let state: AppStateProtocol = DependencyContainer.resolve()
+                let request = PaymentMethodTokenizationRequest(
+                    paymentInstrument: PaymentInstrument(gocardlessMandateId: state.mandateId),
+                    state: state
+                )
+                
+                let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
 
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            let request = PaymentMethodTokenizationRequest(
-                paymentInstrument: PaymentInstrument(gocardlessMandateId: state.mandateId),
-                state: state
-            )
-            
-            let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
-
-            tokenizationService.tokenize(request: request) { [weak self] result in
-                switch result {
-                case .failure(let error):
-                    completion(error)
-                case .success(let token):
-                    state.directDebitMandate = DirectDebitMandate(address: Address())
-                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    settings.onTokenizeSuccess(token, completion)
+                tokenizationService.tokenize(request: request) { result in
+                    switch result {
+                    case .failure(let error):
+                        completion(error)
+                    case .success(let token):
+                        state.directDebitMandate = DirectDebitMandate(address: Address())
+                        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                        settings.onTokenizeSuccess(token, completion)
+                    }
                 }
             }
         })
