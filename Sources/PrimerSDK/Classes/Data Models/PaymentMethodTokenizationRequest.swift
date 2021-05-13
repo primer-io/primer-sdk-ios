@@ -52,9 +52,7 @@ enum PaymentFlow: String, Encodable {
 }
 
 struct ApplePaySourceConfig: Codable {
-    var source: String {
-        return "IN_APP"
-    }
+    let source: String
     let merchantId: String
 }
 
