@@ -49,9 +49,13 @@ class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
             paymentMethodConfigService.fetchConfig(completion)
         } else {
             let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.loadCheckoutConfig({ [weak self] _ in
-                let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                paymentMethodConfigService.fetchConfig(completion)
+            clientTokenService.loadCheckoutConfig({ err in
+                if let err = err {
+                    completion(err)
+                } else {
+                    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    paymentMethodConfigService.fetchConfig(completion)
+                }
             })
         }
     }
