@@ -51,7 +51,7 @@ class MerchantCheckoutViewController: UIViewController {
                 postalCode: "75001"
             )
         ),
-        orderItems: [OrderItem(name: "Shoes", unitAmount: 9999, quantity: 1)],
+        orderItems: [OrderItem(name: "Shoes", unitAmount: 1, quantity: 1)],
         supportedNetworks: [.masterCard, .visa],
         merchantCapabilities: [.capability3DS]
     )
