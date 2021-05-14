@@ -17,6 +17,7 @@ class VaultCheckoutView: UIView, ReactiveView {
 
     let indicator = UIActivityIndicatorView()
     let navBar = UINavigationBar()
+    let titleLabel = UILabel()
     let amountLabelView = UILabel()
     let savedCardTitleLabel = UILabel()
     var savedCardButton = CardButton()
@@ -39,6 +40,7 @@ class VaultCheckoutView: UIView, ReactiveView {
     func render(isBusy: Bool = false) {
         addSubview(indicator)
         addSubview(navBar)
+        addSubview(titleLabel)
         addSubview(amountLabelView)
         addSubview(savedCardTitleLabel)
         addSubview(savedCardButton)
@@ -56,6 +58,7 @@ class VaultCheckoutView: UIView, ReactiveView {
             indicator.startAnimating()
         } else {
             configureNavBar()
+            configureTitleLabel()
             configureTableView()
             configurePayButton()
             configureAmountLabelView()
@@ -115,6 +118,20 @@ extension VaultCheckoutView {
 
     @objc private func cancel() {
         delegate?.cancel()
+    }
+    
+    private func configureTitleLabel() {
+        titleLabel.font = .boldSystemFont(ofSize: 17)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: -28).isActive = true
+        titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20).isActive = true
+        titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20).isActive = true
+        titleLabel.textAlignment = .center
+        titleLabel.text = NSLocalizedString("primer-vault-checkout-nav-bar-title",
+                                            tableName: nil,
+                                            bundle: Bundle.primerResources,
+                                            value: "Choose payment method",
+                                            comment: "Choose payment method - Vault Checkout Navigation Bar Title")
     }
 
     private func configureAmountLabelView() {
@@ -257,14 +274,18 @@ extension VaultCheckoutView {
                 otherMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
                 otherMethodsTitleLabel.font = .systemFont(ofSize: 12, weight: .light)
 
-                otherMethodsTitleLabel.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 0).isActive = true
+                otherMethodsTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16).isActive = true
                 otherMethodsTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
             } else {
                 otherMethodsTitleLabel.text = ""
                 otherMethodsTitleLabel.topAnchor.constraint(equalTo: seeAllLinkLabel.bottomAnchor, constant: 0).isActive = true
             }
         } else {
-            otherMethodsTitleLabel.topAnchor.constraint(equalTo: seeAllLinkLabel.bottomAnchor, constant: 0).isActive = true
+            if seeAllLinkLabel.isHidden {
+                otherMethodsTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16).isActive = true
+            } else {
+                otherMethodsTitleLabel.topAnchor.constraint(equalTo: seeAllLinkLabel.bottomAnchor, constant: 0).isActive = true
+            }
         }
     }
 
