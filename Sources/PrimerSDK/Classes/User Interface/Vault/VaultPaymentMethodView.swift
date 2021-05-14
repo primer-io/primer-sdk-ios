@@ -60,7 +60,7 @@ extension VaultPaymentMethodView {
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
-        navBar.topItem?.title = theme.content.vaultPaymentMethodView.mainTitleText
+        navBar.topItem?.title = theme.content.vaultPaymentMethodView.mainTitleText.uppercased()
     }
 
     @objc private func cancel() { delegate?.cancel() }
