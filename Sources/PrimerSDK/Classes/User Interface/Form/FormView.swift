@@ -26,6 +26,7 @@ class FormView: UIView {
     // MARK: - PROPERTIES
 
     let navBar = UINavigationBar()
+    let navBarTitleLabel = UILabel()
     let title = UILabel()
     let link = UILabel()
     let button = UIButton()
@@ -58,6 +59,8 @@ class FormView: UIView {
         addSubview(button)
         addSubview(scannerButton)
         addSubview(contentView)
+        
+        addSubview(navBarTitleLabel)
         contentView.addSubview(title)
 
     }
@@ -134,14 +137,27 @@ class FormView: UIView {
         // remove default shadow
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
+        navBar.layer.zPosition = -1
 
         // attach items to navbar
         navBar.setItems([navItem], animated: false)
 
         // add top title if theme toggled true
         if theme.layout.showTopTitle {
-            // FIXME: This custom navigation bar does not have a title at the moment. You're assuming that the topItem is the nav bar's title's label, when it actually is the left bar button.
-            navBar.topItem?.title = "delegate.formType.topTitle"
+            // FIXME: This needs to be fixed properly. We don't need a nav bar. We need a stackview!
+            navBarTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+            navBarTitleLabel.textAlignment = .center
+            navBarTitleLabel.font = UIFont.boldSystemFont(ofSize: 17)
+            navBarTitleLabel.textColor = .black
+            navBarTitleLabel.text = NSLocalizedString("primer-form-type-main-title-card-form",
+                                                      tableName: nil,
+                                                      bundle: Bundle.primerResources,
+                                                      value: "Enter your card details",
+                                                      comment: "Enter your card details - Form Type Main Title (Card)")
+            navBarTitleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 15).isActive = true
+            navBarTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20).isActive = true
+            navBarTitleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20).isActive = true
+            navBarTitleLabel.layer.zPosition = 100
         }
 
         navBar.translatesAutoresizingMaskIntoConstraints = false
