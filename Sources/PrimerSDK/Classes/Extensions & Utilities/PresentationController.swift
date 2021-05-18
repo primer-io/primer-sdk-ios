@@ -30,9 +30,9 @@ public class PresentationController: UIPresentationController {
         self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
-            switch Primer.shared.flow {
-            case .addKlarnaToVault,
-                 .addPayPalToVault,
+            switch Primer.shared.flow.internalSessionFlow {
+            case .vaultKlarna,
+                 .vaultPayPal,
                  .checkoutWithKlarna:
                 self.blurEffectView.alpha = settings.isInitialLoadingHidden ? 0 : 0.7
             default:
