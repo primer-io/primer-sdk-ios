@@ -24,13 +24,18 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
     let threeDS2Service: ThreeDS_SDK.ThreeDS2Service = ThreeDS2ServiceSDK()
     
     func initializeSDK(completion: @escaping (Result<Void, Error>) -> Void) {
-        let configParameters = ConfigParameters()
         do {
-            try configParameters.addParam(group: nil,
-                                          paramName: "license-key",
-                                          paramValue: Primer.netceteraLicenseKey)
-            // Change uicustomization to nil for default design.
-//            let uicustomization = try createUICustomization()
+            let configBuilder = ConfigurationBuilder()
+            try configBuilder.license(key: Primer.netceteraLicenseKey)
+                         
+            let scheme = Scheme(name: "scheme_name")
+            scheme.ids = ["A999999999"]
+            scheme.encryptionKeyValue = "MIIBxTCCAWygAwIBAgIIC86P1uYPsHcwCgYIKoZIzj0EAwIwSTELMAkGA1UEBhMCREsxFDASBgNVBAoTCzNkc2VjdXJlLmlvMSQwIgYDVQQDExszZHNlY3VyZS5pbyBzdGFuZGluIGlzc3VpbmcwIBgPMDAwMTAxMDEwMDAwMDBaFw0zMTA1MTEwNzE3NDlaMEQxCzAJBgNVBAYTAkRLMRQwEgYDVQQKEwszZHNlY3VyZS5pbzEfMB0GA1UEAxMWM2RzZWN1cmUuaW8gc3RhbmRpbiBEUzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABPlvqaJJN/P+cbWlFgkMdPrHHYudaDba3BXjc77p8iAfwQj/zlnB722Xhc6cPod9E9sAQusKFlSPM3apXWco/qSjQTA/MA4GA1UdDwEB/wQEAwIDqDAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFBDbGDMLlWPTHL2yGKAG9C8Vlp3DMAoGCCqGSM49BAMCA0cAMEQCIDcKPmQqXPwBWSV52rWOOIVaChr9otyjEM1uvFZuFCnbAiBq7c00mNkJn8MFBx5u7EEjO6qVGIr+4QUrjjicBlyk+Q=="
+            
+            try configBuilder.add(scheme)
+             
+            let configParameters = configBuilder.configParameters()
+            
             try threeDS2Service.initialize(configParameters,
                                            locale: nil,
                                            uiCustomization: nil)
@@ -66,20 +71,20 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
     
     func netceteraAuth(paymentMethod: PaymentMethodToken, completion: @escaping (Result<ThreeDSecureAuthData, Error>) -> Void) {
         do {
-            var scheme: Scheme!
-            switch paymentMethod.paymentInstrumentData?.binData?.network?.lowercased() {
-            case "visa":
-                scheme = .visa()
-            default:
-                let err = NSError(domain: "netcetera", code: 100, userInfo: [NSLocalizedDescriptionKey: "Only Visa for now"])
-                completion(.failure(err))
-                return
-
-            }
-            
-            let directoryServerId = ThreeDSecureService.directoryServerIdFor(scheme: scheme)
-            let transaction = try threeDS2Service.createTransaction(directoryServerId: directoryServerId,
-                                                                    messageVersion: "2.1.0")
+//            var scheme: Scheme!
+//            switch paymentMethod.paymentInstrumentData?.binData?.network?.lowercased() {
+//            case "visa":
+//                scheme = .visa()
+//            default:
+//                let err = NSError(domain: "netcetera", code: 100, userInfo: [NSLocalizedDescriptionKey: "Only Visa for now"])
+//                completion(.failure(err))
+//                return
+//
+//            }
+//
+//            let directoryServerId = ThreeDSecureService.directoryServerIdFor(scheme: scheme)
+            let transaction = try threeDS2Service.createTransaction(directoryServerId: "A999999999",
+                                                                    messageVersion: "2.2.0")
             
             print(transaction)
             let transactionParameters = try transaction.getAuthenticationRequestParameters()
@@ -97,6 +102,7 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
 //            print("sdkEphemPubKey-X:\n\(sdkEphemeralKeyJSON["x"] as! String)\n\n")
 //            print("sdkTransactionId:\n\(sdkTransactionId)\n\n")
             let threeDSecureAuthData = ThreeDSecureAuthData(sdkAppId: sdkAppId, sdkTransactionId: sdkTransactionId, sdkTimeout: 10, sdkEncData: sdkEncData, sdkEphemPubKey: sdkEphemeralKey, sdkReferenceNumber: sdkReferenceNumber)
+            print("\n\n\n\n\n\nsdkEncData:\n\(threeDSecureAuthData.sdkEncData)")
             completion(.success(threeDSecureAuthData))
         } catch {
             print(error)
@@ -168,7 +174,7 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
         api.threeDSecureBeginAuthentication(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
             case .failure:
-                completion(nil, PrimerError.threeDSFailed)
+                completion(nil, PrimerError.clientTokenNull)
             case .success(let res):
                 print(res)
                 completion(res, nil)
