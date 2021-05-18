@@ -37,6 +37,25 @@ class MerchantCheckoutViewController: UIViewController {
         isInitialLoadingHidden: true
     )
     
+    let generalSettings = PrimerSettings(
+        merchantIdentifier: "general-settings",
+        customerId: "my-customer",
+        amount: 100,
+        currency: .EUR,
+        countryCode: .fr,
+        applePayEnabled: false,
+        klarnaSessionType: .recurringPayment,
+        klarnaPaymentDescription: nil,
+        urlScheme: "primer.io://",
+        urlSchemeIdentifier: "primer",
+        isFullScreenOnly: false,
+        hasDisabledSuccessScreen: false,
+        businessDetails: nil,
+        directDebitHasNoAmount: false,
+        orderItems: [],
+        isInitialLoadingHidden: false
+    )
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer"
@@ -47,7 +66,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        Primer.shared.configure(settings: vaultKlarnaSettings)
+        Primer.shared.configure(settings: generalSettings)
         
         let theme = generatePrimerTheme()
         Primer.shared.configure(theme: theme)

@@ -160,16 +160,19 @@ class FormViewModel: FormViewModelProtocol {
                 ErrorHandler.shared.handle(error: error)
                 completion(error)
             case .success(let token):
-                switch Primer.shared.flow {
-                case .completeDirectCheckout:
+                switch Primer.shared.flow.internalSessionFlow {
+                case .checkout,
+                     .checkoutWithCard,
+                     .checkoutWithKlarna:
                     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    settings.onTokenizeSuccess(token, { error in
+                    settings.authorizePayment(token, { error in
                         if error.exists {
                             completion(PrimerError.tokenizationRequestFailed)
                         } else {
                             completion(nil)
                         }
                     })
+                    
                 default:
                     completion(nil)
                 }
