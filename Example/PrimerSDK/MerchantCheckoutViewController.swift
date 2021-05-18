@@ -64,7 +64,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        Primer.shared.configure(settings: generalSettings)
+        Primer.shared.configure(settings: vaultPayPalSettings)
         
         let theme = generatePrimerTheme()
         Primer.shared.configure(theme: theme)
@@ -91,7 +91,9 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
     
-    var klarnaNumberOfTimesPresented = 0
+    @IBAction func addPayPalButtonTapped(_ sender: Any) {
+        Primer.shared.showCheckout(self, flow: .addPayPalToVault)
+    }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
