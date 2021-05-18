@@ -25,9 +25,9 @@ class OAuthViewModel: OAuthViewModelProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.confirmedBillingAgreement
     }
-    private var onTokenizeSuccess: PaymentMethodTokenCallBack {
+    private var authorizePayment: PaymentMethodTokenCallBack {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        return settings.onTokenizeSuccess
+        return settings.authorizePayment
     }
 
     deinit {
@@ -70,7 +70,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
             } else {
                 let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
 
-                switch Primer.shared.flow.uxMode {
+                switch Primer.shared.flow.internalSessionFlow.uxMode {
                 case .CHECKOUT:
                     paypalService.startOrderSession(completion)
                 case .VAULT:
@@ -97,7 +97,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
     }
 
     private func generatePaypalPaymentInstrument(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) -> PaymentInstrument? {
-        switch Primer.shared.flow.uxMode {
+        switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
             guard let id = orderId else { return nil }
             return PaymentInstrument(paypalOrderId: id)
@@ -124,14 +124,14 @@ class OAuthViewModel: OAuthViewModelProtocol {
             case .success(let token):
                 log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
-                switch Primer.shared.flow.uxMode {
+                switch Primer.shared.flow.internalSessionFlow.uxMode {
                 case .VAULT:
                     log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                     
                     completion(nil) // self?.onTokenizeSuccess(token, completion)
                 case .CHECKOUT:
                     log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                    self?.onTokenizeSuccess(token, completion)
+                    self?.authorizePayment(token, completion)
                 }
             }
         }
@@ -148,7 +148,7 @@ class OAuthViewModel: OAuthViewModelProtocol {
 
             let klarnaService: KlarnaServiceProtocol = DependencyContainer.resolve()
 
-            if Primer.shared.flow.vaulted {
+            if Primer.shared.flow.internalSessionFlow.vaulted {
                 // create customer token
                 klarnaService.createKlarnaCustomerToken { [weak self] (result) in
                     switch result {

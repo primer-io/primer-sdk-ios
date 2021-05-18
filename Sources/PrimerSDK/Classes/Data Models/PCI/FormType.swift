@@ -29,17 +29,22 @@ enum FormType {
 
     var textFields: [[FormTextFieldType]] {
         switch self {
-        case .bankAccount(let mandate, _): return [[.accountNumber(mandate.accountNumber)], [.sortCode(mandate.sortCode)]]
-        case .name(let mandate, _): return [[.firstName(mandate.firstName)], [.lastName(mandate.lastName)]]
-        case .iban(let mandate, _): return [[.iban(mandate.iban)]]
-        case .email(let mandate, _): return [[.email(mandate.email)]]
-        case .address(let mandate, _): return [
-            [.addressLine1(mandate.address?.addressLine1)],
-            [.addressLine2(mandate.address?.addressLine2)],
-            [.city(mandate.address?.city)],
-            [.postalCode(mandate.address?.postalCode)],
-            [.country(mandate.address?.countryCode)]
-        ]
+        case .bankAccount(let mandate, _):
+            return [[.accountNumber(mandate.accountNumber)], [.sortCode(mandate.sortCode)]]
+        case .name(let mandate, _):
+            return [[.firstName(mandate.firstName)], [.lastName(mandate.lastName)]]
+        case .iban(let mandate, _):
+            return [[.iban(mandate.iban)]]
+        case .email(let mandate, _):
+            return [[.email(mandate.email)]]
+        case .address(let mandate, _):
+            return [
+                [.addressLine1(mandate.address?.addressLine1)],
+                [.addressLine2(mandate.address?.addressLine2)],
+                [.city(mandate.address?.city)],
+                [.postalCode(mandate.address?.postalCode)],
+                [.country(mandate.address?.countryCode)]
+            ]
         case .cardForm(let theme):
             switch theme.textFieldTheme {
             case .doublelined:
@@ -105,19 +110,20 @@ enum FormType {
         }
     }
     
-    var mainTitleFont: String {
+    var mainTitle: String {
         switch self {
         case .bankAccount: return ""
         case .name: return ""
-        case .iban: return
-            NSLocalizedString("primer-form-type-main-title-sepa-direct-debit-mandate",
+        case .iban:
+            return NSLocalizedString("primer-form-type-main-title-sepa-direct-debit-mandate",
                               tableName: nil,
                               bundle: Bundle.primerResources,
                               value: "SEPA Direct Debit Mandate",
                               comment: "SEPA Direct Debit Mandate - Form Type Main Title (Direct Debit)")
         case .email: return ""
         case .address: return ""
-        case .cardForm: return ""
+        case .cardForm:
+            return ""
         }
     }
 

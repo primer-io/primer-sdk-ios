@@ -35,7 +35,6 @@
  */
 
 public enum PrimerSessionFlow {
-
     case `default`
     case defaultWithVault
     case completeDirectCheckout
@@ -46,49 +45,72 @@ public enum PrimerSessionFlow {
     case addDirectDebit
     case checkoutWithKlarna
 
+    internal var internalSessionFlow: PrimerInternalSessionFlow {
+        switch self {
+        case .default:
+            return .checkout
+        case .defaultWithVault:
+            return .vault
+        case .completeDirectCheckout:
+            return .checkoutWithCard
+        case .addPayPalToVault:
+            return .vaultPayPal
+        case .addCardToVault:
+            return .vaultCard
+        case .addDirectDebitToVault:
+            return .vaultDirectDebit
+        case .addKlarnaToVault:
+            return .vaultKlarna
+        case .addDirectDebit:
+            return .vaultDirectDebit
+        case .checkoutWithKlarna:
+            return .checkoutWithKlarna
+        }
+    }
+}
+
+internal enum PrimerInternalSessionFlow {
+
+    case vault
+    case checkout
+    case vaultCard
+    case checkoutWithCard
+    case vaultPayPal
+    case checkoutWithPayPal
+    case vaultDirectDebit
+    case vaultKlarna
+    case checkoutWithKlarna
+    
     var vaulted: Bool {
         switch self {
-        case .addCardToVault:
+        case .vault,
+             .vaultCard,
+             .vaultPayPal,
+             .vaultDirectDebit,
+             .vaultKlarna:
             return true
-        case .addPayPalToVault:
-            return true
-        case .default:
+        case .checkout,
+             .checkoutWithCard,
+             .checkoutWithPayPal,
+             .checkoutWithKlarna:
             return false
-        case .addDirectDebit:
-            return true
-        case .completeDirectCheckout:
-            return false
-        case .checkoutWithKlarna:
-            return false
-        case .addDirectDebitToVault:
-            return true
-        case .addKlarnaToVault:
-            return true
-        case .defaultWithVault:
-            return true
+        
         }
     }
 
     var uxMode: UXMode {
         switch self {
-        case .addCardToVault:
+        case .vault,
+             .vaultCard,
+             .vaultPayPal,
+             .vaultDirectDebit,
+             .vaultKlarna:
             return .VAULT
-        case .addPayPalToVault:
-            return .VAULT
-        case .default:
+        case .checkout,
+             .checkoutWithCard,
+             .checkoutWithPayPal,
+             .checkoutWithKlarna:
             return .CHECKOUT
-        case .addDirectDebit:
-            return .VAULT
-        case .completeDirectCheckout:
-            return .CHECKOUT
-        case .checkoutWithKlarna:
-            return .CHECKOUT
-        case .addDirectDebitToVault:
-            return .VAULT
-        case .addKlarnaToVault:
-            return .VAULT
-        case .defaultWithVault:
-            return .VAULT
         }
     }
 }
