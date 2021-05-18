@@ -205,7 +205,9 @@ extension ApplePayService: PKPaymentAuthorizationViewControllerDelegate {
             let applePayPaymentResponse = ApplePayPaymentResponse(
                 token: ApplePayPaymentResponseToken(
                     paymentMethod: ApplePayPaymentResponsePaymentMethod(
-                        displayName: payment.token.paymentMethod.displayName
+                        displayName: payment.token.paymentMethod.displayName,
+                        network: payment.token.paymentMethod.network?.rawValue,
+                        type: nil
                     ),
                     transactionIdentifier: payment.token.transactionIdentifier,
                     paymentData: tokenPaymentData

@@ -28,8 +28,8 @@ struct ApplePayPaymentResponseToken: Codable {
 
 struct ApplePayPaymentResponsePaymentMethod: Codable {
     let displayName: String?
-//    let network: String
-//    let type: String
+    let network: String?
+    let type: String?
 }
 
 struct ApplePayPaymentResponseTokenPaymentData: Codable {
