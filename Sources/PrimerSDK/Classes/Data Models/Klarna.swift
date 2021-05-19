@@ -13,9 +13,9 @@ public enum KlarnaSessionType: String, Codable {
 }
 
 struct KlarnaLocaleData: Codable {
-    let countryCode: String
-    let currencyCode: String
-    let localeCode: String
+    let countryCode: String?
+    let currencyCode: String?
+    let localeCode: String?
 }
 
 // MARK: CREATE PAYMENT SESSION DATA MODELS
@@ -23,7 +23,7 @@ struct KlarnaLocaleData: Codable {
 struct KlarnaCreatePaymentSessionAPIRequest: Codable {
     let paymentMethodConfigId: String
     let sessionType: KlarnaSessionType
-    let localeData: KlarnaLocaleData
+    var localeData: KlarnaLocaleData?
     let description: String?
     let redirectUrl: String?
     let totalAmount: Int?
