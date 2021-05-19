@@ -264,7 +264,7 @@ extension ApplePayService: PKPaymentAuthorizationViewControllerDelegate {
                     paymentMethod: ApplePayPaymentResponsePaymentMethod(
                         displayName: payment.token.paymentMethod.displayName,
                         network: payment.token.paymentMethod.network?.rawValue,
-                        type: nil
+                        type: payment.token.paymentMethod.type.primerValue
                     ),
                     transactionIdentifier: payment.token.transactionIdentifier,
                     paymentData: tokenPaymentData
@@ -277,6 +277,23 @@ extension ApplePayService: PKPaymentAuthorizationViewControllerDelegate {
         } catch {
             applePayCompletion?(.failure(error))
             applePayCompletion = nil
+        }
+    }
+    
+}
+
+extension PKPaymentMethodType {
+    
+    var primerValue: String? {
+        switch self {
+        case .credit:
+            return "credit"
+        case .debit:
+            return "debit"
+        case .prepaid:
+            return "prepaid"
+        default:
+            return nil
         }
     }
     
