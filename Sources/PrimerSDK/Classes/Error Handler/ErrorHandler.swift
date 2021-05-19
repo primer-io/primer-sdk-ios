@@ -71,6 +71,10 @@ class ErrorHandler {
                 break
             case .userCancelled:
                 break
+            case .amountCannotBeNullForNonPendingOrderItems:
+                break
+            case .amountShouldBeNullForPendingOrderItems:
+                break
             }
 
         } else if let klarnaException = error as? KlarnaException {
