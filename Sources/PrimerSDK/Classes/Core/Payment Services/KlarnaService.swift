@@ -36,14 +36,6 @@ class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.undefinedSessionType))
         }
         
-        guard let countryCode = settings.countryCode else {
-            return completion(.failure(KlarnaException.noCountryCode))
-        }
-        
-        guard let currency = settings.currency else {
-            return completion(.failure(KlarnaException.noCurrency))
-        }
-        
         var amount = settings.amount
         if amount == nil && Primer.shared.flow == .checkoutWithKlarna {
             return completion(.failure(KlarnaException.noAmount))
@@ -74,18 +66,30 @@ class KlarnaService: KlarnaServiceProtocol {
             amount = nil
         }
         
-        let body = KlarnaCreatePaymentSessionAPIRequest(
-            paymentMethodConfigId: configId,
-            sessionType: klarnaSessionType,
-            localeData: KlarnaLocaleData(
-                countryCode: countryCode.rawValue,
-                currencyCode: currency.rawValue,
-                localeCode: countryCode.klarnaLocaleCode),
-            description: klarnaSessionType == .recurringPayment ? settings.klarnaPaymentDescription : nil,
-            redirectUrl: "https://primer.io/success",
-            totalAmount: amount,
-            orderItems: orderItems)
-
+        var body: KlarnaCreatePaymentSessionAPIRequest
+        
+        if settings.countryCode != nil || settings.currency != nil {
+            body = KlarnaCreatePaymentSessionAPIRequest(
+                paymentMethodConfigId: configId,
+                sessionType: klarnaSessionType,
+                localeData: KlarnaLocaleData(
+                    countryCode: settings.countryCode?.rawValue,
+                    currencyCode: settings.currency?.rawValue,
+                    localeCode: settings.countryCode?.klarnaLocaleCode),
+                description: klarnaSessionType == .recurringPayment ? settings.klarnaPaymentDescription : nil,
+                redirectUrl: "https://primer.io/success",
+                totalAmount: amount,
+                orderItems: orderItems)
+        } else {
+            body = KlarnaCreatePaymentSessionAPIRequest(
+                paymentMethodConfigId: configId,
+                sessionType: klarnaSessionType,
+                description: klarnaSessionType == .recurringPayment ? settings.klarnaPaymentDescription : nil,
+                redirectUrl: "https://primer.io/success",
+                totalAmount: amount,
+                orderItems: orderItems)
+        }
+        
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "createPaymentSession")
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
