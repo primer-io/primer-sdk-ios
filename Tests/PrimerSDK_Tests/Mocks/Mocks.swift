@@ -29,7 +29,7 @@ var mockSettings = PrimerSettings(
     applePayEnabled: false,
     urlScheme: "urlScheme",
     urlSchemeIdentifier: "urlSchemeIdentifier",
-    orderItems: [OrderItem(name: "foo", unitAmount: 200, quantity: 1)]
+    orderItems: [try! OrderItem(name: "foo", unitAmount: 200, quantity: 1)]
 )
 
 class MockPrimerDelegate: PrimerDelegate {
