@@ -51,9 +51,7 @@ class MerchantCheckoutViewController: UIViewController {
                 postalCode: "75001"
             )
         ),
-        supportedNetworks: [.masterCard, .visa],
-        merchantCapabilities: [.capability3DS]
-        orderItems: [try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 1, isPending: true)],
+        orderItems: [try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 1, isPending: true)]
     )
     
     override func viewDidLoad() {
@@ -111,9 +109,7 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func addCardButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
-    
-    var klarnaNumberOfTimesPresented = 0
-    
+        
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
     }

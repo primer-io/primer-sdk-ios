@@ -11,9 +11,9 @@ struct ApplePayRequest {
     var currency: Currency
     var merchantIdentifier: String
     var countryCode: CountryCode
-    var supportedNetworks: [PaymentNetwork]
+//    var supportedNetworks: [PaymentNetwork]
     var items: [OrderItem]
-    var merchantCapabilities: [MerchantCapability]
+//    var merchantCapabilities: [MerchantCapability]
 }
 
 struct ApplePayPaymentResponse {
