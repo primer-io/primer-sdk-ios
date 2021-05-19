@@ -119,7 +119,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: "customer123")
+        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: nil)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
