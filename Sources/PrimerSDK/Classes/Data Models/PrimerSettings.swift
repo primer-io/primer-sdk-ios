@@ -23,8 +23,8 @@ protocol PrimerSettingsProtocol {
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
     var orderItems: [OrderItem] { get }
-    var supportedNetworks: [PaymentNetwork]? { get }
-    var merchantCapabilities: [MerchantCapability]? { get }
+//    var supportedNetworks: [PaymentNetwork]? { get }
+//    var merchantCapabilities: [MerchantCapability]? { get }
     var isInitialLoadingHidden: Bool { get }
 }
 
@@ -67,8 +67,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var businessDetails: BusinessDetails?
     internal(set) public var directDebitHasNoAmount: Bool
     internal(set) public var orderItems: [OrderItem]
-    internal(set) public var supportedNetworks: [PaymentNetwork]?
-    internal(set) public var merchantCapabilities: [MerchantCapability]?
+//    internal(set) public var supportedNetworks: [PaymentNetwork]?
+//    internal(set) public var merchantCapabilities: [MerchantCapability]?
     internal(set) public var isInitialLoadingHidden: Bool
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
@@ -103,8 +103,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         businessDetails: BusinessDetails? = nil,
         directDebitHasNoAmount: Bool = false,
         orderItems: [OrderItem] = [],
-        supportedNetworks: [PaymentNetwork]? = nil,
-        merchantCapabilities: [MerchantCapability]? = nil,
+//        supportedNetworks: [PaymentNetwork]? = nil,
+//        merchantCapabilities: [MerchantCapability]? = nil,
         isInitialLoadingHidden: Bool = false
     ) {
         self.amount = amount
@@ -122,8 +122,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.businessDetails = businessDetails
         self.directDebitHasNoAmount = directDebitHasNoAmount
         self.orderItems = orderItems
-        self.supportedNetworks = supportedNetworks
-        self.merchantCapabilities = merchantCapabilities
+//        self.supportedNetworks = supportedNetworks
+//        self.merchantCapabilities = merchantCapabilities
         self.isInitialLoadingHidden = isInitialLoadingHidden
     }
 }
