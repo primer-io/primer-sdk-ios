@@ -3,7 +3,7 @@
 struct PaymentMethodTokenizationRequest: Encodable {
     
     let paymentInstrument: PaymentInstrument
-    let tokenType: TokenType?
+    let tokenType: TokenType
     let paymentFlow: PaymentFlow?
     let customerId: String?
 
