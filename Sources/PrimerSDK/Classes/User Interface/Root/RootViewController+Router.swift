@@ -74,7 +74,7 @@ fileprivate extension RootViewController {
     func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        UIView.animate(withDuration: 0.25, animations: {[weak self] in
+        UIView.animate(withDuration: 0.25, animations: { [weak self] in
             guard let strongSelf = self else { return }
 
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
