@@ -235,6 +235,8 @@ enum PrimerError: PrimerErrorProtocol {
     case failedToLoadSession
     case missingURLScheme
     case userCancelled
+    case amountShouldBeNullForPendingOrderItems
+    case amountCannotBeNullForNonPendingOrderItems
 
     static var errorDomain: String = "primer"
 
@@ -364,6 +366,20 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "User cancelled",
                                      comment: "User cancelled. - Primer error message")
+            
+        case .amountShouldBeNullForPendingOrderItems:
+            return NSLocalizedString("primer-error-message-amount-should-be-null-for-pending-order-items",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Amount should be null for order items with isPending == true",
+                                     comment: "Amount should be null for order items with isPending == true - Primer error message")
+            
+        case .amountCannotBeNullForNonPendingOrderItems:
+            return NSLocalizedString("primer-error-message-amount-cannot-be-null-for-non-pending-order-items",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Amount cannot be null for order items with isPending == false",
+                                     comment: "Amount cannot be null for order items with isPending == false - Primer error message")
         }
     }
 
