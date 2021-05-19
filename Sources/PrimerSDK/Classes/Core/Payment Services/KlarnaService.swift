@@ -65,6 +65,10 @@ class KlarnaService: KlarnaServiceProtocol {
                 return completion(.failure(KlarnaException.missingOrderItems))
             }
             
+            if settings.orderItems.filter({ $0.unitAmount == nil }).isEmpty {
+                return completion(.failure(KlarnaException.orderItemMissesAmount))
+            }
+            
             orderItems = settings.orderItems
 
             log(logLevel: .info, message: "Klarna amount: \(amount!) \(settings.currency!.rawValue)")

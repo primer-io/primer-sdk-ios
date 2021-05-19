@@ -25,6 +25,7 @@ enum KlarnaException: PrimerErrorProtocol {
     case noCountryCode
     case noPaymentMethodConfigId
     case missingOrderItems
+    case orderItemMissesAmount
 
     static var errorDomain: String = "primer.klarna"
 
@@ -114,6 +115,13 @@ enum KlarnaException: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Failed to find Klarna order items",
                                      comment: "Failed to find Klarna order items - Error message")
+            
+        case .orderItemMissesAmount:
+            return NSLocalizedString("primer-klarna-error-message-missing-order-item-amount",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Failed to find amount for an order item",
+                                     comment: "Failed to find amount for an order item - Error message")
         }
     }
 

@@ -95,6 +95,8 @@ class ErrorHandler {
                 break
             case .missingOrderItems:
                 break
+            case .orderItemMissesAmount:
+                break
             }
 
         } else {

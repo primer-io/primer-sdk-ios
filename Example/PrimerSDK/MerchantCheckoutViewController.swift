@@ -51,9 +51,9 @@ class MerchantCheckoutViewController: UIViewController {
                 postalCode: "75001"
             )
         ),
-        orderItems: [OrderItem(name: "Shoes", unitAmount: 1, quantity: 1)],
         supportedNetworks: [.masterCard, .visa],
         merchantCapabilities: [.capability3DS]
+        orderItems: [try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 1, isPending: true)],
     )
     
     override func viewDidLoad() {
