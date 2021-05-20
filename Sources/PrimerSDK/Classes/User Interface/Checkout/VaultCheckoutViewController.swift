@@ -103,7 +103,18 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
 
         switch option.type {
         case .applePay:
-            router.show(.applePay)
+            let router: RouterDelegate = DependencyContainer.resolve()
+            let rvc = router.root
+            rvc?.dismiss(animated: true, completion: {
+                DispatchQueue.main.async { [weak self] in
+                    let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
+                    appleViewModel.payWithApple { (err) in
+                        if let err = err {
+                            print(err)
+                        }
+                    }
+                }
+            })
         case .googlePay:
             break
         case .paymentCard:
