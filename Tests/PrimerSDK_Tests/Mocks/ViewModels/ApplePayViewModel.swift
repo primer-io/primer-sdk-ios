@@ -10,8 +10,19 @@
 @testable import PrimerSDK
 
 class MockApplePayViewModel: ApplePayViewModelProtocol {
-    var amount: Int? { return 200 }
-
+    
+    var orderItems: [OrderItem] { return [] }
+    
+    var clientToken: DecodedClientToken?
+    
+    var isVaulted: Bool { return false }
+    
+    var uxMode: UXMode { return .CHECKOUT }
+    
+    func payWithApple(completion: @escaping (Error?) -> Void) {
+        
+    }
+    
     var applePayConfigId: String? { return "applePayConfigId" }
 
     var currency: Currency? { return .EUR }
