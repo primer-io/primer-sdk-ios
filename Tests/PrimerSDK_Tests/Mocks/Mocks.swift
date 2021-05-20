@@ -227,6 +227,8 @@ class MockDirectDebitService: DirectDebitServiceProtocol {
 }
 
 class MockRouter: RouterDelegate {
+    var root: RootViewController?
+    
     func setRoot(_ root: RootViewController) {
 
     }
