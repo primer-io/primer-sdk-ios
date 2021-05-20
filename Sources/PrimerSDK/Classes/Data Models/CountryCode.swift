@@ -536,7 +536,8 @@ extension CountryCode {
             return "es-ES"
         case .it:
             return "it-IT"
-        default: return "n/a"
+        default:
+            return "n/a"
         }
     }
 
