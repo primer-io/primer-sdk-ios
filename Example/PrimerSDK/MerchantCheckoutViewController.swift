@@ -190,6 +190,15 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         } catch {
             return completion(NetworkError.missingParams)
         }
+        
+        callApi(request) { (result) in
+            switch result {
+            case .success(let data):
+                completion(nil)
+            case .failure(let err):
+                completion(nil)
+            }
+        }
 
         completion(nil)
     }
