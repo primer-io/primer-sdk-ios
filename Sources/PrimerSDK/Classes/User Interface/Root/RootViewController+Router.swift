@@ -10,6 +10,7 @@
 import UIKit
 
 protocol RouterDelegate: class {
+    var root: RootViewController? { get }
     func setRoot(_ root: RootViewController)
     func show(_ route: Route)
     func pop()
