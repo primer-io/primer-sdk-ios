@@ -124,7 +124,11 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showCheckout(self, flow: .checkoutWithApplePay)
     }
     
-    @IBAction func openWalletButtonTapped(_ sender: Any) {
+    @IBAction func openVaultButtonTapped(_ sender: Any) {
+        Primer.shared.showCheckout(self, flow: .defaultWithVault)
+    }
+    
+    @IBAction func openUniversalCheckoutTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .default)
     }
     
