@@ -72,10 +72,7 @@ class KlarnaService: KlarnaServiceProtocol {
             body = KlarnaCreatePaymentSessionAPIRequest(
                 paymentMethodConfigId: configId,
                 sessionType: klarnaSessionType,
-                localeData: KlarnaLocaleData(
-                    countryCode: settings.countryCode?.rawValue,
-                    currencyCode: settings.currency?.rawValue,
-                    localeCode: settings.countryCode?.klarnaLocaleCode),
+                localeData: settings.localeData,
                 description: klarnaSessionType == .recurringPayment ? settings.klarnaPaymentDescription : nil,
                 redirectUrl: "https://primer.io/success",
                 totalAmount: amount,
@@ -84,6 +81,7 @@ class KlarnaService: KlarnaServiceProtocol {
             body = KlarnaCreatePaymentSessionAPIRequest(
                 paymentMethodConfigId: configId,
                 sessionType: klarnaSessionType,
+                localeData: settings.localeData,
                 description: klarnaSessionType == .recurringPayment ? settings.klarnaPaymentDescription : nil,
                 redirectUrl: "https://primer.io/success",
                 totalAmount: amount,
@@ -117,9 +115,7 @@ class KlarnaService: KlarnaServiceProtocol {
 
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
               let authorizationToken = state.authorizationToken,
-              let sessionId = state.sessionId,
-              let countryCode = settings.countryCode,
-              let currency = settings.currency else {
+              let sessionId = state.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
@@ -128,11 +124,7 @@ class KlarnaService: KlarnaServiceProtocol {
             sessionId: sessionId,
             authorizationToken: authorizationToken,
             description: settings.klarnaPaymentDescription,
-            localeData: KlarnaLocaleData(
-                countryCode: countryCode.rawValue,
-                currencyCode: currency.rawValue,
-                localeCode: countryCode.klarnaLocaleCode
-            )
+            localeData: settings.localeData
         )
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
