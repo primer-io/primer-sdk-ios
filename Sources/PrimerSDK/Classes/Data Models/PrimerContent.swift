@@ -107,11 +107,21 @@ struct VaultCheckoutViewContent {
 }
 
 struct VaultPaymentMethodViewContent {
-    var mainTitleText: String { return NSLocalizedString("primer-vault-payment-method-saved-payment-methods",
-                                                         tableName: nil,
-                                                         bundle: Bundle.primerResources,
-                                                         value: "Saved payment methods",
-                                                         comment: "Saved payment methods - Vault Payment Method (Main title text)") }
+    var mainTitleText: String {
+        if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
+            return NSLocalizedString("primer-vault-payment-method-available-payment-methods",
+                                                             tableName: nil,
+                                                             bundle: Bundle.primerResources,
+                                                             value: "Available payment methods",
+                                                             comment: "Available payment methods - Vault Payment Method (Main title text)")
+        } else {
+            return NSLocalizedString("primer-vault-payment-method-saved-payment-methods",
+                                                             tableName: nil,
+                                                             bundle: Bundle.primerResources,
+                                                             value: "Saved payment methods",
+                                                             comment: "Saved payment methods - Vault Payment Method (Main title text)")
+        }
+    }
 
     var editButtonText: String { return NSLocalizedString("primer-vault-payment-method-edit",
                                                           tableName: nil,

@@ -48,9 +48,9 @@ class RootViewController: UIViewController {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
-        switch Primer.shared.flow {
-        case .addKlarnaToVault,
-             .addPayPalToVault,
+        switch Primer.shared.flow.internalSessionFlow {
+        case .vaultKlarna,
+             .vaultPayPal,
              .checkoutWithKlarna:
             mainView.backgroundColor = settings.isInitialLoadingHidden ? .clear : theme.colorTheme.main1
         default:
@@ -110,16 +110,15 @@ class RootViewController: UIViewController {
         let router: RouterDelegate = DependencyContainer.resolve()
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
-        switch Primer.shared.flow {
-        case .completeDirectCheckout:
+        switch Primer.shared.flow.internalSessionFlow {
+        case .checkout:
             router.show(.vaultCheckout)
-        case .default:
-            router.show(.vaultCheckout)
-        case .addCardToVault:
+        case .vaultCard, .checkoutWithCard:
             router.show(.form(type: .cardForm(theme: theme)))
-        case .addPayPalToVault:
+        case .vaultPayPal,
+             .checkoutWithPayPal:
             router.show(.oAuth(host: .paypal))
-        case .addDirectDebit:
+        case .vaultDirectDebit:
             router.show(
                 .form(
                     type: .iban(mandate: state.directDebitMandate, popOnComplete: true),
@@ -127,20 +126,12 @@ class RootViewController: UIViewController {
             )
         case .checkoutWithKlarna:
             router.show(.oAuth(host: .klarna))
-        case .addDirectDebitToVault:
-            router.show(
-                .form(
-                    type: .iban(mandate: state.directDebitMandate, popOnComplete: true),
-                    closeOnSubmit: false)
-            )
-        case .addKlarnaToVault:
+        case .vaultKlarna:
             router.show(.oAuth(host: .klarna))
-        case .defaultWithVault:
+        case .vault:
             router.show(.vaultCheckout)
-        case .addApplePay:
-            router.show(.oAuth(host: .applePay))
-        case .payWithApplePay:
-            router.show(.oAuth(host: .applePay))
+        case .checkoutWithApplePay:
+            break
         }
     }
     

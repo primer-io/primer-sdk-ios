@@ -42,10 +42,10 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
         return state.decodedClientToken
     }
     var isVaulted: Bool {
-        return Primer.shared.flow.vaulted
+        return Primer.shared.flow.internalSessionFlow.vaulted
     }
     var uxMode: UXMode {
-        return Primer.shared.flow.uxMode
+        return Primer.shared.flow.internalSessionFlow.uxMode
     }
     
     private var applePayCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?

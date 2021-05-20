@@ -10,7 +10,13 @@
 @testable import PrimerSDK
 
 class MockApplePayViewModel: ApplePayViewModelProtocol {
+    var amount: Int?
     
+    func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
+        
+    }
+    
+        
     var orderItems: [OrderItem] { return [] }
     
     var clientToken: DecodedClientToken?
@@ -33,9 +39,6 @@ class MockApplePayViewModel: ApplePayViewModelProtocol {
 
     var calledTokenize = false
 
-    func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
-        calledTokenize = true
-    }
 }
 
 #endif
