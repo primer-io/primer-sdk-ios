@@ -52,6 +52,7 @@ public class Primer {
         DependencyContainer.register(DirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(KlarnaService() as KlarnaServiceProtocol)
         DependencyContainer.register(ApplePayService() as ApplePayServiceProtocol)
+        DependencyContainer.register(ApplePayViewModel() as ApplePayViewModelProtocol)
         DependencyContainer.register(CardScannerViewModel() as CardScannerViewModelProtocol)
         DependencyContainer.register(DirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
         DependencyContainer.register(OAuthViewModel() as OAuthViewModelProtocol)
@@ -155,12 +156,9 @@ public class Primer {
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
         DispatchQueue.main.async { [weak self] in
             if case .payWithApplePay = flow {
-                let appleService: ApplePayServiceProtocol = DependencyContainer.resolve()
-                appleService.payWithApple { (result) in
-                    switch result {
-                    case .success(let response):
-                        print(response)
-                    case .failure(let err):
+                let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
+                appleViewModel.payWithApple { (err) in
+                    if let err = err {
                         print(err)
                     }
                 }
