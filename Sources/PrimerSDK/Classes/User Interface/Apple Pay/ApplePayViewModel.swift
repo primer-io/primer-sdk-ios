@@ -54,6 +54,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
+    // swiftlint:disable cyclomatic_complexity
     func payWithApple(completion: @escaping (Error?) -> Void) {
         guard let countryCode = countryCode else {
             return completion(PaymentException.missingCountryCode)
@@ -173,9 +174,27 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                 token: applePayPaymentResponse.token,
                                 sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
                             )
-
-                            applePayService.tokenize(instrument: instrument) { (err) in
-                                completion(err)
+                            
+                            applePayService.tokenize(instrument: instrument) { [weak self] (result) in
+                                switch result {
+                                case .failure(let err):
+                                    ErrorHandler.shared.handle(error: err)
+                                    DispatchQueue.main.async {
+                                        Primer.shared.delegate?.checkoutFailed(with: err)
+                                    }
+                                    completion(err)
+                                    
+                                case .success(let token):
+                                    DispatchQueue.main.async {
+                                        if Primer.shared.flow.internalSessionFlow.vaulted {
+                                            Primer.shared.delegate?.tokenAddedToVault(token)
+                                            completion(nil)
+                                        } else {
+                                            //settings.onTokenizeSuccess(token, completion)
+                                            Primer.shared.delegate?.authorizePayment(token, completion)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -191,34 +210,8 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
             log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
             return completion(AppleException.unableToMakePaymentsOnProvidedNetworks)
         }
-        
-        
-        
-        
-        
-        
-        
-        
-//        let state: AppStateProtocol = DependencyContainer.resolve()
-//        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
-//
-//        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-//        let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
-//        tokenizationService.tokenize(request: request) { [weak self] result in
-//            switch result {
-//            case .failure(let error):
-//                ErrorHandler.shared.handle(error: error)
-//                completion(error)
-//            case .success(let token):
-//                switch Primer.shared.flow {
-//                case .completeDirectCheckout:
-//                    settings.onTokenizeSuccess(token, completion)
-//                default:
-//                    completion(nil)
-//                }
-//            }
-//        }
     }
+    // swiftlint:enable cyclomatic_complexity
 }
 
 extension ApplePayViewModel: PKPaymentAuthorizationViewControllerDelegate {

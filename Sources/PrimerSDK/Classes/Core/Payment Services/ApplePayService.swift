@@ -9,7 +9,7 @@ import Foundation
 
 
 protocol ApplePayServiceProtocol {
-    func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void)
+    func tokenize(instrument: PaymentInstrument, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void)
     func fetchConfig(_ completion: @escaping (Error?) -> Void)
 }
 
@@ -66,30 +66,17 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
         }
     }
     
-    func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
+    func tokenize(instrument: PaymentInstrument, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
         let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
-        tokenizationService.tokenize(request: request) { [weak self] result in
+        tokenizationService.tokenize(request: request) { (result) in
             switch result {
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                DispatchQueue.main.async {
-                    Primer.shared.delegate?.checkoutFailed(with: error)
-                }
-                completion(error)
+            case .failure(let err):
+                completion(.failure(err))
             case .success(let token):
-                DispatchQueue.main.async {
-                    if Primer.shared.flow.internalSessionFlow.vaulted {
-                        Primer.shared.delegate?.tokenAddedToVault(token)
-                    } else {
-                        //settings.onTokenizeSuccess(token, completion)
-                        Primer.shared.delegate?.authorizePayment(token, completion)
-                    }
-                }
-                completion(nil)
+                completion(.success(token))
             }
         }
     }
