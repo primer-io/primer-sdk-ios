@@ -14,7 +14,7 @@ protocol PrimerSettingsProtocol {
     var klarnaPaymentDescription: String? { get }
     var customerId: String? { get }
     var clientTokenRequestCallback: ClientTokenCallBack { get }
-    var onTokenizeSuccess: PaymentMethodTokenCallBack { get }
+    var authorizePayment: PaymentMethodTokenCallBack { get }
     var onCheckoutDismiss: CheckoutDismissalCallback { get }
     var urlScheme: String? { get }
     var urlSchemeIdentifier: String? { get }
@@ -26,6 +26,7 @@ protocol PrimerSettingsProtocol {
 //    var supportedNetworks: [PaymentNetwork]? { get }
 //    var merchantCapabilities: [MerchantCapability]? { get }
     var isInitialLoadingHidden: Bool { get }
+    var localeData: LocaleData { get }
 }
 
 /**
@@ -70,12 +71,13 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //    internal(set) public var supportedNetworks: [PaymentNetwork]?
 //    internal(set) public var merchantCapabilities: [MerchantCapability]?
     internal(set) public var isInitialLoadingHidden: Bool
+    internal(set) public var localeData: LocaleData
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
     }
 
-    public var onTokenizeSuccess: PaymentMethodTokenCallBack {
+    internal var authorizePayment: PaymentMethodTokenCallBack {
         return Primer.shared.delegate?.authorizePayment ?? { _, _ in }
     }
 
@@ -105,7 +107,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         orderItems: [OrderItem] = [],
 //        supportedNetworks: [PaymentNetwork]? = nil,
 //        merchantCapabilities: [MerchantCapability]? = nil,
-        isInitialLoadingHidden: Bool = false
+        isInitialLoadingHidden: Bool = false,
+        localeData: LocaleData? = nil
     ) {
         self.amount = amount
         self.currency = currency
@@ -125,6 +128,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //        self.supportedNetworks = supportedNetworks
 //        self.merchantCapabilities = merchantCapabilities
         self.isInitialLoadingHidden = isInitialLoadingHidden
+        self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
     }
 }
 

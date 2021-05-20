@@ -93,7 +93,7 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         }) else { return }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        settings.onTokenizeSuccess(selectedToken, completion)
+        settings.authorizePayment(selectedToken, completion)
     }
 
 }

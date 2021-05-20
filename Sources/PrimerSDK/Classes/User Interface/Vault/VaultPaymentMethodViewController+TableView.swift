@@ -37,16 +37,34 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
             guard let methodId = viewModel.paymentMethods[indexPath.row].token else { return }
 
             let alert = AlertController(
-                title: "Confirmation",
-                message: "Are you sure you want to delete this payment method?",
+                title: NSLocalizedString("primer-delete-alert-title",
+                                         tableName: nil,
+                                         bundle: Bundle.primerResources,
+                                         value: "Do you want to delete this payment method?",
+                                         comment: "Do you want to delete this payment method? - Delete alert title"),
+                message: "",
                 preferredStyle: .alert
             )
 
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(
+                                title: NSLocalizedString("primer-alert-button-cancel",
+                                                         tableName: nil,
+                                                         bundle: Bundle.primerResources,
+                                                         value: "Cancel",
+                                                         comment: "Cancel - Alert button cancel"),
+                                style: .cancel,
+                                handler: nil))
 
-            alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
-                self?.deletePaymentMethod(methodId)
-            }))
+            alert.addAction(UIAlertAction(
+                                title: NSLocalizedString("primer-alert-button-delete",
+                                                         tableName: nil,
+                                                         bundle: Bundle.primerResources,
+                                                         value: "Delete",
+                                                         comment: "Delete - Alert button delete"),
+                                style: .destructive,
+                                handler: { [weak self] _ in
+                                    self?.deletePaymentMethod(methodId)
+                                }))
 
             alert.show()
         }

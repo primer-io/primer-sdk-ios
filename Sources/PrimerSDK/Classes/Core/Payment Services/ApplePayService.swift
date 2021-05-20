@@ -82,7 +82,7 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
                 completion(error)
             case .success(let token):
                 DispatchQueue.main.async {
-                    if Primer.shared.flow.vaulted {
+                    if Primer.shared.flow.internalSessionFlow.vaulted {
                         Primer.shared.delegate?.tokenAddedToVault(token)
                     } else {
                         //settings.onTokenizeSuccess(token, completion)

@@ -12,10 +12,23 @@ public enum KlarnaSessionType: String, Codable {
     case recurringPayment = "RECURRING_PAYMENT"
 }
 
-struct KlarnaLocaleData: Codable {
-    let countryCode: String
-    let currencyCode: String
-    let localeCode: String
+public struct LocaleData: Codable {
+    let languageCode: String?
+    var localeCode: String?
+    let regionCode: String?
+    
+    public init(languageCode: String?, regionCode: String?) {
+        self.languageCode = languageCode ?? Locale.current.languageCode
+        self.regionCode = regionCode ?? Locale.current.regionCode
+        
+        if let languageCode = self.languageCode {
+            if let regionCode = self.regionCode {
+                self.localeCode = "\(languageCode)-\(regionCode)"
+            } else {
+                self.localeCode = "\(languageCode)"
+            }
+        }
+    }
 }
 
 // MARK: CREATE PAYMENT SESSION DATA MODELS
@@ -23,7 +36,7 @@ struct KlarnaLocaleData: Codable {
 struct KlarnaCreatePaymentSessionAPIRequest: Codable {
     let paymentMethodConfigId: String
     let sessionType: KlarnaSessionType
-    let localeData: KlarnaLocaleData
+    var localeData: LocaleData?
     let description: String?
     let redirectUrl: String?
     let totalAmount: Int?
@@ -48,7 +61,7 @@ struct CreateKlarnaCustomerTokenAPIRequest: Codable {
     let sessionId: String
     let authorizationToken: String
     let description: String?
-    let localeData: KlarnaLocaleData
+    let localeData: LocaleData
 }
 
 struct KlarnaCustomerTokenAPIResponse: Codable {

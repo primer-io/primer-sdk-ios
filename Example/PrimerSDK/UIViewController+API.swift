@@ -30,6 +30,13 @@ enum NetworkError: Error {
 extension UIViewController {
 
     func callApi(_ req: URLRequest, completion: @escaping (_ result: Result<Data, Error>) -> Void) {
+        print("URL: \(req.url?.absoluteString)")
+        print("Headers:\n\(req.allHTTPHeaderFields)")
+        
+        if let body = req.httpBody, let json = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
+            print("Body:\n\(json)")
+        }
+        
         URLSession.shared.dataTask(with: req, completionHandler: { (data, response, err) in
 
             if err != nil {

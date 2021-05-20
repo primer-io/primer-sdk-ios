@@ -28,8 +28,6 @@ class MerchantCheckoutViewController: UIViewController {
     )
     
     let vaultKlarnaSettings = PrimerSettings(
-        currency: .SEK,
-        countryCode: .se,
         klarnaSessionType: .recurringPayment,
         hasDisabledSuccessScreen: true,
         isInitialLoadingHidden: true
@@ -53,6 +51,25 @@ class MerchantCheckoutViewController: UIViewController {
         ),
         orderItems: [try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 1, isPending: true)]
     )
+
+    let generalSettings = PrimerSettings(
+        merchantIdentifier: "general-settings",
+        customerId: "my-customer",
+        amount: 100,
+        currency: .EUR,
+        countryCode: .fr,
+        applePayEnabled: false,
+        klarnaSessionType: .recurringPayment,
+        klarnaPaymentDescription: nil,
+        urlScheme: "primer.io://",
+        urlSchemeIdentifier: "primer",
+        isFullScreenOnly: false,
+        hasDisabledSuccessScreen: false,
+        businessDetails: nil,
+        directDebitHasNoAmount: false,
+        orderItems: [],
+        isInitialLoadingHidden: false
+    )
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,44 +81,25 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-//        let settings = PrimerSettings(
-//            merchantIdentifier: "merchant.primer.dev.evangelos",
-//            customerId: nil,
-//            amount: nil,
-//            currency: .EUR,
-//            countryCode: .fr,
-//            applePayEnabled: false,
-//            klarnaSessionType: nil,
-//            klarnaPaymentDescription: nil,
-//            urlScheme: nil,
-//            urlSchemeIdentifier: nil,
-//            isFullScreenOnly: true,
-//            hasDisabledSuccessScreen: false,
-//            businessDetails: generateBusinessDetails(),
-//            directDebitHasNoAmount: false,
-//            orderItems: [OrderItem(name: "Shoes", unitAmount: 9999, quantity: 1)],
-//            supportedNetworks: [.masterCard, .visa],
-//            merchantCapabilities: [.capability3DS]
-//        )
         Primer.shared.configure(settings: applePaySettings)
         
-        let theme = generatePrimerTheme()
-        Primer.shared.configure(theme: theme)
+       let theme = generatePrimerTheme()
+       Primer.shared.configure(theme: theme)
 
-        Primer.shared.setDirectDebitDetails(
-            firstName: "John",
-            lastName: "Doe",
-            email: "test@mail.com",
-            iban: "FR1420041010050500013M02606",
-            address: Address(
-                addressLine1: "1 Rue",
-                addressLine2: "",
-                city: "Paris",
-                state: "",
-                countryCode: "FR",
-                postalCode: "75001"
-            )
-        )
+       Primer.shared.setDirectDebitDetails(
+           firstName: "John",
+           lastName: "Doe",
+           email: "test@mail.com",
+           iban: "FR1420041010050500013M02606",
+           address: Address(
+               addressLine1: "1 Rue",
+               addressLine2: "",
+               city: "Paris",
+               state: "",
+               countryCode: "FR",
+               postalCode: "75001"
+           )
+       )
     }
 
     // MARK: - ACTIONS
@@ -109,7 +107,11 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func addCardButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
-        
+    
+    @IBAction func addPayPalButtonTapped(_ sender: Any) {
+        Primer.shared.showCheckout(self, flow: .addPayPalToVault)
+    }
+    
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
     }
@@ -119,7 +121,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .payWithApplePay)
+        Primer.shared.showCheckout(self, flow: .checkoutWithApplePay)
     }
     
     @IBAction func openWalletButtonTapped(_ sender: Any) {
@@ -140,7 +142,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: "customer123")
+        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: nil)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

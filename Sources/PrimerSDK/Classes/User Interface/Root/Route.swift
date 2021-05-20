@@ -53,7 +53,7 @@ enum Route {
                 return nil
             }
         case .applePay:
-            return ApplePayViewController()
+            return nil
         case .success(let screenType):
             let vc = SuccessViewController()
             vc.screenType = screenType
@@ -75,7 +75,7 @@ enum Route {
         #if canImport(CardScan)
         case .cardScanner:  return 420
         #endif
-        case .vaultCheckout:  return 400
+        case .vaultCheckout:  return 250
         case .vaultPaymentMethods:  return 320
         case .oAuth:  return 400
         case .applePay:  return 400

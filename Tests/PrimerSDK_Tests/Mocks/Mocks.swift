@@ -76,6 +76,8 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
+    
     var merchantCapabilities: [MerchantCapability]?
     
     var supportedNetworks: [PaymentNetwork]?
@@ -121,17 +123,17 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 
     var clientTokenRequestCallback: ClientTokenCallBack
 
-    var onTokenizeSuccess: PaymentMethodTokenCallBack
+    var authorizePayment: PaymentMethodTokenCallBack
 
     var onCheckoutDismiss: CheckoutDismissalCallback
 
     init(
         clientTokenRequestCallback: @escaping ClientTokenCallBack = { _ in },
-        onTokenizeSuccess: @escaping PaymentMethodTokenCallBack = { _, _  in },
+        authorizePayment: @escaping PaymentMethodTokenCallBack = { _, _  in },
         onCheckoutDismiss: @escaping CheckoutDismissalCallback = { }
     ) {
         self.clientTokenRequestCallback = clientTokenRequestCallback
-        self.onTokenizeSuccess = onTokenizeSuccess
+        self.authorizePayment = authorizePayment
         self.onCheckoutDismiss = onCheckoutDismiss
     }
 }
