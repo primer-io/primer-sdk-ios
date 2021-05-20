@@ -64,23 +64,23 @@ class MerchantCheckoutViewController: UIViewController {
     func configurePrimer() {
         Primer.shared.configure(settings: vaultKlarnaSettings)
         
-//        let theme = generatePrimerTheme()
-//        Primer.shared.configure(theme: theme)
-//
-//        Primer.shared.setDirectDebitDetails(
-//            firstName: "John",
-//            lastName: "Doe",
-//            email: "test@mail.com",
-//            iban: "FR1420041010050500013M02606",
-//            address: Address(
-//                addressLine1: "1 Rue",
-//                addressLine2: "",
-//                city: "Paris",
-//                state: "",
-//                countryCode: "FR",
-//                postalCode: "75001"
-//            )
-//        )
+       let theme = generatePrimerTheme()
+       Primer.shared.configure(theme: theme)
+
+       Primer.shared.setDirectDebitDetails(
+           firstName: "John",
+           lastName: "Doe",
+           email: "test@mail.com",
+           iban: "FR1420041010050500013M02606",
+           address: Address(
+               addressLine1: "1 Rue",
+               addressLine2: "",
+               city: "Paris",
+               state: "",
+               countryCode: "FR",
+               postalCode: "75001"
+           )
+       )
     }
 
     // MARK: - ACTIONS
@@ -88,7 +88,11 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func addCardButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
-        
+    
+    @IBAction func addPayPalButtonTapped(_ sender: Any) {
+        Primer.shared.showCheckout(self, flow: .addPayPalToVault)
+    }
+    
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
     }
