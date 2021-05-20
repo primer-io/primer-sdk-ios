@@ -125,7 +125,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func openWalletButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .defaultWithVault)
+        Primer.shared.showCheckout(self, flow: .default)
     }
     
 }
@@ -195,14 +195,12 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         
         callApi(request) { (result) in
             switch result {
-            case .success(let data):
+            case .success:
                 completion(nil)
             case .failure(let err):
-                completion(nil)
+                completion(err)
             }
         }
-
-        completion(nil)
     }
     
     func onCheckoutDismissed() {
