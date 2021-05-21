@@ -41,7 +41,9 @@ jobs:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
 
       - name: Distribute app with 🔥 App Distribution 🚀
-        run: bundle exec fastlane distribute
+        run: |
+          ssh-add -K ~/.ssh/id_rsa_github_actions
+          bundle exec fastlane distribute
         env:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
