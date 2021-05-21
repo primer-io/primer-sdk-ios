@@ -20,14 +20,14 @@ platform :ios do
   lane :distribute do
       cocoapods(
         clean_install: true,
-        podfile: "./Podfile"
+        podfile: "./Example/Podfile"
       )
 
       match(type: "development")
 
       build_app(
         scheme: "PrimerSDK-Example",
-        workspace: "PrimerSDK.xcworkspace",
+        workspace: "./Example/PrimerSDK.xcworkspace",
         configuration: "Debug",
         export_method: "development",
         clean: true
