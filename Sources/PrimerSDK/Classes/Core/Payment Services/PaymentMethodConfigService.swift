@@ -2,11 +2,11 @@
 
 import UIKit
 
-protocol PaymentMethodConfigServiceProtocol {
+internal protocol PaymentMethodConfigServiceProtocol {
     func fetchConfig(_ completion: @escaping (Error?) -> Void)
 }
 
-class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
+internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

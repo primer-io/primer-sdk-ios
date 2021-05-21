@@ -1,10 +1,10 @@
 #if canImport(UIKit)
 
-protocol CardScannerViewModelProtocol {
+internal protocol CardScannerViewModelProtocol {
     var theme: PrimerTheme { get }
 }
 
-class CardScannerViewModel: CardScannerViewModelProtocol {
+internal class CardScannerViewModel: CardScannerViewModelProtocol {
     var theme: PrimerTheme {
         let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
         return themeProtocol as! PrimerTheme
@@ -15,7 +15,7 @@ class CardScannerViewModel: CardScannerViewModelProtocol {
     }
 }
 
-class MockCardScannerViewModel: CardScannerViewModelProtocol {
+internal class MockCardScannerViewModel: CardScannerViewModelProtocol {
     var theme: PrimerTheme { return PrimerTheme() }
 }
 

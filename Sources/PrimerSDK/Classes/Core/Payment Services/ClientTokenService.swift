@@ -2,11 +2,11 @@
 
 import Foundation
 
-protocol ClientTokenServiceProtocol {
+internal protocol ClientTokenServiceProtocol {
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void)
 }
 
-class ClientTokenService: ClientTokenServiceProtocol {
+internal class ClientTokenService: ClientTokenServiceProtocol {
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

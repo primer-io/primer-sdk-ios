@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol Parser {
+internal protocol Parser {
     func parse<T: Decodable>(_ type: T.Type, from data: Data) throws -> T
 }

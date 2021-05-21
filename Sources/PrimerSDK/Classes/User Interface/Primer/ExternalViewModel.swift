@@ -9,11 +9,11 @@ import Foundation
 
 #if canImport(UIKit)
 
-protocol ExternalViewModelProtocol {
+internal protocol ExternalViewModelProtocol {
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void)
 }
 
-class ExternalViewModel: ExternalViewModelProtocol {
+internal class ExternalViewModel: ExternalViewModelProtocol {
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -53,7 +53,7 @@ class ExternalViewModel: ExternalViewModelProtocol {
     }
 }
 
-class MockExternalViewModel: ExternalViewModelProtocol {
+internal class MockExternalViewModel: ExternalViewModelProtocol {
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
 
     }
