@@ -18,7 +18,7 @@ struct Dependency<T> {
 private let _DependencyContainer = DependencyContainer()
 // swiftlint:enable identifier_name
 
-final class DependencyContainer {
+final internal class DependencyContainer {
     private var dependencies = [String: AnyObject]()
 
     static var shared: DependencyContainer {
