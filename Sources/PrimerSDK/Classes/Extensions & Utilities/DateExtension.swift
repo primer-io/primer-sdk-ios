@@ -60,7 +60,7 @@ func -(_ lhs: Date, _ rhs: Date) -> DateComponents {
     to: lhs)
 }
 
-extension Date {
+internal extension Date {
 
     init(year: Int,
          month: Int,
@@ -128,7 +128,7 @@ extension Date {
     }
 }
 
-extension DateComponents {
+internal extension DateComponents {
 
   var fromNow: Date {
     return Calendar.current.date(byAdding: self, to: Date())!

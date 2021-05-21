@@ -1,19 +1,19 @@
 #if canImport(UIKit)
 import UIKit
 
-protocol VaultCheckoutViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
+internal protocol VaultCheckoutViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
     func cancel()
     func openVault()
     func pay()
     func selectTokenForPayment(token: PaymentMethodToken)
 }
 
-protocol VaultCheckoutViewDataSource: class {
+internal protocol VaultCheckoutViewDataSource: class {
     var selectedSavedPaymentMethod: PaymentMethodToken? { get }
     var amount: String? { get }
 }
 
-class VaultCheckoutView: UIView, ReactiveView {
+internal class VaultCheckoutView: UIView, ReactiveView {
 
     let indicator = UIActivityIndicatorView()
     let navBar = UINavigationBar()
@@ -96,7 +96,7 @@ class VaultCheckoutView: UIView, ReactiveView {
 }
 
 // MARK: Configuration
-extension VaultCheckoutView {
+internal extension VaultCheckoutView {
     private func configureNavBar() {
         //        guard let theme = delegate?.theme else { return }
         //        navBar.backgroundColor = theme.backgroundColor
@@ -329,7 +329,7 @@ extension VaultCheckoutView {
 }
 
 // MARK: Anchoring
-extension VaultCheckoutView {
+internal extension VaultCheckoutView {
     private func anchorNavBar() {
         navBar.translatesAutoresizingMaskIntoConstraints = false
         navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true

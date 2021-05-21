@@ -9,7 +9,7 @@
 
 import Foundation
 
-protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
+internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var shouldBePresented: Bool { get }
 }
 
@@ -98,7 +98,7 @@ enum KlarnaException: PrimerErrorProtocol {
             return NSLocalizedString("primer-klarna-error-message-failed-to-find-country-code",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "Failed to find currency",
+                                     value: "Failed to find country code",
                                      comment: "Failed to find country code - Error message")
 
         case .noPaymentMethodConfigId:

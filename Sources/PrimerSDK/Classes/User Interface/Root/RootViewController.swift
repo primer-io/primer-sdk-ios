@@ -9,7 +9,7 @@
 
 import UIKit
 
-class RootViewController: UIViewController {
+internal class RootViewController: UIViewController {
 
     weak var transitionDelegate: TransitionDelegate?
 
@@ -214,7 +214,7 @@ class RootViewController: UIViewController {
     }
 }
 
-extension Optional where Wrapped == NSLayoutConstraint {
+internal extension Optional where Wrapped == NSLayoutConstraint {
     mutating func setFullScreen() {
         self?.constant = UIScreen.main.bounds.height - 40
     }

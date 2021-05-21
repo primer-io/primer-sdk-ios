@@ -4,7 +4,7 @@ public typealias ClientTokenCallBack = (_ completionHandler: @escaping (Result<S
 public typealias PaymentMethodTokenCallBack = (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
 public typealias CheckoutDismissalCallback = () -> Void
 
-protocol PrimerSettingsProtocol {
+internal protocol PrimerSettingsProtocol {
     var amount: Int? { get }
     var currency: Currency? { get }
     var merchantIdentifier: String? { get }
@@ -24,6 +24,7 @@ protocol PrimerSettingsProtocol {
     var directDebitHasNoAmount: Bool { get }
     var orderItems: [OrderItem] { get }
     var isInitialLoadingHidden: Bool { get }
+    var localeData: LocaleData { get }
 }
 
 /**
@@ -65,6 +66,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var directDebitHasNoAmount: Bool
     internal(set) public var orderItems: [OrderItem]
     internal(set) public var isInitialLoadingHidden: Bool
+    internal(set) public var localeData: LocaleData
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
@@ -98,7 +100,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         businessDetails: BusinessDetails? = nil,
         directDebitHasNoAmount: Bool = false,
         orderItems: [OrderItem] = [],
-        isInitialLoadingHidden: Bool = false
+        isInitialLoadingHidden: Bool = false,
+        localeData: LocaleData? = nil
     ) {
         self.amount = amount
         self.currency = currency
@@ -116,6 +119,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.directDebitHasNoAmount = directDebitHasNoAmount
         self.orderItems = orderItems
         self.isInitialLoadingHidden = isInitialLoadingHidden
+        self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
     }
 }
 
@@ -129,7 +133,7 @@ public struct BusinessDetails: Codable {
     }
 }
 
-class MockDelegate: PrimerDelegate {
+internal class MockDelegate: PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
 
