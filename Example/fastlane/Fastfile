@@ -23,14 +23,14 @@ platform :ios do
         podfile: "./Podfile"
       )
 
-      get_certificates           # invokes cert
-      get_provisioning_profile   # invokes sigh
-
-      enable_automatic_code_signing(path: "PrimerSDK.xcodeproj")
+      match(type: "development")
 
       build_app(
         scheme: "PrimerSDK-Example",
-        workspace: "./PrimerSDK.xcworkspace"
+        workspace: "PrimerSDK.xcworkspace",
+        configuration: "Debug",
+        export_method: "development",
+        clean: true
       )
 
       firebase_app_distribution(
