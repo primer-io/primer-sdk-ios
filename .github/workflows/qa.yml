@@ -51,3 +51,4 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
