@@ -23,7 +23,10 @@ platform :ios do
         podfile: "./Example/Podfile"
       )
 
-      match(type: "development")
+      match(
+        type: "development",
+        clone_branch_directly: true
+      )
 
       build_app(
         scheme: "PrimerSDK-Example",
