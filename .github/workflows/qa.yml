@@ -32,3 +32,4 @@ jobs:
         run: bundle exec fastlane distribute
         env:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
