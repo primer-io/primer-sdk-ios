@@ -1,4 +1,4 @@
-git_url("https://github.com/primer-io/ios_sdk_match_repo.git")
+git_url("git@github.com:primer-io/ios_sdk_match_repo.git")
 
 storage_mode("git")
 
