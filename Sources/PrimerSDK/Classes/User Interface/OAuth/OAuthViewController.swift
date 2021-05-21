@@ -5,7 +5,7 @@ import AuthenticationServices
 import SafariServices
 
 @available(iOS 11.0, *)
-class OAuthViewController: UIViewController {
+internal class OAuthViewController: UIViewController {
 
     let indicator = UIActivityIndicatorView()
     var session: Any?
