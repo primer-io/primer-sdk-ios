@@ -9,7 +9,7 @@
 
 import UIKit
 
-class SuccessViewController: UIViewController {
+internal class SuccessViewController: UIViewController {
 
     var screenType: SuccessScreenType?
 
@@ -49,7 +49,7 @@ class SuccessViewController: UIViewController {
 }
 
 // MARK: Configuration
-extension SuccessViewController {
+internal extension SuccessViewController {
     func configureNavbar() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
@@ -114,7 +114,7 @@ extension SuccessViewController {
 }
 
 // MARK: Constraints
-extension SuccessViewController {
+internal extension SuccessViewController {
     func anchorIcon() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
@@ -170,7 +170,7 @@ protocol SuccessScreenViewModelProtocol: class {
     func getReference(_ screenType: SuccessScreenType?) -> String
 }
 
-class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
+internal class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
 
     var mandate: DirectDebitMandate {
         let state: AppStateProtocol = DependencyContainer.resolve()
