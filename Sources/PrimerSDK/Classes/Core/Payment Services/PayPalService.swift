@@ -2,13 +2,13 @@ import Foundation
 
 #if canImport(UIKit)
 
-protocol PayPalServiceProtocol {
+internal protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void)
 }
 
-class PayPalService: PayPalServiceProtocol {
+internal class PayPalService: PayPalServiceProtocol {
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

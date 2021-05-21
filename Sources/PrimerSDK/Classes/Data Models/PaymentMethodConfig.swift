@@ -18,7 +18,7 @@ enum ConfigPaymentMethodType: String, Codable {
     case klarna = "KLARNA"
 }
 
-extension PaymentMethodConfig {
+internal extension PaymentMethodConfig {
     func getConfigId(for type: ConfigPaymentMethodType) -> String? {
         guard let method = self.paymentMethods?.first(where: { method in return method.type == type }) else { return nil }
         return method.id

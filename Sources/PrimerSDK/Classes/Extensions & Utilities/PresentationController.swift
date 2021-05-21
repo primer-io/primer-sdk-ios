@@ -66,7 +66,7 @@ public class PresentationController: UIPresentationController {
     }
 }
 
-extension UIView {
+internal extension UIView {
     
     func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
         let path = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners,

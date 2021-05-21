@@ -1,6 +1,6 @@
 #if canImport(UIKit)
 
-protocol ApplePayViewModelProtocol {
+internal protocol ApplePayViewModelProtocol {
     var amount: Int? { get }
     var applePayConfigId: String? { get }
     var currency: Currency? { get }
@@ -12,7 +12,7 @@ protocol ApplePayViewModelProtocol {
     )
 }
 
-class ApplePayViewModel: ApplePayViewModelProtocol {
+internal class ApplePayViewModel: ApplePayViewModelProtocol {
 
     var amount: Int? {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
