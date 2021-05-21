@@ -23,6 +23,10 @@ jobs:
           name: id_rsa_github_actions
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
+      - uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: "2.6"
