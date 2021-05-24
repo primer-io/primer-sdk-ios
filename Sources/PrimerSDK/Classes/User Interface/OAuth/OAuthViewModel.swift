@@ -1,12 +1,12 @@
 #if canImport(UIKit)
 
-protocol OAuthViewModelProtocol {
+internal protocol OAuthViewModelProtocol {
     var urlSchemeIdentifier: String? { get }
     func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void)
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void)
 }
 
-class OAuthViewModel: OAuthViewModelProtocol {
+internal class OAuthViewModel: OAuthViewModelProtocol {
 
     var urlSchemeIdentifier: String? {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()

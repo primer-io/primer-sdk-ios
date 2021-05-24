@@ -9,7 +9,7 @@
 
 import UIKit
 
-class ErrorViewController: UIViewController {
+internal class ErrorViewController: UIViewController {
 
     let navBar = UINavigationBar()
     let icon = UIImageView(image: ImageName.error.image?.withRenderingMode(.alwaysTemplate))
@@ -42,7 +42,7 @@ class ErrorViewController: UIViewController {
 
 }
 
-extension ErrorViewController {
+internal extension ErrorViewController {
 
     func configureNavbar() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -81,7 +81,7 @@ extension ErrorViewController {
     }
 }
 
-extension ErrorViewController {
+internal extension ErrorViewController {
 
     func anchorIcon() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()

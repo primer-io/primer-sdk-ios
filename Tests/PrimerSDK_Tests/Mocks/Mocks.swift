@@ -76,6 +76,8 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var localeData: LocaleData
+    
     var isInitialLoadingHidden: Bool = false
     
     var klarnaPaymentDescription: String?
@@ -130,6 +132,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         self.clientTokenRequestCallback = clientTokenRequestCallback
         self.authorizePayment = authorizePayment
         self.onCheckoutDismiss = onCheckoutDismiss
+        self.localeData = LocaleData(languageCode: nil, regionCode: nil)
     }
 }
 

@@ -11,7 +11,7 @@ import UIKit
 
 let enableCardScanner = false
 
-protocol FormViewDelegate: class, UITextFieldDelegate {
+internal protocol FormViewDelegate: class, UITextFieldDelegate {
     var formType: FormType { get }
     var submitButtonTitle: String { get }
     func back()
@@ -21,7 +21,7 @@ protocol FormViewDelegate: class, UITextFieldDelegate {
     func onBottomLinkTapped()
 }
 
-class FormView: UIView {
+internal class FormView: UIView {
 
     // MARK: - PROPERTIES
 

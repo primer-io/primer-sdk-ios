@@ -416,7 +416,7 @@ enum FormTextFieldType: Equatable {
     }
 }
 
-extension FormTextFieldType {
+internal extension FormTextFieldType {
     var keyboardType: UIKeyboardType {
         switch self {
         case .email: return .emailAddress

@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol FormViewModelProtocol {
+internal protocol FormViewModelProtocol {
     func loadConfig(_ completion: @escaping (Error?) -> Void)
     var popOnComplete: Bool { get }
     var mandate: DirectDebitMandate { get }
@@ -22,7 +22,7 @@ protocol FormViewModelProtocol {
     func onReturnButtonTapped()
 }
 
-class FormViewModel: FormViewModelProtocol {
+internal class FormViewModel: FormViewModelProtocol {
     
     var popOnComplete: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()

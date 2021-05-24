@@ -27,7 +27,7 @@ enum PrimerAPI: Endpoint {
     case threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest)
 }
 
-extension PrimerAPI {
+internal extension PrimerAPI {
 
     // MARK: Base URL
     var baseURL: String? {

@@ -24,7 +24,7 @@ protocol PrimerAPIClientProtocol {
     func threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest, completion: @escaping (_ result: Result<ThreeDSecureBeginAuthResponse, Error>) -> Void)
 }
 
-class PrimerAPIClient: PrimerAPIClientProtocol {
+internal class PrimerAPIClient: PrimerAPIClientProtocol {
 
     internal let networkService: NetworkService
 
@@ -183,7 +183,7 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
 
 }
 
-class MockPrimerAPIClient: PrimerAPIClientProtocol {
+internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
     let response: Data?
     let throwsError: Bool

@@ -9,7 +9,7 @@
 
 import Foundation
 
-class URLSessionStack: NetworkService {
+internal class URLSessionStack: NetworkService {
     private let session: URLSession
     private let parser: Parser
 
@@ -169,7 +169,7 @@ class URLSessionStack: NetworkService {
     }
 }
 
-extension URLSessionStack {
+internal extension URLSessionStack {
     private func url(for endpoint: Endpoint) -> URL? {
         guard let urlStr = endpoint.baseURL else { return nil }
         guard let baseUrl = URL(string: urlStr) else { return nil }

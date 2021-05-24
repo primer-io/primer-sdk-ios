@@ -9,7 +9,7 @@ import Foundation
 
 import Foundation
 
-protocol Endpoint {
+internal protocol Endpoint {
 //    var scheme: String { get }
     var baseURL: String? { get }
     var port: Int? { get }
