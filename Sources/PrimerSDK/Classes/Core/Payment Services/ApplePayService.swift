@@ -82,5 +82,3 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
     }
     
 }
-
-
