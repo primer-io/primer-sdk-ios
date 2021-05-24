@@ -77,7 +77,7 @@
 		88B41EF68102A87F70D54D3A33A7242D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		8A5F8D1E6347A756B6F51FCF58DB99A9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		8B203E261BD3421FA2478F81045AF1EC /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B1E4F6E72A54870D978B8A90392516 /* Error.swift */; };
-		8C9BA9F27F9D2056D7BC4C0202E09876 /* UITextFieldExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B602A0F65BB6125B47065FEEE75BD102 /* UITextFieldExtensions.swift */; };
+		8C9BA9F27F9D2056D7BC4C0202E09876 /* PrimerTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B602A0F65BB6125B47065FEEE75BD102 /* PrimerTextField.swift */; };
 		916DC72F321DCBC920E8D731C96560D6 /* PrimerSDK-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3171B62E75201115B45057AEF4CC0BB8 /* PrimerSDK-dummy.m */; };
 		93052C25AEE89ADA551B1A35BB819476 /* JSONParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EEF223988C66106CEC1BA3548086F4A /* JSONParser.swift */; };
 		94C704853CE0372A98E7C8CECB9F33A1 /* FormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A8A420E8B93FE36974675D8F9CC69A /* FormViewModel.swift */; };
@@ -241,7 +241,7 @@
 		ADD0D25F251A4B55B533519617ACE1AE /* OrderItem.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OrderItem.swift; sourceTree = "<group>"; };
 		B2B402ABD173F1859FE78A4CC6006B2F /* PaymentMethodToken.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodToken.swift; sourceTree = "<group>"; };
 		B429083200B13F604ED3C87DFFC0C016 /* Pods-PrimerSDK_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-PrimerSDK_Tests.modulemap"; sourceTree = "<group>"; };
-		B602A0F65BB6125B47065FEEE75BD102 /* UITextFieldExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITextFieldExtensions.swift; sourceTree = "<group>"; };
+		B602A0F65BB6125B47065FEEE75BD102 /* PrimerTextField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerTextField.swift; sourceTree = "<group>"; };
 		BA120A15B2ED82EE0D93FD07EB035EF3 /* PaymentMethodComponent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodComponent.swift; sourceTree = "<group>"; };
 		BFCC0C04DF77632CA6D4A5CF6AFDFCBE /* ApplePay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePay.swift; sourceTree = "<group>"; };
 		C5993EAC700444C5D7192B737B54237A /* UIDeviceExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
@@ -501,7 +501,7 @@
 				C5993EAC700444C5D7192B737B54237A /* UIDeviceExtension.swift */,
 				7198CB98F4E8492DB81A602A459E2FD5 /* UIScrollViewExtension.swift */,
 				1765BB07E9C04E3557F1A6B899F9A544 /* UITableViewCellExtensions.swift */,
-				B602A0F65BB6125B47065FEEE75BD102 /* UITextFieldExtensions.swift */,
+				B602A0F65BB6125B47065FEEE75BD102 /* PrimerTextField.swift */,
 				174C412E3BB6379DFDF096236251C595 /* UIViewControllerExtensions.swift */,
 				DB57EE7DD6C44C9668322A53607DB558 /* UIViewExtensions.swift */,
 				E9453DA7E7BE5D602B34B456559F0DE7 /* URLExtension.swift */,
@@ -1047,7 +1047,7 @@
 				AA91D537E79BB1B886EB1453C4C14E45 /* UIDeviceExtension.swift in Sources */,
 				5AB6D0859FF8F478C6A85250EA71E6B8 /* UIScrollViewExtension.swift in Sources */,
 				4955914C557F361D0D56892902C33FE5 /* UITableViewCellExtensions.swift in Sources */,
-				8C9BA9F27F9D2056D7BC4C0202E09876 /* UITextFieldExtensions.swift in Sources */,
+				8C9BA9F27F9D2056D7BC4C0202E09876 /* PrimerTextField.swift in Sources */,
 				33FF5084B7414081F4231E004BB98A70 /* UIViewControllerExtensions.swift in Sources */,
 				2930180778FDC07BD8A4C84E977FAE02 /* UIViewExtensions.swift in Sources */,
 				971BA0E671A3E25BC39BCCA901FCD399 /* URLExtension.swift in Sources */,
