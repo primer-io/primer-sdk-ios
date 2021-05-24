@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class PaymentMethodComponent: UIView {
+internal class PaymentMethodComponent: PrimerView {
 
     let label = UILabel()
     let iconView = UIImageView()

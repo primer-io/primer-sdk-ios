@@ -11,7 +11,7 @@ import Foundation
 
 import UIKit
 
-internal extension UIView {
+internal class PrimerView: UIView {
 
     @IBInspectable var cornerRadius: CGFloat {
         get {
@@ -142,24 +142,7 @@ internal extension UIView {
         trailingAnchor.constraint(equalTo: superView.trailingAnchor).isActive = true
         bottomAnchor.constraint(equalTo: superView.bottomAnchor).isActive = true
     }
-
-    @objc
-    func keyboardWillShow(notification: NSNotification) {
-//        let height = UIScreen.main.bounds.height - frame.height
-//        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-////            if self.frame.origin.y.rounded() == height.rounded() {
-////                self.frame.origin.y -= keyboardSize.height
-////            }
-//        }
-    }
-
-    @objc
-    func keyboardWillHide(notification: NSNotification) {
-//        let height = UIScreen.main.bounds.height - frame.height
-////        if self.frame.origin.y.rounded() != height.rounded() {
-////            self.frame.origin.y = height.rounded()
-////        }
-    }
+    
 }
 
 #endif

@@ -13,7 +13,7 @@ internal protocol VaultCheckoutViewDataSource: class {
     var amount: String? { get }
 }
 
-internal class VaultCheckoutView: UIView, ReactiveView {
+internal class VaultCheckoutView: PrimerView, ReactiveView {
 
     let indicator = UIActivityIndicatorView()
     let navBar = UINavigationBar()
@@ -54,7 +54,12 @@ internal class VaultCheckoutView: UIView, ReactiveView {
         indicator.isHidden = !isBusy
 
         if isBusy {
-            indicator.pin(to: self)
+            indicator.translatesAutoresizingMaskIntoConstraints = false
+            indicator.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            indicator.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+            indicator.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+            indicator.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+            
             indicator.startAnimating()
         } else {
             configureNavBar()

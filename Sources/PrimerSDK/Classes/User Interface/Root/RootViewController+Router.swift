@@ -95,7 +95,12 @@ fileprivate extension RootViewController {
         // view
         mainView.addSubview(child.view)
 
-        child.view.pin(to: mainView)
+        child.view.translatesAutoresizingMaskIntoConstraints = false
+        child.view.topAnchor.constraint(equalTo: mainView.topAnchor).isActive = true
+        child.view.leadingAnchor.constraint(equalTo: mainView.leadingAnchor).isActive = true
+        child.view.trailingAnchor.constraint(equalTo: mainView.trailingAnchor).isActive = true
+        child.view.bottomAnchor.constraint(equalTo: mainView.bottomAnchor).isActive = true
+        
         child.didMove(toParent: self)
 
         if self.routes.last is ConfirmMandateViewController {

@@ -21,7 +21,7 @@ internal protocol FormViewDelegate: class, UITextFieldDelegate {
     func onBottomLinkTapped()
 }
 
-internal class FormView: UIView {
+internal class FormView: PrimerView {
 
     // MARK: - PROPERTIES
 

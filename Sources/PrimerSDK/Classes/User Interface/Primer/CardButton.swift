@@ -16,7 +16,7 @@ internal class CardButton: UIButton {
     private var cardholderLabel = UILabel()
     private var last4Label = UILabel()
     private var expiryLabel = UILabel()
-    private var border = UIView()
+    private var border = PrimerView()
     private var checkView = UIImageView()
 
     private weak var widthConstraint: NSLayoutConstraint?
@@ -153,7 +153,7 @@ internal class CardButton: UIButton {
     private func addBorder() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
-        border = UIView()
+        border = PrimerView()
         border.layer.borderColor = theme.colorTheme.disabled1.cgColor
         border.layer.borderWidth = 1
         border.layer.cornerRadius = 4
