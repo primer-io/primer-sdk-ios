@@ -13,7 +13,8 @@ public class Primer {
     
     public weak var delegate: PrimerDelegate?
     private(set) var flow: PrimerSessionFlow = .default
-    private var root: RootViewController?
+    internal var root: RootViewController?
+    internal var presentingViewController: UIViewController?
 
     // MARK: - INITIALIZATION
 
@@ -154,13 +155,14 @@ public class Primer {
      1.4.0
      */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
+        self.presentingViewController = controller
+        Primer.shared.flow = flow
+        
         DispatchQueue.main.async { [weak self] in
             if case .checkoutWithApplePay = flow {
                 let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
                 appleViewModel.payWithApple { (err) in
-                    if let err = err {
-                        print(err)
-                    }
+                    
                 }
             } else {
                 self?.root = RootViewController()
@@ -173,7 +175,6 @@ public class Primer {
                 }
                             
                 router.setRoot(root)
-                Primer.shared.flow = flow
                 controller.present(root, animated: true)
             }
         }
