@@ -45,7 +45,7 @@
 		471F0E11289320BB7E4BD3D44B168147 /* AlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773D1122B084CCA26E09D7E422DC8F56 /* AlertController.swift */; };
 		4735A925E3700519B93395AD2F833F91 /* VaultCheckoutViewController+ReloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF68F6F577D2B684E519304F9430268 /* VaultCheckoutViewController+ReloadDelegate.swift */; };
 		47D715F0F4AFED22533A8F508A314201 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 202CA80ADA72886DF5D86AF9FA2099C6 /* Logger.swift */; };
-		4955914C557F361D0D56892902C33FE5 /* UITableViewCellExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1765BB07E9C04E3557F1A6B899F9A544 /* UITableViewCellExtensions.swift */; };
+		4955914C557F361D0D56892902C33FE5 /* PrimerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1765BB07E9C04E3557F1A6B899F9A544 /* PrimerTableViewCell.swift */; };
 		4E972CE4F7C8BE201EAE417A87B6880F /* ApplePayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5409EA79BCA278257473D1DF8AACD231 /* ApplePayViewModel.swift */; };
 		522FE5C5C396A0819AC8B3E92EE95F97 /* ClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5669A7AAFE4235BEF6CA5B71126D19 /* ClientToken.swift */; };
 		56435E3FADDDDE2722B9B40FCE25FEAB /* ConfirmMandateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC7626182247F30FCF72CBB8AE6FAAB3 /* ConfirmMandateViewModel.swift */; };
@@ -162,7 +162,7 @@
 		144599F293A9ECAF47681A3707264A7F /* PrimerSDK-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerSDK-prefix.pch"; sourceTree = "<group>"; };
 		15BF84DE26495A5100395210 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		174C412E3BB6379DFDF096236251C595 /* PrimerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerViewController.swift; sourceTree = "<group>"; };
-		1765BB07E9C04E3557F1A6B899F9A544 /* UITableViewCellExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITableViewCellExtensions.swift; sourceTree = "<group>"; };
+		1765BB07E9C04E3557F1A6B899F9A544 /* PrimerTableViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerTableViewCell.swift; sourceTree = "<group>"; };
 		1896A45E1388D7E65D09937DD0B030B1 /* PrimerSDK-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerSDK-umbrella.h"; sourceTree = "<group>"; };
 		1B30971FB6EDA620670A1D65A95AE65D /* PrimerSDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = PrimerSDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		1DB1BEDB00594145F1B93177973662BF /* OAuthViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OAuthViewController.swift; sourceTree = "<group>"; };
@@ -500,7 +500,7 @@
 				C89FDA9F590287F7BA7232CFB351EC5B /* UIButtonExtension.swift */,
 				C5993EAC700444C5D7192B737B54237A /* UIDeviceExtension.swift */,
 				7198CB98F4E8492DB81A602A459E2FD5 /* UIScrollViewExtension.swift */,
-				1765BB07E9C04E3557F1A6B899F9A544 /* UITableViewCellExtensions.swift */,
+				1765BB07E9C04E3557F1A6B899F9A544 /* PrimerTableViewCell.swift */,
 				B602A0F65BB6125B47065FEEE75BD102 /* PrimerTextField.swift */,
 				174C412E3BB6379DFDF096236251C595 /* PrimerViewController.swift */,
 				DB57EE7DD6C44C9668322A53607DB558 /* PrimerViewExtensions.swift */,
@@ -1046,7 +1046,7 @@
 				D632883686416C01CA377204BBDCB971 /* UIButtonExtension.swift in Sources */,
 				AA91D537E79BB1B886EB1453C4C14E45 /* UIDeviceExtension.swift in Sources */,
 				5AB6D0859FF8F478C6A85250EA71E6B8 /* UIScrollViewExtension.swift in Sources */,
-				4955914C557F361D0D56892902C33FE5 /* UITableViewCellExtensions.swift in Sources */,
+				4955914C557F361D0D56892902C33FE5 /* PrimerTableViewCell.swift in Sources */,
 				8C9BA9F27F9D2056D7BC4C0202E09876 /* PrimerTextField.swift in Sources */,
 				33FF5084B7414081F4231E004BB98A70 /* PrimerViewController.swift in Sources */,
 				2930180778FDC07BD8A4C84E977FAE02 /* PrimerViewExtensions.swift in Sources */,
