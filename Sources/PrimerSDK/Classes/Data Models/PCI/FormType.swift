@@ -49,15 +49,15 @@ enum FormType {
             switch theme.textFieldTheme {
             case .doublelined:
                 return [
-                    [.cardholderName],
                     [.cardNumber],
+                    [.cardholderName],
                     [.expiryDate],
                     [.cvc]
                 ]
             default:
                 return [
-                    [.cardholderName],
                     [.cardNumber],
+                    [.cardholderName],
                     [.expiryDate, .cvc]
                 ]
             }
