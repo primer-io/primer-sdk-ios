@@ -34,7 +34,7 @@
 		2CAF07681A8B3CA5ED0AF820CC520D58 /* FormType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CAAF59D356D5A37FED257653E74A31 /* FormType.swift */; };
 		2F19BB6B59093986F1240F93B63B6EF1 /* Pods-PrimerSDK_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 21F4ACB1142B1B9457658584BF5CD35A /* Pods-PrimerSDK_Example-dummy.m */; };
 		33B45B52AF6E409B23AB260C33EF20BB /* ImageName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E87ACCCF6AD819DAF89359CB67D638 /* ImageName.swift */; };
-		33FF5084B7414081F4231E004BB98A70 /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174C412E3BB6379DFDF096236251C595 /* UIViewControllerExtensions.swift */; };
+		33FF5084B7414081F4231E004BB98A70 /* PrimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174C412E3BB6379DFDF096236251C595 /* PrimerViewController.swift */; };
 		373F6EC1CB82AC7E4E63D32FB281C8C3 /* CardScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B20487052E21461E4250A4D9AB25E67 /* CardScannerViewController.swift */; };
 		38E8ACAB5EF67A23CEC774470B93E16B /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F278549B11353C2DFD9311198196C0C /* Optional+Extensions.swift */; };
 		398EE80F742DAC3D53AD164A72A2943C /* ExternalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01F1892B2DC194903D6634A7C2C0E38 /* ExternalViewModel.swift */; };
@@ -161,7 +161,7 @@
 		12710ACA0CDE088D991D7176FCBD943D /* ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReloadDelegate.swift; sourceTree = "<group>"; };
 		144599F293A9ECAF47681A3707264A7F /* PrimerSDK-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerSDK-prefix.pch"; sourceTree = "<group>"; };
 		15BF84DE26495A5100395210 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
-		174C412E3BB6379DFDF096236251C595 /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
+		174C412E3BB6379DFDF096236251C595 /* PrimerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerViewController.swift; sourceTree = "<group>"; };
 		1765BB07E9C04E3557F1A6B899F9A544 /* UITableViewCellExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITableViewCellExtensions.swift; sourceTree = "<group>"; };
 		1896A45E1388D7E65D09937DD0B030B1 /* PrimerSDK-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerSDK-umbrella.h"; sourceTree = "<group>"; };
 		1B30971FB6EDA620670A1D65A95AE65D /* PrimerSDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = PrimerSDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -502,7 +502,7 @@
 				7198CB98F4E8492DB81A602A459E2FD5 /* UIScrollViewExtension.swift */,
 				1765BB07E9C04E3557F1A6B899F9A544 /* UITableViewCellExtensions.swift */,
 				B602A0F65BB6125B47065FEEE75BD102 /* PrimerTextField.swift */,
-				174C412E3BB6379DFDF096236251C595 /* UIViewControllerExtensions.swift */,
+				174C412E3BB6379DFDF096236251C595 /* PrimerViewController.swift */,
 				DB57EE7DD6C44C9668322A53607DB558 /* UIViewExtensions.swift */,
 				E9453DA7E7BE5D602B34B456559F0DE7 /* URLExtension.swift */,
 				441A677A6666C6F529C6BD1FE784C7E8 /* UserDefaultsExtension.swift */,
@@ -1048,7 +1048,7 @@
 				5AB6D0859FF8F478C6A85250EA71E6B8 /* UIScrollViewExtension.swift in Sources */,
 				4955914C557F361D0D56892902C33FE5 /* UITableViewCellExtensions.swift in Sources */,
 				8C9BA9F27F9D2056D7BC4C0202E09876 /* PrimerTextField.swift in Sources */,
-				33FF5084B7414081F4231E004BB98A70 /* UIViewControllerExtensions.swift in Sources */,
+				33FF5084B7414081F4231E004BB98A70 /* PrimerViewController.swift in Sources */,
 				2930180778FDC07BD8A4C84E977FAE02 /* UIViewExtensions.swift in Sources */,
 				971BA0E671A3E25BC39BCCA901FCD399 /* URLExtension.swift in Sources */,
 				A3CFED6C2B1125B0C5B4CE232130D458 /* URLSessionStack.swift in Sources */,
