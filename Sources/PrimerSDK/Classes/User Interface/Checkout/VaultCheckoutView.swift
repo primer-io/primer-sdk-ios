@@ -23,7 +23,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
     var savedCardButton = CardButton()
     let otherMethodsTitleLabel = UILabel()
     let tableView = UITableView()
-    let payButton = UIButton()
+    let payButton = PrimerButton()
     let seeAllLinkLabel = UILabel()
     let fadeView = UIView()
 
