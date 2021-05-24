@@ -27,7 +27,7 @@ enum Route {
     case confirmMandate
     case form(type: FormType, closeOnSubmit: Bool = false)
 
-    var viewController: UIViewController? {
+    var viewController: PrimerViewController? {
         switch self {
         #if canImport(CardScan)
         case .cardScanner(let delegate):

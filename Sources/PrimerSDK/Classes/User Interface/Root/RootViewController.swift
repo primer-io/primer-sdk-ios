@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class RootViewController: UIViewController {
+internal class RootViewController: PrimerViewController {
 
     weak var transitionDelegate: TransitionDelegate?
 

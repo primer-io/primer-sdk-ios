@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class ConfirmMandateViewController: UIViewController {
+internal class ConfirmMandateViewController: PrimerViewController {
 
     var subView: ConfirmMandateView = ConfirmMandateView()
 

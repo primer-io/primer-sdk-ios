@@ -2,7 +2,7 @@
 
 import UIKit
 
-internal class ApplePayViewController: UIViewController {
+internal class ApplePayViewController: PrimerViewController {
     private let indicator = UIActivityIndicatorView()
 
     weak var transitionDelegate = TransitionDelegate()
