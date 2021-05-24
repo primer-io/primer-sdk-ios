@@ -54,7 +54,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
-    // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable cyclomatic_complexity function_body_length
     func payWithApple(completion: @escaping (Error?) -> Void) {
         guard let countryCode = countryCode else {
             return completion(PaymentException.missingCountryCode)
@@ -154,13 +154,30 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
             
             paymentVC.delegate = self
             
-            applePayCompletion = { result in
+            applePayCompletion = { [weak self] result in
                 switch result {
                 case .success(let applePayPaymentResponse):
+                    // Loading view
+                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                    
                     let applePayService: ApplePayServiceProtocol = DependencyContainer.resolve()
                     applePayService.fetchConfig { [weak self] (err) in
                         if let err = err {
-                            return completion(err)
+                            DispatchQueue.main.async {
+                                Primer.shared.presentingViewController?.dismiss(animated: true, completion: {
+                                    if !settings.hasDisabledSuccessScreen {
+                                        Primer.shared.root = RootViewController()
+                                        let router: RouterDelegate = DependencyContainer.resolve()
+                                        router.setRoot(Primer.shared.root!)
+                                        router.show(.error(error: err))
+                                        Primer.shared.presentingViewController?.present(Primer.shared.root!, animated: true)
+                                    }
+                                })
+                                
+                                Primer.shared.delegate?.checkoutFailed(with: err)
+                            }
+                            
+                            completion(err)
                             
                         } else {
                             let state: AppStateProtocol = DependencyContainer.resolve()
@@ -178,8 +195,19 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                             applePayService.tokenize(instrument: instrument) { [weak self] (result) in
                                 switch result {
                                 case .failure(let err):
+                                    // Dismiss and show error screen
                                     ErrorHandler.shared.handle(error: err)
                                     DispatchQueue.main.async {
+                                        Primer.shared.presentingViewController?.dismiss(animated: true, completion: {
+                                            if !settings.hasDisabledSuccessScreen {
+                                                Primer.shared.root = RootViewController()
+                                                let router: RouterDelegate = DependencyContainer.resolve()
+                                                router.setRoot(Primer.shared.root!)
+                                                router.show(.error(error: err))
+                                                Primer.shared.presentingViewController?.present(Primer.shared.root!, animated: true)
+                                            }
+                                        })
+                                        
                                         Primer.shared.delegate?.checkoutFailed(with: err)
                                     }
                                     completion(err)
@@ -191,7 +219,25 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                             completion(nil)
                                         } else {
                                             //settings.onTokenizeSuccess(token, completion)
-                                            Primer.shared.delegate?.authorizePayment(token, completion)
+                                            Primer.shared.delegate?.authorizePayment(token, { (err) in
+                                                DispatchQueue.main.async {
+                                                    Primer.shared.presentingViewController?.dismiss(animated: true, completion: {
+                                                        if !settings.hasDisabledSuccessScreen {
+                                                            Primer.shared.root = RootViewController()
+                                                            let router: RouterDelegate = DependencyContainer.resolve()
+                                                            router.setRoot(Primer.shared.root!)
+                                                            if let err = err {
+                                                                router.show(.error(error: err))
+                                                            } else {
+                                                                router.show(.success(type: .regular))
+                                                            }
+                                                            Primer.shared.presentingViewController?.present(Primer.shared.root!, animated: true)
+                                                        }
+                                                    })
+                                                    
+                                                    completion(err)
+                                                }
+                                            })
                                         }
                                     }
                                 }
@@ -211,13 +257,12 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
             return completion(AppleException.unableToMakePaymentsOnProvidedNetworks)
         }
     }
-    // swiftlint:enable cyclomatic_complexity
+    // swiftlint:enable cyclomatic_complexity function_body_length
 }
 
 extension ApplePayViewModel: PKPaymentAuthorizationViewControllerDelegate {
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
-        (Primer.shared.delegate as? UIViewController)?.dismiss(animated: true, completion: nil)
         applePayCompletion?(.failure(AppleException.cancelled))
         applePayCompletion = nil
     }
@@ -244,7 +289,6 @@ extension ApplePayViewModel: PKPaymentAuthorizationViewControllerDelegate {
 
             applePayCompletion?(.success(applePayPaymentResponse))
             applePayCompletion = nil
-            (Primer.shared.delegate as? UIViewController)?.dismiss(animated: true, completion: nil)
         } catch {
             applePayCompletion?(.failure(error))
             applePayCompletion = nil
