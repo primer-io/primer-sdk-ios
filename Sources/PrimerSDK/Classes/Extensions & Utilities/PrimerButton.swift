@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal extension UIButton {
+internal class PrimerButton: UIButton {
 
     func setBusy(theme: PrimerThemeProtocol) {
         let indicator = UIActivityIndicatorView()
