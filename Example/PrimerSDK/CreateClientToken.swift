@@ -11,4 +11,5 @@ import Foundation
 
 struct CreateClientTokenRequest: Codable {
     let customerId: String
+    let customerCountryCode: String?
 }

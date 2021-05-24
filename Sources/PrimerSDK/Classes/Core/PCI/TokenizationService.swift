@@ -2,14 +2,14 @@ import Foundation
 
 #if canImport(UIKit)
 
-protocol TokenizationServiceProtocol {
+internal protocol TokenizationServiceProtocol {
     func tokenize(
         request: PaymentMethodTokenizationRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void
     )
 }
 
-class TokenizationService: TokenizationServiceProtocol {
+internal class TokenizationService: TokenizationServiceProtocol {
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

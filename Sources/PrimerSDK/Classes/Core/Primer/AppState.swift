@@ -7,7 +7,7 @@
 
 #if canImport(UIKit)
 
-protocol AppStateProtocol: class {
+internal protocol AppStateProtocol: class {
     var viewModels: [PaymentMethodViewModel] { get set }
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethod: String { get set }
@@ -28,7 +28,7 @@ protocol AppStateProtocol: class {
     var sessionId: String? { get set }
 }
 
-class AppState: AppStateProtocol {
+internal class AppState: AppStateProtocol {
 
     var viewModels: [PaymentMethodViewModel] = []
     var paymentMethods: [PaymentMethodToken] = []

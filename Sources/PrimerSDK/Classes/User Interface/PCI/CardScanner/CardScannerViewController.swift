@@ -9,12 +9,12 @@ struct PrimerCreditCardDetails {
     var expiryYear: String?
 }
 
-protocol CardScannerViewControllerDelegate: class {
+internal protocol CardScannerViewControllerDelegate: class {
     func setScannedCardDetails(with cardDetails: PrimerCreditCardDetails)
 }
 
 @available(iOS 12, *)
-class CardScannerViewController: UIViewController {
+internal class CardScannerViewController: UIViewController {
 
     let simpleScanVC = SimpleScanViewController.createViewController()
 
@@ -67,7 +67,7 @@ class CardScannerViewController: UIViewController {
 }
 
 @available(iOS 12, *)
-extension CardScannerViewController: ScannerViewDelegate {
+internal extension CardScannerViewController: ScannerViewDelegate {
     func cancel() {
         router.pop()
     }

@@ -9,7 +9,7 @@
 
 import UIKit
 
-class FormViewController: UIViewController {
+internal class FormViewController: UIViewController {
     let subview: FormView = FormView()
 
     weak var reloadDelegate: ReloadDelegate?
@@ -87,7 +87,7 @@ extension FormViewController: FormViewDelegate {
 }
 
 #if canImport(CardScan)
-extension FormViewController: CardScannerViewControllerDelegate {
+internal extension FormViewController: CardScannerViewControllerDelegate {
     func setScannedCardDetails(with cardDetails: PrimerCreditCardDetails) {
         switch formType {
         case .cardForm:

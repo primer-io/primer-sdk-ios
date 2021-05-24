@@ -7,7 +7,7 @@
 
 #if canImport(UIKit)
 
-protocol ConfirmMandateViewModelProtocol {
+internal protocol ConfirmMandateViewModelProtocol {
     var mandate: DirectDebitMandate { get }
     var formCompleted: Bool { get set }
     var businessDetails: BusinessDetails? { get }
@@ -17,7 +17,7 @@ protocol ConfirmMandateViewModelProtocol {
     func eraseData()
 }
 
-class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
+internal class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
     
     var mandate: DirectDebitMandate {
         let state: AppStateProtocol = DependencyContainer.resolve()

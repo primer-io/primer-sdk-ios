@@ -34,7 +34,7 @@ public struct Address: Codable {
     }
 }
 
-extension String {
+internal extension String {
     var withComma: String {
         if self.isEmpty { return "" }
         return ", " + self

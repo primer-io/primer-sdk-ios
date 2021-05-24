@@ -9,17 +9,17 @@
 
 import UIKit
 
-protocol ConfirmMandateViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
+internal protocol ConfirmMandateViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
     func close()
     func confirm()
 }
 
-protocol ConfirmMandateViewDataSource: class {
+internal protocol ConfirmMandateViewDataSource: class {
     var businessDetails: BusinessDetails? { get }
     var amount: String { get }
 }
 
-class ConfirmMandateView: UIView {
+internal class ConfirmMandateView: UIView {
 
     internal let indicator = UIActivityIndicatorView()
     private let navBar = UINavigationBar()
@@ -65,7 +65,7 @@ class ConfirmMandateView: UIView {
     }
 }
 
-extension ConfirmMandateView {
+internal extension ConfirmMandateView {
     func addIndicator() {
         indicator.pin(to: self)
     }
@@ -219,7 +219,7 @@ extension ConfirmMandateView {
     }
 }
 
-class ConfirmMandateTableView: UITableView {
+internal class ConfirmMandateTableView: UITableView {
 
     func render() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()

@@ -30,8 +30,6 @@ class MerchantCheckoutViewController: UIViewController {
     )
     
     let vaultKlarnaSettings = PrimerSettings(
-        currency: .SEK,
-        countryCode: .se,
         klarnaSessionType: .recurringPayment,
         hasDisabledSuccessScreen: true,
         isInitialLoadingHidden: true
@@ -66,25 +64,25 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        Primer.shared.configure(settings: generalSettings)
+        Primer.shared.configure(settings: vaultKlarnaSettings)
         
-        let theme = generatePrimerTheme()
-        Primer.shared.configure(theme: theme)
+       let theme = generatePrimerTheme()
+       Primer.shared.configure(theme: theme)
 
-        Primer.shared.setDirectDebitDetails(
-            firstName: "John",
-            lastName: "Doe",
-            email: "test@mail.com",
-            iban: "FR1420041010050500013M02606",
-            address: Address(
-                addressLine1: "1 Rue",
-                addressLine2: "",
-                city: "Paris",
-                state: "",
-                countryCode: "FR",
-                postalCode: "75001"
-            )
-        )
+       Primer.shared.setDirectDebitDetails(
+           firstName: "John",
+           lastName: "Doe",
+           email: "test@mail.com",
+           iban: "FR1420041010050500013M02606",
+           address: Address(
+               addressLine1: "1 Rue",
+               addressLine2: "",
+               city: "Paris",
+               state: "",
+               countryCode: "FR",
+               postalCode: "75001"
+           )
+       )
     }
 
     // MARK: - ACTIONS
@@ -93,7 +91,9 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
     
-    var klarnaNumberOfTimesPresented = 0
+    @IBAction func addPayPalButtonTapped(_ sender: Any) {
+        Primer.shared.showCheckout(self, flow: .addPayPalToVault)
+    }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
@@ -121,7 +121,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: "customer123")
+        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: nil)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

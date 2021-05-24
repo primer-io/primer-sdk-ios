@@ -3,7 +3,7 @@
 import UIKit
 import PassKit
 
-class VaultCheckoutViewController: UIViewController {
+internal class VaultCheckoutViewController: UIViewController {
 
     var subView: VaultCheckoutView = VaultCheckoutView()
     var tokenSelectedForPayment: PaymentMethodToken?

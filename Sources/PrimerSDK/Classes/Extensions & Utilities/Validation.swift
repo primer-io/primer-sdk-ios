@@ -2,7 +2,7 @@
 
 import UIKit
 
-final class Validation {
+final internal class Validation {
 
     private static var shared = Validation()
 
