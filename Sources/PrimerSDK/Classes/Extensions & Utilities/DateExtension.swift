@@ -102,6 +102,7 @@ internal extension Date {
         df.calendar = calendar == nil ? Calendar(identifier: .gregorian) : calendar!
         return df.string(from: self)
     }
+    // swiftlint:enable identifier_name
 
     var startOfDay: Date {
         return Calendar.current.startOfDay(for: self)
@@ -126,16 +127,4 @@ internal extension Date {
         components.second = -1
         return Calendar(identifier: .gregorian).date(byAdding: components, to: startOfMonth)!
     }
-}
-
-internal extension DateComponents {
-
-  var fromNow: Date {
-    return Calendar.current.date(byAdding: self, to: Date())!
-  }
-
-  var ago: Date {
-    return Calendar.current.date(byAdding: -self, to: Date())!
-  }
-
 }
