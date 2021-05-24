@@ -33,7 +33,13 @@ class PrimerViewController: UIViewController {
     func addLoadingView(_ indicator: UIActivityIndicatorView) {
         indicator.color = .black
         view.addSubview(indicator)
-        indicator.pin(to: view)
+        
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        indicator.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        indicator.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        indicator.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
         indicator.startAnimating()
     }
 

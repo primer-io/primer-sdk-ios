@@ -60,7 +60,12 @@ internal class RootViewController: PrimerViewController {
         view.addSubview(backdropView)
         backdropView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mainView)
-        backdropView.pin(to: view)
+
+        backdropView.translatesAutoresizingMaskIntoConstraints = false
+        backdropView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        backdropView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        backdropView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        backdropView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
 
         if #available(iOS 13.0, *) {
             mainView.clipsToBounds = true
