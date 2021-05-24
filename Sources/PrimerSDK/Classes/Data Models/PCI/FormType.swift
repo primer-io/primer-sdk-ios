@@ -50,15 +50,15 @@ enum FormType {
             case .doublelined:
                 return [
                     [.cardNumber],
-                    [.cardholderName],
                     [.expiryDate],
-                    [.cvc]
+                    [.cvc],
+                    [.cardholderName]
                 ]
             default:
                 return [
                     [.cardNumber],
-                    [.cardholderName],
-                    [.expiryDate, .cvc]
+                    [.expiryDate, .cvc],
+                    [.cardholderName]
                 ]
             }
         }
