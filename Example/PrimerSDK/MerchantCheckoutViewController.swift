@@ -105,10 +105,6 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showCheckout(self, flow: .defaultWithVault)
     }
     
-    @objc func keyboardWillHide(notification: NSNotification) {
-        self.view.layoutIfNeeded()
-    }
-    
 }
 
 // MARK: - PRIMER DELEGATE
