@@ -2,7 +2,7 @@
 
 import UIKit
 
-class PrimerViewController: UIViewController {
+internal class PrimerViewController: UIViewController {
     
     func hideKeyboardWhenTappedAround() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(PrimerViewController.dismissKeyboard))
