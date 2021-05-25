@@ -107,17 +107,6 @@ internal extension String {
         return String((0..<length).map { _ in letters.randomElement()! })
     }
 
-    func toAttributedString(substringsWithAttributes: [String: [NSAttributedString.Key: Any]]) -> NSAttributedString {
-        let mutableAttString = NSMutableAttributedString(string: self)
-        let text = NSString(string: self)
-        substringsWithAttributes.forEach { (arg0) in
-            let (key, value) = arg0
-            let range = text.range(of: key)
-            mutableAttString.addAttributes(value, range: range)
-        }
-        return mutableAttString
-    }
-
     var isValidAccountNumber: Bool {
         return !self.isEmpty
     }
