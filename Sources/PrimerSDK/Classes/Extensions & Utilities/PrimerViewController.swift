@@ -14,22 +14,6 @@ internal class PrimerViewController: UIViewController {
         view.endEditing(true)
     }
 
-    @objc func keyboardWillShow(notification: NSNotification) {
-        let height = UIScreen.main.bounds.height - view.frame.height
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y.rounded() == height.rounded() {
-                self.view.frame.origin.y -= keyboardSize.height
-            }
-        }
-    }
-
-    @objc func keyboardWillHide(notification: NSNotification) {
-        let height = UIScreen.main.bounds.height - view.frame.height
-        if self.view.frame.origin.y.rounded() != height.rounded() {
-            self.view.frame.origin.y = height.rounded()
-        }
-    }
-
     func addLoadingView(_ indicator: UIActivityIndicatorView) {
         indicator.color = .black
         view.addSubview(indicator)
