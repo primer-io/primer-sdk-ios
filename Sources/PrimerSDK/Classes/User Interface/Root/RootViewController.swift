@@ -141,20 +141,20 @@ internal class RootViewController: PrimerViewController {
     private func addKeyboardObservers() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyboardWillShow2),
+            selector: #selector(keyboardWillShow),
             name: UIResponder.keyboardWillShowNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyboardWillHide2),
+            selector: #selector(keyboardWillHide),
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
     }
     
     @objc
-    func keyboardWillShow2(notification: NSNotification) {
+    private func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (
             notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
         )?.cgRectValue {
@@ -172,7 +172,7 @@ internal class RootViewController: PrimerViewController {
     }
     
     @objc
-    func keyboardWillHide2(notification: NSNotification) {
+    private func keyboardWillHide(notification: NSNotification) {
         if let keyboardSize = (
             notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
         )?.cgRectValue {
@@ -184,12 +184,12 @@ internal class RootViewController: PrimerViewController {
     }
     
     @objc
-    func handleTap(_ sender: UITapGestureRecognizer) {
+    private func handleTap(_ sender: UITapGestureRecognizer) {
         dismiss(animated: true, completion: nil)
     }
 
     @objc
-    func panGestureRecognizerAction(sender: UIPanGestureRecognizer) {
+    private func panGestureRecognizerAction(sender: UIPanGestureRecognizer) {
         let translation = sender.translation(in: view)
 
         heightConstraint?.constant = currentHeight - translation.y
