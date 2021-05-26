@@ -26,7 +26,6 @@ var mockSettings = PrimerSettings(
     amount: 200,
     currency: .EUR,
     countryCode: .fr,
-    applePayEnabled: false,
     urlScheme: "urlScheme",
     urlSchemeIdentifier: "urlSchemeIdentifier",
     orderItems: [try! OrderItem(name: "foo", unitAmount: 200, quantity: 1)]
