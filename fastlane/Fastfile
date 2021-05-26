@@ -25,7 +25,6 @@ platform :ios do
 
       match(
         type: "development",
-        clone_branch_directly: true,
         readonly: true,
         skip_provisioning_profiles: true,
       )
