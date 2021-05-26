@@ -52,3 +52,4 @@ jobs:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
           FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+          FASTLANE_SESSION: ${{ SECRETS.FASTLANE_SESSION }}
