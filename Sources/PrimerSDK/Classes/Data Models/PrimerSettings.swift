@@ -9,7 +9,6 @@ protocol PrimerSettingsProtocol {
     var currency: Currency? { get }
     var merchantIdentifier: String? { get }
     var countryCode: CountryCode? { get }
-    var applePayEnabled: Bool { get }
     var klarnaSessionType: KlarnaSessionType? { get }
     var klarnaPaymentDescription: String? { get }
     var customerId: String? { get }
@@ -57,7 +56,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var currency: Currency?
     internal(set) public var merchantIdentifier: String?
     internal(set) public var countryCode: CountryCode?
-    internal(set) public var applePayEnabled: Bool
     internal(set) public var klarnaSessionType: KlarnaSessionType?
     internal(set) public var klarnaPaymentDescription: String?
     internal(set) public var customerId: String?
@@ -95,7 +93,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         amount: Int? = nil,
         currency: Currency? = nil,
         countryCode: CountryCode? = nil,
-        applePayEnabled: Bool = false,
         klarnaSessionType: KlarnaSessionType? = nil,
         klarnaPaymentDescription: String? = nil,
         urlScheme: String? = nil,
@@ -112,7 +109,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
     ) {
         self.amount = amount
         self.currency = currency
-        self.applePayEnabled = applePayEnabled
         self.klarnaSessionType = klarnaSessionType
         self.klarnaPaymentDescription = klarnaPaymentDescription
         self.customerId = customerId

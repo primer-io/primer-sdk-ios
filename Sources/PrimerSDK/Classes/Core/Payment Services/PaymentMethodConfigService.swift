@@ -45,11 +45,7 @@ class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                 let viewModels = state.viewModels
                 if (viewModels.contains(where: { model in model.type == .applePay})) {
                     var arr = viewModels.filter({ model in model.type != .applePay})
-
-                    if settings.applePayEnabled == true {
-                        arr.insert(PaymentMethodViewModel(type: .applePay), at: 0)
-                    }
-
+                    arr.insert(PaymentMethodViewModel(type: .applePay), at: 0)
                     state.viewModels = arr
                 }
 

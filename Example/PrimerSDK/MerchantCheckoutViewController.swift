@@ -37,7 +37,6 @@ class MerchantCheckoutViewController: UIViewController {
         merchantIdentifier: "merchant.primer.dev.evangelos",
         currency: .EUR,
         countryCode: .fr,
-        applePayEnabled: true,
         businessDetails: BusinessDetails(
             name: "My Business",
             address: Address(
@@ -58,7 +57,6 @@ class MerchantCheckoutViewController: UIViewController {
         amount: 100,
         currency: .EUR,
         countryCode: .fr,
-        applePayEnabled: false,
         klarnaSessionType: .recurringPayment,
         klarnaPaymentDescription: nil,
         urlScheme: "primer.io://",
