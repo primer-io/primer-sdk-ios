@@ -1,6 +1,5 @@
 #if canImport(UIKit)
 
-import PassKit
 import UIKit
 
 // swiftlint:disable identifier_name

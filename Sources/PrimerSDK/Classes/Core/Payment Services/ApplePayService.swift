@@ -20,7 +20,7 @@ enum ApplePayType {
 class ApplePayService: NSObject, ApplePayServiceProtocol {
     
     deinit {
-        print("ApplePayService deinit")
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {

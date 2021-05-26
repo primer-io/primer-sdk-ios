@@ -109,9 +109,7 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
                 DispatchQueue.main.async { [weak self] in
                     let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
                     appleViewModel.payWithApple { (err) in
-                        if let err = err {
-                            print(err)
-                        }
+
                     }
                 }
             })

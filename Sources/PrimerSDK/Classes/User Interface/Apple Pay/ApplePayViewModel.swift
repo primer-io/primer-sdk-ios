@@ -142,7 +142,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
             let request = PKPaymentRequest()
             request.currencyCode = applePayRequest.currency.rawValue
             request.countryCode = applePayRequest.countryCode.rawValue
-            request.merchantIdentifier = "merchant.primer.dev.evangelos"
+            request.merchantIdentifier = merchantIdentifier
             request.merchantCapabilities = [.capability3DS]
             request.supportedNetworks = supportedNetworks
             request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
@@ -297,7 +297,7 @@ extension ApplePayViewModel: PKPaymentAuthorizationViewControllerDelegate {
     
 }
 
-extension PKPaymentMethodType {
+internal extension PKPaymentMethodType {
     
     var primerValue: String? {
         switch self {
