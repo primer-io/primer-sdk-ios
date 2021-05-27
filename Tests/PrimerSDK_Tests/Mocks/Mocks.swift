@@ -226,6 +226,14 @@ class MockDirectDebitService: DirectDebitServiceProtocol {
 }
 
 class MockRouter: RouterDelegate {
+    func presentSuccessScreen(for successScreenType: SuccessScreenType) {
+        
+    }
+    
+    func presentErrorScreen(with err: Error) {
+        
+    }
+    
     var root: RootViewController?
     
     func setRoot(_ root: RootViewController) {
