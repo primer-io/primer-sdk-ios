@@ -13,54 +13,25 @@ import PassKit
 public enum PaymentNetwork: String {
     
     case chinaUnionPay
-    
     case discover
-    
-    @available(iOS 12.0, *)
     case eftpos
-    
-    @available(iOS 12.0, *)
     case electron
-    
-    @available(iOS 12.1.1, *)
     case elo
-
-    @available(iOS 10.3, *)
     case idCredit
-    
     case interac
-
-    @available(iOS 10.1, *)
     case jcb
-
-    @available(iOS 12.1.1, *)
     case mada
-
-    @available(iOS 12.0, *)
     case maestro
-
     case masterCard
-    
     case privateLabel
-
-    @available(iOS 10.3, *)
     case quicPay
-
-    @available(iOS 10.1, *)
     case suica
-
     case visa
-
-    @available(iOS 12.0, *)
     case vPay
-
-    @available(iOS 14.0, *)
     case barcode
-
-    @available(iOS 14.0, *)
     case girocard
     
-    var applePayPaymentNetwork: PKPaymentNetwork {
+    var applePayPaymentNetwork: PKPaymentNetwork? {
         switch self {
         case .chinaUnionPay:
             return .chinaUnionPay
@@ -70,25 +41,25 @@ public enum PaymentNetwork: String {
             if #available(iOS 12.0, *) {
                 return .eftpos
             } else {
-                fatalError()
+                return nil
             }
         case .electron:
             if #available(iOS 12.0, *) {
                 return .electron
             } else {
-                fatalError()
+                return nil
             }
         case .elo:
             if #available(iOS 12.1.1, *) {
                 return .elo
             } else {
-                fatalError()
+                return nil
             }
         case .idCredit:
             if #available(iOS 10.3, *) {
                 return .idCredit
             } else {
-                fatalError()
+                return nil
             }
         case .interac:
             return .interac
@@ -96,19 +67,19 @@ public enum PaymentNetwork: String {
             if #available(iOS 10.1, *) {
                 return .JCB
             } else {
-                fatalError()
+                return nil
             }
         case .mada:
             if #available(iOS 12.1.1, *) {
                 return .mada
             } else {
-                fatalError()
+                return nil
             }
         case .maestro:
             if #available(iOS 12.0, *) {
                 return .maestro
             } else {
-                fatalError()
+                return nil
             }
         case .masterCard:
             return .masterCard
@@ -118,13 +89,13 @@ public enum PaymentNetwork: String {
             if #available(iOS 10.3, *) {
                 return .quicPay
             } else {
-                fatalError()
+                return nil
             }
         case .suica:
             if #available(iOS 10.1, *) {
                 return .suica
             } else {
-                fatalError()
+                return nil
             }
         case .visa:
             return .visa
@@ -132,19 +103,19 @@ public enum PaymentNetwork: String {
             if #available(iOS 12.0, *) {
                 return .vPay
             } else {
-                fatalError()
+                return nil
             }
         case .barcode:
             if #available(iOS 14.0, *) {
                 return .barcode
             } else {
-                fatalError()
+                return nil
             }
         case .girocard:
             if #available(iOS 14.0, *) {
                 return .girocard
             } else {
-                fatalError()
+                return nil
             }
         }
     }
