@@ -23,9 +23,20 @@ platform :ios do
         podfile: "./Example/Podfile"
       )
 
+      create_keychain(
+        name: ENV["MATCH_KEYCHAIN_NAME"],
+        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+        default_keychain: true,
+        unlock: true,
+        timeout: 3600,
+        lock_when_sleeps: true
+      )
+
       match(
         type: "development",
         readonly: true,
+        keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
+        keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
       )
 
       build_app(
