@@ -48,7 +48,6 @@ platform :ios do
       )
 
       firebase_app_distribution(
-          service_credentials_file: "firebase_credentials.json",
           app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
           testers: "carleriksson92@gmail.com",
           release_notes: "Lots of amazing new features to test out!"
