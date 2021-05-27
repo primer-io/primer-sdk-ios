@@ -110,13 +110,8 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                         if let err = err {
                             DispatchQueue.main.async {
                                 Primer.shared.presentingViewController?.dismiss(animated: true, completion: {
-                                    if !settings.hasDisabledSuccessScreen {
-                                        Primer.shared.root = RootViewController()
-                                        let router: RouterDelegate = DependencyContainer.resolve()
-                                        router.setRoot(Primer.shared.root!)
-                                        router.show(.error(error: err))
-                                        Primer.shared.presentingViewController?.present(Primer.shared.root!, animated: true)
-                                    }
+                                    let router: RouterDelegate = DependencyContainer.resolve()
+                                    router.presentErrorScreen(with: err)
                                 })
                                 
                                 Primer.shared.delegate?.checkoutFailed(with: err)
@@ -144,13 +139,8 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                     ErrorHandler.shared.handle(error: err)
                                     DispatchQueue.main.async {
                                         Primer.shared.presentingViewController?.dismiss(animated: true, completion: {
-                                            if !settings.hasDisabledSuccessScreen {
-                                                Primer.shared.root = RootViewController()
-                                                let router: RouterDelegate = DependencyContainer.resolve()
-                                                router.setRoot(Primer.shared.root!)
-                                                router.show(.error(error: err))
-                                                Primer.shared.presentingViewController?.present(Primer.shared.root!, animated: true)
-                                            }
+                                            let router: RouterDelegate = DependencyContainer.resolve()
+                                            router.presentErrorScreen(with: err)
                                         })
                                         
                                         Primer.shared.delegate?.checkoutFailed(with: err)
@@ -167,16 +157,13 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                             Primer.shared.delegate?.authorizePayment(token, { (err) in
                                                 DispatchQueue.main.async {
                                                     Primer.shared.presentingViewController?.dismiss(animated: true, completion: {
-                                                        if !settings.hasDisabledSuccessScreen {
-                                                            Primer.shared.root = RootViewController()
-                                                            let router: RouterDelegate = DependencyContainer.resolve()
-                                                            router.setRoot(Primer.shared.root!)
-                                                            if let err = err {
-                                                                router.show(.error(error: err))
-                                                            } else {
-                                                                router.show(.success(type: .regular))
-                                                            }
-                                                            Primer.shared.presentingViewController?.present(Primer.shared.root!, animated: true)
+                                                        let router: RouterDelegate = DependencyContainer.resolve()
+                                                        
+                                                        if let err = err {
+                                                            
+                                                            router.presentErrorScreen(with: err)
+                                                        } else {
+                                                            router.presentSuccessScreen(for: .regular)
                                                         }
                                                     })
                                                     

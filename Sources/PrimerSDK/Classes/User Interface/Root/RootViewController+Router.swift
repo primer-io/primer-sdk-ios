@@ -16,6 +16,8 @@ protocol RouterDelegate: class {
     func pop()
     func popAllAndShow(_ route: Route)
     func popAndShow(_ route: Route)
+    func presentSuccessScreen(for successScreenType: SuccessScreenType)
+    func presentErrorScreen(with err: Error)
 }
 
 class Router: RouterDelegate {
@@ -67,6 +69,29 @@ class Router: RouterDelegate {
         guard let vc = route.viewController else { return }
         root?.popAndShow(vc, height: route.height)
     }
+    
+    func presentErrorScreen(with err: Error) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if !settings.hasDisabledSuccessScreen {
+            Primer.shared.root = RootViewController()
+            setRoot(Primer.shared.root!)
+            show(.error(error: err))
+            Primer.shared.presentingViewController?.present(Primer.shared.root!, animated: true)
+        }
+    }
+    
+    func presentSuccessScreen(for successScreenType: SuccessScreenType = .regular) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if !settings.hasDisabledSuccessScreen {
+            Primer.shared.root = RootViewController()
+            setRoot(Primer.shared.root!)
+            show(.success(type: successScreenType))
+            Primer.shared.presentingViewController?.present(Primer.shared.root!, animated: true)
+        }
+    }
+    
 }
 
 fileprivate extension RootViewController {
