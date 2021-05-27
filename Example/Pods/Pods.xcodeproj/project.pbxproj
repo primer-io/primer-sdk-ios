@@ -70,7 +70,6 @@
 		6DCF943EE41FCA36BF5E5BE8E4F16011 /* Pods-PrimerSDK_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D66C3890C3566F38C935A2FFD9A237B0 /* Pods-PrimerSDK_Tests-dummy.m */; };
 		724DE9DF5BF8C8C66F7E57676FCCEA0D /* ErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E03A8A61B65E5F03306D9AD025E748FD /* ErrorViewController.swift */; };
 		79ED04DC39888C80BB6B334CA338E279 /* PaymentMethodToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B402ABD173F1859FE78A4CC6006B2F /* PaymentMethodToken.swift */; };
-		7B0ECB25CE5DC690707E78BDDEAAD8AD /* ApplePayViewController+PassKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8659AF5FFBF7EA6FB96CA4315D9F7526 /* ApplePayViewController+PassKit.swift */; };
 		8297CE3FB64B4DBCCD77057747F7029E /* FormTextFieldType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C359D765DB806C8F465C79A1D786FC /* FormTextFieldType.swift */; };
 		83A6428FF804080D22817FFD05E010D1 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83B00860F0A67A64EA471CACC17723E /* PaymentMethod.swift */; };
 		8740665FC8E4570721C9590D12693285 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80B3332275304E5FB1FEB0CE87D6328 /* RootViewController.swift */; };
@@ -223,7 +222,6 @@
 		77A1906FAC6A73F2BF05CAEA263A30E2 /* PaymentMethodConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfig.swift; sourceTree = "<group>"; };
 		79E0478470939DEE99A8D4EA867A9B28 /* TokenizationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
 		7F8EC8E6AF461334E1E5943D79D4A960 /* ScannerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
-		8659AF5FFBF7EA6FB96CA4315D9F7526 /* ApplePayViewController+PassKit.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ApplePayViewController+PassKit.swift"; sourceTree = "<group>"; };
 		87FDFCFE00D53F655834E4DBEEF8681C /* ApplePayViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePayViewController.swift; sourceTree = "<group>"; };
 		887ACBC9DA4B85829A9F585DB618F627 /* ResourceBundle-PrimerResources-PrimerSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-PrimerResources-PrimerSDK-Info.plist"; sourceTree = "<group>"; };
 		8AEF959EDB9AE08E9825789EC5B3393F /* AppState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -556,7 +554,6 @@
 			isa = PBXGroup;
 			children = (
 				87FDFCFE00D53F655834E4DBEEF8681C /* ApplePayViewController.swift */,
-				8659AF5FFBF7EA6FB96CA4315D9F7526 /* ApplePayViewController+PassKit.swift */,
 				5409EA79BCA278257473D1DF8AACD231 /* ApplePayViewModel.swift */,
 			);
 			path = "Apple Pay";
@@ -976,7 +973,6 @@
 			files = (
 				471F0E11289320BB7E4BD3D44B168147 /* AlertController.swift in Sources */,
 				B4033062F8D3DF579CFE1A291B1E4032 /* ApplePay.swift in Sources */,
-				7B0ECB25CE5DC690707E78BDDEAAD8AD /* ApplePayViewController+PassKit.swift in Sources */,
 				68ED50C8CC9026E9AFE802D5F09520E7 /* ApplePayViewController.swift in Sources */,
 				4E972CE4F7C8BE201EAE417A87B6880F /* ApplePayViewModel.swift in Sources */,
 				D80EF023837180AF801DFA1CADC86155 /* AppState.swift in Sources */,
