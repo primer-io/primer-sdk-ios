@@ -50,7 +50,8 @@ internal class VaultService: VaultServiceProtocol {
                                     case .success:
                                         service.netceteraAuth(paymentMethod: paymentMethod) { (authResult) in
                                             switch authResult {
-                                            case .success(let threeDSecureAuthData):
+                                            case .success(let transaction):
+                                                let threeDSecureAuthData = try! transaction.buildThreeDSecureAuthData()
                                                 print("3DS SDK Data: \(threeDSecureAuthData)")
                                                 
 //                                                let threeDSecureDevice = ThreeDSecureDevice(sdkTransactionId: sdkTransactionId)
@@ -67,7 +68,13 @@ internal class VaultService: VaultServiceProtocol {
                                                     } else if let val = res?.authentication as? ThreeDSSkippedAPIResponse {
                                                         print(val)
                                                     } else if let val = res?.authentication as? ThreeDSMethodAPIResponse {
-                                                        print(val)
+                                                        let window = UIWindow(frame: UIScreen.main.bounds)
+                                                        window.rootViewController = ClearViewController()
+                                                        window.backgroundColor = UIColor.clear
+                                                        window.windowLevel = UIWindow.Level.alert
+                                                        
+                                                        service.performChallenge(on: transaction, with: val, presentOn: window.rootViewController!)
+                                                        
                                                     } else if let val = res?.authentication as? ThreeDSBrowserV2ChallengeAPIResponse {
                                                         print(val)
                                                     } else if let val = res?.authentication as? ThreeDSAppV2ChallengeAPIResponse {
@@ -78,6 +85,8 @@ internal class VaultService: VaultServiceProtocol {
                                                         print(val)
                                                     } else if let val = res?.authentication as? ThreeDSSuccessAPIResponse {
                                                         print(val)
+                                                    } else {
+                                                        
                                                     }
                                                 }
                                             case .failure(let err):

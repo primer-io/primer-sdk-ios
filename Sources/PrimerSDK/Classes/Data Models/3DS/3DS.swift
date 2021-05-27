@@ -154,15 +154,15 @@ struct ThreeDSecureBeginAuthResponse: Codable {
             authentication = threeDSSkippedAPIResponse
         } else if let threeDSAppV2ChallengeAPIResponse = try? container.decode(ThreeDSAppV2ChallengeAPIResponse.self, forKey: .authentication) {
             authentication = threeDSAppV2ChallengeAPIResponse
-        } else if let threeDSMethodAPIResponse = try? container.decode(ThreeDSMethodAPIResponse.self, forKey: .authentication) {
-            authentication = threeDSMethodAPIResponse
-        } else if let threeDSBrowserV2ChallengeAPIResponse = try? container.decode(ThreeDSBrowserV2ChallengeAPIResponse.self, forKey: .authentication) {
+        }else if let threeDSBrowserV2ChallengeAPIResponse = try? container.decode(ThreeDSBrowserV2ChallengeAPIResponse.self, forKey: .authentication) {
             authentication = threeDSBrowserV2ChallengeAPIResponse
         } else if let threeDSBrowserV1ChallengeAPIResponse = try? container.decode(ThreeDSBrowserV1ChallengeAPIResponse.self, forKey: .authentication) {
             authentication = threeDSBrowserV1ChallengeAPIResponse
         } else if let threeDSSuccessAPIResponse = try? container.decode(ThreeDSSuccessAPIResponse.self, forKey: .authentication) {
             authentication = threeDSSuccessAPIResponse
-        } else {
+        } else if let threeDSMethodAPIResponse = try? container.decode(ThreeDSMethodAPIResponse.self, forKey: .authentication) {
+            authentication = threeDSMethodAPIResponse
+        }  else {
             let err = ThreeDSError.failedToParseResponse
             throw err
         }
@@ -178,17 +178,26 @@ struct ThreeDSecureBeginAuthResponse: Codable {
 protocol ThreeDSecureBeginAuthResponseAuthentication: Codable {}
 
 struct ThreeDSSkippedAPIResponse: ThreeDSecureBeginAuthResponseAuthentication, Codable {
-    let responseCode: ThreeDSecureResponseCode
-    let protocolVersion: String?
-    let transactionId: String?
+    let acsChallengeMandated: Int?
     let acsOperatorId: String?
     let acsReferenceNumber: String?
+    let acsRenderingType: ACSRenderingType?
+    let acsSignedContent: String?
     let acsTransactionId: String?
     let dsReferenceNumber: String?
     let dsTransactionId: String?
     let eci: String?
+    let protocolVersion: String?
+    let responseCode: ThreeDSecureResponseCode
     let skippedReasonCode: ThreeDSecureSkippedCode
     let skippedReasonText: String
+    let statusUrl: String?
+    let transactionId: String?
+}
+
+struct ACSRenderingType: Codable {
+    let acsInterface: String?
+    let acsUiTemplate: String?
 }
 
 struct ThreeDSMethodAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
@@ -197,6 +206,7 @@ struct ThreeDSMethodAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
     let transactionId: String
     let acsOperatorId: String?
     let acsReferenceNumber: String?
+    let acsSignedContent: String?
     let acsTransactionId: String?
     let dsReferenceNumber: String?
     let dsTransactionId: String?
