@@ -49,7 +49,8 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
                     state.viewModels.append(PaymentMethodViewModel(type: type))
                 })
 
-                // ensure Apple Pay is always first if present.
+                // Ensure Apple Pay is always first if present.
+                // This is because of Apple's guidelines.
                 let viewModels = state.viewModels
                 if (viewModels.contains(where: { model in model.type == .applePay})) {
                     var arr = viewModels.filter({ model in model.type != .applePay})
