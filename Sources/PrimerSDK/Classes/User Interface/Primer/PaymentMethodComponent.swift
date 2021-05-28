@@ -65,7 +65,8 @@ internal class PaymentMethodComponent: UIView {
             addSubview(iconView)
             configureIconView(icon: method.toIconName()?.image, color: theme.colorTheme.text1)
             anchorIconView(inRelationToLabel: false)
-        default: break
+        default:
+            break
         }
     }
 

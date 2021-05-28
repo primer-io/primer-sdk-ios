@@ -130,6 +130,8 @@ internal class RootViewController: UIViewController {
             router.show(.oAuth(host: .klarna))
         case .vault:
             router.show(.vaultCheckout)
+        case .checkoutWithApplePay:
+            break
         }
     }
     
