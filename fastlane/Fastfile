@@ -53,6 +53,72 @@ platform :ios do
           testers: "carleriksson92@gmail.com",
           release_notes: "Lots of amazing new features to test out!"
       )
+  end
 
+  lane :preview do
+    pr_number = ENV["PR_NUMBER"]
+    if(!pr_number) then 
+        puts "NO PR NUMBER"
+        next
+    end
+
+    appetize_api_token = ENV['APPETIZE_API_TOKEN']
+
+    puts "PR_NUMBER: " + pr_number
+    version_name = "preview-" + pr_number
+
+    cocoapods(
+      clean_install: true,
+      podfile: "./Example/Podfile"
+    )
+
+    create_keychain(
+        name: ENV["MATCH_KEYCHAIN_NAME"],
+        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+        default_keychain: true,
+        unlock: true,
+        timeout: 3600,
+        lock_when_sleeps: true
+      )
+
+    match(
+      type: "development",
+      readonly: true,
+      keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
+      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+    )
+
+    build_app(
+      scheme: "PrimerSDK-Example",
+      workspace: "./Example/PrimerSDK.xcworkspace",
+      configuration: "Debug",
+      export_method: "development",
+      archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
+      skip_package_ipa: true,
+      skip_package_pkg: true,
+      sdk: "iphonesimulator", # Appetize needs a simulator app
+      clean: true,
+    )
+
+    # Appetize needs the .app to be zipped
+    zip(
+      path: "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app",
+      output_path: "./PrimerSDK_Example.zip",
+      symlinks: true
+    )
+
+    # Find public key of appetize
+    uri = URI('https://livedemostore.primer.io/appetize/ios/' + version_name)
+    public_key = Net::HTTP.get(uri)
+    puts "public_key: " + public_key
+
+    # Upload to Appetize
+    appetize(
+      path: "./PrimerSDK_Example.zip",
+      platform: "ios",
+      api_token: appetize_api_token,
+      public_key: public_key,
+      note: version_name
+    )
   end
 end
