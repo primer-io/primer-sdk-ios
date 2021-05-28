@@ -72,6 +72,11 @@ platform :ios do
       podfile: "./Example/Podfile"
     )
 
+    increment_version_number(
+      version_number: version_name,
+      xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    )
+
     create_keychain(
         name: ENV["MATCH_KEYCHAIN_NAME"],
         password: ENV["MATCH_KEYCHAIN_PASSWORD"],
