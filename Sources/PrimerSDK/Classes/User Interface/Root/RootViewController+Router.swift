@@ -20,7 +20,7 @@ protocol RouterDelegate: class {
     func presentErrorScreen(with err: Error)
 }
 
-class Router: RouterDelegate {
+internal class Router: RouterDelegate {
 
     weak var root: RootViewController?
     

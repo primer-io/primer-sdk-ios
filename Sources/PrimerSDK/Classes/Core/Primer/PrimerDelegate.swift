@@ -32,7 +32,7 @@ public protocol PrimerDelegate: class {
     func checkoutFailed(with error: Error)
 }
 
-class MockPrimerDelegate: PrimerDelegate {
+internal class MockPrimerDelegate: PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
 

@@ -9,7 +9,7 @@
 
 import Foundation
 
-extension String {
+internal extension String {
 
     var withoutWhiteSpace: String {
         return self.replacingOccurrences(of: " ", with: "")

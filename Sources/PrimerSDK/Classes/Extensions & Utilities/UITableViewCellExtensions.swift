@@ -8,7 +8,7 @@
 #if canImport(UIKit)
 import UIKit
 
-extension UITableViewCell {
+internal extension UITableViewCell {
     func addTitle(_ text: String, theme: PrimerThemeProtocol) {
         let titleView = UILabel()
         titleView.text = text

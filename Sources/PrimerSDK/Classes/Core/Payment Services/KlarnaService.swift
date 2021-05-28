@@ -7,13 +7,13 @@
 
 #if canImport(UIKit)
 
-protocol KlarnaServiceProtocol {
+internal protocol KlarnaServiceProtocol {
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func createKlarnaCustomerToken(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
     func finalizePaymentSession(_ completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void)
 }
 
-class KlarnaService: KlarnaServiceProtocol {
+internal class KlarnaService: KlarnaServiceProtocol {
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

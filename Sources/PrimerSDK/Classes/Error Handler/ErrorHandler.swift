@@ -9,7 +9,7 @@
 
 import Foundation
 
-class ErrorHandler {
+internal class ErrorHandler {
 
     static var shared = ErrorHandler()
 

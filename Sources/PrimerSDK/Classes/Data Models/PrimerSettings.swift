@@ -4,7 +4,7 @@ public typealias ClientTokenCallBack = (_ completionHandler: @escaping (Result<S
 public typealias PaymentMethodTokenCallBack = (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
 public typealias CheckoutDismissalCallback = () -> Void
 
-protocol PrimerSettingsProtocol {
+internal protocol PrimerSettingsProtocol {
     var amount: Int? { get }
     var currency: Currency? { get }
     var merchantIdentifier: String? { get }
@@ -138,7 +138,7 @@ public struct BusinessDetails: Codable {
     }
 }
 
-class MockDelegate: PrimerDelegate {
+internal class MockDelegate: PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
 

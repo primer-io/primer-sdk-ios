@@ -7,7 +7,7 @@
 
 import Foundation
 
-class JSONParser: Parser {
+internal class JSONParser: Parser {
     private let jsonDecoder = JSONDecoder()
 
     func parse<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {

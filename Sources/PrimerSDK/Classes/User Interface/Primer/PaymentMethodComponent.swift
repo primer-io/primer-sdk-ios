@@ -9,7 +9,7 @@
 
 import UIKit
 
-class PaymentMethodComponent: UIView {
+internal class PaymentMethodComponent: UIView {
 
     let label = UILabel()
     let iconView = UIImageView()
@@ -74,7 +74,7 @@ class PaymentMethodComponent: UIView {
 }
 
 // MARK: Configuration
-extension PaymentMethodComponent {
+internal extension PaymentMethodComponent {
     func configureLabel(
         with title: String,
         isBold: Bool = false
@@ -97,7 +97,7 @@ extension PaymentMethodComponent {
 }
 
 // MARK: Constraints
-extension PaymentMethodComponent {
+internal extension PaymentMethodComponent {
     func anchorLabel() {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.heightAnchor.constraint(equalToConstant: 14).isActive = true

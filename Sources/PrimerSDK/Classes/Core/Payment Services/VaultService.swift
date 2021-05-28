@@ -2,12 +2,12 @@ import Foundation
 
 #if canImport(UIKit)
 
-protocol VaultServiceProtocol {
+internal protocol VaultServiceProtocol {
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void)
     func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void)
 }
 
-class VaultService: VaultServiceProtocol {
+internal class VaultService: VaultServiceProtocol {
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

@@ -2,18 +2,18 @@
 
 import UIKit
 
-protocol VaultPaymentMethodViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
+internal protocol VaultPaymentMethodViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
     func cancel()
     func edit()
     func showPayPal()
 }
 
-protocol ReactiveView: UIView {
+internal protocol ReactiveView: UIView {
     var indicator: UIActivityIndicatorView { get }
     func render(isBusy: Bool)
 }
 
-class VaultPaymentMethodView: UIView, ReactiveView {
+internal class VaultPaymentMethodView: UIView, ReactiveView {
 
     let indicator = UIActivityIndicatorView()
     let navBar = UINavigationBar()
@@ -40,7 +40,7 @@ class VaultPaymentMethodView: UIView, ReactiveView {
 }
 
 // MARK: Configuration
-extension VaultPaymentMethodView {
+internal extension VaultPaymentMethodView {
     private func configureNavBar() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
@@ -83,7 +83,7 @@ extension VaultPaymentMethodView {
 }
 
 // MARK: Anchoring
-extension VaultPaymentMethodView {
+internal extension VaultPaymentMethodView {
     private func anchorNavBar() {
         navBar.translatesAutoresizingMaskIntoConstraints = false
         navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true

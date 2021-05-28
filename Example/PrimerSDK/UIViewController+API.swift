@@ -28,6 +28,15 @@ enum NetworkError: Error {
 }
 
 extension UIViewController {
+    
+    func keyboardWillShow(notification: NSNotification) {
+        let height = UIScreen.main.bounds.height - view.frame.height
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y.rounded() == height.rounded() {
+                self.view.frame.origin.y -= keyboardSize.height
+            }
+        }
+    }
 
     func callApi(_ req: URLRequest, completion: @escaping (_ result: Result<Data, Error>) -> Void) {
         print("URL: \(req.url?.absoluteString)")
