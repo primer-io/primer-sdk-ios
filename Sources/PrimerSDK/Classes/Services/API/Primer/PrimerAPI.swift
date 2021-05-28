@@ -25,7 +25,7 @@ enum PrimerAPI: Endpoint {
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest)
 }
 
-extension PrimerAPI {
+internal extension PrimerAPI {
 
     // MARK: Base URL
     var baseURL: String? {

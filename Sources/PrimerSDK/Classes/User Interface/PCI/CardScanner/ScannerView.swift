@@ -2,11 +2,11 @@
 
 import UIKit
 
-protocol ScannerViewDelegate: class {
+internal protocol ScannerViewDelegate: class {
     func cancel()
 }
 
-class ScannerView: UIView {
+internal class ScannerView: UIView {
 
     let navBar = UINavigationBar()
     let descriptionLabel = UILabel()
@@ -44,7 +44,7 @@ class ScannerView: UIView {
 
 // MARK: Configuration
 
-extension ScannerView {
+internal extension ScannerView {
     private func configureNavBar() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         navBar.backgroundColor = theme.colorTheme.main1
@@ -82,7 +82,7 @@ extension ScannerView {
 
 // MARK: Anchoring
 
-extension ScannerView {
+internal extension ScannerView {
     private func anchorNavBar() {
         navBar.translatesAutoresizingMaskIntoConstraints = false
         navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true

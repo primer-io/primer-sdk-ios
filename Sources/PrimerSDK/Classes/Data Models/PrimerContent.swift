@@ -226,7 +226,7 @@ struct SingleFieldFormDirectDebitContent {
                                                        comment: "Add Bank Account - Single Field Form (Navigation bar title text)") }
 }
 
-protocol FormProtocol {
+internal protocol FormProtocol {
     var address: String { get }
     var cardForm: String { get }
     var name: String { get }
@@ -258,7 +258,7 @@ public struct FormTopTitles: FormProtocol {
     var bankAccount = ""
 }
 
-extension FormTopTitles {
+internal extension FormTopTitles {
     mutating func setTopTitle(_ text: String, for formType: PrimerFormType) {
         switch formType {
         case .address: address = text

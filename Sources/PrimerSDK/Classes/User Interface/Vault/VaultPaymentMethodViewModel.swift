@@ -1,13 +1,13 @@
 #if canImport(UIKit)
 
-protocol VaultPaymentMethodViewModelProtocol: class {
+internal protocol VaultPaymentMethodViewModelProtocol: class {
     var paymentMethods: [PaymentMethodToken] { get }
     var selectedId: String { get set }
     func reloadVault(with completion: @escaping (Error?) -> Void)
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void)
 }
 
-class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
+internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
 
     var paymentMethods: [PaymentMethodToken] {
         let state: AppStateProtocol = DependencyContainer.resolve()
@@ -53,7 +53,7 @@ class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
     }
 }
 
-class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
+internal class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
     
     var theme: PrimerTheme { return PrimerTheme() }
     var paymentMethods: [PaymentMethodToken] { return [] }
