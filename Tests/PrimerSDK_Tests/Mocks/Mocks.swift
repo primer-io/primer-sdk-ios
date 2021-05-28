@@ -26,10 +26,9 @@ var mockSettings = PrimerSettings(
     amount: 200,
     currency: .EUR,
     countryCode: .fr,
-    applePayEnabled: false,
     urlScheme: "urlScheme",
     urlSchemeIdentifier: "urlSchemeIdentifier",
-    orderItems: [OrderItem(name: "foo", unitAmount: 200, quantity: 1)]
+    orderItems: [try! OrderItem(name: "foo", unitAmount: 200, quantity: 1)]
 )
 
 class MockPrimerDelegate: PrimerDelegate {
@@ -76,8 +75,11 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
-    var localeData: LocaleData
+    var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
     
+    var merchantCapabilities: [MerchantCapability]?
+    
+    var supportedNetworks: [PaymentNetwork]?
     var isInitialLoadingHidden: Bool = false
     
     var klarnaPaymentDescription: String?
@@ -132,7 +134,6 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         self.clientTokenRequestCallback = clientTokenRequestCallback
         self.authorizePayment = authorizePayment
         self.onCheckoutDismiss = onCheckoutDismiss
-        self.localeData = LocaleData(languageCode: nil, regionCode: nil)
     }
 }
 
@@ -225,6 +226,16 @@ class MockDirectDebitService: DirectDebitServiceProtocol {
 }
 
 class MockRouter: RouterDelegate {
+    func presentSuccessScreen(for successScreenType: SuccessScreenType) {
+        
+    }
+    
+    func presentErrorScreen(with err: Error) {
+        
+    }
+    
+    var root: RootViewController?
+    
     func setRoot(_ root: RootViewController) {
 
     }

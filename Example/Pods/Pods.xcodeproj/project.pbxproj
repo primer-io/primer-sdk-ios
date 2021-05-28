@@ -20,6 +20,8 @@
 		0C8A4BC522C67B6BA3D451FD20ADBC7D /* CardScannerViewController+SimpleScanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C016036E93E2D93A4BA981AC0760533 /* CardScannerViewController+SimpleScanDelegate.swift */; };
 		1169543F9D457680BF91B15ADAE05732 /* OAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31F2C4B7A32C398FBAE4187BECBE340E /* OAuthViewModel.swift */; };
 		1336111E9871DC8F84F6AA0D299A4FDA /* TransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D059764D7C717DABDE67C6162FE3CEE /* TransitioningDelegate.swift */; };
+		15508A5A26298AB300517EDF /* PaymentNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15508A5926298AB300517EDF /* PaymentNetwork.swift */; };
+		15508A64262994F600517EDF /* ApplePayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15508A63262994F600517EDF /* ApplePayService.swift */; };
 		15A1D3B2DC0ABFB7AE0DF983BE5009D3 /* UserDefaultsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 441A677A6666C6F529C6BD1FE784C7E8 /* UserDefaultsExtension.swift */; };
 		15BF84DF26495A5100395210 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BF84DE26495A5100395210 /* WebViewController.swift */; };
 		1896C5AA029AB2440A6FFA0ECC2640DC /* sv.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 0F9B735D925E964A0E52A3F01B245351 /* sv.lproj */; };
@@ -61,14 +63,12 @@
 		65769D9354D2104520DF468887F42F96 /* PrimerContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DDE2B8BE26814FD518AC16C88E9E44 /* PrimerContent.swift */; };
 		67B8441B00F0BFEE4F5EF6F4AE3F2F83 /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D03B035767437923180E763A462A06C5 /* VaultService.swift */; };
 		67EF8C89F277170378E41070319E1CE4 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32901E4E14B6E05BA3F371E9E2A466DC /* DateExtension.swift */; };
-		68ED50C8CC9026E9AFE802D5F09520E7 /* ApplePayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FDFCFE00D53F655834E4DBEEF8681C /* ApplePayViewController.swift */; };
 		6C913AE303315480598A38DD96D209EA /* VaultPaymentMethodViewController+ReloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE259E0A3F3CD3EDB3985F4C693027C /* VaultPaymentMethodViewController+ReloadDelegate.swift */; };
 		6D6F3B8B51CF5B54449BCDF7D54D133A /* PaymentMethodConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905CF7E86B7997AD9FD16EF3AA6E9D9E /* PaymentMethodConfigService.swift */; };
 		6D8D595C42273649DC7F6B14D87537DF /* PayPal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7BB7A6605BE0A1D20BD04776EC5E7D /* PayPal.swift */; };
 		6DCF943EE41FCA36BF5E5BE8E4F16011 /* Pods-PrimerSDK_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D66C3890C3566F38C935A2FFD9A237B0 /* Pods-PrimerSDK_Tests-dummy.m */; };
 		724DE9DF5BF8C8C66F7E57676FCCEA0D /* ErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E03A8A61B65E5F03306D9AD025E748FD /* ErrorViewController.swift */; };
 		79ED04DC39888C80BB6B334CA338E279 /* PaymentMethodToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B402ABD173F1859FE78A4CC6006B2F /* PaymentMethodToken.swift */; };
-		7B0ECB25CE5DC690707E78BDDEAAD8AD /* ApplePayViewController+PassKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8659AF5FFBF7EA6FB96CA4315D9F7526 /* ApplePayViewController+PassKit.swift */; };
 		8297CE3FB64B4DBCCD77057747F7029E /* FormTextFieldType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C359D765DB806C8F465C79A1D786FC /* FormTextFieldType.swift */; };
 		83A6428FF804080D22817FFD05E010D1 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83B00860F0A67A64EA471CACC17723E /* PaymentMethod.swift */; };
 		8740665FC8E4570721C9590D12693285 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80B3332275304E5FB1FEB0CE87D6328 /* RootViewController.swift */; };
@@ -160,6 +160,8 @@
 		12644829CF51E6035C3A23E08715F31D /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		12710ACA0CDE088D991D7176FCBD943D /* ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReloadDelegate.swift; sourceTree = "<group>"; };
 		144599F293A9ECAF47681A3707264A7F /* PrimerSDK-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerSDK-prefix.pch"; sourceTree = "<group>"; };
+		15508A5926298AB300517EDF /* PaymentNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentNetwork.swift; sourceTree = "<group>"; };
+		15508A63262994F600517EDF /* ApplePayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayService.swift; sourceTree = "<group>"; };
 		15BF84DE26495A5100395210 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		174C412E3BB6379DFDF096236251C595 /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		1765BB07E9C04E3557F1A6B899F9A544 /* UITableViewCellExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITableViewCellExtensions.swift; sourceTree = "<group>"; };
@@ -219,8 +221,6 @@
 		77A1906FAC6A73F2BF05CAEA263A30E2 /* PaymentMethodConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfig.swift; sourceTree = "<group>"; };
 		79E0478470939DEE99A8D4EA867A9B28 /* TokenizationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
 		7F8EC8E6AF461334E1E5943D79D4A960 /* ScannerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
-		8659AF5FFBF7EA6FB96CA4315D9F7526 /* ApplePayViewController+PassKit.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ApplePayViewController+PassKit.swift"; sourceTree = "<group>"; };
-		87FDFCFE00D53F655834E4DBEEF8681C /* ApplePayViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePayViewController.swift; sourceTree = "<group>"; };
 		887ACBC9DA4B85829A9F585DB618F627 /* ResourceBundle-PrimerResources-PrimerSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-PrimerResources-PrimerSDK-Info.plist"; sourceTree = "<group>"; };
 		8AEF959EDB9AE08E9825789EC5B3393F /* AppState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		8EE259E0A3F3CD3EDB3985F4C693027C /* VaultPaymentMethodViewController+ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "VaultPaymentMethodViewController+ReloadDelegate.swift"; sourceTree = "<group>"; };
@@ -437,6 +437,7 @@
 				77A1906FAC6A73F2BF05CAEA263A30E2 /* PaymentMethodConfig.swift */,
 				B2B402ABD173F1859FE78A4CC6006B2F /* PaymentMethodToken.swift */,
 				696386D6965A4C9B53D2E4445E2788CE /* PaymentMethodTokenizationRequest.swift */,
+				15508A5926298AB300517EDF /* PaymentNetwork.swift */,
 				0A7BB7A6605BE0A1D20BD04776EC5E7D /* PayPal.swift */,
 				A0DDE2B8BE26814FD518AC16C88E9E44 /* PrimerContent.swift */,
 				0269F985581D9E4E7004251A20D4A8EF /* PrimerInternalSessionFlow.swift */,
@@ -550,8 +551,6 @@
 		929D45A210EDA2CDC0D1672C6AA31548 /* Apple Pay */ = {
 			isa = PBXGroup;
 			children = (
-				87FDFCFE00D53F655834E4DBEEF8681C /* ApplePayViewController.swift */,
-				8659AF5FFBF7EA6FB96CA4315D9F7526 /* ApplePayViewController+PassKit.swift */,
 				5409EA79BCA278257473D1DF8AACD231 /* ApplePayViewModel.swift */,
 			);
 			path = "Apple Pay";
@@ -728,6 +727,7 @@
 				905CF7E86B7997AD9FD16EF3AA6E9D9E /* PaymentMethodConfigService.swift */,
 				0E829399759D738A3B6AE16FB3E701A6 /* PayPalService.swift */,
 				D03B035767437923180E763A462A06C5 /* VaultService.swift */,
+				15508A63262994F600517EDF /* ApplePayService.swift */,
 			);
 			path = "Payment Services";
 			sourceTree = "<group>";
@@ -970,8 +970,6 @@
 			files = (
 				471F0E11289320BB7E4BD3D44B168147 /* AlertController.swift in Sources */,
 				B4033062F8D3DF579CFE1A291B1E4032 /* ApplePay.swift in Sources */,
-				7B0ECB25CE5DC690707E78BDDEAAD8AD /* ApplePayViewController+PassKit.swift in Sources */,
-				68ED50C8CC9026E9AFE802D5F09520E7 /* ApplePayViewController.swift in Sources */,
 				4E972CE4F7C8BE201EAE417A87B6880F /* ApplePayViewModel.swift in Sources */,
 				D80EF023837180AF801DFA1CADC86155 /* AppState.swift in Sources */,
 				F60222769431798B94C40E23832DB07F /* BundleExtension.swift in Sources */,
@@ -995,6 +993,7 @@
 				60F34B87AE2E37552A6DCA2122CF25F4 /* Endpoint.swift in Sources */,
 				8B203E261BD3421FA2478F81045AF1EC /* Error.swift in Sources */,
 				22F69E6097A342F4C2976BD25F82662C /* ErrorHandler.swift in Sources */,
+				15508A64262994F600517EDF /* ApplePayService.swift in Sources */,
 				724DE9DF5BF8C8C66F7E57676FCCEA0D /* ErrorViewController.swift in Sources */,
 				398EE80F742DAC3D53AD164A72A2943C /* ExternalViewModel.swift in Sources */,
 				8297CE3FB64B4DBCCD77057747F7029E /* FormTextFieldType.swift in Sources */,
@@ -1021,6 +1020,7 @@
 				6D6F3B8B51CF5B54449BCDF7D54D133A /* PaymentMethodConfigService.swift in Sources */,
 				79ED04DC39888C80BB6B334CA338E279 /* PaymentMethodToken.swift in Sources */,
 				EFB2ECD04F4A04AD4AC5FFFBB84B0B02 /* PaymentMethodTokenizationRequest.swift in Sources */,
+				15508A5A26298AB300517EDF /* PaymentNetwork.swift in Sources */,
 				6D8D595C42273649DC7F6B14D87537DF /* PayPal.swift in Sources */,
 				CB4687045783283FB582D88649A6D685 /* PayPalService.swift in Sources */,
 				5C3438955B3D7E06F1842D5537619223 /* PresentationController.swift in Sources */,

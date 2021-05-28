@@ -12,6 +12,7 @@ import UIKit
 enum OAuthHost {
     case paypal
     case klarna
+    case applePay
 }
 
 enum Route {
@@ -52,7 +53,7 @@ enum Route {
                 return nil
             }
         case .applePay:
-            return ApplePayViewController()
+            return nil
         case .success(let screenType):
             let vc = SuccessViewController()
             vc.screenType = screenType
