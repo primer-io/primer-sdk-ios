@@ -2,7 +2,7 @@
 
 import UIKit
 
-internal class VaultPaymentMethodViewController: UIViewController {
+internal class VaultPaymentMethodViewController: PrimerViewController {
     weak var transitionDelegate = TransitionDelegate()
 
     var showDeleteIcon = false

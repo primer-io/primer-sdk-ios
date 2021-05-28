@@ -2,9 +2,10 @@
 
 import UIKit
 
-internal extension UIViewController {
+internal class PrimerViewController: UIViewController {
+    
     func hideKeyboardWhenTappedAround() {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
+        let tap = UITapGestureRecognizer(target: self, action: #selector(PrimerViewController.dismissKeyboard))
 //        tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
     }
@@ -13,26 +14,16 @@ internal extension UIViewController {
         view.endEditing(true)
     }
 
-    @objc func keyboardWillShow(notification: NSNotification) {
-        let height = UIScreen.main.bounds.height - view.frame.height
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y.rounded() == height.rounded() {
-                self.view.frame.origin.y -= keyboardSize.height
-            }
-        }
-    }
-
-    @objc func keyboardWillHide(notification: NSNotification) {
-        let height = UIScreen.main.bounds.height - view.frame.height
-        if self.view.frame.origin.y.rounded() != height.rounded() {
-            self.view.frame.origin.y = height.rounded()
-        }
-    }
-
     func addLoadingView(_ indicator: UIActivityIndicatorView) {
         indicator.color = .black
         view.addSubview(indicator)
-        indicator.pin(to: view)
+        
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        indicator.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        indicator.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        indicator.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
         indicator.startAnimating()
     }
 
