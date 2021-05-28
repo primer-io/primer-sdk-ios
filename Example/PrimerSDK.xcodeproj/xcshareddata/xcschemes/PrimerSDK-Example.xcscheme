@@ -96,7 +96,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-PrimerDebugEnabled"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

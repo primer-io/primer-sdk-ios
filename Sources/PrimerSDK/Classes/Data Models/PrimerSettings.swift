@@ -9,7 +9,6 @@ internal protocol PrimerSettingsProtocol {
     var currency: Currency? { get }
     var merchantIdentifier: String? { get }
     var countryCode: CountryCode? { get }
-    var applePayEnabled: Bool { get }
     var klarnaSessionType: KlarnaSessionType? { get }
     var klarnaPaymentDescription: String? { get }
     var customerId: String? { get }
@@ -23,6 +22,8 @@ internal protocol PrimerSettingsProtocol {
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
     var orderItems: [OrderItem] { get }
+//    var supportedNetworks: [PaymentNetwork]? { get }
+//    var merchantCapabilities: [MerchantCapability]? { get }
     var isInitialLoadingHidden: Bool { get }
     var localeData: LocaleData { get }
 }
@@ -50,11 +51,11 @@ internal protocol PrimerSettingsProtocol {
  */
 
 public class PrimerSettings: PrimerSettingsProtocol {
+    
     internal(set) public var amount: Int?
     internal(set) public var currency: Currency?
     internal(set) public var merchantIdentifier: String?
     internal(set) public var countryCode: CountryCode?
-    internal(set) public var applePayEnabled: Bool
     internal(set) public var klarnaSessionType: KlarnaSessionType?
     internal(set) public var klarnaPaymentDescription: String?
     internal(set) public var customerId: String?
@@ -65,6 +66,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var businessDetails: BusinessDetails?
     internal(set) public var directDebitHasNoAmount: Bool
     internal(set) public var orderItems: [OrderItem]
+//    internal(set) public var supportedNetworks: [PaymentNetwork]?
+//    internal(set) public var merchantCapabilities: [MerchantCapability]?
     internal(set) public var isInitialLoadingHidden: Bool
     internal(set) public var localeData: LocaleData
 
@@ -90,7 +93,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         amount: Int? = nil,
         currency: Currency? = nil,
         countryCode: CountryCode? = nil,
-        applePayEnabled: Bool = false,
         klarnaSessionType: KlarnaSessionType? = nil,
         klarnaPaymentDescription: String? = nil,
         urlScheme: String? = nil,
@@ -100,12 +102,13 @@ public class PrimerSettings: PrimerSettingsProtocol {
         businessDetails: BusinessDetails? = nil,
         directDebitHasNoAmount: Bool = false,
         orderItems: [OrderItem] = [],
+//        supportedNetworks: [PaymentNetwork]? = nil,
+//        merchantCapabilities: [MerchantCapability]? = nil,
         isInitialLoadingHidden: Bool = false,
         localeData: LocaleData? = nil
     ) {
         self.amount = amount
         self.currency = currency
-        self.applePayEnabled = applePayEnabled
         self.klarnaSessionType = klarnaSessionType
         self.klarnaPaymentDescription = klarnaPaymentDescription
         self.customerId = customerId
@@ -118,6 +121,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.businessDetails = businessDetails
         self.directDebitHasNoAmount = directDebitHasNoAmount
         self.orderItems = orderItems
+//        self.supportedNetworks = supportedNetworks
+//        self.merchantCapabilities = merchantCapabilities
         self.isInitialLoadingHidden = isInitialLoadingHidden
         self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
     }
