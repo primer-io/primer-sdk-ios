@@ -9,7 +9,7 @@
 
 import Foundation
 
-protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
+internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var shouldBePresented: Bool { get }
 }
 

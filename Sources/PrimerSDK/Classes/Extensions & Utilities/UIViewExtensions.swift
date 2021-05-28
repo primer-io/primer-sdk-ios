@@ -11,7 +11,7 @@ import Foundation
 
 import UIKit
 
-extension UIView {
+internal extension UIView {
 
     @IBInspectable var cornerRadius: CGFloat {
         get {

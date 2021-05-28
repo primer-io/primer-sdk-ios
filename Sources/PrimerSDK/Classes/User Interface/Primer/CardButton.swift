@@ -9,7 +9,7 @@
 
 import UIKit
 
-class CardButton: UIButton {
+internal class CardButton: UIButton {
 
     private var iconView = UIImageView()
     private var networkLabel = UILabel()

@@ -7,11 +7,11 @@
 
 #if canImport(UIKit)
 
-protocol DirectDebitServiceProtocol {
+internal protocol DirectDebitServiceProtocol {
     func createMandate(_ completion: @escaping (Error?) -> Void)
 }
 
-class DirectDebitService: DirectDebitServiceProtocol {
+internal class DirectDebitService: DirectDebitServiceProtocol {
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

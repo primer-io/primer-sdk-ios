@@ -63,7 +63,7 @@ public struct PaymentMethodToken: Codable {
     }
 }
 
-extension PaymentMethodToken {
+internal extension PaymentMethodToken {
     var cardButtonViewModel: CardButtonViewModel? {
         switch self.paymentInstrumentType {
         case .paymentCard:

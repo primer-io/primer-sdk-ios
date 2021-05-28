@@ -23,7 +23,7 @@ protocol PrimerAPIClientProtocol {
     func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
 }
 
-class PrimerAPIClient: PrimerAPIClientProtocol {
+internal class PrimerAPIClient: PrimerAPIClientProtocol {
 
     private let networkService: NetworkService
 
@@ -182,7 +182,7 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
 
 }
 
-class MockPrimerAPIClient: PrimerAPIClientProtocol {
+internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
     let response: Data?
     let throwsError: Bool
