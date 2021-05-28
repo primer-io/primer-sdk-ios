@@ -72,6 +72,7 @@ platform :ios do
       podfile: "./Example/Podfile"
     )
 
+    # Set version number
     increment_version_number(
       version_number: version_name,
       xcodeproj: "./Example/PrimerSDK.xcodeproj"
@@ -93,6 +94,7 @@ platform :ios do
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
 
+    # Build app
     build_app(
       scheme: "PrimerSDK-Example",
       workspace: "./Example/PrimerSDK.xcworkspace",
