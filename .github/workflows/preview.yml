@@ -1,4 +1,4 @@
-name: Distribute
+name: Preview
 
 on: pull_request
 
