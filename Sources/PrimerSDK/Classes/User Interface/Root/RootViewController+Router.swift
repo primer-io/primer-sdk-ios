@@ -9,7 +9,7 @@
 
 import UIKit
 
-protocol RouterDelegate: class {
+internal protocol RouterDelegate: class {
     func setRoot(_ root: RootViewController)
     func show(_ route: Route)
     func pop()
@@ -17,7 +17,7 @@ protocol RouterDelegate: class {
     func popAndShow(_ route: Route)
 }
 
-class Router: RouterDelegate {
+internal class Router: RouterDelegate {
 
     weak var root: RootViewController?
     

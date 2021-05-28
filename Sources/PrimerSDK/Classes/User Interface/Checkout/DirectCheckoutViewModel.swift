@@ -2,13 +2,13 @@
 
 import Foundation
 
-protocol DirectCheckoutViewModelProtocol {
+internal protocol DirectCheckoutViewModelProtocol {
     var amountViewModel: AmountViewModel? { get }
     var paymentMethods: [PaymentMethodViewModel] { get }
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void)
 }
 
-class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
+internal class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
     
     private var amount: Int? {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()

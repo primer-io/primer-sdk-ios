@@ -1,6 +1,6 @@
 #if canImport(UIKit)
 
-protocol VaultCheckoutViewModelProtocol {
+internal protocol VaultCheckoutViewModelProtocol {
     var paymentMethods: [PaymentMethodToken] { get }
     var mandate: DirectDebitMandate { get }
     var availablePaymentOptions: [PaymentMethodViewModel] { get }
@@ -10,7 +10,7 @@ protocol VaultCheckoutViewModelProtocol {
     func authorizePayment(_ completion: @escaping (Error?) -> Void)
 }
 
-class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
+internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     var mandate: DirectDebitMandate {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.directDebitMandate
@@ -98,7 +98,7 @@ class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
 }
 
-extension Int {
+internal extension Int {
     func toCurrencyString(currency: Currency) -> String {
         switch currency {
         case .USD: return String(format: "$%.2f", Float(self) / 100)
