@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class ErrorViewController: UIViewController {
+internal class ErrorViewController: PrimerViewController {
 
     let navBar = UINavigationBar()
     let icon = UIImageView(image: ImageName.error.image?.withRenderingMode(.alwaysTemplate))

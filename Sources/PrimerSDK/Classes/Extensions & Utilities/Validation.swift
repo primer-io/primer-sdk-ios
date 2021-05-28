@@ -14,12 +14,6 @@ final internal class Validation {
         return isValidateName
     }
 
-    public func validaCardNumber(cardNumber: String) -> Bool {
-        let trimmedString = cardNumber.trimmingCharacters(in: .whitespaces)
-        let isValidCard = trimmedString.count > 13
-        return isValidCard
-    }
-
     public func validateIsNotEmpty(entry: String) -> Bool {
         let trimmedString = entry.trimmingCharacters(in: .whitespaces)
         let isValid = !trimmedString.isEmpty

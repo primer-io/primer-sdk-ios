@@ -14,7 +14,7 @@ internal protocol CardScannerViewControllerDelegate: class {
 }
 
 @available(iOS 12, *)
-internal class CardScannerViewController: UIViewController {
+internal class CardScannerViewController: PrimerViewController {
 
     let simpleScanVC = SimpleScanViewController.createViewController()
 
