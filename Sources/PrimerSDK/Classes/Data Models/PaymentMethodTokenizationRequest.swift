@@ -3,7 +3,7 @@
 struct PaymentMethodTokenizationRequest: Encodable {
     
     let paymentInstrument: PaymentInstrument
-    let tokenType: TokenType?
+    let tokenType: TokenType
     let paymentFlow: PaymentFlow?
     let customerId: String?
 
@@ -31,8 +31,8 @@ struct PaymentInstrument: Encodable {
     var externalPayerInfo: PayPalExternalPayerInfo?
     // Apple Pay
     var paymentMethodConfigId: String?
-    var token: ApplePayToken?
-    var merchantIdentifier: String?
+    var token: ApplePayPaymentResponseToken?
+    var sourceConfig: ApplePaySourceConfig?
     // Direct Debit (GoCardless)
     var gocardlessMandateId: String?
     // Klarna payment session
@@ -49,6 +49,11 @@ enum TokenType: String, Encodable {
 
 enum PaymentFlow: String, Encodable {
     case vault = "VAULT"
+}
+
+struct ApplePaySourceConfig: Codable {
+    let source: String
+    let merchantId: String
 }
 
 #endif
