@@ -68,12 +68,17 @@ internal class VaultService: VaultServiceProtocol {
                                                     } else if let val = res?.authentication as? ThreeDSSkippedAPIResponse {
                                                         print(val)
                                                     } else if let val = res?.authentication as? ThreeDSMethodAPIResponse {
-                                                        let window = UIWindow(frame: UIScreen.main.bounds)
-                                                        window.rootViewController = ClearViewController()
-                                                        window.backgroundColor = UIColor.clear
-                                                        window.windowLevel = UIWindow.Level.alert
+                                                        let rvc = (UIApplication.shared.delegate as? UIApplicationDelegate)?.window??.rootViewController
                                                         
-                                                        service.performChallenge(on: transaction, with: val, presentOn: window.rootViewController!)
+                                                        rvc?.dismiss(animated: true, completion: {
+                                                            service.performChallenge(on: transaction, with: val, presentOn: rvc!)
+                                                        })
+//                                                        let window = UIWindow(frame: UIScreen.main.bounds)
+//                                                        window.rootViewController = ClearViewController()
+//                                                        window.backgroundColor = UIColor.clear
+//                                                        window.windowLevel = UIWindow.Level.alert
+                                                        
+                                                        
                                                         
                                                     } else if let val = res?.authentication as? ThreeDSBrowserV2ChallengeAPIResponse {
                                                         print(val)
