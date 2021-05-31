@@ -18,6 +18,8 @@ default_platform(:ios)
 platform :ios do
 
   lane :release do
+    appetize_api_token = ENV['APPETIZE_API_TOKEN']
+
     cocoapods(
       clean_install: true,
       podfile: "./Example/Podfile"
@@ -61,7 +63,7 @@ platform :ios do
     firebase_app_distribution(
         service_credentials_file: "firebase_credentials.json",
         app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
-        testers: "internal-qa-team",
+        groups: "internal-qa-team",
         release_notes: "Release: Version " + sdk_version_name
     )
 
@@ -74,7 +76,6 @@ platform :ios do
       skip_package_ipa: true,
       skip_package_pkg: true,
       sdk: "iphonesimulator", # Appetize needs a simulator app
-      clean: true,
     )
 
     # Appetize needs the .app to be zipped
@@ -163,7 +164,7 @@ platform :ios do
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
 
-    # Upload to Appetize
+    # Upload to Appetize as it's version number
     appetize(
       path: "./PrimerSDK_Example.zip",
       platform: "ios",
@@ -171,5 +172,6 @@ platform :ios do
       public_key: public_key,
       note: version_name
     )
+
   end
 end
