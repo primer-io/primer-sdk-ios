@@ -10,7 +10,7 @@
 import UIKit
 import WebKit
 
-internal class WebViewController: UIViewController, WKNavigationDelegate {
+internal class WebViewController: PrimerViewController, WKNavigationDelegate {
 
     weak var delegate: ReloadDelegate?
 

@@ -1,17 +1,28 @@
-#if canImport(UIKit)
+//
+//  ApplePayService.swift
+//  PrimerSDK
+//
+//  Created by Evangelos Pittas on 16/4/21.
+//
 
-import UIKit
+import Foundation
 
-internal protocol PaymentMethodConfigServiceProtocol {
+
+protocol ApplePayServiceProtocol {
+    func tokenize(instrument: PaymentInstrument, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void)
     func fetchConfig(_ completion: @escaping (Error?) -> Void)
 }
 
-internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
+enum ApplePayType {
+    case recurring, checkout
+}
+
+class ApplePayService: NSObject, ApplePayServiceProtocol {
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
-
+    
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
@@ -35,9 +46,6 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                 config.paymentMethods?.forEach({ method in
                     guard let type = method.type else { return }
                     if type == .googlePay { return }
-//                    if type == .goCardlessMandate { return }
-//                    if type == .applePay { return }
-//                    if type == .klarna { return }
                     state.viewModels.append(PaymentMethodViewModel(type: type))
                 })
 
@@ -55,6 +63,19 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
         }
     }
     
-}
+    func tokenize(instrument: PaymentInstrument, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
 
-#endif
+        let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
+        tokenizationService.tokenize(request: request) { (result) in
+            switch result {
+            case .failure(let err):
+                completion(.failure(err))
+            case .success(let token):
+                completion(.success(token))
+            }
+        }
+    }
+    
+}

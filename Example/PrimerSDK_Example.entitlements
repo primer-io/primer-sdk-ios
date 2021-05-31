@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
-		<string>merchant.io.primer.dev</string>
+		<string>merchant.primer.dev.evangelos</string>
 	</array>
 </dict>
 </plist>

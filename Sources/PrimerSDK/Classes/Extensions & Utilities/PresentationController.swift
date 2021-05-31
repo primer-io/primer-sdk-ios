@@ -2,7 +2,7 @@
 
 import UIKit
 
-public class PresentationController: UIPresentationController {
+internal class PresentationController: UIPresentationController {
 
     let blurEffectView: UIVisualEffectView!
     var tapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
@@ -17,14 +17,7 @@ public class PresentationController: UIPresentationController {
         self.blurEffectView.addGestureRecognizer(tapGestureRecognizer)
     }
 
-    //    public override var frameOfPresentedViewInContainerView: CGRect {
-    //        return CGRect(
-    //            origin: CGPoint(x: 0, y: self.containerView!.frame.height * 0.5),
-    //            size: CGSize(width: self.containerView!.frame.width,height: self.containerView!.frame.height * 0.5)
-    //        )
-    //    }
-
-    public override func presentationTransitionWillBegin() {
+    override func presentationTransitionWillBegin() {
         self.blurEffectView.alpha = 0
         self.containerView?.addSubview(blurEffectView)
         self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in
@@ -42,7 +35,7 @@ public class PresentationController: UIPresentationController {
         }, completion: { (_) in })
     }
 
-    public override func dismissalTransitionWillBegin() {
+    override func dismissalTransitionWillBegin() {
         self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in
             self.blurEffectView.alpha = 0
         }, completion: { (_) in
@@ -50,12 +43,12 @@ public class PresentationController: UIPresentationController {
         })
     }
 
-    public override func containerViewWillLayoutSubviews() {
+    override func containerViewWillLayoutSubviews() {
         super.containerViewWillLayoutSubviews()
         presentedView!.roundCorners([.topLeft, .topRight], radius: 22)
     }
 
-    public override func containerViewDidLayoutSubviews() {
+    override func containerViewDidLayoutSubviews() {
         super.containerViewDidLayoutSubviews()
         presentedView?.frame = frameOfPresentedViewInContainerView
         blurEffectView.frame = containerView!.bounds
@@ -77,7 +70,11 @@ internal extension UIView {
     }
     
     func roundCorners(corners: UIRectCorner, radius: CGFloat) {
-        let path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        let path = UIBezierPath(
+            roundedRect: self.bounds,
+            byRoundingCorners: corners,
+            cornerRadii: CGSize(width: radius, height: radius))
+
         let mask = CAShapeLayer()
         mask.path = path.cgPath
         self.layer.mask = mask

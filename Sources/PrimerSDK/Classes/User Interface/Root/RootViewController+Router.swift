@@ -9,12 +9,15 @@
 
 import UIKit
 
-internal protocol RouterDelegate: class {
+protocol RouterDelegate: class {
+    var root: RootViewController? { get }
     func setRoot(_ root: RootViewController)
     func show(_ route: Route)
     func pop()
     func popAllAndShow(_ route: Route)
     func popAndShow(_ route: Route)
+    func presentSuccessScreen(for successScreenType: SuccessScreenType)
+    func presentErrorScreen(with err: Error)
 }
 
 internal class Router: RouterDelegate {
@@ -66,6 +69,29 @@ internal class Router: RouterDelegate {
         guard let vc = route.viewController else { return }
         root?.popAndShow(vc, height: route.height)
     }
+    
+    func presentErrorScreen(with err: Error) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if !settings.hasDisabledSuccessScreen {
+            Primer.shared.root = RootViewController()
+            setRoot(Primer.shared.root!)
+            show(.error(error: err))
+            Primer.shared.presentingViewController?.present(Primer.shared.root!, animated: true)
+        }
+    }
+    
+    func presentSuccessScreen(for successScreenType: SuccessScreenType = .regular) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if !settings.hasDisabledSuccessScreen {
+            Primer.shared.root = RootViewController()
+            setRoot(Primer.shared.root!)
+            show(.success(type: successScreenType))
+            Primer.shared.presentingViewController?.present(Primer.shared.root!, animated: true)
+        }
+    }
+    
 }
 
 fileprivate extension RootViewController {
@@ -74,7 +100,7 @@ fileprivate extension RootViewController {
     func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        UIView.animate(withDuration: 0.25, animations: {[weak self] in
+        UIView.animate(withDuration: 0.25, animations: { [weak self] in
             guard let strongSelf = self else { return }
 
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -95,7 +121,12 @@ fileprivate extension RootViewController {
         // view
         mainView.addSubview(child.view)
 
-        child.view.pin(to: mainView)
+        child.view.translatesAutoresizingMaskIntoConstraints = false
+        child.view.topAnchor.constraint(equalTo: mainView.topAnchor).isActive = true
+        child.view.leadingAnchor.constraint(equalTo: mainView.leadingAnchor).isActive = true
+        child.view.trailingAnchor.constraint(equalTo: mainView.trailingAnchor).isActive = true
+        child.view.bottomAnchor.constraint(equalTo: mainView.bottomAnchor).isActive = true
+        
         child.didMove(toParent: self)
 
         if self.routes.last is ConfirmMandateViewController {
