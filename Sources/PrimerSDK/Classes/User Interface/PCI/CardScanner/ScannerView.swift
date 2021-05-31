@@ -6,7 +6,7 @@ internal protocol ScannerViewDelegate: class {
     func cancel()
 }
 
-internal class ScannerView: UIView {
+internal class ScannerView: PrimerView {
 
     let navBar = UINavigationBar()
     let descriptionLabel = UILabel()

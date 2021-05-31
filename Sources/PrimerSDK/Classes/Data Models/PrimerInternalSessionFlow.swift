@@ -44,6 +44,7 @@ public enum PrimerSessionFlow {
     case addKlarnaToVault
     case addDirectDebit
     case checkoutWithKlarna
+    case checkoutWithApplePay
 
     internal var internalSessionFlow: PrimerInternalSessionFlow {
         switch self {
@@ -65,6 +66,8 @@ public enum PrimerSessionFlow {
             return .vaultDirectDebit
         case .checkoutWithKlarna:
             return .checkoutWithKlarna
+        case .checkoutWithApplePay:
+            return .checkoutWithApplePay
         }
     }
 }
@@ -80,6 +83,7 @@ internal enum PrimerInternalSessionFlow {
     case vaultDirectDebit
     case vaultKlarna
     case checkoutWithKlarna
+    case checkoutWithApplePay
     
     var vaulted: Bool {
         switch self {
@@ -92,7 +96,8 @@ internal enum PrimerInternalSessionFlow {
         case .checkout,
              .checkoutWithCard,
              .checkoutWithPayPal,
-             .checkoutWithKlarna:
+             .checkoutWithKlarna,
+             .checkoutWithApplePay:
             return false
         
         }
@@ -109,7 +114,8 @@ internal enum PrimerInternalSessionFlow {
         case .checkout,
              .checkoutWithCard,
              .checkoutWithPayPal,
-             .checkoutWithKlarna:
+             .checkoutWithKlarna,
+             .checkoutWithApplePay:
             return .CHECKOUT
         }
     }

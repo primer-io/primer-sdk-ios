@@ -33,13 +33,30 @@ class MerchantCheckoutViewController: UIViewController {
         isInitialLoadingHidden: true
     )
     
+    let applePaySettings = PrimerSettings(
+        merchantIdentifier: "merchant.primer.dev.evangelos",
+        currency: .EUR,
+        countryCode: .fr,
+        businessDetails: BusinessDetails(
+            name: "My Business",
+            address: Address(
+                addressLine1: "107 Rue",
+                addressLine2: nil,
+                city: "Paris",
+                state: nil,
+                countryCode: "FR",
+                postalCode: "75001"
+            )
+        ),
+        orderItems: [try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 1, isPending: true)]
+    )
+
     let generalSettings = PrimerSettings(
         merchantIdentifier: "general-settings",
         customerId: "my-customer",
         amount: 100,
         currency: .EUR,
         countryCode: .fr,
-        applePayEnabled: false,
         klarnaSessionType: .recurringPayment,
         klarnaPaymentDescription: nil,
         urlScheme: "primer.io://",
@@ -62,7 +79,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        Primer.shared.configure(settings: vaultKlarnaSettings)
+        Primer.shared.configure(settings: applePaySettings)
         
        let theme = generatePrimerTheme()
        Primer.shared.configure(theme: theme)
@@ -101,8 +118,16 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showCheckout(self, flow: .addDirectDebitToVault)
     }
     
-    @IBAction func openWalletButtonTapped(_ sender: Any) {
+    @IBAction func addApplePayButtonTapped(_ sender: Any) {
+        Primer.shared.showCheckout(self, flow: .checkoutWithApplePay)
+    }
+    
+    @IBAction func openVaultButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .defaultWithVault)
+    }
+    
+    @IBAction func openUniversalCheckoutTapped(_ sender: Any) {
+        Primer.shared.showCheckout(self, flow: .default)
     }
     
 }
@@ -169,8 +194,15 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         } catch {
             return completion(NetworkError.missingParams)
         }
-
-        completion(nil)
+        
+        callApi(request) { (result) in
+            switch result {
+            case .success:
+                completion(nil)
+            case .failure(let err):
+                completion(err)
+            }
+        }
     }
     
     func onCheckoutDismissed() {

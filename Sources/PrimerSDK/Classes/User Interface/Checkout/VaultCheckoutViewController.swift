@@ -3,7 +3,7 @@
 import UIKit
 import PassKit
 
-internal class VaultCheckoutViewController: UIViewController {
+internal class VaultCheckoutViewController: PrimerViewController {
 
     var subView: VaultCheckoutView = VaultCheckoutView()
     var tokenSelectedForPayment: PaymentMethodToken?
@@ -103,7 +103,15 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
 
         switch option.type {
         case .applePay:
-            router.show(.applePay)
+            let router: RouterDelegate = DependencyContainer.resolve()
+            router.root?.dismiss(animated: true, completion: {
+                DispatchQueue.main.async { [weak self] in
+                    let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
+                    appleViewModel.payWithApple { (_) in
+
+                    }
+                }
+            })
         case .googlePay:
             break
         case .paymentCard:

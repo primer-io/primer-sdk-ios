@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class SuccessViewController: UIViewController {
+internal class SuccessViewController: PrimerViewController {
 
     var screenType: SuccessScreenType?
 

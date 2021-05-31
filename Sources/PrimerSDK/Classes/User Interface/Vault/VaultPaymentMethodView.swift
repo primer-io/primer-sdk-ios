@@ -13,7 +13,7 @@ internal protocol ReactiveView: UIView {
     func render(isBusy: Bool)
 }
 
-internal class VaultPaymentMethodView: UIView, ReactiveView {
+internal class VaultPaymentMethodView: PrimerView, ReactiveView {
 
     let indicator = UIActivityIndicatorView()
     let navBar = UINavigationBar()

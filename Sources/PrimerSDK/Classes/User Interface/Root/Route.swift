@@ -12,6 +12,7 @@ import UIKit
 enum OAuthHost {
     case paypal
     case klarna
+    case applePay
 }
 
 enum Route {
@@ -27,7 +28,7 @@ enum Route {
     case confirmMandate
     case form(type: FormType, closeOnSubmit: Bool = false)
 
-    var viewController: UIViewController? {
+    var viewController: PrimerViewController? {
         switch self {
         #if canImport(CardScan)
         case .cardScanner(let delegate):
@@ -52,7 +53,7 @@ enum Route {
                 return nil
             }
         case .applePay:
-            return ApplePayViewController()
+            return nil
         case .success(let screenType):
             let vc = SuccessViewController()
             vc.screenType = screenType

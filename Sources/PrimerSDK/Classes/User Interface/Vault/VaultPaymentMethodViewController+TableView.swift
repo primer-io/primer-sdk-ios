@@ -144,7 +144,11 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
 
         cell.addSubview(cardView)
 
-        cardView.pin(to: cell)
+        cardView.translatesAutoresizingMaskIntoConstraints = false
+        cardView.topAnchor.constraint(equalTo: cell.topAnchor).isActive = true
+        cardView.leadingAnchor.constraint(equalTo: cell.leadingAnchor).isActive = true
+        cardView.trailingAnchor.constraint(equalTo: cell.trailingAnchor).isActive = true
+        cardView.bottomAnchor.constraint(equalTo: cell.bottomAnchor).isActive = true
 
         cell.backgroundColor = theme.colorTheme.main1
 
