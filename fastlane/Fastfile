@@ -16,44 +16,6 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Primer Sample App"
-  lane :distribute do
-      cocoapods(
-        clean_install: true,
-        podfile: "./Example/Podfile"
-      )
-   
-      create_keychain(
-        name: ENV["MATCH_KEYCHAIN_NAME"],
-        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-        default_keychain: true,
-        unlock: true,
-        timeout: 3600,
-        lock_when_sleeps: true
-      )
-
-      match(
-        type: "development",
-        readonly: true,
-        keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
-        keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-      )
-
-      build_app(
-        scheme: "PrimerSDK-Example",
-        workspace: "./Example/PrimerSDK.xcworkspace",
-        configuration: "Debug",
-        export_method: "development",
-        clean: true
-      )
-
-      firebase_app_distribution(
-          service_credentials_file: "firebase_credentials.json",
-          app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
-          testers: "carleriksson92@gmail.com",
-          release_notes: "Lots of amazing new features to test out!"
-      )
-  end
 
   lane :release do
     cocoapods(
