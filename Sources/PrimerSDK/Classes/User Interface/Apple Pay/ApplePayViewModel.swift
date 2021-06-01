@@ -170,6 +170,22 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                                     completion(err)
                                                 }
                                             })
+                                            Primer.shared.delegate?.onTokenizeSuccess(token, { (err) in
+                                                DispatchQueue.main.async {
+                                                    Primer.shared.presentingViewController?.dismiss(animated: true, completion: {
+                                                        let router: RouterDelegate = DependencyContainer.resolve()
+                                                        
+                                                        if let err = err {
+                                                            
+                                                            router.presentErrorScreen(with: err)
+                                                        } else {
+                                                            router.presentSuccessScreen(for: .regular)
+                                                        }
+                                                    })
+                                                    
+                                                    completion(err)
+                                                }
+                                            })
                                         }
                                     }
                                 }

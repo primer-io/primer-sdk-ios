@@ -94,6 +94,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.authorizePayment(selectedToken, completion)
+        settings.onTokenizeSuccess(selectedToken, completion)
     }
 
 }
