@@ -117,11 +117,11 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xhR-QE-h6v">
                                         <rect key="frame" x="0.0" y="52" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <accessibility key="accessibilityConfiguration" identifier="add_klarna_button"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="vault_klarna_button"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="9OY-3P-D9G"/>
                                         </constraints>
-                                        <state key="normal" title="Add Klarna">
+                                        <state key="normal" title="Vault Klarna">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
