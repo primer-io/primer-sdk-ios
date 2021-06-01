@@ -23,7 +23,7 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        webView.isAccessibilityElement = true
+        webView.isAccessibilityElement = false
         webView.accessibilityIdentifier = "primer_webview"
         
         webView.scrollView.bounces = false

@@ -82,6 +82,10 @@ class Base: XCTestCase {
         let webView = app.webViews["primer_webview"]
         expectation(for: exists, evaluatedWith: webView, handler: nil)
         waitForExpectations(timeout: 5, handler: nil)
+        
+        let continueButton = app.webViews.buttons["Continue"]
+        expectation(for: exists, evaluatedWith: continueButton, handler: nil)
+        waitForExpectations(timeout: 30, handler: nil)
     }
 
 }
