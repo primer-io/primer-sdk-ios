@@ -2,6 +2,7 @@
 
 public typealias ClientTokenCallBack = (_ completionHandler: @escaping (Result<String, Error>) -> Void) -> Void
 public typealias PaymentMethodTokenCallBack = (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
+public typealias TokenizationSuccessCallBack = (_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
 public typealias CheckoutDismissalCallback = () -> Void
 
 internal protocol PrimerSettingsProtocol {
@@ -14,6 +15,7 @@ internal protocol PrimerSettingsProtocol {
     var customerId: String? { get }
     var clientTokenRequestCallback: ClientTokenCallBack { get }
     var authorizePayment: PaymentMethodTokenCallBack { get }
+    var onTokenizeSuccess: TokenizationSuccessCallBack { get }
     var onCheckoutDismiss: CheckoutDismissalCallback { get }
     var urlScheme: String? { get }
     var urlSchemeIdentifier: String? { get }
@@ -51,7 +53,7 @@ internal protocol PrimerSettingsProtocol {
  */
 
 public class PrimerSettings: PrimerSettingsProtocol {
-    
+        
     internal(set) public var amount: Int?
     internal(set) public var currency: Currency?
     internal(set) public var merchantIdentifier: String?
@@ -77,6 +79,10 @@ public class PrimerSettings: PrimerSettingsProtocol {
 
     internal var authorizePayment: PaymentMethodTokenCallBack {
         return Primer.shared.delegate?.authorizePayment ?? { _, _ in }
+    }
+    
+    internal var onTokenizeSuccess: TokenizationSuccessCallBack {
+        return Primer.shared.delegate?.onTokenizeSuccess ?? { _, _ in }
     }
 
     public var onCheckoutDismiss: CheckoutDismissalCallback {
@@ -139,6 +145,9 @@ public struct BusinessDetails: Codable {
 }
 
 internal class MockDelegate: PrimerDelegate {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+        
+    }
     
     func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
 
