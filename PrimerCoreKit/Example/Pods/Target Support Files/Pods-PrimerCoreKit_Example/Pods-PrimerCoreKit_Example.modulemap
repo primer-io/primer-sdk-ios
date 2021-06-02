@@ -1,0 +1,6 @@
+framework module Pods_PrimerCoreKit_Example {
+  umbrella header "Pods-PrimerCoreKit_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

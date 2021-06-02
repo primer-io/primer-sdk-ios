@@ -1,0 +1,6 @@
+framework module PrimerCoreKit {
+  umbrella header "PrimerCoreKit-umbrella.h"
+
+  export *
+  module * { export * }
+}

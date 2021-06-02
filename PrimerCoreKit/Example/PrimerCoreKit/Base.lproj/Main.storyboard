@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="ufC-wZ-h7g">
+            <objects>
+                <viewController id="vXZ-lx-hvc" customClass="ViewController" customModule="PrimerCoreKit_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
+                        <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YUT-Cw-SjB" customClass="PrimerCardNumberField" customModule="PrimerCoreKit">
+                                <rect key="frame" x="36" y="80" width="303" height="50"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="y4L-Bg-AP5"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="placeholder" value="Cardnumber"/>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" systemColor="systemBlueColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="textColor">
+                                        <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="6"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="checkmarkColor">
+                                        <color key="value" systemColor="systemGreenColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="placeholderTextColor">
+                                        <color key="value" systemColor="systemBlueColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="errorColor">
+                                        <color key="value" systemColor="systemRedColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i5a-ST-xVO">
+                                <rect key="frame" x="20" y="346" width="335" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="mVF-Cs-CNG"/>
+                                </constraints>
+                                <state key="normal" title="Hack delegate"/>
+                                <connections>
+                                    <action selector="hackDelegateButtonTapped:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="bdG-Co-qsM"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N5M-RH-NBk">
+                                <rect key="frame" x="36" y="424" width="303" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="OgP-Tt-WIT"/>
+                                    <constraint firstAttribute="height" constant="50" id="Zzv-TW-ngT"/>
+                                </constraints>
+                                <state key="normal" title="Sneaky get text from view"/>
+                                <connections>
+                                    <action selector="sneakyGetTextButtonTapped:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="3kd-pu-F5s"/>
+                                </connections>
+                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HzG-Rt-WAt" customClass="PrimerExpiryDateField" customModule="PrimerCoreKit">
+                                <rect key="frame" x="36" y="138" width="147.5" height="50"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="f1o-CA-vxO"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" systemColor="systemBlueColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="checkmarkColor">
+                                        <color key="value" systemColor="systemGreenColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="errorColor">
+                                        <color key="value" systemColor="systemRedColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="placeholderTextColor">
+                                        <color key="value" systemColor="systemBlueColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="textColor">
+                                        <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="6"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="placeholder" value="Expiry"/>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="w1E-DC-JSR" customClass="PrimerCVVField" customModule="PrimerCoreKit">
+                                <rect key="frame" x="191.5" y="138" width="147.5" height="50"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" systemColor="systemBlueColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="checkmarkColor">
+                                        <color key="value" systemColor="systemGreenColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="errorColor">
+                                        <color key="value" systemColor="systemRedColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="placeholderTextColor">
+                                        <color key="value" systemColor="systemBlueColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="textColor">
+                                        <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="6"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="placeholder" value="CVV/CVC"/>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IeI-Qd-Ye7" customClass="PrimerNameField" customModule="PrimerCoreKit">
+                                <rect key="frame" x="36" y="196" width="303" height="50"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="1UF-vb-tPl"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="placeholder" value="Cardholder"/>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" systemColor="systemBlueColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="textColor">
+                                        <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="6"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="checkmarkColor">
+                                        <color key="value" systemColor="systemGreenColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="placeholderTextColor">
+                                        <color key="value" systemColor="systemBlueColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="errorColor">
+                                        <color key="value" systemColor="systemRedColor"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="YUT-Cw-SjB" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="80" id="0eL-hb-9DU"/>
+                            <constraint firstItem="HzG-Rt-WAt" firstAttribute="leading" secondItem="YUT-Cw-SjB" secondAttribute="leading" id="1Hp-Ka-sOe"/>
+                            <constraint firstItem="N5M-RH-NBk" firstAttribute="top" secondItem="i5a-ST-xVO" secondAttribute="bottom" constant="28" id="3Vd-Qw-Yyh"/>
+                            <constraint firstAttribute="trailing" secondItem="i5a-ST-xVO" secondAttribute="trailing" constant="20" id="3dt-6W-dyJ"/>
+                            <constraint firstItem="HzG-Rt-WAt" firstAttribute="top" secondItem="YUT-Cw-SjB" secondAttribute="bottom" constant="8" id="42V-Nw-VRL"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="YUT-Cw-SjB" secondAttribute="trailing" constant="20" id="5zv-7Q-PdQ"/>
+                            <constraint firstItem="IeI-Qd-Ye7" firstAttribute="leading" secondItem="YUT-Cw-SjB" secondAttribute="leading" id="ILs-zO-cJl"/>
+                            <constraint firstItem="IeI-Qd-Ye7" firstAttribute="top" secondItem="HzG-Rt-WAt" secondAttribute="bottom" constant="8" id="Jm5-Ut-rfw"/>
+                            <constraint firstItem="N5M-RH-NBk" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="20" id="Nxq-Ga-1Vo"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="N5M-RH-NBk" secondAttribute="trailing" constant="20" id="QeB-zf-9F3"/>
+                            <constraint firstItem="w1E-DC-JSR" firstAttribute="trailing" secondItem="YUT-Cw-SjB" secondAttribute="trailing" id="R2K-4u-gpw"/>
+                            <constraint firstItem="IeI-Qd-Ye7" firstAttribute="trailing" secondItem="YUT-Cw-SjB" secondAttribute="trailing" id="UO4-1c-d71"/>
+                            <constraint firstItem="HzG-Rt-WAt" firstAttribute="width" secondItem="YUT-Cw-SjB" secondAttribute="width" multiplier="0.5" constant="-4" id="jLz-1K-YX5"/>
+                            <constraint firstItem="w1E-DC-JSR" firstAttribute="width" secondItem="HzG-Rt-WAt" secondAttribute="width" id="koE-sv-mb0"/>
+                            <constraint firstItem="w1E-DC-JSR" firstAttribute="height" secondItem="HzG-Rt-WAt" secondAttribute="height" id="m0q-WX-Mqd"/>
+                            <constraint firstItem="YUT-Cw-SjB" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="20" id="p4y-qG-t98"/>
+                            <constraint firstItem="w1E-DC-JSR" firstAttribute="centerY" secondItem="HzG-Rt-WAt" secondAttribute="centerY" id="sJQ-p8-z5n"/>
+                            <constraint firstItem="i5a-ST-xVO" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="20" id="uCo-O6-u2X"/>
+                            <constraint firstItem="i5a-ST-xVO" firstAttribute="top" secondItem="IeI-Qd-Ye7" secondAttribute="bottom" constant="100" id="y1W-nQ-xWG"/>
+                        </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="I8r-Gx-HNQ" appends="YES" id="yqR-7X-Uw6"/>
+                        </connections>
+                    </view>
+                    <connections>
+                        <outlet property="textField" destination="YUT-Cw-SjB" id="J7X-oH-33E"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="I8r-Gx-HNQ">
+                    <connections>
+                        <action selector="viewTapped:" destination="vXZ-lx-hvc" id="RIb-b7-SyK"/>
+                    </connections>
+                </tapGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="136.80000000000001" y="133.5832083958021"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGreenColor">
+            <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

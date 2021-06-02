@@ -1,0 +1,16 @@
+PODS:
+  - PrimerCoreKit (0.1.0)
+
+DEPENDENCIES:
+  - PrimerCoreKit (from `../`)
+
+EXTERNAL SOURCES:
+  PrimerCoreKit:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  PrimerCoreKit: 2e74d512a5b421883db20505c5f7722b2f76abac
+
+PODFILE CHECKSUM: cb0ae7fa8d6dfda495c568d2748e2d3c98ef9a59
+
+COCOAPODS: 1.10.1
