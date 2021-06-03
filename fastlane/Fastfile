@@ -107,6 +107,12 @@ platform :ios do
         next
     end
 
+    time = Time.new
+    str_time = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Set timestamp as version_code to differentiate builds in firebase
+    build_number = time.to_i
+
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
 
     puts "PR_NUMBER: " + pr_number
@@ -120,6 +126,11 @@ platform :ios do
     # Set version number
     increment_version_number(
       version_number: version_name,
+      xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    )
+
+    increment_build_number(
+      build_number: build_number,
       xcodeproj: "./Example/PrimerSDK.xcodeproj"
     )
 
@@ -139,17 +150,17 @@ platform :ios do
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
 
-    # Build app
+    # Build for appetize
     build_app(
       scheme: "PrimerSDK-Example",
+      sdk: "iphonesimulator", # Appetize needs a simulator app
       workspace: "./Example/PrimerSDK.xcworkspace",
       configuration: "Debug",
       export_method: "development",
       archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
+      # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
-      sdk: "iphonesimulator", # Appetize needs a simulator app
-      clean: true,
     )
 
     # Appetize needs the .app to be zipped
@@ -173,5 +184,22 @@ platform :ios do
       note: version_name
     )
 
+    # Build for firebase
+    build_app(
+      scheme: "PrimerSDK-Example",
+      workspace: "./Example/PrimerSDK.xcworkspace",
+      configuration: "Debug",
+      export_method: "development",
+      # Build speed optimisation
+      skip_package_pkg: true, 
+    )
+
+    # Firebase
+    firebase_app_distribution(
+        service_credentials_file: "firebase_credentials.json",
+        app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
+        groups: "internal-qa-team",
+        release_notes: "PR: " + version_name + " | " + str_time,
+      )
   end
 end
