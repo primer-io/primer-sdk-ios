@@ -270,7 +270,7 @@ internal extension VaultCheckoutView {
         if (vaulted) {
             if (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true) {
                 otherMethodsTitleLabel.text = vaulted
-                    ? NSLocalizedString("primer-vault-checkout-other-methods",
+                    ? NSLocalizedString("primer-vault-payment-method-available-payment-methods",
                                         tableName: nil,
                                         bundle: Bundle.primerResources,
                                         value: "Available payment methods",
