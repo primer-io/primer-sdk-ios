@@ -81,7 +81,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
         }
         
         navBar.isHidden = true
-        amountLabelView.isHidden = true
+        amountLabelView.isHidden = Primer.shared.flow.internalSessionFlow.vaulted
         savedCardTitleLabel.isHidden = true
         savedCardButton.isHidden = true
         seeAllLinkLabel.isHidden = true
