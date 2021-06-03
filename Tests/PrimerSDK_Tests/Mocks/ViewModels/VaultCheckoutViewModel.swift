@@ -18,8 +18,8 @@ class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return []
     }
 
-    var amountStringed: String {
-        return ""
+    var amountStringed: String? {
+        return nil
     }
 
     var paymentMethods: [PaymentMethodToken] {
