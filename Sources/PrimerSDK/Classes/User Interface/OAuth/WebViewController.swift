@@ -10,7 +10,7 @@
 import UIKit
 import WebKit
 
-internal class WebViewController: UIViewController, WKNavigationDelegate {
+internal class WebViewController: PrimerViewController, WKNavigationDelegate {
 
     weak var delegate: ReloadDelegate?
 
@@ -22,6 +22,9 @@ internal class WebViewController: UIViewController, WKNavigationDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        webView.isAccessibilityElement = false
+        webView.accessibilityIdentifier = "primer_webview"
         
         webView.scrollView.bounces = false
         

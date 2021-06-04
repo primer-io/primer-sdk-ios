@@ -2,20 +2,6 @@
 
 import UIKit
 
-internal extension UITextField {
-    func setLeftPaddingPoints(_ amount: CGFloat) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
-        self.leftView = paddingView
-        self.leftViewMode = .always
-    }
-
-    func setRightPaddingPoints(_ amount: CGFloat) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
-        self.rightView = paddingView
-        self.rightViewMode = .always
-    }
-}
-
 enum TextFieldState {
     case `default`
     case valid
@@ -59,6 +45,8 @@ internal class PrimerTextField: UITextField {
     private var icon = UIImageView()
 
     var padding: CGFloat = 12
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -86,8 +74,6 @@ internal class PrimerTextField: UITextField {
 
         renderSubViews(validationState: .default)
     }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func renderSubViews(validationState: TextFieldState, showIcon: Bool = true) {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -149,6 +135,18 @@ internal class PrimerTextField: UITextField {
         errorMessage.translatesAutoresizingMaskIntoConstraints = false
         errorMessage.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         errorMessage.topAnchor.constraint(equalTo: bottomAnchor, constant: 2).isActive = true
+    }
+    
+    private func setLeftPaddingPoints(_ amount: CGFloat) {
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
+        self.leftView = paddingView
+        self.leftViewMode = .always
+    }
+
+    private func setRightPaddingPoints(_ amount: CGFloat) {
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
+        self.rightView = paddingView
+        self.rightViewMode = .always
     }
 
 }

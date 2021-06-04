@@ -21,7 +21,7 @@ internal protocol FormViewDelegate: class, UITextFieldDelegate {
     func onBottomLinkTapped()
 }
 
-internal class FormView: UIView {
+internal class FormView: PrimerView {
 
     // MARK: - PROPERTIES
 
@@ -29,8 +29,8 @@ internal class FormView: UIView {
     let navBarTitleLabel = UILabel()
     let title = UILabel()
     let link = UILabel()
-    let button = UIButton()
-    let scannerButton = UIButton()
+    let button = PrimerButton()
+    let scannerButton = PrimerButton()
     let contentView = UIScrollView()
 
     var textFields: [[UITextField]] = []
@@ -548,7 +548,7 @@ internal class FormView: UIView {
         guard let delegate = delegate else { return }
         switch delegate.formType {
         case .cardForm:
-            button.setBusy(theme: theme)
+            (button as? PrimerButton)?.setBusy(theme: theme)
         default:
             break
         }

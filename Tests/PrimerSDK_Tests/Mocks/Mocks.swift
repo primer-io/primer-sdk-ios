@@ -35,13 +35,16 @@ class MockPrimerDelegate: PrimerDelegate {
 
     var token: String?
     var authorizePaymentFails: Bool
+    var clientTokenCallbackCalled = false
+    var authorizePaymentCalled = false
+    var onCheckoutDismissedCalled = false
 
     init(token: String? = nil, authorizePaymentFails: Bool = false) {
         self.token = token
         self.authorizePaymentFails = authorizePaymentFails
     }
 
-    var clientTokenCallbackCalled = false
+    
 
     func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
         clientTokenCallbackCalled = true
@@ -56,14 +59,17 @@ class MockPrimerDelegate: PrimerDelegate {
         
     }
 
-    var authorizePaymentCalled = false
+    
 
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
         if authorizePaymentFails { completion(PrimerError.clientTokenNull) }
     }
-
-    var onCheckoutDismissedCalled = false
+    
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+        authorizePaymentCalled = true
+        if authorizePaymentFails { completion(PrimerError.clientTokenNull) }
+    }
 
     func onCheckoutDismissed() {
         onCheckoutDismissedCalled = true
@@ -75,6 +81,7 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    
     var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
     
     var merchantCapabilities: [MerchantCapability]?
@@ -123,17 +130,21 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     var clientTokenRequestCallback: ClientTokenCallBack
 
     var authorizePayment: PaymentMethodTokenCallBack
-
+    
+    var onTokenizeSuccess: TokenizationSuccessCallBack
+    
     var onCheckoutDismiss: CheckoutDismissalCallback
 
     init(
         clientTokenRequestCallback: @escaping ClientTokenCallBack = { _ in },
         authorizePayment: @escaping PaymentMethodTokenCallBack = { _, _  in },
+        onTokenizeSuccess: @escaping TokenizationSuccessCallBack = { _, _  in },
         onCheckoutDismiss: @escaping CheckoutDismissalCallback = { }
     ) {
         self.clientTokenRequestCallback = clientTokenRequestCallback
         self.authorizePayment = authorizePayment
         self.onCheckoutDismiss = onCheckoutDismiss
+        self.onTokenizeSuccess = onTokenizeSuccess
     }
 }
 
