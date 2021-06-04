@@ -20,7 +20,12 @@ or alternatively using `brew install fastlane`
 ```
 fastlane ios distribute
 ```
-My awesome app
+Primer Sample App
+### ios preview
+```
+fastlane ios preview
+```
+
 
 ----
 
