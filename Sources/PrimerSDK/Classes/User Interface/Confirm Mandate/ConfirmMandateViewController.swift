@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class ConfirmMandateViewController: UIViewController {
+internal class ConfirmMandateViewController: PrimerViewController {
 
     var subView: ConfirmMandateView = ConfirmMandateView()
 
@@ -55,7 +55,7 @@ extension ConfirmMandateViewController: UITableViewDelegate, UITableViewDataSour
         let viewModel: ConfirmMandateViewModelProtocol = DependencyContainer.resolve()
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
+        let cell = PrimerTableViewCell(style: .subtitle, reuseIdentifier: nil)
         cell.addTitle(formTypes[indexPath.row].title, theme: theme)
         cell.addContent(formTypes[indexPath.row].content(viewModel.mandate), theme: theme)
         cell.accessoryType = .disclosureIndicator

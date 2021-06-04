@@ -29,6 +29,10 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         return settings.authorizePayment
     }
+    private var onTokenizeSuccess: TokenizationSuccessCallBack {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return settings.onTokenizeSuccess
+    }
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -132,6 +136,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
                 case .CHECKOUT:
                     log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                     self?.authorizePayment(token, completion)
+                    self?.onTokenizeSuccess(token, completion)
                 }
             }
         }

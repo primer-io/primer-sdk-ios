@@ -257,7 +257,7 @@ class KlarnaServiceTests: XCTestCase {
 }
 
 extension KlarnaServiceTests: PrimerDelegate {
-    
+
     func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
         guard let url = URL(string: "\(endpoint)/clientToken") else {
             return completion(.failure(NetworkError.missingParams))
@@ -296,6 +296,10 @@ extension KlarnaServiceTests: PrimerDelegate {
     }
     
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+        
+    }
+    
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         
     }
     
