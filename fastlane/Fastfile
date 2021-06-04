@@ -16,14 +16,125 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Primer Sample App"
-  lane :distribute do
-      cocoapods(
-        clean_install: true,
-        podfile: "./Example/Podfile"
-      )
 
-      create_keychain(
+  lane :release do
+    appetize_api_token = ENV['APPETIZE_API_TOKEN']
+
+    cocoapods(
+      clean_install: true,
+      podfile: "./Example/Podfile"
+    )
+
+    sdk_version_name = get_version_number(
+      xcodeproj: "./Example/Pods/Pods.xcodeproj",
+      target: "PrimerSDK"
+    )
+
+    # Set version number
+    increment_version_number(
+      version_number: sdk_version_name,
+      xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    )
+
+    create_keychain(
+      name: ENV["MATCH_KEYCHAIN_NAME"],
+      password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      lock_when_sleeps: true
+    )
+
+    match(
+      type: "development",
+      readonly: true,
+      keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
+      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+    )
+
+    build_app(
+      scheme: "PrimerSDK-Example",
+      workspace: "./Example/PrimerSDK.xcworkspace",
+      configuration: "Debug",
+      export_method: "development",
+      clean: true
+    )
+
+    firebase_app_distribution(
+        service_credentials_file: "firebase_credentials.json",
+        app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
+        groups: "internal-qa-team",
+        release_notes: "Release: Version " + sdk_version_name
+    )
+
+    build_app(
+      scheme: "PrimerSDK-Example",
+      workspace: "./Example/PrimerSDK.xcworkspace",
+      configuration: "Debug",
+      export_method: "development",
+      archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
+      skip_package_ipa: true,
+      skip_package_pkg: true,
+      sdk: "iphonesimulator", # Appetize needs a simulator app
+    )
+
+    # Appetize needs the .app to be zipped
+    zip(
+      path: "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app",
+      output_path: "./PrimerSDK_Example.zip",
+      symlinks: true
+    )
+
+    # Find public key of appetize
+    uri = URI('https://livedemostore.primer.io/appetize/ios/' + sdk_version_name)
+    public_key = Net::HTTP.get(uri)
+    puts "public_key: " + public_key
+
+    # Upload to Appetize
+    appetize(
+      path: "./PrimerSDK_Example.zip",
+      platform: "ios",
+      api_token: appetize_api_token,
+      public_key: public_key,
+      note: sdk_version_name
+    )
+  end
+
+  lane :preview do
+    pr_number = ENV["PR_NUMBER"]
+    if(!pr_number) then 
+        puts "NO PR NUMBER"
+        next
+    end
+
+    time = Time.new
+    str_time = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Set timestamp as version_code to differentiate builds in firebase
+    build_number = time.to_i
+
+    appetize_api_token = ENV['APPETIZE_API_TOKEN']
+
+    puts "PR_NUMBER: " + pr_number
+    version_name = "preview-" + pr_number
+
+    cocoapods(
+      clean_install: true,
+      podfile: "./Example/Podfile"
+    )
+
+    # Set version number
+    increment_version_number(
+      version_number: version_name,
+      xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    )
+
+    increment_build_number(
+      build_number: build_number,
+      xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    )
+
+    create_keychain(
         name: ENV["MATCH_KEYCHAIN_NAME"],
         password: ENV["MATCH_KEYCHAIN_PASSWORD"],
         default_keychain: true,
@@ -32,27 +143,63 @@ platform :ios do
         lock_when_sleeps: true
       )
 
-      match(
-        type: "development",
-        readonly: true,
-        keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
-        keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-      )
+    match(
+      type: "development",
+      readonly: true,
+      keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
+      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+    )
 
-      build_app(
-        scheme: "PrimerSDK-Example",
-        workspace: "./Example/PrimerSDK.xcworkspace",
-        configuration: "Debug",
-        export_method: "development",
-        clean: true
-      )
+    # Build for appetize
+    build_app(
+      scheme: "PrimerSDK-Example",
+      sdk: "iphonesimulator", # Appetize needs a simulator app
+      workspace: "./Example/PrimerSDK.xcworkspace",
+      configuration: "Debug",
+      export_method: "development",
+      archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
+      # Build speed optimisation
+      skip_package_ipa: true,
+      skip_package_pkg: true,
+    )
 
-      firebase_app_distribution(
-          service_credentials_file: "firebase_credentials.json",
-          app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
-          testers: "carleriksson92@gmail.com",
-          release_notes: "Lots of amazing new features to test out!"
-      )
+    # Appetize needs the .app to be zipped
+    zip(
+      path: "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app",
+      output_path: "./PrimerSDK_Example.zip",
+      symlinks: true
+    )
 
+    # Find public key of appetize
+    uri = URI('https://livedemostore.primer.io/appetize/ios/' + version_name)
+    public_key = Net::HTTP.get(uri)
+    puts "public_key: " + public_key
+
+    # Upload to Appetize as it's version number
+    appetize(
+      path: "./PrimerSDK_Example.zip",
+      platform: "ios",
+      api_token: appetize_api_token,
+      public_key: public_key,
+      note: version_name
+    )
+
+    # Build for firebase
+    build_app(
+      scheme: "PrimerSDK-Example",
+      workspace: "./Example/PrimerSDK.xcworkspace",
+      configuration: "Debug",
+      export_method: "development",
+      # Build speed optimisation
+      skip_package_pkg: true, 
+    )
+
+    # Firebase
+    firebase_app_distribution(
+        service_credentials_file: "firebase_credentials.json",
+        app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
+        groups: "internal-qa-team",
+        release_notes: "PR: " + version_name + " | " + str_time,
+      )
   end
 end
