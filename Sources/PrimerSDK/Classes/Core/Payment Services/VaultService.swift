@@ -45,7 +45,6 @@ internal class VaultService: VaultServiceProtocol {
                             switch initResult {
                             case .success:
                                 service.verifyWarnings { (verifyResult) in
-                                    print(verifyResult)
                                     switch verifyResult {
                                     case .success:
                                         service.netceteraAuth(paymentMethod: paymentMethod) { (authResult) in
@@ -55,7 +54,7 @@ internal class VaultService: VaultServiceProtocol {
                                                 print("3DS SDK Data: \(threeDSecureAuthData)")
                                                 
 //                                                let threeDSecureDevice = ThreeDSecureDevice(sdkTransactionId: sdkTransactionId)
-                                                var req = ThreeDSecureBeginAuthRequest.demoAuthRequest
+                                                var req = ThreeDS.BeginAuthRequest.demoAuthRequest
 //                                                req.testScenario = ThreeDSecureTestScenario.threeDS2AutoChallengePass
                                                 req.device = threeDSecureAuthData
 //                                                req.deviceChannel = "03"
@@ -71,7 +70,14 @@ internal class VaultService: VaultServiceProtocol {
                                                         let rvc = (UIApplication.shared.delegate as? UIApplicationDelegate)?.window??.rootViewController
                                                         
                                                         rvc?.dismiss(animated: true, completion: {
-                                                            service.performChallenge(on: transaction, with: val, presentOn: rvc!)
+                                                            service.performChallenge(on: transaction, with: val, presentOn: rvc!, completion: { result in
+                                                                switch result {
+                                                                case .success(let netceteraAuthCompletion):
+                                                                    break
+                                                                case .failure(let err):
+                                                                    break
+                                                                }
+                                                            })
                                                         })
 //                                                        let window = UIWindow(frame: UIScreen.main.bounds)
 //                                                        window.rootViewController = ClearViewController()

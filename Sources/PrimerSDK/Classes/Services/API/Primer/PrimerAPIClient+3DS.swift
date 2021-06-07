@@ -9,9 +9,9 @@ import Foundation
 
 extension PrimerAPIClient {
     
-    func threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest, completion: @escaping (_ result: Result<ThreeDSecureBeginAuthResponse, Error>) -> Void) {
+    func threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.threeDSecureBeginAuthentication(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
-        networkService.request(endpoint) { (result: Result<ThreeDSecureBeginAuthResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<ThreeDS.BeginAuthResponse, NetworkServiceError>) in
             switch result {
             case .success(let threeDSecureBeginAuthResponse):
                 completion(.success(threeDSecureBeginAuthResponse))
@@ -26,12 +26,12 @@ extension PrimerAPIClient {
 
 extension MockPrimerAPIClient {
     
-    func threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest, completion: @escaping (_ result: Result<ThreeDSecureBeginAuthResponse, Error>) -> Void) {
+    func threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(ThreeDSecureBeginAuthResponse.self, from: response)
+            let value = try JSONDecoder().decode(ThreeDS.BeginAuthResponse.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))

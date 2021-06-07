@@ -12,8 +12,8 @@ import ThreeDS_SDK
 
 protocol ThreeDSecureServiceProtocol {
     func threeDSecureBeginAuthentication(paymentMethodToken: PaymentMethodToken,
-                                         threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest,
-                                         completion: @escaping (ThreeDSecureBeginAuthResponse?, Error?) -> Void)
+                                         threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
+                                         completion: @escaping (ThreeDS.BeginAuthResponse?, Error?) -> Void)
 }
 
 class ThreeDSecureService: ThreeDSecureServiceProtocol {
@@ -22,6 +22,8 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
     @Dependency private(set) var api: PrimerAPIClientProtocol
     
     let threeDS2Service: ThreeDS_SDK.ThreeDS2Service = ThreeDS2ServiceSDK(bundle: Bundle.primerFramework)
+    private var transaction: Transaction?
+    private var netceteraCompletion: ((_ netceteraThreeDSCompletion: ThreeDS.NetceteraThreeDSCompletion?, _ err: Error?) -> Void)?
     
     deinit {
         print("ThreeDSecureServiceProtocol deinit")
@@ -32,9 +34,11 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
             let configBuilder = ConfigurationBuilder()
             try configBuilder.log(to: .debug)
             try configBuilder.license(key: Primer.netceteraLicenseKey)
+            
+            let supportedSchemeIds: [String] = ["A999999999"]
                          
             let scheme = Scheme(name: "scheme_name")
-            scheme.ids = ["A999999999"]
+            scheme.ids = supportedSchemeIds
             scheme.encryptionKeyValue = Certificates.cer1
             scheme.rootCertificateValue = Certificates.cer3
             scheme.logoImageName = "visa"
@@ -90,9 +94,9 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
 //            }
 //
 //            let directoryServerId = ThreeDSecureService.directoryServerIdFor(scheme: scheme)
-            let transaction = try threeDS2Service.createTransaction(directoryServerId: "A999999999",
+            transaction = try threeDS2Service.createTransaction(directoryServerId: "A999999999",
                                                                     messageVersion: "2.1.0")
-            completion(.success(transaction))
+            completion(.success(transaction!))
         } catch {
             print(error)
             completion(.failure(error))
@@ -100,12 +104,26 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
         
     }
     
-    func performChallenge(on transaction: Transaction, with threeDSecureAuthResponse: ThreeDSMethodAPIResponse, presentOn viewController: UIViewController) {
+    func performChallenge(on transaction: Transaction, with threeDSecureAuthResponse: ThreeDSMethodAPIResponse, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.NetceteraThreeDSCompletion, Error>) -> Void) {
+        self.transaction = transaction
+        
         let challengeParameters = ChallengeParameters(
             threeDSServerTransactionID: threeDSecureAuthResponse.transactionId,
             acsTransactionID: threeDSecureAuthResponse.acsTransactionId,
             acsRefNumber: threeDSecureAuthResponse.acsReferenceNumber,
             acsSignedContent: threeDSecureAuthResponse.acsSignedContent)
+        
+        netceteraCompletion = { [weak self] (netceteraThreeDSCompletion, err) in
+            if let err = err {
+                completion(.failure(err))
+            } else if let netceteraThreeDSCompletion = netceteraThreeDSCompletion {
+                completion(.success(netceteraThreeDSCompletion))
+            } else {
+                // Will never get in here! Assert an error.
+            }
+            
+            self?.netceteraCompletion = nil
+        }
         
         do {
             try transaction.doChallenge(challengeParameters: challengeParameters,
@@ -156,8 +174,8 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
 //    }
     
     func threeDSecureBeginAuthentication(paymentMethodToken: PaymentMethodToken,
-                                         threeDSecureBeginAuthRequest: ThreeDSecureBeginAuthRequest,
-                                         completion: @escaping (ThreeDSecureBeginAuthResponse?, Error?) -> Void) {
+                                         threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
+                                         completion: @escaping (ThreeDS.BeginAuthResponse?, Error?) -> Void) {
         guard let clientToken = state.decodedClientToken else {
             return completion(nil, PrimerError.vaultFetchFailed)
         }
@@ -279,23 +297,39 @@ extension Transaction {
 
 extension ThreeDSecureService: ChallengeStatusReceiver {
     func completed(completionEvent: CompletionEvent) {
-        
+        let sdkTransactionId = completionEvent.getSDKTransactionID()
+        let authenticationStatus = ThreeDS.AuthenticationStatus(rawValue: completionEvent.getTransactionStatus())
+        let netceteraThreeDSCompletion = ThreeDS.NetceteraThreeDSCompletion(sdkTransactionId: sdkTransactionId, transactionStatus: authenticationStatus)
+        netceteraCompletion?(netceteraThreeDSCompletion, nil)
     }
     
     func cancelled() {
-        
+        let err = NSError(domain: "netcetera", code: -4, userInfo: [NSLocalizedDescriptionKey: "3DS canceled"])
+        ErrorHandler.shared.handle(error: err)
+        netceteraCompletion?(nil, err)
     }
     
     func timedout() {
-        
+        let err = NSError(domain: "netcetera", code: -3, userInfo: [NSLocalizedDescriptionKey: "3DS timed out"])
+        ErrorHandler.shared.handle(error: err)
+        netceteraCompletion?(nil, err)
     }
     
     func protocolError(protocolErrorEvent: ProtocolErrorEvent) {
+        let userInfo: [String: Any] = [
+            NSLocalizedDescriptionKey: protocolErrorEvent.getErrorMessage(),
+            "sdkTransactionId": protocolErrorEvent.getSDKTransactionID()
+        ]
         
+        let err = NSError(domain: "netcetera", code: -1, userInfo: userInfo)
+        ErrorHandler.shared.handle(error: err)
+        netceteraCompletion?(nil, err)
     }
     
     func runtimeError(runtimeErrorEvent: RuntimeErrorEvent) {
-        print("Netcetera Runtime Error\nCode: \(runtimeErrorEvent.getErrorCode())\nMessage: \(runtimeErrorEvent.getErrorMessage())\n\n")
+        let err = NSError(domain: "netcetera", code: Int(runtimeErrorEvent.getErrorCode() ?? "-2") ?? -2, userInfo: [NSLocalizedDescriptionKey: runtimeErrorEvent.getErrorMessage()])
+        ErrorHandler.shared.handle(error: err)
+        netceteraCompletion?(nil, err)
     }
 }
 
