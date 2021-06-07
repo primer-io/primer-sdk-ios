@@ -46,6 +46,7 @@ class AppViewController: UIViewController, AppViewControllerDelegate {
         100,
         200,
         1000,
+        5000,
     ]
     
     var useKlarna: Bool {
@@ -84,6 +85,17 @@ class AppViewController: UIViewController, AppViewControllerDelegate {
         super.viewDidLoad()
         
         title = "Settings"
+    
+        
+        if traitCollection.userInterfaceStyle == .light {
+            view.backgroundColor = .white
+        } else {
+            if #available(iOS 13.0, *) {
+                view.backgroundColor = .systemGray6
+            } else {
+                view.backgroundColor = UIColor(displayP3Red: 26/255, green: 27/255, blue: 27/255, alpha: 1)
+            }
+        }
         
         environment = Environment.allCases[0]
         countryCode = countryList[0]
@@ -134,10 +146,11 @@ class AppViewController: UIViewController, AppViewControllerDelegate {
     
     private func configureCustomerIdTextField() {
         customerIdTextField.delegate = self
+        customerIdTextField.becomeFirstResponder()
     }
     
     private func configurePickerAndAttachToolbar(to textField: UITextField, picker: UIPickerView) {
-        picker.backgroundColor = .white
+//        picker.backgroundColor = .white
         picker.dataSource = self
         picker.delegate = self
         picker.showsSelectionIndicator = true

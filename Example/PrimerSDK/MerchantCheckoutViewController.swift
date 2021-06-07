@@ -63,7 +63,18 @@ class MerchantCheckoutViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Primer"
+        title = "Checkout"
+        
+        if traitCollection.userInterfaceStyle == .light {
+            view.backgroundColor = .white
+        } else {
+            if #available(iOS 13.0, *) {
+                view.backgroundColor = .systemBackground
+                tableView.backgroundColor = .systemBackground
+            } else {
+                view.backgroundColor = UIColor(displayP3Red: 26/255, green: 27/255, blue: 27/255, alpha: 1)
+            }
+        }
         
         Primer.shared.delegate = self
         self.configurePrimer()
@@ -90,7 +101,7 @@ class MerchantCheckoutViewController: UIViewController {
         universalCheckoutButton.layer.cornerRadius = 8
         
         let generalSettings = PrimerSettings(
-            merchantIdentifier: "general-settings",
+            merchantIdentifier: "merchant.primer.dev.evangelos",
             customerId: "my-customer",
             amount: strongDelegate.amount,
             currency: strongDelegate.countryCode.currency,
@@ -101,9 +112,19 @@ class MerchantCheckoutViewController: UIViewController {
             urlSchemeIdentifier: "primer",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
-            businessDetails: nil,
+            businessDetails: BusinessDetails(
+                name: "My Business",
+                address: Address(
+                    addressLine1: "Road 100",
+                    addressLine2: nil,
+                    city: "Some City",
+                    state: nil,
+                    countryCode: strongDelegate.countryCode.country,
+                    postalCode: "12345"
+                )
+            ),
             directDebitHasNoAmount: false,
-            orderItems: [],
+            orderItems: [try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 1, isPending: true)],
             isInitialLoadingHidden: false
         )
         
