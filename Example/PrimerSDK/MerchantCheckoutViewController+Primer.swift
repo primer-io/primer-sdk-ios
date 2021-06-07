@@ -70,6 +70,7 @@ extension MerchantCheckoutViewController {
     }
     
     internal func generateRequest(_ token: PaymentMethodToken, capture: Bool) -> URLRequest? {
+        guard let strongDelegate = delegate else { return nil }
         guard let url = URL(string: "\(endpoint)/transaction") else { return nil }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -77,10 +78,10 @@ extension MerchantCheckoutViewController {
         
         let body = AuthorizationRequest(
             paymentMethod: token.token!,
-            amount: amount,
+            amount: strongDelegate.amount,
             type: token.paymentInstrumentType.rawValue,
             capture: capture,
-            currencyCode: "GBP"
+            currencyCode: strongDelegate.countryCode.currency!.rawValue
         )
         
         do {
@@ -121,12 +122,12 @@ extension MerchantCheckoutViewController {
     }
     
     internal func generateAmountAndOrderItems() -> (Int, [OrderItem]) {
-        let items = [try! OrderItem(name: "Rent scooter", unitAmount: amount, quantity: 1)]
+        let items = [try! OrderItem(name: "Rent scooter", unitAmount: delegate?.amount, quantity: 1)]
         var newAmount = 0
         items.forEach { newAmount += (($0.unitAmount ?? 0) * $0.quantity)  }
         
         return (
-            amount,
+            delegate!.amount,
             [try! OrderItem(name: "Rent scooter", unitAmount: newAmount, quantity: 1)]
         )
     }

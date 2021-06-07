@@ -64,9 +64,9 @@ internal class PayPalService: PayPalServiceProtocol {
         let body = PayPalCreateOrderRequest(
             paymentMethodConfigId: configId,
             amount: amount,
-            currencyCode: currency,
-            returnUrl: urlScheme,
-            cancelUrl: urlScheme
+            currencyCode: currency.rawValue,
+            returnUrl: "\(urlScheme)://success",
+            cancelUrl: "\(urlScheme)://failure"
         )
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
@@ -101,13 +101,16 @@ internal class PayPalService: PayPalServiceProtocol {
 
         let body = PayPalCreateBillingAgreementRequest(
             paymentMethodConfigId: configId,
-            returnUrl: urlScheme,
-            cancelUrl: urlScheme
+            returnUrl: "\(urlScheme)://",
+            cancelUrl: "\(urlScheme)://"
         )
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.payPalStartBillingAgreementSession(clientToken: clientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
+        api.payPalStartBillingAgreementSession(
+            clientToken: clientToken,
+            payPalCreateBillingAgreementRequest: body
+        ) { (result) in
             switch result {
             case .failure:
                 completion(.failure(PrimerError.payPalSessionFailed))

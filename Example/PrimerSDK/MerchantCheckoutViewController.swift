@@ -12,13 +12,23 @@ import UIKit
 class MerchantCheckoutViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
+    
+    @IBOutlet var cardVaultButton: UIButton!
+    @IBOutlet var paypalVaultButton: UIButton!
+    @IBOutlet var klarnaVaultButton: UIButton!
+    @IBOutlet var directDebitButton: UIButton!
+    @IBOutlet var applePayButton: UIButton!
+    @IBOutlet var vaultButton: UIButton!
+    @IBOutlet var universalCheckoutButton: UIButton!
+    
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
         didSet {
             self.tableView.reloadData()
         }
     }
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
-    let amount = 200
+    
+    weak var delegate: AppViewControllerDelegate?
     
     let vaultPayPalSettings = PrimerSettings(
         currency: .GBP,
@@ -50,24 +60,6 @@ class MerchantCheckoutViewController: UIViewController {
         ),
         orderItems: [try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 1, isPending: true)]
     )
-
-    let generalSettings = PrimerSettings(
-        merchantIdentifier: "general-settings",
-        customerId: "my-customer",
-        amount: 100,
-        currency: .EUR,
-        countryCode: .fr,
-        klarnaSessionType: .recurringPayment,
-        klarnaPaymentDescription: nil,
-        urlScheme: "primer.io://",
-        urlSchemeIdentifier: "primer",
-        isFullScreenOnly: false,
-        hasDisabledSuccessScreen: false,
-        businessDetails: nil,
-        directDebitHasNoAmount: false,
-        orderItems: [],
-        isInitialLoadingHidden: false
-    )
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,6 +71,43 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
+        guard let strongDelegate = delegate else { return print("🇯🇵 ええ？！") }
+        
+        // toggle buttons
+        cardVaultButton.isHidden = !strongDelegate.useCard
+        paypalVaultButton.isHidden = !strongDelegate.usePaypal
+        klarnaVaultButton.isHidden = !strongDelegate.useKlarna
+        applePayButton.isHidden = !strongDelegate.useApplePay
+        directDebitButton.isHidden = true
+        
+        // add rounded corners to buttons
+        cardVaultButton.layer.cornerRadius = 8
+        paypalVaultButton.layer.cornerRadius = 8
+        klarnaVaultButton.layer.cornerRadius = 8
+        applePayButton.layer.cornerRadius = 8
+        directDebitButton.layer.cornerRadius = 8
+        vaultButton.layer.cornerRadius = 8
+        universalCheckoutButton.layer.cornerRadius = 8
+        
+        let generalSettings = PrimerSettings(
+            merchantIdentifier: "general-settings",
+            customerId: "my-customer",
+            amount: strongDelegate.amount,
+            currency: strongDelegate.countryCode.currency,
+            countryCode: strongDelegate.countryCode,
+            klarnaSessionType: .recurringPayment,
+            klarnaPaymentDescription: nil,
+            urlScheme: "primer.io://",
+            urlSchemeIdentifier: "primer",
+            isFullScreenOnly: false,
+            hasDisabledSuccessScreen: false,
+            businessDetails: nil,
+            directDebitHasNoAmount: false,
+            orderItems: [],
+            isInitialLoadingHidden: false
+        )
+        
+        
         Primer.shared.configure(settings: generalSettings)
         
         let theme = generatePrimerTheme()
@@ -138,14 +167,21 @@ class MerchantCheckoutViewController: UIViewController {
 extension MerchantCheckoutViewController: PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
-        guard let url = URL(string: "\(endpoint)/clientToken") else {
+        
+        guard let delegate = delegate else {
+            return completion(.failure(NetworkError.missingParams))
+        }
+        
+        let path = delegate.environment == .Production ? "clientTokenProduction" : "clientToken"
+        
+        guard let url = URL(string: "\(endpoint)/\(path)") else {
             return completion(.failure(NetworkError.missingParams))
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: nil)
+        let body = CreateClientTokenRequest(customerId: delegate.customerId, customerCountryCode: nil)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -207,6 +243,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+        guard let strongDelegate = delegate else { return print("🇯🇵 ええ？！") }
         guard let token = paymentMethodToken.token else { return completion(NetworkError.missingParams) }
 
         guard let url = URL(string: "\(endpoint)/transaction") else {
@@ -220,7 +257,13 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: "GBP")
+        let body = AuthorizationRequest(
+            paymentMethod: token,
+            amount: strongDelegate.amount,
+            type: type.rawValue,
+            capture: true,
+            currencyCode: strongDelegate.countryCode.currency!.rawValue
+        )
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

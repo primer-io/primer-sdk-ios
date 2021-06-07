@@ -25,8 +25,7 @@ struct PayPalApplicationContext: Codable {
 struct PayPalCreateOrderRequest: Codable {
     let paymentMethodConfigId: String
     let amount: Int
-    let currencyCode: Currency
-    var locale: CountryCode?
+    let currencyCode: String
     let returnUrl: String
     let cancelUrl: String
 }

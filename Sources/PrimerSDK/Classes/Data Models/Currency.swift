@@ -33,4 +33,5 @@ public enum Currency: String, Codable {
     case SAR = "SAR"
     case MYR = "MYR"
     case RON = "RON"
+    case GEL
 }
