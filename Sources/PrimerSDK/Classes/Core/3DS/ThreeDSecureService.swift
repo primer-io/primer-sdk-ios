@@ -21,7 +21,11 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
     @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var api: PrimerAPIClientProtocol
     
-    let threeDS2Service: ThreeDS_SDK.ThreeDS2Service = ThreeDS2ServiceSDK()
+    let threeDS2Service: ThreeDS_SDK.ThreeDS2Service = ThreeDS2ServiceSDK(bundle: Bundle.primerFramework)
+    
+    deinit {
+        print("ThreeDSecureServiceProtocol deinit")
+    }
     
     func initializeSDK(completion: @escaping (Result<Void, Error>) -> Void) {
         do {
@@ -33,7 +37,7 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
             scheme.ids = ["A999999999"]
             scheme.encryptionKeyValue = Certificates.cer1
             scheme.rootCertificateValue = Certificates.cer3
-            scheme.logoImageName = "credit-card"
+            scheme.logoImageName = "visa"
             
             try configBuilder.add(scheme)
              
