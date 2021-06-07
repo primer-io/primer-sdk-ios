@@ -7,169 +7,235 @@
 
 import Foundation
 
-enum ThreeDSecureTestScenario: String, Codable {
-    // swiftlint:disable identifier_name
-    case three3DS2MethodTimeout = "3DS_V2_METHOD_TIMEOUT"
-    case threeDS2FrictionlessNoMethod = "3DS_V2_FRICTIONLESS_NO_METHOD"
-    case threeDS2FrictionlessPass = "3DS_V2_FRICTIONLESS_PASS"
-    case threeDS2ManualChallengePass = "3DS_V2_MANUAL_CHALLENGE_PASS"
-    case threeDS2AutoChallengePass = "3DS_V2_AUTO_CHALLENGE_PASS"
-    case threeDS2AutoChallengeFail = "3DS_V2_AUTO_CHALLENGE_FAIL"
-    case threeDS2AutoChallengePassNoMethod = "3DS_V2_AUTO_CHALLENGE_PASS_NO_METHOD"
-    case threeDS2FrictionlessFailureN = "3DS_V2_FRICTIONLESS_FAILURE_N"
-    case threeDS2FrictionlessFailureU = "3DS_V2_FRICTIONLESS_FAILURE_U"
-    case threeDS2FrictionlessFailureR = "3DS_V2_FRICTIONLESS_FAILURE_R"
-    case threeDS2FrictionlessFailureAttempted = "3DS_V2_FRICTIONLESS_FAILURE_ATTEMPTED"
-    case threeDS2DSTimeout = "3DS_V2_DS_TIMEOUT"
-}
-
-struct ThreeDSecureBeginAuthRequest: Codable {
+struct ThreeDS {
     
-    static var demoAuthRequest: ThreeDSecureBeginAuthRequest {
-        let threeDSecureBeginAuthRequest = ThreeDSecureBeginAuthRequest(testScenario: nil,
-                                                                        amount: 100,
-                                                                        currencyCode: .EUR,
-                                                                        orderId: "test_id",
-                                                                        customer: ThreeDSecureCustomer(name: "Evangelos",
-                                                                                                       email: "evangelos@primer.io",
-                                                                                                       homePhone: nil,
-                                                                                                       mobilePhone: nil,
-                                                                                                       workPhone: nil),
-                                                                        device: nil,
-                                                                        billingAddress: ThreeDSecureAddress(title: nil,
-                                                                                                            firstName: nil,
-                                                                                                            lastName: nil,
-                                                                                                            email: nil,
-                                                                                                            phoneNumber: nil,
-                                                                                                            addressLine1: "my address line 1",
-                                                                                                            addressLine2: nil,
-                                                                                                            addressLine3: nil,
-                                                                                                            city: "Athens",
-                                                                                                            state: nil,
-                                                                                                            countryCode: .gr,
-                                                                                                            postalCode: "11472"),
-                                                                        shippingAddress: nil,
-                                                                        customerAccount: nil)
-        return threeDSecureBeginAuthRequest
-    }
-    
-    var testScenario: ThreeDSecureTestScenario?
-    var amount: Int
-    let currencyCode: Currency
-    let orderId: String
-    let customer: ThreeDSecureCustomer
-    var device: ThreeDSecureAuthData?
-    let billingAddress: ThreeDSecureAddress
-    let shippingAddress: ThreeDSecureAddress?
-    let customerAccount: ThreeDSecureCustomerAccount?
-}
-
-struct ThreeDSecureCustomer: Codable {
-    let name: String
-    let email: String
-    let homePhone: String?
-    let mobilePhone: String?
-    let workPhone: String?
-}
-
-struct ThreeDSecureDevice: Codable {
-    //    struct Web {
-    //        let colorDepth: Int
-    //        let javaEnabled: Bool
-    //        let language: String
-    //        let screenHeight: Int
-    //        let screenWidth: Int
-    //        let timezoneOffset: Int
-    //        let userAgent: String
-    //    }
-    //
-    //    struct App {
-    let sdkTransactionId: String
-    //    }
-}
-
-struct ThreeDSecureAddress: Codable {
-    let title: String?
-    let firstName: String?
-    let lastName: String?
-    let email: String?
-    let phoneNumber: String?
-    let addressLine1: String
-    let addressLine2: String?
-    let addressLine3: String?
-    let city: String
-    let state: String?
-    let countryCode: CountryCode
-    let postalCode: String
-}
-
-struct ThreeDSecureCustomerAccount: Codable {
-    let id: String?
-    let createdAt: String?
-    let updatedAt: String?
-    let passwordUpdatedAt: String?
-    let purchaseCount: Int?
-}
-
-enum ThreeDSecureResponseCode: String, Codable {
-    case notPerformed = "NOT_PERFORMED"
-    case skipped = "SKIPPED"
-    case authSuccess = "AUTH_SUCCESS"
-    case authFailed = "AUTH_FAILED"
-    case challenge = "CHALLENGE"
-    case METHOD = "METHOD"
-}
-
-enum ThreeDSecureSkippedCode: String, Codable {
-    case gatewayUnavailable = "GATEWAY_UNAVAILABLE"
-    case disabledByMerchant = "DISABLED_BY_MERCHANT"
-    case notSupportedByIssuer = "NOT_SUPPORTED_BY_ISSUER"
-    case failedToNegotiate = "FAILED_TO_NEGOTIATE"
-    case unknownACSResponse = "UNKNOWN_ACS_RESPONSE"
-    case threeDSServerError = "3DS_SERVER_ERROR"
-    case acquirerNotConfigured = "ACQUIRER_NOT_CONFIGURED"
-    case acquirerNotParticipating = "ACQUIRER_NOT_PARTICIPATING"
-    
-}
-
-struct ThreeDSecureBeginAuthResponse: Codable {
-    let authentication: ThreeDSecureBeginAuthResponseAuthentication
-    let token: ThreeDSecureBeginAuthResponseToken
-    
-    enum CodingKeys: String, CodingKey {
-        case authentication
-        case token
-    }
-    
-    func encode(to encoder: Encoder) throws {
+    enum AuthenticationStatus: String {
+        case y, a, n, u, e
         
-    }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        if let threeDSDeclinedAPIResponse = (try? container.decode(ThreeDSDeclinedAPIResponse.self, forKey: .authentication)) {
-            authentication = threeDSDeclinedAPIResponse
-        } else if let threeDSSkippedAPIResponse = try? container.decode(ThreeDSSkippedAPIResponse.self, forKey: .authentication) {
-            authentication = threeDSSkippedAPIResponse
-        } else if let threeDSAppV2ChallengeAPIResponse = try? container.decode(ThreeDSAppV2ChallengeAPIResponse.self, forKey: .authentication) {
-            authentication = threeDSAppV2ChallengeAPIResponse
-        }else if let threeDSBrowserV2ChallengeAPIResponse = try? container.decode(ThreeDSBrowserV2ChallengeAPIResponse.self, forKey: .authentication) {
-            authentication = threeDSBrowserV2ChallengeAPIResponse
-        } else if let threeDSBrowserV1ChallengeAPIResponse = try? container.decode(ThreeDSBrowserV1ChallengeAPIResponse.self, forKey: .authentication) {
-            authentication = threeDSBrowserV1ChallengeAPIResponse
-        } else if let threeDSSuccessAPIResponse = try? container.decode(ThreeDSSuccessAPIResponse.self, forKey: .authentication) {
-            authentication = threeDSSuccessAPIResponse
-        } else if let threeDSMethodAPIResponse = try? container.decode(ThreeDSMethodAPIResponse.self, forKey: .authentication) {
-            authentication = threeDSMethodAPIResponse
-        }  else {
-            let err = ThreeDSError.failedToParseResponse
-            throw err
+        init(rawValue: String) {
+            switch rawValue.lowercased() {
+            case "y":
+                self = ThreeDS.AuthenticationStatus.y
+            case "a":
+                self = ThreeDS.AuthenticationStatus.a
+            case "n":
+                self = ThreeDS.AuthenticationStatus.n
+            case "u":
+                self = ThreeDS.AuthenticationStatus.u
+            case "e":
+                self = ThreeDS.AuthenticationStatus.e
+            default:
+                self = ThreeDS.AuthenticationStatus.e
+            }
         }
         
-        token = try container.decode(ThreeDSecureBeginAuthResponseToken.self, forKey: .token)
+        var `description`: String {
+            switch self {
+            case .y:
+                return "Authentication successful"
+            case .a:
+                return "Authentication attempted"
+            case .n:
+                return "Authentication failed"
+            case .u:
+                return "Authentication unavailable"
+            case .e:
+                return "Error"
+            }
+        }
+        
+        var recommendation: AuthenticationRecommendation {
+            switch self {
+            case .y,
+                 .a:
+                return .proceed
+            case .n,
+                 .e:
+                return .stop
+            case .u:
+                return .merchantDecision
+            }
+        }
     }
+    
+    enum AuthenticationRecommendation {
+        case proceed, stop, merchantDecision
+    }
+    
+    enum TestScenario: String, Codable {
+        // swiftlint:disable identifier_name
+        case three3DS2MethodTimeout = "3DS_V2_METHOD_TIMEOUT"
+        case threeDS2FrictionlessNoMethod = "3DS_V2_FRICTIONLESS_NO_METHOD"
+        case threeDS2FrictionlessPass = "3DS_V2_FRICTIONLESS_PASS"
+        case threeDS2ManualChallengePass = "3DS_V2_MANUAL_CHALLENGE_PASS"
+        case threeDS2AutoChallengePass = "3DS_V2_AUTO_CHALLENGE_PASS"
+        case threeDS2AutoChallengeFail = "3DS_V2_AUTO_CHALLENGE_FAIL"
+        case threeDS2AutoChallengePassNoMethod = "3DS_V2_AUTO_CHALLENGE_PASS_NO_METHOD"
+        case threeDS2FrictionlessFailureN = "3DS_V2_FRICTIONLESS_FAILURE_N"
+        case threeDS2FrictionlessFailureU = "3DS_V2_FRICTIONLESS_FAILURE_U"
+        case threeDS2FrictionlessFailureR = "3DS_V2_FRICTIONLESS_FAILURE_R"
+        case threeDS2FrictionlessFailureAttempted = "3DS_V2_FRICTIONLESS_FAILURE_ATTEMPTED"
+        case threeDS2DSTimeout = "3DS_V2_DS_TIMEOUT"
+    }
+    
+    struct BeginAuthRequest: Codable {
+        
+        static var demoAuthRequest: BeginAuthRequest {
+            let threeDSecureBeginAuthRequest = BeginAuthRequest(testScenario: nil,
+                                                                amount: 100,
+                                                                currencyCode: .EUR,
+                                                                orderId: "test_id",
+                                                                customer: ThreeDS.Customer(name: "Evangelos",
+                                                                                               email: "evangelos@primer.io",
+                                                                                               homePhone: nil,
+                                                                                               mobilePhone: nil,
+                                                                                               workPhone: nil),
+                                                                device: nil,
+                                                                billingAddress: ThreeDS.Address(title: nil,
+                                                                                                    firstName: nil,
+                                                                                                    lastName: nil,
+                                                                                                    email: nil,
+                                                                                                    phoneNumber: nil,
+                                                                                                    addressLine1: "my address line 1",
+                                                                                                    addressLine2: nil,
+                                                                                                    addressLine3: nil,
+                                                                                                    city: "Athens",
+                                                                                                    state: nil,
+                                                                                                    countryCode: .gr,
+                                                                                                    postalCode: "11472"),
+                                                                shippingAddress: nil,
+                                                                customerAccount: nil)
+            return threeDSecureBeginAuthRequest
+        }
+        
+        var testScenario: ThreeDS.TestScenario?
+        var amount: Int
+        let currencyCode: Currency
+        let orderId: String
+        let customer: ThreeDS.Customer
+        var device: ThreeDSecureAuthData?
+        let billingAddress: ThreeDS.Address
+        let shippingAddress: ThreeDS.Address?
+        let customerAccount: ThreeDS.CustomerAccount?
+    }
+    
+    struct NetceteraThreeDSCompletion {
+        let sdkTransactionId: String
+        let transactionStatus: ThreeDS.AuthenticationStatus
+    }
+    
+    struct Customer: Codable {
+        let name: String
+        let email: String
+        let homePhone: String?
+        let mobilePhone: String?
+        let workPhone: String?
+    }
+    
+    struct Device: Codable {
+        let sdkTransactionId: String
+    }
+    
+    struct Address: Codable {
+        let title: String?
+        let firstName: String?
+        let lastName: String?
+        let email: String?
+        let phoneNumber: String?
+        let addressLine1: String
+        let addressLine2: String?
+        let addressLine3: String?
+        let city: String
+        let state: String?
+        let countryCode: CountryCode
+        let postalCode: String
+    }
+    
+    struct CustomerAccount: Codable {
+        let id: String?
+        let createdAt: String?
+        let updatedAt: String?
+        let passwordUpdatedAt: String?
+        let purchaseCount: Int?
+    }
+    
+    enum ResponseCode: String, Codable {
+        case notPerformed = "NOT_PERFORMED"
+        case skipped = "SKIPPED"
+        case authSuccess = "AUTH_SUCCESS"
+        case authFailed = "AUTH_FAILED"
+        case challenge = "CHALLENGE"
+        case METHOD = "METHOD"
+    }
+    
+    enum SkippedCode: String, Codable {
+        case gatewayUnavailable = "GATEWAY_UNAVAILABLE"
+        case disabledByMerchant = "DISABLED_BY_MERCHANT"
+        case notSupportedByIssuer = "NOT_SUPPORTED_BY_ISSUER"
+        case failedToNegotiate = "FAILED_TO_NEGOTIATE"
+        case unknownACSResponse = "UNKNOWN_ACS_RESPONSE"
+        case threeDSServerError = "3DS_SERVER_ERROR"
+        case acquirerNotConfigured = "ACQUIRER_NOT_CONFIGURED"
+        case acquirerNotParticipating = "ACQUIRER_NOT_PARTICIPATING"
+        
+    }
+    
+    struct BeginAuthResponse: Codable {
+        let authentication: ThreeDSecureBeginAuthResponseAuthentication
+        let token: ThreeDSecureBeginAuthResponseToken
+        
+        enum CodingKeys: String, CodingKey {
+            case authentication
+            case token
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            
+            if let threeDSDeclinedAPIResponse = (try? container.decode(ThreeDSDeclinedAPIResponse.self, forKey: .authentication)) {
+                authentication = threeDSDeclinedAPIResponse
+            } else if let threeDSSkippedAPIResponse = try? container.decode(ThreeDSSkippedAPIResponse.self, forKey: .authentication) {
+                authentication = threeDSSkippedAPIResponse
+            } else if let threeDSAppV2ChallengeAPIResponse = try? container.decode(ThreeDSAppV2ChallengeAPIResponse.self, forKey: .authentication) {
+                authentication = threeDSAppV2ChallengeAPIResponse
+            }else if let threeDSBrowserV2ChallengeAPIResponse = try? container.decode(ThreeDSBrowserV2ChallengeAPIResponse.self, forKey: .authentication) {
+                authentication = threeDSBrowserV2ChallengeAPIResponse
+            } else if let threeDSBrowserV1ChallengeAPIResponse = try? container.decode(ThreeDSBrowserV1ChallengeAPIResponse.self, forKey: .authentication) {
+                authentication = threeDSBrowserV1ChallengeAPIResponse
+            } else if let threeDSSuccessAPIResponse = try? container.decode(ThreeDSSuccessAPIResponse.self, forKey: .authentication) {
+                authentication = threeDSSuccessAPIResponse
+            } else if let threeDSMethodAPIResponse = try? container.decode(ThreeDSMethodAPIResponse.self, forKey: .authentication) {
+                authentication = threeDSMethodAPIResponse
+            }  else {
+                let err = ThreeDSError.failedToParseResponse
+                throw err
+            }
+            
+            token = try container.decode(ThreeDSecureBeginAuthResponseToken.self, forKey: .token)
+        }
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //struct ThreeDSecureBeginAuthResponse<T: ThreeDSecureBeginAuthResponseAuthentication>: Codable {
 //    let authentication: T
@@ -188,8 +254,8 @@ struct ThreeDSSkippedAPIResponse: ThreeDSecureBeginAuthResponseAuthentication, C
     let dsTransactionId: String?
     let eci: String?
     let protocolVersion: String?
-    let responseCode: ThreeDSecureResponseCode
-    let skippedReasonCode: ThreeDSecureSkippedCode
+    let responseCode: ThreeDS.ResponseCode
+    let skippedReasonCode: ThreeDS.SkippedCode
     let skippedReasonText: String
     let statusUrl: String?
     let transactionId: String?
@@ -201,7 +267,7 @@ struct ACSRenderingType: Codable {
 }
 
 struct ThreeDSMethodAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDSecureResponseCode
+    let responseCode: ThreeDS.ResponseCode
     let protocolVersion: String
     let transactionId: String
     let acsOperatorId: String?
@@ -217,7 +283,7 @@ struct ThreeDSMethodAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
 }
 
 struct ThreeDSBrowserV2ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDSecureResponseCode
+    let responseCode: ThreeDS.ResponseCode
     let protocolVersion: String
     let transactionId: String?
     let acsOperatorId: String?
@@ -233,7 +299,7 @@ struct ThreeDSBrowserV2ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthen
 }
 
 struct ThreeDSAppV2ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDSecureResponseCode
+    let responseCode: ThreeDS.ResponseCode
     let protocolVersion: String
     let transactionId: String?
     let acsOperatorId: String?
@@ -249,7 +315,7 @@ struct ThreeDSAppV2ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthentica
 }
 
 struct ThreeDSBrowserV1ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDSecureResponseCode
+    let responseCode: ThreeDS.ResponseCode
     let protocolVersion: String
     let transactionId: String?
     let acsOperatorId: String?
@@ -304,7 +370,7 @@ enum ThreeDSecureDeclinedReasonCode: String, Codable {
 }
 
 struct ThreeDSDeclinedAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDSecureResponseCode
+    let responseCode: ThreeDS.ResponseCode
     let protocolVersion: String
     let transactionId: String?
     let acsOperatorId: String?
@@ -318,7 +384,7 @@ struct ThreeDSDeclinedAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
 }
 
 struct ThreeDSSuccessAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDSecureResponseCode?
+    let responseCode: ThreeDS.ResponseCode?
     let protocolVersion: String
     let transactionId: String?
     let acsOperatorId: String?
