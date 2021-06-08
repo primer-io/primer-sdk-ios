@@ -32,7 +32,7 @@ internal class VaultService: VaultServiceProtocol {
                 let paymentMethods = state.paymentMethods
 
                 if state.selectedPaymentMethod.isEmpty == true && paymentMethods.isEmpty == false {
-                    guard let id = paymentMethods[0].token else { return }
+                    guard let id = paymentMethods.filter({ $0.paymentInstrumentType == .paymentCard }).first?.token else { return }
                     state.selectedPaymentMethod = id
                 }
 
