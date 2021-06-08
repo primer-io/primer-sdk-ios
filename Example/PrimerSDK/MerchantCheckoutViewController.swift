@@ -44,7 +44,7 @@ class MerchantCheckoutViewController: UIViewController {
     )
     
     let applePaySettings = PrimerSettings(
-        merchantIdentifier: "merchant.primer.dev.evangelos",
+        merchantIdentifier: "merchant.checkout.team",
         currency: .EUR,
         countryCode: .fr,
         businessDetails: BusinessDetails(
@@ -101,7 +101,7 @@ class MerchantCheckoutViewController: UIViewController {
         universalCheckoutButton.layer.cornerRadius = 8
         
         
-        let merchantIdentifier = strongDelegate.environment == .Production ? "merchant.io.primer" : "merchant.primer.dev.evangelos"
+        let merchantIdentifier = strongDelegate.environment == .Production ? "merchant.checkout.team" : "merchant.primer.dev.evangelos"
         
         let generalSettings = PrimerSettings(
             merchantIdentifier: merchantIdentifier,
