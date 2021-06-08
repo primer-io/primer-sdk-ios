@@ -48,7 +48,11 @@ class MerchantCheckoutViewController: UIViewController {
                 postalCode: "75001"
             )
         ),
-        orderItems: [try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 1, isPending: true)]
+        orderItems: [
+            try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
+            try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
+            try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
+        ]
     )
 
     let generalSettings = PrimerSettings(
