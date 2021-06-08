@@ -57,7 +57,7 @@ internal class KlarnaService: KlarnaServiceProtocol {
                 return completion(.failure(KlarnaException.missingOrderItems))
             }
             
-            if settings.orderItems.filter({ $0.unitAmount == nil }).isEmpty {
+            if !settings.orderItems.filter({ $0.unitAmount == nil }).isEmpty {
                 return completion(.failure(KlarnaException.orderItemMissesAmount))
             }
             
