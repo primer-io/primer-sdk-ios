@@ -210,6 +210,8 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                     }
                     
                 case .failure(let err):
+                    _ = ErrorHandler.shared.handle(error: err)
+                    Primer.shared.delegate?.checkoutFailed(with: err)
                     completion(err)
                 }
             }
@@ -227,6 +229,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
 extension ApplePayViewModel: PKPaymentAuthorizationViewControllerDelegate {
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
+        controller.dismiss(animated: true, completion: nil)
         applePayCompletion?(.failure(AppleException.cancelled))
         applePayCompletion = nil
     }
