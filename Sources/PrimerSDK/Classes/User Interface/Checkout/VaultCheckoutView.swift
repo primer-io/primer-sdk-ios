@@ -38,11 +38,13 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
     weak var topConstraint: NSLayoutConstraint?
     
     private var isShowingFirstVaultedPaymentMethod: Bool {
+//        return false
         if Primer.shared.flow.internalSessionFlow.vaulted { return false }
         return (dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel.exists == true)
     }
     
     private var isShowingAmount: Bool {
+//        return false
         if Primer.shared.flow.internalSessionFlow.vaulted { return false }
         return dataSource?.amount != nil
     }
