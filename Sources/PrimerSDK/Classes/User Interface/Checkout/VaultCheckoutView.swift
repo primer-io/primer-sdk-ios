@@ -125,12 +125,19 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
         let titleItem = UINavigationItem(title: "Test")
         navBar.setItems([navItem, titleItem], animated: false)
         
-
-        navBar.topItem?.title = NSLocalizedString("primer-vault-checkout-nav-bar-title",
-                                                  tableName: nil,
-                                                  bundle: Bundle.primerResources,
-                                                  value: "Choose payment method",
-                                                  comment: "Choose payment method - Vault Checkout Navigation Bar Title")
+        
+        navBar.topItem?.title = Primer.shared.flow.internalSessionFlow.vaulted ?
+            NSLocalizedString("primer-vault-nav-bar-title",
+                              tableName: nil,
+                              bundle: Bundle.primerResources,
+                              value: "Add payment method",
+                              comment: "Add payment method - Vault Navigation Bar Title")
+            :
+            NSLocalizedString("primer-checkout-nav-bar-title",
+                              tableName: nil,
+                              bundle: Bundle.primerResources,
+                              value: "Choose payment method",
+                              comment: "Choose payment method - Checkout Navigation Bar Title")
     }
 
     @objc private func cancel() {
@@ -144,11 +151,19 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
         titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20).isActive = true
         titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20).isActive = true
         titleLabel.textAlignment = .center
-        titleLabel.text = NSLocalizedString("primer-vault-checkout-nav-bar-title",
-                                            tableName: nil,
-                                            bundle: Bundle.primerResources,
-                                            value: "Choose payment method",
-                                            comment: "Choose payment method - Vault Checkout Navigation Bar Title")
+        titleLabel.text = Primer.shared.flow.internalSessionFlow.vaulted ?
+            NSLocalizedString("primer-vault-nav-bar-title",
+                              tableName: nil,
+                              bundle: Bundle.primerResources,
+                              value: "Add payment method",
+                              comment: "Add payment method - Vault Navigation Bar Title")
+            :
+            NSLocalizedString("primer-checkout-nav-bar-title",
+                              tableName: nil,
+                              bundle: Bundle.primerResources,
+                              value: "Choose payment method",
+                              comment: "Choose payment method - Checkout Navigation Bar Title")
+        print(titleLabel.text)
     }
 
     private func configureAmountLabelView() {
@@ -347,7 +362,7 @@ internal extension VaultCheckoutView {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: otherMethodsTitleLabel.bottomAnchor, constant: 12).isActive = true
+        tableView.topAnchor.constraint(equalTo: otherMethodsTitleLabel.bottomAnchor, constant: 0).isActive = true
         
         tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
         tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
