@@ -57,7 +57,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let urlScheme = settings.urlScheme else {
+        guard let urlSchemeId = settings.urlSchemeIdentifier else {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
@@ -65,8 +65,8 @@ internal class PayPalService: PayPalServiceProtocol {
             paymentMethodConfigId: configId,
             amount: amount,
             currencyCode: currency.rawValue,
-            returnUrl: "\(urlScheme)://success",
-            cancelUrl: "\(urlScheme)://failure"
+            returnUrl: "https://primer.io/success",
+            cancelUrl: "https://primer.io/cancel"
         )
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
@@ -95,14 +95,14 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
-        guard let urlScheme = settings.urlScheme else {
-            return completion(.failure(PrimerError.missingURLScheme))
+        guard let urlSchemeId = settings.urlSchemeIdentifier else {
+            return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
         let body = PayPalCreateBillingAgreementRequest(
             paymentMethodConfigId: configId,
-            returnUrl: "\(urlScheme)://",
-            cancelUrl: "\(urlScheme)://"
+            returnUrl: "https://primer.io/success",
+            cancelUrl: "https://primer.io/cancel"
         )
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()

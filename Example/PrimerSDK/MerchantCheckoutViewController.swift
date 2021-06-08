@@ -100,15 +100,18 @@ class MerchantCheckoutViewController: UIViewController {
         vaultButton.layer.cornerRadius = 8
         universalCheckoutButton.layer.cornerRadius = 8
         
+        
+        let merchantIdentifier = strongDelegate.environment == .Production ? "merchant.io.primer" : "merchant.primer.dev.evangelos"
+        
         let generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.primer.dev.evangelos",
+            merchantIdentifier: merchantIdentifier,
             customerId: "my-customer",
             amount: strongDelegate.amount,
             currency: strongDelegate.countryCode.currency,
             countryCode: strongDelegate.countryCode,
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
-            urlScheme: "primer.io://",
+            urlScheme: "primer://",
             urlSchemeIdentifier: "primer",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
@@ -124,7 +127,7 @@ class MerchantCheckoutViewController: UIViewController {
                 )
             ),
             directDebitHasNoAmount: false,
-            orderItems: [try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 1, isPending: true)],
+            orderItems: [try! OrderItem(name: "Shoes", unitAmount: strongDelegate.amount, quantity: 1, isPending: false)],
             isInitialLoadingHidden: false
         )
         
@@ -193,6 +196,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             return completion(.failure(NetworkError.missingParams))
         }
         
+        print(delegate.environment)
         let path = delegate.environment == .Production ? "clientTokenProduction" : "clientToken"
         
         guard let url = URL(string: "\(endpoint)/\(path)") else {
@@ -266,8 +270,11 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         guard let strongDelegate = delegate else { return print("🇯🇵 ええ？！") }
         guard let token = paymentMethodToken.token else { return completion(NetworkError.missingParams) }
+        
+        print(strongDelegate.environment)
+        let path = strongDelegate.environment == .Production ? "transactionProduction" : "transaction"
 
-        guard let url = URL(string: "\(endpoint)/transaction") else {
+        guard let url = URL(string: "\(endpoint)/\(path)") else {
             return completion(NetworkError.missingParams)
         }
 

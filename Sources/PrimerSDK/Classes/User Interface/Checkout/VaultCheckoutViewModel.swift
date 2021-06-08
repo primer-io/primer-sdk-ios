@@ -102,9 +102,13 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 internal extension Int {
     func toCurrencyString(currency: Currency) -> String {
         switch currency {
-        case .USD: return String(format: "$%.2f", Float(self) / 100)
-        case .EUR: return String(format: "€%.2f", Float(self) / 100)
-        case .GBP: return String(format: "£%.2f", Float(self) / 100)
+        case .USD: return String(format: "$%.2f", Double(self) / 100)
+        case .EUR: return String(format: "€%.2f", Double(self) / 100)
+        case .GBP: return String(format: "£%.2f", Double(self) / 100)
+        case .SEK: return String(format: "%.2fkr", Double(self) / 100)
+        case .AUD: return String(format: "A$%.2f", Double(self) / 100)
+        case .TRY: return String(format: "₺‎%.2f", Double(self) / 100)
+        case .GEL: return String(format: "₾%.2f", Double(self) / 100)
         default:
             return "\(self) \(currency.rawValue)"
         }

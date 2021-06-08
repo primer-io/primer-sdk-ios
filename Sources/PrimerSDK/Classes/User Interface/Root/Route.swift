@@ -75,12 +75,12 @@ enum Route {
         #if canImport(CardScan)
         case .cardScanner:  return 420
         #endif
-        case .vaultCheckout:  return 250
-        case .vaultPaymentMethods:  return 320
+        case .vaultCheckout:  return 400
+        case .vaultPaymentMethods:  return 400
         case .oAuth:  return 400
         case .applePay:  return 400
-        case .success:  return 360
-        case .error:  return 220
+        case .success:  return 400
+        case .error:  return 400
         case .confirmMandate: return 580
         case .form(let type, _):
             switch type {
@@ -88,10 +88,10 @@ enum Route {
             case .name, .iban, .email: return 300
             case .cardForm(let theme):
                 switch theme.textFieldTheme {
-                case .doublelined: return 360
-                default: return 320
+                case .doublelined: return 400
+                default: return 400
                 }
-            default: return 320
+            default: return 400
             }
         }
     }

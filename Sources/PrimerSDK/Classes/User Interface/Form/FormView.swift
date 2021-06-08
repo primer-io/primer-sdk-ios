@@ -132,7 +132,7 @@ internal class FormView: PrimerView {
         let backBtnImage = ImageName.back.image
         backItem.tintColor = theme.colorTheme.tint1
         backItem.image = backBtnImage
-        navItem.leftBarButtonItem = backItem
+        navItem.setLeftBarButton(backItem, animated: false)
 
         // remove default shadow
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
@@ -148,7 +148,11 @@ internal class FormView: PrimerView {
             navBarTitleLabel.translatesAutoresizingMaskIntoConstraints = false
             navBarTitleLabel.textAlignment = .center
             navBarTitleLabel.font = UIFont.boldSystemFont(ofSize: 17)
-            navBarTitleLabel.textColor = .black
+            if #available(iOS 13.0, *) {
+                navBarTitleLabel.textColor = .label
+            } else {
+                navBarTitleLabel.textColor = .black
+            }
             navBarTitleLabel.text = NSLocalizedString("primer-form-type-main-title-card-form",
                                                       tableName: nil,
                                                       bundle: Bundle.primerResources,

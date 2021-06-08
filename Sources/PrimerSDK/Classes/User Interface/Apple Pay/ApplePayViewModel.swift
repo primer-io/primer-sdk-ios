@@ -63,7 +63,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
         guard let currency = currency else {
             return completion(PaymentException.missingCurrency)
         }
-        
+
         guard let merchantIdentifier = merchantIdentifier else {
             return completion(AppleException.missingMerchantIdentifier)
         }
@@ -113,12 +113,10 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                     let router: RouterDelegate = DependencyContainer.resolve()
                                     router.presentErrorScreen(with: err)
                                 })
-                                
+
                                 Primer.shared.delegate?.checkoutFailed(with: err)
                             }
-                            
                             completion(err)
-                            
                         } else {
                             let state: AppStateProtocol = DependencyContainer.resolve()
 
@@ -129,7 +127,10 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                             let instrument = PaymentInstrument(
                                 paymentMethodConfigId: applePayConfigId,
                                 token: applePayPaymentResponse.token,
-                                sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
+                                sourceConfig: ApplePaySourceConfig(
+                                    source: "IN_APP",
+                                    merchantId: merchantIdentifier
+                                )
                             )
                             
                             applePayService.tokenize(instrument: instrument) { [weak self] (result) in

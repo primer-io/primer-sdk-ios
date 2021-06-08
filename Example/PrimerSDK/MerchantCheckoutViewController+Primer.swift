@@ -94,13 +94,13 @@ extension MerchantCheckoutViewController {
     }
     
     internal func generatePrimerTheme() -> PrimerTheme {
-        let themeColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
+//        let themeColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
         
         if #available(iOS 13.0, *) {
             return PrimerTheme(
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
-                colorTheme: PrimerDefaultTheme(tint1: themeColor),
-                darkTheme: PrimerDarkTheme(tint1: themeColor),
+                colorTheme: PrimerDefaultTheme(),
+                darkTheme: PrimerDarkTheme(),
                 layout: PrimerLayout(showTopTitle: true, textFieldHeight: 40)
 //                fontTheme: PrimerFontTheme(
 //                    mainTitleFont: .boldSystemFont(ofSize: 24),
@@ -110,7 +110,7 @@ extension MerchantCheckoutViewController {
         } else {
             return PrimerTheme(
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
-                colorTheme: PrimerDefaultTheme(tint1: themeColor),
+                colorTheme: PrimerDefaultTheme(),
                 layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
                 textFieldTheme: .outlined
 //                fontTheme: PrimerFontTheme(

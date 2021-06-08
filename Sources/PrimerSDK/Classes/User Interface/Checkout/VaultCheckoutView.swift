@@ -81,7 +81,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
         }
         
         navBar.isHidden = true
-        amountLabelView.isHidden = true
+//        amountLabelView.isHidden = true
         savedCardTitleLabel.isHidden = true
         savedCardButton.isHidden = true
         seeAllLinkLabel.isHidden = true
@@ -145,7 +145,7 @@ internal extension VaultCheckoutView {
         amountLabelView.text = dataSource?.amount
         amountLabelView.font = .boldSystemFont(ofSize: 32)
         amountLabelView.translatesAutoresizingMaskIntoConstraints = false
-        amountLabelView.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 6).isActive = true
+        amountLabelView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6).isActive = true
         amountLabelView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
     }
 

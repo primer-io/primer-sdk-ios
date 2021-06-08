@@ -33,6 +33,7 @@ class AppViewController: UIViewController, AppViewControllerDelegate {
         CountryCode.tr,
         CountryCode.au,
         CountryCode.ge,
+        CountryCode.gb,
     ]
     
     var amount: Int = 50 {
@@ -47,6 +48,7 @@ class AppViewController: UIViewController, AppViewControllerDelegate {
         200,
         1000,
         5000,
+        10000,
     ]
     
     var useKlarna: Bool {
