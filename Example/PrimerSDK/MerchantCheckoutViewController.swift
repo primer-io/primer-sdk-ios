@@ -34,7 +34,7 @@ class MerchantCheckoutViewController: UIViewController {
     )
     
     let applePaySettings = PrimerSettings(
-        merchantIdentifier: "merchant.primer.dev.evangelos",
+        merchantIdentifier: "merchant.checkout.team",
         currency: .EUR,
         countryCode: .fr,
         businessDetails: BusinessDetails(
@@ -52,7 +52,7 @@ class MerchantCheckoutViewController: UIViewController {
     )
 
     let generalSettings = PrimerSettings(
-        merchantIdentifier: "general-settings",
+        merchantIdentifier: "merchant.checkout.team",
         customerId: "my-customer",
         amount: 100,
         currency: .EUR,
