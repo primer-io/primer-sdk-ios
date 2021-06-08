@@ -8,7 +8,6 @@
 xcuserdata/
 Certificates.swift
 
-
 ## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
 *.xcscmblueprint
 *.xccheckout
@@ -103,3 +102,8 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject//*.png
+
+id_rsa_github_actions.*
+id_rsa_github_actions
+id_rsa_ios.*
+id_rsa_ios

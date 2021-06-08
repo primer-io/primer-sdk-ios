@@ -19,7 +19,7 @@ internal protocol ConfirmMandateViewDataSource: class {
     var amount: String { get }
 }
 
-internal class ConfirmMandateView: UIView {
+internal class ConfirmMandateView: PrimerView {
 
     internal let indicator = UIActivityIndicatorView()
     private let navBar = UINavigationBar()
@@ -67,7 +67,11 @@ internal class ConfirmMandateView: UIView {
 
 internal extension ConfirmMandateView {
     func addIndicator() {
-        indicator.pin(to: self)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        indicator.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        indicator.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        indicator.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
     }
 
     func addNavbar() {
@@ -213,7 +217,13 @@ internal extension ConfirmMandateView {
         button.setTitle("", for: .normal)
         button.addSubview(indicator)
         indicator.color = theme.colorTheme.text2
-        indicator.pin(to: button)
+
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.topAnchor.constraint(equalTo: button.topAnchor).isActive = true
+        indicator.leadingAnchor.constraint(equalTo: button.leadingAnchor).isActive = true
+        indicator.trailingAnchor.constraint(equalTo: button.trailingAnchor).isActive = true
+        indicator.bottomAnchor.constraint(equalTo: button.bottomAnchor).isActive = true
+        
         indicator.startAnimating()
         delegate?.confirm()
     }

@@ -11,41 +11,41 @@ import Foundation
 
 import UIKit
 
-internal extension UIView {
+internal class PrimerView: UIView {
 
-    @IBInspectable var cornerRadius: CGFloat {
-        get {
-            return layer.cornerRadius
-        }
-        set {
-            layer.cornerRadius = newValue
-        }
-    }
+//    @IBInspectable var cornerRadius: CGFloat {
+//        get {
+//            return layer.cornerRadius
+//        }
+//        set {
+//            layer.cornerRadius = newValue
+//        }
+//    }
+//
+//    @IBInspectable var borderWidth: CGFloat {
+//        get {
+//            return layer.borderWidth
+//        }
+//        set {
+//            layer.borderWidth = newValue
+//        }
+//    }
+//
+//    @IBInspectable var borderColor: UIColor? {
+//        get {
+//            if let cgColor = layer.borderColor {
+//                return UIColor(cgColor: cgColor)
+//            } else {
+//                return nil
+//            }
+//
+//        }
+//        set {
+//            layer.borderColor = newValue?.cgColor
+//        }
+//    }
 
-    @IBInspectable var borderWidth: CGFloat {
-        get {
-            return layer.borderWidth
-        }
-        set {
-            layer.borderWidth = newValue
-        }
-    }
-
-    @IBInspectable var borderColor: UIColor? {
-        get {
-            if let cgColor = layer.borderColor {
-                return UIColor(cgColor: cgColor)
-            } else {
-                return nil
-            }
-
-        }
-        set {
-            layer.borderColor = newValue?.cgColor
-        }
-    }
-
-    @IBInspectable var shadowColor: UIColor? {
+    var shadowColor: UIColor? {
         get {
             if let cgColor = layer.shadowColor {
                 return UIColor(cgColor: cgColor)
@@ -59,7 +59,7 @@ internal extension UIView {
         }
     }
 
-    @IBInspectable var shadowRadius: CGFloat {
+    var shadowRadius: CGFloat {
         get {
             return layer.shadowRadius
         }
@@ -68,7 +68,7 @@ internal extension UIView {
         }
     }
 
-    @IBInspectable var shadowOffset: CGSize {
+    var shadowOffset: CGSize {
         get {
             return layer.shadowOffset
         }
@@ -77,7 +77,7 @@ internal extension UIView {
         }
     }
 
-    @IBInspectable var shadowOpacity: Float {
+    var shadowOpacity: Float {
         get {
             return layer.shadowOpacity
         }
@@ -86,23 +86,12 @@ internal extension UIView {
         }
     }
 
-    func toImage() -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0.0)
-        defer { UIGraphicsEndImageContext() }
-        if let context = UIGraphicsGetCurrentContext() {
-            layer.render(in: context)
-            let image = UIGraphicsGetImageFromCurrentImageContext()
-            return image
-        }
-        return nil
-    }
-
     func addShadow(opacity: Float = 0.5, radius: CGFloat = 3, offset: CGSize = CGSize(width: 0, height: 2)) {
-        self.layer.shadowColor = UIColor.black.cgColor
-        self.layer.shadowRadius = radius
-        self.layer.shadowOpacity = opacity
-        self.layer.shadowOffset = offset
-        self.layer.masksToBounds = false
+        shadowColor = .black
+        shadowRadius = radius
+        shadowOpacity = opacity
+        shadowOffset = offset
+        layer.masksToBounds = false
     }
 
     func addBottomShadow() {
@@ -142,24 +131,7 @@ internal extension UIView {
         trailingAnchor.constraint(equalTo: superView.trailingAnchor).isActive = true
         bottomAnchor.constraint(equalTo: superView.bottomAnchor).isActive = true
     }
-
-    @objc
-    func keyboardWillShow(notification: NSNotification) {
-//        let height = UIScreen.main.bounds.height - frame.height
-//        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-////            if self.frame.origin.y.rounded() == height.rounded() {
-////                self.frame.origin.y -= keyboardSize.height
-////            }
-//        }
-    }
-
-    @objc
-    func keyboardWillHide(notification: NSNotification) {
-//        let height = UIScreen.main.bounds.height - frame.height
-////        if self.frame.origin.y.rounded() != height.rounded() {
-////            self.frame.origin.y = height.rounded()
-////        }
-    }
+    
 }
 
 #endif

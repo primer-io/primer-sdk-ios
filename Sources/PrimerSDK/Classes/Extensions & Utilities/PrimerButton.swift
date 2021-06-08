@@ -9,13 +9,19 @@
 
 import UIKit
 
-internal extension UIButton {
+internal class PrimerButton: UIButton {
 
     func setBusy(theme: PrimerThemeProtocol) {
         let indicator = UIActivityIndicatorView()
         self.setTitle("", for: .normal)
         self.addSubview(indicator)
-        indicator.pin(to: self)
+
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        indicator.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        indicator.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        indicator.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        
         indicator.color = theme.colorTheme.text2
         indicator.startAnimating()
     }
