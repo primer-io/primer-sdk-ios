@@ -131,6 +131,11 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //        self.merchantCapabilities = merchantCapabilities
         self.isInitialLoadingHidden = isInitialLoadingHidden
         self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
+        
+        if !orderItems.filter({ $0.unitAmount != nil }).isEmpty {
+            // In case order items have been provided: Replace amount with the sum of the unit amounts
+            self.amount = orderItems.filter({ $0.unitAmount != nil }).compactMap({ $0.unitAmount! * $0.quantity }).reduce(0, +)
+        }
     }
 }
 
