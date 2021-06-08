@@ -13,7 +13,8 @@ public class Primer {
     
     public weak var delegate: PrimerDelegate?
     private(set) var flow: PrimerSessionFlow = .default
-    private var root: RootViewController?
+    internal var root: RootViewController?
+    internal var presentingViewController: UIViewController?
 
     // MARK: - INITIALIZATION
 
@@ -60,6 +61,7 @@ public class Primer {
         DependencyContainer.register(TokenizationService() as TokenizationServiceProtocol)
         DependencyContainer.register(DirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(KlarnaService() as KlarnaServiceProtocol)
+        DependencyContainer.register(ApplePayService() as ApplePayServiceProtocol)
         DependencyContainer.register(ApplePayViewModel() as ApplePayViewModelProtocol)
         DependencyContainer.register(CardScannerViewModel() as CardScannerViewModelProtocol)
         DependencyContainer.register(DirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
@@ -162,19 +164,28 @@ public class Primer {
      1.4.0
      */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
+        self.presentingViewController = controller
+        Primer.shared.flow = flow
+        
         DispatchQueue.main.async { [weak self] in
-            self?.root = RootViewController()
-            guard let root = self?.root else { return }
-            let router: RouterDelegate = DependencyContainer.resolve()
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            if flow.internalSessionFlow.vaulted {
-                (settings as! PrimerSettings).amount = nil
+            if case .checkoutWithApplePay = flow {
+                let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
+                appleViewModel.payWithApple { (err) in
+                    
+                }
+            } else {
+                self?.root = RootViewController()
+                guard let root = self?.root else { return }
+                let router: RouterDelegate = DependencyContainer.resolve()
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                
+                if flow.internalSessionFlow.vaulted {
+                    (settings as! PrimerSettings).amount = nil
+                }
+                            
+                router.setRoot(root)
+                controller.present(root, animated: true)
             }
-                        
-            router.setRoot(root)
-            Primer.shared.flow = flow
-            controller.present(root, animated: true)
         }
     }
 

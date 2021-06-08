@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class FormViewController: UIViewController {
+internal class FormViewController: PrimerViewController {
     let subview: FormView = FormView()
 
     weak var reloadDelegate: ReloadDelegate?

@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class RootViewController: UIViewController {
+internal class RootViewController: PrimerViewController {
 
     weak var transitionDelegate: TransitionDelegate?
 
@@ -60,7 +60,12 @@ internal class RootViewController: UIViewController {
         view.addSubview(backdropView)
         backdropView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mainView)
-        backdropView.pin(to: view)
+
+        backdropView.translatesAutoresizingMaskIntoConstraints = false
+        backdropView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        backdropView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        backdropView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        backdropView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
 
         if #available(iOS 13.0, *) {
             mainView.clipsToBounds = true
@@ -130,26 +135,28 @@ internal class RootViewController: UIViewController {
             router.show(.oAuth(host: .klarna))
         case .vault:
             router.show(.vaultCheckout)
+        case .checkoutWithApplePay:
+            break
         }
     }
     
     private func addKeyboardObservers() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyboardWillShow2),
+            selector: #selector(keyboardWillShow),
             name: UIResponder.keyboardWillShowNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyboardWillHide2),
+            selector: #selector(keyboardWillHide),
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
     }
     
     @objc
-    func keyboardWillShow2(notification: NSNotification) {
+    private func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (
             notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
         )?.cgRectValue {
@@ -167,7 +174,7 @@ internal class RootViewController: UIViewController {
     }
     
     @objc
-    func keyboardWillHide2(notification: NSNotification) {
+    private func keyboardWillHide(notification: NSNotification) {
         if let keyboardSize = (
             notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
         )?.cgRectValue {
@@ -179,12 +186,12 @@ internal class RootViewController: UIViewController {
     }
     
     @objc
-    func handleTap(_ sender: UITapGestureRecognizer) {
+    private func handleTap(_ sender: UITapGestureRecognizer) {
         dismiss(animated: true, completion: nil)
     }
 
     @objc
-    func panGestureRecognizerAction(sender: UIPanGestureRecognizer) {
+    private func panGestureRecognizerAction(sender: UIPanGestureRecognizer) {
         let translation = sender.translation(in: view)
 
         heightConstraint?.constant = currentHeight - translation.y

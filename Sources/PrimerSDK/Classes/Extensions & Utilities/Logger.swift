@@ -7,19 +7,19 @@
 
 import Foundation
 
-public enum LogLevel: Int {
+public enum PrimerLogLevel: Int {
     case verbose = 0, debug, info, warning, error
 }
 
 // swiftlint:disable cyclomatic_complexity
-public func log(logLevel: LogLevel = .info, title: String? = nil, message: String? = nil, prefix: String? = nil, suffix: String? = nil, bundle: String? = nil, file: String? = nil, className: String? = nil, function: String? = nil, line: Int? = nil) {
+internal func log(logLevel: PrimerLogLevel = .info, title: String? = nil, message: String? = nil, prefix: String? = nil, suffix: String? = nil, bundle: String? = nil, file: String? = nil, className: String? = nil, function: String? = nil, line: Int? = nil) {
     
     if !ProcessInfo.processInfo.arguments.contains("-PrimerDebugEnabled") {
         return
     }
 
     #if DEBUG
-    if logLevel.rawValue < LogLevel.debug.rawValue { return }
+    if logLevel.rawValue < PrimerLogLevel.debug.rawValue { return }
 
     var log: String = "\n"
     let now = Date()
@@ -116,7 +116,7 @@ public func log(logLevel: LogLevel = .info, title: String? = nil, message: Strin
     #endif
 }
 
-public func logJSON(obj: Any) {
+internal func logJSON(obj: Any) {
     do {
         print(String(data: try JSONSerialization.data(withJSONObject: obj, options: .prettyPrinted), encoding: .utf8 )!)
     } catch {

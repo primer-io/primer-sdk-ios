@@ -172,6 +172,13 @@ internal class FormViewModel: FormViewModelProtocol {
                             completion(nil)
                         }
                     })
+                    settings.onTokenizeSuccess(token, { error in
+                        if error.exists {
+                            completion(PrimerError.tokenizationRequestFailed)
+                        } else {
+                            completion(nil)
+                        }
+                    })
                     
                 default:
                     completion(nil)

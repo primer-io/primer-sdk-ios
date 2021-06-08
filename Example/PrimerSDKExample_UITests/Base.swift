@@ -74,14 +74,18 @@ class Base: XCTestCase {
     
     func testInitKlarna() throws {
         try testPresentWallet()
-        
-        app/*@START_MENU_TOKEN@*/.buttons["add_klarna_button"]/*[[".buttons[\"Add Klarna\"]",".buttons[\"add_klarna_button\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-        
-        let klarnaBuyButton = app.webViews.webViews.webViews/*@START_MENU_TOKEN@*/.buttons["Buy"]/*[[".otherElements.matching(identifier: \"Complete your purchase\").buttons[\"Buy\"]",".buttons[\"Buy\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+
+        app.buttons["vault_klarna_button"].tap()
+
         let exists = NSPredicate(format: "exists == 1")
         
-        expectation(for: exists, evaluatedWith: klarnaBuyButton, handler: nil)
-        waitForExpectations(timeout: 10, handler: nil)
+        let webView = app.webViews["primer_webview"]
+        expectation(for: exists, evaluatedWith: webView, handler: nil)
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        let continueButton = app.webViews.buttons["Continue"]
+        expectation(for: exists, evaluatedWith: continueButton, handler: nil)
+        waitForExpectations(timeout: 30, handler: nil)
     }
 
 }

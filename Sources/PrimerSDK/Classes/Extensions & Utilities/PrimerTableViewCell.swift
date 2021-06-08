@@ -8,7 +8,8 @@
 #if canImport(UIKit)
 import UIKit
 
-internal extension UITableViewCell {
+internal class PrimerTableViewCell: UITableViewCell {
+    
     func addTitle(_ text: String, theme: PrimerThemeProtocol) {
         let titleView = UILabel()
         titleView.text = text
@@ -19,6 +20,7 @@ internal extension UITableViewCell {
         titleView.topAnchor.constraint(equalTo: self.topAnchor, constant: 8).isActive = true
         titleView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16).isActive = true
     }
+    
     func addContent(_ text: String?, theme: PrimerThemeProtocol) {
         let contentView = UILabel()
         contentView.text = text
@@ -31,5 +33,6 @@ internal extension UITableViewCell {
         contentView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16).isActive = true
         contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -32).isActive = true
     }
+    
 }
 #endif

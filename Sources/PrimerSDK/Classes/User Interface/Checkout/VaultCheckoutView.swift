@@ -13,7 +13,7 @@ internal protocol VaultCheckoutViewDataSource: class {
     var amount: String? { get }
 }
 
-internal class VaultCheckoutView: UIView, ReactiveView {
+internal class VaultCheckoutView: PrimerView, ReactiveView {
 
     let indicator = UIActivityIndicatorView()
     let navBar = UINavigationBar()
@@ -23,7 +23,7 @@ internal class VaultCheckoutView: UIView, ReactiveView {
     var savedCardButton = CardButton()
     let otherMethodsTitleLabel = UILabel()
     let tableView = UITableView()
-    let payButton = UIButton()
+    let payButton = PrimerButton()
     let seeAllLinkLabel = UILabel()
     let fadeView = UIView()
 
@@ -54,7 +54,12 @@ internal class VaultCheckoutView: UIView, ReactiveView {
         indicator.isHidden = !isBusy
 
         if isBusy {
-            indicator.pin(to: self)
+            indicator.translatesAutoresizingMaskIntoConstraints = false
+            indicator.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            indicator.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+            indicator.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+            indicator.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+            
             indicator.startAnimating()
         } else {
             configureNavBar()
@@ -321,6 +326,7 @@ internal extension VaultCheckoutView {
     }
 
     @objc private func onTap(sender: UIButton) {
+        // FIXME: Why would you have a function that takes a UIButton as input, but then perform actions on payButton?
         payButton.isEnabled = false
         log(logLevel: .verbose, title: nil, message: "Paying", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         payButton.showSpinner()
