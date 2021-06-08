@@ -34,7 +34,7 @@ class MerchantCheckoutViewController: UIViewController {
     )
     
     let applePaySettings = PrimerSettings(
-        merchantIdentifier: "merchant.checkout.team",
+        merchantIdentifier: "merchant.primer.dev.evangelos",
         currency: .EUR,
         countryCode: .fr,
         businessDetails: BusinessDetails(
@@ -83,7 +83,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        Primer.shared.configure(settings: generalSettings)
+        Primer.shared.configure(settings: applePaySettings)
         
         let theme = generatePrimerTheme()
         Primer.shared.configure(theme: theme)
