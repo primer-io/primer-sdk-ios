@@ -57,6 +57,17 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
         
+        if navigationAction.request.url?.absoluteString.hasPrefix("bankid://") == true {
+            // bankid:///?autostarttoken=197701116050-fa74-49cf-b98c-bfe651f9a7c6&redirect=null
+            if UIApplication.shared.canOpenURL(navigationAction.request.url!) {
+                decisionHandler(.allow)
+                UIApplication.shared.open(navigationAction.request.url!, options: [:]) { (isFinished) in
+
+                }
+                return
+            }
+        }
+        
         let allowedHosts: [String] = [
             "primer.io",
 //            "api.playground.klarna.com",
