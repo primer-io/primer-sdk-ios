@@ -56,5 +56,9 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>bankid</string>
+    </array>
 </dict>
 </plist>
