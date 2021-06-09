@@ -86,6 +86,7 @@ internal class OAuthViewController: PrimerViewController {
         webViewController.url = URL(string: urlString)
         webViewController.delegate = self
         webViewController.klarnaWebViewCompletion = { [weak self] (_, err) in
+//            let err: Error?  = KlarnaException.noCoreUrl
             if let err = err {
                 _ = ErrorHandler.shared.handle(error: err)
                 router.show(.error(error: err))
