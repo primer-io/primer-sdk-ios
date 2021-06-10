@@ -20,6 +20,7 @@ internal class VaultPaymentMethodViewController: PrimerViewController {
         subView.render()
     }
 
+    // FIXME: Do not handle logic based on UI events.
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         delegate?.reload()
