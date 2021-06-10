@@ -57,19 +57,31 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
     // swiftlint:disable cyclomatic_complexity function_body_length
     func payWithApple(completion: @escaping (Error?) -> Void) {
         guard let countryCode = countryCode else {
-            return completion(PaymentException.missingCountryCode)
+            let err = PaymentException.missingCountryCode
+            _ = ErrorHandler.shared.handle(error: err)
+            Primer.shared.delegate?.checkoutFailed(with: err)
+            return completion(err)
         }
         
         guard let currency = currency else {
-            return completion(PaymentException.missingCurrency)
+            let err = PaymentException.missingCurrency
+            _ = ErrorHandler.shared.handle(error: err)
+            Primer.shared.delegate?.checkoutFailed(with: err)
+            return completion(err)
         }
 
         guard let merchantIdentifier = merchantIdentifier else {
-            return completion(AppleException.missingMerchantIdentifier)
+            let err = AppleException.missingMerchantIdentifier
+            _ = ErrorHandler.shared.handle(error: err)
+            Primer.shared.delegate?.checkoutFailed(with: err)
+            return completion(err)
         }
         
         guard !orderItems.isEmpty else {
-            return completion(PaymentException.missingOrderItems)
+            let err = PaymentException.missingOrderItems
+            _ = ErrorHandler.shared.handle(error: err)
+            Primer.shared.delegate?.checkoutFailed(with: err)
+            return completion(err)
         }
         
         let applePayRequest = ApplePayRequest(
@@ -93,8 +105,10 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
             request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
             
             guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
-                log(logLevel: .error, title: "APPLE PAY", message: "Unable to present Apple Pay authorization.")
-                return completion(AppleException.unableToPresentApplePay)
+                let err = AppleException.unableToPresentApplePay
+                _ = ErrorHandler.shared.handle(error: err)
+                Primer.shared.delegate?.checkoutFailed(with: err)
+                return completion(err)
             }
             
             paymentVC.delegate = self
@@ -121,7 +135,10 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                             let state: AppStateProtocol = DependencyContainer.resolve()
 
                             guard let applePayConfigId = self?.applePayConfigId else {
-                                return completion(PaymentException.missingConfigurationId)
+                                let err = PaymentException.missingConfigurationId
+                                _ = ErrorHandler.shared.handle(error: err)
+                                Primer.shared.delegate?.checkoutFailed(with: err)
+                                return completion(err)
                             }
 
                             let instrument = PaymentInstrument(
@@ -137,7 +154,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                 switch result {
                                 case .failure(let err):
                                     // Dismiss and show error screen
-                                    ErrorHandler.shared.handle(error: err)
+                                    _ = ErrorHandler.shared.handle(error: err)
                                     DispatchQueue.main.async {
                                         Primer.shared.presentingViewController?.dismiss(animated: true, completion: {
                                             let router: RouterDelegate = DependencyContainer.resolve()
@@ -146,6 +163,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                         
                                         Primer.shared.delegate?.checkoutFailed(with: err)
                                     }
+                                    
                                     completion(err)
                                     
                                 case .success(let token):
@@ -161,7 +179,6 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                                         let router: RouterDelegate = DependencyContainer.resolve()
                                                         
                                                         if let err = err {
-                                                            
                                                             router.presentErrorScreen(with: err)
                                                         } else {
                                                             router.presentSuccessScreen(for: .regular)
@@ -177,7 +194,6 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                                         let router: RouterDelegate = DependencyContainer.resolve()
                                                         
                                                         if let err = err {
-                                                            
                                                             router.presentErrorScreen(with: err)
                                                         } else {
                                                             router.presentSuccessScreen(for: .regular)
@@ -195,6 +211,8 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                     }
                     
                 case .failure(let err):
+                    _ = ErrorHandler.shared.handle(error: err)
+                    Primer.shared.delegate?.checkoutFailed(with: err)
                     completion(err)
                 }
             }
@@ -212,6 +230,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
 extension ApplePayViewModel: PKPaymentAuthorizationViewControllerDelegate {
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
+        controller.dismiss(animated: true, completion: nil)
         applePayCompletion?(.failure(AppleException.cancelled))
         applePayCompletion = nil
     }
