@@ -65,8 +65,8 @@ internal class PayPalService: PayPalServiceProtocol {
             paymentMethodConfigId: configId,
             amount: amount,
             currencyCode: currency.rawValue,
-            returnUrl: "https://primer.io/success",
-            cancelUrl: "https://primer.io/cancel"
+            returnUrl: "\(urlSchemeId)://success",
+            cancelUrl: "\(urlSchemeId)://cancel"
         )
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
@@ -101,8 +101,8 @@ internal class PayPalService: PayPalServiceProtocol {
 
         let body = PayPalCreateBillingAgreementRequest(
             paymentMethodConfigId: configId,
-            returnUrl: "https://primer.io/success",
-            cancelUrl: "https://primer.io/cancel"
+            returnUrl: "\(urlSchemeId)://success",
+            cancelUrl: "\(urlSchemeId)://cancel"
         )
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()

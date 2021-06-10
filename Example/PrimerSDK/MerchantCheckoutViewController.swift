@@ -81,8 +81,13 @@ class MerchantCheckoutViewController: UIViewController {
         self.fetchPaymentMethods()
     }
     
+    deinit {
+        Primer.shared.clearToken()
+    }
+    
     func configurePrimer() {
-        guard let strongDelegate = delegate else { return print("🇯🇵 ええ？！") }
+        
+        guard let strongDelegate = delegate else { return }
         
         // toggle buttons
         cardVaultButton.isHidden = !strongDelegate.useCard
@@ -103,9 +108,11 @@ class MerchantCheckoutViewController: UIViewController {
         
         let merchantIdentifier = strongDelegate.environment == .Production ? "merchant.checkout.team" : "merchant.primer.dev.evangelos"
         
+        let customerId = strongDelegate.customerId.isEmpty ? nil : strongDelegate.customerId
+        
         let generalSettings = PrimerSettings(
             merchantIdentifier: merchantIdentifier,
-            customerId: "my-customer",
+            customerId: customerId,
             amount: strongDelegate.amount,
             currency: strongDelegate.countryCode.currency,
             countryCode: strongDelegate.countryCode,
@@ -206,7 +213,9 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: delegate.customerId, customerCountryCode: nil)
+        let customerId = delegate.customerId.isEmpty ? nil : delegate.customerId
+        
+        let body = CreateClientTokenRequest(customerId: customerId, customerCountryCode: nil)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

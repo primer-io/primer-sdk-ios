@@ -116,39 +116,37 @@ class AppViewController: UIViewController, AppViewControllerDelegate {
         nextButton.backgroundColor = .black
         nextButton.setTitleColor(.white, for: .normal)
         nextButton.layer.cornerRadius = 8.0
-        determineCanProgress()
     }
     
-    private func determineCanProgress() {
-//        let paymentMethodSelected = [klarnaSwitch.isOn, paypalSwitch.isOn, cardSwitch.isOn, applePaySwitch.isOn].contains(true)
-        let canProgress = customerId.count > 0
-        nextButton.isEnabled = canProgress
-        nextButton.alpha = canProgress ? 1.0 : 0.6
-    }
+//    private func determineCanProgress() {
+////        let paymentMethodSelected = [klarnaSwitch.isOn, paypalSwitch.isOn, cardSwitch.isOn, applePaySwitch.isOn].contains(true)
+//        let canProgress = customerId.count > 0
+//        nextButton.isEnabled = canProgress
+//        nextButton.alpha = canProgress ? 1.0 : 0.6
+//    }
     
-    @IBAction private func onCustomerIdTextFieldDidChange(_ sender: UITextField) {
-        determineCanProgress()
-    }
-    
-    @IBAction private func klarnaSwitchDidChange(_ sender: UISwitch) {
-        determineCanProgress()
-    }
-    
-    @IBAction private func paypalSwitchDidChange(_ sender: UISwitch) {
-        determineCanProgress()
-    }
-    
-    @IBAction private func cardSwitchDidChange(_ sender: UISwitch) {
-        determineCanProgress()
-    }
-    
-    @IBAction private func applePaySwitchDidChange(_ sender: UISwitch) {
-        determineCanProgress()
-    }
+//    @IBAction private func onCustomerIdTextFieldDidChange(_ sender: UITextField) {
+//        determineCanProgress()
+//    }
+//
+//    @IBAction private func klarnaSwitchDidChange(_ sender: UISwitch) {
+//        determineCanProgress()
+//    }
+//    
+//    @IBAction private func paypalSwitchDidChange(_ sender: UISwitch) {
+//        determineCanProgress()
+//    }
+//
+//    @IBAction private func cardSwitchDidChange(_ sender: UISwitch) {
+//        determineCanProgress()
+//    }
+//
+//    @IBAction private func applePaySwitchDidChange(_ sender: UISwitch) {
+//        determineCanProgress()
+//    }
     
     private func configureCustomerIdTextField() {
         customerIdTextField.delegate = self
-        customerIdTextField.becomeFirstResponder()
     }
     
     private func configurePickerAndAttachToolbar(to textField: UITextField, picker: UIPickerView) {

@@ -30,9 +30,6 @@
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
-                                        <connections>
-                                            <action selector="onCustomerIdTextFieldDidChange:" destination="Hsc-Wl-Q65" eventType="editingChanged" id="86d-Ah-ZVL"/>
-                                        </connections>
                                     </textField>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Environment" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ikm-Bs-pJ3">
                                         <rect key="frame" x="0.0" y="56" width="343" height="40"/>
@@ -69,9 +66,6 @@
                                             </label>
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="LPB-bn-GLF">
                                                 <rect key="frame" x="286" y="9.5" width="51" height="31"/>
-                                                <connections>
-                                                    <action selector="klarnaSwitchDidChange:" destination="Hsc-Wl-Q65" eventType="valueChanged" id="BAK-mC-eJY"/>
-                                                </connections>
                                             </switch>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="quaternarySystemFillColor"/>
@@ -94,9 +88,6 @@
                                             </label>
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="WxX-a7-SVx">
                                                 <rect key="frame" x="286" y="9.5" width="51" height="31"/>
-                                                <connections>
-                                                    <action selector="paypalSwitchDidChange:" destination="Hsc-Wl-Q65" eventType="valueChanged" id="X1l-U8-8Vg"/>
-                                                </connections>
                                             </switch>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="quaternarySystemFillColor"/>
@@ -119,9 +110,6 @@
                                             </label>
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Tw1-3p-1TK">
                                                 <rect key="frame" x="286" y="9.5" width="51" height="31"/>
-                                                <connections>
-                                                    <action selector="cardSwitchDidChange:" destination="Hsc-Wl-Q65" eventType="valueChanged" id="WXH-uj-I3e"/>
-                                                </connections>
                                             </switch>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="quaternarySystemFillColor"/>
@@ -144,9 +132,6 @@
                                             </label>
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="6zK-cb-x0d">
                                                 <rect key="frame" x="286" y="9.5" width="51" height="31"/>
-                                                <connections>
-                                                    <action selector="applePaySwitchDidChange:" destination="Hsc-Wl-Q65" eventType="valueChanged" id="vT3-YK-BVf"/>
-                                                </connections>
                                             </switch>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="quaternarySystemFillColor"/>
@@ -164,7 +149,7 @@
                                     <constraint firstItem="EiK-Xd-8ps" firstAttribute="leading" secondItem="0IX-Vv-5bY" secondAttribute="leading" id="e6V-Ba-aEQ"/>
                                 </constraints>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
                                 <rect key="frame" x="16" y="603" width="343" height="40"/>
                                 <color key="backgroundColor" systemColor="quaternaryLabelColor"/>
                                 <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>

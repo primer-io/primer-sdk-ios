@@ -200,7 +200,12 @@ public class Primer {
             self?.root?.dismiss(animated: true, completion: nil)
         }
     }
-
+    
+    /** WARNING: do not use in production. Removes the current client token from session.*/
+    public func clearToken() {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        state.decodedClientToken = nil
+    }
 }
 
 #endif
