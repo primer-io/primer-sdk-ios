@@ -328,6 +328,12 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     
     func checkoutFailed(with error: Error) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\nError: \(error as NSError)")
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] (_) in
+            let nsErr = error as NSError
+            let alert = UIAlertController(title: "Error!", message: "\(nsErr.domain):\(nsErr.code) | \(nsErr.localizedDescription)", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self?.present(alert, animated: true, completion: nil)
+        }
     }
     
 }
