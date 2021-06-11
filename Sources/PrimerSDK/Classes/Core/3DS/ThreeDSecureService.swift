@@ -95,7 +95,7 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
         
     }
     
-    func performChallenge(on transaction: Transaction, with threeDSecureAuthResponse: ThreeDSMethodAPIResponse, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.NetceteraThreeDSCompletion, Error>) -> Void) {
+    func performChallenge(on transaction: Transaction, with threeDSecureAuthResponse: ThreeDSAuthenticationProtocol, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.NetceteraThreeDSCompletion, Error>) -> Void) {
         self.transaction = transaction
         
         let challengeParameters = ChallengeParameters(
@@ -143,54 +143,6 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
                 completion(res, nil)
             }
         })
-    }
-}
-
-extension ThreeDSecureService {
-    static func directoryServerIdFor(scheme: Scheme) -> String {
-        print(DsRidValues.visa)
-        return "A000000003"
-        switch scheme {
-        case .visa():
-            print(DsRidValues.visa)
-            return DsRidValues.visa
-        case .mastercard():
-            return DsRidValues.mastercard
-        case .amex():
-            return DsRidValues.amex
-        case .jcb():
-            return DsRidValues.jcb
-        case .diners():
-            return DsRidValues.diners
-        case .union():
-            return DsRidValues.union
-        default:
-            return ""
-        }
-    }
-}
-
-struct ThreeDSecureAuthData: Codable {
-    let sdkAppId: String
-    let sdkTransactionId: String
-    let sdkTimeout: Int
-    let sdkEncData: String
-    let sdkEphemPubKey: String
-    let sdkReferenceNumber: String
-}
-
-extension Transaction {
-    func buildThreeDSecureAuthData() throws -> ThreeDSecureAuthData {
-        let transactionParameters = try self.getAuthenticationRequestParameters()
-        let sdkAppId = transactionParameters.getSDKAppID()
-        let sdkTransactionId = transactionParameters.getSDKTransactionId()
-//        let sdkMaxTimeout = 10
-        let sdkEncData = transactionParameters.getDeviceData()
-        let sdkEphemeralKey = transactionParameters.getSDKEphemeralPublicKey()
-//        let sdkEphemeralKeyJSON = try! JSONSerialization.jsonObject(with: sdkEphemeralKey.data(using: .utf8)!, options: .allowFragments) as! [String: Any]
-        let sdkReferenceNumber = transactionParameters.getSDKReferenceNumber()
-        let threeDSecureAuthData = ThreeDSecureAuthData(sdkAppId: sdkAppId, sdkTransactionId: sdkTransactionId, sdkTimeout: 10, sdkEncData: sdkEncData, sdkEphemPubKey: sdkEphemeralKey, sdkReferenceNumber: sdkReferenceNumber)
-        return threeDSecureAuthData
     }
 }
 
