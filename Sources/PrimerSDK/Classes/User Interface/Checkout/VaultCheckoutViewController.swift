@@ -38,7 +38,7 @@ internal class VaultCheckoutViewController: PrimerViewController {
 extension VaultCheckoutViewController: VaultCheckoutViewDataSource {
     var selectedSavedPaymentMethod: PaymentMethodToken? {
         let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-        return viewModel.paymentMethods.filter({ $0.paymentInstrumentType == .paymentCard }).first(where: { paymentMethod in
+        return viewModel.paymentMethods.first(where: { paymentMethod in
             return paymentMethod.token == viewModel.selectedPaymentMethodId
         })
     }
