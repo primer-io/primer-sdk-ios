@@ -108,6 +108,8 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
 
             alert.show()
         }
+        
+        delegate?.reload()
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
