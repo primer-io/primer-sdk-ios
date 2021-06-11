@@ -25,6 +25,8 @@ enum PrimerAPI: Endpoint {
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest)
     
     case threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
+    case threeDSecureStatus(clientToken: DecodedClientToken, url: String)
+    case threeDSecurePostAuthentication(clientToken: DecodedClientToken, threeDSTokenId: String)
 }
 
 internal extension PrimerAPI {
@@ -44,12 +46,15 @@ internal extension PrimerAPI {
         case .vaultDeletePaymentMethod(let clientToken, _),
              .vaultFetchPaymentMethods(let clientToken),
              .tokenizePaymentMethod(let clientToken, _),
-             .threeDSecureBeginAuthentication(let clientToken, _, _):
+             .threeDSecureBeginAuthentication(let clientToken, _, _),
+             .threeDSecurePostAuthentication(let clientToken, _):
             guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
         case .fetchConfiguration(let clientToken):
             guard let urlStr = clientToken.configurationUrl else { return nil }
             return urlStr
+        case .threeDSecureStatus(_, let url):
+            return url
         }
     }
 
@@ -81,6 +86,10 @@ internal extension PrimerAPI {
             return "/payment-instruments"
         case .threeDSecureBeginAuthentication(_, let paymentMethodToken, _):
             return "/3ds/\(paymentMethodToken.token!)/auth"
+        case .threeDSecureStatus:
+            return ""
+        case .threeDSecurePostAuthentication(_, let threeDSTokenId):
+            return "/3ds/\(threeDSTokenId)/continue"
         }
     }
 
@@ -98,7 +107,8 @@ internal extension PrimerAPI {
         case .vaultDeletePaymentMethod:
             return .delete
         case .fetchConfiguration,
-             .vaultFetchPaymentMethods:
+             .vaultFetchPaymentMethods,
+             .threeDSecureStatus:
             return .get
         case .directDebitCreateMandate,
              .payPalStartOrderSession,
@@ -108,7 +118,8 @@ internal extension PrimerAPI {
              .klarnaCreateCustomerToken,
              .klarnaFinalizePaymentSession,
              .tokenizePaymentMethod,
-             .threeDSecureBeginAuthentication:
+             .threeDSecureBeginAuthentication,
+             .threeDSecurePostAuthentication:
             return .post
         }
     }
@@ -133,7 +144,9 @@ internal extension PrimerAPI {
              .klarnaCreateCustomerToken(let clientToken, _),
              .klarnaFinalizePaymentSession(let clientToken, _),
              .tokenizePaymentMethod(let clientToken, _),
-             .threeDSecureBeginAuthentication(let clientToken, _, _):
+             .threeDSecureBeginAuthentication(let clientToken, _, _),
+             .threeDSecureStatus(let clientToken, _),
+             .threeDSecurePostAuthentication(let clientToken, _):
             if let token = clientToken.accessToken {
                 headers["Primer-Client-Token"] = token
             }
@@ -175,7 +188,9 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(threeDSecureBeginAuthRequest)
         case .vaultDeletePaymentMethod,
              .fetchConfiguration,
-             .vaultFetchPaymentMethods:
+             .vaultFetchPaymentMethods,
+             .threeDSecureStatus,
+             .threeDSecurePostAuthentication:
             return nil
         }
     }
