@@ -7,9 +7,22 @@
 
 import Foundation
 
-struct ThreeDS {
+protocol ThreeDSAuthenticationProtocol: Codable {
+    var acsReferenceNumber: String? { get }
+    var acsSignedContent: String? { get }
+    var acsTransactionId: String? { get }
+    var responseCode: ThreeDS.ResponseCode { get }
+    var transactionId: String? { get }
+}
+
+public struct ThreeDS {
+
+    internal struct ACSRenderingType: Codable {
+        let acsInterface: String?
+        let acsUiTemplate: String?
+    }
     
-    enum AuthenticationStatus: String {
+    internal enum AuthenticationStatus: String {
         case y, a, n, u, e
         
         init(rawValue: String) {
@@ -58,11 +71,11 @@ struct ThreeDS {
         }
     }
     
-    enum AuthenticationRecommendation {
+    internal enum AuthenticationRecommendation {
         case proceed, stop, merchantDecision
     }
     
-    enum TestScenario: String, Codable {
+    internal enum TestScenario: String, Codable {
         // swiftlint:disable identifier_name
         case three3DS2MethodTimeout = "3DS_V2_METHOD_TIMEOUT"
         case threeDS2FrictionlessNoMethod = "3DS_V2_FRICTIONLESS_NO_METHOD"
@@ -76,9 +89,10 @@ struct ThreeDS {
         case threeDS2FrictionlessFailureR = "3DS_V2_FRICTIONLESS_FAILURE_R"
         case threeDS2FrictionlessFailureAttempted = "3DS_V2_FRICTIONLESS_FAILURE_ATTEMPTED"
         case threeDS2DSTimeout = "3DS_V2_DS_TIMEOUT"
+        // swiftlint:enable identifier_name
     }
     
-    struct BeginAuthRequest: Codable {
+    internal struct BeginAuthRequest: Codable {
         
         static var demoAuthRequest: BeginAuthRequest {
             let threeDSecureBeginAuthRequest = BeginAuthRequest(testScenario: nil,
@@ -113,18 +127,18 @@ struct ThreeDS {
         let currencyCode: Currency
         let orderId: String
         let customer: ThreeDS.Customer
-        var device: ThreeDSecureAuthData?
+        var device: NetceteraAuthData?
         let billingAddress: ThreeDS.Address
         let shippingAddress: ThreeDS.Address?
         let customerAccount: ThreeDS.CustomerAccount?
     }
     
-    struct NetceteraThreeDSCompletion {
+    internal struct NetceteraThreeDSCompletion {
         let sdkTransactionId: String
         let transactionStatus: ThreeDS.AuthenticationStatus
     }
     
-    struct Customer: Codable {
+    internal struct Customer: Codable {
         let name: String
         let email: String
         let homePhone: String?
@@ -132,11 +146,11 @@ struct ThreeDS {
         let workPhone: String?
     }
     
-    struct Device: Codable {
+    internal struct Device: Codable {
         let sdkTransactionId: String
     }
     
-    struct Address: Codable {
+    internal struct Address: Codable {
         let title: String?
         let firstName: String?
         let lastName: String?
@@ -151,7 +165,7 @@ struct ThreeDS {
         let postalCode: String
     }
     
-    struct CustomerAccount: Codable {
+    internal struct CustomerAccount: Codable {
         let id: String?
         let createdAt: String?
         let updatedAt: String?
@@ -159,7 +173,7 @@ struct ThreeDS {
         let purchaseCount: Int?
     }
     
-    enum ResponseCode: String, Codable {
+    internal enum ResponseCode: String, Codable {
         case notPerformed = "NOT_PERFORMED"
         case skipped = "SKIPPED"
         case authSuccess = "AUTH_SUCCESS"
@@ -168,7 +182,7 @@ struct ThreeDS {
         case METHOD = "METHOD"
     }
     
-    enum SkippedCode: String, Codable {
+    internal enum SkippedCode: String, Codable {
         case gatewayUnavailable = "GATEWAY_UNAVAILABLE"
         case disabledByMerchant = "DISABLED_BY_MERCHANT"
         case notSupportedByIssuer = "NOT_SUPPORTED_BY_ISSUER"
@@ -180,243 +194,222 @@ struct ThreeDS {
         
     }
     
-    struct BeginAuthResponse: Codable {
-        let authentication: ThreeDSecureBeginAuthResponseAuthentication
-        let token: ThreeDSecureBeginAuthResponseToken
+    internal struct BeginAuthResponse: Decodable {
+        struct Token: Codable {
+            let token: String
+            let analyticsId: String
+            let tokenType: String
+            let paymentInstrumentType: PaymentInstrumentType
+            let paymentInstrumentData: PaymentInstrumentData
+            let vaultData: VaultData?
+            let threeDSecureAuthentication: AuthenticationDetails?
+        }
+        
+        let authentication: ThreeDSAuthenticationProtocol
+        let token: ThreeDS.BeginAuthResponse.Token
         
         enum CodingKeys: String, CodingKey {
             case authentication
             case token
         }
         
-        func encode(to encoder: Encoder) throws {
-            
-        }
-        
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             
-            if let threeDSDeclinedAPIResponse = (try? container.decode(ThreeDSDeclinedAPIResponse.self, forKey: .authentication)) {
+            if let threeDSDeclinedAPIResponse = (try? container.decode(ThreeDS.DeclinedAPIResponse.self, forKey: .authentication)) {
                 authentication = threeDSDeclinedAPIResponse
-            } else if let threeDSSkippedAPIResponse = try? container.decode(ThreeDSSkippedAPIResponse.self, forKey: .authentication) {
+            } else if let threeDSSkippedAPIResponse = try? container.decode(ThreeDS.SkippedAPIResponse.self, forKey: .authentication) {
                 authentication = threeDSSkippedAPIResponse
-            } else if let threeDSAppV2ChallengeAPIResponse = try? container.decode(ThreeDSAppV2ChallengeAPIResponse.self, forKey: .authentication) {
+            } else if let threeDSAppV2ChallengeAPIResponse = try? container.decode(ThreeDS.AppV2ChallengeAPIResponse.self, forKey: .authentication) {
                 authentication = threeDSAppV2ChallengeAPIResponse
-            }else if let threeDSBrowserV2ChallengeAPIResponse = try? container.decode(ThreeDSBrowserV2ChallengeAPIResponse.self, forKey: .authentication) {
+            }else if let threeDSBrowserV2ChallengeAPIResponse = try? container.decode(ThreeDS.BrowserV2ChallengeAPIResponse.self, forKey: .authentication) {
                 authentication = threeDSBrowserV2ChallengeAPIResponse
-            } else if let threeDSBrowserV1ChallengeAPIResponse = try? container.decode(ThreeDSBrowserV1ChallengeAPIResponse.self, forKey: .authentication) {
+            } else if let threeDSBrowserV1ChallengeAPIResponse = try? container.decode(ThreeDS.BrowserV1ChallengeAPIResponse.self, forKey: .authentication) {
                 authentication = threeDSBrowserV1ChallengeAPIResponse
-            } else if let threeDSSuccessAPIResponse = try? container.decode(ThreeDSSuccessAPIResponse.self, forKey: .authentication) {
+            } else if let threeDSSuccessAPIResponse = try? container.decode(Authentication.self, forKey: .authentication) {
                 authentication = threeDSSuccessAPIResponse
-            } else if let threeDSMethodAPIResponse = try? container.decode(ThreeDSMethodAPIResponse.self, forKey: .authentication) {
+            } else if let threeDSMethodAPIResponse = try? container.decode(ThreeDS.MethodAPIResponse.self, forKey: .authentication) {
                 authentication = threeDSMethodAPIResponse
             }  else {
                 let err = ThreeDSError.failedToParseResponse
                 throw err
             }
             
-            token = try container.decode(ThreeDSecureBeginAuthResponseToken.self, forKey: .token)
+            token = try container.decode(ThreeDS.BeginAuthResponse.Token.self, forKey: .token)
         }
     }
     
-}
+    internal struct PostAuthResponse: Codable {
+        let token: PaymentMethodToken
+        let resumeToken: String?
+        let authentication: Authentication?
+    }
+    
+    internal struct Authentication: ThreeDSAuthenticationProtocol {
+        let acsReferenceNumber: String?
+        let acsSignedContent: String?
+        let acsTransactionId: String?
+        let responseCode: ThreeDS.ResponseCode
+        let transactionId: String?
+        
+        let acsOperatorId: String?
+        let cryptogram: String?
+        let dsReferenceNumber: String?
+        let dsTransactionId: String?
+        let eci: String?
+        let protocolVersion: String
+        let xid: String?
+    }
+    
+    internal struct SkippedAPIResponse: ThreeDSAuthenticationProtocol, Codable {
+        let acsReferenceNumber: String?
+        let acsSignedContent: String?
+        let acsTransactionId: String?
+        let responseCode: ThreeDS.ResponseCode
+        let transactionId: String?
+        
+        let acsChallengeMandated: Int?
+        let acsOperatorId: String?
+        let acsRenderingType: ACSRenderingType?
+        let dsReferenceNumber: String?
+        let dsTransactionId: String?
+        let eci: String?
+        let protocolVersion: String?
+        let skippedReasonCode: ThreeDS.SkippedCode
+        let skippedReasonText: String
+        let statusUrl: String?
+    }
+    
+    internal struct MethodAPIResponse: ThreeDSAuthenticationProtocol {
+        let acsReferenceNumber: String?
+        let acsSignedContent: String?
+        let acsTransactionId: String?
+        let responseCode: ThreeDS.ResponseCode
+        let transactionId: String?
+        
+        let protocolVersion: String
+        let acsOperatorId: String?
+        let dsReferenceNumber: String?
+        let dsTransactionId: String?
+        let eci: String?
+        let acsMethodUrl: String?
+        let notificationUrl: String?
+        let statusUrl: String?
+    }
+    
+    internal struct BrowserV2ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
+        let acsReferenceNumber: String?
+        let acsSignedContent: String?
+        let acsTransactionId: String?
+        let responseCode: ThreeDS.ResponseCode
+        let transactionId: String?
+        
+        let protocolVersion: String
+        let acsOperatorId: String?
+        let dsReferenceNumber: String?
+        let dsTransactionId: String
+        let eci: String?
+        let acsChallengeUrl: String
+        let acsChallengeMandated: String
+        let statusUrl: String
+        let challengeWindowSize: String
+    }
+    
+    internal struct AppV2ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
+        let acsReferenceNumber: String?
+        let acsSignedContent: String?
+        let acsTransactionId: String?
+        let responseCode: ThreeDS.ResponseCode
+        let transactionId: String?
+        
+        let protocolVersion: String
+        let acsOperatorId: String?
+        let dsReferenceNumber: String?
+        let dsTransactionId: String
+        let eci: String?
+        let acsRenderingType: String
+        let acsChallengeMandated: String
+        let statusUrl: String
+    }
+    
+    internal struct BrowserV1ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
+        let acsRefNumber: String?
+        let acsSignedContent: String?
+        let acsTransactionId: String?
+        let responseCode: ThreeDS.ResponseCode
+        let transactionId: String?
+        
+        let protocolVersion: String
+        let acsOperatorId: String?
+        let acsReferenceNumber: String?
+        let dsReferenceNumber: String?
+        let dsTransactionId: String?
+        let eci: String?
+        let acsChallengeUrl: String
+        let acsChallengeData: String
+        let statusUrl: String
+        let notificationUrl: String
+        let challengeWindowSize: String
+    }
+    
+    internal struct DeclinedAPIResponse: ThreeDSAuthenticationProtocol {
+        let acsRefNumber: String?
+        let acsSignedContent: String?
+        let acsTransactionId: String?
+        let responseCode: ThreeDS.ResponseCode
+        let transactionId: String?
+        
+        let protocolVersion: String
+        let acsOperatorId: String?
+        let acsReferenceNumber: String?
+        let dsReferenceNumber: String?
+        let dsTransactionId: String?
+        let eci: String?
+        let declinedReasonCode: ThreeDS.DeclinedReasonCode
+        let declinedReasonText: String
+    }
+    
+    public struct AuthenticationDetails: Codable {
+        let responseCode: String
+        let reasonCode, reasonText, protocolVersion: String?
+        let challengeIssued: Bool?
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//struct ThreeDSecureBeginAuthResponse<T: ThreeDSecureBeginAuthResponseAuthentication>: Codable {
-//    let authentication: T
-//}
-
-protocol ThreeDSecureBeginAuthResponseAuthentication: Codable {}
-
-struct ThreeDSSkippedAPIResponse: ThreeDSecureBeginAuthResponseAuthentication, Codable {
-    let acsChallengeMandated: Int?
-    let acsOperatorId: String?
-    let acsReferenceNumber: String?
-    let acsRenderingType: ACSRenderingType?
-    let acsSignedContent: String?
-    let acsTransactionId: String?
-    let dsReferenceNumber: String?
-    let dsTransactionId: String?
-    let eci: String?
-    let protocolVersion: String?
-    let responseCode: ThreeDS.ResponseCode
-    let skippedReasonCode: ThreeDS.SkippedCode
-    let skippedReasonText: String
-    let statusUrl: String?
-    let transactionId: String?
-}
-
-struct ACSRenderingType: Codable {
-    let acsInterface: String?
-    let acsUiTemplate: String?
-}
-
-struct ThreeDSMethodAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDS.ResponseCode
-    let protocolVersion: String
-    let transactionId: String
-    let acsOperatorId: String?
-    let acsReferenceNumber: String?
-    let acsSignedContent: String?
-    let acsTransactionId: String?
-    let dsReferenceNumber: String?
-    let dsTransactionId: String?
-    let eci: String?
-    let acsMethodUrl: String?
-    let notificationUrl: String?
-    let statusUrl: String?
-}
-
-struct ThreeDSBrowserV2ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDS.ResponseCode
-    let protocolVersion: String
-    let transactionId: String?
-    let acsOperatorId: String?
-    let acsReferenceNumber: String?
-    let acsTransactionId: String
-    let dsReferenceNumber: String?
-    let dsTransactionId: String
-    let eci: String?
-    let acsChallengeUrl: String
-    let acsChallengeMandated: String
-    let statusUrl: String
-    let challengeWindowSize: String
-}
-
-struct ThreeDSAppV2ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDS.ResponseCode
-    let protocolVersion: String
-    let transactionId: String?
-    let acsOperatorId: String?
-    let acsReferenceNumber: String?
-    let acsTransactionId: String
-    let dsReferenceNumber: String?
-    let dsTransactionId: String
-    let eci: String?
-    let acsRenderingType: String
-    let acsSignedContent: String
-    let acsChallengeMandated: String
-    let statusUrl: String
-}
-
-struct ThreeDSBrowserV1ChallengeAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDS.ResponseCode
-    let protocolVersion: String
-    let transactionId: String?
-    let acsOperatorId: String?
-    let acsReferenceNumber: String?
-    let acsTransactionId: String?
-    let dsReferenceNumber: String?
-    let dsTransactionId: String?
-    let eci: String?
-    let acsChallengeUrl: String
-    let acsChallengeData: String
-    let statusUrl: String
-    let notificationUrl: String
-    let challengeWindowSize: String
-}
-
-enum ThreeDSecureDeclinedReasonCode: String, Codable {
-    case unknown = "UNKNOWN"
-    case rejectedByIssuer = "REJECTED_BY_ISSUER"
-    case cardAuthenticationFailed = "CARD_AUTHENTICATION_FAILED"
-    case unknownDevice = "UNKNOWN_DEVICE"
-    case unsupportedDevice = "UNSUPPORTED_DEVICE"
-    case exceedsAuthenticationFrequencyLimit = "EXCEEDS_AUTHENTICATION_FREQUENCY_LIMIT"
-    case expiredCard = "EXPIRED_CARD"
-    case invalidCardNumber = "INVALID_CARD_NUMBER"
-    case invalidTransaction = "INVALID_TRANSACTION"
-    case noCardRecord = "NO_CARD_RECORD"
-    case securityFailure = "SECURITY_FAILURE"
-    case stolenCard = "STOLEN_CARD"
-    case suspectedFraud = "SUSPECTED_FRAUD"
-    case transactionNotPermittedToCardholder = "TRANSACTION_NOT_PERMITTED_TO_CARDHOLDER"
-    case cardholderNotEnrolledInService = "CARDHOLDER_NOT_ENROLLED_IN_SERVICE"
-    case transactionTimedOutAtTheACS = "TRANSACTION_TIMED_OUT_AT_THE_ACS"
-    case lowConfidence = "LOW_CONFIDENCE"
-    case mediumConfidence = "MEDIUM_CONFIDENCE"
-    case highConfidence = "HIGH_CONFIDENCE"
-    case veryHighConfidence = "VERY_HIGH_CONFIDENCE"
-    case exceedsACSMaximumChallenges = "EXCEEDS_ACS_MAXIMUM_CHALLENGES"
-    case nonPaymentNotSupported = "NON_PAYMENT_NOT_SUPPORTED"
-    case threeRINotSupported = "THREE_RI_NOT_SUPPORTED"
-    case acsTechnicalIssue = "ACS_TECHNICAL_ISSUE"
-    case decoupledRequiredByACS = "DECOUPLED_REQUIRED_BY_ACS"
-    case decoupledMaxExpiryExceeded = "DECOUPLED_MAX_EXPIRY_EXCEEDED"
-    case decoupledAuthenticationInsufficientTime = "DECOUPLED_AUTHENTICATION_INSUFFICIENT_TIME"
-    case authenticationAttemptedButNotPerformedByCardholder = "AUTHENTICATION_ATTEMPTED_BUT_NOT_PERFORMED_BY_CARDHOLDER"
-    case acsTimedOut = "ACS_TIMED_OUT"
-    case invalidACSResponse = "INVALID_ACS_RESPONSE"
-    case acsSystemErrorResponse = "ACS_SYSTEM_ERROR_RESPONSE"
-    case errorGeneratingCAVV = "ERROR_GENERATING_CAVV"
-    case protocolVersionNotSupported = "PROTOCOL_VERSION_NOT_SUPPORTED"
-    case transactionExcludedFromAttemptsProcessing = "TRANSACTION_EXCLUDED_FROM_ATTEMPTS_PROCESSING"
-    case requestedProgramNotSupported = "REQUESTED_PROGRAM_NOT_SUPPORTED"
-}
-
-struct ThreeDSDeclinedAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDS.ResponseCode
-    let protocolVersion: String
-    let transactionId: String?
-    let acsOperatorId: String?
-    let acsReferenceNumber: String?
-    let acsTransactionId: String?
-    let dsReferenceNumber: String?
-    let dsTransactionId: String?
-    let eci: String?
-    let declinedReasonCode: ThreeDSecureDeclinedReasonCode
-    let declinedReasonText: String
-}
-
-struct ThreeDSSuccessAPIResponse: ThreeDSecureBeginAuthResponseAuthentication {
-    let responseCode: ThreeDS.ResponseCode?
-    let protocolVersion: String
-    let transactionId: String?
-    let acsOperatorId: String?
-    let acsReferenceNumber: String?
-    let acsTransactionId: String?
-    let dsReferenceNumber: String?
-    let dsTransactionId: String?
-    let eci: String?
-    let cryptogram: String
-    let xid: String?
-}
-
-struct ThreeDSecureBeginAuthResponseToken: Codable {
-    let token: String
-    let analyticsId: String
-    let tokenType: String
-    let paymentInstrumentType: PaymentInstrumentType
-    let paymentInstrumentData: PaymentInstrumentData
-    let vaultData: VaultData?
-    let threeDSecureAuthentication: ThreeDSecureAuthentication?
-}
-
-/**
- If available, it contains information on the 3DSecure authentication associated with this payment method token/instrument.
- 
- - Author:
- Primer
- - Version:
- 1.2.2
- */
-
-public struct ThreeDSecureAuthentication: Codable {
-    let responseCode: String
-    let reasonCode, reasonText, protocolVersion, challengeIssued: String?
+    internal enum DeclinedReasonCode: String, Codable {
+        case unknown = "UNKNOWN"
+        case rejectedByIssuer = "REJECTED_BY_ISSUER"
+        case cardAuthenticationFailed = "CARD_AUTHENTICATION_FAILED"
+        case unknownDevice = "UNKNOWN_DEVICE"
+        case unsupportedDevice = "UNSUPPORTED_DEVICE"
+        case exceedsAuthenticationFrequencyLimit = "EXCEEDS_AUTHENTICATION_FREQUENCY_LIMIT"
+        case expiredCard = "EXPIRED_CARD"
+        case invalidCardNumber = "INVALID_CARD_NUMBER"
+        case invalidTransaction = "INVALID_TRANSACTION"
+        case noCardRecord = "NO_CARD_RECORD"
+        case securityFailure = "SECURITY_FAILURE"
+        case stolenCard = "STOLEN_CARD"
+        case suspectedFraud = "SUSPECTED_FRAUD"
+        case transactionNotPermittedToCardholder = "TRANSACTION_NOT_PERMITTED_TO_CARDHOLDER"
+        case cardholderNotEnrolledInService = "CARDHOLDER_NOT_ENROLLED_IN_SERVICE"
+        case transactionTimedOutAtTheACS = "TRANSACTION_TIMED_OUT_AT_THE_ACS"
+        case lowConfidence = "LOW_CONFIDENCE"
+        case mediumConfidence = "MEDIUM_CONFIDENCE"
+        case highConfidence = "HIGH_CONFIDENCE"
+        case veryHighConfidence = "VERY_HIGH_CONFIDENCE"
+        case exceedsACSMaximumChallenges = "EXCEEDS_ACS_MAXIMUM_CHALLENGES"
+        case nonPaymentNotSupported = "NON_PAYMENT_NOT_SUPPORTED"
+        case threeRINotSupported = "THREE_RI_NOT_SUPPORTED"
+        case acsTechnicalIssue = "ACS_TECHNICAL_ISSUE"
+        case decoupledRequiredByACS = "DECOUPLED_REQUIRED_BY_ACS"
+        case decoupledMaxExpiryExceeded = "DECOUPLED_MAX_EXPIRY_EXCEEDED"
+        case decoupledAuthenticationInsufficientTime = "DECOUPLED_AUTHENTICATION_INSUFFICIENT_TIME"
+        case authenticationAttemptedButNotPerformedByCardholder = "AUTHENTICATION_ATTEMPTED_BUT_NOT_PERFORMED_BY_CARDHOLDER"
+        case acsTimedOut = "ACS_TIMED_OUT"
+        case invalidACSResponse = "INVALID_ACS_RESPONSE"
+        case acsSystemErrorResponse = "ACS_SYSTEM_ERROR_RESPONSE"
+        case errorGeneratingCAVV = "ERROR_GENERATING_CAVV"
+        case protocolVersionNotSupported = "PROTOCOL_VERSION_NOT_SUPPORTED"
+        case transactionExcludedFromAttemptsProcessing = "TRANSACTION_EXCLUDED_FROM_ATTEMPTS_PROCESSING"
+        case requestedProgramNotSupported = "REQUESTED_PROGRAM_NOT_SUPPORTED"
+    }
 }

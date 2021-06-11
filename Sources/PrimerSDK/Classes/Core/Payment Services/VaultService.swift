@@ -61,16 +61,26 @@ internal class VaultService: VaultServiceProtocol {
                                                                                                threeDSecureBeginAuthRequest: req) { (res, err) in
                                                     if let err = err {
                                                         print(err)
-                                                    } else if let val = res?.authentication as? ThreeDSSkippedAPIResponse {
+                                                    } else if let val = res?.authentication as? ThreeDS.MethodAPIResponse {
                                                         print(val)
-                                                    } else if let val = res?.authentication as? ThreeDSMethodAPIResponse {
+                                                    } else if let val = res?.authentication as? ThreeDS.MethodAPIResponse {
                                                         let rvc = (UIApplication.shared.delegate as? UIApplicationDelegate)?.window??.rootViewController
                                                         
                                                         rvc?.dismiss(animated: true, completion: {
                                                             service.performChallenge(on: transaction, with: val, presentOn: rvc!, completion: { result in
                                                                 switch result {
                                                                 case .success(let netceteraAuthCompletion):
-                                                                    break
+                                                                    let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+
+                                                                    api.threeDSecurePostAuthentication(clientToken: clientToken, threeDSTokenId: paymentMethod.token!) { (result) in
+                                                                        switch result {
+                                                                        case .success(let authResponse):
+                                                                            break
+                                                                        case .failure(let err):
+                                                                            break
+                                                                        }
+                                                                    }
+                                                                    
                                                                 case .failure(let err):
                                                                     break
                                                                 }
@@ -83,18 +93,40 @@ internal class VaultService: VaultServiceProtocol {
                                                         
                                                         
                                                         
-                                                    } else if let val = res?.authentication as? ThreeDSBrowserV2ChallengeAPIResponse {
+                                                    } else if let val = res?.authentication as? ThreeDS.BrowserV2ChallengeAPIResponse {
                                                         print(val)
-                                                    } else if let val = res?.authentication as? ThreeDSAppV2ChallengeAPIResponse {
+                                                    } else if let val = res?.authentication as? ThreeDS.AppV2ChallengeAPIResponse {
                                                         print(val)
-                                                    } else if let val = res?.authentication as? ThreeDSBrowserV1ChallengeAPIResponse {
+                                                    } else if let val = res?.authentication as? ThreeDS.BrowserV1ChallengeAPIResponse {
                                                         print(val)
-                                                    } else if let val = res?.authentication as? ThreeDSDeclinedAPIResponse {
+                                                    } else if let val = res?.authentication as? ThreeDS.DeclinedAPIResponse {
                                                         print(val)
-                                                    } else if let val = res?.authentication as? ThreeDSSuccessAPIResponse {
+                                                    } else if let val = res?.authentication as? ThreeDS.Authentication {
                                                         print(val)
-                                                    } else {
+                                                        let rvc = (UIApplication.shared.delegate as? UIApplicationDelegate)?.window??.rootViewController
                                                         
+                                                        rvc?.dismiss(animated: true, completion: {
+                                                            service.performChallenge(on: transaction, with: val, presentOn: rvc!, completion: { result in
+                                                                switch result {
+                                                                case .success(let netceteraAuthCompletion):
+                                                                    let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+
+                                                                    api.threeDSecurePostAuthentication(clientToken: clientToken, threeDSTokenId: paymentMethod.token!) { (result) in
+                                                                        switch result {
+                                                                        case .success(let data):
+                                                                            break
+                                                                        case .failure(let err):
+                                                                            break
+                                                                        }
+                                                                    }
+                                                                    
+                                                                case .failure(let err):
+                                                                    break
+                                                                }
+                                                            })
+                                                        })
+                                                    } else {
+
                                                     }
                                                 }
                                             case .failure(let err):
