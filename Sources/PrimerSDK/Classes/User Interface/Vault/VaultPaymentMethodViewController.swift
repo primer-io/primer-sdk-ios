@@ -152,6 +152,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
         let token = viewModel.paymentMethods[indexPath.row]
 
         let cardView = CardButton()
+        cardView.isUserInteractionEnabled = false
 
         cardView.render(model: token.cardButtonViewModel)
 
