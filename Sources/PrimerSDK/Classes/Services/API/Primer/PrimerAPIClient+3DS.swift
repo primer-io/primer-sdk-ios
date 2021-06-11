@@ -22,6 +22,37 @@ extension PrimerAPIClient {
         }
     }
     
+    func threeDSecureStatus(clientToken: DecodedClientToken, url: String, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
+        let endpoint = PrimerAPI.threeDSecureStatus(clientToken: clientToken, url: url)
+        networkService.request(endpoint) { (result: Result<ThreeDS.BeginAuthResponse, NetworkServiceError>) in
+            switch result {
+            case .success(let authResponse):
+                print(authResponse)
+                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { (_) in
+                    self.threeDSecureStatus(clientToken: clientToken, url: url, completion: completion)
+                }
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(PrimerError.tokenizationRequestFailed))
+            }
+        }
+    }
+    
+    func threeDSecurePostAuthentication(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
+        let endpoint = PrimerAPI.threeDSecurePostAuthentication(clientToken: clientToken, threeDSTokenId: threeDSTokenId)
+        networkService.request(endpoint) { (result: Result<ThreeDS.PostAuthResponse, NetworkServiceError>) in
+            switch result {
+            case .success(let postAuthResponse):
+                completion(.success(postAuthResponse))
+
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(PrimerError.tokenizationRequestFailed))
+            }
+        }
+    
+}
+    
 }
 
 extension MockPrimerAPIClient {
