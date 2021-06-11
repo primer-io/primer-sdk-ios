@@ -72,9 +72,12 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
                 message += "\n"
             }
             
-            let err = NSError(domain: "netcetera", code: 100, userInfo: [NSLocalizedDescriptionKey: message])
-//            completion(.failure(err))
+            #if DEBUG
             completion(.success(()))
+            #else
+            let err = NSError(domain: "netcetera", code: 100, userInfo: [NSLocalizedDescriptionKey: message])
+            completion(.failure(err))
+            #endif
         } else {
             completion(.success(()))
         }
