@@ -102,7 +102,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
     }
 
     func reloadVaultDetails() {
-        if vaulted {
+        if !Primer.shared.flow.internalSessionFlow.vaulted {
             configureSavedCardTitleLabel()
             configureSavedCardButton()
             configureSeeAllLinkLabel()
