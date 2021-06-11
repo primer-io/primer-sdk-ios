@@ -53,11 +53,8 @@ internal class VaultService: VaultServiceProtocol {
                                                 let threeDSecureAuthData = try! transaction.buildThreeDSecureAuthData()
                                                 print("3DS SDK Data: \(threeDSecureAuthData)")
                                                 
-//                                                let threeDSecureDevice = ThreeDSecureDevice(sdkTransactionId: sdkTransactionId)
                                                 var req = ThreeDS.BeginAuthRequest.demoAuthRequest
-//                                                req.testScenario = ThreeDSecureTestScenario.threeDS2AutoChallengePass
                                                 req.device = threeDSecureAuthData
-//                                                req.deviceChannel = "03"
                                                 req.amount = 1000
                                                 
                                                 service.threeDSecureBeginAuthentication(paymentMethodToken: paymentMethod,
