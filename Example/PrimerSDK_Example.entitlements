@@ -5,6 +5,7 @@
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
 		<string>merchant.checkout.team</string>
+		<string>merchant.primer.dev.evangelos</string>
 	</array>
 </dict>
 </plist>

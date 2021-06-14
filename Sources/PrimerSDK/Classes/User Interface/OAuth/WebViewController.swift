@@ -89,7 +89,6 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
             let state: AppStateProtocol = DependencyContainer.resolve()
 
             // FIXME: WebView should be agnostic of state and not set it. Debug what happens on
-            // PayPal case befire removing.
             state.authorizationToken = val
             klarnaWebViewCompletion?(val, nil)
             klarnaWebViewCompletion = nil
