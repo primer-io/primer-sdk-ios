@@ -83,10 +83,29 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
         }
     }
     
-    func netceteraAuth(paymentMethod: PaymentMethodToken, completion: @escaping (Result<Transaction, Error>) -> Void) {
+    func netceteraAuth(paymentMethod: PaymentMethodToken, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void) {
         do {
-            transaction = try threeDS2Service.createTransaction(directoryServerId: "A999999999",
-                                                                    messageVersion: "2.1.0")
+            var directoryServerId: String
+            
+            switch paymentMethod.paymentInstrumentData?.network?.lowercased() {
+            case "visa":
+                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .visa())
+            case "mastercard":
+                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .mastercard())
+            case "diners":
+                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .diners())
+            case "jcb":
+                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .jcb())
+            case "amex":
+                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .amex())
+            case "union":
+                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .union())
+            default:
+                directoryServerId = "A999999999"
+            }
+
+            transaction = try threeDS2Service.createTransaction(directoryServerId: directoryServerId,
+                                                                messageVersion: protocolVersion.rawValue)
             completion(.success(transaction!))
         } catch {
             print(error)

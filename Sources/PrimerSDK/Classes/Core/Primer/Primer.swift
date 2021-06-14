@@ -225,7 +225,7 @@ public class Primer {
                 service.verifyWarnings { (verifyResult) in
                     switch verifyResult {
                     case .success:
-                        service.netceteraAuth(paymentMethod: paymentMethod) { (authResult) in
+                        service.netceteraAuth(paymentMethod: paymentMethod, protocolVersion: .v1) { (authResult) in
                             switch authResult {
                             case .success(let transaction):
                                 let threeDSecureAuthData = try! transaction.buildThreeDSecureAuthData()
