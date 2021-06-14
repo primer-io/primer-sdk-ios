@@ -57,11 +57,15 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
         
-        if navigationAction.request.url?.absoluteString.hasPrefix("bankid://") == true {
+        if var urlStr = navigationAction.request.url?.absoluteString, urlStr.hasPrefix("bankid://") == true {
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            if urlStr.contains("redirect=null"), let urlScheme = settings.urlScheme {
+                urlStr = urlStr.replacingOccurrences(of: "redirect=null", with: "redirect=\(urlScheme)")
+            }
             // bankid:///?autostarttoken=197701116050-fa74-49cf-b98c-bfe651f9a7c6&redirect=null
-            if UIApplication.shared.canOpenURL(navigationAction.request.url!) {
+            if UIApplication.shared.canOpenURL(URL(string: urlStr)!) {
                 decisionHandler(.allow)
-                UIApplication.shared.open(navigationAction.request.url!, options: [:]) { (isFinished) in
+                UIApplication.shared.open(URL(string: urlStr)!, options: [:]) { (isFinished) in
 
                 }
                 return
