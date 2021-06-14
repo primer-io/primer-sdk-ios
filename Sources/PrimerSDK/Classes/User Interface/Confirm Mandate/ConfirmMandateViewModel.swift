@@ -115,6 +115,7 @@ internal class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
                         state.directDebitMandate = DirectDebitMandate(address: Address())
                         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                         settings.authorizePayment(token, completion)
+                        settings.onTokenizeSuccess(token, completion)
                     }
                 }
             }

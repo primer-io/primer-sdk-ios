@@ -34,7 +34,7 @@ class MerchantCheckoutViewController: UIViewController {
     )
     
     let applePaySettings = PrimerSettings(
-        merchantIdentifier: "merchant.primer.dev.evangelos",
+        merchantIdentifier: "merchant.checkout.team",
         currency: .EUR,
         countryCode: .fr,
         businessDetails: BusinessDetails(
@@ -52,7 +52,7 @@ class MerchantCheckoutViewController: UIViewController {
     )
 
     let generalSettings = PrimerSettings(
-        merchantIdentifier: "general-settings",
+        merchantIdentifier: "merchant.checkout.team",
         customerId: "my-customer",
         amount: 100,
         currency: .EUR,
@@ -79,25 +79,25 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        Primer.shared.configure(settings: applePaySettings)
+        Primer.shared.configure(settings: generalSettings)
         
-       let theme = generatePrimerTheme()
-       Primer.shared.configure(theme: theme)
-
-       Primer.shared.setDirectDebitDetails(
-           firstName: "John",
-           lastName: "Doe",
-           email: "test@mail.com",
-           iban: "FR1420041010050500013M02606",
-           address: Address(
-               addressLine1: "1 Rue",
-               addressLine2: "",
-               city: "Paris",
-               state: "",
-               countryCode: "FR",
-               postalCode: "75001"
-           )
-       )
+        let theme = generatePrimerTheme()
+        Primer.shared.configure(theme: theme)
+        
+        Primer.shared.setDirectDebitDetails(
+            firstName: "John",
+            lastName: "Doe",
+            email: "test@mail.com",
+            iban: "FR1420041010050500013M02606",
+            address: Address(
+                addressLine1: "1 Rue",
+                addressLine2: "",
+                city: "Paris",
+                state: "",
+                countryCode: "FR",
+                postalCode: "75001"
+            )
+        )
     }
 
     // MARK: - ACTIONS
@@ -111,6 +111,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: vaultKlarnaSettings)
         Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
     }
     
@@ -174,13 +175,45 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-        guard let token = result.token else { return completion(NetworkError.missingParams) }
+//        guard let token = result.token else { return completion(NetworkError.missingParams) }
+//
+//        guard let url = URL(string: "\(endpoint)/transaction") else {
+//            return completion(NetworkError.missingParams)
+//        }
+//
+//        let type = result.paymentInstrumentType
+//
+//        var request = URLRequest(url: url)
+//
+//        request.httpMethod = "POST"
+//        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+//        
+//        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: "GBP")
+//        
+//        do {
+//            request.httpBody = try JSONEncoder().encode(body)
+//        } catch {
+//            return completion(NetworkError.missingParams)
+//        }
+//        
+//        callApi(request) { (result) in
+//            switch result {
+//            case .success:
+//                completion(nil)
+//            case .failure(let err):
+//                completion(err)
+//            }
+//        }
+    }
+    
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+        guard let token = paymentMethodToken.token else { return completion(NetworkError.missingParams) }
 
         guard let url = URL(string: "\(endpoint)/transaction") else {
             return completion(NetworkError.missingParams)
         }
 
-        let type = result.paymentInstrumentType
+        let type = paymentMethodToken.paymentInstrumentType
 
         var request = URLRequest(url: url)
 
