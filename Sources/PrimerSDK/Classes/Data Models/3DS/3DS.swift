@@ -16,6 +16,11 @@ protocol ThreeDSAuthenticationProtocol: Codable {
 }
 
 public struct ThreeDS {
+    
+    internal enum ProtocolVersion: String {
+        case v1 = "2.1.0"
+        case v2 = "2.2.0"
+    }
 
     internal struct ACSRenderingType: Codable {
         let acsInterface: String?
