@@ -1,6 +1,8 @@
 import Foundation
 import Dispatch
 
+// swiftlint:disable large_tuple
+
 private func _when<U: Thenable>(_ thenables: [U]) -> Promise<Void> {
     var countdown = thenables.count
     guard countdown > 0 else {

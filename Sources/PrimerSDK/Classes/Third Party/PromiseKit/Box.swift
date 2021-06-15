@@ -36,6 +36,7 @@ class EmptyBox<T>: Box<T> {
     override func seal(_ value: T) {
         var handlers: Handlers<T>!
         barrier.sync(flags: .barrier) {
+            // swiftlint:disable identifier_name
             guard case .pending(let _handlers) = self.sealant else {
                 return  // already fulfilled!
             }
