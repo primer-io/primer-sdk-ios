@@ -1,7 +1,7 @@
 import Dispatch
 
 /// Thenable represents an asynchronous operation that can be chained.
-public protocol Thenable: AnyObject {
+internal protocol Thenable: AnyObject {
     /// The type of the wrapped value
     associatedtype T
 
@@ -12,7 +12,7 @@ public protocol Thenable: AnyObject {
     var result: Result<T, Error>? { get }
 }
 
-public extension Thenable {
+internal extension Thenable {
     /**
      The provided closure executes when this promise is fulfilled.
 
@@ -216,7 +216,7 @@ public extension Thenable {
     }
 }
 
-public extension Thenable {
+internal extension Thenable {
     /**
      - Returns: The error with which this promise was rejected; `nil` if this promise is not rejected.
      */
@@ -274,7 +274,7 @@ public extension Thenable {
     }
 }
 
-public extension Thenable {
+internal extension Thenable {
     /**
      Converts a Promise or Guarantee into a promise that can be cancelled.
      - Parameter thenable: The Thenable (Promise or Guarantee) to be made cancellable.
@@ -286,7 +286,7 @@ public extension Thenable {
 }
 
 
-public extension Thenable where T: Sequence {
+internal extension Thenable where T: Sequence {
     /**
      `Promise<[T]>` => `T` -> `U` => `Promise<[U]>`
 
@@ -391,7 +391,7 @@ public extension Thenable where T: Sequence {
     }
 }
 
-public extension Thenable where T: Collection {
+internal extension Thenable where T: Collection {
     /// - Returns: a promise fulfilled with the first value of this `Collection` or, if empty, a promise rejected with PMKError.emptySequence.
     var firstValue: Promise<T.Iterator.Element> {
         return map(on: nil) { aa in
@@ -425,7 +425,7 @@ public extension Thenable where T: Collection {
     }
 }
 
-public extension Thenable where T: Sequence, T.Iterator.Element: Comparable {
+internal extension Thenable where T: Sequence, T.Iterator.Element: Comparable {
     /// - Returns: a promise fulfilled with the sorted values of this `Sequence`.
     func sortedValues(on: Dispatcher = conf.D.map) -> Promise<[T.Iterator.Element]> {
         return map(on: on){ $0.sorted() }

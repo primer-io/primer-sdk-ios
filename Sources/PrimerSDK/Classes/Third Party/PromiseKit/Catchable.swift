@@ -1,10 +1,10 @@
 import Dispatch
 
 /// Provides `catch` and `recover` to your object that conforms to `Thenable`
-public protocol CatchMixin: Thenable
+internal protocol CatchMixin: Thenable
 {}
 
-public extension CatchMixin {
+internal extension CatchMixin {
     
     /**
      The provided closure executes when this promise rejects.
@@ -111,18 +111,18 @@ public extension CatchMixin {
     }
 }
 
-public class PMKFinalizer {
+internal class PMKFinalizer {
     let pending = Guarantee<Void>.pending()
 
     /// `finally` is the same as `ensure`, but it is not chainable
-    public func finally(on: Dispatcher = conf.D.return, _ body: @escaping () -> Void) {
+    internal func finally(on: Dispatcher = conf.D.return, _ body: @escaping () -> Void) {
         pending.guarantee.done(on: on) {
             body()
         }
     }
 }
 
-public class PMKCascadingFinalizer {
+internal class PMKCascadingFinalizer {
     let pending = Promise<Void>.pending()
 
     /**
@@ -140,7 +140,7 @@ public class PMKCascadingFinalizer {
      - SeeAlso: [Cancellation](http://promisekit.org/docs/)
      */
     @discardableResult
-    public func `catch`(on: Dispatcher = conf.D.return, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(Error) -> Void) -> PMKFinalizer {
+    internal func `catch`(on: Dispatcher = conf.D.return, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(Error) -> Void) -> PMKFinalizer {
         return pending.promise.catch(on: on, policy: policy) {
             body($0)
         }
@@ -161,7 +161,7 @@ public class PMKCascadingFinalizer {
      - Note: Since this method handles only specific errors, supplying a `CatchPolicy` is unsupported.
      - SeeAlso: [Cancellation](http://promisekit.org/docs/)
      */
-    public func `catch`<E: Swift.Error>(only: E, on: Dispatcher = conf.D.return, _ body: @escaping(E) -> Void) -> PMKCascadingFinalizer where E: Equatable {
+    internal func `catch`<E: Swift.Error>(only: E, on: Dispatcher = conf.D.return, _ body: @escaping(E) -> Void) -> PMKCascadingFinalizer where E: Equatable {
         return pending.promise.catch(only: only, on: on) {
             body($0)
         }
@@ -181,7 +181,7 @@ public class PMKCascadingFinalizer {
      - Returns: A promise finalizer that accepts additional `catch` clauses.
      - SeeAlso: [Cancellation](http://promisekit.org/docs/)
      */
-    public func `catch`<E: Swift.Error>(only: E.Type, on: Dispatcher = conf.D.return, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) -> Void) -> PMKCascadingFinalizer {
+    internal func `catch`<E: Swift.Error>(only: E.Type, on: Dispatcher = conf.D.return, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) -> Void) -> PMKCascadingFinalizer {
         return pending.promise.catch(only: only, on: on, policy: policy) {
             body($0)
         }
@@ -192,14 +192,14 @@ public class PMKCascadingFinalizer {
      - Note: You should `catch`, but in situations where you know you don’t need a `catch`, `cauterize` makes your intentions clear.
      */
     @discardableResult
-    public func cauterize() -> PMKFinalizer {
+    internal func cauterize() -> PMKFinalizer {
         return self.catch {
             conf.logHandler(.cauterized($0))
         }
     }
 }
 
-public extension CatchMixin {
+internal extension CatchMixin {
     
     /**
      The provided closure executes when this promise rejects.
@@ -431,7 +431,7 @@ public extension CatchMixin {
 }
 
 
-public extension CatchMixin where T == Void {
+internal extension CatchMixin where T == Void {
     
     /**
      The provided closure executes when this promise rejects.

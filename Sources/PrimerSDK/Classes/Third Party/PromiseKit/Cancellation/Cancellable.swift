@@ -3,7 +3,7 @@ import Dispatch
 /**
  Use this protocol to define cancellable tasks for CancellablePromise.
  */
-public protocol Cancellable {
+internal protocol Cancellable {
     /// Cancel the associated task
     func cancel()
     

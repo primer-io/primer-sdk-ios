@@ -19,7 +19,7 @@ import Foundation
 ///
 /// 100% thread safe.
 
-public final class RateLimitedDispatcher: RateLimitedDispatcherBase {
+internal final class RateLimitedDispatcher: RateLimitedDispatcherBase {
     
     private var tokensInBucket: Double = 0
     private var latestAccrual: DispatchTime = DispatchTime.now()
@@ -39,13 +39,13 @@ public final class RateLimitedDispatcher: RateLimitedDispatcherBase {
     ///   - perInterval: The length of the reference interval, in seconds.
     ///   - queue: The DispatchQueue or Dispatcher on which to perform executions. May be serial or concurrent.
 
-    override public init(maxDispatches: Int, perInterval interval: TimeInterval, queue: Dispatcher = DispatchQueue.global()) {
+    override internal init(maxDispatches: Int, perInterval interval: TimeInterval, queue: Dispatcher = DispatchQueue.global()) {
         latestAccrual = DispatchTime.now()
         super.init(maxDispatches: maxDispatches, perInterval: interval, queue: queue)
         tokensInBucket = Double(maxDispatches)
     }
     
-    public convenience init(maxDispatches: Int, perInterval interval: TimeInterval, queue: DispatchQueue) {
+    internal convenience init(maxDispatches: Int, perInterval interval: TimeInterval, queue: DispatchQueue) {
         self.init(maxDispatches: maxDispatches, perInterval: interval, queue: queue as Dispatcher)
     }
     

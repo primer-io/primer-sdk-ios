@@ -5,7 +5,7 @@ import Dispatch
  A `Guarantee` is a functional abstraction around an asynchronous operation that cannot error.
  - See: `Thenable`
 */
-public final class Guarantee<T>: Thenable {
+internal final class Guarantee<T>: Thenable {
     let box: Box<T>
 
     fileprivate init(box: SealedBox<T>) {
@@ -13,24 +13,24 @@ public final class Guarantee<T>: Thenable {
     }
 
     /// Returns a `Guarantee` sealed with the provided value.
-    public static func value(_ value: T) -> Guarantee<T> {
+    internal static func value(_ value: T) -> Guarantee<T> {
         return .init(box: SealedBox(value: value))
     }
 
     /// Returns a pending `Guarantee` that can be resolved with the provided closure’s parameter.
-    public init(resolver body: (@escaping(T) -> Void) -> Void) {
+    internal init(resolver body: (@escaping(T) -> Void) -> Void) {
         box = Box()
         body(box.seal)
     }
 
     /// Returns a pending `Guarantee` that can be resolved with the provided closure’s parameter.
-    public convenience init(cancellable: Cancellable, resolver body: (@escaping(T) -> Void) -> Void) {
+    internal convenience init(cancellable: Cancellable, resolver body: (@escaping(T) -> Void) -> Void) {
         self.init(resolver: body)
        setCancellable(cancellable)
     }
 
     /// - See: `Thenable.pipe`
-    public func pipe(to: @escaping(Result<T, Error>) -> Void) {
+    internal func pipe(to: @escaping(Result<T, Error>) -> Void) {
         pipe{ to(.success($0)) }
     }
 
@@ -51,7 +51,7 @@ public final class Guarantee<T>: Thenable {
     }
 
     /// - See: `Thenable.result`
-    public var result: Result<T, Error>? {
+    internal var result: Result<T, Error>? {
         switch box.inspect() {
         case .pending:
             return nil
@@ -79,13 +79,13 @@ public final class Guarantee<T>: Thenable {
     }
 
     /// Returns a tuple of a pending `Guarantee` and a function that resolves it.
-    public class func pending() -> (guarantee: Guarantee<T>, resolve: (T) -> Void) {
+    internal class func pending() -> (guarantee: Guarantee<T>, resolve: (T) -> Void) {
         return { ($0, $0.box.seal) }(Guarantee<T>(.pending))
     }
 
     var cancellable: Cancellable?
 
-    public func setCancellable(_ cancellable: Cancellable) {
+    internal func setCancellable(_ cancellable: Cancellable) {
         if let gb = (box as? Guarantee<T>.Box<T>) {
             self.cancellable = CancellableWrapper(box: gb, cancellable: cancellable)
         } else {
@@ -113,7 +113,7 @@ public final class Guarantee<T>: Thenable {
     }
 }
 
-public extension Guarantee {
+internal extension Guarantee {
     @discardableResult
     func done(on: Dispatcher = conf.D.return, _ body: @escaping(T) -> Void) -> Guarantee<Void> {
         let rg = Guarantee<Void>(.pending)
@@ -181,7 +181,7 @@ public extension Guarantee {
     }
 }
 
-public extension Guarantee where T: Sequence {
+internal extension Guarantee where T: Sequence {
     /**
      `Guarantee<[T]>` => `T` -> `U` => `Guarantee<[U]>`
 
@@ -298,7 +298,7 @@ public extension Guarantee where T: Sequence {
     }
 }
 
-public extension Guarantee where T: Sequence, T.Iterator.Element: Comparable {
+internal extension Guarantee where T: Sequence, T.Iterator.Element: Comparable {
     /**
      `Guarantee<[T]>` => `Guarantee<[T]>`
 
@@ -313,7 +313,7 @@ public extension Guarantee where T: Sequence, T.Iterator.Element: Comparable {
     }
 }
 
-public extension Guarantee where T == Void {
+internal extension Guarantee where T == Void {
     convenience init() {
         self.init(box: SealedBox(value: Void()))
     }
@@ -331,7 +331,7 @@ public extension Guarantee where T == Void {
     }
 }
 
-public extension DispatchQueue {
+internal extension DispatchQueue {
     /**
      Asynchronously executes the provided closure on a dispatch queue, yielding a `Guarantee`.
 
@@ -358,7 +358,7 @@ public extension DispatchQueue {
     }
 }
 
-public extension Dispatcher {
+internal extension Dispatcher {
     /**
      Executes the provided closure on a `Dispatcher`, yielding a `Guarantee`
      that represents the value ultimately returned by the closure.

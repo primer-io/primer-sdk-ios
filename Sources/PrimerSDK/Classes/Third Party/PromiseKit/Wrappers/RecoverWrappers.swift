@@ -1,6 +1,6 @@
 import Dispatch
 
-public extension _PMKSharedWrappers {
+internal extension _PMKSharedWrappers {
     
     /**
      The provided closure executes when this promise rejects.
@@ -83,7 +83,7 @@ public extension _PMKSharedWrappers {
     }
 }
 
-public extension _PMKSharedVoidWrappers {
+internal extension _PMKSharedVoidWrappers {
     
     /**
      The provided closure executes when this promise rejects.
@@ -145,7 +145,7 @@ public extension _PMKSharedVoidWrappers {
     }
 }
 
-public extension CatchMixin {
+internal extension CatchMixin {
     
     /**
      The provided closure executes when this promise rejects.
@@ -166,7 +166,7 @@ public extension CatchMixin {
     }    
 }
 
-public extension CatchMixin where T == Void {
+internal extension CatchMixin where T == Void {
     
     /**
      The provided closure executes when this promise rejects.
@@ -187,7 +187,7 @@ public extension CatchMixin where T == Void {
     }
 }
 
-public extension CancellableCatchMixin {
+internal extension CancellableCatchMixin {
     
     /**
      The provided closure executes when this cancellable promise rejects.
