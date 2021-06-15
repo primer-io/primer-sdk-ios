@@ -1,16 +1,31 @@
 PODS:
-  - PrimerSDK (1.6.0)
+  - PrimerSDK (1.6.1)
+  - PromiseKit (6.15.3):
+    - PromiseKit/CorePromise (= 6.15.3)
+    - PromiseKit/Foundation (= 6.15.3)
+    - PromiseKit/UIKit (= 6.15.3)
+  - PromiseKit/CorePromise (6.15.3)
+  - PromiseKit/Foundation (6.15.3):
+    - PromiseKit/CorePromise
+  - PromiseKit/UIKit (6.15.3):
+    - PromiseKit/CorePromise
 
 DEPENDENCIES:
   - PrimerSDK (from `../`)
+  - PromiseKit
+
+SPEC REPOS:
+  trunk:
+    - PromiseKit
 
 EXTERNAL SOURCES:
   PrimerSDK:
     :path: "../"
 
 SPEC CHECKSUMS:
-  PrimerSDK: 7a60b4afc2c5c0131cf1fade63c44ac44b179a9a
+  PrimerSDK: f5c4329c181e3d76e64e5b6f1ab521aad8e341a5
+  PromiseKit: 3b2b6995e51a954c46dbc550ce3da44fbfb563c5
 
-PODFILE CHECKSUM: 5e9d6f999d932304aefa9ae636264b5955e2901d
+PODFILE CHECKSUM: ce1ecabaadce29245fa2f5ba69d3a0690b496ae7
 
 COCOAPODS: 1.10.1
