@@ -25,13 +25,6 @@ public class Primer {
 
     fileprivate init() {
         DispatchQueue.main.async { [weak self] in
-//            let configParameters = ConfigParameters()
-//            do {
-//                try configParameters.addParam(group:nil, paramName:"license-key", paramValue: Primer.netceteraLicenseKey)
-//            } catch {
-//                print(error)
-//            }
-        
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
         }
