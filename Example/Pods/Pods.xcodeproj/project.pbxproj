@@ -17,6 +17,42 @@
 		0F7E94771F3F2BCDEBABA0CC320E74D0 /* PrimerSDK-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = DF79CC1A04D60C59860D5EFF646575AE /* PrimerSDK-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		100B515CE44BE2484BD0CAD016C5509E /* CountryCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB36382A878CE2F30BA9C9187F8E2042 /* CountryCode.swift */; };
 		11253BDF4DF375C348E87DF5B34F018A /* VaultCheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445FF62409FA7512582BFE5738E6E06E /* VaultCheckoutView.swift */; };
+		151431562678A1DF00B4C96D /* CancellableCatchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431302678A1DF00B4C96D /* CancellableCatchable.swift */; };
+		151431572678A1DF00B4C96D /* CancelContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431312678A1DF00B4C96D /* CancelContext.swift */; };
+		151431582678A1DF00B4C96D /* Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431322678A1DF00B4C96D /* Cancellable.swift */; };
+		151431592678A1DF00B4C96D /* CancellableThenable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431332678A1DF00B4C96D /* CancellableThenable.swift */; };
+		1514315A2678A1DF00B4C96D /* CancellablePromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431342678A1DF00B4C96D /* CancellablePromise.swift */; };
+		1514315B2678A1DF00B4C96D /* RecoverWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431362678A1DF00B4C96D /* RecoverWrappers.swift */; };
+		1514315C2678A1DF00B4C96D /* CatchWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431372678A1DF00B4C96D /* CatchWrappers.swift */; };
+		1514315D2678A1DF00B4C96D /* ThenableWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431382678A1DF00B4C96D /* ThenableWrappers.swift */; };
+		1514315E2678A1DF00B4C96D /* WrapperProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431392678A1DF00B4C96D /* WrapperProtocols.swift */; };
+		1514315F2678A1DF00B4C96D /* EnsureWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514313A2678A1DF00B4C96D /* EnsureWrappers.swift */; };
+		151431602678A1DF00B4C96D /* SequenceWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514313B2678A1DF00B4C96D /* SequenceWrappers.swift */; };
+		151431612678A1DF00B4C96D /* GuaranteeWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514313C2678A1DF00B4C96D /* GuaranteeWrappers.swift */; };
+		151431622678A1DF00B4C96D /* FinallyWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514313D2678A1DF00B4C96D /* FinallyWrappers.swift */; };
+		151431632678A1DF00B4C96D /* Dispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514313E2678A1DF00B4C96D /* Dispatcher.swift */; };
+		151431642678A1DF00B4C96D /* when.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514313F2678A1DF00B4C96D /* when.swift */; };
+		151431652678A1DF00B4C96D /* Guarantee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431402678A1DF00B4C96D /* Guarantee.swift */; };
+		151431662678A1DF00B4C96D /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 151431412678A1DF00B4C96D /* LICENSE */; };
+		151431672678A1DF00B4C96D /* race.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431422678A1DF00B4C96D /* race.swift */; };
+		151431682678A1DF00B4C96D /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431432678A1DF00B4C96D /* Error.swift */; };
+		151431692678A1DF00B4C96D /* after.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431442678A1DF00B4C96D /* after.swift */; };
+		1514316A2678A1DF00B4C96D /* Resolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431452678A1DF00B4C96D /* Resolver.swift */; };
+		1514316B2678A1DF00B4C96D /* hang.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431462678A1DF00B4C96D /* hang.swift */; };
+		1514316C2678A1DF00B4C96D /* RateLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431482678A1DF00B4C96D /* RateLimitedDispatcher.swift */; };
+		1514316D2678A1DF00B4C96D /* RateLimitedDispatcherBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431492678A1DF00B4C96D /* RateLimitedDispatcherBase.swift */; };
+		1514316E2678A1DF00B4C96D /* CoreDataDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514314A2678A1DF00B4C96D /* CoreDataDispatcher.swift */; };
+		1514316F2678A1DF00B4C96D /* StrictRateLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514314B2678A1DF00B4C96D /* StrictRateLimitedDispatcher.swift */; };
+		151431702678A1DF00B4C96D /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514314C2678A1DF00B4C96D /* Queue.swift */; };
+		151431712678A1DF00B4C96D /* ConcurrencyLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514314D2678A1DF00B4C96D /* ConcurrencyLimitedDispatcher.swift */; };
+		151431722678A1DF00B4C96D /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514314E2678A1DF00B4C96D /* Box.swift */; };
+		151431732678A1DF00B4C96D /* Catchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514314F2678A1DF00B4C96D /* Catchable.swift */; };
+		151431742678A1DF00B4C96D /* LogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431502678A1DF00B4C96D /* LogEvent.swift */; };
+		151431752678A1DF00B4C96D /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431512678A1DF00B4C96D /* Promise.swift */; };
+		151431762678A1DF00B4C96D /* firstly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431522678A1DF00B4C96D /* firstly.swift */; };
+		151431772678A1DF00B4C96D /* CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431532678A1DF00B4C96D /* CustomStringConvertible.swift */; };
+		151431782678A1DF00B4C96D /* Thenable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431542678A1DF00B4C96D /* Thenable.swift */; };
+		151431792678A1DF00B4C96D /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431552678A1DF00B4C96D /* Configuration.swift */; };
 		16AF604EFAB8215B9F0879C271AE7A2D /* FormTextFieldType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D364D798A53A76D482156C7E07703394 /* FormTextFieldType.swift */; };
 		16EAA7FA33F257010600B443C71C99B5 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F41D2762B2290B4EE76542889986A16 /* PaymentMethod.swift */; };
 		17CC0E100C8B9EF45824E087493F8CBB /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 522F77B4CB1E9CA3B31E3F74F1962B2B /* fr.lproj */; };
@@ -152,6 +188,42 @@
 		0EB28F97384012160632AF45B559BA3A /* PrimerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerViewController.swift; sourceTree = "<group>"; };
 		0FB7D7BE4E2DD1D34BE722C35E696BC6 /* DependencyInjection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DependencyInjection.swift; sourceTree = "<group>"; };
 		10521EBB01DE5F936655DD588B1ADA7F /* VaultPaymentMethodViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewModel.swift; sourceTree = "<group>"; };
+		151431302678A1DF00B4C96D /* CancellableCatchable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CancellableCatchable.swift; sourceTree = "<group>"; };
+		151431312678A1DF00B4C96D /* CancelContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CancelContext.swift; sourceTree = "<group>"; };
+		151431322678A1DF00B4C96D /* Cancellable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cancellable.swift; sourceTree = "<group>"; };
+		151431332678A1DF00B4C96D /* CancellableThenable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CancellableThenable.swift; sourceTree = "<group>"; };
+		151431342678A1DF00B4C96D /* CancellablePromise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CancellablePromise.swift; sourceTree = "<group>"; };
+		151431362678A1DF00B4C96D /* RecoverWrappers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecoverWrappers.swift; sourceTree = "<group>"; };
+		151431372678A1DF00B4C96D /* CatchWrappers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CatchWrappers.swift; sourceTree = "<group>"; };
+		151431382678A1DF00B4C96D /* ThenableWrappers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThenableWrappers.swift; sourceTree = "<group>"; };
+		151431392678A1DF00B4C96D /* WrapperProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WrapperProtocols.swift; sourceTree = "<group>"; };
+		1514313A2678A1DF00B4C96D /* EnsureWrappers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnsureWrappers.swift; sourceTree = "<group>"; };
+		1514313B2678A1DF00B4C96D /* SequenceWrappers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequenceWrappers.swift; sourceTree = "<group>"; };
+		1514313C2678A1DF00B4C96D /* GuaranteeWrappers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GuaranteeWrappers.swift; sourceTree = "<group>"; };
+		1514313D2678A1DF00B4C96D /* FinallyWrappers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FinallyWrappers.swift; sourceTree = "<group>"; };
+		1514313E2678A1DF00B4C96D /* Dispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatcher.swift; sourceTree = "<group>"; };
+		1514313F2678A1DF00B4C96D /* when.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = when.swift; sourceTree = "<group>"; };
+		151431402678A1DF00B4C96D /* Guarantee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Guarantee.swift; sourceTree = "<group>"; };
+		151431412678A1DF00B4C96D /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		151431422678A1DF00B4C96D /* race.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = race.swift; sourceTree = "<group>"; };
+		151431432678A1DF00B4C96D /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		151431442678A1DF00B4C96D /* after.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = after.swift; sourceTree = "<group>"; };
+		151431452678A1DF00B4C96D /* Resolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
+		151431462678A1DF00B4C96D /* hang.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = hang.swift; sourceTree = "<group>"; };
+		151431482678A1DF00B4C96D /* RateLimitedDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RateLimitedDispatcher.swift; sourceTree = "<group>"; };
+		151431492678A1DF00B4C96D /* RateLimitedDispatcherBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RateLimitedDispatcherBase.swift; sourceTree = "<group>"; };
+		1514314A2678A1DF00B4C96D /* CoreDataDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataDispatcher.swift; sourceTree = "<group>"; };
+		1514314B2678A1DF00B4C96D /* StrictRateLimitedDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StrictRateLimitedDispatcher.swift; sourceTree = "<group>"; };
+		1514314C2678A1DF00B4C96D /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
+		1514314D2678A1DF00B4C96D /* ConcurrencyLimitedDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurrencyLimitedDispatcher.swift; sourceTree = "<group>"; };
+		1514314E2678A1DF00B4C96D /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
+		1514314F2678A1DF00B4C96D /* Catchable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Catchable.swift; sourceTree = "<group>"; };
+		151431502678A1DF00B4C96D /* LogEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogEvent.swift; sourceTree = "<group>"; };
+		151431512678A1DF00B4C96D /* Promise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
+		151431522678A1DF00B4C96D /* firstly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = firstly.swift; sourceTree = "<group>"; };
+		151431532678A1DF00B4C96D /* CustomStringConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomStringConvertible.swift; sourceTree = "<group>"; };
+		151431542678A1DF00B4C96D /* Thenable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Thenable.swift; sourceTree = "<group>"; };
+		151431552678A1DF00B4C96D /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		15939D76EEF467A182746C99C10F14B6 /* AlertController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		1841E53752535A5BB808AE11B6967728 /* PaymentNetwork.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentNetwork.swift; sourceTree = "<group>"; };
 		187BF6D0164EDAB4FF90BEC8F100DD60 /* ResourceBundle-PrimerResources-PrimerSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-PrimerResources-PrimerSDK-Info.plist"; sourceTree = "<group>"; };
@@ -335,6 +407,82 @@
 			path = Primer;
 			sourceTree = "<group>";
 		};
+		1514312D2678A1DF00B4C96D /* Third Party */ = {
+			isa = PBXGroup;
+			children = (
+				1514312E2678A1DF00B4C96D /* PromiseKit */,
+			);
+			name = "Third Party";
+			path = "Sources/PrimerSDK/Classes/Third Party";
+			sourceTree = "<group>";
+		};
+		1514312E2678A1DF00B4C96D /* PromiseKit */ = {
+			isa = PBXGroup;
+			children = (
+				1514312F2678A1DF00B4C96D /* Cancellation */,
+				151431352678A1DF00B4C96D /* Wrappers */,
+				1514313E2678A1DF00B4C96D /* Dispatcher.swift */,
+				1514313F2678A1DF00B4C96D /* when.swift */,
+				151431402678A1DF00B4C96D /* Guarantee.swift */,
+				151431412678A1DF00B4C96D /* LICENSE */,
+				151431422678A1DF00B4C96D /* race.swift */,
+				151431432678A1DF00B4C96D /* Error.swift */,
+				151431442678A1DF00B4C96D /* after.swift */,
+				151431452678A1DF00B4C96D /* Resolver.swift */,
+				151431462678A1DF00B4C96D /* hang.swift */,
+				151431472678A1DF00B4C96D /* Dispatchers */,
+				1514314E2678A1DF00B4C96D /* Box.swift */,
+				1514314F2678A1DF00B4C96D /* Catchable.swift */,
+				151431502678A1DF00B4C96D /* LogEvent.swift */,
+				151431512678A1DF00B4C96D /* Promise.swift */,
+				151431522678A1DF00B4C96D /* firstly.swift */,
+				151431532678A1DF00B4C96D /* CustomStringConvertible.swift */,
+				151431542678A1DF00B4C96D /* Thenable.swift */,
+				151431552678A1DF00B4C96D /* Configuration.swift */,
+			);
+			path = PromiseKit;
+			sourceTree = "<group>";
+		};
+		1514312F2678A1DF00B4C96D /* Cancellation */ = {
+			isa = PBXGroup;
+			children = (
+				151431302678A1DF00B4C96D /* CancellableCatchable.swift */,
+				151431312678A1DF00B4C96D /* CancelContext.swift */,
+				151431322678A1DF00B4C96D /* Cancellable.swift */,
+				151431332678A1DF00B4C96D /* CancellableThenable.swift */,
+				151431342678A1DF00B4C96D /* CancellablePromise.swift */,
+			);
+			path = Cancellation;
+			sourceTree = "<group>";
+		};
+		151431352678A1DF00B4C96D /* Wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				151431362678A1DF00B4C96D /* RecoverWrappers.swift */,
+				151431372678A1DF00B4C96D /* CatchWrappers.swift */,
+				151431382678A1DF00B4C96D /* ThenableWrappers.swift */,
+				151431392678A1DF00B4C96D /* WrapperProtocols.swift */,
+				1514313A2678A1DF00B4C96D /* EnsureWrappers.swift */,
+				1514313B2678A1DF00B4C96D /* SequenceWrappers.swift */,
+				1514313C2678A1DF00B4C96D /* GuaranteeWrappers.swift */,
+				1514313D2678A1DF00B4C96D /* FinallyWrappers.swift */,
+			);
+			path = Wrappers;
+			sourceTree = "<group>";
+		};
+		151431472678A1DF00B4C96D /* Dispatchers */ = {
+			isa = PBXGroup;
+			children = (
+				151431482678A1DF00B4C96D /* RateLimitedDispatcher.swift */,
+				151431492678A1DF00B4C96D /* RateLimitedDispatcherBase.swift */,
+				1514314A2678A1DF00B4C96D /* CoreDataDispatcher.swift */,
+				1514314B2678A1DF00B4C96D /* StrictRateLimitedDispatcher.swift */,
+				1514314C2678A1DF00B4C96D /* Queue.swift */,
+				1514314D2678A1DF00B4C96D /* ConcurrencyLimitedDispatcher.swift */,
+			);
+			path = Dispatchers;
+			sourceTree = "<group>";
+		};
 		1C69793A68B99B63309CC75AFD0213CC /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -473,6 +621,7 @@
 		66B8BA7948FD8BD5D89FEE63BB2294DE /* PrimerSDK */ = {
 			isa = PBXGroup;
 			children = (
+				1514312D2678A1DF00B4C96D /* Third Party */,
 				3131507DA4017DB7A55DACF4A75B6679 /* Icons.xcassets */,
 				93387FADAA255B15BD6D7D93D51C223C /* Core */,
 				6B01E5BC803490F426B519A8B29CA31F /* Data Models */,
@@ -928,6 +1077,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				151431662678A1DF00B4C96D /* LICENSE in Resources */,
 				4C7139FF7E7397D65CE425EC83A1007B /* PrimerResources.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -957,6 +1107,8 @@
 				F3AFB382036D197A48CD6058113CC1E9 /* ApplePay.swift in Sources */,
 				0340923F54769C46668B7C5F7156E17F /* ApplePayService.swift in Sources */,
 				A8DBF10293EA9DE69E9B8C5AEA013388 /* ApplePayViewModel.swift in Sources */,
+				151431562678A1DF00B4C96D /* CancellableCatchable.swift in Sources */,
+				1514316E2678A1DF00B4C96D /* CoreDataDispatcher.swift in Sources */,
 				6AB20858207DB7DBFF725B94916B749D /* AppState.swift in Sources */,
 				B3D75D1C27AC93BA0102990B550A6EE7 /* BundleExtension.swift in Sources */,
 				C94F30411821090F1F68E93854AC1391 /* CardButton.swift in Sources */,
@@ -965,12 +1117,20 @@
 				59368ADD663AB98144AA73B4ADB1969E /* CardScannerViewModel.swift in Sources */,
 				A3A8D146CF43C30A797CB7CB445F1802 /* Certificates.swift in Sources */,
 				5C26F0873A30CF6675BF015CFE0C2B6C /* ClientToken.swift in Sources */,
+				151431722678A1DF00B4C96D /* Box.swift in Sources */,
+				1514315D2678A1DF00B4C96D /* ThenableWrappers.swift in Sources */,
 				840679B391D9158648C2531563977624 /* ClientTokenService.swift in Sources */,
 				24E25BC0AE84E348C803FD3307B97EF9 /* ConfirmMandateView.swift in Sources */,
+				151431742678A1DF00B4C96D /* LogEvent.swift in Sources */,
+				1514315F2678A1DF00B4C96D /* EnsureWrappers.swift in Sources */,
 				75080BC9A0AE6CC995A10A545D49D8B1 /* ConfirmMandateViewController.swift in Sources */,
+				151431572678A1DF00B4C96D /* CancelContext.swift in Sources */,
 				C37EAA1AD59C34421F7CCFEF51F3512A /* ConfirmMandateViewModel.swift in Sources */,
+				1514316C2678A1DF00B4C96D /* RateLimitedDispatcher.swift in Sources */,
+				1514315A2678A1DF00B4C96D /* CancellablePromise.swift in Sources */,
 				6E61E7BA26E877CE92EB353DFBD71B18 /* Consolable.swift in Sources */,
 				100B515CE44BE2484BD0CAD016C5509E /* CountryCode.swift in Sources */,
+				151431642678A1DF00B4C96D /* when.swift in Sources */,
 				71C060DC6D21155C9A6C2E585C51BF1B /* Currency.swift in Sources */,
 				FF62CA338DA2EAA923059ADB8FE04046 /* DateExtension.swift in Sources */,
 				FEDC1EAFBF0FF116B6E95C792C334109 /* DependencyInjection.swift in Sources */,
@@ -980,11 +1140,14 @@
 				0890055FEDDCEB535FC6AEC6B65CF4D4 /* Endpoint.swift in Sources */,
 				3BA2A300D3CCE045794EE882C3F286A8 /* Error.swift in Sources */,
 				672928566FEB179A834ADE7444782EE3 /* ErrorHandler.swift in Sources */,
+				151431772678A1DF00B4C96D /* CustomStringConvertible.swift in Sources */,
 				7A89ED4985C9E4A3661B95A125F1E289 /* ErrorViewController.swift in Sources */,
 				89AE9892901270524A8F16C3F0D29851 /* ExternalViewModel.swift in Sources */,
 				16AF604EFAB8215B9F0879C271AE7A2D /* FormTextFieldType.swift in Sources */,
 				7EBB65AFF9F9BA4FAED72D7743238DE4 /* FormType.swift in Sources */,
 				96CC7A7804069FFF464C8AA093B5FAEF /* FormView.swift in Sources */,
+				151431592678A1DF00B4C96D /* CancellableThenable.swift in Sources */,
+				1514315E2678A1DF00B4C96D /* WrapperProtocols.swift in Sources */,
 				C77E3E56C2A648E6040B9D7AF2FB8ADA /* FormViewController.swift in Sources */,
 				B8DC96D10AA586C59A28906ACE96B1DE /* FormViewModel.swift in Sources */,
 				2E2099CC37880839F8051CA41C6A5A27 /* ImageName.swift in Sources */,
@@ -992,19 +1155,28 @@
 				E21E68D9150D801BD1C0388DAC20032C /* Klarna.swift in Sources */,
 				6F9388B3D8ABC7CEE372D7FD5A8A097C /* KlarnaService.swift in Sources */,
 				B250DAED2DECEEA6E43BC89AD8803E51 /* Logger.swift in Sources */,
+				1514316D2678A1DF00B4C96D /* RateLimitedDispatcherBase.swift in Sources */,
 				ED56E0B76F0664255AD0DEA5633E3A06 /* Mask.swift in Sources */,
+				151431792678A1DF00B4C96D /* Configuration.swift in Sources */,
+				1514316A2678A1DF00B4C96D /* Resolver.swift in Sources */,
+				151431682678A1DF00B4C96D /* Error.swift in Sources */,
+				151431632678A1DF00B4C96D /* Dispatcher.swift in Sources */,
 				A647544AE010B7FE4D18BE248E6E160F /* NetworkService.swift in Sources */,
 				5774C2481103E6FAD971E2F7D43BB699 /* OAuthViewController.swift in Sources */,
 				B1BFC088109B5A9F79B6AFDCBC93A2F7 /* OAuthViewModel.swift in Sources */,
+				151431602678A1DF00B4C96D /* SequenceWrappers.swift in Sources */,
 				CB7E8370E1475BF23A66444906441FEC /* Optional+Extensions.swift in Sources */,
 				187C16A25FE1C4808AA1F0F9C3DB97D0 /* OrderItem.swift in Sources */,
+				151431612678A1DF00B4C96D /* GuaranteeWrappers.swift in Sources */,
 				AB55A55A1107F23AEDC6190DC3ACCEE0 /* Parser.swift in Sources */,
 				16EAA7FA33F257010600B443C71C99B5 /* PaymentMethod.swift in Sources */,
 				F1DE20823F3783EA5653F958E1B88BB9 /* PaymentMethodComponent.swift in Sources */,
+				151431702678A1DF00B4C96D /* Queue.swift in Sources */,
 				BA342EA26A415A527777716BA55373DA /* PaymentMethodConfig.swift in Sources */,
 				098BDEE7A02BA66DC9E9CC3B3E388C46 /* PaymentMethodConfigService.swift in Sources */,
 				648DBB552D02C8E0FCC02FC2DD9AA7D0 /* PaymentMethodToken.swift in Sources */,
 				389CFA13E248D224FFD0AB098512884E /* PaymentMethodTokenizationRequest.swift in Sources */,
+				151431752678A1DF00B4C96D /* Promise.swift in Sources */,
 				590B2C32B8B5C8E97C66BC1A9A519BBE /* PaymentNetwork.swift in Sources */,
 				2188445239FC01DCD860BF843C114F9A /* PayPal.swift in Sources */,
 				BE898A82BF092378AA6476C6491288FE /* PayPalService.swift in Sources */,
@@ -1013,27 +1185,37 @@
 				6F4B395BB1387F692CBA164CEE2234CC /* PrimerAPI.swift in Sources */,
 				FA574C8F23D2537BCE422EBC7681E58D /* PrimerAPIClient.swift in Sources */,
 				3F28DE74B2F49EBD78669F6CF83C7216 /* PrimerButton.swift in Sources */,
+				151431782678A1DF00B4C96D /* Thenable.swift in Sources */,
+				151431692678A1DF00B4C96D /* after.swift in Sources */,
 				EE88EFD8527ABBD25F733DD7E448EBC8 /* PrimerContent.swift in Sources */,
 				D39ABD5195BCD984D385A957589314C7 /* PrimerDelegate.swift in Sources */,
 				1D6B7233D6C2F577017F5FCDD6400A8C /* PrimerInternalSessionFlow.swift in Sources */,
 				A60E122367DE517EDCBDE827DAA2F57C /* PrimerScrollView.swift in Sources */,
 				85060DAE3F9FF88FD603DC1C6A7A2B11 /* PrimerSDK-dummy.m in Sources */,
 				B4350DDF11F73597250A1BCC528420A1 /* PrimerSettings.swift in Sources */,
+				151431732678A1DF00B4C96D /* Catchable.swift in Sources */,
 				804B6D88A05E2B922F5765B3E97ABBBE /* PrimerTableViewCell.swift in Sources */,
 				C9973DF2E27D4180AD0D3B18903794C1 /* PrimerTextField.swift in Sources */,
+				151431652678A1DF00B4C96D /* Guarantee.swift in Sources */,
+				1514315B2678A1DF00B4C96D /* RecoverWrappers.swift in Sources */,
 				1ECC73BB4C0A4C15EF55CAF8A4B9E5F7 /* PrimerTheme.swift in Sources */,
+				1514316F2678A1DF00B4C96D /* StrictRateLimitedDispatcher.swift in Sources */,
 				DFD4AC1DB9D71DB2ACBDCC24AB6095A8 /* PrimerViewController.swift in Sources */,
 				2F1CB6D423DB09B982ED2203292A2076 /* PrimerViewExtensions.swift in Sources */,
 				C883F99C7CFB9A995908413B99D93463 /* ReloadDelegate.swift in Sources */,
+				1514315C2678A1DF00B4C96D /* CatchWrappers.swift in Sources */,
 				CE9CD49B7545DE6751CFB1EF00CC4705 /* RootViewController+Router.swift in Sources */,
 				4AD2FD69FB9093E6495ECECBB0AFF1C8 /* RootViewController.swift in Sources */,
 				E7C3CFD182DF2B88B397D4FEC932BA4E /* Route.swift in Sources */,
 				53201CEF7F016F1D0095DC02F0BB82CA /* ScannerView.swift in Sources */,
 				2F7D46820B2AB95810A9B34D168247E6 /* StringExtension.swift in Sources */,
 				0F6EFF3B57B0E3FABF8321F0C04626F7 /* SuccessMessage.swift in Sources */,
+				151431622678A1DF00B4C96D /* FinallyWrappers.swift in Sources */,
 				4B27E95E579C5674DE0B8EC74D820D50 /* SuccessViewController.swift in Sources */,
 				BBF30763480FBB6F5000398D19DB28EE /* TokenizationService.swift in Sources */,
 				0AA402CDA372EF554E7A70E23A6A5E5A /* TransitioningDelegate.swift in Sources */,
+				151431762678A1DF00B4C96D /* firstly.swift in Sources */,
+				151431672678A1DF00B4C96D /* race.swift in Sources */,
 				CB3AF15A48F3B31044F9AEFA80F04912 /* UIDeviceExtension.swift in Sources */,
 				A012BC83909882DDB259F54B141CF69B /* URLExtension.swift in Sources */,
 				D54295DA667D662FF5EDBCB2ECEB26B8 /* URLSessionStack.swift in Sources */,
@@ -1041,6 +1223,7 @@
 				A77B360A5A6472B85E1C85C89D284D88 /* UXMode.swift in Sources */,
 				2A38B1DEF016374B878FEFC3E12EFA93 /* Validation.swift in Sources */,
 				11253BDF4DF375C348E87DF5B34F018A /* VaultCheckoutView.swift in Sources */,
+				151431582678A1DF00B4C96D /* Cancellable.swift in Sources */,
 				53E1AFE672487F64D1E03D9348B302BC /* VaultCheckoutViewController+ReloadDelegate.swift in Sources */,
 				6767FA45D7125CB4BD583D3E8DE8B680 /* VaultCheckoutViewController.swift in Sources */,
 				88F203675CBB09F77B19A7DE2D964CDE /* VaultCheckoutViewModel.swift in Sources */,
@@ -1050,6 +1233,8 @@
 				CF77FF5930DBCF0E089637C2849B5A8A /* VaultPaymentMethodViewModel.swift in Sources */,
 				D5E96BB5935FB39F946A9AE4141F10C7 /* VaultService.swift in Sources */,
 				5739C85AE478EB333677BC710B293000 /* WebViewController.swift in Sources */,
+				1514316B2678A1DF00B4C96D /* hang.swift in Sources */,
+				151431712678A1DF00B4C96D /* ConcurrencyLimitedDispatcher.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
