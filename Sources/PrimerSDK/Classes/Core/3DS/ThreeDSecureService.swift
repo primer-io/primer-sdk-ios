@@ -142,7 +142,8 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
                                         inViewController: viewController)
             
         } catch {
-            fatalError(error.localizedDescription)
+            _ = ErrorHandler.shared.handle(error: error)
+            completion(.failure(error))
         }
     }
     
