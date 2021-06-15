@@ -1,6 +1,5 @@
 #if canImport(UIKit)
 
-import ThreeDS_SDK
 import UIKit
 
 // swiftlint:disable identifier_name
