@@ -10,6 +10,10 @@
 @testable import PrimerSDK
 
 class MockOAuthViewModel: OAuthViewModelProtocol {
+    
+    var generateOAuthURLThrows = false
+    
+    
     var urlSchemeIdentifier: String? { return "urlSchemeIdentifier" }
 
     var generateOAuthURLCalled = false
@@ -17,6 +21,11 @@ class MockOAuthViewModel: OAuthViewModelProtocol {
 
     func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void) {
         generateOAuthURLCalled = true
+        if (generateOAuthURLThrows) {
+            completion(.failure(PrimerError.payPalSessionFailed))
+        } else {
+            completion(.success("https://paypal.com/session"))
+        }
     }
 
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
