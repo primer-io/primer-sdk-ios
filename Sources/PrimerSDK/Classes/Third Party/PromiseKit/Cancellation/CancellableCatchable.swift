@@ -1,7 +1,7 @@
 import Dispatch
 
 /// Provides `catch` and `recover` to your object that conforms to `CancellableThenable`
-public protocol CancellableCatchMixin: CancellableThenable {
+internal protocol CancellableCatchMixin: CancellableThenable {
     /// Type of the delegate `catchable`
     associatedtype C: CatchMixin
 
@@ -9,7 +9,7 @@ public protocol CancellableCatchMixin: CancellableThenable {
     var catchable: C { get }
 }
 
-public extension CancellableCatchMixin {
+internal extension CancellableCatchMixin {
     /**
      The provided closure executes when this cancellable promise rejects.
      
@@ -67,9 +67,9 @@ public extension CancellableCatchMixin {
     }
 }
 
-public class CancelContextFinalizer {
+internal class CancelContextFinalizer {
     /// The CancelContext associated with this finalizer
-    public let cancelContext: CancelContext
+    internal let cancelContext: CancelContext
     
     init(cancel: CancelContext) {
         self.cancelContext = cancel
@@ -80,28 +80,28 @@ public class CancelContextFinalizer {
 
      - Parameter error: Specifies the cancellation error to use for the cancel operation, defaults to `PMKError.cancelled`
      */
-    public func cancel(with error: Error = PMKError.cancelled) {
+    internal func cancel(with error: Error = PMKError.cancelled) {
         cancelContext.cancel(with: error)
     }
     
     /**
      True if all members of the promise chain have been successfully cancelled, false otherwise.
      */
-    public var isCancelled: Bool {
+    internal var isCancelled: Bool {
         return cancelContext.isCancelled
     }
     
     /**
      True if `cancel` has been called on the CancelContext associated with this promise, false otherwise.  `cancelAttempted` will be true if `cancel` is called on any promise in the chain.
      */
-    public var cancelAttempted: Bool {
+    internal var cancelAttempted: Bool {
         return cancelContext.cancelAttempted
     }
     
     /**
      The cancellation error generated when the promise is cancelled, or `nil` if not cancelled.
      */
-    public var cancelledError: Error? {
+    internal var cancelledError: Error? {
         return cancelContext.cancelledError
     }
 }
@@ -109,7 +109,7 @@ public class CancelContextFinalizer {
 /**
  Cancellable finalizer returned from `catch`.  Use `finally` to specify a code block that executes when the promise chain resolves.
  */
-public class CancellableFinalizer: CancelContextFinalizer {
+internal class CancellableFinalizer: CancelContextFinalizer {
     let pmkFinalizer: PMKFinalizer
 
     init(_ pmkFinalizer: PMKFinalizer, cancel: CancelContext) {
@@ -119,13 +119,13 @@ public class CancellableFinalizer: CancelContextFinalizer {
     
     /// `finally` is the same as `ensure`, but it is not chainable
     @discardableResult
-    public func finally(on: Dispatcher = conf.D.return, _ body: @escaping () -> Void) -> CancelContext {
+    internal func finally(on: Dispatcher = conf.D.return, _ body: @escaping () -> Void) -> CancelContext {
         pmkFinalizer.finally(on: on, body)
         return cancelContext
     }
 }
 
-public class CancellableCascadingFinalizer: CancelContextFinalizer {
+internal class CancellableCascadingFinalizer: CancelContextFinalizer {
     let pmkCascadingFinalizer: PMKCascadingFinalizer
 
     init(_ pmkCascadingFinalizer: PMKCascadingFinalizer, cancel: CancelContext) {
@@ -148,7 +148,7 @@ public class CancellableCascadingFinalizer: CancelContextFinalizer {
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
     @discardableResult
-    public func `catch`(on: Dispatcher = conf.D.return, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(Error) -> Void) -> CancellableFinalizer {
+    internal func `catch`(on: Dispatcher = conf.D.return, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(Error) -> Void) -> CancellableFinalizer {
         return CancellableFinalizer(pmkCascadingFinalizer.catch(on: on, policy: policy, body), cancel: cancelContext)
     }
 
@@ -166,7 +166,7 @@ public class CancellableCascadingFinalizer: CancelContextFinalizer {
      - Note: Since this method handles only specific errors, supplying a `CatchPolicy` is unsupported. You can instead specify e.g. your cancellable error.
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
-    public func `catch`<E: Swift.Error>(only: E, on: Dispatcher = conf.D.return, _ body: @escaping(E) -> Void) -> CancellableCascadingFinalizer where E: Equatable {
+    internal func `catch`<E: Swift.Error>(only: E, on: Dispatcher = conf.D.return, _ body: @escaping(E) -> Void) -> CancellableCascadingFinalizer where E: Equatable {
         return CancellableCascadingFinalizer(pmkCascadingFinalizer.catch(only: only, on: on, body), cancel: cancelContext)
     }
 
@@ -183,7 +183,7 @@ public class CancellableCascadingFinalizer: CancelContextFinalizer {
      - Parameter execute: The handler to execute if this promise is rejected with the provided error type.
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
-    public func `catch`<E: Swift.Error>(only: E.Type, on: Dispatcher = conf.D.return, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) -> Void) -> CancellableCascadingFinalizer {
+    internal func `catch`<E: Swift.Error>(only: E.Type, on: Dispatcher = conf.D.return, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) -> Void) -> CancellableCascadingFinalizer {
         return CancellableCascadingFinalizer(pmkCascadingFinalizer.catch(only: only, on: on, policy: policy, body), cancel: cancelContext)
     }
     
@@ -192,14 +192,14 @@ public class CancellableCascadingFinalizer: CancelContextFinalizer {
      - Note: You should `catch`, but in situations where you know you don’t need a `catch`, `cauterize` makes your intentions clear.
      */
     @discardableResult
-    public func cauterize() -> CancellableFinalizer {
+    internal func cauterize() -> CancellableFinalizer {
         return self.catch(policy: .allErrors) {
             conf.logHandler(.cauterized($0))
         }
     }
 }
 
-public extension CancellableCatchMixin {
+internal extension CancellableCatchMixin {
     /**
      The provided closure executes when this cancellable promise rejects.
      
@@ -542,7 +542,7 @@ public extension CancellableCatchMixin {
     }
 }
 
-public extension CancellableCatchMixin where C.T == Void {
+internal extension CancellableCatchMixin where C.T == Void {
     /**
      The provided closure executes when this cancellable promise rejects.
      

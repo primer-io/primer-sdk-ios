@@ -1,7 +1,7 @@
 
 extension Promise: CustomStringConvertible {
     /// - Returns: A description of the state of this promise.
-    public var description: String {
+    internal var description: String {
         switch result {
         case nil:
             return "Promise(…\(T.self))"
@@ -15,7 +15,7 @@ extension Promise: CustomStringConvertible {
 
 extension Promise: CustomDebugStringConvertible {
     /// - Returns: A debug-friendly description of the state of this promise.
-    public var debugDescription: String {
+    internal var debugDescription: String {
         switch box.inspect() {
         case .pending(let handlers):
             return "Promise<\(T.self)>.pending(handlers: \(handlers.bodies.count))"

@@ -1,6 +1,6 @@
 import Dispatch
 
-public extension Thenable where T: Sequence {
+internal extension Thenable where T: Sequence {
     /**
      `Promise<[T]>` => `T` -> `U` => `Promise<[U]>`
      
@@ -98,14 +98,14 @@ public extension Thenable where T: Sequence {
     }
 }
 
-public extension Thenable where T: Collection {
+internal extension Thenable where T: Collection {
     func firstValue(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, where test: @escaping (T.Iterator.Element) -> Bool) -> Promise<T.Iterator.Element> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return firstValue(on: dispatcher, where: test)
     }
 }
 
-public extension Thenable where T: Sequence, T.Iterator.Element: Comparable {
+internal extension Thenable where T: Sequence, T.Iterator.Element: Comparable {
     /// - Returns: a promise fulfilled with the sorted values of this `Sequence`.
     func sortedValues(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil) -> Promise<[T.Iterator.Element]> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
@@ -113,7 +113,7 @@ public extension Thenable where T: Sequence, T.Iterator.Element: Comparable {
     }
 }
 
-public extension CancellableThenable where U.T: Sequence {
+internal extension CancellableThenable where U.T: Sequence {
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `V` => `CancellablePromise<[V]>`
 
@@ -243,14 +243,14 @@ public extension CancellableThenable where U.T: Sequence {
     }
 }
 
-public extension CancellableThenable where U.T: Collection {
+internal extension CancellableThenable where U.T: Collection {
     func firstValue(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, where test: @escaping (U.T.Iterator.Element) -> Bool) -> CancellablePromise<U.T.Iterator.Element> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return firstValue(on: dispatcher, where: test)
     }
 }
 
-public extension CancellableThenable where U.T: Sequence, U.T.Iterator.Element: Comparable {
+internal extension CancellableThenable where U.T: Sequence, U.T.Iterator.Element: Comparable {
     /// - Returns: a cancellable promise fulfilled with the sorted values of this `Sequence`.
     func sortedValues(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil) -> CancellablePromise<[U.T.Iterator.Element]> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)

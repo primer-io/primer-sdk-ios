@@ -12,10 +12,10 @@ import Dispatch
 // Associated types within protocols may not be generic, so there are many functions that can't be genericized
 // in this way. For example, anything of the form `func foo<U>(_ body: () -> U) -> Promise<U>` is unrepresentable.
 //
-// These protocols have to be public to make their contents accessible to users, but the protocols themselves
+// These protocols have to be internal to make their contents accessible to users, but the protocols themselves
 // should never appear in Xcode or in the documentation.
 
-public protocol _PMKSharedWrappers {
+internal protocol _PMKSharedWrappers {
     
     associatedtype T
     associatedtype BaseOfT
@@ -35,16 +35,16 @@ public protocol _PMKSharedWrappers {
 }
 
 extension Promise: _PMKSharedWrappers {
-    public typealias T = T
-    public typealias BaseOfT = Promise<T>
+    internal typealias T = T
+    internal typealias BaseOfT = Promise<T>
 }
 
 extension CancellablePromise: _PMKSharedWrappers {
-    public typealias T = T
-    public typealias BaseOfT = CancellablePromise<T>
+    internal typealias T = T
+    internal typealias BaseOfT = CancellablePromise<T>
 }
 
-public protocol _PMKSharedVoidWrappers {
+internal protocol _PMKSharedVoidWrappers {
     
     associatedtype BaseOfT
     
@@ -56,7 +56,7 @@ public protocol _PMKSharedVoidWrappers {
 extension Promise: _PMKSharedVoidWrappers where T == Void {}
 extension CancellablePromise: _PMKSharedVoidWrappers where C.T == Void {}
 
-public protocol _PMKCatchWrappers {
+internal protocol _PMKCatchWrappers {
     
     associatedtype Finalizer
     associatedtype CascadingFinalizer
@@ -71,7 +71,7 @@ extension PMKCascadingFinalizer: _PMKCatchWrappers {}
 extension CancellablePromise: _PMKCatchWrappers {}
 extension CancellableCascadingFinalizer: _PMKCatchWrappers {}
 
-public protocol _PMKFinallyWrappers {
+internal protocol _PMKFinallyWrappers {
     
     associatedtype FinallyReturn
     

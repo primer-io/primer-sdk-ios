@@ -1,6 +1,6 @@
 import Dispatch
 
-public extension _PMKCatchWrappers {
+internal extension _PMKCatchWrappers {
     
     /**
      The provided closure executes when this promise rejects.
