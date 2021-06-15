@@ -53,6 +53,7 @@
 		151431772678A1DF00B4C96D /* CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431532678A1DF00B4C96D /* CustomStringConvertible.swift */; };
 		151431782678A1DF00B4C96D /* Thenable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431542678A1DF00B4C96D /* Thenable.swift */; };
 		151431792678A1DF00B4C96D /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431552678A1DF00B4C96D /* Configuration.swift */; };
+		1514317B2678A52300B4C96D /* PrimerAPIClient+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514317A2678A52300B4C96D /* PrimerAPIClient+Promises.swift */; };
 		16AF604EFAB8215B9F0879C271AE7A2D /* FormTextFieldType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D364D798A53A76D482156C7E07703394 /* FormTextFieldType.swift */; };
 		16EAA7FA33F257010600B443C71C99B5 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F41D2762B2290B4EE76542889986A16 /* PaymentMethod.swift */; };
 		17CC0E100C8B9EF45824E087493F8CBB /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 522F77B4CB1E9CA3B31E3F74F1962B2B /* fr.lproj */; };
@@ -224,6 +225,7 @@
 		151431532678A1DF00B4C96D /* CustomStringConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomStringConvertible.swift; sourceTree = "<group>"; };
 		151431542678A1DF00B4C96D /* Thenable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Thenable.swift; sourceTree = "<group>"; };
 		151431552678A1DF00B4C96D /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		1514317A2678A52300B4C96D /* PrimerAPIClient+Promises.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrimerAPIClient+Promises.swift"; sourceTree = "<group>"; };
 		15939D76EEF467A182746C99C10F14B6 /* AlertController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		1841E53752535A5BB808AE11B6967728 /* PaymentNetwork.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentNetwork.swift; sourceTree = "<group>"; };
 		187BF6D0164EDAB4FF90BEC8F100DD60 /* ResourceBundle-PrimerResources-PrimerSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-PrimerResources-PrimerSDK-Info.plist"; sourceTree = "<group>"; };
@@ -853,6 +855,7 @@
 			children = (
 				B888AA00553724F7A290781B4738472C /* PrimerAPI.swift */,
 				F19FB93272F2BF0952CDDD8CE819AB7C /* PrimerAPIClient.swift */,
+				1514317A2678A52300B4C96D /* PrimerAPIClient+Promises.swift */,
 			);
 			path = Primer;
 			sourceTree = "<group>";
@@ -1222,6 +1225,7 @@
 				05BCA0F9A5794D4E55440A801BDDEA7E /* UserDefaultsExtension.swift in Sources */,
 				A77B360A5A6472B85E1C85C89D284D88 /* UXMode.swift in Sources */,
 				2A38B1DEF016374B878FEFC3E12EFA93 /* Validation.swift in Sources */,
+				1514317B2678A52300B4C96D /* PrimerAPIClient+Promises.swift in Sources */,
 				11253BDF4DF375C348E87DF5B34F018A /* VaultCheckoutView.swift in Sources */,
 				151431582678A1DF00B4C96D /* Cancellable.swift in Sources */,
 				53E1AFE672487F64D1E03D9348B302BC /* VaultCheckoutViewController+ReloadDelegate.swift in Sources */,
