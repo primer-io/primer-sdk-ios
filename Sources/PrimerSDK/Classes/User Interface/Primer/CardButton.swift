@@ -28,6 +28,7 @@ internal class CardButton: PrimerButton {
 
     func render(model: CardButtonViewModel?, showIcon: Bool = true) {
         guard let model = model else { return }
+        accessibilityIdentifier = "saved_payment_method_button"
 
         log(logLevel: .debug, message: "🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓: \(model)")
 
