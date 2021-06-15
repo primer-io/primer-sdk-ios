@@ -6,7 +6,6 @@
 //  Copyright (c) 2021 Evangelos Pittas. All rights reserved.
 //
 
-import PromiseKit
 import UIKit
 
 @UIApplicationMain
