@@ -75,7 +75,8 @@ enum Route {
         #if canImport(CardScan)
         case .cardScanner:  return 420
         #endif
-        case .vaultCheckout:  return 250
+        case .vaultCheckout:
+            return 600
         case .vaultPaymentMethods:  return 320
         case .oAuth:  return 400
         case .applePay:  return 400
