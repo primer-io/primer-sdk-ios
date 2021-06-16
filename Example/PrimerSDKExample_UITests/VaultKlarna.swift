@@ -30,17 +30,9 @@ class Klarna: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-
-    func testInitializeSDK() throws {
-        let initSDKButton = app.buttons["initialize_primer_sdk"]
-        initSDKButton.tap()
-        
-        let vaultKlarnaButton = app.buttons["vault_klarna_button"]
-        XCTAssert(vaultKlarnaButton.exists)
-    }
     
     func testInitKlarna() throws {
-        try testInitializeSDK()
+        try Base().testInitializeSDK()
 
         app.buttons["vault_klarna_button"].tap()
 
