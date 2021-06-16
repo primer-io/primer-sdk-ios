@@ -76,7 +76,7 @@ enum Route {
         case .cardScanner:  return 420
         #endif
         case .vaultCheckout:
-            return 600
+            return Primer.shared.flow.internalSessionFlow.vaulted ? 400 : 600
         case .vaultPaymentMethods:
             return 320
         case .oAuth:
