@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		15300DB9267A1211009A1B9C /* Vault.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15300DB8267A1211009A1B9C /* Vault.swift */; };
+		151B098C267A276100FB49B8 /* Vault.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15300DB8267A1211009A1B9C /* Vault.swift */; };
 		15300DBB267A1646009A1B9C /* VaultKlarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15300DBA267A1646009A1B9C /* VaultKlarna.swift */; };
 		1582B979260A3F2900C80BD7 /* OAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95B260A3F2900C80BD7 /* OAuthViewModel.swift */; };
 		1582B97A260A3F2900C80BD7 /* ConfirmMandateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95C260A3F2900C80BD7 /* ConfirmMandateViewModel.swift */; };
@@ -624,6 +624,7 @@
 				1582B9AD260A402E00C80BD7 /* Base.swift in Sources */,
 				1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */,
 				15300DBB267A1646009A1B9C /* VaultKlarna.swift in Sources */,
+				151B098C267A276100FB49B8 /* Vault.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
