@@ -21,18 +21,9 @@ class Vault: XCTestCase {
     override func tearDown() {
         super.tearDown()
     }
-    
-    func testInitializeSDK() throws {
-        let initSDKButton = app.buttons["initialize_primer_sdk"]
-        initSDKButton.tap()
-        
-        let vaultButton = app.buttons["vault_button"]
-        XCTAssert(vaultButton.exists)
-    }
-    
 
-    func testUniversalCheckout() throws {
-        try testInitializeSDK()
+    func testVault() throws {
+        try Base().testInitializeSDK()
         
         let vaultButton = app.buttons["vault_button"]
         vaultButton.tap()
