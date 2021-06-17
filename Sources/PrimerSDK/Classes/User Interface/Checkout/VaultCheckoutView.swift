@@ -163,7 +163,6 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
                               bundle: Bundle.primerResources,
                               value: "Choose payment method",
                               comment: "Choose payment method - Checkout Navigation Bar Title")
-        print(titleLabel.text)
     }
 
     private func configureAmountLabelView() {
