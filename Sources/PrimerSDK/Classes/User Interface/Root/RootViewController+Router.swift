@@ -99,17 +99,14 @@ fileprivate extension RootViewController {
     // FIXME: Can't all this logic be resolved with a UINavigationController?
     func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5) {
         let state: AppStateProtocol = DependencyContainer.resolve()
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if !settings.isFullScreenOnly {
+            heightConstraint?.constant = height
+        }
         
         UIView.animate(withDuration: 0.25, animations: { [weak self] in
-            guard let strongSelf = self else { return }
-
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            if settings.isFullScreenOnly {
-//                strongSelf.view.layoutIfNeeded()
-            } else {
-                strongSelf.heightConstraint?.constant = height
-                strongSelf.view.layoutIfNeeded()
-            }
+            self?.view.layoutIfNeeded()
         })
 
         // hide previous view
@@ -172,19 +169,17 @@ fileprivate extension RootViewController {
         if self.routes.last is ConfirmMandateViewController {
             (self.routes.last as! ConfirmMandateViewController).reload()
         }
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        if settings.isFullScreenOnly {
+            heightConstraint.setFullScreen()
+        } else {
+            heightConstraint?.constant = heights.last ?? 400
+        }
 
         // animate to previous height
-        UIView.animate(withDuration: 0.25, animations: {[weak self] in
-            guard let strongSelf = self else { return }
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            if settings.isFullScreenOnly {
-                strongSelf.heightConstraint.setFullScreen()
-                strongSelf.view.layoutIfNeeded()
-            } else {
-                strongSelf.heightConstraint?.constant = self?.heights.last ?? 400
-                strongSelf.view.layoutIfNeeded()
-            }
+        UIView.animate(withDuration: 0.25, animations: { [weak self] in
+            self?.view.layoutIfNeeded()
         })
 
     }
