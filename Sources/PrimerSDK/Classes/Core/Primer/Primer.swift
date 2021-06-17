@@ -210,14 +210,14 @@ public class Primer {
             return completion(PrimerError.vaultFetchFailed)
         }
         
-        let service = ThreeDSecureService()
+        let service = NetceteraThreeDSService()
         service.initializeSDK { (initResult) in
             switch initResult {
             case .success:
                 service.verifyWarnings { (verifyResult) in
                     switch verifyResult {
                     case .success:
-                        service.netceteraAuth(paymentMethod: paymentMethod, protocolVersion: .v1) { (authResult) in
+                        service.sdkAuth(paymentMethod: paymentMethod, protocolVersion: .v1) { (authResult) in
                             switch authResult {
                             case .success(let transaction):
                                 let threeDSecureAuthData = try! transaction.buildThreeDSecureAuthData()
@@ -227,25 +227,27 @@ public class Primer {
                                 req.device = threeDSecureAuthData
                                 req.amount = 1000
                                 
-                                service.threeDSecureBeginAuthentication(paymentMethodToken: paymentMethod,
-                                                                               threeDSecureBeginAuthRequest: req) { (res, err) in
-                                    if let err = err {
-                                        print(err)
+                                service.beginRemoteAuth(paymentMethodToken: paymentMethod,
+                                                                               threeDSecureBeginAuthRequest: req) { (result) in
+                                    switch result {
+                                    case .failure(let err):
                                         completion(err)
-                                    } else if let val = res?.authentication as? ThreeDS.MethodAPIResponse {
-                                        print(val)
-                                    } else if let val = res?.authentication as? ThreeDS.MethodAPIResponse {
+                                    case .success(let res):
+                                        guard let authentication = res.authentication as? ThreeDS.Authentication else {
+                                            let err = PrimerError.generic
+                                            completion(err)
+                                            return
+                                        }
+                                        
                                         let rvc = (UIApplication.shared.delegate as? UIApplicationDelegate)?.window??.rootViewController
                                         
                                         rvc?.dismiss(animated: true, completion: {
-                                            service.performChallenge(on: transaction, with: val, presentOn: rvc!, completion: { result in
+                                            service.performChallenge(on: transaction, with: authentication, presentOn: rvc!, completion: { result in
                                                 switch result {
                                                 case .success(let netceteraAuthCompletion):
-                                                    let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-
-                                                    api.threeDSecurePostAuthentication(clientToken: clientToken, threeDSTokenId: paymentMethod.token!) { (result) in
+                                                    service.continueRemoteAuth(threeDSTokenId: paymentMethod.token!) { result in
                                                         switch result {
-                                                        case .success(let data):
+                                                        case .success:
                                                             completion(nil)
                                                         case .failure(let err):
                                                             completion(err)
@@ -257,47 +259,6 @@ public class Primer {
                                                 }
                                             })
                                         })
-//                                                        let window = UIWindow(frame: UIScreen.main.bounds)
-//                                                        window.rootViewController = ClearViewController()
-//                                                        window.backgroundColor = UIColor.clear
-//                                                        window.windowLevel = UIWindow.Level.alert
-                                        
-                                        
-                                        
-                                    } else if let val = res?.authentication as? ThreeDS.BrowserV2ChallengeAPIResponse {
-                                        print(val)
-                                    } else if let val = res?.authentication as? ThreeDS.AppV2ChallengeAPIResponse {
-                                        print(val)
-                                    } else if let val = res?.authentication as? ThreeDS.BrowserV1ChallengeAPIResponse {
-                                        print(val)
-                                    } else if let val = res?.authentication as? ThreeDS.DeclinedAPIResponse {
-                                        print(val)
-                                    } else if let val = res?.authentication as? ThreeDS.Authentication {
-                                        print(val)
-                                        let rvc = (UIApplication.shared.delegate as? UIApplicationDelegate)?.window??.rootViewController
-                                        
-                                        rvc?.dismiss(animated: true, completion: {
-                                            service.performChallenge(on: transaction, with: val, presentOn: rvc!, completion: { result in
-                                                switch result {
-                                                case .success(let netceteraAuthCompletion):
-                                                    let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-
-                                                    api.threeDSecurePostAuthentication(clientToken: clientToken, threeDSTokenId: paymentMethod.token!) { (result) in
-                                                        switch result {
-                                                        case .success(let data):
-                                                            completion(nil)
-                                                        case .failure(let err):
-                                                            completion(err)
-                                                        }
-                                                    }
-                                                    
-                                                case .failure(let err):
-                                                    completion(err)
-                                                }
-                                            })
-                                        })
-                                    } else {
-
                                     }
                                 }
                             case .failure(let err):

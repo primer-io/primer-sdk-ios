@@ -10,13 +10,19 @@
 import Foundation
 import ThreeDS_SDK
 
-protocol ThreeDSecureServiceProtocol {
-    func threeDSecureBeginAuthentication(paymentMethodToken: PaymentMethodToken,
-                                         threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
-                                         completion: @escaping (ThreeDS.BeginAuthResponse?, Error?) -> Void)
+protocol ThreeDSServiceProtocol {
+    func initializeSDK(completion: @escaping (Result<Void, Error>) -> Void)
+    func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
+                         threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
+                         completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
+    func sdkAuth(paymentMethod: PaymentMethodToken,
+                 protocolVersion: ThreeDS.ProtocolVersion,
+                 completion: @escaping (Result<Transaction, Error>) -> Void)
+    func performChallenge(on transaction: Transaction, with threeDSecureAuthResponse: ThreeDSAuthenticationProtocol, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.NetceteraThreeDSCompletion, Error>) -> Void)
+    func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void)
 }
 
-class ThreeDSecureService: ThreeDSecureServiceProtocol {
+class NetceteraThreeDSService: ThreeDSServiceProtocol {
     
     @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var api: PrimerAPIClientProtocol
@@ -36,7 +42,7 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
             try configBuilder.license(key: Primer.netceteraLicenseKey)
             
             let supportedSchemeIds: [String] = ["A999999999"]
-                         
+            
             let scheme = Scheme(name: "scheme_name")
             scheme.ids = supportedSchemeIds
             scheme.encryptionKeyValue = Certificates.cer1
@@ -44,7 +50,7 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
             scheme.logoImageName = "visa"
             
             try configBuilder.add(scheme)
-             
+            
             let configParameters = configBuilder.configParameters()
             
             try threeDS2Service.initialize(configParameters,
@@ -83,7 +89,7 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
         }
     }
     
-    func netceteraAuth(paymentMethod: PaymentMethodToken, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void) {
+    func sdkAuth(paymentMethod: PaymentMethodToken, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void) {
         do {
             var directoryServerId: String
             
@@ -103,7 +109,7 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
             default:
                 directoryServerId = "A999999999"
             }
-
+            
             transaction = try threeDS2Service.createTransaction(directoryServerId: directoryServerId,
                                                                 messageVersion: protocolVersion.rawValue)
             completion(.success(transaction!))
@@ -147,26 +153,40 @@ class ThreeDSecureService: ThreeDSecureServiceProtocol {
         }
     }
     
-    func threeDSecureBeginAuthentication(paymentMethodToken: PaymentMethodToken,
-                                         threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
-                                         completion: @escaping (ThreeDS.BeginAuthResponse?, Error?) -> Void) {
+    func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
+                         threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
+                         completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         guard let clientToken = state.decodedClientToken else {
-            return completion(nil, PrimerError.vaultFetchFailed)
+            return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
         api.threeDSecureBeginAuthentication(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
-            case .failure:
-                completion(nil, PrimerError.clientTokenNull)
+            case .failure(let err):
+                completion(.failure(err))
             case .success(let res):
-                print(res)
-                completion(res, nil)
+                completion(.success(res))
             }
         })
     }
+    
+    func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
+        guard let clientToken = state.decodedClientToken else {
+            return completion(.failure(PrimerError.vaultFetchFailed))
+        }
+        
+        api.threeDSecurePostAuthentication(clientToken: clientToken, threeDSTokenId: threeDSTokenId) { result in
+            switch result {
+            case .failure(let err):
+                completion(.failure(err))
+            case .success(let res):
+                completion(.success(res))
+            }
+        }
+    }
 }
 
-extension ThreeDSecureService: ChallengeStatusReceiver {
+extension NetceteraThreeDSService: ChallengeStatusReceiver {
     func completed(completionEvent: CompletionEvent) {
         let sdkTransactionId = completionEvent.getSDKTransactionID()
         let authenticationStatus = ThreeDS.AuthenticationStatus(rawValue: completionEvent.getTransactionStatus())
