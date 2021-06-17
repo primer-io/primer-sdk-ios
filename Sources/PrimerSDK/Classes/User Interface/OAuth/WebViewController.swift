@@ -57,6 +57,29 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         log(logLevel: .info, message: "🚀 \(navigationAction.request.url?.host ?? "n/a")")
         
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if var urlStr = navigationAction.request.url?.absoluteString,
+           urlStr.hasPrefix("bankid://") == true {
+            // This is a redirect to the BankId app
+            
+            
+            if urlStr.contains("redirect=null"), let urlScheme = settings.urlScheme {
+                // Klarna's redirect param should contain our URL scheme, replace null with urlScheme if we have a urlScheme if present.
+                urlStr = urlStr.replacingOccurrences(of: "redirect=null", with: "redirect=\(urlScheme)")
+            }
+            
+            // The bankid redirection URL looks like the one below
+            /// bankid:///?autostarttoken=197701116050-fa74-49cf-b98c-bfe651f9a7c6&redirect=null
+            if UIApplication.shared.canOpenURL(URL(string: urlStr)!) {
+                decisionHandler(.allow)
+                UIApplication.shared.open(URL(string: urlStr)!, options: [:]) { (isFinished) in
+
+                }
+                return
+            }
+        }
+        
         let allowedHosts: [String] = [
             "primer.io",
 //            "api.playground.klarna.com",
