@@ -34,7 +34,7 @@ class MerchantCheckoutViewController: UIViewController {
     )
     
     let applePaySettings = PrimerSettings(
-        merchantIdentifier: "merchant.checkout.team",
+        merchantIdentifier: "merchant.primer.dev.evangelos",
         currency: .EUR,
         countryCode: .fr,
         businessDetails: BusinessDetails(
@@ -48,7 +48,11 @@ class MerchantCheckoutViewController: UIViewController {
                 postalCode: "75001"
             )
         ),
-        orderItems: [try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 1, isPending: true)]
+        orderItems: [
+            try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
+            try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
+            try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
+        ]
     )
 
     let generalSettings = PrimerSettings(
@@ -79,7 +83,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        Primer.shared.configure(settings: generalSettings)
+        Primer.shared.configure(settings: applePaySettings)
         
         let theme = generatePrimerTheme()
         Primer.shared.configure(theme: theme)
