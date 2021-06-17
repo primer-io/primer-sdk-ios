@@ -74,22 +74,22 @@ class NetceteraSDK: ThreeDSSDKProtocol {
         }
     }
     
-    func sdkAuth(paymentMethod: PaymentMethodToken, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void) {
+    func sdkAuth(cardNetwork: CardNetwork, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void) {
         do {
             var directoryServerId: String
             
-            switch paymentMethod.paymentInstrumentData?.network?.lowercased() {
-            case "visa":
+            switch cardNetwork {
+            case .visa:
                 directoryServerId = ThreeDS.directoryServerIdFor(scheme: .visa())
-            case "mastercard":
+            case .masterCard:
                 directoryServerId = ThreeDS.directoryServerIdFor(scheme: .mastercard())
-            case "diners":
+            case .diners:
                 directoryServerId = ThreeDS.directoryServerIdFor(scheme: .diners())
-            case "jcb":
+            case .jcb:
                 directoryServerId = ThreeDS.directoryServerIdFor(scheme: .jcb())
-            case "amex":
+            case .amex:
                 directoryServerId = ThreeDS.directoryServerIdFor(scheme: .amex())
-            case "union":
+            case .chinaUnionPay:
                 directoryServerId = ThreeDS.directoryServerIdFor(scheme: .union())
             default:
                 directoryServerId = "A999999999"
