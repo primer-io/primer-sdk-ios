@@ -12,9 +12,6 @@ import ThreeDS_SDK
 
 class NetceteraSDK: ThreeDSSDKProtocol {
     
-    @Dependency private(set) var state: AppStateProtocol
-    @Dependency private(set) var api: PrimerAPIClientProtocol
-    
     let threeDS2Service: ThreeDS_SDK.ThreeDS2Service = ThreeDS2ServiceSDK(bundle: Bundle.primerFramework)
     private var transaction: Transaction?
     private var netceteraCompletion: ((_ netceteraThreeDSCompletion: ThreeDS.ThreeDSSDKAuthCompletion?, _ err: Error?) -> Void)?
@@ -141,37 +138,6 @@ class NetceteraSDK: ThreeDSSDKProtocol {
         }
     }
     
-    func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
-                         threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
-                         completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
-        guard let clientToken = state.decodedClientToken else {
-            return completion(.failure(PrimerError.vaultFetchFailed))
-        }
-        
-        api.threeDSecureBeginAuthentication(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
-            switch result {
-            case .failure(let err):
-                completion(.failure(err))
-            case .success(let res):
-                completion(.success(res))
-            }
-        })
-    }
-    
-    func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
-        guard let clientToken = state.decodedClientToken else {
-            return completion(.failure(PrimerError.vaultFetchFailed))
-        }
-        
-        api.threeDSecurePostAuthentication(clientToken: clientToken, threeDSTokenId: threeDSTokenId) { result in
-            switch result {
-            case .failure(let err):
-                completion(.failure(err))
-            case .success(let res):
-                completion(.success(res))
-            }
-        }
-    }
 }
 
 extension NetceteraSDK: ChallengeStatusReceiver {

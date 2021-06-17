@@ -26,9 +26,6 @@ protocol ThreeDSServiceProtocol {
 }
 
 class ThreeDSService: ThreeDSServiceProtocol {
-    
-    @Dependency private(set) var state: AppStateProtocol
-    @Dependency private(set) var api: PrimerAPIClientProtocol
         
     deinit {
         print("ThreeDSecureServiceProtocol deinit")
@@ -48,9 +45,13 @@ class ThreeDSService: ThreeDSServiceProtocol {
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
                          threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
                          completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         
         api.threeDSecureBeginAuthentication(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
@@ -74,10 +75,13 @@ class ThreeDSService: ThreeDSServiceProtocol {
     }
     
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.threeDSecurePostAuthentication(clientToken: clientToken, threeDSTokenId: threeDSTokenId) { result in
             switch result {
             case .failure(let err):
