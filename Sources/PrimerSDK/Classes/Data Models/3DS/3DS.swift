@@ -138,7 +138,7 @@ public struct ThreeDS {
         let customerAccount: ThreeDS.CustomerAccount?
     }
     
-    internal struct NetceteraThreeDSCompletion {
+    internal struct ThreeDSSDKAuthCompletion {
         let sdkTransactionId: String
         let transactionStatus: ThreeDS.AuthenticationStatus
     }

@@ -10,26 +10,14 @@
 import Foundation
 import ThreeDS_SDK
 
-protocol ThreeDSServiceProtocol {
-    func initializeSDK(completion: @escaping (Result<Void, Error>) -> Void)
-    func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
-                         threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
-                         completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
-    func sdkAuth(paymentMethod: PaymentMethodToken,
-                 protocolVersion: ThreeDS.ProtocolVersion,
-                 completion: @escaping (Result<Transaction, Error>) -> Void)
-    func performChallenge(on transaction: Transaction, with threeDSecureAuthResponse: ThreeDSAuthenticationProtocol, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.NetceteraThreeDSCompletion, Error>) -> Void)
-    func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void)
-}
-
-class NetceteraThreeDSService: ThreeDSServiceProtocol {
+class NetceteraSDK: ThreeDSSDKProtocol {
     
     @Dependency private(set) var state: AppStateProtocol
     @Dependency private(set) var api: PrimerAPIClientProtocol
     
     let threeDS2Service: ThreeDS_SDK.ThreeDS2Service = ThreeDS2ServiceSDK(bundle: Bundle.primerFramework)
     private var transaction: Transaction?
-    private var netceteraCompletion: ((_ netceteraThreeDSCompletion: ThreeDS.NetceteraThreeDSCompletion?, _ err: Error?) -> Void)?
+    private var netceteraCompletion: ((_ netceteraThreeDSCompletion: ThreeDS.ThreeDSSDKAuthCompletion?, _ err: Error?) -> Void)?
     
     deinit {
         print("ThreeDSecureServiceProtocol deinit")
@@ -56,13 +44,13 @@ class NetceteraThreeDSService: ThreeDSServiceProtocol {
             try threeDS2Service.initialize(configParameters,
                                            locale: nil,
                                            uiCustomization: nil)
-            completion(.success(()))
+            return verifyWarnings(completion: completion)
         } catch {
             completion(.failure(error))
         }
     }
     
-    func verifyWarnings(completion: @escaping (Result<Void, Error>) -> Void) {
+    private func verifyWarnings(completion: @escaping (Result<Void, Error>) -> Void) {
         var sdkWarnings: [Warning] = []
         do {
             sdkWarnings = try threeDS2Service.getWarnings()
@@ -120,7 +108,7 @@ class NetceteraThreeDSService: ThreeDSServiceProtocol {
         
     }
     
-    func performChallenge(on transaction: Transaction, with threeDSecureAuthResponse: ThreeDSAuthenticationProtocol, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.NetceteraThreeDSCompletion, Error>) -> Void) {
+    func performChallenge(on transaction: Transaction, with threeDSecureAuthResponse: ThreeDSAuthenticationProtocol, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.ThreeDSSDKAuthCompletion, Error>) -> Void) {
         self.transaction = transaction
         
         let challengeParameters = ChallengeParameters(
@@ -186,11 +174,11 @@ class NetceteraThreeDSService: ThreeDSServiceProtocol {
     }
 }
 
-extension NetceteraThreeDSService: ChallengeStatusReceiver {
+extension NetceteraSDK: ChallengeStatusReceiver {
     func completed(completionEvent: CompletionEvent) {
         let sdkTransactionId = completionEvent.getSDKTransactionID()
         let authenticationStatus = ThreeDS.AuthenticationStatus(rawValue: completionEvent.getTransactionStatus())
-        let netceteraThreeDSCompletion = ThreeDS.NetceteraThreeDSCompletion(sdkTransactionId: sdkTransactionId, transactionStatus: authenticationStatus)
+        let netceteraThreeDSCompletion = ThreeDS.ThreeDSSDKAuthCompletion(sdkTransactionId: sdkTransactionId, transactionStatus: authenticationStatus)
         netceteraCompletion?(netceteraThreeDSCompletion, nil)
     }
     

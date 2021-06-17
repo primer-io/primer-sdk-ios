@@ -210,59 +210,53 @@ public class Primer {
             return completion(PrimerError.vaultFetchFailed)
         }
         
-        let service = NetceteraThreeDSService()
-        service.initializeSDK { (initResult) in
+        let sdk: ThreeDSSDKProtocol = NetceteraSDK()
+        let service: ThreeDSServiceProtocol = ThreeDSService()
+        service.initializeSDK(sdk) { (initResult) in
             switch initResult {
             case .success:
-                service.verifyWarnings { (verifyResult) in
-                    switch verifyResult {
-                    case .success:
-                        service.sdkAuth(paymentMethod: paymentMethod, protocolVersion: .v1) { (authResult) in
-                            switch authResult {
-                            case .success(let transaction):
-                                let threeDSecureAuthData = try! transaction.buildThreeDSecureAuthData()
-                                print("3DS SDK Data: \(threeDSecureAuthData)")
+                service.sdkAuth(sdk: sdk, paymentMethod: paymentMethod, protocolVersion: .v1) { (authResult) in
+                    switch authResult {
+                    case .success(let transaction):
+                        let threeDSecureAuthData = try! transaction.buildThreeDSecureAuthData()
+                        print("3DS SDK Data: \(threeDSecureAuthData)")
+                        
+                        var req = ThreeDS.BeginAuthRequest.demoAuthRequest
+                        req.device = threeDSecureAuthData
+                        req.amount = 1000
+                        
+                        service.beginRemoteAuth(paymentMethodToken: paymentMethod,
+                                                                       threeDSecureBeginAuthRequest: req) { (result) in
+                            switch result {
+                            case .failure(let err):
+                                completion(err)
+                            case .success(let res):
+                                guard let authentication = res.authentication as? ThreeDS.Authentication else {
+                                    let err = PrimerError.generic
+                                    completion(err)
+                                    return
+                                }
                                 
-                                var req = ThreeDS.BeginAuthRequest.demoAuthRequest
-                                req.device = threeDSecureAuthData
-                                req.amount = 1000
+                                let rvc = (UIApplication.shared.delegate as? UIApplicationDelegate)?.window??.rootViewController
                                 
-                                service.beginRemoteAuth(paymentMethodToken: paymentMethod,
-                                                                               threeDSecureBeginAuthRequest: req) { (result) in
-                                    switch result {
-                                    case .failure(let err):
-                                        completion(err)
-                                    case .success(let res):
-                                        guard let authentication = res.authentication as? ThreeDS.Authentication else {
-                                            let err = PrimerError.generic
-                                            completion(err)
-                                            return
-                                        }
-                                        
-                                        let rvc = (UIApplication.shared.delegate as? UIApplicationDelegate)?.window??.rootViewController
-                                        
-                                        rvc?.dismiss(animated: true, completion: {
-                                            service.performChallenge(on: transaction, with: authentication, presentOn: rvc!, completion: { result in
+                                rvc?.dismiss(animated: true, completion: {
+                                    service.performChallenge(with: sdk, on: transaction, with: authentication, presentOn: rvc!) { result in
+                                        switch result {
+                                        case .success(let netceteraAuthCompletion):
+                                            service.continueRemoteAuth(threeDSTokenId: paymentMethod.token!) { result in
                                                 switch result {
-                                                case .success(let netceteraAuthCompletion):
-                                                    service.continueRemoteAuth(threeDSTokenId: paymentMethod.token!) { result in
-                                                        switch result {
-                                                        case .success:
-                                                            completion(nil)
-                                                        case .failure(let err):
-                                                            completion(err)
-                                                        }
-                                                    }
-                                                    
+                                                case .success:
+                                                    completion(nil)
                                                 case .failure(let err):
                                                     completion(err)
                                                 }
-                                            })
-                                        })
+                                            }
+
+                                        case .failure(let err):
+                                            completion(err)
+                                        }
                                     }
-                                }
-                            case .failure(let err):
-                                completion(err)
+                                })
                             }
                         }
                     case .failure(let err):
