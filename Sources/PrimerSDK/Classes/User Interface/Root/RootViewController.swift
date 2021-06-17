@@ -86,11 +86,12 @@ internal class RootViewController: PrimerViewController {
             heightConstraint?.isActive = true
             self.modalPresentationStyle = .custom
             self.transitioningDelegate = transitionDelegate
-            let panGesture = UIPanGestureRecognizer(
+            let swipeGesture = UISwipeGestureRecognizer(
                 target: self,
-                action: #selector(panGestureRecognizerAction)
+                action: #selector(swipeGestureRecognizerAction)
             )
-            mainView.addGestureRecognizer(panGesture)
+            swipeGesture.direction = .down
+            mainView.addGestureRecognizer(swipeGesture)
         }
 
         bindFirstFlowView()
@@ -202,33 +203,8 @@ internal class RootViewController: PrimerViewController {
     }
 
     @objc
-    private func panGestureRecognizerAction(sender: UIPanGestureRecognizer) {
-        let translation = sender.translation(in: view)
-
-        heightConstraint?.constant = currentHeight - translation.y
-
-        if currentHeight - translation.y < 220 {
-            UIView.animate(withDuration: 0.3) { [weak self] in
-                guard let strongSelf = self else { return }
-                strongSelf.currentHeight = 280
-                strongSelf.heightConstraint?.constant = 280
-                strongSelf.view.layoutIfNeeded()
-            }
-            return
-        }
-
-        if sender.state == .ended {
-            if currentHeight - translation.y > UIScreen.main.bounds.height - 80 {
-                UIView.animate(withDuration: 0.3) { [weak self] in
-                    guard let strongSelf = self else { return }
-                    strongSelf.currentHeight = UIScreen.main.bounds.height - 80
-                    strongSelf.heightConstraint.setFullScreen()
-                    strongSelf.view.layoutIfNeeded()
-                }
-            } else {
-                currentHeight = heightConstraint?.constant ?? 400
-            }
-        }
+    private func swipeGestureRecognizerAction(sender: UISwipeGestureRecognizer) {
+        Primer.shared.dismiss()
     }
 }
 
