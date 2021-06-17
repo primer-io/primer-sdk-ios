@@ -109,6 +109,20 @@ internal class RootViewController: PrimerViewController {
             settings.onCheckoutDismiss()
         }
     }
+    
+    func modifyBottomSheetHeight(to height: CGFloat, animated: Bool) {
+        heightConstraint?.constant = height
+        
+        if animated {
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutIfNeeded()
+            } completion: { isFinished in
+                // ...
+            }
+        } else {
+            view.layoutIfNeeded()
+        }
+    }
 
     private func bindFirstFlowView() {
         let state: AppStateProtocol = DependencyContainer.resolve()
