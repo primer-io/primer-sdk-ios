@@ -52,7 +52,7 @@
 		6F87D65F011D067DF2746395FB67953F /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 06649FFF1F556B1D1C3AD25D995441EA /* Icons.xcassets */; };
 		704533DD512D9CAA3256BE23157E2DFF /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7136D93B09E3F2ECD06B25C8ABBA3B /* URLExtension.swift */; };
 		772048A8987B1B5837F74CFEABB58AD2 /* PaymentMethodConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62E66D8B40462B193986BB8C1C081EC /* PaymentMethodConfig.swift */; };
-		780765EC52E39601A49E6935B4BF444E /* ThreeDSecureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00C3A36D1F9D31EBE3C40CC5E868DAE /* ThreeDSecureService.swift */; };
+		780765EC52E39601A49E6935B4BF444E /* NetceteraThreeDSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00C3A36D1F9D31EBE3C40CC5E868DAE /* NetceteraThreeDSService.swift */; };
 		786B0022338936F5217D787BADD69292 /* DirectDebitMandate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A371B74AA250A84E47A126C08D2EECE3 /* DirectDebitMandate.swift */; };
 		78BC1D5D2B624605F356409195AD378A /* KlarnaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4878E2885452AF18ADB530586BD04A41 /* KlarnaService.swift */; };
 		7A500A67C8360E2955D73860CB952C99 /* PrimerViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FD3B4CF5B6D1C262192C9CC0EEF643 /* PrimerViewExtensions.swift */; };
@@ -271,7 +271,7 @@
 		DD27EBB1060366FD2965F54D150DBB16 /* CardScannerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardScannerViewController.swift; sourceTree = "<group>"; };
 		DF2953507578C0689D4B51B017652876 /* DirectDebitService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DirectDebitService.swift; sourceTree = "<group>"; };
 		DF6E4F8E7C26A7BBEC17AAD4042A317D /* Pods-PrimerSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		E00C3A36D1F9D31EBE3C40CC5E868DAE /* ThreeDSecureService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThreeDSecureService.swift; sourceTree = "<group>"; };
+		E00C3A36D1F9D31EBE3C40CC5E868DAE /* NetceteraThreeDSService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetceteraThreeDSService.swift; sourceTree = "<group>"; };
 		E1B945985145643C12B1E91600B680DE /* Pods-PrimerSDK_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrimerSDK_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
 		E62E66D8B40462B193986BB8C1C081EC /* PaymentMethodConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfig.swift; sourceTree = "<group>"; };
 		E884507DF2B84FA8A2E8AD8289881542 /* Pods-PrimerSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -709,7 +709,7 @@
 		C8A434A87877153B46F8D1C82179DE1A /* 3DS */ = {
 			isa = PBXGroup;
 			children = (
-				E00C3A36D1F9D31EBE3C40CC5E868DAE /* ThreeDSecureService.swift */,
+				E00C3A36D1F9D31EBE3C40CC5E868DAE /* NetceteraThreeDSService.swift */,
 				15057D4C267387EE0030BDF0 /* Netcetera+Helpers.swift */,
 			);
 			path = 3DS;
@@ -1084,7 +1084,7 @@
 				3014C5E97D4189CC8679C768DEF5ED50 /* StringExtension.swift in Sources */,
 				E61FF75DC284167850AFBA5A4DE82F71 /* SuccessMessage.swift in Sources */,
 				8F5329C14B18F7A286F2E831BC35BDDA /* SuccessViewController.swift in Sources */,
-				780765EC52E39601A49E6935B4BF444E /* ThreeDSecureService.swift in Sources */,
+				780765EC52E39601A49E6935B4BF444E /* NetceteraThreeDSService.swift in Sources */,
 				B0A98EFC6ED70D1C58AA0D06D605C269 /* TokenizationService.swift in Sources */,
 				6032BA15CDA4F1094194BA8052D90641 /* TransitioningDelegate.swift in Sources */,
 				B715DC006698DF5D2D0BF0604EEF6748 /* UIDeviceExtension.swift in Sources */,
