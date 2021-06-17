@@ -18,6 +18,8 @@
 		0C559698500D2BBB6F12DAACB7A9FD68 /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579E4E9DD325C80360486F58365A3E03 /* Optional+Extensions.swift */; };
 		13FEE7C1727C4724BADFE735435B3638 /* PrimerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A721447FED40ABD11DBB611C72F074F /* PrimerDelegate.swift */; };
 		15057D4D267387EE0030BDF0 /* Netcetera+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15057D4C267387EE0030BDF0 /* Netcetera+Helpers.swift */; };
+		151B09E1267B223A00FB49B8 /* ThreeDSSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151B09E0267B223A00FB49B8 /* ThreeDSSDK.swift */; };
+		151B09E3267B22A700FB49B8 /* ThreeDSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151B09E2267B22A700FB49B8 /* ThreeDSService.swift */; };
 		15F961667369D592B466B491AB42B391 /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3791EAF33257A11A52C4A76DD40558DB /* Validation.swift */; };
 		1C32CCD8AA8CFC78DEAFA852EEEE0972 /* PrimerInternalSessionFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CABD6B459AE78A50B2D1BFD67ECCED8 /* PrimerInternalSessionFlow.swift */; };
 		1CE27B575D294D7AB06954515C124B7F /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF5C662AA722D9AF6FE985E7D49E98BF /* PaymentMethod.swift */; };
@@ -52,7 +54,7 @@
 		6F87D65F011D067DF2746395FB67953F /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 06649FFF1F556B1D1C3AD25D995441EA /* Icons.xcassets */; };
 		704533DD512D9CAA3256BE23157E2DFF /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7136D93B09E3F2ECD06B25C8ABBA3B /* URLExtension.swift */; };
 		772048A8987B1B5837F74CFEABB58AD2 /* PaymentMethodConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62E66D8B40462B193986BB8C1C081EC /* PaymentMethodConfig.swift */; };
-		780765EC52E39601A49E6935B4BF444E /* NetceteraThreeDSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00C3A36D1F9D31EBE3C40CC5E868DAE /* NetceteraThreeDSService.swift */; };
+		780765EC52E39601A49E6935B4BF444E /* NetceteraSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00C3A36D1F9D31EBE3C40CC5E868DAE /* NetceteraSDK.swift */; };
 		786B0022338936F5217D787BADD69292 /* DirectDebitMandate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A371B74AA250A84E47A126C08D2EECE3 /* DirectDebitMandate.swift */; };
 		78BC1D5D2B624605F356409195AD378A /* KlarnaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4878E2885452AF18ADB530586BD04A41 /* KlarnaService.swift */; };
 		7A500A67C8360E2955D73860CB952C99 /* PrimerViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FD3B4CF5B6D1C262192C9CC0EEF643 /* PrimerViewExtensions.swift */; };
@@ -164,6 +166,8 @@
 		114BC9ADC4D87E190E5C7B0DE5633C2E /* Parser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		1424222F21E221BE9D18BDFDF5803843 /* ApplePayService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePayService.swift; sourceTree = "<group>"; };
 		15057D4C267387EE0030BDF0 /* Netcetera+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Netcetera+Helpers.swift"; sourceTree = "<group>"; };
+		151B09E0267B223A00FB49B8 /* ThreeDSSDK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDSSDK.swift; sourceTree = "<group>"; };
+		151B09E2267B22A700FB49B8 /* ThreeDSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDSService.swift; sourceTree = "<group>"; };
 		18C1BB8B361FBC8BF608DEC33F5574FC /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		1904B24189F7CAB68F0B12E561A48F24 /* fr.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = fr.lproj; sourceTree = "<group>"; };
 		21F4ACB1142B1B9457658584BF5CD35A /* Pods-PrimerSDK_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-PrimerSDK_Example-dummy.m"; sourceTree = "<group>"; };
@@ -271,7 +275,7 @@
 		DD27EBB1060366FD2965F54D150DBB16 /* CardScannerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardScannerViewController.swift; sourceTree = "<group>"; };
 		DF2953507578C0689D4B51B017652876 /* DirectDebitService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DirectDebitService.swift; sourceTree = "<group>"; };
 		DF6E4F8E7C26A7BBEC17AAD4042A317D /* Pods-PrimerSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		E00C3A36D1F9D31EBE3C40CC5E868DAE /* NetceteraThreeDSService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetceteraThreeDSService.swift; sourceTree = "<group>"; };
+		E00C3A36D1F9D31EBE3C40CC5E868DAE /* NetceteraSDK.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetceteraSDK.swift; sourceTree = "<group>"; };
 		E1B945985145643C12B1E91600B680DE /* Pods-PrimerSDK_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrimerSDK_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
 		E62E66D8B40462B193986BB8C1C081EC /* PaymentMethodConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfig.swift; sourceTree = "<group>"; };
 		E884507DF2B84FA8A2E8AD8289881542 /* Pods-PrimerSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -383,6 +387,15 @@
 			);
 			name = "Error Handler";
 			path = "Sources/PrimerSDK/Classes/Error Handler";
+			sourceTree = "<group>";
+		};
+		151B09E4267B26E900FB49B8 /* Netcetera */ = {
+			isa = PBXGroup;
+			children = (
+				E00C3A36D1F9D31EBE3C40CC5E868DAE /* NetceteraSDK.swift */,
+				15057D4C267387EE0030BDF0 /* Netcetera+Helpers.swift */,
+			);
+			path = Netcetera;
 			sourceTree = "<group>";
 		};
 		2307059CC0CB3CFD844BAFE2922EF4BE /* Vault */ = {
@@ -709,8 +722,9 @@
 		C8A434A87877153B46F8D1C82179DE1A /* 3DS */ = {
 			isa = PBXGroup;
 			children = (
-				E00C3A36D1F9D31EBE3C40CC5E868DAE /* NetceteraThreeDSService.swift */,
-				15057D4C267387EE0030BDF0 /* Netcetera+Helpers.swift */,
+				151B09E0267B223A00FB49B8 /* ThreeDSSDK.swift */,
+				151B09E2267B22A700FB49B8 /* ThreeDSService.swift */,
+				151B09E4267B26E900FB49B8 /* Netcetera */,
 			);
 			path = 3DS;
 			sourceTree = "<group>";
@@ -1010,12 +1024,14 @@
 				0410D33B5E127D1BB1BCE39FF68C70C9 /* AppState.swift in Sources */,
 				FBC3B3457053E2106BED5B88D3AE5C5E /* BundleExtension.swift in Sources */,
 				96F9C7BAD2BE590DD6BA4DB0091BF476 /* CardButton.swift in Sources */,
+				151B09E1267B223A00FB49B8 /* ThreeDSSDK.swift in Sources */,
 				33A8C9703DB35E5D98D54AC1E5060F02 /* CardScannerViewController+SimpleScanDelegate.swift in Sources */,
 				421690558538EE2251D0E5B56CB0B40C /* CardScannerViewController.swift in Sources */,
 				DC20ADD4E0D87EC5AFA5F6EA4169FF32 /* CardScannerViewModel.swift in Sources */,
 				276B430309C1413845DACE5CEC4E382E /* Certificates.swift in Sources */,
 				F2A0AA55458F5D5BF2344BC5B848B74F /* ClientToken.swift in Sources */,
 				F7D1CF925793370461C9287CC4F1CBCC /* ClientTokenService.swift in Sources */,
+				151B09E3267B22A700FB49B8 /* ThreeDSService.swift in Sources */,
 				9740D8C49DC99B31676E2CC035F27A11 /* ConfirmMandateView.swift in Sources */,
 				DFF3AB8685D58F5EFB9C1BCF7DB01809 /* ConfirmMandateViewController.swift in Sources */,
 				A3C6CE653AAD7F0977E25303BA0268E0 /* ConfirmMandateViewModel.swift in Sources */,
@@ -1084,7 +1100,7 @@
 				3014C5E97D4189CC8679C768DEF5ED50 /* StringExtension.swift in Sources */,
 				E61FF75DC284167850AFBA5A4DE82F71 /* SuccessMessage.swift in Sources */,
 				8F5329C14B18F7A286F2E831BC35BDDA /* SuccessViewController.swift in Sources */,
-				780765EC52E39601A49E6935B4BF444E /* NetceteraThreeDSService.swift in Sources */,
+				780765EC52E39601A49E6935B4BF444E /* NetceteraSDK.swift in Sources */,
 				B0A98EFC6ED70D1C58AA0D06D605C269 /* TokenizationService.swift in Sources */,
 				6032BA15CDA4F1094194BA8052D90641 /* TransitioningDelegate.swift in Sources */,
 				B715DC006698DF5D2D0BF0604EEF6748 /* UIDeviceExtension.swift in Sources */,
