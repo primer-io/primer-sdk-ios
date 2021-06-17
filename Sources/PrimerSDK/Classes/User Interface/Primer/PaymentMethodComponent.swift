@@ -23,12 +23,12 @@ internal class PaymentMethodComponent: PrimerView {
 
         switch method.type {
         case .applePay:
-            backgroundColor = theme.colorTheme.main2
-            label.textColor = theme.colorTheme.text2
+            backgroundColor = .black
+            label.textColor = .white
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString(), isBold: true)
-            configureIconView(icon: method.toIconName()?.image, color: .white)
+            configureIconView(icon: method.toIconName()?.image, color: .white, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         case .paymentCard:
@@ -100,7 +100,7 @@ internal extension PaymentMethodComponent {
 internal extension PaymentMethodComponent {
     func anchorLabel() {
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.heightAnchor.constraint(equalToConstant: 14).isActive = true
+//        label.heightAnchor.constraint(equalToConstant: 14).isActive = true
         label.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         label.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 12).isActive = true
     }
