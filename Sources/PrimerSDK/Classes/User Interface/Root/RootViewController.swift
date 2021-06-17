@@ -177,10 +177,7 @@ internal class RootViewController: PrimerViewController {
             let newConstant = -keyboardSize.height
             let duration = bottomConstraint!.constant.distance(to: newConstant) < 100 ? 0.0 : 0.5
             bottomConstraint!.constant = newConstant
-            if currentHeight + keyboardSize.height > UIScreen.main.bounds.height - 40 {
-                currentHeight = UIScreen.main.bounds.height - (40 + keyboardSize.height)
-                heightConstraint?.constant = UIScreen.main.bounds.height - (40 + keyboardSize.height)
-            }
+            
             UIView.animate(withDuration: duration) {
                 self.view.layoutIfNeeded()
             }
