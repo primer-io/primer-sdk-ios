@@ -10,6 +10,31 @@
 import Foundation
 import PassKit
 
+internal enum CardNetwork: String {
+    case amex
+    case chinaUnionPay
+    case diners
+    case discover
+    case electron
+    case elo
+    case jcb
+    case maestro
+    case masterCard
+    case visa
+    case unknown
+    
+    init(rawValue: String?) {
+        switch rawValue?.lowercased() {
+        case "visa":
+            self = .visa
+        case "mastercard":
+            self = .masterCard
+        default:
+            self = .unknown
+        }
+    }
+}
+
 public enum PaymentNetwork: String {
     
     case chinaUnionPay

@@ -11,7 +11,7 @@ import ThreeDS_SDK
 protocol ThreeDSServiceProtocol {
     func initializeSDK(_ sdk: ThreeDSSDKProtocol, completion: @escaping (Result<Void, Error>) -> Void)
     func sdkAuth(sdk: ThreeDSSDKProtocol,
-                 paymentMethod: PaymentMethodToken,
+                 cardNetwork: CardNetwork,
                  protocolVersion: ThreeDS.ProtocolVersion,
                  completion: @escaping (Result<Transaction, Error>) -> Void)
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
@@ -36,10 +36,10 @@ class ThreeDSService: ThreeDSServiceProtocol {
     }
     
     func sdkAuth(sdk: ThreeDSSDKProtocol,
-                 paymentMethod: PaymentMethodToken,
+                 cardNetwork: CardNetwork,
                  protocolVersion: ThreeDS.ProtocolVersion,
                  completion: @escaping (Result<Transaction, Error>) -> Void) {
-        sdk.sdkAuth(paymentMethod: paymentMethod, protocolVersion: protocolVersion, completion: completion)
+        sdk.sdkAuth(cardNetwork: cardNetwork, protocolVersion: protocolVersion, completion: completion)
     }
     
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
