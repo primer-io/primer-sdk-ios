@@ -8,6 +8,7 @@
 #if canImport(UIKit)
 
 @testable import PrimerSDK
+import XCTest
 
 var mockClientToken = DecodedClientToken(
     accessToken: "bla",
@@ -226,7 +227,7 @@ class MockLocator {
         DependencyContainer.register(MockFormViewModel() as FormViewModelProtocol)
         DependencyContainer.register(MockExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(MockRouter() as RouterDelegate)
-
+        DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
     }
 }
 
@@ -236,34 +237,44 @@ class MockDirectDebitService: DirectDebitServiceProtocol {
     }
 }
 
-class MockRouter: RouterDelegate {
-    func presentSuccessScreen(for successScreenType: SuccessScreenType) {
+class MockRouter: Router {
+    
+    override func presentSuccessScreen(for successScreenType: SuccessScreenType) {
         
     }
     
-    func presentErrorScreen(with err: Error) {
+    override func presentErrorScreen(with err: Error) {
         
     }
+
     
-    var root: RootViewController?
+    override func setRoot(_ root: RootViewController) {
+
+    }
     
-    func setRoot(_ root: RootViewController) {
+    var showCalled = false
+    
+    var callback: (() -> Void)?
+    
+    func setShowCalledTrue() {
+        showCalled = true
+        guard let callback = callback else { return }
+        callback()
+    }
+
+    override func show(_ route: Route) {
+        setShowCalledTrue()
+    }
+
+    override func pop() {
+        
+    }
+
+    override func popAllAndShow(_ route: Route) {
 
     }
 
-    func show(_ route: Route) {
-
-    }
-
-    func pop() {
-
-    }
-
-    func popAllAndShow(_ route: Route) {
-
-    }
-
-    func popAndShow(_ route: Route) {
+    override func popAndShow(_ route: Route) {
 
     }
 }
