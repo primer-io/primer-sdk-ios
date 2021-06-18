@@ -25,23 +25,24 @@ internal class VaultService: VaultServiceProtocol {
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        
+        firstly {
+            api.vaultFetchPaymentMethods(clientToken: clientToken)
+        }
+        .done { paymentMethods in
+            state.paymentMethods = paymentMethods.data
 
-        api.vaultFetchPaymentMethods(clientToken: clientToken) { [weak self] (result) in
-            switch result {
-            case .failure:
-                completion(PrimerError.vaultFetchFailed)
-            case .success(let paymentMethods):
-                state.paymentMethods = paymentMethods.data
+            let paymentMethods = state.paymentMethods
 
-                let paymentMethods = state.paymentMethods
-
-                if state.selectedPaymentMethod.isEmpty == true && paymentMethods.isEmpty == false {
-                    guard let id = paymentMethods[0].token else { return }
-                    state.selectedPaymentMethod = id
-                }
-
-                completion(nil)
+            if state.selectedPaymentMethod.isEmpty == true && paymentMethods.isEmpty == false {
+                guard let id = paymentMethods.first?.token else { return }
+                state.selectedPaymentMethod = id
             }
+
+            completion(nil)
+        }
+        .catch { err in
+            completion(PrimerError.vaultFetchFailed)
         }
     }
 
