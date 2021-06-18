@@ -24,8 +24,8 @@ enum PrimerAPI: Endpoint {
 
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest)
     
+    // 3DS
     case threeDSBeginRemoteAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
-    case threeDSecureStatus(clientToken: DecodedClientToken, url: String)
     case threeDSContinueRemoteAuth(clientToken: DecodedClientToken, threeDSTokenId: String)
 }
 
@@ -53,8 +53,6 @@ internal extension PrimerAPI {
         case .fetchConfiguration(let clientToken):
             guard let urlStr = clientToken.configurationUrl else { return nil }
             return urlStr
-        case .threeDSecureStatus(_, let url):
-            return url
         }
     }
 
@@ -86,8 +84,6 @@ internal extension PrimerAPI {
             return "/payment-instruments"
         case .threeDSBeginRemoteAuth(_, let paymentMethodToken, _):
             return "/3ds/\(paymentMethodToken.token!)/auth"
-        case .threeDSecureStatus:
-            return ""
         case .threeDSContinueRemoteAuth(_, let threeDSTokenId):
             return "/3ds/\(threeDSTokenId)/continue"
         }
@@ -107,8 +103,7 @@ internal extension PrimerAPI {
         case .vaultDeletePaymentMethod:
             return .delete
         case .fetchConfiguration,
-             .vaultFetchPaymentMethods,
-             .threeDSecureStatus:
+             .vaultFetchPaymentMethods:
             return .get
         case .directDebitCreateMandate,
              .payPalStartOrderSession,
@@ -145,7 +140,6 @@ internal extension PrimerAPI {
              .klarnaFinalizePaymentSession(let clientToken, _),
              .tokenizePaymentMethod(let clientToken, _),
              .threeDSBeginRemoteAuth(let clientToken, _, _),
-             .threeDSecureStatus(let clientToken, _),
              .threeDSContinueRemoteAuth(let clientToken, _):
             if let token = clientToken.accessToken {
                 headers["Primer-Client-Token"] = token
@@ -189,7 +183,6 @@ internal extension PrimerAPI {
         case .vaultDeletePaymentMethod,
              .fetchConfiguration,
              .vaultFetchPaymentMethods,
-             .threeDSecureStatus,
              .threeDSContinueRemoteAuth:
             return nil
         }
