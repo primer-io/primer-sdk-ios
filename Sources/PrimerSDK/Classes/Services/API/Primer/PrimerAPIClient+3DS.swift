@@ -59,7 +59,11 @@ extension MockPrimerAPIClient {
     
     func threeDSecureBeginAuthentication(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         isCalled = true
-        guard let response = response else { return }
+        guard let response = response else {
+            let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
+            completion(.failure(nsErr))
+            return
+        }
 
         do {
             let value = try JSONDecoder().decode(ThreeDS.BeginAuthResponse.self, from: response)

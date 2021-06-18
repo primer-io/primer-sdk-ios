@@ -188,7 +188,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
 
 internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
-    let response: Data?
+    var response: Data?
     let throwsError: Bool
     var isCalled: Bool = false
 
@@ -357,11 +357,26 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func threeDSecureStatus(clientToken: DecodedClientToken, url: String, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
-        
+        isCalled = true
+        guard let response = response else { return }
+
+        do {
+            let value = try JSONDecoder().decode(ThreeDS.BeginAuthResponse.self, from: response)
+            completion(.success(value))
+        } catch {
+            completion(.failure(error))
+        }
     }
     
     func threeDSecurePostAuthentication(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
-        
+        guard let response = response else { return }
+
+        do {
+            let value = try JSONDecoder().decode(ThreeDS.PostAuthResponse.self, from: response)
+            completion(.success(value))
+        } catch {
+            completion(.failure(error))
+        }
     }
 
 }
