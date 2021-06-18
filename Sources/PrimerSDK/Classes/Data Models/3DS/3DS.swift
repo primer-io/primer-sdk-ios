@@ -15,6 +15,15 @@ protocol ThreeDSAuthenticationProtocol: Codable {
     var transactionId: String? { get }
 }
 
+protocol ThreeDSSDKAuthDataProtocol: Codable {
+    var sdkAppId: String { get }
+    var sdkTransactionId: String { get }
+    var sdkTimeout: Int { get }
+    var sdkEncData: String { get }
+    var sdkEphemPubKey: String { get }
+    var sdkReferenceNumber: String { get }
+}
+
 public struct ThreeDS {
     
     internal enum ProtocolVersion: String {
@@ -97,6 +106,15 @@ public struct ThreeDS {
         // swiftlint:enable identifier_name
     }
     
+    internal struct SDKAuthData: ThreeDSSDKAuthDataProtocol {
+        var sdkAppId: String
+        var sdkTransactionId: String
+        var sdkTimeout: Int
+        var sdkEncData: String
+        var sdkEphemPubKey: String
+        var sdkReferenceNumber: String
+    }
+    
     internal struct BeginAuthRequest: Codable {
         
         static var demoAuthRequest: BeginAuthRequest {
@@ -132,7 +150,7 @@ public struct ThreeDS {
         let currencyCode: Currency
         let orderId: String
         let customer: ThreeDS.Customer
-        var device: NetceteraAuthData?
+        var device: ThreeDS.SDKAuthData?
         let billingAddress: ThreeDS.Address
         let shippingAddress: ThreeDS.Address?
         let customerAccount: ThreeDS.CustomerAccount?
