@@ -9,7 +9,7 @@ import Foundation
 import ThreeDS_SDK
 
 extension Transaction {
-    func buildThreeDSecureAuthData() throws -> NetceteraAuthData {
+    func buildThreeDSecureAuthData() throws -> ThreeDSSDKAuthDataProtocol {
         let transactionParameters = try self.getAuthenticationRequestParameters()
         let sdkAppId = transactionParameters.getSDKAppID()
         let sdkTransactionId = transactionParameters.getSDKTransactionId()
@@ -18,7 +18,7 @@ extension Transaction {
         let sdkEphemeralKey = transactionParameters.getSDKEphemeralPublicKey()
         let sdkReferenceNumber = transactionParameters.getSDKReferenceNumber()
         
-        return NetceteraAuthData(
+        return ThreeDS.SDKAuthData(
             sdkAppId: sdkAppId,
             sdkTransactionId: sdkTransactionId,
             sdkTimeout: sdkMaxTimeout,
@@ -26,15 +26,6 @@ extension Transaction {
             sdkEphemPubKey: sdkEphemeralKey,
             sdkReferenceNumber: sdkReferenceNumber)
     }
-}
-
-struct NetceteraAuthData: Codable {
-    let sdkAppId: String
-    let sdkTransactionId: String
-    let sdkTimeout: Int
-    let sdkEncData: String
-    let sdkEphemPubKey: String
-    let sdkReferenceNumber: String
 }
 
 extension ThreeDS {
