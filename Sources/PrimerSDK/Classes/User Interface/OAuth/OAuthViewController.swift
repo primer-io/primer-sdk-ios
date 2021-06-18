@@ -49,9 +49,12 @@ internal class OAuthViewController: PrimerViewController {
                     
                     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                     
+                    let routerDelegate: RouterDelegate = DependencyContainer.resolve()
+                    
+                    let router = routerDelegate as! Router
+                    
                     if settings.hasDisabledSuccessScreen {
-                        let routerDelegate: RouterDelegate = DependencyContainer.resolve()
-                        let router = routerDelegate as! Router
+                        
                         let rootViewController = router.root
                         
                         UIView.animate(withDuration: 0.3) {
@@ -59,6 +62,8 @@ internal class OAuthViewController: PrimerViewController {
                         } completion: { (_) in
                             rootViewController?.dismiss(animated: true, completion: nil)
                         }
+                    } else {
+                        router.show(.error(error: error))
                     }
                     
                 case .success(let urlString):

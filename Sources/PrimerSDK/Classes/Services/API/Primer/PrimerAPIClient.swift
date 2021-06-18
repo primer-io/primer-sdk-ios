@@ -11,6 +11,7 @@ import Foundation
 
 protocol PrimerAPIClientProtocol {
     func vaultFetchPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<GetVaultedPaymentMethodsResponse, Error>) -> Void)
+    func vaultFetchPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse>
     func vaultDeletePaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Data, Error>) -> Void)
     func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PaymentMethodConfig, Error>) -> Void)
     func directDebitCreateMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
@@ -202,6 +203,17 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
             completion(.success(value))
         } catch {
             completion(.failure(error))
+        }
+    }
+    
+    func vaultFetchPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse> {
+        return Promise { [weak self] seal in
+            do {
+                let value = try JSONDecoder().decode(GetVaultedPaymentMethodsResponse.self, from: response!)
+                seal.fulfill(value)
+            } catch {
+                seal.reject(error)
+            }
         }
     }
 
