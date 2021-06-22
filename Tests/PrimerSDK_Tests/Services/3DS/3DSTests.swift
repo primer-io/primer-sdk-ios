@@ -69,11 +69,10 @@ class ThreeDSTests: XCTestCase {
                             let sdkAuthData = try transaction.buildThreeDSecureAuthData()
                             XCTAssert(!sdkAuthData.sdkAppId.isEmpty, "SDK App ID cannot be empty")
                             XCTAssert(!sdkAuthData.sdkEncData.isEmpty, "SDK encrypted data cannot be empty")
-                            //                            let decodedToken = sdkAuthData.sdkEncData.jwtTokenPayload
                             XCTAssert(!sdkAuthData.sdkEphemPubKey.isEmpty, "SDK ephemeral key cannot be empty")
                             
                             if let _ = sdk as? NetceteraSDK {
-                                XCTAssert(sdkAuthData.sdkReferenceNumber == "3DS_SDK_REF", "SDK Reference number is wrong \(sdkAuthData.sdkReferenceNumber)")
+                                XCTAssert(sdkAuthData.sdkReferenceNumber == ThreeDSConstants.netceteraSDKRef, "SDK Reference number is wrong \(sdkAuthData.sdkReferenceNumber)")
                             }
                             expectation.fulfill()
                         } catch {
@@ -146,6 +145,33 @@ class ThreeDSTests: XCTestCase {
         }
         
         wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testThreeDSContinueRemoteAuth() throws {
+        let expectation = XCTestExpectation(description: "3DS SDK Request Continue Auth")
+        
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+        let api = MockPrimerAPIClient()
+        DependencyContainer.register(api as PrimerAPIClientProtocol)
+        api.response = ThreeDSConstants.continueAuthResponseStr.data(using: .utf8)!
+        
+        let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
+        threeDSService.continueRemoteAuth(threeDSTokenId: "transaction_id") { result in
+            switch result {
+            case .success(let response):
+                XCTAssert(response.token.paymentInstrumentData?.last4Digits == "0008", "last4Digits wasn't parsed correctly")
+                XCTAssert(response.token.threeDSecureAuthentication?.responseCode == "AUTH_SUCCESS", "last4Digits wasn't parsed correctly")
+                XCTAssert(response.token.threeDSecureAuthentication?.challengeIssued == true, "Challenge issued wasn't parsed correctly")
+                XCTAssert(response.token.threeDSecureAuthentication?.protocolVersion == "2.1.0", "3DS protocol version wasn't parsed correctly")
+                expectation.fulfill()
+            case .failure(let err):
+                let nsErr = err as NSError
+                XCTAssert(false, "Failed to parse 3ds continue auth response with error: \(nsErr.domain):\(nsErr.code) [\(nsErr.localizedDescription)]")
+            }
+        }
+        
+        wait(for: [expectation], timeout: 2.0)
     }
     
 }
