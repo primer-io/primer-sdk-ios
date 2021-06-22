@@ -128,6 +128,14 @@ class MockThreeDSService: ThreeDSServiceProtocol {
     
     func performChallenge(with sdk: ThreeDSSDKProtocol, on transaction: Transaction, with threeDSecureAuthResponse: ThreeDSAuthenticationProtocol, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.ThreeDSSDKAuthCompletion, Error>) -> Void) {
         
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+            do {
+                let authCompletion = ThreeDS.ThreeDSSDKAuthCompletion(sdkTransactionId: "transaction_id", transactionStatus: .y)
+                completion(.success(authCompletion))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
     
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
