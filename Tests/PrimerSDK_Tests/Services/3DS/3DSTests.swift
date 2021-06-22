@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import ThreeDS_SDK
 @testable import PrimerSDK
 
 class ThreeDSTests: XCTestCase {
@@ -145,6 +146,86 @@ class ThreeDSTests: XCTestCase {
         }
         
         wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testThreeDSChallenge() throws {
+        let expectation = XCTestExpectation(description: "3DS SDK Request Continue Auth")
+        
+        let sdk = NetceteraSDK()
+        let threeDSService = MockThreeDSService()
+        DependencyContainer.register(threeDSService as ThreeDSServiceProtocol)
+        
+        initializeThreeDSSDK(sdk) { err in
+            if let err = err {
+                let nsErr = err as NSError
+                XCTAssert(false, "3DS SDK initialization failed with error: \(nsErr.domain):\(nsErr.code) [\(nsErr.localizedDescription)]")
+            } else {
+                threeDSService.sdkAuth(sdk: sdk, cardNetwork: .unknown, protocolVersion: .v1) { result in
+                    switch result {
+                    case .success(let transaction):
+                        guard let paymentMethodData = ThreeDSConstants.paymentMethodJSON.data(using: .utf8) else {
+                            XCTAssert(false, "Failed to get data from JSON string")
+                            return
+                        }
+                        
+                        var paymentMethod: PaymentMethodToken!
+                        do {
+                            paymentMethod = try JSONParser().parse(PaymentMethodToken.self, from: paymentMethodData)
+                        } catch {
+                            let nsErr = error as NSError
+                            XCTAssert(false, "Failed to parse payment method with error: \(nsErr.domain):\(nsErr.code) [\(nsErr.localizedDescription)]")
+                        }
+                        
+                        let state = MockAppState()
+                        DependencyContainer.register(state as AppStateProtocol)
+                        
+                        
+                        var req = ThreeDS.BeginAuthRequest.demoAuthRequest
+                        req.amount = 0
+                        
+                        do {
+                            req.device = try JSONParser().parse(ThreeDS.SDKAuthData.self, from: ThreeDSConstants.sdkAuthResponseStr.data(using: .utf8)!)
+                        } catch {
+                            let nsErr = error as NSError
+                            XCTAssert(false, "Failed to parse payment method with error: \(nsErr.domain):\(nsErr.code) [\(nsErr.localizedDescription)]")
+                        }
+                        
+                        threeDSService.response = ThreeDSConstants.beginAuthResponseStr.data(using: .utf8)!
+                        threeDSService.beginRemoteAuth(paymentMethodToken: paymentMethod, threeDSecureBeginAuthRequest: req) { result in
+                            switch result {
+                            case .success(let response):
+                                guard let authentication = response.authentication as? ThreeDS.Authentication else {
+                                    let err = PrimerError.generic
+                                    XCTAssert(false, "3DS Begin Remote Auth doesn't include the `auth` field.")
+                                    return
+                                }
+                                
+                                threeDSService.performChallenge(with: sdk, on: transaction, with: authentication, presentOn: UIViewController()) { result in
+                                    switch result {
+                                    case .success(let sdkAuthCompletion):
+                                        XCTAssert(sdkAuthCompletion.sdkTransactionId == "transaction_id", "3DS SDK Challenge returned transaction id.")
+                                        expectation.fulfill()
+                                    case .failure(let err):
+                                        let nsErr = err as NSError
+                                        XCTAssert(false, "Failed to parse payment method with error: \(nsErr.domain):\(nsErr.code) [\(nsErr.localizedDescription)]")
+                                    }
+                                }
+                                
+                                
+                            case .failure(let err):
+                                let nsErr = err as NSError
+                                XCTAssert(false, "Failed to parse payment method with error: \(nsErr.domain):\(nsErr.code) [\(nsErr.localizedDescription)]")
+                            }
+                        }
+                        
+                        
+                    case .failure(let err):
+                        let nsErr = err as NSError
+                        XCTAssert(false, "Failed to parse payment method with error: \(nsErr.domain):\(nsErr.code) [\(nsErr.localizedDescription)]")
+                    }
+                }
+            }
+        }
     }
     
     func testThreeDSContinueRemoteAuth() throws {
