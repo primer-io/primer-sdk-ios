@@ -10,45 +10,8 @@
 import XCTest
 @testable import PrimerSDK
 
-class TokenizationServiceTests: XCTestCase {
-    
-    let paymentMethodTokenJSON: String = """
-        """
-
-    func test_tokenize_calls_api() throws {
-        let expectation = XCTestExpectation(description: "Create PayPal payment sesion | Success")
-
-        let paymentMethodTokenData = paymentMethodTokenJSON.data(using: .utf8)!
-        let token = try! JSONParser().parse(PaymentMethodToken.self, from: paymentMethodTokenData) //PaymentMethodToken(token: "tokenID", paymentInstrumentType: .paymentCard, vaultData: VaultData())
-
-        let data = try JSONEncoder().encode(token)
-        let api = MockPrimerAPIClient(with: data, throwsError: false)
-        let state = MockAppState()
-
-        let request = PaymentMethodTokenizationRequest(paymentInstrument: PaymentInstrument(), state: state)
-
-        MockLocator.registerDependencies()
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
-        DependencyContainer.register(state as AppStateProtocol)
-
-        let service = TokenizationService()
-
-        service.tokenize(request: request) { result in
-            switch result {
-            case .failure:
-                XCTAssert(false, "Test should not get into the failure case.")
-            case .success(let token):
-                XCTAssertEqual(token.token, token.token)
-            }
-
-            expectation.fulfill()
-        }
-
-        XCTAssertEqual(api.isCalled, true)
-
-        wait(for: [expectation], timeout: 10.0)
-    }
-
-}
+//class TokenizationServiceTests: XCTestCase {
+//    
+//}
 
 #endif
