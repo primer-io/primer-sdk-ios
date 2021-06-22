@@ -45,15 +45,13 @@ class MockPrimerDelegate: PrimerDelegate {
         self.authorizePaymentFails = authorizePaymentFails
     }
 
-    
-
-    func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
+    func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         clientTokenCallbackCalled = true
         guard let token = token else {
-            // FIXME: Throw error
+            completion(nil, PrimerError.clientTokenNull)
             return
         }
-        completion(.success(token))
+        completion(token, nil)
     }
     
     func tokenAddedToVault(_ token: PaymentMethodToken) {
