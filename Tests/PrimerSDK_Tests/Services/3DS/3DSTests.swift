@@ -109,9 +109,6 @@ class ThreeDSTests: XCTestCase {
         
         let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
-        let api = MockPrimerAPIClient()
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
-        api.response = ThreeDSConstants.beginAuthResponseStr.data(using: .utf8)!
         
         var req = ThreeDS.BeginAuthRequest.demoAuthRequest
         req.amount = 0
@@ -123,7 +120,10 @@ class ThreeDSTests: XCTestCase {
             XCTAssert(false, "Failed to parse payment method with error: \(nsErr.domain):\(nsErr.code) [\(nsErr.localizedDescription)]")
         }
         
-        let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
+        let threeDSService = MockThreeDSService()
+        threeDSService.response = ThreeDSConstants.beginAuthResponseStr.data(using: .utf8)!
+        DependencyContainer.register(threeDSService as ThreeDSServiceProtocol)
+        
         threeDSService.beginRemoteAuth(paymentMethodToken: paymentMethod, threeDSecureBeginAuthRequest: req) { result in
             switch result {
             case .success(let response):
@@ -152,11 +152,11 @@ class ThreeDSTests: XCTestCase {
         
         let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
-        let api = MockPrimerAPIClient()
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
-        api.response = ThreeDSConstants.continueAuthResponseStr.data(using: .utf8)!
         
-        let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
+        let threeDSService = MockThreeDSService()
+        threeDSService.response = ThreeDSConstants.continueAuthResponseStr.data(using: .utf8)!
+        DependencyContainer.register(threeDSService as ThreeDSServiceProtocol)
+        
         threeDSService.continueRemoteAuth(threeDSTokenId: "transaction_id") { result in
             switch result {
             case .success(let response):
