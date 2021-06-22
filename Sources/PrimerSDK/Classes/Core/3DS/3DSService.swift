@@ -53,7 +53,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         
-        api.threeDSecureBeginAuthentication(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
+        api.threeDSBeginAuth(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -82,7 +82,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        api.threeDSecurePostAuthentication(clientToken: clientToken, threeDSTokenId: threeDSTokenId) { result in
+        api.threeDSContinueAuth(clientToken: clientToken, threeDSTokenId: threeDSTokenId) { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
