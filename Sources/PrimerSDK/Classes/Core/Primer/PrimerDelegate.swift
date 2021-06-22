@@ -24,8 +24,9 @@ import UIKit
  1.4.3
  */
 
-public protocol PrimerDelegate: class {
-    func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void)
+@objc
+public protocol PrimerDelegate {
+    func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
     func tokenAddedToVault(_ token: PaymentMethodToken)
     @available(*, deprecated, renamed: "onTokenizeSuccess")
     func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
@@ -35,8 +36,8 @@ public protocol PrimerDelegate: class {
 }
 
 internal class MockPrimerDelegate: PrimerDelegate {
-    func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
-
+    func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
+        
     }
     
     func tokenAddedToVault(_ token: PaymentMethodToken) {
