@@ -7,8 +7,6 @@
 
 import Foundation
 
-import Foundation
-
 internal protocol Endpoint {
 //    var scheme: String { get }
     var baseURL: String? { get }
