@@ -26,13 +26,33 @@ import UIKit
 
 @objc
 public protocol PrimerDelegate {
+    
     func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
+    
     @objc optional func tokenAddedToVault(_ token: PaymentMethodToken)
+    
+    /// This function will be called when the user tries to make a payment. You should make the pay API call to your backend, and
+    /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
+    ///
+    /// - Parameters:
+    ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
+    ///   - completion: Call with error or nil when the pay API call returns a result.
+    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
+    
+    @objc optional func onCheckoutDismissed()
+    
+    @objc optional func checkoutFailed(with error: Error)
+    
+    /// This function will be called when the user tries to make a payment. You should make the pay API call to your backend, and
+    /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
+    /// Deprecated in favour of onTokenizeSuccess
+    ///
+    /// - Parameters:
+    ///   - result: The PaymentMethodToken object containing the token's information.
+    ///   - completion: Call with error or nil when the pay API call returns a result.
     @available(*, deprecated, renamed: "onTokenizeSuccess")
     @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
-    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
-    @objc optional func onCheckoutDismissed()
-    @objc optional func checkoutFailed(with error: Error)
+    
 }
 
 internal class MockPrimerDelegate: PrimerDelegate {
