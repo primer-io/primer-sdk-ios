@@ -178,38 +178,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         print("Token added: \(token)")
     }
     
-    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-//        guard let token = result.token else { return completion(NetworkError.missingParams) }
-//
-//        guard let url = URL(string: "\(endpoint)/transaction") else {
-//            return completion(NetworkError.missingParams)
-//        }
-//
-//        let type = result.paymentInstrumentType
-//
-//        var request = URLRequest(url: url)
-//
-//        request.httpMethod = "POST"
-//        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-//        
-//        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: "GBP")
-//        
-//        do {
-//            request.httpBody = try JSONEncoder().encode(body)
-//        } catch {
-//            return completion(NetworkError.missingParams)
-//        }
-//        
-//        callApi(request) { (result) in
-//            switch result {
-//            case .success:
-//                completion(nil)
-//            case .failure(let err):
-//                completion(err)
-//            }
-//        }
-    }
-    
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         guard let token = paymentMethodToken.token else { return completion(NetworkError.missingParams) }
 
