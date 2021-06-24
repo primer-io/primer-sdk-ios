@@ -21,6 +21,14 @@ class Base: XCTestCase {
     override func tearDown() {
         super.tearDown()
     }
+    
+    func testInitializeSDK() throws {
+        let initSDKButton = app.buttons["initialize_primer_sdk"]
+        initSDKButton.tap()
+        
+        let addCardButton = app/*@START_MENU_TOKEN@*/.buttons["add_card_button"]/*[[".buttons[\"Add Card\"]",".buttons[\"add_card_button\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        XCTAssert(addCardButton.exists)
+    }
 
     func testPresentWallet() throws {
         let initSDKButton = app.buttons["initialize_primer_sdk"]
@@ -70,22 +78,6 @@ class Base: XCTestCase {
         app.navigationBars["Saved payment methods"].buttons["Edit"].tap()
         app.tables.buttons.containing(.staticText, identifier:"•••• 1111").firstMatch.tap()
         app.alerts["Confirmation"].scrollViews.otherElements.buttons["Delete"].tap()
-    }
-    
-    func testInitKlarna() throws {
-        try testPresentWallet()
-
-        app.buttons["vault_klarna_button"].tap()
-
-        let exists = NSPredicate(format: "exists == 1")
-        
-        let webView = app.webViews["primer_webview"]
-        expectation(for: exists, evaluatedWith: webView, handler: nil)
-        waitForExpectations(timeout: 5, handler: nil)
-        
-        let continueButton = app.webViews.buttons["Continue"]
-        expectation(for: exists, evaluatedWith: continueButton, handler: nil)
-        waitForExpectations(timeout: 30, handler: nil)
     }
 
 }
