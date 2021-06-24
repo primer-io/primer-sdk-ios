@@ -34,6 +34,13 @@ public protocol PrimerDelegate: class {
     func checkoutFailed(with error: Error)
 }
 
+public extension PrimerDelegate {
+    func tokenAddedToVault(_ token: PaymentMethodToken) {}
+    func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) {}
+    func onCheckoutDismissed() {}
+    func checkoutFailed(with error: Error) {}
+}
+
 internal class MockPrimerDelegate: PrimerDelegate {
     func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
 
