@@ -48,7 +48,7 @@ class Vault: XCTestCase {
         let savedPaymentMethodView = app.buttons["saved_payment_method_button"]
         
         XCTAssert(!savedPaymentMethodTitle.exists, "Saved payment method should not exist")
-        XCTAssert(!seeAllButton.exists, "'See All' button should exist")
+        XCTAssert(!seeAllButton.exists, "'See All' button should not exist")
         XCTAssert(!savedPaymentMethodView.exists, "Saved payment method view should not exist")
         
         // Test that the table with the payment methods exists
