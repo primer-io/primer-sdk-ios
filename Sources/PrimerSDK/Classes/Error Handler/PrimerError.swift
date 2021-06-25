@@ -31,9 +31,28 @@ enum KlarnaException: PrimerErrorProtocol {
 
     var errorCode: Int {
         switch self {
-        default:
-            // Define API error codes with Android & Web
-            return 100
+        case .invalidUrl:
+            return 4000
+        case .noToken:
+            return 4001
+        case .undefinedSessionType:
+            return 4002
+        case .noCoreUrl:
+            return 4003
+        case .failedApiCall:
+            return 4003
+        case .noAmount:
+            return 4004
+        case .noCurrency:
+            return 4005
+        case .noCountryCode:
+            return 4006
+        case .noPaymentMethodConfigId:
+            return 4006
+        case .missingOrderItems:
+            return 4007
+        case .orderItemMissesAmount:
+            return 4008
         }
     }
 
@@ -242,9 +261,44 @@ enum PrimerError: PrimerErrorProtocol {
 
     var errorCode: Int {
         switch self {
-        default:
-            // Define API error codes with Android & Web
-            return 100
+        case .generic:
+            return 0
+        // Settings
+        case .customerIDNull:
+            return 1400
+        case .userCancelled:
+            return 1500
+        case .missingURLScheme:
+            return 1600
+        case .amountShouldBeNullForPendingOrderItems:
+            return 1710
+        case .amountCannotBeNullForNonPendingOrderItems:
+            return 1720
+        // Network
+        case .requestFailed:
+            return 2000
+        case .clientTokenNull:
+            return 2001
+        case .tokenExpired:
+            return 2002
+        case .configFetchFailed:
+            return 2100
+        case .tokenizationPreRequestFailed:
+            return 2101
+        case .tokenizationRequestFailed:
+            return 2102
+        case .vaultFetchFailed:
+            return 2200
+        case .vaultCreateFailed:
+            return 2201
+        case .vaultDeleteFailed:
+            return 2202
+        case .payPalSessionFailed:
+            return 2300
+        case .directDebitSessionFailed:
+            return 2400
+        case .failedToLoadSession:
+            return 2500
         }
     }
 
