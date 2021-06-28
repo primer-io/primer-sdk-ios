@@ -75,23 +75,37 @@ enum Route {
         #if canImport(CardScan)
         case .cardScanner:  return 420
         #endif
-        case .vaultCheckout:  return 250
-        case .vaultPaymentMethods:  return 320
-        case .oAuth:  return 400
-        case .applePay:  return 400
-        case .success:  return 360
-        case .error:  return 220
-        case .confirmMandate: return 580
+        case .vaultCheckout:
+            return Primer.shared.flow.internalSessionFlow.vaulted ? 400 : 600
+        case .vaultPaymentMethods:
+            return 320
+        case .oAuth:
+            return 400
+        case .applePay:
+            return 400
+        case .success:
+            return 360
+        case .error:
+            return 220
+        case .confirmMandate:
+            return 580
         case .form(let type, _):
             switch type {
-            case .address: return 460
-            case .name, .iban, .email: return 300
+            case .address:
+                return 460
+            case .name,
+                 .iban,
+                 .email:
+                return 300
             case .cardForm(let theme):
                 switch theme.textFieldTheme {
-                case .doublelined: return 360
-                default: return 320
+                case .doublelined:
+                    return 360
+                default:
+                    return 320
                 }
-            default: return 320
+            default:
+                return 320
             }
         }
     }
