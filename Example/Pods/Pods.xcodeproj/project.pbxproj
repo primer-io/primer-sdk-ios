@@ -54,6 +54,7 @@
 		151431782678A1DF00B4C96D /* Thenable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431542678A1DF00B4C96D /* Thenable.swift */; };
 		151431792678A1DF00B4C96D /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431552678A1DF00B4C96D /* Configuration.swift */; };
 		1514317B2678A52300B4C96D /* PrimerAPIClient+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514317A2678A52300B4C96D /* PrimerAPIClient+Promises.swift */; };
+		1589240F268B05A1001280DD /* PrimerTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1589240E268B05A1001280DD /* PrimerTextFieldView.swift */; };
 		15892410268B05AA001280DD /* PrimerTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1589240C268B04AC001280DD /* PrimerTextField.swift */; };
 		15892412268B062F001280DD /* PrimerNibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15892411268B062F001280DD /* PrimerNibView.swift */; };
 		16AF604EFAB8215B9F0879C271AE7A2D /* FormTextFieldType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D364D798A53A76D482156C7E07703394 /* FormTextFieldType.swift */; };
@@ -229,6 +230,7 @@
 		151431552678A1DF00B4C96D /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		1514317A2678A52300B4C96D /* PrimerAPIClient+Promises.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrimerAPIClient+Promises.swift"; sourceTree = "<group>"; };
 		1589240C268B04AC001280DD /* PrimerTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerTextField.swift; sourceTree = "<group>"; };
+		1589240E268B05A1001280DD /* PrimerTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerTextFieldView.swift; sourceTree = "<group>"; };
 		15892411268B062F001280DD /* PrimerNibView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerNibView.swift; sourceTree = "<group>"; };
 		15939D76EEF467A182746C99C10F14B6 /* AlertController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		1841E53752535A5BB808AE11B6967728 /* PaymentNetwork.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentNetwork.swift; sourceTree = "<group>"; };
@@ -493,6 +495,7 @@
 			isa = PBXGroup;
 			children = (
 				1589240C268B04AC001280DD /* PrimerTextField.swift */,
+				1589240E268B05A1001280DD /* PrimerTextFieldView.swift */,
 				15892411268B062F001280DD /* PrimerNibView.swift */,
 			);
 			path = "Text Fields";
@@ -1248,6 +1251,7 @@
 				2A38B1DEF016374B878FEFC3E12EFA93 /* Validation.swift in Sources */,
 				1514317B2678A52300B4C96D /* PrimerAPIClient+Promises.swift in Sources */,
 				11253BDF4DF375C348E87DF5B34F018A /* VaultCheckoutView.swift in Sources */,
+				1589240F268B05A1001280DD /* PrimerTextFieldView.swift in Sources */,
 				151431582678A1DF00B4C96D /* Cancellable.swift in Sources */,
 				53E1AFE672487F64D1E03D9348B302BC /* VaultCheckoutViewController+ReloadDelegate.swift in Sources */,
 				6767FA45D7125CB4BD583D3E8DE8B680 /* VaultCheckoutViewController.swift in Sources */,
