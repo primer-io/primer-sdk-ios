@@ -55,6 +55,7 @@
 		151431792678A1DF00B4C96D /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431552678A1DF00B4C96D /* Configuration.swift */; };
 		1514317B2678A52300B4C96D /* PrimerAPIClient+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1514317A2678A52300B4C96D /* PrimerAPIClient+Promises.swift */; };
 		1589240D268B04AC001280DD /* PrimerTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1589240C268B04AC001280DD /* PrimerTextField.swift */; };
+		15892412268B062F001280DD /* PrimerNibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15892411268B062F001280DD /* PrimerNibView.swift */; };
 		16AF604EFAB8215B9F0879C271AE7A2D /* FormTextFieldType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D364D798A53A76D482156C7E07703394 /* FormTextFieldType.swift */; };
 		16EAA7FA33F257010600B443C71C99B5 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F41D2762B2290B4EE76542889986A16 /* PaymentMethod.swift */; };
 		17CC0E100C8B9EF45824E087493F8CBB /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 522F77B4CB1E9CA3B31E3F74F1962B2B /* fr.lproj */; };
@@ -228,6 +229,7 @@
 		151431552678A1DF00B4C96D /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		1514317A2678A52300B4C96D /* PrimerAPIClient+Promises.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrimerAPIClient+Promises.swift"; sourceTree = "<group>"; };
 		1589240C268B04AC001280DD /* PrimerTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerTextField.swift; sourceTree = "<group>"; };
+		15892411268B062F001280DD /* PrimerNibView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerNibView.swift; sourceTree = "<group>"; };
 		15939D76EEF467A182746C99C10F14B6 /* AlertController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		1841E53752535A5BB808AE11B6967728 /* PaymentNetwork.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentNetwork.swift; sourceTree = "<group>"; };
 		187BF6D0164EDAB4FF90BEC8F100DD60 /* ResourceBundle-PrimerResources-PrimerSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-PrimerResources-PrimerSDK-Info.plist"; sourceTree = "<group>"; };
@@ -491,6 +493,7 @@
 			isa = PBXGroup;
 			children = (
 				1589240C268B04AC001280DD /* PrimerTextField.swift */,
+				15892411268B062F001280DD /* PrimerNibView.swift */,
 			);
 			path = "Text Fields";
 			sourceTree = "<group>";
@@ -1139,6 +1142,7 @@
 				151431722678A1DF00B4C96D /* Box.swift in Sources */,
 				1514315D2678A1DF00B4C96D /* ThenableWrappers.swift in Sources */,
 				840679B391D9158648C2531563977624 /* ClientTokenService.swift in Sources */,
+				15892412268B062F001280DD /* PrimerNibView.swift in Sources */,
 				24E25BC0AE84E348C803FD3307B97EF9 /* ConfirmMandateView.swift in Sources */,
 				151431742678A1DF00B4C96D /* LogEvent.swift in Sources */,
 				1514315F2678A1DF00B4C96D /* EnsureWrappers.swift in Sources */,
