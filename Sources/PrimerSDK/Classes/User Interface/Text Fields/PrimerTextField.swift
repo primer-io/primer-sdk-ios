@@ -22,8 +22,10 @@ internal class PrimerTextField: UITextField {
         }
     }
     
+    // swiftlint:disable identifier_name
     internal var _text: String?
-    
+    // swiftlint:enable identifier_name
+        
     override var text: String? {
         get {
             return "****"
