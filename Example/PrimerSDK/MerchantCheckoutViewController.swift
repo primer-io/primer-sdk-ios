@@ -72,7 +72,22 @@ class MerchantCheckoutViewController: UIViewController {
         businessDetails: nil,
         directDebitHasNoAmount: false,
         orderItems: [],
-        isInitialLoadingHidden: false
+        isInitialLoadingHidden: false,
+        is3DSEnabled: true,
+        billingAddress: Address(addressLine1: "Line 1", addressLine2: "Line 2", city: "City", state: "State", countryCode: "GR", postalCode: "15236"),
+        orderId: "order id",
+        userDetails: UserDetails(
+            firstName: "Evans",
+            lastName: "Pie",
+            email: "evans@primer.io",
+            addressLine1: "Line 1",
+            addressLine2: "Line 2",
+            city: "City",
+            postalCode: "15236",
+            countryCode: "GR",
+            homePhone: nil,
+            mobilePhone: nil,
+            workPhone: nil)
     )
     
     override func viewDidLoad() {
@@ -85,7 +100,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        Primer.shared.configure(settings: applePaySettings)
+        Primer.shared.configure(settings: generalSettings)
         
         let theme = generatePrimerTheme()
         Primer.shared.configure(theme: theme)
