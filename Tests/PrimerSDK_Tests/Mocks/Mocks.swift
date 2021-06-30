@@ -82,6 +82,13 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var userDetails: UserDetails?
+    
+    var orderId: String?
+    
+    var billingAddress: Address?
+    
+    var is3DSEnabled: Bool
     
     var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
     
@@ -146,6 +153,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         self.authorizePayment = authorizePayment
         self.onCheckoutDismiss = onCheckoutDismiss
         self.onTokenizeSuccess = onTokenizeSuccess
+        self.is3DSEnabled = true
     }
 }
 
