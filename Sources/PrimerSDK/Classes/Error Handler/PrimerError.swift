@@ -277,7 +277,16 @@ enum PrimerError: PrimerErrorProtocol {
     case userCancelled
     case amountShouldBeNullForPendingOrderItems
     case amountCannotBeNullForNonPendingOrderItems
-
+    case currencyMissing
+    case amountMissing
+    case billingAddressMissing
+    case billingAddressCityMissing
+    case billingAddressAddressLine1Missing
+    case billingAddressPostalCodeMissing
+    case billingAddressCountryCodeMissing
+    case orderIdMissing
+    case userDetailsMissing
+    
     static var errorDomain: String = "primer"
 
     var errorCode: Int {
@@ -426,6 +435,60 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Amount cannot be null for order items with isPending == false",
                                      comment: "Amount cannot be null for order items with isPending == false - Primer error message")
+        case .currencyMissing:
+            return NSLocalizedString("primer-error-message-currency-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Currency is missing",
+                                     comment: "Currency is missing - Primer error message")
+        case .amountMissing:
+            return NSLocalizedString("primer-error-message-amount-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Amount is missing",
+                                     comment: "Amount is missing - Primer error message")
+        case .billingAddressMissing:
+            return NSLocalizedString("primer-error-billing-address-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Billing address is missing",
+                                     comment: "Billing address is missing - Primer error message")
+        case .billingAddressCityMissing:
+            return NSLocalizedString("primer-error-billing-address-city-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Billing address city is missing",
+                                     comment: "Billing address city is missing - Primer error message")
+        case .billingAddressPostalCodeMissing:
+            return NSLocalizedString("primer-error-billing-address-postal-code-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Billing address postal code is missing",
+                                     comment: "Billing address postal code is missing - Primer error message")
+        case .billingAddressCountryCodeMissing:
+            return NSLocalizedString("primer-error-billing-address-country-code-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Billing address country code is missing",
+                                     comment: "Billing address country code is missing - Primer error message")
+        case .orderIdMissing:
+            return NSLocalizedString("primer-error-order-id-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Order ID is missing",
+                                     comment: "Order ID is missing - Primer error message")
+        case .billingAddressAddressLine1Missing:
+            return NSLocalizedString("primer-error-billing-address-line1-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Address line 1 is missing",
+                                     comment: "Address line 1 is missing - Primer error message")
+        case .userDetailsMissing:
+            return NSLocalizedString("primer-error-user-details-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "User details are missing",
+                                     comment: "User details are missing - Primer error message")
         }
     }
 

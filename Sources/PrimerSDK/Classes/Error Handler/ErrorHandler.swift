@@ -13,7 +13,7 @@ internal class ErrorHandler {
 
     static var shared = ErrorHandler()
 
-    // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable cyclomatic_complexity function_body_length
     func handle(error: Error) -> Bool {
         log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
 
@@ -76,6 +76,24 @@ internal class ErrorHandler {
             case .amountCannotBeNullForNonPendingOrderItems:
                 break
             case .amountShouldBeNullForPendingOrderItems:
+                break
+            case .currencyMissing:
+                break
+            case .amountMissing:
+                break
+            case .billingAddressMissing:
+                break
+            case .billingAddressCityMissing:
+                break
+            case .billingAddressPostalCodeMissing:
+                break
+            case .billingAddressCountryCodeMissing:
+                break
+            case .orderIdMissing:
+                break
+            case .billingAddressAddressLine1Missing:
+                break
+            case .userDetailsMissing:
                 break
             }
 
