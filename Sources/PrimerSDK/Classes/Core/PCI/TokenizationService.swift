@@ -44,15 +44,48 @@ internal class TokenizationService: TokenizationServiceProtocol {
         api.tokenizePaymentMethod(clientToken: clientToken, paymentMethodTokenizationRequest: request) { (result) in
             switch result {
             case .failure:
-                onTokenizeSuccess(.failure( PrimerError.tokenizationRequestFailed ))
+                DispatchQueue.main.async {
+                    onTokenizeSuccess(.failure( PrimerError.tokenizationRequestFailed ))
+                }
+                
             case .success(let paymentMethodToken):
-                if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                                
+                if settings.is3DSEnabled && settings.billingAddress != nil {
+                    let sdk: ThreeDSSDKProtocol = NetceteraSDK()
+                    DependencyContainer.register(sdk)
+                    
+                    let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
+                    DependencyContainer.register(threeDSService)
+                    
+                    threeDSService.perform3DS(sdk, cardNetwork: .unknown, paymentMethodToken: paymentMethodToken, protocolVersion: .v1, presentOn: UIViewController(), completion: { result in
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success(let paymentMethodToken):
+                                if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
+                                    Primer.shared.delegate?.tokenAddedToVault(paymentMethodToken)
+                                }
+                                
+                                onTokenizeSuccess(.success(paymentMethodToken))
+                            case .failure(let err):
+                                onTokenizeSuccess(.failure( PrimerError.tokenizationRequestFailed ))
+                            }
+                        }
+                        
+                    })
+                } else {
                     DispatchQueue.main.async {
-                        Primer.shared.delegate?.tokenAddedToVault(paymentMethodToken)
+                        if settings.is3DSEnabled {
+                            print("\nWARNING!\nCannot perform 3DS without a billing address. Continue without 3DS\n")
+                        }
+                        
+                        if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
+                            Primer.shared.delegate?.tokenAddedToVault(paymentMethodToken)
+                        }
+                        
+                        onTokenizeSuccess(.success(paymentMethodToken))
                     }
                 }
-                onTokenizeSuccess(.success(paymentMethodToken))
-
             }
         }
     }
