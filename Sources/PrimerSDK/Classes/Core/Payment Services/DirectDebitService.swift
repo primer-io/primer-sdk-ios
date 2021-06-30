@@ -29,25 +29,29 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         }
 
         let mandate = state.directDebitMandate
+        
+        let userDetails = UserDetails(
+            firstName: mandate.firstName ?? "",
+            lastName: mandate.lastName ?? "",
+            email: mandate.email ?? "",
+            addressLine1: mandate.address?.addressLine1 ?? "",
+            addressLine2: mandate.address?.addressLine2 ?? "",
+            city: mandate.address?.city ?? "",
+            postalCode: mandate.address?.postalCode ?? "",
+            countryCode: mandate.address?.countryCode ?? "",
+            homePhone: nil,
+            mobilePhone: nil,
+            workPhone: nil)
+        
+        let bankDetails = BankDetails(
+            iban: mandate.iban,
+            bankCode: mandate.sortCode,
+            accountNumber: mandate.accountNumber)
 
         let body = DirectDebitCreateMandateRequest(
             id: configId,
-            userDetails: UserDetails(
-                firstName: mandate.firstName ?? "",
-                lastName: mandate.lastName ?? "",
-                email: mandate.email ?? "",
-                addressLine1: mandate.address?.addressLine1 ?? "",
-                addressLine2: mandate.address?.addressLine2 ?? "",
-                city: mandate.address?.city ?? "",
-                postalCode: mandate.address?.postalCode ?? "",
-                countryCode: mandate.address?.countryCode ?? ""
-            ),
-            bankDetails: BankDetails(
-                iban: mandate.iban,
-                bankCode: mandate.sortCode,
-                accountNumber: mandate.accountNumber
-            )
-        )
+            userDetails: userDetails,
+            bankDetails: bankDetails)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
@@ -69,7 +73,7 @@ struct DirectDebitCreateMandateRequest: Codable {
     let bankDetails: BankDetails
 }
 
-struct UserDetails: Codable {
+public struct UserDetails: Codable {
     let firstName: String
     let lastName: String
     let email: String
@@ -78,6 +82,35 @@ struct UserDetails: Codable {
     let city: String
     let postalCode: String
     let countryCode: String
+    let homePhone: String?
+    let mobilePhone: String?
+    let workPhone: String?
+    
+    public init(
+        firstName: String,
+        lastName: String,
+        email: String,
+        addressLine1: String,
+        addressLine2: String,
+        city: String,
+        postalCode: String,
+        countryCode: String,
+        homePhone: String?,
+        mobilePhone: String?,
+        workPhone: String?
+    ) {
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.addressLine1 = addressLine1
+        self.addressLine2 = addressLine2
+        self.city = city
+        self.postalCode = postalCode
+        self.countryCode = countryCode
+        self.homePhone = homePhone
+        self.mobilePhone = mobilePhone
+        self.workPhone = workPhone
+    }
 }
 
 struct BankDetails: Codable {
