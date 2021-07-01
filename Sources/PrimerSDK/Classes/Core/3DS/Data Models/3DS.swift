@@ -218,18 +218,9 @@ public struct ThreeDS {
     }
     
     internal struct BeginAuthResponse: Decodable {
-        struct Token: Codable {
-            let token: String
-            let analyticsId: String
-            let tokenType: String
-            let paymentInstrumentType: PaymentInstrumentType
-            let paymentInstrumentData: PaymentInstrumentData
-            let vaultData: VaultData?
-            let threeDSecureAuthentication: AuthenticationDetails?
-        }
         
         let authentication: ThreeDSAuthenticationProtocol
-        let token: ThreeDS.BeginAuthResponse.Token
+        let token: PaymentMethodToken
         
         enum CodingKeys: String, CodingKey {
             case authentication
@@ -258,7 +249,7 @@ public struct ThreeDS {
                 throw err
             }
             
-            token = try container.decode(ThreeDS.BeginAuthResponse.Token.self, forKey: .token)
+            token = try container.decode(PaymentMethodToken.self, forKey: .token)
         }
     }
     
@@ -393,7 +384,7 @@ public struct ThreeDS {
     }
     
     public struct AuthenticationDetails: Codable {
-        let responseCode: String
+        let responseCode: ResponseCode
         let reasonCode, reasonText, protocolVersion: String?
         let challengeIssued: Bool?
     }
