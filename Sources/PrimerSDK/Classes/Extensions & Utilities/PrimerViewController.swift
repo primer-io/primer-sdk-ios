@@ -14,41 +14,8 @@ internal class PrimerViewController: UIViewController {
         view.endEditing(true)
     }
 
-    func addLoadingView(_ indicator: UIActivityIndicatorView) {
-        indicator.color = .black
-        view.addSubview(indicator)
-        
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        indicator.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        indicator.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        indicator.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        indicator.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        
-        indicator.startAnimating()
-    }
-
-    private func setLoadingIndicatorConstraints(_ indicator: UIActivityIndicatorView) {
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        indicator.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        indicator.heightAnchor.constraint(equalToConstant: 20).isActive = true
-    }
-
     func removeLoadingView(_ indicator: UIActivityIndicatorView) {
         indicator.removeFromSuperview()
-    }
-
-    func remove() {
-        // Just to be safe, we check that this view controller
-        // is actually added to a parent before removing it.
-        guard parent != nil else {
-            return
-        }
-
-        willMove(toParent: nil)
-        view.removeFromSuperview()
-        removeFromParent()
     }
 
 }
