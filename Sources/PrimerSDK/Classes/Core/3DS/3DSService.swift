@@ -170,6 +170,31 @@ class ThreeDSService: ThreeDSServiceProtocol {
             }
         }
         .done { beginAuthResponse in
+            switch beginAuthResponse.authentication.responseCode {
+            case .authSuccess:
+                // Frictionless pass
+                // Frictionless attempt 2.1.0
+                completion(.success(beginAuthResponse.token))
+                return
+            case .notPerformed:
+                break
+            case .skipped:
+                // Skip authentication for low-risk payments
+                completion(.success(beginAuthResponse.token))
+                return
+            case .authFailed:
+                // Frictionless fail
+                // Frictionless not authenticated
+                // FIXME: Should I return the token since it exists or throw error?
+                completion(.success(beginAuthResponse.token))
+                return
+            case .challenge:
+                // Continue to present the challenge
+                break
+            case .METHOD:
+                break
+            }
+            
             guard let rvc = (UIApplication.shared.delegate as? UIApplicationDelegate)?.window??.rootViewController else {
                 throw NSError(domain: "primer", code: 100, userInfo: nil)
             }
