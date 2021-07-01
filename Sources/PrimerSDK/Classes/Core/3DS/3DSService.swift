@@ -173,7 +173,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             switch beginAuthResponse.authentication.responseCode {
             case .authSuccess:
                 // Frictionless pass
-                // Frictionless attempt 2.1.0
+                // Frictionless attempt
                 completion(.success(beginAuthResponse.token))
                 return
             case .notPerformed:
@@ -185,7 +185,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
             case .authFailed:
                 // Frictionless fail
                 // Frictionless not authenticated
-                // FIXME: Should I return the token since it exists or throw error?
                 completion(.success(beginAuthResponse.token))
                 return
             case .challenge:
