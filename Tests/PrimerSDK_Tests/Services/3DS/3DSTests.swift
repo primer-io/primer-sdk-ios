@@ -128,10 +128,10 @@ class ThreeDSTests: XCTestCase {
         threeDSService.beginRemoteAuth(paymentMethodToken: paymentMethod, threeDSecureBeginAuthRequest: req) { result in
             switch result {
             case .success(let response):
-                XCTAssert(response.token.paymentInstrumentData.last4Digits == "0008", "last4Digits wasn't parsed correctly")
-                XCTAssert(response.token.paymentInstrumentData.expirationMonth == "02", "expirationMonth wasn't parsed correctly")
-                XCTAssert(response.token.paymentInstrumentData.expirationYear == "2022", "expirationYear wasn't parsed correctly")
-                XCTAssert(response.token.paymentInstrumentData.cardholderName == "John Snow", "cardholderName wasn't parsed correctly")
+                XCTAssert(response.token.paymentInstrumentData?.last4Digits == "0008", "last4Digits wasn't parsed correctly")
+                XCTAssert(response.token.paymentInstrumentData?.expirationMonth == "02", "expirationMonth wasn't parsed correctly")
+                XCTAssert(response.token.paymentInstrumentData?.expirationYear == "2022", "expirationYear wasn't parsed correctly")
+                XCTAssert(response.token.paymentInstrumentData?.cardholderName == "John Snow", "cardholderName wasn't parsed correctly")
                 
                 XCTAssert(response.authentication.acsSignedContent?.isEmpty == false, "acsSignedContent wasn't parsed correctly")
                 XCTAssert(response.authentication.acsReferenceNumber == "3ds_acs_provider", "acsReferenceNumber wasn't parsed correctly")
@@ -244,7 +244,7 @@ class ThreeDSTests: XCTestCase {
             switch result {
             case .success(let response):
                 XCTAssert(response.token.paymentInstrumentData?.last4Digits == "0008", "last4Digits wasn't parsed correctly")
-                XCTAssert(response.token.threeDSecureAuthentication?.responseCode == "AUTH_SUCCESS", "last4Digits wasn't parsed correctly")
+                XCTAssert(response.token.threeDSecureAuthentication?.responseCode == .authSuccess, "3DS wasn't successful")
                 XCTAssert(response.token.threeDSecureAuthentication?.challengeIssued == true, "Challenge issued wasn't parsed correctly")
                 XCTAssert(response.token.threeDSecureAuthentication?.protocolVersion == "2.1.0", "3DS protocol version wasn't parsed correctly")
                 expectation.fulfill()
