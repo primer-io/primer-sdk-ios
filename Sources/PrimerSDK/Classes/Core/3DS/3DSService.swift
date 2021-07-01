@@ -195,16 +195,13 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 break
             }
             
-            guard let rvc = (UIApplication.shared.delegate as? UIApplicationDelegate)?.window??.rootViewController else {
+            guard let presentingViewController = Primer.shared.presentingViewController else {
                 throw NSError(domain: "primer", code: 100, userInfo: nil)
             }
-            
-            let prvc = Primer.shared.root
-            let presentingViewController = prvc?.presentingViewController
-            
-            prvc?.dismiss(animated: true) {
+                        
+            presentingViewController.dismiss(animated: true) {
                 firstly {
-                    self.performChallenge(with: sdk, on: transaction, with: beginAuthResponse.authentication, presentOn: presentingViewController!)
+                    self.performChallenge(with: sdk, on: transaction, with: beginAuthResponse.authentication, presentOn: presentingViewController)
                 }
                 .then { sdkAuth -> Promise<ThreeDS.PostAuthResponse> in
                     return self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token!)
