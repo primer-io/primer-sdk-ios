@@ -14,7 +14,7 @@ protocol ThreeDSServiceProtocol {
         cardNetwork: CardNetwork,
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
-        presentOn viewController: UIViewController,
+        sdkDismissed: (() -> Void)?,
         completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void
     )
     
@@ -77,7 +77,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         cardNetwork: CardNetwork,
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
-        presentOn viewController: UIViewController,
+        sdkDismissed: (() -> Void)?,
         completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void
     ) {
         var transaction: Transaction!
@@ -202,13 +202,21 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 firstly {
                     self.performChallenge(with: sdk, on: transaction, with: beginAuthResponse.authentication, presentOn: presentingViewController)
                 }
-                .then { sdkAuth -> Promise<ThreeDS.PostAuthResponse> in
-                    return self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token!)
-                }
-                .done { postAuthResponse in
-                    completion(.success(postAuthResponse.token))
+                .done { sdkAuth in
+                    sdkDismissed?()
+                    
+                    firstly {
+                        self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token!)
+                    }
+                    .done { postAuthResponse in
+                        completion(.success(postAuthResponse.token))
+                    }
+                    .catch { err in
+                        completion(.failure(err))
+                    }
                 }
                 .catch { err in
+                    sdkDismissed?()
                     completion(.failure(err))
                 }
             }
@@ -287,7 +295,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         cardNetwork: CardNetwork,
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
-        presentOn viewController: UIViewController,
+        sdkDismissed: (() -> Void)?,
         completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void
     ) { }
     
