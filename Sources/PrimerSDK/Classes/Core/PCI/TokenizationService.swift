@@ -58,36 +58,28 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
                     DependencyContainer.register(threeDSService)
                     
-                        DispatchQueue.main.async {
-                            switch result {
-                            case .success(let paymentMethodToken):
-                                if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-                                    Primer.shared.delegate?.tokenAddedToVault(paymentMethodToken)
                     threeDSService.perform3DS(
                             sdk,
                             cardNetwork: .unknown,
                             paymentMethodToken: paymentMethodToken,
                             protocolVersion: .v1,
                             sdkDismissed: { () in
-                                let routerDelegate: RouterDelegate = DependencyContainer.resolve()
-                                let router = routerDelegate as! Router
-                                let rootViewController = router.root
                                 
-                                if !settings.hasDisabledSuccessScreen {
-//                                    UIView.animate(withDuration: 0.3) {
-                                        Primer.shared.root?.addBlurEffect()
-//                                    }
-                                }
                             }, completion: { result in
+                                DispatchQueue.main.async {
+                                    switch result {
+                                    case .success(let paymentMethodToken):
+                                        if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
+                                            Primer.shared.delegate?.tokenAddedToVault(paymentMethodToken)
+                                        }
+                                                                                
+                                        onTokenizeSuccess(.success(paymentMethodToken))
+                                    case .failure(let err):
+                                        onTokenizeSuccess(.failure( PrimerError.tokenizationRequestFailed ))
+                                    }
                                 }
                                 
-                                onTokenizeSuccess(.success(paymentMethodToken))
-                            case .failure(let err):
-                                onTokenizeSuccess(.failure( PrimerError.tokenizationRequestFailed ))
-                            }
-                        }
-                        
-                    })
+                            })
                 } else {
                     DispatchQueue.main.async {
                         if settings.is3DSEnabled {
