@@ -219,8 +219,10 @@ class ThreeDSService: ThreeDSServiceProtocol {
                     completion(.failure(err))
                 }
             }
-            .catch { err in
+            .ensure {
                 sdkDismissed?()
+            }
+            .catch { err in
                 completion(.failure(err))
             }
         }
