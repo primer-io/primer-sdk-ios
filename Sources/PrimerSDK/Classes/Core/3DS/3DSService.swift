@@ -178,9 +178,10 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 completion(.success(beginAuthResponse.token))
                 return
             case .notPerformed:
+                // Not enough data to perform 3DS. Won't be returned.
                 break
             case .skipped:
-                // Skip authentication for low-risk payments
+                // Skipped because of a technical failure.
                 completion(.success(beginAuthResponse.token))
                 return
             case .authFailed:
@@ -192,6 +193,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 // Continue to present the challenge
                 break
             case .METHOD:
+                // Only applies on the web
                 break
             }
             
