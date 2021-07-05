@@ -42,22 +42,35 @@
                                     <constraint firstAttribute="height" constant="50" id="I3H-Od-r5f"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C1O-8f-gsj" customClass="PrimerCVVFieldView" customModule="PrimerSDK">
+                                <rect key="frame" x="36" y="206" width="303" height="50"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="jne-kJ-hrC"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="C1O-8f-gsj" firstAttribute="height" secondItem="z3P-zC-vmr" secondAttribute="height" id="934-Qr-aFV"/>
+                            <constraint firstItem="C1O-8f-gsj" firstAttribute="leading" secondItem="z3P-zC-vmr" secondAttribute="leading" id="9am-Nw-BMy"/>
                             <constraint firstItem="z3P-zC-vmr" firstAttribute="leading" secondItem="PeS-dP-X3g" secondAttribute="leading" id="9u3-9D-GfU"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerY" secondItem="P7R-MC-LKq" secondAttribute="centerY" id="A4C-4q-2Y2"/>
                             <constraint firstItem="PeS-dP-X3g" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" constant="20" id="DVm-pe-4Fl"/>
+                            <constraint firstItem="C1O-8f-gsj" firstAttribute="trailing" secondItem="z3P-zC-vmr" secondAttribute="trailing" id="KWX-ZB-Xot"/>
                             <constraint firstItem="z3P-zC-vmr" firstAttribute="top" secondItem="PeS-dP-X3g" secondAttribute="bottom" constant="8" id="QOo-bc-LXX"/>
                             <constraint firstItem="PeS-dP-X3g" firstAttribute="top" secondItem="Hc4-ia-dRw" secondAttribute="bottom" constant="30" id="Vwe-qU-8Fs"/>
                             <constraint firstAttribute="trailingMargin" secondItem="PeS-dP-X3g" secondAttribute="trailing" constant="20" id="beK-Hg-MMt"/>
                             <constraint firstItem="z3P-zC-vmr" firstAttribute="trailing" secondItem="PeS-dP-X3g" secondAttribute="trailing" id="cU2-hN-gdS"/>
                             <constraint firstItem="z3P-zC-vmr" firstAttribute="height" secondItem="PeS-dP-X3g" secondAttribute="height" id="kLg-47-RN8"/>
+                            <constraint firstItem="C1O-8f-gsj" firstAttribute="top" secondItem="z3P-zC-vmr" secondAttribute="bottom" constant="24" id="mhY-mU-pRR"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerX" secondItem="P7R-MC-LKq" secondAttribute="centerX" id="uIm-xc-nvN"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="kYZ-5n-R2a"/>
                     <connections>
+                        <outlet property="cvvFieldView" destination="C1O-8f-gsj" id="cRj-Rl-Q8l"/>
+                        <outlet property="expiryDateFieldView" destination="z3P-zC-vmr" id="XT2-7Y-EjM"/>
                         <outlet property="primerTextField" destination="PeS-dP-X3g" id="tIB-h0-Ihi"/>
                     </connections>
                 </viewController>

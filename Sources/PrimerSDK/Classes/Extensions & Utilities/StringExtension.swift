@@ -98,6 +98,17 @@ internal extension String {
         guard let date = toDate(withFormat: "MMyy") else { return false }
         return date.endOfMonth > Date()
     }
+    
+    var isTypingValidCVV: Bool? {
+        if !isNumeric && !isEmpty { return false }
+        if count > 4 { return false }
+        if count >= 3 && count <= 4 { return true }
+        return nil
+    }
+    
+    var isValidCVV: Bool {
+        return isNumeric && count >= 3 && count <= 4
+    }
 
     var isValidEmail: Bool {
         let emailRegEx = "(?:[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}~-]+(?:\\.[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}" +
