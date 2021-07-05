@@ -57,6 +57,9 @@
 		1589240F268B05A1001280DD /* PrimerTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1589240E268B05A1001280DD /* PrimerTextFieldView.swift */; };
 		15892410268B05AA001280DD /* PrimerTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1589240C268B04AC001280DD /* PrimerTextField.swift */; };
 		15892412268B062F001280DD /* PrimerNibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15892411268B062F001280DD /* PrimerNibView.swift */; };
+		15892414268B1143001280DD /* PrimerTextFieldView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15892413268B1143001280DD /* PrimerTextFieldView.xib */; };
+		15892416268B1ACD001280DD /* PrimerCardNumberFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15892415268B1ACD001280DD /* PrimerCardNumberFieldView.swift */; };
+		15892418268B20DF001280DD /* CardNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15892417268B20DF001280DD /* CardNetwork.swift */; };
 		16AF604EFAB8215B9F0879C271AE7A2D /* FormTextFieldType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D364D798A53A76D482156C7E07703394 /* FormTextFieldType.swift */; };
 		16EAA7FA33F257010600B443C71C99B5 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F41D2762B2290B4EE76542889986A16 /* PaymentMethod.swift */; };
 		17CC0E100C8B9EF45824E087493F8CBB /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 522F77B4CB1E9CA3B31E3F74F1962B2B /* fr.lproj */; };
@@ -232,6 +235,9 @@
 		1589240C268B04AC001280DD /* PrimerTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerTextField.swift; sourceTree = "<group>"; };
 		1589240E268B05A1001280DD /* PrimerTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerTextFieldView.swift; sourceTree = "<group>"; };
 		15892411268B062F001280DD /* PrimerNibView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerNibView.swift; sourceTree = "<group>"; };
+		15892413268B1143001280DD /* PrimerTextFieldView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PrimerTextFieldView.xib; sourceTree = "<group>"; };
+		15892415268B1ACD001280DD /* PrimerCardNumberFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerCardNumberFieldView.swift; sourceTree = "<group>"; };
+		15892417268B20DF001280DD /* CardNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardNetwork.swift; sourceTree = "<group>"; };
 		15939D76EEF467A182746C99C10F14B6 /* AlertController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		1841E53752535A5BB808AE11B6967728 /* PaymentNetwork.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentNetwork.swift; sourceTree = "<group>"; };
 		187BF6D0164EDAB4FF90BEC8F100DD60 /* ResourceBundle-PrimerResources-PrimerSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-PrimerResources-PrimerSDK-Info.plist"; sourceTree = "<group>"; };
@@ -494,9 +500,11 @@
 		1589240B268B0498001280DD /* Text Fields */ = {
 			isa = PBXGroup;
 			children = (
+				15892411268B062F001280DD /* PrimerNibView.swift */,
 				1589240C268B04AC001280DD /* PrimerTextField.swift */,
 				1589240E268B05A1001280DD /* PrimerTextFieldView.swift */,
-				15892411268B062F001280DD /* PrimerNibView.swift */,
+				15892413268B1143001280DD /* PrimerTextFieldView.xib */,
+				15892415268B1ACD001280DD /* PrimerCardNumberFieldView.swift */,
 			);
 			path = "Text Fields";
 			sourceTree = "<group>";
@@ -681,6 +689,7 @@
 				BFC2161CA55DC783DE736603A18CD1DE /* SuccessMessage.swift */,
 				1923AB6954C93D97B27B17962DF3A408 /* UXMode.swift */,
 				C5B8FAE78A1152F76BEC6E94C222E73B /* PCI */,
+				15892417268B20DF001280DD /* CardNetwork.swift */,
 			);
 			name = "Data Models";
 			path = "Sources/PrimerSDK/Classes/Data Models";
@@ -1103,6 +1112,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				151431662678A1DF00B4C96D /* LICENSE in Resources */,
+				15892414268B1143001280DD /* PrimerTextFieldView.xib in Resources */,
 				4C7139FF7E7397D65CE425EC83A1007B /* PrimerResources.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1212,6 +1222,7 @@
 				FA574C8F23D2537BCE422EBC7681E58D /* PrimerAPIClient.swift in Sources */,
 				3F28DE74B2F49EBD78669F6CF83C7216 /* PrimerButton.swift in Sources */,
 				151431782678A1DF00B4C96D /* Thenable.swift in Sources */,
+				15892416268B1ACD001280DD /* PrimerCardNumberFieldView.swift in Sources */,
 				151431692678A1DF00B4C96D /* after.swift in Sources */,
 				EE88EFD8527ABBD25F733DD7E448EBC8 /* PrimerContent.swift in Sources */,
 				D39ABD5195BCD984D385A957589314C7 /* PrimerDelegate.swift in Sources */,
@@ -1263,6 +1274,7 @@
 				D5E96BB5935FB39F946A9AE4141F10C7 /* VaultService.swift in Sources */,
 				5739C85AE478EB333677BC710B293000 /* WebViewController.swift in Sources */,
 				1514316B2678A1DF00B4C96D /* hang.swift in Sources */,
+				15892418268B20DF001280DD /* CardNetwork.swift in Sources */,
 				151431712678A1DF00B4C96D /* ConcurrencyLimitedDispatcher.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
