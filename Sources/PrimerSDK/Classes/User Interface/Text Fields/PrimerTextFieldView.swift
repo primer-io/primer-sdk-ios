@@ -8,19 +8,48 @@
 import UIKit
 
 public protocol PrimerTextFieldViewDelegate {
-    func isTextValid(_ isValid: Bool?)
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?)
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork)
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didFailWithError error: Error)
 }
 
 public extension PrimerTextFieldViewDelegate {
-    func isTextValid(_ isValid: Bool?) {}
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {}
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork) {}
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didFailWithError error: Error) {}
 }
 
 public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     
     @IBOutlet internal weak var textField: PrimerTextField!
+    internal var isValid: ((_ text: String) -> Bool)?
+    public var delegate: PrimerTextFieldViewDelegate?
+    
+    internal var validation: PrimerTextField.Validation = .notAvailable {
+        didSet {
+            switch validation {
+            case .valid:
+                delegate?.primerTextFieldView(self, isValid: true)
+
+            case .invalid(let err):
+                delegate?.primerTextFieldView(self, isValid: false)
+                
+                if let err = err {
+                    delegate?.primerTextFieldView(self, didFailWithError: err)
+                }
+        
+            case .notAvailable:
+                delegate?.primerTextFieldView(self, isValid: nil)
+            }
+        }
+    }
+    
     
     // MARK: - PROXY
     
+    public override var backgroundColor: UIColor? { didSet {
+        textField?.backgroundColor = backgroundColor
+    } }
     public var text: String? { didSet { textField.text = text } }
     public var attributedText: NSAttributedString? { didSet { textField.attributedText = attributedText } }
     public var textColor: UIColor? { didSet { textField.textColor = textColor } }
@@ -37,6 +66,90 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var disabledBackground: UIImage? { didSet { textField.disabledBackground = disabledBackground } }
     public var isEditing: Bool {
         return textField.isEditing
+    }
+    public var allowsEditingTextAttributes: Bool = false { didSet { textField.allowsEditingTextAttributes = allowsEditingTextAttributes }}
+    public var typingAttributes: [NSAttributedString.Key: Any]? { didSet { textField.typingAttributes = typingAttributes }}
+    public var clearButtonMode: UITextField.ViewMode = .never { didSet { textField.clearButtonMode = clearButtonMode }}
+    public var leftViewMode: UITextField.ViewMode = .never { didSet { textField.leftViewMode = leftViewMode }}
+    public var rightViewMode: UITextField.ViewMode = .never { didSet { textField.rightViewMode = rightViewMode }}
+    
+    public func borderRectForBounds(forBounds bounds: CGRect) -> CGRect {
+        return textField.borderRect(forBounds: bounds)
+    }
+    
+    public func textRect(forBounds bounds: CGRect) -> CGRect {
+        return textField.textRect(forBounds: bounds)
+    }
+    
+    public func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        return textField.placeholderRect(forBounds: bounds)
+    }
+    
+    public func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return textField.editingRect(forBounds: bounds)
+    }
+    
+    public func clearButtonRect(forBounds bounds: CGRect) -> CGRect {
+        return textField.clearButtonRect(forBounds: bounds)
+    }
+    
+    public func leftViewRect(forBounds bounds: CGRect) -> CGRect {
+        return textField.leftViewRect(forBounds: bounds)
+    }
+    
+    public func rightViewRect(forBounds bounds: CGRect) -> CGRect {
+        return textField.rightViewRect(forBounds: bounds)
+    }
+    
+    public func drawText(in rect: CGRect) {
+        return textField.drawText(in: rect)
+    }
+    
+    public func drawPlaceholderInRect(in rect: CGRect) {
+        return textField.drawPlaceholder(in: rect)
+    }
+    
+    public override var inputView: UIView? {
+        get {
+            return textField.inputView
+        }
+        set {
+            textField.inputView = newValue
+        }
+    }
+    public override var inputAccessoryView: UIView? {
+        get {
+            return textField.inputAccessoryView
+        }
+        set {
+            textField.inputAccessoryView = newValue
+        }
+    }
+    public var clearsOnInsertion: Bool = false { didSet { textField.clearsOnInsertion = clearsOnInsertion }}
+    
+    
+    override func xibSetup() {
+        super.xibSetup()
+        
+        textField.inputView = UIView()
+        
+        backgroundColor = .clear
+        view.backgroundColor = .clear
+        textField.backgroundColor = backgroundColor
+        textField.delegate = self
+    }
+    
+    // MARK: - TEXT FIELD DELEGATE
+    
+    public func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let primerTextField = textField as? PrimerTextField else { return }
+        let err = NSError(domain: "primer.core.kit", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."])
+        validation = (self.isValid?(primerTextField._text ?? "") ?? false) ? .valid : .invalid(err)
+    }
+    
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let primerTextField = textField as? PrimerTextField else { return true }
+        return true
     }
     
 }
