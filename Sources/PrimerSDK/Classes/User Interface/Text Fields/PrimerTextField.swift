@@ -18,7 +18,9 @@ internal class PrimerTextField: UITextField {
             return super.delegate
         }
         set {
-
+            if let primerTextFieldView = newValue as? PrimerTextFieldView {
+                super.delegate = primerTextFieldView
+            }
         }
     }
     
