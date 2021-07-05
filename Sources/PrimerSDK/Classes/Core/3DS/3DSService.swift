@@ -11,7 +11,6 @@ import ThreeDS_SDK
 protocol ThreeDSServiceProtocol {
     func perform3DS(
         _ sdk: ThreeDSSDKProtocol,
-        cardNetwork: CardNetwork,
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
         sdkDismissed: (() -> Void)?,
@@ -76,13 +75,13 @@ class ThreeDSService: ThreeDSServiceProtocol {
     
     func perform3DS(
         _ sdk: ThreeDSSDKProtocol,
-        cardNetwork: CardNetwork,
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
         sdkDismissed: (() -> Void)?,
         completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void
     ) {
         var transaction: Transaction!
+        let cardNetwork = CardNetwork(rawValue: paymentMethodToken.paymentInstrumentData?.network)
         
         firstly {
             initializeSDK(sdk)
@@ -297,7 +296,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
 class MockThreeDSService: ThreeDSServiceProtocol {
     func perform3DS(
         _ sdk: ThreeDSSDKProtocol,
-        cardNetwork: CardNetwork,
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
         sdkDismissed: (() -> Void)?,

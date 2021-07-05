@@ -60,7 +60,6 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     
                     threeDSService.perform3DS(
                             sdk,
-                            cardNetwork: .unknown,
                             paymentMethodToken: paymentMethodToken,
                             protocolVersion: .v1,
                             sdkDismissed: { () in
