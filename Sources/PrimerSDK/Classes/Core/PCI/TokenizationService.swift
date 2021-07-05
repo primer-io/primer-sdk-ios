@@ -59,7 +59,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     DependencyContainer.register(threeDSService)
                     
                     threeDSService.perform3DS(
-                            sdk,
+                            withSDK: sdk,
                             paymentMethodToken: paymentMethodToken,
                             protocolVersion: .v1,
                             sdkDismissed: { () in
