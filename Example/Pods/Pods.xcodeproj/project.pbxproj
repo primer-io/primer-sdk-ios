@@ -20,6 +20,7 @@
 		1367C7FC886D649CDDD1A751C0A62F7F /* firstly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A95FC5D7129D1682B7F493A40A06CBB /* firstly.swift */; };
 		150E2D244EA57AF7FD84D8FCB0D29850 /* Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DE345FA383CCCD0D19A5B1D8FF526C /* Primer.swift */; };
 		1589241A268B48F9001280DD /* 3DSService+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15892419268B48F9001280DD /* 3DSService+Promises.swift */; };
+		1589241C268EECAD001280DD /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1589241B268EECAD001280DD /* LoadingViewController.swift */; };
 		1652477FBEB1DE8DAE9E5E62C5916019 /* DirectCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46571F77829D57C0A56C1AF47F76B45 /* DirectCheckoutViewModel.swift */; };
 		17EB178CE7FC5C564C47734FDE4A13B7 /* CoreDataDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C6C5A46AE71847A79D69ED87E0D981E /* CoreDataDispatcher.swift */; };
 		1DEDC5FCC9B43413695D0B62BDBAA47C /* CardScannerViewController+SimpleScanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64435FCCB77E1C4AF84B87D9F623E97F /* CardScannerViewController+SimpleScanDelegate.swift */; };
@@ -202,6 +203,7 @@
 		10983E354DBF103C1E9D6F8220FE757D /* SuccessViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SuccessViewController.swift; sourceTree = "<group>"; };
 		133A956F37653D78C4E4B932CBE65604 /* PrimerDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerDelegate.swift; sourceTree = "<group>"; };
 		15892419268B48F9001280DD /* 3DSService+Promises.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "3DSService+Promises.swift"; sourceTree = "<group>"; };
+		1589241B268EECAD001280DD /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
 		16D7C16C833ED64334FFBAA03006046B /* VaultPaymentMethodViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewController.swift; sourceTree = "<group>"; };
 		178B69C04BF743332C45B625151F9EFE /* OrderItem.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OrderItem.swift; sourceTree = "<group>"; };
 		1AF971D66227F7C0993266D229B700E9 /* VaultPaymentMethodViewController+ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "VaultPaymentMethodViewController+ReloadDelegate.swift"; sourceTree = "<group>"; };
@@ -684,6 +686,7 @@
 				5D540227C19F31BE473F1EB625E8DA2E /* Success */,
 				41EE90FC0087E0F96E19C10CA782008A /* UI Delegates */,
 				AFF4EA3B23C8A7FD0DFF5B6236CE353B /* Vault */,
+				1589241B268EECAD001280DD /* LoadingViewController.swift */,
 			);
 			name = "User Interface";
 			path = "Sources/PrimerSDK/Classes/User Interface";
@@ -1244,6 +1247,7 @@
 				9E5EC9A728D544B049F5DA243C2ED9BD /* GuaranteeWrappers.swift in Sources */,
 				28C45304A200E73EEEC0C003CB0BAC4F /* hang.swift in Sources */,
 				F2CC6687A589FDD54E09879F5C980133 /* ImageName.swift in Sources */,
+				1589241C268EECAD001280DD /* LoadingViewController.swift in Sources */,
 				935E8A4BD57E98D4D2B0E3386ED3320A /* JSONParser.swift in Sources */,
 				0C0C5ED6946FF5490076A22FF0DFC4B0 /* Klarna.swift in Sources */,
 				ACF7B1C41D7DCD69310900F690998223 /* KlarnaService.swift in Sources */,
