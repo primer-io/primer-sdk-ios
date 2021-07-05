@@ -12,19 +12,26 @@ import UIKit
 class AppViewController: UIViewController, PrimerTextFieldViewDelegate {
     
     @IBOutlet weak var primerTextField: PrimerCardNumberFieldView!
+    @IBOutlet weak var expiryDateFieldView: PrimerExpiryDateFieldView!
+    @IBOutlet weak var cvvFieldView: PrimerCVVFieldView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        primerTextField.backgroundColor = .orange
+        primerTextField.backgroundColor = .lightGray
         primerTextField.delegate = self
-    }
-    
-    func isTextValid(_ isValid: Bool?) {
-        print("isTextValid: \(isValid)")
+        expiryDateFieldView.backgroundColor = .lightGray
+        expiryDateFieldView.delegate = self
+        cvvFieldView.backgroundColor = .lightGray
+        cvvFieldView.placeholder = "CVV"
+        cvvFieldView.delegate = self
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork) {
         print(cardNetwork)
+    }
+    
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
+        print("isTextValid: \(isValid)")
     }
 }
