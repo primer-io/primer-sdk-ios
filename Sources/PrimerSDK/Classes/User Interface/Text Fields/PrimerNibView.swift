@@ -9,7 +9,7 @@ import UIKit
 
 public class PrimerNibView: UIView {
     
-    public var view: UIView!
+    internal var view: UIView!
     
     override internal init(frame: CGRect) {
         super.init(frame: frame)
@@ -47,14 +47,8 @@ internal extension PrimerNibView {
         let bundle = Bundle(for: type(of: self))
         var nibName = type(of: self).description().components(separatedBy: ".").last!
         
-        if nibName == "PrimerCardNumberField" {
-            nibName = "PrimerPCITextField"
-        } else if nibName == "PrimerExpiryDateField" {
-            nibName = "PrimerPCITextField"
-        } else if nibName == "PrimerCVVField" {
-            nibName = "PrimerPCITextField"
-        } else if nibName == "PrimerNameField" {
-            nibName = "PrimerPCITextField"
+        if nibName == "PrimerCardNumberFieldView" {
+            nibName = "PrimerTextFieldView"
         }
         
         let nib = UINib(nibName: nibName, bundle: bundle)
