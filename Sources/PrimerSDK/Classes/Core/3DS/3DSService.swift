@@ -36,6 +36,8 @@ protocol ThreeDSServiceProtocol {
 
 class ThreeDSService: ThreeDSServiceProtocol {
     
+    private var threeDSSDKWindow: UIWindow?
+    
     deinit {
         print("ThreeDSecureServiceProtocol deinit")
     }
@@ -194,31 +196,32 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 break
             }
             
-            guard let presentingViewController = Primer.shared.presentingViewController else {
-                throw NSError(domain: "primer", code: 100, userInfo: nil)
+            self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
+            self.threeDSSDKWindow!.rootViewController = ClearViewController()
+            self.threeDSSDKWindow!.backgroundColor = UIColor.clear
+            self.threeDSSDKWindow!.windowLevel = UIWindow.Level.normal
+            self.threeDSSDKWindow!.makeKeyAndVisible()
+            
+            firstly {
+                self.performChallenge(with: sdk, on: transaction, with: beginAuthResponse.authentication, presentOn: self.threeDSSDKWindow!.rootViewController!)
             }
-                        
-            presentingViewController.dismiss(animated: true) {
+            .done { sdkAuth in
+                self.threeDSSDKWindow!.isHidden = true
+                self.threeDSSDKWindow = nil
+                
                 firstly {
-                    self.performChallenge(with: sdk, on: transaction, with: beginAuthResponse.authentication, presentOn: presentingViewController)
+                    self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token!)
                 }
-                .done { sdkAuth in
-                    sdkDismissed?()
-                    
-                    firstly {
-                        self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token!)
-                    }
-                    .done { postAuthResponse in
-                        completion(.success(postAuthResponse.token))
-                    }
-                    .catch { err in
-                        completion(.failure(err))
-                    }
+                .done { postAuthResponse in
+                    completion(.success(postAuthResponse.token))
                 }
                 .catch { err in
-                    sdkDismissed?()
                     completion(.failure(err))
                 }
+            }
+            .catch { err in
+                sdkDismissed?()
+                completion(.failure(err))
             }
         }
         .catch { err in
