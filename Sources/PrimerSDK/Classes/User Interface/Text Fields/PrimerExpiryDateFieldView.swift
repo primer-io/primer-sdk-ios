@@ -46,9 +46,6 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         }
         
         primerTextField._text = newText
-
-//        delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)
-//        validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? .valid : .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
         primerTextField.text = newText
         return false
     }
