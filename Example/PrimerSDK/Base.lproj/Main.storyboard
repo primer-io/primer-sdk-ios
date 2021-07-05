@@ -35,13 +35,24 @@
                                     <constraint firstAttribute="height" constant="50" id="4Tw-OJ-R9n"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="z3P-zC-vmr" customClass="PrimerExpiryDateFieldView" customModule="PrimerSDK">
+                                <rect key="frame" x="36" y="132" width="303" height="50"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="I3H-Od-r5f"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="z3P-zC-vmr" firstAttribute="leading" secondItem="PeS-dP-X3g" secondAttribute="leading" id="9u3-9D-GfU"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerY" secondItem="P7R-MC-LKq" secondAttribute="centerY" id="A4C-4q-2Y2"/>
                             <constraint firstItem="PeS-dP-X3g" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" constant="20" id="DVm-pe-4Fl"/>
+                            <constraint firstItem="z3P-zC-vmr" firstAttribute="top" secondItem="PeS-dP-X3g" secondAttribute="bottom" constant="8" id="QOo-bc-LXX"/>
                             <constraint firstItem="PeS-dP-X3g" firstAttribute="top" secondItem="Hc4-ia-dRw" secondAttribute="bottom" constant="30" id="Vwe-qU-8Fs"/>
                             <constraint firstAttribute="trailingMargin" secondItem="PeS-dP-X3g" secondAttribute="trailing" constant="20" id="beK-Hg-MMt"/>
+                            <constraint firstItem="z3P-zC-vmr" firstAttribute="trailing" secondItem="PeS-dP-X3g" secondAttribute="trailing" id="cU2-hN-gdS"/>
+                            <constraint firstItem="z3P-zC-vmr" firstAttribute="height" secondItem="PeS-dP-X3g" secondAttribute="height" id="kLg-47-RN8"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerX" secondItem="P7R-MC-LKq" secondAttribute="centerX" id="uIm-xc-nvN"/>
                         </constraints>
                     </view>
