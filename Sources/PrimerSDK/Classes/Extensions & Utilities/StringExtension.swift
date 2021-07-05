@@ -43,6 +43,11 @@ internal extension String {
         let inputP = NSPredicate(format: "SELF MATCHES %@", regex)
         return inputP.evaluate(with: self)
     }
+    
+    var isOnlyLatinCharacters: Bool {
+        let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ")
+        return !(self.rangeOfCharacter(from: set.inverted) != nil)
+    }
 
     var isValidCardNumber: Bool {
         return count >= 13 && count <= 19 && isValidLuhn
@@ -108,6 +113,15 @@ internal extension String {
     
     var isValidCVV: Bool {
         return isNumeric && count >= 3 && count <= 4
+    }
+    
+    var isTypingValidCardholderName: Bool? {
+        if isValidCardholderName { return true }
+        return nil
+    }
+    
+    var isValidCardholderName: Bool {
+        return self.replacingOccurrences(of: " ", with: "").withoutWhiteSpace.isOnlyLatinCharacters && self.split(separator: " ").count >= 2
     }
 
     var isValidEmail: Bool {
