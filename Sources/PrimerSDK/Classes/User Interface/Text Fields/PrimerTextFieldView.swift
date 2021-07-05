@@ -22,7 +22,7 @@ public extension PrimerTextFieldViewDelegate {
 public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     
     @IBOutlet internal weak var textField: PrimerTextField!
-    internal var isValid: ((_ text: String) -> Bool)?
+    internal var isValid: ((_ text: String) -> Bool?)?
     public var delegate: PrimerTextFieldViewDelegate?
     
     internal var validation: PrimerTextField.Validation = .notAvailable {
@@ -109,22 +109,22 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         return textField.drawPlaceholder(in: rect)
     }
     
-    public override var inputView: UIView? {
-        get {
-            return textField.inputView
-        }
-        set {
-            textField.inputView = newValue
-        }
-    }
-    public override var inputAccessoryView: UIView? {
-        get {
-            return textField.inputAccessoryView
-        }
-        set {
-            textField.inputAccessoryView = newValue
-        }
-    }
+//    public override var inputView: UIView? {
+//        get {
+//            return textField.inputView
+//        }
+//        set {
+//            textField.inputView = newValue
+//        }
+//    }
+//    public override var inputAccessoryView: UIView? {
+//        get {
+//            return textField.inputAccessoryView
+//        }
+//        set {
+//            textField.inputAccessoryView = newValue
+//        }
+//    }
     public var clearsOnInsertion: Bool = false { didSet { textField.clearsOnInsertion = clearsOnInsertion }}
     
     

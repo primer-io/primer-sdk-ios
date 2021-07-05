@@ -47,6 +47,57 @@ internal extension String {
     var isValidCardNumber: Bool {
         return count >= 13 && count <= 19 && isValidLuhn
     }
+    
+    var isTypingValidExpiryDate: Bool? {
+        // swiftlint:disable identifier_name
+        let _self = self.replacingOccurrences(of: "/", with: "")
+        // swiftlint:enable identifier_name
+        if _self.count > 4 {
+            return false
+            
+        } else if _self.count == 3 {
+            return nil
+            
+        } else if _self.count == 2 {
+            if let month = Int(_self) {
+                if month < 1 || month > 12 {
+                    return false
+                } else {
+                    return nil
+                }
+            }
+            
+        } else if _self.count == 1 {
+            if ["0", "1"].contains(_self.prefix(1)) {
+                return nil
+            } else {
+                return false
+            }
+            
+        } else if _self.isEmpty {
+            return nil
+        }
+        
+        // Case where count is 4 will arrive here
+        guard let date = toDate(withFormat: "MMyy") else { return false }
+        return date.endOfMonth > Date()
+    }
+    
+    var isValidExpiryDate: Bool {
+        // swiftlint:disable identifier_name
+        let _self = self.replacingOccurrences(of: "/", with: "")
+        // swiftlint:enable identifier_name
+        if _self.count != 4 {
+            return false
+        }
+        
+        if !_self.isNumeric {
+            return false
+        }
+        
+        guard let date = toDate(withFormat: "MMyy") else { return false }
+        return date.endOfMonth > Date()
+    }
 
     var isValidEmail: Bool {
         let emailRegEx = "(?:[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}~-]+(?:\\.[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}" +
