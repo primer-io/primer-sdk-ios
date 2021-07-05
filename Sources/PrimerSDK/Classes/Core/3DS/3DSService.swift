@@ -111,7 +111,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             }
             
             guard let addressLine1 = billingAddress.addressLine1, !addressLine1.isEmpty else {
-                throw PrimerError.billingAddressCityMissing
+                throw PrimerError.billingAddressAddressLine1Missing
             }
             
             guard let city = billingAddress.city, !city.isEmpty else {
