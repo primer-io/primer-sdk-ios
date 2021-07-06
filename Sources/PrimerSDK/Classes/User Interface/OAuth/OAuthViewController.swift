@@ -145,10 +145,17 @@ internal class OAuthViewController: PrimerViewController {
                 self.dismiss(animated: true, completion: nil)
                 return
             }
+            
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            guard let urlScheme = settings.urlScheme else {
+                let router: RouterDelegate = DependencyContainer.resolve()
+                router.show(.error(error: PrimerError.generic))
+                return
+            }
 
             session = ASWebAuthenticationSession(
                 url: authURL,
-                callbackURLScheme: "https://primer.io/",
+                callbackURLScheme: urlScheme,
                 completionHandler: { [weak self] (url, error) in
                     if let error = error {
                         _ = ErrorHandler.shared.handle(error: error)
