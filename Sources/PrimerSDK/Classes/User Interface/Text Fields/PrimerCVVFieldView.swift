@@ -8,7 +8,11 @@
 import UIKit
 
 public final class PrimerCVVFieldView: PrimerTextFieldView {
-            
+    
+    internal var cvv: String {
+        return textField._text ?? ""
+    }
+    
     override func xibSetup() {
         super.xibSetup()
         
