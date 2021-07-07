@@ -100,7 +100,7 @@ internal extension String {
             return false
         }
         
-        guard let date = toDate(withFormat: "MMyy") else { return false }
+        guard let date = _self.toDate(withFormat: "MMyy") else { return false }
         return date.endOfMonth > Date()
     }
     
