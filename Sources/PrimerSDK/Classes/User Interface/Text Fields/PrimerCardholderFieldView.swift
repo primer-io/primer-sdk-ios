@@ -8,7 +8,11 @@
 import UIKit
 
 public final class PrimerCardholderFieldView: PrimerTextFieldView {
-            
+    
+    internal var cardholderName: String {
+        return textField._text ?? ""
+    }
+    
     override func xibSetup() {
         super.xibSetup()
         

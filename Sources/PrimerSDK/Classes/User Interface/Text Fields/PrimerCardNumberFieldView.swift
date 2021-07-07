@@ -10,6 +10,9 @@ import UIKit
 public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         
     var cardNetwork: CardNetwork = .unknown
+    internal var cardnumber: String {
+        return (textField._text ?? "").replacingOccurrences(of: " ", with: "").withoutWhiteSpace
+    }
     
     override func xibSetup() {
         super.xibSetup()

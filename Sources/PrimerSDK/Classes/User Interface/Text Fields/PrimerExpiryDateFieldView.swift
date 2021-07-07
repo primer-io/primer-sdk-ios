@@ -8,6 +8,9 @@
 import UIKit
 
 public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
+    
+    private(set) public var expiryMonth: String?
+    private(set) public var expiryYear: String?
             
     override func xibSetup() {
         super.xibSetup()
@@ -15,7 +18,6 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         textField.delegate = self
         isValid = { text in
             let isValid = text.isTypingValidExpiryDate
-            print(isValid)
             return isValid
         }
     }
@@ -47,6 +49,14 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         
         primerTextField._text = newText
         primerTextField.text = newText
+        
+        if newText.isValidExpiryDate {
+            expiryMonth = String(newText.prefix(2))
+            expiryYear = String(newText.suffix(2))
+        } else {
+            expiryMonth = nil
+            expiryYear = nil
+        }
         return false
     }
     
