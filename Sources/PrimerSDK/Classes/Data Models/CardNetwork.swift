@@ -37,7 +37,6 @@ public enum CardNetwork: String {
     
     public init(account: String) {
         let str = account.withoutWhiteSpace
-        print("Account: \(str)")
         if str.withoutWhiteSpace.range(of: CardNetwork.masterCard.fastIdRegex, options: .regularExpression, range: nil, locale: nil) != nil {
             self = .masterCard
         } else if str.withoutWhiteSpace.range(of: CardNetwork.visa.fastIdRegex, options: .regularExpression, range: nil, locale: nil) != nil {
