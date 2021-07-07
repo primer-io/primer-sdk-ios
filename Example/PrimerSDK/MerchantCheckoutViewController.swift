@@ -23,7 +23,7 @@ class MerchantCheckoutViewController: UIViewController {
     let vaultPayPalSettings = PrimerSettings(
         currency: .GBP,
         countryCode: .gb,
-        urlScheme: "primer://",
+        urlScheme: "primer",
         urlSchemeIdentifier: "primer"
     )
     
@@ -63,7 +63,7 @@ class MerchantCheckoutViewController: UIViewController {
         countryCode: .fr,
         klarnaSessionType: .recurringPayment,
         klarnaPaymentDescription: nil,
-        urlScheme: "primer.io://",
+        urlScheme: "primer",
         urlSchemeIdentifier: "primer",
         isFullScreenOnly: false,
         hasDisabledSuccessScreen: false,
@@ -83,7 +83,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func configurePrimer() {
-        Primer.shared.configure(settings: applePaySettings)
+        Primer.shared.configure(settings: generalSettings)
         
         let theme = generatePrimerTheme()
         Primer.shared.configure(theme: theme)
@@ -111,6 +111,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: vaultPayPalSettings)
         Primer.shared.showCheckout(self, flow: .addPayPalToVault)
     }
     
