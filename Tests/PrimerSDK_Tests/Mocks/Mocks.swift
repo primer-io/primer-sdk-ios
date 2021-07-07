@@ -114,17 +114,17 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 
     var urlSchemeIdentifier: String? = ""
 
-    var amount: Int? { return 200 }
+    var amount: Int? = 100
 
-    var currency: Currency? { return .EUR }
+    var currency: Currency? = .EUR
 
-    var merchantIdentifier: String? { return "mid"}
+    var merchantIdentifier: String? = "mid"
 
-    var countryCode: CountryCode? { return .fr }
+    var countryCode: CountryCode? = .fr
 
-    var applePayEnabled: Bool { return false }
+    var applePayEnabled: Bool = false
 
-    var customerId: String? { return "cid" }
+    var customerId: String? = "cid"
 
     var theme: PrimerTheme { return PrimerTheme() }
 
