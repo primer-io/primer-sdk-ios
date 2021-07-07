@@ -17,6 +17,7 @@
 		0F7E94771F3F2BCDEBABA0CC320E74D0 /* PrimerSDK-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = DF79CC1A04D60C59860D5EFF646575AE /* PrimerSDK-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		100B515CE44BE2484BD0CAD016C5509E /* CountryCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB36382A878CE2F30BA9C9187F8E2042 /* CountryCode.swift */; };
 		11253BDF4DF375C348E87DF5B34F018A /* VaultCheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445FF62409FA7512582BFE5738E6E06E /* VaultCheckoutView.swift */; };
+		15034789269450DB00D26B62 /* CardComponentsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15034788269450DB00D26B62 /* CardComponentsManager.swift */; };
 		151431562678A1DF00B4C96D /* CancellableCatchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431302678A1DF00B4C96D /* CancellableCatchable.swift */; };
 		151431572678A1DF00B4C96D /* CancelContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431312678A1DF00B4C96D /* CancelContext.swift */; };
 		151431582678A1DF00B4C96D /* Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151431322678A1DF00B4C96D /* Cancellable.swift */; };
@@ -198,6 +199,7 @@
 		0EB28F97384012160632AF45B559BA3A /* PrimerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerViewController.swift; sourceTree = "<group>"; };
 		0FB7D7BE4E2DD1D34BE722C35E696BC6 /* DependencyInjection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DependencyInjection.swift; sourceTree = "<group>"; };
 		10521EBB01DE5F936655DD588B1ADA7F /* VaultPaymentMethodViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewModel.swift; sourceTree = "<group>"; };
+		15034788269450DB00D26B62 /* CardComponentsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardComponentsManager.swift; sourceTree = "<group>"; };
 		151431302678A1DF00B4C96D /* CancellableCatchable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CancellableCatchable.swift; sourceTree = "<group>"; };
 		151431312678A1DF00B4C96D /* CancelContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CancelContext.swift; sourceTree = "<group>"; };
 		151431322678A1DF00B4C96D /* Cancellable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cancellable.swift; sourceTree = "<group>"; };
@@ -514,6 +516,7 @@
 				1589241D269311AD001280DD /* PrimerExpiryDateFieldView.swift */,
 				1589241F26933D77001280DD /* PrimerCVVFieldView.swift */,
 				1589242126934373001280DD /* PrimerCardholderFieldView.swift */,
+				15034788269450DB00D26B62 /* CardComponentsManager.swift */,
 			);
 			path = "Text Fields";
 			sourceTree = "<group>";
@@ -1190,6 +1193,7 @@
 				89AE9892901270524A8F16C3F0D29851 /* ExternalViewModel.swift in Sources */,
 				16AF604EFAB8215B9F0879C271AE7A2D /* FormTextFieldType.swift in Sources */,
 				7EBB65AFF9F9BA4FAED72D7743238DE4 /* FormType.swift in Sources */,
+				15034789269450DB00D26B62 /* CardComponentsManager.swift in Sources */,
 				96CC7A7804069FFF464C8AA093B5FAEF /* FormView.swift in Sources */,
 				151431592678A1DF00B4C96D /* CancellableThenable.swift in Sources */,
 				1514315E2678A1DF00B4C96D /* WrapperProtocols.swift in Sources */,
