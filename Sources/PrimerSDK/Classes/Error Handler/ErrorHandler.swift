@@ -45,7 +45,7 @@ internal class ErrorHandler {
                 break
             case .customerIDNull:
                 break
-            case .tokenExpired:
+            case .clientTokenExpired:
                 break
             case .payPalSessionFailed:
                 break
@@ -74,6 +74,22 @@ internal class ErrorHandler {
             case .amountCannotBeNullForNonPendingOrderItems:
                 break
             case .amountShouldBeNullForPendingOrderItems:
+                break
+            case .clientTokenExpirationMissing:
+                break
+            case .amountMissing:
+                break
+            case .currencyMissing:
+                break
+            case .delegateNotSet:
+                break
+            case .invalidCardnumber:
+                break
+            case .invalidExpiryDate:
+                break
+            case .invalidCVV:
+                break
+            case .invalidCardholderName:
                 break
             }
 
