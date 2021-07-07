@@ -108,6 +108,8 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
 
             alert.show()
         }
+        
+        delegate?.reload()
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -152,6 +154,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
         let token = viewModel.paymentMethods[indexPath.row]
 
         let cardView = CardButton()
+        cardView.isUserInteractionEnabled = false
 
         cardView.render(model: token.cardButtonViewModel)
 

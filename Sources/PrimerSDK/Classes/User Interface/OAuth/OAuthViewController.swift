@@ -47,6 +47,25 @@ internal class OAuthViewController: PrimerViewController {
                     _ = ErrorHandler.shared.handle(error: error)
                     Primer.shared.delegate?.checkoutFailed(with: error)
                     
+                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                    
+                    let routerDelegate: RouterDelegate = DependencyContainer.resolve()
+                    
+                    let router = routerDelegate as! Router
+                    
+                    if settings.hasDisabledSuccessScreen {
+                        
+                        let rootViewController = router.root
+                        
+                        UIView.animate(withDuration: 0.3) {
+                            (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.0
+                        } completion: { (_) in
+                            rootViewController?.dismiss(animated: true, completion: nil)
+                        }
+                    } else {
+                        router.show(.error(error: error))
+                    }
+                    
                 case .success(let urlString):
                     // if Klarna show WebView, otherwise OAuth
                     if self?.host == OAuthHost.klarna {
@@ -72,6 +91,7 @@ internal class OAuthViewController: PrimerViewController {
         webViewController.url = URL(string: urlString)
         webViewController.delegate = self
         webViewController.klarnaWebViewCompletion = { [weak self] (_, err) in
+//            let err: Error?  = KlarnaException.noCoreUrl
             if let err = err {
                 _ = ErrorHandler.shared.handle(error: err)
                 router.show(.error(error: err))
@@ -106,6 +126,8 @@ internal class OAuthViewController: PrimerViewController {
             } else if settings.hasDisabledSuccessScreen && settings.isInitialLoadingHidden {
                 UIView.animate(withDuration: 0.3) {
                     (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.0
+                } completion: { (_) in
+                    rootViewController?.dismiss(animated: true, completion: nil)
                 }
             }
             
