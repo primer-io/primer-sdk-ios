@@ -10,7 +10,7 @@ import Foundation
 public protocol CardComponentsManagerDelegate {
     func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void)
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken)
-    func tokenizationFailed(with error: Error)
+    func tokenizationFailed(with errors: [Error])
     func isLoading(_ isLoading: Bool)
 }
 
@@ -168,22 +168,27 @@ public class CardComponentsManager: CardComponentsManagerProtocol {
     }
     
     private func validateCardComponents() throws {
-        if !self.cardnumberField.cardnumber.isValidCardNumber {
-            throw PrimerError.invalidCardnumber
+        var errors: [Error] = []
+        if !cardnumberField.cardnumber.isValidCardNumber {
+            errors.append(PrimerError.invalidCardnumber)
         }
         
-        guard let expiryMonth = self.expiryDateField.expiryMonth, let expiryYear = self.expiryDateField.expiryYear else {
-            throw PrimerError.invalidExpiryDate
+        if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
+            errors.append(PrimerError.invalidExpiryDate)
         }
         
-        guard self.cvvField.cvv.isValidCVV else {
-            throw PrimerError.invalidCVV
+        if !cvvField.cvv.isValidCVV {
+            errors.append(PrimerError.invalidCVV)
         }
         
         if let cardholderField  = cardholderField {
             if !cardholderField.cardholderName.isValidCardholderName {
-                throw PrimerError.invalidCardholderName
+                errors.append(PrimerError.invalidCardholderName)
             }
+        }
+        
+        if !errors.isEmpty {
+            throw PrimerError.containerError(errors: errors)
         }
     }
     
@@ -233,18 +238,21 @@ public class CardComponentsManager: CardComponentsManagerProtocol {
                     case .success(let paymentMethodToken):
                         self.delegate?.onTokenizeSuccess(paymentMethodToken)
                     case .failure(let err):
-                        self.delegate?.tokenizationFailed(with: PrimerError.tokenizationRequestFailed)
+                        self.delegate?.tokenizationFailed(with: [PrimerError.tokenizationRequestFailed])
                     }
                     
                     self.setIsLoading(false)
                 }
             }
             .catch { err in
-                self.delegate?.tokenizationFailed(with: err)
+                self.delegate?.tokenizationFailed(with: [err])
                 self.setIsLoading(false)
             }
+        } catch PrimerError.containerError(let errors) {
+            delegate?.tokenizationFailed(with: errors)
+            setIsLoading(false)
         } catch {
-            delegate?.tokenizationFailed(with: error)
+            delegate?.tokenizationFailed(with: [error])
             setIsLoading(false)
         }
     }

@@ -239,6 +239,7 @@ enum NetworkServiceError: PrimerErrorProtocol {
 enum PrimerError: PrimerErrorProtocol {
 
     case generic
+    case containerError(errors: [Error])
     case delegateNotSet
     case userCancelled
     
@@ -274,6 +275,8 @@ enum PrimerError: PrimerErrorProtocol {
         switch self {
         case .generic:
             return 0
+        case .containerError:
+            return 1
         case .delegateNotSet:
             return 500
         case .userCancelled:
@@ -352,6 +355,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Something went wrong",
                                      comment: "Something went wrong - Primer error message")
+            
+        case .containerError:
+            return NSLocalizedString("primer-error-message-multiple-errors",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Multiple errors occured",
+                                     comment: "Multiple errors occured - Primer error message")
             
         case .delegateNotSet:
             return NSLocalizedString("primer-error-message-delegate-not-set",
