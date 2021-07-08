@@ -45,7 +45,7 @@ internal class OAuthViewController: PrimerViewController {
                 switch result {
                 case .failure(let error):
                     _ = ErrorHandler.shared.handle(error: error)
-                    Primer.shared.delegate?.checkoutFailed(with: error)
+                    Primer.shared.delegate?.checkoutFailed?(with: error)
                     
                     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                     
