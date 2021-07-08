@@ -51,7 +51,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
             case .success(let paymentMethodToken):
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                                 
-                if settings.is3DSEnabled && settings.billingAddress != nil {
+                if settings.is3DSEnabled && settings.billingAddress != nil && paymentMethodToken.paymentInstrumentType == .paymentCard {
                     let sdk: ThreeDSSDKProtocol = NetceteraSDK()
                     DependencyContainer.register(sdk)
                     
@@ -81,7 +81,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                             })
                 } else {
                     DispatchQueue.main.async {
-                        if settings.is3DSEnabled {
+                        if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard {
                             print("\nWARNING!\nCannot perform 3DS without a billing address. Continue without 3DS\n")
                         }
                         
