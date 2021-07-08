@@ -257,10 +257,9 @@ class KlarnaServiceTests: XCTestCase {
 }
 
 extension KlarnaServiceTests: PrimerDelegate {
-
-    func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
+    func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         guard let url = URL(string: "\(endpoint)/clientToken") else {
-            return completion(.failure(NetworkError.missingParams))
+            return completion(nil, NetworkError.missingParams)
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -271,7 +270,7 @@ extension KlarnaServiceTests: PrimerDelegate {
         do {
             request.httpBody = try JSONEncoder().encode(body)
         } catch {
-            return completion(.failure(NetworkError.missingParams))
+            return completion(nil, NetworkError.missingParams)
         }
         
         callApi(request, completion: { result in
@@ -280,13 +279,13 @@ extension KlarnaServiceTests: PrimerDelegate {
                 do {
                     let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
                     print("🚀🚀🚀 token:", token)
-                    completion(.success(token))
+                    completion(token, nil)
                     
                 } catch {
-                    completion(.failure(NetworkError.serializationError))
+                    completion(nil, error)
                 }
             case .failure(let err):
-                completion(.failure(err))
+                completion(nil, err)
             }
         })
     }
