@@ -40,8 +40,8 @@ class UniversalCheckout: XCTestCase {
         // UI tests are a black box, we cannot access the actual amount from the code.
         // Test against € 0.05 since we know that this is the configuration we pass.
         // Test that the amount exists
-        let amountText = app.staticTexts["€0.05"]
-        XCTAssert(amountText.exists, "Amount '€0.05' should exist")
+        let amountText = app.staticTexts["€1.00"]
+        XCTAssert(amountText.exists, "Amount '€1.00' should exist")
         
         let savedPaymentMethodTitle = app.staticTexts["SAVED PAYMENT METHOD"]
         let seeAllButton = app.buttons["See All"]
