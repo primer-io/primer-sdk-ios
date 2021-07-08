@@ -7,11 +7,12 @@
 
 import Foundation
 
+@objc
 public protocol CardComponentsManagerDelegate {
-    func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void)
+    @objc optional func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void)
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken)
-    func tokenizationFailed(with errors: [Error])
-    func isLoading(_ isLoading: Bool)
+    @objc optional func tokenizationFailed(with errors: [Error])
+    @objc optional func isLoading(_ isLoading: Bool)
 }
 
 protocol CardComponentsManagerProtocol {
@@ -69,7 +70,7 @@ public class CardComponentsManager: CardComponentsManagerProtocol {
     private func setIsLoading(_ isLoading: Bool) {
         if self.isLoading == isLoading { return }
         self.isLoading = isLoading
-        delegate?.isLoading(self.isLoading)
+        delegate?.isLoading?(self.isLoading)
     }
     
     private func fetchAccessToken() -> Promise<DecodedClientToken> {
@@ -80,18 +81,18 @@ public class CardComponentsManager: CardComponentsManagerProtocol {
                 return
             }
             
-            delegate.clientTokenCallback({ result in
-                switch result {
-                case .success(let accessToken):
+            delegate.clientTokenCallback?({ (accessToken, err) in
+                if let err = err {
+                    seal.reject(err)
+                } else if let accessToken = accessToken {
                     if let decodedClientToken = accessToken.jwtTokenPayload {
                         seal.fulfill(decodedClientToken)
                     } else {
                         let err = PrimerError.clientTokenNull
                         seal.reject(err)
                     }
-                    
-                case .failure(let err):
-                    seal.reject(err)
+                } else {
+                    assert(true, "Should always return token or error")
                 }
             })
         }
@@ -238,21 +239,21 @@ public class CardComponentsManager: CardComponentsManagerProtocol {
                     case .success(let paymentMethodToken):
                         self.delegate?.onTokenizeSuccess(paymentMethodToken)
                     case .failure(let err):
-                        self.delegate?.tokenizationFailed(with: [PrimerError.tokenizationRequestFailed])
+                        self.delegate?.tokenizationFailed?(with: [PrimerError.tokenizationRequestFailed])
                     }
                     
                     self.setIsLoading(false)
                 }
             }
             .catch { err in
-                self.delegate?.tokenizationFailed(with: [err])
+                self.delegate?.tokenizationFailed?(with: [err])
                 self.setIsLoading(false)
             }
         } catch PrimerError.containerError(let errors) {
-            delegate?.tokenizationFailed(with: errors)
+            delegate?.tokenizationFailed?(with: errors)
             setIsLoading(false)
         } catch {
-            delegate?.tokenizationFailed(with: [error])
+            delegate?.tokenizationFailed?(with: [error])
             setIsLoading(false)
         }
     }
