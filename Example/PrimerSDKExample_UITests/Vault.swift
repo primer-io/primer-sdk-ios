@@ -23,7 +23,8 @@ class Vault: XCTestCase {
     }
 
     func testVault() throws {
-        try Base().testInitializeSDK()
+        let initSDKButton = app.buttons["initialize_primer_sdk"]
+        initSDKButton.tap()
         
         let vaultButton = app.buttons["vault_button"]
         vaultButton.tap()
