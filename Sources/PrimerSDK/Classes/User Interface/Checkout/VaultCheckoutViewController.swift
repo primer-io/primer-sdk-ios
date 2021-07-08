@@ -81,6 +81,21 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
 
         let option = viewModel.availablePaymentOptions[indexPath.section]
         let methodView = PaymentMethodComponent(frame: view.frame, method: option)
+        
+        switch option.type {
+        case .applePay:
+            cell.accessibilityIdentifier = "payment_method_table_view_apple_pay_cell"
+        case .klarna:
+            cell.accessibilityIdentifier = "payment_method_table_view_klarna_cell"
+        case .payPal:
+            cell.accessibilityIdentifier = "payment_method_table_view_paypal_cell"
+        case .goCardlessMandate:
+            cell.accessibilityIdentifier = "payment_method_table_view_direct_debit_cell"
+        case .paymentCard:
+            cell.accessibilityIdentifier = "payment_method_table_view_card_cell"
+        default:
+            break
+        }
 
         cell.layer.cornerRadius = 12.0
         cell.contentView.addSubview(methodView)
