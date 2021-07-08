@@ -58,8 +58,8 @@ class MerchantCheckoutViewController: UIViewController {
     let generalSettings = PrimerSettings(
         merchantIdentifier: "merchant.checkout.team",
         customerId: "my-customer",
-        amount: 100,
-        currency: .EUR,
+        amount: 100,        // Please don't change on develop (used for UI testing)
+        currency: .EUR,     // Please don't change on develop (used for UI testing)
         countryCode: .fr,
         klarnaSessionType: .recurringPayment,
         klarnaPaymentDescription: nil,
