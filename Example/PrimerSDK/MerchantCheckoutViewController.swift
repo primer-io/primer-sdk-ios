@@ -216,7 +216,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func checkoutFailed(with error: Error) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nError: \(error as NSError)\n")
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)")
     }
     
 }
