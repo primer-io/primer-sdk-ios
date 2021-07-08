@@ -95,8 +95,8 @@ class AppViewController: UIViewController, PrimerTextFieldViewDelegate, CardComp
         print("*** onTokenizeSuccess: \(paymentMethodToken)")
     }
     
-    func tokenizationFailed(with error: Error) {
-        print("*** tokenizationFailed: \(error)")
+    func tokenizationFailed(with errors: [Error]) {
+        print("*** tokenizationFailed: \(errors)")
     }
     
     func isLoading(_ isLoading: Bool) {

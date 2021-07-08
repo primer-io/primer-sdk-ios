@@ -39,7 +39,8 @@ internal class ErrorHandler {
 
         } else if let primerError = error as? PrimerError {
             switch primerError {
-            case .generic:
+            case .generic,
+                 .containerError:
                 break
             case .clientTokenNull:
                 break
