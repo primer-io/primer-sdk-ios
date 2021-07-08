@@ -19,11 +19,10 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
-        settings.clientTokenRequestCallback({ [weak self] result in
-            switch result {
-            case .failure:
+        settings.clientTokenRequestCallback({ [weak self] (token, err) in
+            if let err = err {
                 completion(PrimerError.clientTokenNull)
-            case .success(let token):
+            } else if let token = token {
                 guard let jwtTokenPayload = token.jwtTokenPayload,
                       let expDate = jwtTokenPayload.expDate
                 else {

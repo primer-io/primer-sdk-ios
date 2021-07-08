@@ -48,7 +48,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
             case .success(let paymentMethodToken):
                 if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
                     DispatchQueue.main.async {
-                        Primer.shared.delegate?.tokenAddedToVault(paymentMethodToken)
+                        Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
                     }
                 }
                 onTokenizeSuccess(.success(paymentMethodToken))
