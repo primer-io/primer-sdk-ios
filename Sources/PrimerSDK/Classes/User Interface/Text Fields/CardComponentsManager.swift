@@ -302,10 +302,10 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     convenience init(
         clientAccessToken: String,
-        cardnumberField: String?
+        cardnumber: String?
     ) {
         let cardnumberFieldView = PrimerCardNumberFieldView()
-        cardnumberFieldView.textField._text = cardnumberField
+        cardnumberFieldView.textField._text = cardnumber
         self.init(accessToken: clientAccessToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderField: PrimerCardholderFieldView())
         
         decodedClientToken = clientAccessToken.jwtTokenPayload
