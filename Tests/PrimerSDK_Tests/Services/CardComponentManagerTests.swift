@@ -11,12 +11,7 @@ import XCTest
 
 class CardComponentManagerTests: XCTestCase {
     
-    func test_card_component_manager_initialization() throws {        
-        let cardnumberFieldView = PrimerCardNumberFieldView()
-        let expiryDateFieldView = PrimerExpiryDateFieldView()
-        let cvvFieldView = PrimerCVVFieldView()
-        let cardholderFieldView = PrimerCardholderFieldView()
-
+    func test_card_component_manager_initialization() throws {
         var cardComponentManager = MockCardComponentsManager(clientAccessToken: "not_a_valid_jwt_token", cardnumberField: nil)
         XCTAssertEqual(cardComponentManager.decodedClientToken == nil, true)
 
