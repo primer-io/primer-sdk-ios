@@ -11,9 +11,7 @@ import XCTest
 
 class CardComponentManagerTests: XCTestCase {
     
-    func test_card_component_manager_initialization() throws {
-//        let expectation = XCTestExpectation(description: "Test")
-        
+    func test_card_component_manager_initialization() throws {        
         let cardnumberFieldView = PrimerCardNumberFieldView()
         let expiryDateFieldView = PrimerExpiryDateFieldView()
         let cvvFieldView = PrimerCVVFieldView()
