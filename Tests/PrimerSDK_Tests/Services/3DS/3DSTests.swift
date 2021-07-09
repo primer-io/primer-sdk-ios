@@ -63,7 +63,7 @@ class ThreeDSTests: XCTestCase {
                 XCTAssert(false, "3DS SDK initialization failed with error: \(nsErr.domain):\(nsErr.code) [\(nsErr.localizedDescription)]")
             } else {
                 let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
-                threeDSService.sdkAuth(sdk: sdk, cardNetwork: .unknown, protocolVersion: .v1) { result in
+                threeDSService.authenticateSdk(sdk: sdk, cardNetwork: .unknown, protocolVersion: .v1) { result in
                     switch result {
                     case .success(let transaction):
                         do {
@@ -160,7 +160,7 @@ class ThreeDSTests: XCTestCase {
                 let nsErr = err as NSError
                 XCTAssert(false, "3DS SDK initialization failed with error: \(nsErr.domain):\(nsErr.code) [\(nsErr.localizedDescription)]")
             } else {
-                threeDSService.sdkAuth(sdk: sdk, cardNetwork: .unknown, protocolVersion: .v1) { result in
+                threeDSService.authenticateSdk(sdk: sdk, cardNetwork: .unknown, protocolVersion: .v1) { result in
                     switch result {
                     case .success(let transaction):
                         guard let paymentMethodData = ThreeDSConstants.paymentMethodJSON.data(using: .utf8) else {

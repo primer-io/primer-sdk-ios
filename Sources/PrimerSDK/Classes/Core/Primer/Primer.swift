@@ -211,7 +211,7 @@ public class Primer {
         service.initializeSDK(sdk) { (initResult) in
             switch initResult {
             case .success:
-                service.sdkAuth(sdk: sdk, cardNetwork: CardNetwork(rawValue: paymentMethod.paymentInstrumentData?.network), protocolVersion: .v1) { (authResult) in
+                service.authenticateSdk(sdk: sdk, cardNetwork: CardNetwork(rawValue: paymentMethod.paymentInstrumentData?.network), protocolVersion: .v1) { (authResult) in
                     switch authResult {
                     case .success(let transaction):
                         let threeDSecureAuthData = try! transaction.buildThreeDSecureAuthData()

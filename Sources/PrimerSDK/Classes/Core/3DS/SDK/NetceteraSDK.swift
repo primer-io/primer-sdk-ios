@@ -74,7 +74,7 @@ class NetceteraSDK: ThreeDSSDKProtocol {
         }
     }
     
-    func sdkAuth(cardNetwork: CardNetwork, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void) {
+    func authenticateSdk(cardNetwork: CardNetwork, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void) {
         do {
             var directoryServerId: String
             

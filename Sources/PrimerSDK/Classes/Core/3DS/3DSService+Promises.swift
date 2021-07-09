@@ -23,11 +23,11 @@ extension ThreeDSService {
         }
     }
     
-    func sdkAuth(sdk: ThreeDSSDKProtocol,
+    func authenticateSdk(sdk: ThreeDSSDKProtocol,
                  cardNetwork: CardNetwork,
                  protocolVersion: ThreeDS.ProtocolVersion) -> Promise<Transaction> {
         return Promise { seal in
-            self.sdkAuth(sdk: sdk, cardNetwork: cardNetwork, protocolVersion: protocolVersion) { result in
+            self.authenticateSdk(sdk: sdk, cardNetwork: cardNetwork, protocolVersion: protocolVersion) { result in
                 switch result {
                 case .success(let transaction):
                     seal.fulfill(transaction)

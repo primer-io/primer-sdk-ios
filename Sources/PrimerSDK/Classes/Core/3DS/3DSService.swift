@@ -18,7 +18,7 @@ protocol ThreeDSServiceProtocol {
     )
     
     func initializeSDK(_ sdk: ThreeDSSDKProtocol, completion: @escaping (Result<Void, Error>) -> Void)
-    func sdkAuth(sdk: ThreeDSSDKProtocol,
+    func authenticateSdk(sdk: ThreeDSSDKProtocol,
                  cardNetwork: CardNetwork,
                  protocolVersion: ThreeDS.ProtocolVersion,
                  completion: @escaping (Result<Transaction, Error>) -> Void)
@@ -87,7 +87,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             initializeSDK(sdk)
         }
         .then { () -> Promise<Transaction> in
-            return self.sdkAuth(sdk: sdk, cardNetwork: cardNetwork, protocolVersion: protocolVersion)
+            return self.authenticateSdk(sdk: sdk, cardNetwork: cardNetwork, protocolVersion: protocolVersion)
         }
         .then { trx -> Promise<ThreeDS.BeginAuthResponse> in
             transaction = trx
@@ -236,11 +236,11 @@ class ThreeDSService: ThreeDSServiceProtocol {
         sdk.initializeSDK(completion: completion)
     }
     
-    func sdkAuth(sdk: ThreeDSSDKProtocol,
+    func authenticateSdk(sdk: ThreeDSSDKProtocol,
                  cardNetwork: CardNetwork,
                  protocolVersion: ThreeDS.ProtocolVersion,
                  completion: @escaping (Result<Transaction, Error>) -> Void) {
-        sdk.sdkAuth(cardNetwork: cardNetwork, protocolVersion: protocolVersion, completion: completion)
+        sdk.authenticateSdk(cardNetwork: cardNetwork, protocolVersion: protocolVersion, completion: completion)
     }
     
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
@@ -317,8 +317,8 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         sdk.initializeSDK(completion: completion)
     }
     
-    func sdkAuth(sdk: ThreeDSSDKProtocol, cardNetwork: CardNetwork, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void) {
-        sdk.sdkAuth(cardNetwork: cardNetwork, protocolVersion: protocolVersion, completion: completion)
+    func authenticateSdk(sdk: ThreeDSSDKProtocol, cardNetwork: CardNetwork, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void) {
+        sdk.authenticateSdk(cardNetwork: cardNetwork, protocolVersion: protocolVersion, completion: completion)
     }
     
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
