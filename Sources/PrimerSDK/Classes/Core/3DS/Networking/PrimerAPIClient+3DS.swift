@@ -28,14 +28,14 @@ extension PrimerAPIClient {
             switch result {
             case .success(let postAuthResponse):
                 completion(.success(postAuthResponse))
-
+                
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.tokenizationRequestFailed))
             }
         }
-    
-}
+        
+    }
     
 }
 
@@ -48,7 +48,7 @@ extension MockPrimerAPIClient {
             completion(.failure(nsErr))
             return
         }
-
+        
         do {
             let value = try JSONDecoder().decode(ThreeDS.BeginAuthResponse.self, from: response)
             completion(.success(value))
@@ -65,7 +65,7 @@ extension MockPrimerAPIClient {
             completion(.failure(nsErr))
             return
         }
-
+        
         do {
             let value = try JSONDecoder().decode(ThreeDS.PostAuthResponse.self, from: response)
             completion(.success(value))
