@@ -34,6 +34,7 @@
 		1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B9A1260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift */; };
 		1582B9AD260A402E00C80BD7 /* Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B9AC260A402E00C80BD7 /* Base.swift */; };
 		15ACE9652614B186004C3EAA /* chocolate_bar_demo.otf in Resources */ = {isa = PBXBuildFile; fileRef = 15ACE9642614B186004C3EAA /* chocolate_bar_demo.otf */; };
+		15F5E2FF26982B21003AFF8A /* CardComponentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F5E2FE26982B21003AFF8A /* CardComponentManagerTests.swift */; };
 		15F97C632624480500DCB3BA /* AppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F97C622624480500DCB3BA /* AppViewController.swift */; };
 		15F97C682624488700DCB3BA /* MerchantCheckoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F97C672624488700DCB3BA /* MerchantCheckoutViewController.swift */; };
 		15F97C6D26246FD300DCB3BA /* MerchantCheckoutViewController+Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F97C6C26246FD300DCB3BA /* MerchantCheckoutViewController+Primer.swift */; };
@@ -112,6 +113,7 @@
 		15ACEA762615C791004C3EAA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		15ACEA772615C791004C3EAA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Main.strings; sourceTree = "<group>"; };
 		15F5BFFE25FBAFDB00426B1C /* PrimerSDK_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrimerSDK_Example.entitlements; sourceTree = "<group>"; };
+		15F5E2FE26982B21003AFF8A /* CardComponentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardComponentManagerTests.swift; sourceTree = "<group>"; };
 		15F97C622624480500DCB3BA /* AppViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewController.swift; sourceTree = "<group>"; };
 		15F97C672624488700DCB3BA /* MerchantCheckoutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantCheckoutViewController.swift; sourceTree = "<group>"; };
 		15F97C6C26246FD300DCB3BA /* MerchantCheckoutViewController+Primer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MerchantCheckoutViewController+Primer.swift"; sourceTree = "<group>"; };
@@ -242,6 +244,7 @@
 				1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */,
 				1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */,
 				1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */,
+				15F5E2FE26982B21003AFF8A /* CardComponentManagerTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -664,6 +667,7 @@
 				1582B981260A3F2900C80BD7 /* PayPalService.swift in Sources */,
 				1582B991260A3F2900C80BD7 /* ClientTokenServiceTests.swift in Sources */,
 				1582B98E260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift in Sources */,
+				15F5E2FF26982B21003AFF8A /* CardComponentManagerTests.swift in Sources */,
 				1582B97C260A3F2900C80BD7 /* DirectCheckoutViewModel.swift in Sources */,
 				1582B98F260A3F2900C80BD7 /* KlarnaServiceTests.swift in Sources */,
 				1582B98A260A3F2900C80BD7 /* OAuthViewModelTests.swift in Sources */,

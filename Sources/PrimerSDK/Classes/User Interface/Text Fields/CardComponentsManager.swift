@@ -259,3 +259,60 @@ public class CardComponentsManager: CardComponentsManagerProtocol {
     }
     
 }
+
+
+internal class MockCardComponentsManager: CardComponentsManagerProtocol {
+    
+    var cardnumberField: PrimerCardNumberFieldView
+    
+    var expiryDateField: PrimerExpiryDateFieldView
+    
+    var cvvField: PrimerCVVFieldView
+    
+    var cardholderField: PrimerCardholderFieldView?
+    
+    var flow: PaymentFlow
+    
+    var delegate: CardComponentsManagerDelegate?
+    
+    var customerId: String?
+    
+    var merchantIdentifier: String?
+    
+    var amount: Int?
+    
+    var currency: Currency?
+    
+    var decodedClientToken: DecodedClientToken?
+    
+    var paymentMethodsConfig: PaymentMethodConfig?
+    
+    public init(accessToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderFieldView?) {
+        DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
+        self.flow = flow
+        self.cardnumberField = cardnumberField
+        self.expiryDateField = expiryDateField
+        self.cvvField = cvvField
+        self.cardholderField = cardholderField
+        
+        if let accessToken = accessToken, let decodedClientToken = accessToken.jwtTokenPayload {
+            self.decodedClientToken = decodedClientToken
+        }
+    }
+    
+    convenience init(
+        clientAccessToken: String,
+        cardnumberField: String?
+    ) {
+        let cardnumberFieldView = PrimerCardNumberFieldView()
+        cardnumberFieldView.textField._text = cardnumberField
+        self.init(accessToken: clientAccessToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderField: PrimerCardholderFieldView())
+        
+        decodedClientToken = clientAccessToken.jwtTokenPayload
+    }
+    
+    func tokenize() {
+        
+    }
+
+}
