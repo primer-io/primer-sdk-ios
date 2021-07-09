@@ -13,22 +13,70 @@ import PassKit
 internal enum CardNetwork: String {
     case amex
     case chinaUnionPay
+    case dankort
     case diners
     case discover
     case electron
     case elo
+    case enroute
+    case hiper
+    case interac
     case jcb
     case maestro
     case masterCard
+    case mir
     case visa
     case unknown
     
+//    "AMEX"
+//      | "DANKORT"
+//      | "DINERS_CLUB"
+//      | "DISCOVER"
+//      | "ENROUTE"
+//      | "ELO"
+//      | "HIPER"
+//      | "INTERAC"
+//      | "JCB"
+//      | "MAESTRO"
+//      | "MASTERCARD"
+//      | "MIR"
+//      | "PRIVATE_LABEL"
+//      | "UNIONPAY"
+//      | "VISA"
+//      | "OTHER";
+    
     init(rawValue: String?) {
         switch rawValue?.lowercased() {
-        case "visa":
-            self = .visa
+        case "amex":
+            self = .amex
+        case "unionpay":
+            self = .chinaUnionPay
+        case "diners_club":
+            self = .diners
+        case "dankort":
+            self = .dankort
+        case "discover":
+            self = .discover
+        case "electron":
+            self = .electron
+        case "enroute":
+            self = .enroute
+        case "elo":
+            self = .elo
+        case "hiper":
+            self = .hiper
+        case "interac":
+            self = .interac
+        case "jcb":
+            self = .jcb
+        case "maestro":
+            self = .maestro
         case "mastercard":
             self = .masterCard
+        case "mir":
+            self = .mir
+        case "visa":
+            self = .visa
         default:
             self = .unknown
         }
