@@ -24,8 +24,8 @@ extension ThreeDSService {
     }
     
     func authenticateSdk(sdk: ThreeDSSDKProtocol,
-                 cardNetwork: CardNetwork,
-                 protocolVersion: ThreeDS.ProtocolVersion) -> Promise<Transaction> {
+                         cardNetwork: CardNetwork,
+                         protocolVersion: ThreeDS.ProtocolVersion) -> Promise<Transaction> {
         return Promise { seal in
             self.authenticateSdk(sdk: sdk, cardNetwork: cardNetwork, protocolVersion: protocolVersion) { result in
                 switch result {
@@ -38,9 +38,7 @@ extension ThreeDSService {
         }
     }
     
-    func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
-                         threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest) -> Promise<ThreeDS.BeginAuthResponse>
-    {
+    func beginRemoteAuth(paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest) -> Promise<ThreeDS.BeginAuthResponse> {
         return Promise { seal in
             self.beginRemoteAuth(paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
                 switch result {
