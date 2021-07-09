@@ -198,6 +198,8 @@ public class Primer {
             self?.root?.dismiss(animated: true, completion: nil)
         }
     }
+    
+    // FIXME: Remove me when done testing.
     // swiftlint:disable cyclomatic_complexity
     public func performThreeDS(paymentMethod: PaymentMethodToken, completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
