@@ -200,7 +200,7 @@ class ThreeDSTests: XCTestCase {
                                     return
                                 }
                                 
-                                threeDSService.performChallenge(with: sdk, on: transaction, with: authentication, presentOn: UIViewController()) { result in
+                                threeDSService.performChallenge(with: sdk, on: transaction, threeDSAuth: authentication, presentOn: UIViewController()) { result in
                                     switch result {
                                     case .success(let sdkAuthCompletion):
                                         XCTAssert(sdkAuthCompletion.sdkTransactionId == "transaction_id", "3DS SDK Challenge returned transaction id.")

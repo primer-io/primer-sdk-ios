@@ -236,7 +236,7 @@ public class Primer {
                                 let rvc = (UIApplication.shared.delegate as? UIApplicationDelegate)?.window??.rootViewController
                                 
                                 rvc?.dismiss(animated: true, completion: {
-                                    service.performChallenge(with: sdk, on: transaction, with: authentication, presentOn: rvc!) { result in
+                                    service.performChallenge(with: sdk, on: transaction, threeDSAuth: authentication, presentOn: rvc!) { result in
                                         switch result {
                                         case .success(let netceteraAuthCompletion):
                                             service.continueRemoteAuth(threeDSTokenId: paymentMethod.token!) { result in

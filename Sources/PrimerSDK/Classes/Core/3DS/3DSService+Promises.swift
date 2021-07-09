@@ -53,11 +53,11 @@ extension ThreeDSService {
     
     func performChallenge(with sdk: ThreeDSSDKProtocol,
                           on transaction: Transaction,
-                          with threeDSecureAuthResponse: ThreeDSAuthenticationProtocol,
+                          threeDSAuth: ThreeDSAuthenticationProtocol,
                           presentOn viewController: UIViewController) -> Promise<ThreeDS.ThreeDSSDKAuthCompletion>
     {
         return Promise { seal in
-            self.performChallenge(with: sdk, on: transaction, with: threeDSecureAuthResponse, presentOn: viewController) { result in
+            self.performChallenge(with: sdk, on: transaction, threeDSAuth: threeDSAuth, presentOn: viewController) { result in
                 switch result {
                 case .success(let sdkAuth):
                     seal.fulfill(sdkAuth)

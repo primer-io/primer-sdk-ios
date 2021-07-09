@@ -27,7 +27,7 @@ protocol ThreeDSServiceProtocol {
                          completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
     func performChallenge(with sdk: ThreeDSSDKProtocol,
                           on transaction: Transaction,
-                          with threeDSecureAuthResponse: ThreeDSAuthenticationProtocol,
+                          threeDSAuth: ThreeDSAuthenticationProtocol,
                           presentOn viewController: UIViewController,
                           completion: @escaping (Result<ThreeDS.ThreeDSSDKAuthCompletion, Error>) -> Void)
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void)
@@ -204,7 +204,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             self.threeDSSDKWindow!.makeKeyAndVisible()
             
             firstly {
-                self.performChallenge(with: sdk, on: transaction, with: beginAuthResponse.authentication, presentOn: self.threeDSSDKWindow!.rootViewController!)
+                self.performChallenge(with: sdk, on: transaction, threeDSAuth: beginAuthResponse.authentication, presentOn: self.threeDSSDKWindow!.rootViewController!)
             }
             .done { sdkAuth in
                 self.threeDSSDKWindow!.isHidden = true
@@ -266,11 +266,11 @@ class ThreeDSService: ThreeDSServiceProtocol {
     
     func performChallenge(with sdk: ThreeDSSDKProtocol,
                           on transaction: Transaction,
-                          with threeDSecureAuthResponse: ThreeDSAuthenticationProtocol,
+                          threeDSAuth: ThreeDSAuthenticationProtocol,
                           presentOn viewController: UIViewController,
                           completion: @escaping (Result<ThreeDS.ThreeDSSDKAuthCompletion, Error>) -> Void) {
         sdk.performChallenge(on: transaction,
-                             with: threeDSecureAuthResponse,
+                             with: threeDSAuth,
                              presentOn: viewController,
                              completion: completion)
     }
@@ -335,7 +335,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         api.threeDSBeginAuth(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
     }
     
-    func performChallenge(with sdk: ThreeDSSDKProtocol, on transaction: Transaction, with threeDSecureAuthResponse: ThreeDSAuthenticationProtocol, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.ThreeDSSDKAuthCompletion, Error>) -> Void) {
+    func performChallenge(with sdk: ThreeDSSDKProtocol, on transaction: Transaction, threeDSAuth: ThreeDSAuthenticationProtocol, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.ThreeDSSDKAuthCompletion, Error>) -> Void) {
         
         Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
             do {
