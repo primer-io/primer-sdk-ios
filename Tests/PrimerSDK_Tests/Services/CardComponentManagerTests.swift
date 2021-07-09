@@ -88,12 +88,13 @@ class CardComponentManagerTests: XCTestCase {
     }
     
     func test_is_valid_card_number() throws {
-        for (_, cardnumbers) in testCardNumbers {
+        for (cardNetwork, cardnumbers) in testCardNumbers {
             for cardnumber in cardnumbers {
-                XCTAssert(cardnumber.isValidCardNumber)
+                XCTAssert(cardnumber.withoutWhiteSpace.isValidCardNumber, "\(cardnumber) [\(cardNetwork)] failed validation")
             }
         }
         
+        XCTAssert(!"".isValidCardNumber)
         XCTAssert(!"abcd".isValidCardNumber)
         XCTAssert(!"1".isValidCardNumber)
         XCTAssert(!"1234abcd".isValidCardNumber)
