@@ -51,7 +51,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
             case .success(let paymentMethodToken):
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                                 
-                if settings.is3DSEnabled && settings.billingAddress != nil && paymentMethodToken.paymentInstrumentType == .paymentCard {
+                if settings.is3DSEnabled && settings.billingAddress != nil && paymentMethodToken.paymentInstrumentType == .paymentCard && paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess {
                     let sdk: ThreeDSSDKProtocol = NetceteraSDK()
                     DependencyContainer.register(sdk)
                     
