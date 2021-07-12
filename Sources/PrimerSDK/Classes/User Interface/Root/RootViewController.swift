@@ -157,30 +157,32 @@ internal class RootViewController: PrimerViewController {
     
     @objc
     private func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (
-            notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
-        )?.cgRectValue {
-            let newConstant = -keyboardSize.height
-            let duration = bottomConstraint!.constant.distance(to: newConstant) < 100 ? 0.0 : 0.5
-            bottomConstraint!.constant = newConstant
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue,
+           let animationCurve = notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt,
+           let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
+            bottomConstraint?.constant = -keyboardSize.height
             if currentHeight + keyboardSize.height > UIScreen.main.bounds.height - 40 {
                 currentHeight = UIScreen.main.bounds.height - (40 + keyboardSize.height)
                 heightConstraint?.constant = UIScreen.main.bounds.height - (40 + keyboardSize.height)
             }
-            UIView.animate(withDuration: duration) {
+            UIView.animate(withDuration: animationDuration, delay: 0, options: UIView.AnimationOptions(rawValue: animationCurve)) {
                 self.view.layoutIfNeeded()
+            } completion: { _ in
+                // ...
             }
         }
     }
     
     @objc
     private func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (
-            notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
-        )?.cgRectValue {
-            bottomConstraint?.constant += keyboardSize.height
-            UIView.animate(withDuration: 0.5) {
+        if let animationCurve = notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt,
+           let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
+            bottomConstraint?.constant = 0
+            
+            UIView.animate(withDuration: animationDuration, delay: 0, options: UIView.AnimationOptions(rawValue: animationCurve)) {
                 self.view.layoutIfNeeded()
+            } completion: { finished in
+                // ...
             }
         }
     }
