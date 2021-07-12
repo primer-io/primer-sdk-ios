@@ -284,6 +284,11 @@ enum PrimerError: PrimerErrorProtocol {
     case billingAddressAddressLine1Missing
     case billingAddressPostalCodeMissing
     case billingAddressCountryCodeMissing
+    case userDetailsAddressMissing
+    case userDetailsCityMissing
+    case userDetailsAddressLine1Missing
+    case userDetailsPostalCodeMissing
+    case userDetailsCountryCodeMissing
     case orderIdMissing
     case userDetailsMissing
     
@@ -489,6 +494,40 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "User details are missing",
                                      comment: "User details are missing - Primer error message")
+        case .userDetailsAddressMissing:
+            return NSLocalizedString("primer-error-user-details-address-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "User details address is missing",
+                                     comment: "User details address is missing - Primer error message")
+        
+        case .userDetailsCityMissing:
+            return NSLocalizedString("primer-error-user-details-address-city-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "User details city is missing",
+                                     comment: "User details city is missing - Primer error message")
+            
+        case .userDetailsPostalCodeMissing:
+            return NSLocalizedString("primer-error-user-details-address-postal-code-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "User details postal code is missing",
+                                     comment: "User details postal code is missing - Primer error message")
+            
+        case .userDetailsCountryCodeMissing:
+            return NSLocalizedString("primer-error-user-details-address-country-code-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "User details country code is missing",
+                                     comment: "User details country code is missing - Primer error message")
+            
+        case .userDetailsAddressLine1Missing:
+            return NSLocalizedString("primer-error-user-details-address-line1-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "User details address line 1 is missing",
+                                     comment: "User details address line 1 is missing - Primer error message")
         }
     }
 

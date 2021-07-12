@@ -95,6 +95,16 @@ internal class ErrorHandler {
                 break
             case .userDetailsMissing:
                 break
+            case .userDetailsAddressMissing:
+                break
+            case .userDetailsCityMissing:
+                break
+            case .userDetailsAddressLine1Missing:
+                break
+            case .userDetailsPostalCodeMissing:
+                break
+            case .userDetailsCountryCodeMissing:
+                break
             }
 
         } else if let klarnaException = error as? KlarnaException {

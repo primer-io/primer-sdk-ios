@@ -48,28 +48,24 @@ class ThreeDSService: ThreeDSServiceProtocol {
             throw PrimerError.amountMissing
         }
         
-        guard let currency = settings.currency else {
+        guard settings.currency != nil else {
             throw PrimerError.currencyMissing
         }
         
-        guard let orderId = settings.orderId else {
+        guard settings.orderId != nil else {
             throw PrimerError.orderIdMissing
         }
         
-        guard let billingAddress = settings.billingAddress else {
-            throw PrimerError.billingAddressMissing
+        guard let city = settings.userDetails?.city, !city.isEmpty else {
+            throw PrimerError.userDetailsCityMissing
         }
         
-        guard let city = billingAddress.city, !city.isEmpty else {
-            throw PrimerError.billingAddressCityMissing
+        guard let countryCodeStr = settings.userDetails?.countryCode, CountryCode(rawValue: countryCodeStr) != nil else {
+            throw PrimerError.userDetailsCountryCodeMissing
         }
         
-        guard let countryCodeStr = settings.billingAddress?.countryCode, let countryCode = CountryCode(rawValue: countryCodeStr) else {
-            throw PrimerError.billingAddressCountryCodeMissing
-        }
-        
-        guard let postalCode = settings.billingAddress?.postalCode, !postalCode.isEmpty else {
-            throw PrimerError.billingAddressPostalCodeMissing
+        guard let postalCode = settings.userDetails?.postalCode, !postalCode.isEmpty else {
+            throw PrimerError.userDetailsPostalCodeMissing
         }
     }
     
@@ -102,28 +98,24 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 throw PrimerError.currencyMissing
             }
             
-            guard let orderId = settings.orderId else {
+            guard settings.orderId != nil else {
                 throw PrimerError.orderIdMissing
             }
             
-            guard let billingAddress = settings.billingAddress else {
-                throw PrimerError.billingAddressMissing
+            guard let addressLine1 = settings.userDetails?.addressLine1, !addressLine1.isEmpty else {
+                throw PrimerError.userDetailsAddressLine1Missing
             }
             
-            guard let addressLine1 = billingAddress.addressLine1, !addressLine1.isEmpty else {
-                throw PrimerError.billingAddressAddressLine1Missing
+            guard let city = settings.userDetails?.city, !city.isEmpty else {
+                throw PrimerError.userDetailsCityMissing
             }
             
-            guard let city = billingAddress.city, !city.isEmpty else {
-                throw PrimerError.billingAddressCityMissing
+            guard let countryCodeStr = settings.userDetails?.countryCode, let countryCode = CountryCode(rawValue: countryCodeStr) else {
+                throw PrimerError.userDetailsCountryCodeMissing
             }
             
-            guard let countryCodeStr = settings.billingAddress?.countryCode, let countryCode = CountryCode(rawValue: countryCodeStr) else {
-                throw PrimerError.billingAddressCountryCodeMissing
-            }
-            
-            guard let postalCode = settings.billingAddress?.postalCode, !postalCode.isEmpty else {
-                throw PrimerError.billingAddressPostalCodeMissing
+            guard let postalCode = settings.userDetails?.postalCode, !postalCode.isEmpty else {
+                throw PrimerError.userDetailsCountryCodeMissing
             }
             
             guard let userDetails = settings.userDetails,
@@ -146,10 +138,10 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                                  email: userDetails.email,
                                                  phoneNumber: userDetails.mobilePhone ?? userDetails.homePhone ?? userDetails.workPhone,
                                                  addressLine1: addressLine1,
-                                                 addressLine2: billingAddress.addressLine2,
+                                                 addressLine2: settings.userDetails?.addressLine2,
                                                  addressLine3: nil,
                                                  city: city,
-                                                 state: billingAddress.state,
+                                                 state: nil,
                                                  countryCode: countryCode,
                                                  postalCode: postalCode)
             
