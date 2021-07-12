@@ -10,13 +10,13 @@ import UIKit
 public protocol PrimerTextFieldViewDelegate {
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?)
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork)
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didFailWithError error: Error)
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error)
 }
 
 public extension PrimerTextFieldViewDelegate {
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {}
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork) {}
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didFailWithError error: Error) {}
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {}
 }
 
 public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
@@ -35,7 +35,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
                 delegate?.primerTextFieldView(self, isValid: false)
                 
                 if let err = err {
-                    delegate?.primerTextFieldView(self, didFailWithError: err)
+                    delegate?.primerTextFieldView(self, validationDidFailWithError: err)
                 }
         
             case .notAvailable:
