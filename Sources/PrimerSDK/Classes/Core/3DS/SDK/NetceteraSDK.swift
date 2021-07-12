@@ -17,7 +17,7 @@ class NetceteraSDK: ThreeDSSDKProtocol {
     private var netceteraCompletion: ((_ netceteraThreeDSCompletion: ThreeDS.ThreeDSSDKAuthCompletion?, _ err: Error?) -> Void)?
     
     deinit {
-        print("ThreeDSecureServiceProtocol deinit")
+
     }
     
     func initializeSDK(completion: @escaping (Result<Void, Error>) -> Void) {
@@ -99,7 +99,6 @@ class NetceteraSDK: ThreeDSSDKProtocol {
                                                                 messageVersion: protocolVersion.rawValue)
             completion(.success(transaction!))
         } catch {
-            print(error)
             completion(.failure(error))
         }
         

@@ -38,7 +38,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
     private var threeDSSDKWindow: UIWindow?
     
     deinit {
-        print("ThreeDSecureServiceProtocol deinit")
+        
     }
     
     static func validate3DSParameters() throws {
