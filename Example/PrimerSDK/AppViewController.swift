@@ -40,7 +40,7 @@ class AppViewController: UIViewController, PrimerTextFieldViewDelegate, CardComp
 //        clientTokenCallback { result in
 //            switch result {
 //            case .success(let token):
-        let cardComponentsManager = CardComponentsManager(clientToken: "token", flow: .vault, cardnumberField: self.primerTextField, expiryDateField: self.expiryDateFieldView, cvvField: self.cvvFieldView, cardholderField: self.cardholderFieldView)
+        let cardComponentsManager = CardComponentsManager(clientToken: "token", flow: .vault, cardnumberField: self.primerTextField, expiryDateField: self.expiryDateFieldView, cvvField: self.cvvFieldView, cardholderNameField: self.cardholderFieldView)
                 cardComponentsManager.delegate = self
                 cardComponentsManager.tokenize()
                 
