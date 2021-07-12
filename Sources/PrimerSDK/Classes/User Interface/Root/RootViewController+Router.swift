@@ -53,7 +53,12 @@ internal class Router: RouterDelegate {
             root.view.endEditing(true)
         }
 
-        root.add(vc, height: route.height)
+        switch route {
+        case .form:
+            root.add(vc, height: route.height, animateOnPush: false)
+        default:
+            root.add(vc, height: route.height)
+        }
     }
 
     func pop() {
@@ -97,21 +102,25 @@ internal class Router: RouterDelegate {
 fileprivate extension RootViewController {
     
     // FIXME: Can't all this logic be resolved with a UINavigationController?
-    func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5) {
+    func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5, animateOnPush: Bool = true) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        UIView.animate(withDuration: 0.25, animations: { [weak self] in
-            guard let strongSelf = self else { return }
-
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            if settings.isFullScreenOnly {
-//                strongSelf.view.layoutIfNeeded()
-            } else {
-                strongSelf.heightConstraint?.constant = height
-                strongSelf.view.layoutIfNeeded()
+        if animateOnPush {
+            UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions(rawValue: 7)) {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                if settings.isFullScreenOnly {
+                    // ...
+                } else {
+                    self.heightConstraint?.constant = height
+                    self.view.layoutIfNeeded()
+                }
+            } completion: { finished in
+                
             }
-        })
-
+        } else {
+            // Do not change the view's height here, it should be changed when keyboard shows.
+        }
+        
         // hide previous view
         routes.last?.view.isHidden = true
         routes.append(child)
