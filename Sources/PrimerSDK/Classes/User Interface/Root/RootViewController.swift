@@ -161,10 +161,9 @@ internal class RootViewController: PrimerViewController {
            let animationCurve = notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt,
            let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
             bottomConstraint?.constant = -keyboardSize.height
-            if currentHeight + keyboardSize.height > UIScreen.main.bounds.height - 40 {
-                currentHeight = UIScreen.main.bounds.height - (40 + keyboardSize.height)
-                heightConstraint?.constant = UIScreen.main.bounds.height - (40 + keyboardSize.height)
-            }
+            currentHeight = heights.last ?? 0.0
+            heightConstraint?.constant = currentHeight
+            
             UIView.animate(withDuration: animationDuration, delay: 0, options: UIView.AnimationOptions(rawValue: animationCurve)) {
                 self.view.layoutIfNeeded()
             } completion: { _ in
@@ -178,6 +177,13 @@ internal class RootViewController: PrimerViewController {
         if let animationCurve = notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt,
            let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
             bottomConstraint?.constant = 0
+            
+            if heights.count > 1 {
+                let secondLast = heights.count - 2
+                let previousHeight = heights[secondLast]
+                currentHeight = previousHeight
+                heightConstraint?.constant = currentHeight
+            }
             
             UIView.animate(withDuration: animationDuration, delay: 0, options: UIView.AnimationOptions(rawValue: animationCurve)) {
                 self.view.layoutIfNeeded()
