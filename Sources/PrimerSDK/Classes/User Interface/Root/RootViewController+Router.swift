@@ -64,7 +64,12 @@ internal class Router: RouterDelegate {
     }
 
     func pop() {
-        root?.popView()
+        switch currentRoute {
+        case .form:
+            root?.popView(animateOnPop: false)
+        default:
+            root?.popView()
+        }
     }
 
     func popAllAndShow(_ route: Route) {
@@ -161,7 +166,7 @@ fileprivate extension RootViewController {
         add(child, height: height)
     }
 
-    func popView() {
+    func popView(animateOnPop: Bool = true) {
         // dismiss checkout if this is the first route
         if routes.count < 2 { return dismiss(animated: true) }
 
@@ -185,19 +190,20 @@ fileprivate extension RootViewController {
         }
 
         // animate to previous height
-        UIView.animate(withDuration: 0.25, animations: {[weak self] in
-            guard let strongSelf = self else { return }
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            if settings.isFullScreenOnly {
-                strongSelf.heightConstraint.setFullScreen()
-                strongSelf.view.layoutIfNeeded()
-            } else {
-                strongSelf.heightConstraint?.constant = self?.heights.last ?? 400
-                strongSelf.view.layoutIfNeeded()
-            }
-        })
-
+        if animateOnPop {
+            UIView.animate(withDuration: 0.25, animations: {[weak self] in
+                guard let strongSelf = self else { return }
+                
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                if settings.isFullScreenOnly {
+                    strongSelf.heightConstraint.setFullScreen()
+                    strongSelf.view.layoutIfNeeded()
+                } else {
+                    strongSelf.heightConstraint?.constant = self?.heights.last ?? 400
+                    strongSelf.view.layoutIfNeeded()
+                }
+            })
+        }
     }
 }
 
