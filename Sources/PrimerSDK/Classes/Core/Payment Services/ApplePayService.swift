@@ -45,7 +45,7 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
 
                 config.paymentMethods?.forEach({ method in
                     guard let type = method.type else { return }
-                    if type == .googlePay { return }
+                    if !type.isEnabled { return }
                     state.viewModels.append(PaymentMethodViewModel(type: type))
                 })
 
