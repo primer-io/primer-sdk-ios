@@ -58,7 +58,7 @@ class AppViewController: UIViewController, PrimerTextFieldViewDelegate, CardComp
         print("isTextValid: \(isValid)")
     }
     
-    func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
         guard let url = URL(string: "\(endpoint)/clientToken") else {
             return completion(nil, NetworkError.missingParams)
         }
@@ -92,15 +92,15 @@ class AppViewController: UIViewController, PrimerTextFieldViewDelegate, CardComp
         })
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken) {
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
         print("*** onTokenizeSuccess: \(paymentMethodToken)")
     }
     
-    func tokenizationFailed(with errors: [Error]) {
-        print("*** tokenizationFailed: \(errors)")
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
+        print("*** isLoading: \(isLoading)")
     }
     
-    func isLoading(_ isLoading: Bool) {
-        print("*** isLoading: \(isLoading)")
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
+        print("*** tokenizationFailed: \(errors)")
     }
 }

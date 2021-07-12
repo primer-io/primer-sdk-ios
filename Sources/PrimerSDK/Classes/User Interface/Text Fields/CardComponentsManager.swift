@@ -9,10 +9,10 @@ import Foundation
 
 @objc
 public protocol CardComponentsManagerDelegate {
-    @objc optional func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void)
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken)
-    @objc optional func tokenizationFailed(with errors: [Error])
-    @objc optional func isLoading(_ isLoading: Bool)
+    @objc optional func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void)
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken)
+    @objc optional func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error])
+    @objc optional func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool)
 }
 
 protocol CardComponentsManagerProtocol {
@@ -32,7 +32,8 @@ protocol CardComponentsManagerProtocol {
     func tokenize()
 }
 
-public class CardComponentsManager: CardComponentsManagerProtocol {
+@objc
+public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     
     public var cardnumberField: PrimerCardNumberFieldView
     public var expiryDateField: PrimerExpiryDateFieldView
@@ -54,12 +55,14 @@ public class CardComponentsManager: CardComponentsManagerProtocol {
     }
     
     public init(accessToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderFieldView?) {
-        DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
-        
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
+        
+        super.init()
+        DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
+        
         self.cardholderField = cardholderField
         
         if let accessToken = accessToken, let decodedClientToken = accessToken.jwtTokenPayload {
@@ -70,7 +73,7 @@ public class CardComponentsManager: CardComponentsManagerProtocol {
     private func setIsLoading(_ isLoading: Bool) {
         if self.isLoading == isLoading { return }
         self.isLoading = isLoading
-        delegate?.isLoading?(self.isLoading)
+        delegate?.cardComponentsManager?(self, isLoading: isLoading)
     }
     
     private func fetchAccessToken() -> Promise<DecodedClientToken> {
@@ -81,7 +84,7 @@ public class CardComponentsManager: CardComponentsManagerProtocol {
                 return
             }
             
-            delegate.clientTokenCallback?({ (accessToken, err) in
+            delegate.cardComponentsManager?(self, clientTokenCallback: { accessToken, err in
                 if let err = err {
                     seal.reject(err)
                 } else if let accessToken = accessToken {
@@ -237,23 +240,23 @@ public class CardComponentsManager: CardComponentsManagerProtocol {
                 apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in
                     switch result {
                     case .success(let paymentMethodToken):
-                        self.delegate?.onTokenizeSuccess(paymentMethodToken)
+                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
                     case .failure(let err):
-                        self.delegate?.tokenizationFailed?(with: [PrimerError.tokenizationRequestFailed])
+                        self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [PrimerError.tokenizationRequestFailed])
                     }
                     
                     self.setIsLoading(false)
                 }
             }
             .catch { err in
-                self.delegate?.tokenizationFailed?(with: [err])
+                self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 self.setIsLoading(false)
             }
         } catch PrimerError.containerError(let errors) {
-            delegate?.tokenizationFailed?(with: errors)
+            delegate?.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)
         } catch {
-            delegate?.tokenizationFailed?(with: [error])
+            delegate?.cardComponentsManager?(self, tokenizationFailedWith: [error])
             setIsLoading(false)
         }
     }
