@@ -54,7 +54,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         setIsLoading(false)
     }
     
-    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderNameFieldView?) {
+    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderNameField: PrimerCardholderNameFieldView?) {
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
@@ -63,7 +63,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         super.init()
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         
-        self.cardholderField = cardholderField
+        self.cardholderField = cardholderNameField
         
         if let clientToken = clientToken, let decodedClientToken = clientToken.jwtTokenPayload {
             self.decodedClientToken = decodedClientToken
@@ -290,13 +290,13 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var paymentMethodsConfig: PaymentMethodConfig?
     
-    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderNameFieldView?) {
+    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderNameField: PrimerCardholderNameFieldView?) {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
-        self.cardholderField = cardholderField
+        self.cardholderField = cardholderNameField
         
         if let clientToken = clientToken, let decodedClientToken = clientToken.jwtTokenPayload {
             self.decodedClientToken = decodedClientToken
@@ -309,7 +309,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     ) {
         let cardnumberFieldView = PrimerCardNumberFieldView()
         cardnumberFieldView.textField._text = cardnumber
-        self.init(clientToken: clientToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderField: PrimerCardholderNameFieldView())
+        self.init(clientToken: clientToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderNameField: PrimerCardholderNameFieldView())
         
         decodedClientToken = clientToken.jwtTokenPayload
     }
