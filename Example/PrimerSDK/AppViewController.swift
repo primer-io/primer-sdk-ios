@@ -14,7 +14,7 @@ class AppViewController: UIViewController, PrimerTextFieldViewDelegate, CardComp
     @IBOutlet weak var primerTextField: PrimerCardNumberFieldView!
     @IBOutlet weak var expiryDateFieldView: PrimerExpiryDateFieldView!
     @IBOutlet weak var cvvFieldView: PrimerCVVFieldView!
-    @IBOutlet weak var cardholderFieldView: PrimerCardholderFieldView!
+    @IBOutlet weak var cardholderFieldView: PrimerCardholderNameFieldView!
     
 //    var cardComponentsManager: CardComponentsManager!
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"

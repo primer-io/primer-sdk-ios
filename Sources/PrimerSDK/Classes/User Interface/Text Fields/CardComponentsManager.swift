@@ -19,7 +19,7 @@ protocol CardComponentsManagerProtocol {
     var cardnumberField: PrimerCardNumberFieldView { get }
     var expiryDateField: PrimerExpiryDateFieldView { get }
     var cvvField: PrimerCVVFieldView { get }
-    var cardholderField: PrimerCardholderFieldView? { get }
+    var cardholderField: PrimerCardholderNameFieldView? { get }
     var flow: PaymentFlow { get }
     var delegate: CardComponentsManagerDelegate? { get }
     var customerId: String? { get }
@@ -38,7 +38,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var cardnumberField: PrimerCardNumberFieldView
     public var expiryDateField: PrimerExpiryDateFieldView
     public var cvvField: PrimerCVVFieldView
-    public var cardholderField: PrimerCardholderFieldView?
+    public var cardholderField: PrimerCardholderNameFieldView?
     
     private(set) public var flow: PaymentFlow
     public var delegate: CardComponentsManagerDelegate?
@@ -54,7 +54,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         setIsLoading(false)
     }
     
-    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderFieldView?) {
+    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderNameFieldView?) {
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
@@ -272,7 +272,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var cvvField: PrimerCVVFieldView
     
-    var cardholderField: PrimerCardholderFieldView?
+    var cardholderField: PrimerCardholderNameFieldView?
     
     var flow: PaymentFlow
     
@@ -290,7 +290,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var paymentMethodsConfig: PaymentMethodConfig?
     
-    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderFieldView?) {
+    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderNameFieldView?) {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         self.flow = flow
         self.cardnumberField = cardnumberField
@@ -309,7 +309,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     ) {
         let cardnumberFieldView = PrimerCardNumberFieldView()
         cardnumberFieldView.textField._text = cardnumber
-        self.init(clientToken: clientToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderField: PrimerCardholderFieldView())
+        self.init(clientToken: clientToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderField: PrimerCardholderNameFieldView())
         
         decodedClientToken = clientToken.jwtTokenPayload
     }
