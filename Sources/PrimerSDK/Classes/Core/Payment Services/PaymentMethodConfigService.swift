@@ -34,10 +34,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
 
                 config.paymentMethods?.forEach({ method in
                     guard let type = method.type else { return }
-                    if type == .googlePay { return }
-//                    if type == .goCardlessMandate { return }
-//                    if type == .applePay { return }
-//                    if type == .klarna { return }
+                    if !type.isEnabled { return }
                     state.viewModels.append(PaymentMethodViewModel(type: type))
                 })
 
