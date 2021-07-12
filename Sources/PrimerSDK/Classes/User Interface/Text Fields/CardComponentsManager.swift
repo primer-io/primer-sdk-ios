@@ -54,7 +54,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         setIsLoading(false)
     }
     
-    public init(accessToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderFieldView?) {
+    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderFieldView?) {
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
@@ -65,7 +65,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         
         self.cardholderField = cardholderField
         
-        if let accessToken = accessToken, let decodedClientToken = accessToken.jwtTokenPayload {
+        if let clientToken = clientToken, let decodedClientToken = clientToken.jwtTokenPayload {
             self.decodedClientToken = decodedClientToken
         }
     }
@@ -76,7 +76,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         delegate?.cardComponentsManager?(self, isLoading: isLoading)
     }
     
-    private func fetchAccessToken() -> Promise<DecodedClientToken> {
+    private func fetchClientToken() -> Promise<DecodedClientToken> {
         return Promise { seal in
             guard let delegate = delegate else {
                 print("Warning: Delegate has not been set")
@@ -84,11 +84,11 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 return
             }
             
-            delegate.cardComponentsManager?(self, clientTokenCallback: { accessToken, err in
+            delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, err in
                 if let err = err {
                     seal.reject(err)
-                } else if let accessToken = accessToken {
-                    if let decodedClientToken = accessToken.jwtTokenPayload {
+                } else if let clientToken = clientToken {
+                    if let decodedClientToken = clientToken.jwtTokenPayload {
                         seal.fulfill(decodedClientToken)
                     } else {
                         let err = PrimerError.clientTokenNull
@@ -101,7 +101,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         }
     }
     
-    private func fetchAccessTokenIfNeeded() -> Promise<DecodedClientToken> {
+    private func fetchClientTokenIfNeeded() -> Promise<DecodedClientToken> {
         return Promise { seal in
             do {
                 if let decodedClientToken = decodedClientToken {
@@ -109,7 +109,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     seal.fulfill(decodedClientToken)
                 } else {
                     firstly {
-                        self.fetchAccessToken()
+                        self.fetchClientToken()
                     }
                     .done { decodedClientToken in
                         seal.fulfill(decodedClientToken)
@@ -125,7 +125,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                      PrimerError.clientTokenExpirationMissing,
                      PrimerError.clientTokenExpired:
                     firstly {
-                        self.fetchAccessToken()
+                        self.fetchClientToken()
                     }
                     .done { decodedClientToken in
                         seal.fulfill(decodedClientToken)
@@ -203,7 +203,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             try validateCardComponents()
             
             firstly {
-                self.fetchAccessTokenIfNeeded()
+                self.fetchClientTokenIfNeeded()
             }
             .then { decodedClientToken -> Promise<PaymentMethodConfig> in
                 self.decodedClientToken = decodedClientToken
@@ -290,7 +290,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var paymentMethodsConfig: PaymentMethodConfig?
     
-    public init(accessToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderFieldView?) {
+    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderField: PrimerCardholderFieldView?) {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         self.flow = flow
         self.cardnumberField = cardnumberField
@@ -298,20 +298,20 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         self.cvvField = cvvField
         self.cardholderField = cardholderField
         
-        if let accessToken = accessToken, let decodedClientToken = accessToken.jwtTokenPayload {
+        if let clientToken = clientToken, let decodedClientToken = clientToken.jwtTokenPayload {
             self.decodedClientToken = decodedClientToken
         }
     }
     
     convenience init(
-        clientAccessToken: String,
+        clientToken: String,
         cardnumber: String?
     ) {
         let cardnumberFieldView = PrimerCardNumberFieldView()
         cardnumberFieldView.textField._text = cardnumber
-        self.init(accessToken: clientAccessToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderField: PrimerCardholderFieldView())
+        self.init(clientToken: clientToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderField: PrimerCardholderFieldView())
         
-        decodedClientToken = clientAccessToken.jwtTokenPayload
+        decodedClientToken = clientToken.jwtTokenPayload
     }
     
     func tokenize() {
