@@ -25,9 +25,6 @@ class Base: XCTestCase {
     func testInitializeSDK() throws {
         let initSDKButton = app.buttons["initialize_primer_sdk"]
         initSDKButton.tap()
-        
-        let addCardButton = app/*@START_MENU_TOKEN@*/.buttons["add_card_button"]/*[[".buttons[\"Add Card\"]",".buttons[\"add_card_button\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
-        XCTAssert(addCardButton.exists)
     }
 
 //    func testPresentWallet() throws {
