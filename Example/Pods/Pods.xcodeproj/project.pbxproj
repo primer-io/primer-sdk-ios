@@ -63,7 +63,7 @@
 		15892418268B20DF001280DD /* CardNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15892417268B20DF001280DD /* CardNetwork.swift */; };
 		1589241E269311AD001280DD /* PrimerExpiryDateFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1589241D269311AD001280DD /* PrimerExpiryDateFieldView.swift */; };
 		1589242026933D77001280DD /* PrimerCVVFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1589241F26933D77001280DD /* PrimerCVVFieldView.swift */; };
-		1589242226934373001280DD /* PrimerCardholderFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1589242126934373001280DD /* PrimerCardholderFieldView.swift */; };
+		1589242226934373001280DD /* PrimerCardholderNameFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1589242126934373001280DD /* PrimerCardholderNameFieldView.swift */; };
 		16AF604EFAB8215B9F0879C271AE7A2D /* FormTextFieldType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D364D798A53A76D482156C7E07703394 /* FormTextFieldType.swift */; };
 		16EAA7FA33F257010600B443C71C99B5 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F41D2762B2290B4EE76542889986A16 /* PaymentMethod.swift */; };
 		17CC0E100C8B9EF45824E087493F8CBB /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 522F77B4CB1E9CA3B31E3F74F1962B2B /* fr.lproj */; };
@@ -244,7 +244,7 @@
 		15892417268B20DF001280DD /* CardNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardNetwork.swift; sourceTree = "<group>"; };
 		1589241D269311AD001280DD /* PrimerExpiryDateFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerExpiryDateFieldView.swift; sourceTree = "<group>"; };
 		1589241F26933D77001280DD /* PrimerCVVFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerCVVFieldView.swift; sourceTree = "<group>"; };
-		1589242126934373001280DD /* PrimerCardholderFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerCardholderFieldView.swift; sourceTree = "<group>"; };
+		1589242126934373001280DD /* PrimerCardholderNameFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerCardholderNameFieldView.swift; sourceTree = "<group>"; };
 		15939D76EEF467A182746C99C10F14B6 /* AlertController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		1841E53752535A5BB808AE11B6967728 /* PaymentNetwork.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentNetwork.swift; sourceTree = "<group>"; };
 		187BF6D0164EDAB4FF90BEC8F100DD60 /* ResourceBundle-PrimerResources-PrimerSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-PrimerResources-PrimerSDK-Info.plist"; sourceTree = "<group>"; };
@@ -513,7 +513,7 @@
 				15892415268B1ACD001280DD /* PrimerCardNumberFieldView.swift */,
 				1589241D269311AD001280DD /* PrimerExpiryDateFieldView.swift */,
 				1589241F26933D77001280DD /* PrimerCVVFieldView.swift */,
-				1589242126934373001280DD /* PrimerCardholderFieldView.swift */,
+				1589242126934373001280DD /* PrimerCardholderNameFieldView.swift */,
 				15034788269450DB00D26B62 /* CardComponentsManager.swift */,
 			);
 			path = "Text Fields";
@@ -1256,7 +1256,7 @@
 				4AD2FD69FB9093E6495ECECBB0AFF1C8 /* RootViewController.swift in Sources */,
 				E7C3CFD182DF2B88B397D4FEC932BA4E /* Route.swift in Sources */,
 				53201CEF7F016F1D0095DC02F0BB82CA /* ScannerView.swift in Sources */,
-				1589242226934373001280DD /* PrimerCardholderFieldView.swift in Sources */,
+				1589242226934373001280DD /* PrimerCardholderNameFieldView.swift in Sources */,
 				2F7D46820B2AB95810A9B34D168247E6 /* StringExtension.swift in Sources */,
 				0F6EFF3B57B0E3FABF8321F0C04626F7 /* SuccessMessage.swift in Sources */,
 				151431622678A1DF00B4C96D /* FinallyWrappers.swift in Sources */,

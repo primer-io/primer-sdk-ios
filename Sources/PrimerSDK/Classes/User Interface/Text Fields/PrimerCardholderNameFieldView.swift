@@ -7,7 +7,7 @@
 
 import UIKit
 
-public final class PrimerCardholderFieldView: PrimerTextFieldView {
+public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
     
     internal var cardholderName: String {
         return textField._text ?? ""
