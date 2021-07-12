@@ -23,6 +23,7 @@ protocol RouterDelegate: class {
 internal class Router: RouterDelegate {
 
     weak var root: RootViewController?
+    var currentRoute: Route?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -35,6 +36,7 @@ internal class Router: RouterDelegate {
     func show(_ route: Route) {
         guard let root = self.root else { return }
         guard let vc = route.viewController else { return }
+        self.currentRoute = route
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         // FIXME: No decisions on UI elements
