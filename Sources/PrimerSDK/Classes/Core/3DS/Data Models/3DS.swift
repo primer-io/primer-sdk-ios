@@ -221,10 +221,12 @@ public struct ThreeDS {
         
         let authentication: ThreeDSAuthenticationProtocol
         let token: PaymentMethodToken
+        let resumeToken: String?
         
         enum CodingKeys: String, CodingKey {
             case authentication
             case token
+            case resumeToken
         }
         
         init(from decoder: Decoder) throws {
@@ -250,6 +252,7 @@ public struct ThreeDS {
             }
             
             token = try container.decode(PaymentMethodToken.self, forKey: .token)
+            resumeToken = try? container.decode(String?.self, forKey: .resumeToken)
         }
     }
     
