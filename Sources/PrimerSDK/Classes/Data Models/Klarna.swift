@@ -117,6 +117,21 @@ public struct KlarnaSessionData: Codable {
     public let orderAmount: Int?
     public let orderLines: [KlarnaSessionOrderLines]
     public let billingAddress: KlarnaBillingAddress?
+    public let tokenDetails: KlarnaSessionDataTokenDetails?
+}
+
+public struct KlarnaSessionDataTokenDetails: Codable {
+    public let brand: String?
+    public let maskedNumber: String?
+    public let type: String
+    public let expiryDate: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case brand = "brand"
+        case maskedNumber = "masked_number"
+        case type = "type"
+        case expiryDate = "expiry_date"
+    }
 }
 
 public struct KlarnaBillingAddress: Codable {
