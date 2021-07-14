@@ -78,7 +78,7 @@ public struct UserDetails: Codable {
     let lastName: String
     let email: String
     let addressLine1: String
-    let addressLine2: String
+    let addressLine2: String?
     let city: String
     let postalCode: String
     let countryCode: String
@@ -91,7 +91,7 @@ public struct UserDetails: Codable {
         lastName: String,
         email: String,
         addressLine1: String,
-        addressLine2: String,
+        addressLine2: String?,
         city: String,
         postalCode: String,
         countryCode: String,
