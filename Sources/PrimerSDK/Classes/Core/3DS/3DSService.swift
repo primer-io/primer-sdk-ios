@@ -19,9 +19,9 @@ protocol ThreeDSServiceProtocol {
     
     func initializeSDK(_ sdk: ThreeDSSDKProtocol, completion: @escaping (Result<Void, Error>) -> Void)
     func authenticateSdk(sdk: ThreeDSSDKProtocol,
-                 cardNetwork: CardNetwork,
-                 protocolVersion: ThreeDS.ProtocolVersion,
-                 completion: @escaping (Result<Transaction, Error>) -> Void)
+                         cardNetwork: CardNetwork,
+                         protocolVersion: ThreeDS.ProtocolVersion,
+                         completion: @escaping (Result<Transaction, Error>) -> Void)
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
                          threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
                          completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
@@ -205,18 +205,24 @@ class ThreeDSService: ThreeDSServiceProtocol {
                     completion(.success(postAuthResponse.token))
                 }
                 .catch { err in
-                    completion(.failure(err))
+                    var token = paymentMethodToken
+                    token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: nil, reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v1.rawValue, challengeIssued: true)
+                    completion(.success(token))
                 }
             }
             .ensure {
                 sdkDismissed?()
             }
             .catch { err in
-                completion(.failure(err))
+                var token = paymentMethodToken
+                token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: nil, reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v1.rawValue, challengeIssued: false)
+                completion(.success(token))
             }
         }
         .catch { err in
-            completion(.failure(err))
+            var token = paymentMethodToken
+            token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: nil, reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v1.rawValue, challengeIssued: false)
+            completion(.success(token))
         }
     }
     
@@ -225,9 +231,9 @@ class ThreeDSService: ThreeDSServiceProtocol {
     }
     
     func authenticateSdk(sdk: ThreeDSSDKProtocol,
-                 cardNetwork: CardNetwork,
-                 protocolVersion: ThreeDS.ProtocolVersion,
-                 completion: @escaping (Result<Transaction, Error>) -> Void) {
+                         cardNetwork: CardNetwork,
+                         protocolVersion: ThreeDS.ProtocolVersion,
+                         completion: @escaping (Result<Transaction, Error>) -> Void) {
         sdk.authenticateSdk(cardNetwork: cardNetwork, protocolVersion: protocolVersion, completion: completion)
     }
     
