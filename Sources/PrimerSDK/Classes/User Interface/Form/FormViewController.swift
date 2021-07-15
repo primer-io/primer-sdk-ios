@@ -15,11 +15,6 @@ internal class FormViewController: PrimerViewController {
     weak var reloadDelegate: ReloadDelegate?
 
     var formType: FormType
-    
-    // This is really bad 😢 Since we have no navigation controller logic, and we need a way to
-    // know when we pop the view controller within the 'keyboardWillHide(:)' function, that'll do
-    // for now ¯\_(ツ)_/¯
-    var isPopping: Bool = false
 
     init() {
         let state: AppStateProtocol = DependencyContainer.resolve()
@@ -59,10 +54,9 @@ extension FormViewController: UITextFieldDelegate {
 extension FormViewController: FormViewDelegate {
 
     func back() {
-        isPopping = true
+        view.endEditing(true)
         let viewModel: FormViewModelProtocol = DependencyContainer.resolve()
         viewModel.onReturnButtonTapped()
-        view.endEditing(true)
     }
 
     func openLink() {
