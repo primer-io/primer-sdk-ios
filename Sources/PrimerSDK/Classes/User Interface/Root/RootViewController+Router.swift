@@ -111,6 +111,11 @@ fileprivate extension RootViewController {
     // FIXME: Can't all this logic be resolved with a UINavigationController?
     func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5, animateOnPush: Bool = true) {
         let state: AppStateProtocol = DependencyContainer.resolve()
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if !settings.isFullScreenOnly {
+            heightConstraint?.constant = height
+        }
         
         if animateOnPush {
             UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions(rawValue: 7)) {
@@ -187,6 +192,13 @@ fileprivate extension RootViewController {
 
         if self.routes.last is ConfirmMandateViewController {
             (self.routes.last as! ConfirmMandateViewController).reload()
+        }
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        if settings.isFullScreenOnly {
+            heightConstraint.setFullScreen()
+        } else {
+            heightConstraint?.constant = heights.last ?? 400
         }
 
         // animate to previous height

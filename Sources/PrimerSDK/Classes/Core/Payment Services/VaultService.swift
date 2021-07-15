@@ -34,7 +34,24 @@ internal class VaultService: VaultServiceProtocol {
                 guard let id = paymentMethods.first?.token else { return }
                 state.selectedPaymentMethod = id
             }
-
+            
+            switch Primer.shared.flow {
+            case .default,
+                 .defaultWithVault:
+                let paymentMethodsCount = state.viewModels.count
+                let paymentMethodsHeight = CGFloat((46 * paymentMethodsCount) + (16 * (paymentMethodsCount > 0 ? paymentMethodsCount-1 : 0)))
+                let vaultCheckoutHeightOffset: CGFloat = Primer.shared.flow.internalSessionFlow.vaulted ? 140 : 320
+                let height = vaultCheckoutHeightOffset+paymentMethodsHeight
+                Primer.shared.root?.modifyBottomSheetHeight(to: height, animated: true)
+                
+                // Didn't find a better way
+                if Primer.shared.root?.heights.first != nil {
+                    Primer.shared.root?.heights[0] = height
+                }
+            default:
+                break
+            }
+            
             completion(nil)
         }
         .catch { err in
