@@ -100,9 +100,9 @@ enum Route {
             case .cardForm(let theme):
                 switch theme.textFieldTheme {
                 case .doublelined:
-                    return 360
+                    return 400
                 default:
-                    return 320
+                    return 360
                 }
             default:
                 return 320
