@@ -59,7 +59,7 @@ enum Route {
             vc.screenType = screenType
             return vc
         case .error(let error):
-            Primer.shared.delegate?.checkoutFailed(with: error)
+            Primer.shared.delegate?.checkoutFailed?(with: error)
             return ErrorViewController(message: error.localizedDescription)
         case .confirmMandate:
             return ConfirmMandateViewController()
@@ -77,13 +77,13 @@ enum Route {
             return 420
         #endif
         case .vaultCheckout:
-            return 320
+            return Primer.shared.flow.internalSessionFlow.vaulted ? 400 : 600
         case .vaultPaymentMethods:
             return 320
         case .oAuth:
-            return 320
+            return 400
         case .applePay:
-            return 320
+            return 400
         case .success:
             return 360
         case .error:
@@ -93,7 +93,7 @@ enum Route {
         case .form(let type, _):
             switch type {
             case .address:
-                return 360
+                return 460
             case .name,
                  .iban,
                  .email:
@@ -101,7 +101,7 @@ enum Route {
             case .cardForm(let theme):
                 switch theme.textFieldTheme {
                 case .doublelined:
-                    return 360
+                    return 400
                 default:
                     return 360
                 }

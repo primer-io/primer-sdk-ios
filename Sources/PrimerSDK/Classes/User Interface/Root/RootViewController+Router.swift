@@ -23,6 +23,7 @@ protocol RouterDelegate: class {
 internal class Router: RouterDelegate {
 
     weak var root: RootViewController?
+    var currentRoute: Route?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -35,6 +36,7 @@ internal class Router: RouterDelegate {
     func show(_ route: Route) {
         guard let root = self.root else { return }
         guard let vc = route.viewController else { return }
+        self.currentRoute = route
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         // FIXME: No decisions on UI elements
@@ -53,11 +55,21 @@ internal class Router: RouterDelegate {
             root.view.endEditing(true)
         }
 
-        root.add(vc, height: route.height)
+        switch route {
+        case .form:
+            root.add(vc, height: route.height, animateOnPush: false)
+        default:
+            root.add(vc, height: route.height)
+        }
     }
 
     func pop() {
-        root?.popView()
+        switch currentRoute {
+        case .form:
+            root?.popView(animateOnPop: false)
+        default:
+            root?.popView()
+        }
     }
 
     func popAllAndShow(_ route: Route) {
@@ -97,7 +109,7 @@ internal class Router: RouterDelegate {
 fileprivate extension RootViewController {
     
     // FIXME: Can't all this logic be resolved with a UINavigationController?
-    func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5) {
+    func add(_ child: UIViewController, height: CGFloat = UIScreen.main.bounds.height * 0.5, animateOnPush: Bool = true) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
@@ -105,10 +117,22 @@ fileprivate extension RootViewController {
             heightConstraint?.constant = height
         }
         
-        UIView.animate(withDuration: 0.25, animations: { [weak self] in
-            self?.view.layoutIfNeeded()
-        })
-
+        if animateOnPush {
+            UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions(rawValue: 7)) {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                if settings.isFullScreenOnly {
+                    // ...
+                } else {
+                    self.heightConstraint?.constant = height
+                    self.view.layoutIfNeeded()
+                }
+            } completion: { finished in
+                
+            }
+        } else {
+            // Do not change the view's height here, it should be changed when keyboard shows.
+        }
+        
         // hide previous view
         routes.last?.view.isHidden = true
         routes.append(child)
@@ -147,7 +171,7 @@ fileprivate extension RootViewController {
         add(child, height: height)
     }
 
-    func popView() {
+    func popView(animateOnPop: Bool = true) {
         // dismiss checkout if this is the first route
         if routes.count < 2 { return dismiss(animated: true) }
 
@@ -178,10 +202,20 @@ fileprivate extension RootViewController {
         }
 
         // animate to previous height
-        UIView.animate(withDuration: 0.25, animations: { [weak self] in
-            self?.view.layoutIfNeeded()
-        })
-
+        if animateOnPop {
+            UIView.animate(withDuration: 0.25, animations: {[weak self] in
+                guard let strongSelf = self else { return }
+                
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                if settings.isFullScreenOnly {
+                    strongSelf.heightConstraint.setFullScreen()
+                    strongSelf.view.layoutIfNeeded()
+                } else {
+                    strongSelf.heightConstraint?.constant = self?.heights.last ?? 400
+                    strongSelf.view.layoutIfNeeded()
+                }
+            })
+        }
     }
 }
 

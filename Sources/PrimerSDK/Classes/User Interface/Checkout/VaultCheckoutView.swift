@@ -311,7 +311,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
 
     private func configureTableView() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
+        tableView.accessibilityIdentifier = "payment_methods_table_view"
         tableView.delegate = delegate
         tableView.dataSource = delegate
         tableView.layer.cornerRadius = 8.0
