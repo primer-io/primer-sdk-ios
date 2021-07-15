@@ -82,7 +82,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 } else {
                     DispatchQueue.main.async {
                         if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard {
-                            print("\nWARNING!\nCannot perform 3DS without a billing address. Continue without 3DS\n")
+                            print("\nWARNING!\nCannot perform 3DS. Continue without 3DS\n")
                         }
                         
                         if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
