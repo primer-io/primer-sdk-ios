@@ -57,16 +57,20 @@ internal class PayPalService: PayPalServiceProtocol {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let urlScheme = settings.urlScheme else {
-            return completion(.failure(PrimerError.payPalSessionFailed))
+        guard var urlScheme = settings.urlScheme else {
+            return completion(.failure(PrimerError.missingURLScheme))
+        }
+        
+        if urlScheme.suffix(3) == "://" {
+            urlScheme = urlScheme.replacingOccurrences(of: "://", with: "")
         }
 
         let body = PayPalCreateOrderRequest(
             paymentMethodConfigId: configId,
             amount: amount,
             currencyCode: currency,
-            returnUrl: urlScheme,
-            cancelUrl: urlScheme
+            returnUrl: "\(urlScheme)://paypal-success",
+            cancelUrl: "\(urlScheme)://paypal-cancel"
         )
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
@@ -95,14 +99,18 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
-        guard let urlScheme = settings.urlScheme else {
+        guard var urlScheme = settings.urlScheme else {
             return completion(.failure(PrimerError.missingURLScheme))
+        }
+        
+        if urlScheme.suffix(3) == "://" {
+            urlScheme = urlScheme.replacingOccurrences(of: "://", with: "")
         }
 
         let body = PayPalCreateBillingAgreementRequest(
             paymentMethodConfigId: configId,
-            returnUrl: urlScheme,
-            cancelUrl: urlScheme
+            returnUrl: "\(urlScheme)://paypal-success",
+            cancelUrl: "\(urlScheme)://paypal-cancel"
         )
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()

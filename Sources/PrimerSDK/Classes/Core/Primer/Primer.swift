@@ -10,7 +10,7 @@ public class Primer {
     
     // MARK: - PROPERTIES
     
-    public weak var delegate: PrimerDelegate?
+    public var delegate: PrimerDelegate?
     private(set) var flow: PrimerSessionFlow = .default
     internal var root: RootViewController?
     internal var presentingViewController: UIViewController?
