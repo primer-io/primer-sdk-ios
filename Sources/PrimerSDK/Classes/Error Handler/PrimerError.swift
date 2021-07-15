@@ -291,6 +291,7 @@ enum PrimerError: PrimerErrorProtocol {
     case userDetailsCountryCodeMissing
     case orderIdMissing
     case userDetailsMissing
+    case dataMissing(description: String)
     
     static var errorDomain: String = "primer"
 
@@ -528,6 +529,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "User details address line 1 is missing",
                                      comment: "User details address line 1 is missing - Primer error message")
+            
+        case .dataMissing(let description):
+            return NSLocalizedString("primer-error-data-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Data are missing: \(description)",
+                                     comment: "Data are missing - Primer error message")
         }
     }
 

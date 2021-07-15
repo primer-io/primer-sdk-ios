@@ -105,6 +105,8 @@ internal class ErrorHandler {
                 break
             case .userDetailsCountryCodeMissing:
                 break
+            case .dataMissing:
+                break
             }
 
         } else if let klarnaException = error as? KlarnaException {

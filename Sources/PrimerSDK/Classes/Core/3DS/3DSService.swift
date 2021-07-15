@@ -42,30 +42,54 @@ class ThreeDSService: ThreeDSServiceProtocol {
     }
     
     static func validate3DSParameters() throws {
+        var errors: [Error] = []
+        
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if !Primer.shared.flow.internalSessionFlow.vaulted && settings.amount == nil {
-            throw PrimerError.amountMissing
+            errors.append(PrimerError.amountMissing)
         }
         
-        guard settings.currency != nil else {
-            throw PrimerError.currencyMissing
+        if settings.currency == nil {
+            errors.append(PrimerError.currencyMissing)
         }
         
-        guard settings.orderId != nil else {
-            throw PrimerError.orderIdMissing
+        if settings.orderId == nil {
+            errors.append(PrimerError.orderIdMissing)
         }
         
-        guard let city = settings.userDetails?.city, !city.isEmpty else {
-            throw PrimerError.userDetailsCityMissing
+        if (settings.userDetails?.addressLine1 ?? "").isEmpty {
+            errors.append(PrimerError.userDetailsAddressLine1Missing)
         }
         
-        guard let countryCodeStr = settings.userDetails?.countryCode, CountryCode(rawValue: countryCodeStr) != nil else {
-            throw PrimerError.userDetailsCountryCodeMissing
+        if (settings.userDetails?.city ?? "").isEmpty {
+            errors.append(PrimerError.userDetailsCityMissing)
         }
         
-        guard let postalCode = settings.userDetails?.postalCode, !postalCode.isEmpty else {
-            throw PrimerError.userDetailsPostalCodeMissing
+        if settings.userDetails?.countryCode == nil {
+            errors.append(PrimerError.userDetailsCountryCodeMissing)
+        } else if CountryCode(rawValue: settings.userDetails!.countryCode) == nil {
+            errors.append(PrimerError.userDetailsCountryCodeMissing)
+        }
+        
+        if (settings.userDetails?.postalCode ?? "").isEmpty {
+            errors.append(PrimerError.userDetailsCountryCodeMissing)
+        }
+        
+        if (settings.userDetails?.firstName ?? "").isEmpty ||
+            (settings.userDetails?.lastName ?? "").isEmpty ||
+            (settings.userDetails?.email ?? "").isEmpty
+        {
+            errors.append(PrimerError.userDetailsMissing)
+        }
+        
+        if !errors.isEmpty {
+            var errorDescription: String = ""
+            for err in errors {
+                errorDescription += err.localizedDescription + "\n"
+            }
+            
+            throw PrimerError.dataMissing(description: errorDescription)
         }
     }
     
@@ -79,6 +103,13 @@ class ThreeDSService: ThreeDSServiceProtocol {
         var transaction: Transaction!
         let cardNetwork = CardNetwork(rawValue: paymentMethodToken.paymentInstrumentData?.network)
         
+        do {
+            try ThreeDSService.validate3DSParameters()
+        } catch {
+            completion(.failure(error))
+            return
+        }
+        
         firstly {
             initializeSDK(sdk)
         }
@@ -89,42 +120,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             transaction = trx
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            if !Primer.shared.flow.internalSessionFlow.vaulted && settings.amount == nil {
-                throw PrimerError.amountMissing
-            }
-            
-            guard let currency = settings.currency else {
-                throw PrimerError.currencyMissing
-            }
-            
-            guard settings.orderId != nil else {
-                throw PrimerError.orderIdMissing
-            }
-            
-            guard let addressLine1 = settings.userDetails?.addressLine1, !addressLine1.isEmpty else {
-                throw PrimerError.userDetailsAddressLine1Missing
-            }
-            
-            guard let city = settings.userDetails?.city, !city.isEmpty else {
-                throw PrimerError.userDetailsCityMissing
-            }
-            
-            guard let countryCodeStr = settings.userDetails?.countryCode, let countryCode = CountryCode(rawValue: countryCodeStr) else {
-                throw PrimerError.userDetailsCountryCodeMissing
-            }
-            
-            guard let postalCode = settings.userDetails?.postalCode, !postalCode.isEmpty else {
-                throw PrimerError.userDetailsCountryCodeMissing
-            }
-            
-            guard let userDetails = settings.userDetails,
-                  !userDetails.firstName.isEmpty,
-                  !userDetails.lastName.isEmpty,
-                  !userDetails.email.isEmpty
-            else {
-                throw PrimerError.userDetailsMissing
-            }
+            let userDetails = settings.userDetails!
             
             let customer = ThreeDS.Customer(name: "\(userDetails.firstName) \(userDetails.lastName)",
                                             email: userDetails.email,
@@ -137,20 +133,20 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                                  lastName: userDetails.lastName,
                                                  email: userDetails.email,
                                                  phoneNumber: userDetails.mobilePhone ?? userDetails.homePhone ?? userDetails.workPhone,
-                                                 addressLine1: addressLine1,
+                                                 addressLine1: userDetails.addressLine1,
                                                  addressLine2: settings.userDetails?.addressLine2,
                                                  addressLine3: nil,
-                                                 city: city,
+                                                 city: userDetails.city,
                                                  state: nil,
-                                                 countryCode: countryCode,
-                                                 postalCode: postalCode)
+                                                 countryCode: CountryCode(rawValue: userDetails.countryCode)!,
+                                                 postalCode: userDetails.postalCode)
             
             do {
                 let threeDSecureAuthData = try transaction.buildThreeDSecureAuthData()
                 let threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(testScenario: nil,
                                                                             amount: settings.amount ?? 0,
-                                                                            currencyCode: currency,
-                                                                            orderId: "test_id",
+                                                                            currencyCode: settings.currency!,
+                                                                            orderId: settings.orderId ?? "",
                                                                             customer: customer,
                                                                             device: threeDSecureAuthData as! ThreeDS.SDKAuthData,
                                                                             billingAddress: threeDSAddress,
