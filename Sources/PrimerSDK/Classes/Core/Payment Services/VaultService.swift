@@ -3,7 +3,6 @@
 #if canImport(UIKit)
 
 import Foundation
-import ThreeDS_SDK
 
 internal protocol VaultServiceProtocol {
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void)
