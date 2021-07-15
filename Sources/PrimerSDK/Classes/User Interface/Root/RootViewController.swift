@@ -178,11 +178,18 @@ internal class RootViewController: PrimerViewController {
            let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
             bottomConstraint?.constant = 0
             
-            if heights.count > 1 {
-                let secondLast = heights.count - 2
-                let previousHeight = heights[secondLast]
-                currentHeight = previousHeight
-                heightConstraint?.constant = currentHeight
+            if let formViewController = routes.last as? FormViewController {
+                if formViewController.isPopping {
+                    if heights.count > 1 {
+                        let secondLast = heights.count - 2
+                        let previousHeight = heights[secondLast]
+                        currentHeight = previousHeight
+                        heightConstraint?.constant = currentHeight
+                    }
+                    
+                } else {
+                    // Do nothing and leave height as is.
+                }
             }
             
             UIView.animate(withDuration: animationDuration, delay: 0, options: UIView.AnimationOptions(rawValue: animationCurve)) {
