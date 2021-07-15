@@ -73,7 +73,8 @@ enum Route {
     var height: CGFloat {
         switch self {
         #if canImport(CardScan)
-        case .cardScanner:  return 420
+        case .cardScanner:
+            return 420
         #endif
         case .vaultCheckout:
             return Primer.shared.flow.internalSessionFlow.vaulted ? 400 : 600
