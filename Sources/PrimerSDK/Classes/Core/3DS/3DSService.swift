@@ -195,9 +195,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 self.performChallenge(with: sdk, on: transaction, threeDSAuth: beginAuthResponse.authentication, presentOn: self.threeDSSDKWindow!.rootViewController!)
             }
             .done { sdkAuth in
-                self.threeDSSDKWindow!.isHidden = true
-                self.threeDSSDKWindow = nil
-                
                 firstly {
                     self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token!)
                 }
@@ -211,6 +208,8 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 }
             }
             .ensure {
+                self.threeDSSDKWindow!.isHidden = true
+                self.threeDSSDKWindow = nil
                 sdkDismissed?()
             }
             .catch { err in
@@ -220,6 +219,9 @@ class ThreeDSService: ThreeDSServiceProtocol {
             }
         }
         .catch { err in
+            self.threeDSSDKWindow!.isHidden = true
+            self.threeDSSDKWindow = nil
+            
             var token = paymentMethodToken
             token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v1.rawValue, challengeIssued: false)
             completion(.success(token))
