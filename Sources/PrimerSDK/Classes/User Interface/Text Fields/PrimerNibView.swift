@@ -44,7 +44,7 @@ public class PrimerNibView: UIView {
 internal extension PrimerNibView {
     /** Loads instance from nib with the same name. */
     func loadNib() -> UIView {
-        let bundle = Bundle.primerResources
+        let bundle = Bundle.primerFramework
         var nibName = type(of: self).description().components(separatedBy: ".").last!
         
         if nibName == "PrimerCardNumberFieldView" {
@@ -53,10 +53,9 @@ internal extension PrimerNibView {
             nibName = "PrimerTextFieldView"
         } else if nibName == "PrimerCVVFieldView" {
             nibName = "PrimerTextFieldView"
-        }
-        else if nibName == "PrimerCardholderNameFieldView" {
+        } else if nibName == "PrimerCardholderNameFieldView" {
            nibName = "PrimerTextFieldView"
-       }
+        }
         
         let nib = UINib(nibName: nibName, bundle: bundle)
         return nib.instantiate(withOwner: self, options: nil).first as! UIView
