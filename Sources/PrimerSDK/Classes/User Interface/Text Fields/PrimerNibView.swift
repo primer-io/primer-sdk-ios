@@ -54,7 +54,7 @@ internal extension PrimerNibView {
         } else if nibName == "PrimerCVVFieldView" {
             nibName = "PrimerTextFieldView"
         }
-        else if nibName == "PrimerCardholderFieldView" {
+        else if nibName == "PrimerCardholderNameFieldView" {
            nibName = "PrimerTextFieldView"
        }
         
