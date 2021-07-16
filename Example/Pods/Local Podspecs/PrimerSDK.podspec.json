@@ -19,12 +19,11 @@
   "platforms": {
     "ios": "10.0"
   },
-  "source_files": "Sources/PrimerSDK/Classes/**/*.{h,m,swift}",
+  "source_files": "Sources/PrimerSDK/Classes/**/*.{h,m,swift,xib}",
   "resource_bundles": {
     "PrimerResources": [
       "Sources/PrimerSDK/Resources/*.xcassets",
-      "Sources/PrimerSDK/Resources/Localizable/*",
-      "Sources/PrimerSDK/Resources/Nibs/*.{xib}"
+      "Sources/PrimerSDK/Resources/Localizable/*"
     ]
   },
   "testspecs": [
