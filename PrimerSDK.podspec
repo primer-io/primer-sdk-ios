@@ -22,7 +22,8 @@ Pod::Spec.new do |spec|
     spec.resource_bundles = {
         'PrimerResources' => [
             'Sources/PrimerSDK/Resources/*.xcassets',
-            'Sources/PrimerSDK/Resources/Localizable/*'
+            'Sources/PrimerSDK/Resources/Localizable/*',
+            'Sources/PrimerSDK/Resources/Nibs/*.{xib}'
         ]
     }
     
