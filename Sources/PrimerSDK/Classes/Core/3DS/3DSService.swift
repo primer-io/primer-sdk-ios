@@ -186,10 +186,10 @@ class ThreeDSService: ThreeDSServiceProtocol {
             }
             
             self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
-            self.threeDSSDKWindow!.rootViewController = ClearViewController()
-            self.threeDSSDKWindow!.backgroundColor = UIColor.clear
-            self.threeDSSDKWindow!.windowLevel = UIWindow.Level.normal
-            self.threeDSSDKWindow!.makeKeyAndVisible()
+            self.threeDSSDKWindow?.rootViewController = ClearViewController()
+            self.threeDSSDKWindow?.backgroundColor = UIColor.clear
+            self.threeDSSDKWindow?.windowLevel = UIWindow.Level.normal
+            self.threeDSSDKWindow?.makeKeyAndVisible()
             
             firstly {
                 self.performChallenge(with: sdk, on: transaction, threeDSAuth: beginAuthResponse.authentication, presentOn: self.threeDSSDKWindow!.rootViewController!)
@@ -208,7 +208,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 }
             }
             .ensure {
-                self.threeDSSDKWindow!.isHidden = true
+                self.threeDSSDKWindow?.isHidden = true
                 self.threeDSSDKWindow = nil
                 sdkDismissed?()
             }
@@ -219,7 +219,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             }
         }
         .catch { err in
-            self.threeDSSDKWindow!.isHidden = true
+            self.threeDSSDKWindow?.isHidden = true
             self.threeDSSDKWindow = nil
             
             var token = paymentMethodToken
