@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		151B09F5267B7F9400FB49B8 /* 3DSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151B09F4267B7F9400FB49B8 /* 3DSTests.swift */; };
 		151B0A1C267CE24B00FB49B8 /* 3DSConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151B0A1B267CE24B00FB49B8 /* 3DSConstants.swift */; };
+		152A42CE26A2B0BD0036D3D6 /* ThreeDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152A42CD26A2B0BD0036D3D6 /* ThreeDS.swift */; };
 		1582B979260A3F2900C80BD7 /* OAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95B260A3F2900C80BD7 /* OAuthViewModel.swift */; };
 		1582B97A260A3F2900C80BD7 /* ConfirmMandateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95C260A3F2900C80BD7 /* ConfirmMandateViewModel.swift */; };
 		1582B97C260A3F2900C80BD7 /* DirectCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95E260A3F2900C80BD7 /* DirectCheckoutViewModel.swift */; };
@@ -73,6 +74,7 @@
 		0BEFFA023E994EF5B370A80C /* PrimerSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = PrimerSDK.podspec; path = ../PrimerSDK.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		151B09F4267B7F9400FB49B8 /* 3DSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3DSTests.swift; sourceTree = "<group>"; };
 		151B0A1B267CE24B00FB49B8 /* 3DSConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3DSConstants.swift; sourceTree = "<group>"; };
+		152A42CD26A2B0BD0036D3D6 /* ThreeDS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDS.swift; sourceTree = "<group>"; };
 		1582B95B260A3F2900C80BD7 /* OAuthViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OAuthViewModel.swift; sourceTree = "<group>"; };
 		1582B95C260A3F2900C80BD7 /* ConfirmMandateViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmMandateViewModel.swift; sourceTree = "<group>"; };
 		1582B95E260A3F2900C80BD7 /* DirectCheckoutViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectCheckoutViewModel.swift; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 				1582B9AC260A402E00C80BD7 /* Base.swift */,
 				1582B9A3260A3FD300C80BD7 /* Info.plist */,
 				15F9E67C2678C88000F6B6C1 /* UniversalCheckout.swift */,
+				152A42CD26A2B0BD0036D3D6 /* ThreeDS.swift */,
 			);
 			path = PrimerSDKExample_UITests;
 			sourceTree = "<group>";
@@ -644,6 +647,7 @@
 				15F9E67D2678C88000F6B6C1 /* UniversalCheckout.swift in Sources */,
 				1582B9AD260A402E00C80BD7 /* Base.swift in Sources */,
 				1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */,
+				152A42CE26A2B0BD0036D3D6 /* ThreeDS.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
