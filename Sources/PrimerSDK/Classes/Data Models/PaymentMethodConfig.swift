@@ -16,6 +16,18 @@ enum ConfigPaymentMethodType: String, Codable {
     case googlePay = "GOOGLE_PAY"
     case goCardlessMandate = "GOCARDLESS"
     case klarna = "KLARNA"
+    case payNlIdeal = "PAY_NL_IDEAL"
+    
+    case unknown
+    
+    var isEnabled: Bool {
+        switch self {
+        case .applePay, .payPal, .paymentCard, .goCardlessMandate, .klarna:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 internal extension PaymentMethodConfig {
