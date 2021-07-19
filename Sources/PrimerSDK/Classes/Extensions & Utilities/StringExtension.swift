@@ -121,7 +121,8 @@ internal extension String {
     }
     
     var isValidCardholderName: Bool {
-        return self.replacingOccurrences(of: " ", with: "").withoutWhiteSpace.isOnlyLatinCharacters && self.split(separator: " ").count >= 2
+        let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-")
+        return !(self.rangeOfCharacter(from: set.inverted) != nil)
     }
 
     var isValidEmail: Bool {
