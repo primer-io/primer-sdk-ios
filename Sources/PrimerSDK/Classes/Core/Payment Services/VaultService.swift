@@ -1,6 +1,6 @@
-import Foundation
-
 #if canImport(UIKit)
+
+import UIKit
 
 internal protocol VaultServiceProtocol {
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void)
