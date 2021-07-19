@@ -118,7 +118,7 @@ class KlarnaServiceTests: XCTestCase {
     func test_create_client_token_success() throws {
         let expectation = XCTestExpectation(description: "Create Klarna client token | Success")
 
-        let sessionData = KlarnaSessionData(recurringDescription: "subscription", purchaseCountry: "SE", purchaseCurrency: "SEK", locale: "en-SE", orderAmount: 2000, orderLines: [], billingAddress: nil)
+        let sessionData = KlarnaSessionData(recurringDescription: "subscription", purchaseCountry: "SE", purchaseCurrency: "SEK", locale: "en-SE", orderAmount: 2000, orderLines: [], billingAddress: nil, tokenDetails: nil)
         let response = KlarnaCustomerTokenAPIResponse(customerTokenId: "token", sessionData: sessionData)
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
@@ -146,7 +146,7 @@ class KlarnaServiceTests: XCTestCase {
     func test_create_client_token_fail_invalid_response() throws {
         let expectation = XCTestExpectation(description: "Create Klarna client token | Failure: API call failed")
 
-        let sessionData = KlarnaSessionData(recurringDescription: "subscription", purchaseCountry: "SE", purchaseCurrency: "SEK", locale: "en-SE", orderAmount: 2000, orderLines: [], billingAddress: nil)
+        let sessionData = KlarnaSessionData(recurringDescription: "subscription", purchaseCountry: "SE", purchaseCurrency: "SEK", locale: "en-SE", orderAmount: 2000, orderLines: [], billingAddress: nil, tokenDetails: nil)
         let response = KlarnaCustomerTokenAPIResponse(customerTokenId: "token", sessionData: sessionData)
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: true)
@@ -175,7 +175,7 @@ class KlarnaServiceTests: XCTestCase {
     func test_finalize_payment_session_success() throws {
         let expectation = XCTestExpectation(description: "Finalize Klarna payment session | Success")
 
-        let sessionData = KlarnaSessionData(recurringDescription: "subscription", purchaseCountry: "SE", purchaseCurrency: "SEK", locale: "en-SE", orderAmount: 2000, orderLines: [], billingAddress: nil)
+        let sessionData = KlarnaSessionData(recurringDescription: "subscription", purchaseCountry: "SE", purchaseCurrency: "SEK", locale: "en-SE", orderAmount: 2000, orderLines: [], billingAddress: nil, tokenDetails: nil)
         let response = KlarnaFinalizePaymentSessionresponse(sessionData: sessionData)
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
@@ -203,7 +203,7 @@ class KlarnaServiceTests: XCTestCase {
     func test_finalize_payment_session_fail_invalid_response() throws {
         let expectation = XCTestExpectation(description: "Finalize Klarna payment session | Failure: API call failed")
 
-        let sessionData = KlarnaSessionData(recurringDescription: "subscription", purchaseCountry: "SE", purchaseCurrency: "SEK", locale: "en-SE", orderAmount: 2000, orderLines: [], billingAddress: nil)
+        let sessionData = KlarnaSessionData(recurringDescription: "subscription", purchaseCountry: "SE", purchaseCurrency: "SEK", locale: "en-SE", orderAmount: 2000, orderLines: [], billingAddress: nil, tokenDetails: nil)
         let response = KlarnaFinalizePaymentSessionresponse(sessionData: sessionData)
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: true)
@@ -257,10 +257,9 @@ class KlarnaServiceTests: XCTestCase {
 }
 
 extension KlarnaServiceTests: PrimerDelegate {
-
-    func clientTokenCallback(_ completion: @escaping (Result<String, Error>) -> Void) {
+    func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         guard let url = URL(string: "\(endpoint)/clientToken") else {
-            return completion(.failure(NetworkError.missingParams))
+            return completion(nil, NetworkError.missingParams)
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -271,7 +270,7 @@ extension KlarnaServiceTests: PrimerDelegate {
         do {
             request.httpBody = try JSONEncoder().encode(body)
         } catch {
-            return completion(.failure(NetworkError.missingParams))
+            return completion(nil, NetworkError.missingParams)
         }
         
         callApi(request, completion: { result in
@@ -280,13 +279,13 @@ extension KlarnaServiceTests: PrimerDelegate {
                 do {
                     let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
                     print("🚀🚀🚀 token:", token)
-                    completion(.success(token))
+                    completion(token, nil)
                     
                 } catch {
-                    completion(.failure(NetworkError.serializationError))
+                    completion(nil, error)
                 }
             case .failure(let err):
-                completion(.failure(err))
+                completion(nil, err)
             }
         })
     }

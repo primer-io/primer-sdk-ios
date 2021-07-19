@@ -16,7 +16,7 @@ struct GetVaultedPaymentMethodsResponse: Decodable {
  1.2.2
  */
 
-public struct PaymentMethodToken: Codable {
+public class PaymentMethodToken: NSObject, Codable {
     public var token: String?
     public var analyticsId: String?
     public var tokenType: String?
@@ -25,7 +25,7 @@ public struct PaymentMethodToken: Codable {
     public var vaultData: VaultData?
     public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
 
-    var description: String {
+    public override var description: String {
         switch self.paymentInstrumentType {
         case .paymentCard:
             let last4 = self.paymentInstrumentData?.last4Digits ?? "••••"
@@ -61,6 +61,13 @@ public struct PaymentMethodToken: Codable {
         default: return .creditCard
         }
     }
+    
+//    public convenience init(token: String, paymentInstrumentType: PaymentInstrumentType, vaultData: VaultData) {
+//        self.init(from: <#Decoder#>)
+//        self.token = token
+//        self.paymentInstrumentType = paymentInstrumentType
+//        self.vaultData = vaultData
+//    }
 }
 
 internal extension PaymentMethodToken {

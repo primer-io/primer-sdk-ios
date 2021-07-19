@@ -69,7 +69,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                                     switch result {
                                     case .success(let paymentMethodToken):
                                         if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-                                            Primer.shared.delegate?.tokenAddedToVault(paymentMethodToken)
+                                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
                                         }
                                                                                 
                                         onTokenizeSuccess(.success(paymentMethodToken))
@@ -86,7 +86,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                         }
                         
                         if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-                            Primer.shared.delegate?.tokenAddedToVault(paymentMethodToken)
+                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
                         }
                         
                         onTokenizeSuccess(.success(paymentMethodToken))

@@ -8,6 +8,10 @@ Describe ... (Features / UI / logic changes)
 
 List & explain ...
 
+# Instructions on how to test this
+
+Let other reviewers know how they can test this.
+
 # Before merging
 
 _QA_

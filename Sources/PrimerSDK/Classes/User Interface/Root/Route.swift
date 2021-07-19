@@ -59,7 +59,7 @@ enum Route {
             vc.screenType = screenType
             return vc
         case .error(let error):
-            Primer.shared.delegate?.checkoutFailed(with: error)
+            Primer.shared.delegate?.checkoutFailed?(with: error)
             return ErrorViewController(message: error.localizedDescription)
         case .confirmMandate:
             return ConfirmMandateViewController()
@@ -73,26 +73,40 @@ enum Route {
     var height: CGFloat {
         switch self {
         #if canImport(CardScan)
-        case .cardScanner:  return 420
+        case .cardScanner:
+            return 420
         #endif
         case .vaultCheckout:
-            return 600
-        case .vaultPaymentMethods:  return 320
-        case .oAuth:  return 400
-        case .applePay:  return 400
-        case .success:  return 360
-        case .error:  return 220
-        case .confirmMandate: return 580
+            return Primer.shared.flow.internalSessionFlow.vaulted ? 400 : 600
+        case .vaultPaymentMethods:
+            return 320
+        case .oAuth:
+            return 400
+        case .applePay:
+            return 400
+        case .success:
+            return 360
+        case .error:
+            return 220
+        case .confirmMandate:
+            return 580
         case .form(let type, _):
             switch type {
-            case .address: return 460
-            case .name, .iban, .email: return 300
+            case .address:
+                return 460
+            case .name,
+                 .iban,
+                 .email:
+                return 300
             case .cardForm(let theme):
                 switch theme.textFieldTheme {
-                case .doublelined: return 400
-                default: return 360
+                case .doublelined:
+                    return 400
+                default:
+                    return 360
                 }
-            default: return 320
+            default:
+                return 320
             }
         }
     }

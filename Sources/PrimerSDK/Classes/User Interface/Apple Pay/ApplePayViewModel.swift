@@ -59,28 +59,28 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
         guard let countryCode = countryCode else {
             let err = PaymentException.missingCountryCode
             _ = ErrorHandler.shared.handle(error: err)
-            Primer.shared.delegate?.checkoutFailed(with: err)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
             return completion(err)
         }
         
         guard let currency = currency else {
             let err = PaymentException.missingCurrency
             _ = ErrorHandler.shared.handle(error: err)
-            Primer.shared.delegate?.checkoutFailed(with: err)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
             return completion(err)
         }
         
         guard let merchantIdentifier = merchantIdentifier else {
             let err = AppleException.missingMerchantIdentifier
             _ = ErrorHandler.shared.handle(error: err)
-            Primer.shared.delegate?.checkoutFailed(with: err)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
             return completion(err)
         }
         
         guard !orderItems.isEmpty else {
             let err = PaymentException.missingOrderItems
             _ = ErrorHandler.shared.handle(error: err)
-            Primer.shared.delegate?.checkoutFailed(with: err)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
             return completion(err)
         }
         
@@ -107,7 +107,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
             guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
                 let err = AppleException.unableToPresentApplePay
                 _ = ErrorHandler.shared.handle(error: err)
-                Primer.shared.delegate?.checkoutFailed(with: err)
+                Primer.shared.delegate?.checkoutFailed?(with: err)
                 return completion(err)
             }
             
@@ -128,7 +128,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                     router.presentErrorScreen(with: err)
                                 })
                                 
-                                Primer.shared.delegate?.checkoutFailed(with: err)
+                                Primer.shared.delegate?.checkoutFailed?(with: err)
                             }
                             
                             completion(err)
@@ -139,7 +139,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                             guard let applePayConfigId = self?.applePayConfigId else {
                                 let err = PaymentException.missingConfigurationId
                                 _ = ErrorHandler.shared.handle(error: err)
-                                Primer.shared.delegate?.checkoutFailed(with: err)
+                                Primer.shared.delegate?.checkoutFailed?(with: err)
                                 return completion(err)
                             }
 
@@ -160,7 +160,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                             router.presentErrorScreen(with: err)
                                         })
                                         
-                                        Primer.shared.delegate?.checkoutFailed(with: err)
+                                        Primer.shared.delegate?.checkoutFailed?(with: err)
                                     }
                                     
                                     completion(err)
@@ -168,11 +168,11 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                 case .success(let token):
                                     DispatchQueue.main.async {
                                         if Primer.shared.flow.internalSessionFlow.vaulted {
-                                            Primer.shared.delegate?.tokenAddedToVault(token)
+                                            Primer.shared.delegate?.tokenAddedToVault?(token)
                                             completion(nil)
                                         } else {
                                             //settings.onTokenizeSuccess(token, completion)
-                                            Primer.shared.delegate?.authorizePayment(token, { (err) in
+                                            Primer.shared.delegate?.authorizePayment?(token, { (err) in
                                                 DispatchQueue.main.async {
                                                     Primer.shared.presentingViewController?.dismiss(animated: true, completion: {
                                                         let router: RouterDelegate = DependencyContainer.resolve()
@@ -187,7 +187,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                                     completion(err)
                                                 }
                                             })
-                                            Primer.shared.delegate?.onTokenizeSuccess(token, { (err) in
+                                            Primer.shared.delegate?.onTokenizeSuccess?(token, { (err) in
                                                 DispatchQueue.main.async {
                                                     Primer.shared.presentingViewController?.dismiss(animated: true, completion: {
                                                         let router: RouterDelegate = DependencyContainer.resolve()
@@ -211,7 +211,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                     
                 case .failure(let err):
                     _ = ErrorHandler.shared.handle(error: err)
-                    Primer.shared.delegate?.checkoutFailed(with: err)
+                    Primer.shared.delegate?.checkoutFailed?(with: err)
                     completion(err)
                 }
             }
