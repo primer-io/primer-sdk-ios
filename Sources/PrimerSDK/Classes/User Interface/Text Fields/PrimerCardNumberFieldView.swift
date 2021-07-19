@@ -28,6 +28,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         let currentText = primerTextField._text ?? ""
         if string != "" && currentText.withoutWhiteSpace.count == 19 { return false }
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
+        if !newText.withoutWhiteSpace.isNumeric && !string.isEmpty { return false }
         primerTextField._text = newText
         cardNetwork = CardNetwork(account: primerTextField._text ?? "")
         delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)
