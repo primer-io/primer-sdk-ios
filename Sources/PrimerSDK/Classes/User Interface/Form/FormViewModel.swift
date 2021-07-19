@@ -59,11 +59,20 @@ internal class FormViewModel: FormViewModelProtocol {
     func getSubmitButtonTitle(formType: FormType) -> String {
         switch formType {
         case .cardForm:
-            return NSLocalizedString("primer-form-view-card-submit-button-text",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Add card",
-                                     comment: "Add card - Card Form View (Sumbit button text)")
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                return NSLocalizedString("primer-form-view-card-submit-button-text-vault",
+                                         tableName: nil,
+                                         bundle: Bundle.primerResources,
+                                         value: "Add card",
+                                         comment: "Add card - Card Form View (Sumbit button text)")
+            } else {
+                return NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                         tableName: nil,
+                                         bundle: Bundle.primerResources,
+                                         value: "Pay",
+                                         comment: "Pay - Card Form View (Sumbit button text)")
+            }
+            
 
         default:
             return NSLocalizedString("primer-form-view-submit-button-text",

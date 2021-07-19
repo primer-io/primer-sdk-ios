@@ -86,11 +86,12 @@ internal class RootViewController: PrimerViewController {
             heightConstraint?.isActive = true
             self.modalPresentationStyle = .custom
             self.transitioningDelegate = transitionDelegate
-            let panGesture = UIPanGestureRecognizer(
+            let swipeGesture = UISwipeGestureRecognizer(
                 target: self,
-                action: #selector(panGestureRecognizerAction)
+                action: #selector(swipeGestureRecognizerAction)
             )
-            mainView.addGestureRecognizer(panGesture)
+            swipeGesture.direction = .down
+            mainView.addGestureRecognizer(swipeGesture)
         }
 
         bindFirstFlowView()
@@ -107,6 +108,20 @@ internal class RootViewController: PrimerViewController {
             // FIXME: Quick fix for now. It still should be handled by our logic instead of
             // the view controller's life-cycle.
             settings.onCheckoutDismiss()
+        }
+    }
+    
+    func modifyBottomSheetHeight(to height: CGFloat, animated: Bool) {
+        heightConstraint?.constant = height
+        
+        if animated {
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutIfNeeded()
+            } completion: { isFinished in
+                // ...
+            }
+        } else {
+            view.layoutIfNeeded()
         }
     }
 
@@ -157,30 +172,45 @@ internal class RootViewController: PrimerViewController {
     
     @objc
     private func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (
-            notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
-        )?.cgRectValue {
-            let newConstant = -keyboardSize.height
-            let duration = bottomConstraint!.constant.distance(to: newConstant) < 100 ? 0.0 : 0.5
-            bottomConstraint!.constant = newConstant
-            if currentHeight + keyboardSize.height > UIScreen.main.bounds.height - 40 {
-                currentHeight = UIScreen.main.bounds.height - (40 + keyboardSize.height)
-                heightConstraint?.constant = UIScreen.main.bounds.height - (40 + keyboardSize.height)
-            }
-            UIView.animate(withDuration: duration) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue,
+           let animationCurve = notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt,
+           let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
+            bottomConstraint?.constant = -keyboardSize.height
+            currentHeight = heights.last ?? 0.0
+            heightConstraint?.constant = currentHeight
+            
+            UIView.animate(withDuration: animationDuration, delay: 0, options: UIView.AnimationOptions(rawValue: animationCurve)) {
                 self.view.layoutIfNeeded()
+            } completion: { _ in
+                // ...
             }
         }
     }
     
     @objc
     private func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (
-            notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
-        )?.cgRectValue {
-            bottomConstraint?.constant += keyboardSize.height
-            UIView.animate(withDuration: 0.5) {
+        if let animationCurve = notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt,
+           let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
+            bottomConstraint?.constant = 0
+            
+            if let formViewController = routes.last as? FormViewController {
+                if formViewController.isPopping {
+                    if heights.count > 1 {
+                        let secondLast = heights.count - 2
+                        let previousHeight = heights[secondLast]
+                        currentHeight = previousHeight
+                        heightConstraint?.constant = currentHeight
+                    }
+                    
+                } else {
+                    // Do nothing and leave height as is.
+                }
+            }
+            
+            UIView.animate(withDuration: animationDuration, delay: 0, options: UIView.AnimationOptions(rawValue: animationCurve)) {
                 self.view.layoutIfNeeded()
+            } completion: { finished in
+                // ...
             }
         }
     }
@@ -191,33 +221,8 @@ internal class RootViewController: PrimerViewController {
     }
 
     @objc
-    private func panGestureRecognizerAction(sender: UIPanGestureRecognizer) {
-        let translation = sender.translation(in: view)
-
-        heightConstraint?.constant = currentHeight - translation.y
-
-        if currentHeight - translation.y < 220 {
-            UIView.animate(withDuration: 0.3) { [weak self] in
-                guard let strongSelf = self else { return }
-                strongSelf.currentHeight = 280
-                strongSelf.heightConstraint?.constant = 280
-                strongSelf.view.layoutIfNeeded()
-            }
-            return
-        }
-
-        if sender.state == .ended {
-            if currentHeight - translation.y > UIScreen.main.bounds.height - 80 {
-                UIView.animate(withDuration: 0.3) { [weak self] in
-                    guard let strongSelf = self else { return }
-                    strongSelf.currentHeight = UIScreen.main.bounds.height - 80
-                    strongSelf.heightConstraint.setFullScreen()
-                    strongSelf.view.layoutIfNeeded()
-                }
-            } else {
-                currentHeight = heightConstraint?.constant ?? 400
-            }
-        }
+    private func swipeGestureRecognizerAction(sender: UISwipeGestureRecognizer) {
+        Primer.shared.dismiss()
     }
 }
 

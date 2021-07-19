@@ -13,7 +13,7 @@ struct Consolable<T> {
     var wrappedValue: T {
         didSet {
             #if DEBUG
-            print("Did set \(type(of: wrappedValue)) to \(wrappedValue)")
+            log(logLevel: .verbose, message: "Did set \(type(of: wrappedValue))")
             #endif
         }
     }

@@ -95,7 +95,7 @@ internal extension VaultPaymentMethodView {
         tableView.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 12).isActive = true
         tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
         tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12).isActive = true
-        tableView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12).isActive = true
     }
 }
 
