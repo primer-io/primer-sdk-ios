@@ -1,7 +1,6 @@
 name: Pull request
 on:
   pull_request:
-    types: [assigned, opened, synchronize, reopened]
     branches:
       - develop
       - "feature/**"
@@ -26,11 +25,21 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Setup - Ruby and bundler dependencies
-        uses: ruby/setup-ruby@v1
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
         with:
-          ruby-version: 2.4.0
-          bundler-cache: true
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa_github_actions
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: "2.6"
 
       - name: Test - Fastlane tests
         run: bundle exec fastlane test
