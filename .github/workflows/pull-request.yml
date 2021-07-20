@@ -1,6 +1,6 @@
 name: Pull request on feature
 on:
-  pull_request:
+  push:
     branches:
       # - develop
       - "feature/**"
