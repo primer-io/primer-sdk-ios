@@ -30,6 +30,8 @@ public class Primer {
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
         }
+        
+        
     }
 
     /**
