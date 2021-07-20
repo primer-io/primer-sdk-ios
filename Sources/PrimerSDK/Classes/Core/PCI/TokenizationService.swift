@@ -50,8 +50,15 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 
             case .success(let paymentMethodToken):
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                let state: AppStateProtocol = DependencyContainer.resolve()
+                
+                var isThreeDSEnabled: Bool = false
+                
+                if state.paymentMethodConfig?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                    isThreeDSEnabled = true
+                }
                                 
-                if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard && paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess {
+                if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard && paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess && isThreeDSEnabled {
                     let sdk: ThreeDSSDKProtocol = NetceteraSDK()
                     DependencyContainer.register(sdk)
                     
