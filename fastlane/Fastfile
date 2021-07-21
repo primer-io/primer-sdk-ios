@@ -17,6 +17,11 @@ default_platform(:ios)
 
 platform :ios do
 
+  lane :tests do
+    run_tests(workspace: "PrimerSDK.xcworkspace",
+              scheme: "PrimerSDK-Example")
+  end
+
   lane :release do
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
 
@@ -202,4 +207,5 @@ platform :ios do
         release_notes: "PR: " + version_name + " | " + str_time,
       )
   end
+
 end
