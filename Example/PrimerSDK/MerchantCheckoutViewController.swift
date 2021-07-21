@@ -10,8 +10,15 @@ import PrimerSDK
 import UIKit
 
 class MerchantCheckoutViewController: UIViewController {
+    
+    class func instantiate(environment: Environment) -> MerchantCheckoutViewController {
+        let mvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
+        mvc.environment = environment
+        return mvc
+    }
 
     @IBOutlet weak var tableView: UITableView!
+    fileprivate var environment: Environment = .sandbox
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
         didSet {
             self.tableView.reloadData()
@@ -92,7 +99,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Primer"
+        title = "Primer [\(environment.rawValue)]"
         
         Primer.shared.delegate = self
         self.configurePrimer()
@@ -167,7 +174,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: nil, environment: .sandbox)
+        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: nil, environment: environment)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

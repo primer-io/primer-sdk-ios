@@ -25,17 +25,34 @@
                                 <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
                                 <state key="normal" title="Initialize Primer SDK"/>
                                 <connections>
-                                    <segue destination="rv5-RJ-1cA" kind="show" id="lRu-Go-hvr"/>
+                                    <action selector="initializeButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="ix2-XA-ujs"/>
                                 </connections>
                             </button>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Gbo-HH-IGR">
+                                <rect key="frame" x="20" y="360.5" width="335" height="32"/>
+                                <segments>
+                                    <segment title="Sandbox"/>
+                                    <segment title="Staging"/>
+                                    <segment title="Production"/>
+                                </segments>
+                                <connections>
+                                    <action selector="environmentValueChanged:" destination="Hsc-Wl-Q65" eventType="valueChanged" id="HwU-hT-uQ5"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="Gbo-HH-IGR" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leading" constant="20" id="3BW-gJ-W5B"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerY" secondItem="P7R-MC-LKq" secondAttribute="centerY" id="A4C-4q-2Y2"/>
+                            <constraint firstAttribute="trailing" secondItem="Gbo-HH-IGR" secondAttribute="trailing" constant="20" id="bfH-Dx-f2O"/>
+                            <constraint firstItem="Gbo-HH-IGR" firstAttribute="top" secondItem="Uou-Rn-KOH" secondAttribute="bottom" constant="12" id="niy-EI-C95"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerX" secondItem="P7R-MC-LKq" secondAttribute="centerX" id="uIm-xc-nvN"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="kYZ-5n-R2a"/>
+                    <connections>
+                        <outlet property="environmentSwitch" destination="Gbo-HH-IGR" id="ZHY-z7-esU"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AfA-pm-mcm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -54,7 +71,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="40" estimatedRowHeight="40" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="5Bg-Yz-vOr">
-                                <rect key="frame" x="0.0" y="64" width="375" height="211"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="255"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="PaymentMethodCell" rowHeight="40" id="hfT-yD-Z4D" customClass="PaymentMethodCell" customModule="PrimerSDK_Example" customModuleProvider="target">
