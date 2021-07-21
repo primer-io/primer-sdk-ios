@@ -2,7 +2,7 @@ name: On release tag
 on:
   push:
     branches:
-      - "release/**"
+      - "feature/**"
 
 jobs:
   distribute:
