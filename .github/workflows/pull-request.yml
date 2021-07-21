@@ -1,9 +1,8 @@
-name: Pull request on feature
+name: On release tag
 on:
   push:
     branches:
-      # - develop
-      - "feature/**"
+      - "release/**"
 
 jobs:
   distribute:
@@ -11,6 +10,11 @@ jobs:
     timeout-minutes: 15
 
     steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@0.9.0
         with:
@@ -46,6 +50,9 @@ jobs:
           gem install bundler
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
+
+      - name: Test - Fastlane tests
+        run: bundle exec fastlane test
 
       - name: Create Firebase Service Credentials file
         run: |
