@@ -27,7 +27,6 @@ class MerchantCheckoutViewController: UIViewController {
         urlSchemeIdentifier: "primer"
     )
     
-    
     let vaultKlarnaSettings = PrimerSettings(
         klarnaSessionType: .recurringPayment,
         hasDisabledSuccessScreen: true,
