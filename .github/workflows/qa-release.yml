@@ -2,7 +2,7 @@ name: QA Release
 on:
   push:
     branches:
-      - "releases/**"
+      - "release/**"
 
 jobs:
   release-branch:
