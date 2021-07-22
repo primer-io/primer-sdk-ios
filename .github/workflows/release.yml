@@ -11,7 +11,7 @@ on:
     #   - '!releases/**-alpha'
 
 jobs:
-  get-tag:
+  tag:
     runs-on: ubuntu-18.04
     steps:
       - name: Extract tag name
@@ -21,17 +21,19 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             return context.payload.ref.replace(/\/refs\/tags\//, '');
-
       - name: Echo Tag
         run: echo ${{ steps.tag.outputs.result }}
-
       - name: Store tag in env
         run: echo "Release branch has been tagged with ${TAG}"
         env:
           TAG: ${{ steps.tag.outputs.result }}
+      - name: Echo env tag
+        run: echo "Env tag ${{ env.TAG }}"
+      - name: Echo env tag 2
+        run: echo ${{ env.TAG }}
 
   build-test:
-    needs: get-tag
+    needs: tag
     runs-on: macos-latest
     timeout-minutes: 15
 
