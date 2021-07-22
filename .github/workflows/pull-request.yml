@@ -1,8 +1,13 @@
 name: On release tag
+# on:
+#   push:
+#     branches:
+#       - "feature/**"
+
 on:
-  push:
-    branches:
-      - "feature/**"
+  create:
+    tags:
+      - v*
 
 jobs:
   build-test:
