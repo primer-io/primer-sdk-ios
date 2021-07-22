@@ -52,7 +52,7 @@ jobs:
           bundle install --jobs 4 --retry 3
 
       - name: Test - Fastlane tests
-        run: bundle exec fastlane test
+        run: bundle exec fastlane tests
 
       - name: Create Firebase Service Credentials file
         run: |
@@ -61,7 +61,7 @@ jobs:
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
 
-      - name: Preview app on Appetize 🚀
+      - name: Distribute internally on Firebase & Appetize 🚀
         run: |
           bundle exec fastlane preview
         env:
