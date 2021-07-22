@@ -35,6 +35,8 @@ platform :ios do
 
 
   lane :qa_release do
+    puts "Testing"
+    puts "SOURCE_BRANCH: #{ENV['SOURCE_BRANCH']}"
     time = Time.new
     str_time = time.strftime("%Y-%m-%d %H:%M:%S")
     # Set timestamp as version_code to differentiate builds in firebase
