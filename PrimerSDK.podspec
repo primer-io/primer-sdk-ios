@@ -8,8 +8,8 @@ Pod::Spec.new do |spec|
     DESC
     spec.homepage     = "https://www.primer.io"
     spec.license      = { :type => "MIT", :file => "LICENSE" }
-    spec.author       = { "Primer" => "carl@primer.io" }
     spec.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{spec.version}" }
+    spec.author       = { "Primer" => "dx@primer.io" }
     
     spec.swift_version = "5.3"
     spec.ios.deployment_target = '10.0'
