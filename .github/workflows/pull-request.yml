@@ -1,8 +1,5 @@
 name: Preview PR
-on:
-  pull_request:
-    branches:
-      - "feature/**"
+on: pull_request
 
 jobs:
   build-test:
