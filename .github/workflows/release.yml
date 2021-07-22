@@ -26,7 +26,7 @@ jobs:
         run: echo ${{ steps.tag.outputs.result }}
 
       - name: Store tag in env
-        run: echo "Tag is: ${TAG}"
+        run: echo "Tags are > ${TAG}"
         env:
           TAG: ${{ steps.tag.outputs.result }}
       - name: Echo Env Tag
