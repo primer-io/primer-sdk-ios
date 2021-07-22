@@ -42,7 +42,7 @@ platform :ios do
 
     # Set version number
     increment_version_number(
-      version_number: "0.2.15",
+      version_number: sdk_version_name,
       xcodeproj: "./Example/PrimerSDK.xcodeproj"
     )
 
