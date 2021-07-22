@@ -1,13 +1,12 @@
 name: On release tag
-# on:
-#   push:
-#     branches:
-#       - "feature/**"
-
 on:
-  create:
-    tags:
-      - v*
+  # Use push for debugging
+  push:
+    branches:
+      - "feature/**"
+  pull_request:
+    branches:
+      - "feature/**"
 
 jobs:
   build-test:
