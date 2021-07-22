@@ -33,21 +33,18 @@ platform :ios do
     str_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
-    puts "TAG: " + ENV['TAG']
+    sdk_version_name = ENV['TAG']
 
     cocoapods(
       clean_install: true,
       podfile: "./Example/Podfile"
     )
 
-    sdk_version_name = ENV['TAG']
-    puts "TAG: " + sdk_version_name
-
-    # # Set version number
-    # increment_version_number(
-    #   version_number: sdk_version_name,
-    #   xcodeproj: "./Example/PrimerSDK.xcodeproj"
-    # )
+    # Set version number
+    increment_version_number(
+      version_number: sdk_version_name,
+      xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    )
 
     create_keychain(
       name: ENV["MATCH_KEYCHAIN_NAME"],
