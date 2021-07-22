@@ -80,7 +80,7 @@ jobs:
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
 
   pod-lint:
-    needs: build-test
+    # needs: build-test
     runs-on: macOS-latest
 
     steps:
