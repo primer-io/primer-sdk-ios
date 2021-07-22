@@ -31,24 +31,6 @@ jobs:
           SOURCE_BRANCH: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
           SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
 
-      # - name: Extract tag name
-      #   id: tag
-      #   uses: actions/github-script@0.2.0
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     script: |
-      #       return context.payload.ref.replace(/\/refs\/tags\//, '');
-      # # - name: Echo Tag
-      # #   run: echo ${{ steps.tag.outputs.result }}
-      # - name: Store tag in env
-      #   run: echo "Release branch has been tagged with ${TAG_VERSION}"
-      #   env:
-      #     TAG_VERSION: ${{ steps.tag.outputs.result }}
-      # # - name: Echo env tag
-      # #   run: echo "Env tag ${{ env.TAG_VERSION }}"
-      # # - name: Echo env tag 2
-      # #   run: echo ${{ env.TAG_VERSION }}
-
   build-test:
     needs: tag
     runs-on: macos-latest
@@ -91,8 +73,8 @@ jobs:
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
 
-      # - name: Test - Fastlane tests
-      #   run: bundle exec fastlane tests
+      - name: Test - Fastlane tests
+        run: bundle exec fastlane tests
 
       - name: Create Firebase Service Credentials file
         run: |
@@ -114,34 +96,36 @@ jobs:
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
 
-  # deploy:
-  #   needs: build-test
-  #   runs-on: macOS-latest
+  deploy:
+    needs: build-test
+    runs-on: macOS-latest
 
-  #   steps:
-  #     - uses: actions/checkout@v1
+    steps:
+      - uses: actions/checkout@v1
 
-  #     - name: Install Cocoapods
-  #       run: gem install cocoapods
+      - name: Install Cocoapods
+        run: gem install cocoapods
 
-  #     - name: Deploy to Cocoapods
-  #       run: |
-  #         set -eo pipefail
-  #         export LIB_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
-  #         pod lib lint --allow-warnings
+      - name: Deploy to Cocoapods
+        run: |
+          set -eo pipefail
+          export LIB_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
+          pod lib lint --allow-warnings
 
-  #       env:
-  #         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        # pod trunk push --allow-warnings
 
-  # merge-branch:
-  #   needs: deploy
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@master
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 
-  #     - name: Merge release -> master
-  #       uses: devmasx/merge-branch@v1.3.1
-  #       with:
-  #         type: now
-  #         target_branch: dev_test
-  #         github_token: ${{ github.token }}
+  merge-branch:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Merge release -> master
+        uses: devmasx/merge-branch@v1.3.1
+        with:
+          type: now
+          target_branch: dev_test
+          github_token: ${{ github.token }}
