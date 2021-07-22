@@ -5,7 +5,7 @@ on:
       - "feature/**"
 
 jobs:
-  distribute:
+  build:
     runs-on: macos-latest
     timeout-minutes: 15
 
@@ -45,14 +45,20 @@ jobs:
         with:
           ruby-version: "2.6"
 
-      # - name: Install Bundler
-      #   run: |
-      #     gem install bundler
-      #     bundle config path vendor/bundle
-      #     bundle install --jobs 4 --retry 3
+      - name: Install Bundler
+        run: |
+          gem install bundler
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
 
-      # - name: Test - Fastlane tests
-      #   run: bundle exec fastlane tests
+  test:
+    needs: build
+    runs-on: macos-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Test - Fastlane tests
+        run: bundle exec fastlane tests
 
       # - name: Create Firebase Service Credentials file
       #   run: |
@@ -76,7 +82,7 @@ jobs:
       #     APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
 
   merge-branch:
-    needs: distribute
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
