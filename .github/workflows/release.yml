@@ -3,9 +3,9 @@ on:
   create:
     tags:
       - "!v**"
-      - "!**-alpha**"
-      - "!**beta**"
-      - "**.**.**"
+      # - "!**-alpha**"
+      # - "!**beta**"
+      # - "**.**.**"
 
     branches:
       - "releases/**"

@@ -1,15 +1,41 @@
-name: Distribute
-
+name: QA Release
 on:
   push:
-    branches: [qa]
+    branches:
+      - "releases/**"
 
 jobs:
-  distribute:
+  release-branch:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Branch name
+        id: branch_name
+        run: |
+          echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
+          echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
+      - name: Build base image
+        run: |
+          echo $SOURCE_NAME
+          echo $SOURCE_BRANCH
+        env:
+          SOURCE_NAME: ${{ steps.branch_name.outputs.SOURCE_NAME }}
+          SOURCE_BRANCH: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
+
+  build-test:
+    needs: release-branch
     runs-on: macos-latest
+    timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Git - Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
 
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@v1
@@ -31,11 +57,14 @@ jobs:
         with:
           ruby-version: "2.6"
 
-      - name: Install bundle
+      - name: Install Bundler
         run: |
           gem install bundler
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
+
+      - name: Test - Fastlane tests
+        run: bundle exec fastlane tests
 
       - name: Create Firebase Service Credentials file
         run: |
@@ -44,9 +73,9 @@ jobs:
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
 
-      - name: Distribute app with 🔥 App Distribution 🚀
+      - name: Distribute internally on Firebase & Appetize 🚀
         run: |
-          bundle exec fastlane distribute
+          bundle exec fastlane qa_release
         env:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
@@ -55,3 +84,4 @@ jobs:
           FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
