@@ -79,7 +79,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
 
-  deploy:
+  pod-lint:
     needs: build-test
     runs-on: macOS-latest
 
@@ -96,16 +96,3 @@ jobs:
           pod lib lint --allow-warnings
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-
-  merge-branch:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-
-      - name: Merge release -> master
-        uses: devmasx/merge-branch@v1.3.1
-        with:
-          type: now
-          target_branch: dev_test
-          github_token: ${{ github.token }}
