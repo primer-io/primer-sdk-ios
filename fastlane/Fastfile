@@ -29,6 +29,8 @@ platform :ios do
   # end
 
   lane :release do
+    puts "Testing"
+    puts "SOURCE_TAG: #{ENV['SOURCE_TAG']}"
     time = Time.new
     str_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
