@@ -33,7 +33,7 @@ platform :ios do
     str_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
-    sdk_version_name = ENV['SOURCE_TAG']
+    sdk_version_name = "0.2.19" # ENV['SOURCE_TAG']
 
     cocoapods(
       clean_install: true,
@@ -43,6 +43,11 @@ platform :ios do
     # Set version number
     increment_version_number(
       version_number: sdk_version_name,
+      xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    )
+
+    increment_build_number(
+      build_number: build_number,
       xcodeproj: "./Example/PrimerSDK.xcodeproj"
     )
 
@@ -62,30 +67,17 @@ platform :ios do
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
 
+    # Build for appetize
     build_app(
       scheme: "PrimerSDK-Example",
-      workspace: "./Example/PrimerSDK.xcworkspace",
-      configuration: "Debug",
-      export_method: "development",
-      clean: true
-    )
-
-    firebase_app_distribution(
-        service_credentials_file: "firebase_credentials.json",
-        app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
-        groups: "internal-qa-team",
-        release_notes: "Release: Version " + sdk_version_name + " [" + str_time + "]"
-    )
-
-    build_app(
-      scheme: "PrimerSDK-Example",
+      sdk: "iphonesimulator", # Appetize needs a simulator app
       workspace: "./Example/PrimerSDK.xcworkspace",
       configuration: "Debug",
       export_method: "development",
       archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
+      # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
-      sdk: "iphonesimulator", # Appetize needs a simulator app
     )
 
     # Appetize needs the .app to be zipped
@@ -108,15 +100,27 @@ platform :ios do
       public_key: public_key,
       note: sdk_version_name
     )
+
+    # Build for firebase
+    build_app(
+      scheme: "PrimerSDK-Example",
+      workspace: "./Example/PrimerSDK.xcworkspace",
+      configuration: "Debug",
+      export_method: "development",
+      # Build speed optimisation
+      skip_package_pkg: true, 
+    )
+
+    # Firebase
+    firebase_app_distribution(
+      service_credentials_file: "firebase_credentials.json",
+      app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
+      groups: "primer-internal",
+      release_notes: "PR: " + sdk_version_name + " [" + str_time + "]"
+    )
   end
 
   lane :preview do
-    pr_number = ENV["PR_NUMBER"]
-    if(!pr_number) then 
-        puts "NO PR NUMBER"
-        next
-    end
-
     time = Time.new
     str_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -124,6 +128,11 @@ platform :ios do
     build_number = time.to_i
 
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
+    pr_number = ENV["PR_NUMBER"]
+    if(!pr_number) then 
+        puts "NO PR NUMBER"
+        next
+    end
 
     puts "PR_NUMBER: " + pr_number
     version_name = "preview-" + pr_number
