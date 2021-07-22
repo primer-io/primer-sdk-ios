@@ -81,10 +81,9 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Merge develop -> master
+      - name: Merge release -> master
         uses: devmasx/merge-branch@v1.3.1
         with:
           type: now
-          from_branch: ${GITHUB_REF}
           target_branch: dev_test
           github_token: ${{ github.token }}
