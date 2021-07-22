@@ -5,7 +5,7 @@ on:
       - "feature/**"
 
 jobs:
-  build:
+  build-test:
     runs-on: macos-latest
     timeout-minutes: 15
 
@@ -54,12 +54,6 @@ jobs:
       - name: Test - Fastlane tests
         run: bundle exec fastlane tests
 
-  distribute-build:
-    needs: build
-    runs-on: macos-latest
-    timeout-minutes: 15
-
-    steps:
       - name: Create Firebase Service Credentials file
         run: |
           echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json.b64
@@ -81,8 +75,24 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
 
+  deploy:
+    runs-on: macOS-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install Cocoapods
+        run: gem install cocoapods
+
+      - name: Deploy to Cocoapods
+        run: |
+          set -eo pipefail
+          pod lib lint --allow-warnings
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+
   merge-branch:
-    needs: distribute-build
+    needs: build-test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
