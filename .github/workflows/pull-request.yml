@@ -1,5 +1,7 @@
 name: Preview PR
-on: pull_request
+on:
+  pull_request:
+    types: [opened, edited, closed, reopened]
 
 jobs:
   build-test:
