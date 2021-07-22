@@ -15,23 +15,39 @@ jobs:
   tag:
     runs-on: ubuntu-18.04
     steps:
-      - name: Extract tag name
-        id: tag
-        uses: actions/github-script@0.2.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            return context.payload.ref.replace(/\/refs\/tags\//, '');
-      # - name: Echo Tag
-      #   run: echo ${{ steps.tag.outputs.result }}
-      - name: Store tag in env
-        run: echo "Release branch has been tagged with ${TAG_VERSION}"
+      - name: Branch name
+        id: branch_name
+        run: |
+          echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
+          echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
+          echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+      - name: Build base image
+        run: |
+          echo $SOURCE_NAME
+          echo $SOURCE_BRANCH
+          echo $SOURCE_TAG
         env:
-          TAG_VERSION: ${{ steps.tag.outputs.result }}
-      # - name: Echo env tag
-      #   run: echo "Env tag ${{ env.TAG_VERSION }}"
-      # - name: Echo env tag 2
-      #   run: echo ${{ env.TAG_VERSION }}
+          SOURCE_NAME: ${{ steps.branch_name.outputs.SOURCE_NAME }}
+          SOURCE_BRANCH: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
+          SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
+
+      # - name: Extract tag name
+      #   id: tag
+      #   uses: actions/github-script@0.2.0
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       return context.payload.ref.replace(/\/refs\/tags\//, '');
+      # # - name: Echo Tag
+      # #   run: echo ${{ steps.tag.outputs.result }}
+      # - name: Store tag in env
+      #   run: echo "Release branch has been tagged with ${TAG_VERSION}"
+      #   env:
+      #     TAG_VERSION: ${{ steps.tag.outputs.result }}
+      # # - name: Echo env tag
+      # #   run: echo "Env tag ${{ env.TAG_VERSION }}"
+      # # - name: Echo env tag 2
+      # #   run: echo ${{ env.TAG_VERSION }}
 
   build-test:
     needs: tag
@@ -96,7 +112,6 @@ jobs:
           FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
 
   # deploy:

@@ -33,7 +33,7 @@ platform :ios do
     str_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
-    sdk_version_name = ENV['TAG_VERSION']
+    sdk_version_name = ENV['SOURCE_TAG']
 
     cocoapods(
       clean_install: true,
