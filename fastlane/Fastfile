@@ -29,6 +29,9 @@ platform :ios do
   # end
 
   lane :release do
+    time = Time.new
+    str_time = time.strftime("%Y-%m-%d %H:%M:%S")
+
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
 
     cocoapods(
@@ -36,10 +39,7 @@ platform :ios do
       podfile: "./Example/Podfile"
     )
 
-    sdk_version_name = get_version_number(
-      xcodeproj: "./Example/Pods/Pods.xcodeproj",
-      target: "PrimerSDK"
-    )
+    sdk_version_name = ENV['TAG']
 
     # Set version number
     increment_version_number(
@@ -75,7 +75,7 @@ platform :ios do
         service_credentials_file: "firebase_credentials.json",
         app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
         groups: "internal-qa-team",
-        release_notes: "Release: Version " + sdk_version_name
+        release_notes: "Release: Version " + sdk_version_name + " [" + str_time + "]"
     )
 
     build_app(
