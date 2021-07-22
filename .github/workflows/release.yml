@@ -24,15 +24,15 @@ jobs:
       - name: Echo Tag
         run: echo ${{ steps.tag.outputs.result }}
       - name: Store tag in env
-        run: echo "Release branch has been tagged with ${TAG}"
+        run: echo "Release branch has been tagged with ${TAG_VERSION}"
         env:
-          TAG: ${{ steps.tag.outputs.result }}
+          TAG_VERSION: ${{ steps.tag.outputs.result }}
       - name: Echo env tag
-        run: echo "Env tag ${{ env.TAG }}"
+        run: echo "Env tag ${{ env.TAG_VERSION }}"
       - name: Echo env tag 2
-        run: echo ${{ env.TAG }}
+        run: echo ${{ env.TAG_VERSION }}
       - name: Echo env tag 2
-        run: echo "Release branch has been tagged with ${env.TAG}"
+        run: echo "Release branch has been tagged with ${env.TAG_VERSION}"
 
   build-test:
     needs: tag
