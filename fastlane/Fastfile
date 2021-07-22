@@ -43,11 +43,11 @@ platform :ios do
     sdk_version_name = ENV['TAG']
     puts "TAG: " + sdk_version_name
 
-    # Set version number
-    increment_version_number(
-      version_number: sdk_version_name,
-      xcodeproj: "./Example/PrimerSDK.xcodeproj"
-    )
+    # # Set version number
+    # increment_version_number(
+    #   version_number: sdk_version_name,
+    #   xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    # )
 
     create_keychain(
       name: ENV["MATCH_KEYCHAIN_NAME"],
