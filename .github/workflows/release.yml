@@ -26,10 +26,10 @@ jobs:
         run: echo ${{ steps.tag.outputs.result }}
 
       - name: Store tag in env
-        run: |
-          export TAG=${{ steps.tag.outputs.result }}
+        env:
+          TAG: ${{ steps.tag.outputs.result }}
       - name: Echo Env Tag
-        run: echo ${{ TAG }}
+        run: echo ${{ env.TAG }}
 
   # build-test:
   #   needs: get-tag
