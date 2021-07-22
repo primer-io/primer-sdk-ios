@@ -18,9 +18,15 @@ default_platform(:ios)
 platform :ios do
 
   lane :tests do
-    run_tests(workspace: "PrimerSDK.xcworkspace",
-              scheme: "PrimerSDK-Example")
+    run_tests(workspace: "Example/PrimerSDK.xcworkspace",
+              scheme: "PrimerSDK_Tests")
   end
+
+  # lane :ui_tests do
+  #   run_tests(workspace: "Example/PrimerSDK.xcworkspace",
+  #             devices: ["iPhone SE", "iPhone 8"],
+  #             scheme: "PrimerSDKExample_UITests")
+  # end
 
   lane :release do
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
