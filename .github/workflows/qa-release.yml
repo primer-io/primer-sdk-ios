@@ -85,3 +85,4 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
+          SOURCE_BRANCH: ${{ jobs.release-branch.steps.branch_name.outputs.SOURCE_BRANCH }}
