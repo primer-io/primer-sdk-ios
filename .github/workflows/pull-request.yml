@@ -75,14 +75,6 @@ jobs:
       #     PR_NUMBER: ${{ github.event.pull_request.number }}
       #     APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
 
-      - name: Merge release -> master
-        uses: devmasx/merge-branch@v1.3.1
-        with:
-          type: now
-          from_branch: ${GITHUB_REF}
-          target_branch: master
-          github_token: ${{ github.token }}
-
   merge-branch:
     needs: distribute
     runs-on: ubuntu-latest
