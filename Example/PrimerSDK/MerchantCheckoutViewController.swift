@@ -73,7 +73,6 @@ class MerchantCheckoutViewController: UIViewController {
         isInitialLoadingHidden: false
     )
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer"
