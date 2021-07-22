@@ -5,24 +5,24 @@ on:
       - "release/**"
 
 jobs:
-  release-branch:
+  branch:
     runs-on: ubuntu-18.04
+    # Map a step output to a job output
+    outputs:
+      branch: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
     steps:
       - name: Branch name
         id: branch_name
         run: |
-          echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
           echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
       - name: Build base image
         run: |
-          echo $SOURCE_NAME
           echo $SOURCE_BRANCH
         env:
-          SOURCE_NAME: ${{ steps.branch_name.outputs.SOURCE_NAME }}
           SOURCE_BRANCH: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
 
   build-test:
-    needs: release-branch
+    needs: branch
     runs-on: macos-latest
     timeout-minutes: 15
 
@@ -85,4 +85,4 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
-          SOURCE_BRANCH: ${{ jobs.release-branch.steps.branch_name.outputs.SOURCE_BRANCH }}
+          SOURCE_BRANCH: ${{ needs.branch.outputs.branch }}
