@@ -3,7 +3,7 @@ on:
   create:
     tags:
       - "!v**"
-      - "!**alpha**"
+      - "!**-alpha**"
       - "!**beta**"
       - "**.**.**"
 
