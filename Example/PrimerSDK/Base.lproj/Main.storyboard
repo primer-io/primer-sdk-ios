@@ -39,18 +39,30 @@
                                     <action selector="environmentValueChanged:" destination="Hsc-Wl-Q65" eventType="valueChanged" id="HwU-hT-uQ5"/>
                                 </connections>
                             </segmentedControl>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Provide a customer id" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FzB-bx-JVe">
+                                <rect key="frame" x="20" y="403.5" width="335" height="48"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="zao-Ul-Liy"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="Gbo-HH-IGR" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leading" constant="20" id="3BW-gJ-W5B"/>
+                            <constraint firstItem="FzB-bx-JVe" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leading" constant="20" id="3NZ-uR-juZ"/>
+                            <constraint firstItem="FzB-bx-JVe" firstAttribute="top" secondItem="Gbo-HH-IGR" secondAttribute="bottom" constant="12" id="90e-au-FxR"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerY" secondItem="P7R-MC-LKq" secondAttribute="centerY" id="A4C-4q-2Y2"/>
                             <constraint firstAttribute="trailing" secondItem="Gbo-HH-IGR" secondAttribute="trailing" constant="20" id="bfH-Dx-f2O"/>
                             <constraint firstItem="Gbo-HH-IGR" firstAttribute="top" secondItem="Uou-Rn-KOH" secondAttribute="bottom" constant="12" id="niy-EI-C95"/>
+                            <constraint firstAttribute="trailing" secondItem="FzB-bx-JVe" secondAttribute="trailing" constant="20" id="r8T-3F-uD8"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerX" secondItem="P7R-MC-LKq" secondAttribute="centerX" id="uIm-xc-nvN"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="kYZ-5n-R2a"/>
                     <connections>
+                        <outlet property="customerIdTextField" destination="FzB-bx-JVe" id="WYv-fO-enB"/>
                         <outlet property="environmentSwitch" destination="Gbo-HH-IGR" id="ZHY-z7-esU"/>
                     </connections>
                 </viewController>

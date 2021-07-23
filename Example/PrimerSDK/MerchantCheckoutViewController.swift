@@ -11,14 +11,16 @@ import UIKit
 
 class MerchantCheckoutViewController: UIViewController {
     
-    class func instantiate(environment: Environment) -> MerchantCheckoutViewController {
+    class func instantiate(environment: Environment, customerId: String?) -> MerchantCheckoutViewController {
         let mvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
         mvc.environment = environment
+        mvc.customerId = customerId
         return mvc
     }
 
     @IBOutlet weak var tableView: UITableView!
     fileprivate var environment: Environment = .sandbox
+    fileprivate var customerId: String?
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
         didSet {
             self.tableView.reloadData()
@@ -29,77 +31,85 @@ class MerchantCheckoutViewController: UIViewController {
 
     let amount = 200
     
-    let vaultPayPalSettings = PrimerSettings(
-        currency: .GBP,
-        countryCode: .gb,
-        urlScheme: "primer",
-        urlSchemeIdentifier: "primer"
-    )
-    
-    let vaultKlarnaSettings = PrimerSettings(
-        klarnaSessionType: .recurringPayment,
-        hasDisabledSuccessScreen: true,
-        isInitialLoadingHidden: true
-    )
-    
-    let applePaySettings = PrimerSettings(
-        merchantIdentifier: "merchant.primer.dev.evangelos",
-        currency: .EUR,
-        countryCode: .fr,
-        businessDetails: BusinessDetails(
-            name: "My Business",
-            address: Address(
-                addressLine1: "107 Rue",
-                addressLine2: nil,
-                city: "Paris",
-                state: nil,
-                countryCode: "FR",
-                postalCode: "75001"
-            )
-        ),
-        orderItems: [
-            try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
-            try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-            try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
-        ]
-    )
-
-    let generalSettings = PrimerSettings(
-        merchantIdentifier: "merchant.checkout.team",
-        customerId: "my-customer",
-        amount: 100,        // Please don't change on develop (used for UI testing)
-        currency: .EUR,     // Please don't change on develop (used for UI testing)
-        countryCode: .fr,
-        klarnaSessionType: .recurringPayment,
-        klarnaPaymentDescription: nil,
-        urlScheme: "primer",
-        urlSchemeIdentifier: "primer",
-        isFullScreenOnly: false,
-        hasDisabledSuccessScreen: false,
-        businessDetails: nil,
-        directDebitHasNoAmount: false,
-        orderItems: [],
-        isInitialLoadingHidden: false,
-        is3DSEnabled: true,
-        billingAddress: Address(addressLine1: "Line 1", addressLine2: "Line 2", city: "City", state: "State", countryCode: "GR", postalCode: "15236"),
-        orderId: "order id",
-        userDetails: UserDetails(
-            firstName: "Evans",
-            lastName: "Pie",
-            email: "evans@primer.io",
-            addressLine1: "Line 1",
-            addressLine2: "Line 2",
-            city: "City",
-            postalCode: "15236",
-            countryCode: "GR",
-            homePhone: nil,
-            mobilePhone: nil,
-            workPhone: nil)
-    )
+    var vaultPayPalSettings: PrimerSettings!
+    var vaultKlarnaSettings: PrimerSettings!
+    var applePaySettings: PrimerSettings!
+    var generalSettings: PrimerSettings!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer [\(environment.rawValue)]"
+        
+        generalSettings = PrimerSettings(
+            merchantIdentifier: "merchant.checkout.team",
+            customerId: customerId,
+            amount: 100,        // Please don't change on develop (used for UI testing)
+            currency: .EUR,     // Please don't change on develop (used for UI testing)
+            countryCode: .fr,
+            klarnaSessionType: .recurringPayment,
+            klarnaPaymentDescription: nil,
+            urlScheme: "primer",
+            urlSchemeIdentifier: "primer",
+            isFullScreenOnly: false,
+            hasDisabledSuccessScreen: false,
+            businessDetails: nil,
+            directDebitHasNoAmount: false,
+            orderItems: [],
+            isInitialLoadingHidden: false,
+            is3DSEnabled: true,
+            billingAddress: Address(addressLine1: "Line 1", addressLine2: "Line 2", city: "City", state: "State", countryCode: "GR", postalCode: "15236"),
+            orderId: "order id",
+            userDetails: UserDetails(
+                firstName: "Evans",
+                lastName: "Pie",
+                email: "evans@primer.io",
+                addressLine1: "Line 1",
+                addressLine2: "Line 2",
+                city: "City",
+                postalCode: "15236",
+                countryCode: "GR",
+                homePhone: nil,
+                mobilePhone: nil,
+                workPhone: nil)
+        )
+        
+        vaultPayPalSettings = PrimerSettings(
+            customerId: customerId,
+            currency: .GBP,
+            countryCode: .gb,
+            urlScheme: "primer",
+            urlSchemeIdentifier: "primer"
+        )
+        
+        vaultKlarnaSettings = PrimerSettings(
+            customerId: customerId,
+            klarnaSessionType: .recurringPayment,
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true
+        )
+        
+        applePaySettings = PrimerSettings(
+            merchantIdentifier: "merchant.checkout.team",
+            customerId: customerId,
+            currency: .EUR,
+            countryCode: .fr,
+            businessDetails: BusinessDetails(
+                name: "My Business",
+                address: Address(
+                    addressLine1: "107 Rue",
+                    addressLine2: nil,
+                    city: "Paris",
+                    state: nil,
+                    countryCode: "FR",
+                    postalCode: "75001"
+                )
+            ),
+            orderItems: [
+                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
+            ]
+        )
         
         Primer.shared.delegate = self
         self.configurePrimer()
@@ -174,7 +184,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: nil, environment: environment)
+        let body = CreateClientTokenRequest(customerId: customerId, customerCountryCode: nil, environment: environment)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

@@ -13,7 +13,7 @@ enum Environment: String, Codable {
 }
 
 struct CreateClientTokenRequest: Codable {
-    let customerId: String
+    let customerId: String?
     let customerCountryCode: String?
     var environment: Environment = .sandbox
 }

@@ -12,6 +12,7 @@ class AppViewController: UIViewController {
     
     @IBOutlet weak var environmentSwitch: UISegmentedControl!
     private var selectedEnvironment: Environment = .sandbox
+    @IBOutlet weak var customerIdTextField: UITextField!
     
     @IBAction func environmentValueChanged(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
@@ -27,7 +28,7 @@ class AppViewController: UIViewController {
     }
     
     @IBAction func initializeButtonTapped(_ sender: Any) {
-        let mvc = MerchantCheckoutViewController.instantiate(environment: selectedEnvironment)
+        let mvc = MerchantCheckoutViewController.instantiate(environment: selectedEnvironment, customerId: customerIdTextField.text)
         navigationController?.pushViewController(mvc, animated: true)
     }
     
