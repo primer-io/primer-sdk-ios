@@ -196,7 +196,7 @@ public struct ThreeDS {
         let purchaseCount: Int?
     }
     
-    internal enum ResponseCode: String, Codable {
+    public enum ResponseCode: String, Codable {
         case notPerformed = "NOT_PERFORMED"
         case skipped = "SKIPPED"
         case authSuccess = "AUTH_SUCCESS"
@@ -387,9 +387,9 @@ public struct ThreeDS {
     }
     
     public struct AuthenticationDetails: Codable {
-        let responseCode: ResponseCode
-        let reasonCode, reasonText, protocolVersion: String?
-        let challengeIssued: Bool?
+        public let responseCode: ResponseCode
+        public let reasonCode, reasonText, protocolVersion: String?
+        public let challengeIssued: Bool?
     }
 
     internal enum DeclinedReasonCode: String, Codable {

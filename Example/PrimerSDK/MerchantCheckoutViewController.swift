@@ -35,6 +35,7 @@ class MerchantCheckoutViewController: UIViewController {
     var vaultKlarnaSettings: PrimerSettings!
     var applePaySettings: PrimerSettings!
     var generalSettings: PrimerSettings!
+    var threeDSAlert: UIAlertController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -215,6 +216,25 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         guard let token = paymentMethodToken.token else { return completion(NetworkError.missingParams) }
+        
+        if let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
+           threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess {
+            var message: String = ""
+            
+            if let reasonCode = threeDSecureAuthentication.reasonCode {
+                message += "[\(reasonCode)] "
+            }
+            
+            if let reasonText = threeDSecureAuthentication.reasonText {
+                message += reasonText
+            }
+            
+            
+            threeDSAlert = UIAlertController(title: "3DS Error", message: message, preferredStyle: .alert)
+            threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
+                self?.threeDSAlert = nil
+            }))
+        }
 
         guard let url = URL(string: "\(endpoint)/transaction") else {
             return completion(NetworkError.missingParams)
@@ -248,6 +268,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func onCheckoutDismissed() {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nPrimer view dismissed\n")
         fetchPaymentMethods()
+        
+        if let threeDSAlert = threeDSAlert {
+            present(threeDSAlert, animated: true, completion: nil)
+        }
     }
     
     func checkoutFailed(with error: Error) {
