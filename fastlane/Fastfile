@@ -22,17 +22,11 @@ platform :ios do
               scheme: "PrimerSDK_Tests")
   end
 
-  # lane :ui_tests do
-  #   run_tests(workspace: "Example/PrimerSDK.xcworkspace",
-  #             devices: ["iPhone SE", "iPhone 8"],
-  #             scheme: "PrimerSDKExample_UITests")
-  # end
-
-
-
-
-
-
+  lane :ui_tests do
+    run_tests(workspace: "Example/PrimerSDK.xcworkspace",
+              devices: ["iPhone SE", "iPhone 8"],
+              scheme: "PrimerSDKExample_UITests")
+  end
 
   lane :qa_release do
     puts "Testing"
