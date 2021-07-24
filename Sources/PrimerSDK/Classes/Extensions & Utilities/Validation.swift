@@ -59,19 +59,7 @@ final internal class Validation {
 
     static func cardFieldIsValid(_ entry: String?) -> (Bool, String, Bool) {
         guard let entry = entry else { return (false, "Card number is required", false) }
-
-        let number = entry.filter { !$0.isWhitespace }
-
-        let containsNotOnlyNumbers = number.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) != nil
-        if containsNotOnlyNumbers { return (false, "Card number can only have digits", false) }
-
-        let containsTooFewDigits = number.count < 16
-        if containsTooFewDigits { return (false, "Card number is too short", false ) }
-
-        let isNotALuhnNumber = !shared.luhnCheck(number)
-        if isNotALuhnNumber { return (false, "Card number is invalid", false ) }
-
-        return (true, "", false )
+        return (entry.isValidCardNumber, entry.isValidCardNumber ? "" : "Invalid card number", false)
     }
 
     private func expiryYearIsNotValid(_ year: String.SubSequence) -> (Bool, String, Bool) {
