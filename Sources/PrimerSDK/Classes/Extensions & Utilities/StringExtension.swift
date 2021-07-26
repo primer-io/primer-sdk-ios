@@ -12,7 +12,7 @@ import Foundation
 internal extension String {
 
     var withoutWhiteSpace: String {
-        return self.replacingOccurrences(of: " ", with: "")
+        return self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var isNotValidIBAN: Bool {
@@ -43,9 +43,86 @@ internal extension String {
         let inputP = NSPredicate(format: "SELF MATCHES %@", regex)
         return inputP.evaluate(with: self)
     }
+    
+    var isOnlyLatinCharacters: Bool {
+        let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ")
+        return !(self.rangeOfCharacter(from: set.inverted) != nil)
+    }
 
     var isValidCardNumber: Bool {
         return count >= 13 && count <= 19 && isValidLuhn
+    }
+    
+    var isTypingValidExpiryDate: Bool? {
+        // swiftlint:disable identifier_name
+        let _self = self.replacingOccurrences(of: "/", with: "")
+        // swiftlint:enable identifier_name
+        if _self.count > 4 {
+            return false
+            
+        } else if _self.count == 3 {
+            return nil
+            
+        } else if _self.count == 2 {
+            if let month = Int(_self) {
+                if month < 1 || month > 12 {
+                    return false
+                } else {
+                    return nil
+                }
+            }
+            
+        } else if _self.count == 1 {
+            if ["0", "1"].contains(_self.prefix(1)) {
+                return nil
+            } else {
+                return false
+            }
+            
+        } else if _self.isEmpty {
+            return nil
+        }
+        
+        // Case where count is 4 will arrive here
+        guard let date = toDate(withFormat: "MMyy") else { return false }
+        return date.endOfMonth > Date()
+    }
+    
+    var isValidExpiryDate: Bool {
+        // swiftlint:disable identifier_name
+        let _self = self.replacingOccurrences(of: "/", with: "")
+        // swiftlint:enable identifier_name
+        if _self.count != 4 {
+            return false
+        }
+        
+        if !_self.isNumeric {
+            return false
+        }
+        
+        guard let date = _self.toDate(withFormat: "MMyy") else { return false }
+        return date.endOfMonth > Date()
+    }
+    
+    var isTypingValidCVV: Bool? {
+        if !isNumeric && !isEmpty { return false }
+        if count > 4 { return false }
+        if count >= 3 && count <= 4 { return true }
+        return nil
+    }
+    
+    var isValidCVV: Bool {
+        return isNumeric && count >= 3 && count <= 4
+    }
+    
+    var isTypingValidCardholderName: Bool? {
+        if isValidCardholderName { return true }
+        return nil
+    }
+    
+    var isValidCardholderName: Bool {
+        let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-")
+        return !(self.rangeOfCharacter(from: set.inverted) != nil)
     }
 
     var isValidEmail: Bool {
@@ -109,6 +186,12 @@ internal extension String {
 
     var isValidAccountNumber: Bool {
         return !self.isEmpty
+    }
+    
+    func separate(every: Int, with separator: String) -> String {
+        return String(stride(from: 0, to: Array(self).count, by: every).map {
+            Array(Array(self)[$0..<min($0 + every, Array(self).count)])
+        }.joined(separator: separator))
     }
 
 }
