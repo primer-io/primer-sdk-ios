@@ -208,9 +208,11 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 }
             }
             .ensure {
-                self.threeDSSDKWindow?.isHidden = true
-                self.threeDSSDKWindow = nil
-                sdkDismissed?()
+                Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+                    self.threeDSSDKWindow?.isHidden = true
+                    self.threeDSSDKWindow = nil
+                    sdkDismissed?()
+                }
             }
             .catch { err in
                 var token = paymentMethodToken

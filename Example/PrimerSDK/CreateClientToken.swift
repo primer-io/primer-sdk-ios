@@ -12,9 +12,8 @@ enum Environment: String, Codable {
     case sandbox, staging, production
 }
 
-
 struct CreateClientTokenRequest: Codable {
-    let customerId: String
+    let customerId: String?
     let customerCountryCode: String?
-    var environment: Environment?
+    var environment: Environment = .sandbox
 }

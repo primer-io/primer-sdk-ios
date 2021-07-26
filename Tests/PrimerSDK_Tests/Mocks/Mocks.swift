@@ -198,8 +198,8 @@ class MockAppState: AppStateProtocol {
             coreUrl: "url",
             pciUrl: "url",
             paymentMethods: [
-                ConfigPaymentMethod(id: "1", type: .klarna),
-                ConfigPaymentMethod(id: "2", type: .payPal)
+                ConfigPaymentMethod(id: "1", options: nil, processorConfigId: nil, type: .klarna),
+                ConfigPaymentMethod(id: "2", options: nil, processorConfigId: nil, type: .payPal)
             ]
         )
     ) {

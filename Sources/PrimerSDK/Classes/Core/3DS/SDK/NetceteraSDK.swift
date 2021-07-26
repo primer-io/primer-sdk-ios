@@ -56,6 +56,9 @@ class NetceteraSDK: ThreeDSSDKProtocol {
             return
         }
         
+        completion(.success(()))
+        return
+        
         if !sdkWarnings.isEmpty {
             var message = ""
             for warning in sdkWarnings {
