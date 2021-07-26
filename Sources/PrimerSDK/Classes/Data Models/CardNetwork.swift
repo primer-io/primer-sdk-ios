@@ -43,7 +43,7 @@ public enum CardNetwork: String, CaseIterable {
             return CardNetworkValidation(
                 niceType: "American Express",
                 patterns: [[34], [37]],
-                gaps: [4, 8, 12],
+                gaps: [4, 10],
                 lengths: [15],
                 code: CardNetworkCode(
                     name: "CID",
