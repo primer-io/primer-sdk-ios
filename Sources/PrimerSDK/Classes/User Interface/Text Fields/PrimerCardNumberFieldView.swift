@@ -31,9 +31,16 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         if !newText.withoutWhiteSpace.isNumeric && !string.isEmpty { return false }
         primerTextField._text = newText
         cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
+        
         delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)
-        validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? .valid : .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
-        primerTextField.text = newText.withoutWhiteSpace.separate(every: 4, with: " ")
+        validation = (self.isValid?(primerTextField._text ?? "") ?? false) ? .valid : .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
+        
+        if let cardNetworkValidation = cardNetwork.validation {
+            primerTextField.text = newText.withoutNonNumericCharacters.separate(on: cardNetworkValidation.gaps, with: " ")
+        } else {
+            primerTextField.text = newText.withoutNonNumericCharacters.separate(every: 4, with: " ")
+        }
+        
         return false
     }
     
