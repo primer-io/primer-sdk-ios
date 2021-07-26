@@ -127,8 +127,6 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
                     }
                 }
             })
-        case .googlePay:
-            break
         case .paymentCard:
             router.show(.form(type: .cardForm(theme: theme)))
         case .payPal:
@@ -137,6 +135,8 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
             router.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
         case .klarna:
             router.show(.oAuth(host: .klarna))
+        default:
+            break
         }
     }
 }
