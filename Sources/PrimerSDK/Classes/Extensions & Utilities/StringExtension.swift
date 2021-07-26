@@ -50,7 +50,24 @@ internal extension String {
     }
 
     var isValidCardNumber: Bool {
-        return count >= 13 && count <= 19 && isValidLuhn
+        let clearedCardNumber = self.withoutNonNumericCharacters
+        
+        if !(clearedCardNumber.count >= 13 && clearedCardNumber.count <= 19 && clearedCardNumber.isValidLuhn) {
+            return false
+        }
+        
+        let cardNetwork = CardNetwork(cardNumber: clearedCardNumber)
+        if let cardNumberValidation = cardNetwork.validation {
+            if !cardNumberValidation.lengths.contains(clearedCardNumber.count) {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    var withoutNonNumericCharacters: String {
+        return withoutWhiteSpace.filter("0123456789".contains)
     }
     
     var isTypingValidExpiryDate: Bool? {
