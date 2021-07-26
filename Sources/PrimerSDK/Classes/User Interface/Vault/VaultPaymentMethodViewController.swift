@@ -4,7 +4,6 @@ import UIKit
 
 internal class VaultPaymentMethodViewController: PrimerViewController {
     
-    var transitionDelegate = TransitionDelegate()
     var showDeleteIcon = false
     var subView: VaultPaymentMethodView = VaultPaymentMethodView()
     weak var delegate: ReloadDelegate?

@@ -150,7 +150,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: nil)
+        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: nil, staging: true)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -163,7 +163,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             case .success(let data):
                 do {
                     let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
-                    print("🚀🚀🚀 token:", token)
+
                     completion(token, nil)
 
                 } catch {
