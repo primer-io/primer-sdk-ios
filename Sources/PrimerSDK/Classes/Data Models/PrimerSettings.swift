@@ -32,6 +32,15 @@ internal protocol PrimerSettingsProtocol {
     var billingAddress: Address? { get }
     var orderId: String? { get }
     var userDetails: UserDetails? { get }
+    var debugOptions: PrimerDebugOptions { get }
+}
+
+public struct PrimerDebugOptions {
+    public var is3DSSanityCheckEnabled: Bool = true
+    
+    public init(is3DSSanityCheckEnabled: Bool = true) {
+        self.is3DSSanityCheckEnabled = is3DSSanityCheckEnabled
+    }
 }
 
 /**
@@ -80,6 +89,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var billingAddress: Address?
     internal(set) public var orderId: String?
     internal(set) public var userDetails: UserDetails?
+    internal(set) public var debugOptions: PrimerDebugOptions = PrimerDebugOptions()
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
@@ -123,7 +133,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         is3DSEnabled: Bool = true,
         billingAddress: Address? = nil,
         orderId: String? = nil,
-        userDetails: UserDetails? = nil
+        userDetails: UserDetails? = nil,
+        debugOptions: PrimerDebugOptions? = nil
     ) {
         self.amount = amount
         self.currency = currency
@@ -153,6 +164,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.billingAddress = billingAddress
         self.orderId = orderId
         self.userDetails = userDetails
+        self.debugOptions = debugOptions ?? PrimerDebugOptions()
     }
 }
 

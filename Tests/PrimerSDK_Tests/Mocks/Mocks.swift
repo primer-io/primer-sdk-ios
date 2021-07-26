@@ -80,6 +80,8 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var debugOptions: PrimerDebugOptions
+    
     var userDetails: UserDetails?
     
     var orderId: String?
@@ -152,6 +154,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         self.onCheckoutDismiss = onCheckoutDismiss
         self.onTokenizeSuccess = onTokenizeSuccess
         self.is3DSEnabled = true
+        self.debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
     }
 }
 

@@ -71,7 +71,8 @@ class MerchantCheckoutViewController: UIViewController {
                 countryCode: "GR",
                 homePhone: nil,
                 mobilePhone: nil,
-                workPhone: nil)
+                workPhone: nil),
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
         
         vaultPayPalSettings = PrimerSettings(

@@ -48,32 +48,31 @@ class NetceteraSDK: ThreeDSSDKProtocol {
     }
     
     private func verifyWarnings(completion: @escaping (Result<Void, Error>) -> Void) {
-        var sdkWarnings: [Warning] = []
-        do {
-            sdkWarnings = try threeDS2Service.getWarnings()
-        } catch {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if !settings.debugOptions.is3DSSanityCheckEnabled {
             completion(.success(()))
-            return
-        }
-        
-        completion(.success(()))
-        return
-        
-        if !sdkWarnings.isEmpty {
-            var message = ""
-            for warning in sdkWarnings {
-                message += warning.getMessage()
-                message += "\n"
+        } else {
+            var sdkWarnings: [Warning] = []
+            do {
+                sdkWarnings = try threeDS2Service.getWarnings()
+            } catch {
+                completion(.failure(error))
+                return
             }
             
-            #if DEBUG
-            completion(.success(()))
-            #else
-            let err = NSError(domain: "netcetera", code: 100, userInfo: [NSLocalizedDescriptionKey: message])
-            completion(.failure(err))
-            #endif
-        } else {
-            completion(.success(()))
+            if !sdkWarnings.isEmpty {
+                var message = ""
+                for warning in sdkWarnings {
+                    message += warning.getMessage()
+                    message += "\n"
+                }
+                
+                let err = NSError(domain: "netcetera", code: 100, userInfo: [NSLocalizedDescriptionKey: message])
+                completion(.failure(err))
+            } else {
+                completion(.success(()))
+            }
         }
     }
     
