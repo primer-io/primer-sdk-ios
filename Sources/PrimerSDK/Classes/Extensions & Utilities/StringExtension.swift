@@ -211,6 +211,19 @@ internal extension String {
         }.joined(separator: separator))
     }
 
+    func separate(on gaps: [Int], with separator: String) -> String {
+        let sortedReversedGaps = gaps.sorted(by: { $0 > $1 })
+        
+        var str = self
+        for gap in sortedReversedGaps {
+            if str.count > gap {
+                str.insert(" ", at: str.index(str.startIndex, offsetBy: gap))
+            }
+        }
+        
+        return str
+    }
+    
 }
 
 #endif
