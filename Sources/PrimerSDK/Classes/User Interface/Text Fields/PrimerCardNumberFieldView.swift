@@ -30,7 +30,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         if !newText.withoutWhiteSpace.isNumeric && !string.isEmpty { return false }
         primerTextField._text = newText
-        cardNetwork = CardNetwork(account: primerTextField._text ?? "")
+        cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
         delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)
         validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? .valid : .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
         primerTextField.text = newText.withoutWhiteSpace.separate(every: 4, with: " ")
