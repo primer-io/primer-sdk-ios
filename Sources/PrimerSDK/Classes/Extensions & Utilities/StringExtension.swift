@@ -149,7 +149,7 @@ internal extension String {
             "z0-9-]*[\\p{L}0-9])?\\.)+[\\p{L}0-9](?:[\\p{L}0-9-]*[\\p{L}0-9])?|\\[(?:(?:25[0-5" +
             "]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-" +
             "9][0-9]?|[\\p{L}0-9-]*[\\p{L}0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21" +
-        "-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+            "-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
         let emailP = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
         return emailP.evaluate(with: self)
     }
@@ -181,8 +181,8 @@ internal extension String {
         let components = self.split(separator: ".")
         if components.count < 2 { return nil }
         let segment = String(components[1]).padding(toLength: ((String(components[1]).count+3)/4)*4,
-                                                              withPad: "=",
-                                                              startingAt: 0)
+                                                    withPad: "=",
+                                                    startingAt: 0)
         guard !segment.isEmpty, let data = Data(base64Encoded: segment) else { return nil }
         
         return try? JSONParser().parse(DecodedClientToken.self, from: data)
