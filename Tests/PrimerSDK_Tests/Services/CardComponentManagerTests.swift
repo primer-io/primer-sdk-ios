@@ -82,7 +82,7 @@ class CardComponentManagerTests: XCTestCase {
     func test_card_number_network() throws {
         for (cardNetwork, cardnumbers) in testCardNumbers {
             for cardnumber in cardnumbers {
-                XCTAssert(CardNetwork(account: cardnumber.withoutWhiteSpace) == cardNetwork)
+                XCTAssert(CardNetwork(cardNumber: cardnumber.withoutWhiteSpace) == cardNetwork, "Failed to match card \(cardnumber) to network \(cardNetwork.rawValue)")
             }
         }
     }
@@ -90,7 +90,7 @@ class CardComponentManagerTests: XCTestCase {
     func test_is_valid_card_number() throws {
         for (cardNetwork, cardnumbers) in testCardNumbers {
             for cardnumber in cardnumbers {
-                XCTAssert(cardnumber.withoutWhiteSpace.isValidCardNumber, "\(cardnumber) [\(cardNetwork)] failed validation")
+                XCTAssert(cardnumber.isValidCardNumber, "\(cardnumber) [\(cardNetwork)] failed validation")
             }
         }
         
@@ -98,7 +98,7 @@ class CardComponentManagerTests: XCTestCase {
         XCTAssert(!"abcd".isValidCardNumber)
         XCTAssert(!"1".isValidCardNumber)
         XCTAssert(!"1234abcd".isValidCardNumber)
-        XCTAssert(!"4242-4242-4242-4242".isValidCardNumber)
+        XCTAssert("4242-4242-4242-4242".isValidCardNumber)
     }
     
 }
