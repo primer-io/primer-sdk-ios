@@ -34,7 +34,7 @@ internal class FormView: PrimerView {
     let contentView = UIScrollView()
 
     var textFields: [[UITextField]] = []
-    var countryPickerTextField: PrimerTextField?
+    var countryPickerTextField: PrimerCustomStyleTextField?
     var validatedFields: [[Bool]] = []
 
     let countries = CountryCode.all
@@ -185,7 +185,7 @@ internal class FormView: PrimerView {
 
     private func configureTextField(_ model: FormTextFieldType, column: Int, row: Int, index: Int) -> Int {
         guard let delegate = delegate else { return 0 }
-        let textField = PrimerTextField()
+        let textField = PrimerCustomStyleTextField()
         textFields[row].append(textField)
 
         switch model {
@@ -498,7 +498,7 @@ internal class FormView: PrimerView {
 
     private func validateTextField(_ sender: UITextField, markError: Bool = true, showValidity: Bool = true) {
         guard let delegate = delegate else { return }
-        guard let textField = sender as? PrimerTextField else { return }
+        guard let textField = sender as? PrimerCustomStyleTextField else { return }
 
         if textField.validationIsOptional {
             textField.renderSubViews(validationState: .default)
@@ -538,7 +538,7 @@ internal class FormView: PrimerView {
         
         textFields.forEach { row in
             row.forEach {
-                guard let textField = $0 as? PrimerTextField else { return }
+                guard let textField = $0 as? PrimerCustomStyleTextField else { return }
                 let column: Int = textField.tag % 10
                 let row: Int = (textField.tag - column) / 10
                 guard let type = delegate?.formType.textFields[row][column] else { return }
