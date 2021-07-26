@@ -14,27 +14,4 @@ struct DecodedClientToken: Decodable {
     var coreUrl: String?
     var pciUrl: String?
     var env: String?
-    
-    var isValid: Bool {
-        do {
-            try validate()
-            return true
-        } catch {
-            return false
-        }
-    }
-    
-    func validate() throws {
-        if accessToken == nil {
-            throw PrimerError.clientTokenNull
-        }
-        
-        guard let expDate = expDate else {
-            throw PrimerError.clientTokenExpirationMissing
-        }
-        
-        if expDate < Date() {
-            throw PrimerError.clientTokenExpired
-        }
-    }
 }

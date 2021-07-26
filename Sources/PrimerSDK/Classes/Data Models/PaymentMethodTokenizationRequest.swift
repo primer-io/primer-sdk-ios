@@ -7,19 +7,12 @@ struct PaymentMethodTokenizationRequest: Encodable {
     let paymentFlow: PaymentFlow?
     let customerId: String?
 
-    init(paymentInstrument: PaymentInstrument, state: AppStateProtocol?) {
+    init(paymentInstrument: PaymentInstrument, state: AppStateProtocol) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         self.paymentInstrument = paymentInstrument
         self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : .singleUse
         self.paymentFlow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
         self.customerId = Primer.shared.flow.internalSessionFlow.vaulted ? settings.customerId : nil
-    }
-    
-    init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow, customerId: String?) {
-        self.paymentInstrument = paymentInstrument
-        self.paymentFlow = paymentFlow
-        self.tokenType = (paymentFlow == .vault) ? .multiUse : .singleUse
-        self.customerId = customerId
     }
 
 }
@@ -54,9 +47,8 @@ enum TokenType: String, Encodable {
     case singleUse = "SINGLE_USE"
 }
 
-public enum PaymentFlow: String, Encodable {
+enum PaymentFlow: String, Encodable {
     case vault = "VAULT"
-    case checkout = "CHECKOUT"
 }
 
 struct ApplePaySourceConfig: Codable {

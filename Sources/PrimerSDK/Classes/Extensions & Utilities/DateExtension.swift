@@ -9,19 +9,6 @@ import Foundation
 
 internal extension Date {
     
-    var startOfMonth: Date {
-        let calendar = Calendar(identifier: .gregorian)
-        let components = calendar.dateComponents([.year, .month], from: self)
-        return  calendar.date(from: components)!
-    }
-    
-    var endOfMonth: Date {
-        var components = DateComponents()
-        components.month = 1
-        components.second = -1
-        return Calendar(identifier: .gregorian).date(byAdding: components, to: startOfMonth)!
-    }
-    
     // swiftlint:disable identifier_name
     func toString(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil, calendar: Calendar? = nil) -> String {
         let df = DateFormatter()
