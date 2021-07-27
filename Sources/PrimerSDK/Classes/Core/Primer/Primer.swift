@@ -27,6 +27,18 @@ public class Primer {
             self?.setDependencies(settings: settings, theme: PrimerTheme())
         }
     }
+    
+    private lazy var primerWindow: UIWindow = {
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        window.rootViewController = PrimerRootViewController.instantiate()
+        window.backgroundColor = UIColor.clear
+        window.windowLevel = UIWindow.Level.normal
+        return window
+    }()
+    
+    public func testAutolayout() {
+        primerWindow.makeKeyAndVisible()
+    }
 
     /**
      Set or reload all SDK dependencies.

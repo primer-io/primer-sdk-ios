@@ -107,7 +107,8 @@ class MerchantCheckoutViewController: UIViewController {
     // MARK: - ACTIONS
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .addCardToVault)
+//        Primer.shared.showCheckout(self, flow: .addCardToVault)
+        Primer.shared.testAutolayout()
     }
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {
