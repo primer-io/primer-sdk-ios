@@ -1,8 +1,5 @@
 name: QA Release
-on:
-  pull_request:
-    branches:
-      - "release/**"
+on: [pull_request]
 
 jobs:
   branch:
