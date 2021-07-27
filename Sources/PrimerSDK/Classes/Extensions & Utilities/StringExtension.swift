@@ -52,10 +52,6 @@ internal extension String {
     var isValidCardNumber: Bool {
         let clearedCardNumber = self.withoutNonNumericCharacters
         
-        if !(clearedCardNumber.count >= 13 && clearedCardNumber.count <= 19 && clearedCardNumber.isValidLuhn) {
-            return false
-        }
-        
         let cardNetwork = CardNetwork(cardNumber: clearedCardNumber)
         if let cardNumberValidation = cardNetwork.validation {
             if !cardNumberValidation.lengths.contains(clearedCardNumber.count) {
@@ -63,7 +59,7 @@ internal extension String {
             }
         }
         
-        return true
+        return clearedCardNumber.isValidLuhn
     }
     
     var withoutNonNumericCharacters: String {
