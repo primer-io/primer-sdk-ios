@@ -29,7 +29,7 @@ class MerchantCheckoutViewController: UIViewController {
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
 //    let endpoint = "http://localhost:8020"
 
-    let amount = 200
+    var amount = 1
     
     var vaultPayPalSettings: PrimerSettings!
     var vaultKlarnaSettings: PrimerSettings!
@@ -44,7 +44,7 @@ class MerchantCheckoutViewController: UIViewController {
         generalSettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
             customerId: customerId,
-            amount: 100,        // Please don't change on develop (used for UI testing)
+            amount: amount,        // Please don't change on develop (used for UI testing)
             currency: .EUR,     // Please don't change on develop (used for UI testing)
             countryCode: .fr,
             klarnaSessionType: .recurringPayment,
