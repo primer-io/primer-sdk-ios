@@ -100,4 +100,26 @@ class CardComponentManagerTests: XCTestCase {
         XCTAssert("4242-4242-4242-4242".isValidCardNumber)
     }
     
+    func test_is_valid_cvv() throws {
+        let threeDigitCVV = "123"
+        let fourDigitCVV = "1234"
+        
+        for (cardNetwork, cardnumbers) in testCardNumbers {
+            for cardnumber in cardnumbers {
+                let cardNetwork = CardNetwork(cardNumber: cardnumber)
+                let cvvDigits = cardNetwork.validation?.code.length ?? 4
+                
+                if cardNetwork != .unknown {
+                    if cvvDigits == 3 {
+                        XCTAssert(threeDigitCVV.isValidCVV(cardNetwork: cardNetwork))
+                    } else if cvvDigits == 4 {
+                        XCTAssert(fourDigitCVV.isValidCVV(cardNetwork: cardNetwork))
+                    } else {
+                        XCTAssert(false)
+                    }
+                }
+            }
+        }
+    }
+    
 }
