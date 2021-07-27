@@ -117,15 +117,17 @@ internal extension String {
         return date.endOfMonth > Date()
     }
     
-    var isTypingValidCVV: Bool? {
+    func isTypingValidCVV(cardNetwork: CardNetwork?) -> Bool? {
+        let maxDigits = cardNetwork?.validation?.code.length ?? 4
         if !isNumeric && !isEmpty { return false }
-        if count > 4 { return false }
-        if count >= 3 && count <= 4 { return true }
+        if count > maxDigits { return false }
+        if count >= 3 && count <= maxDigits { return true }
         return nil
     }
     
-    var isValidCVV: Bool {
-        return isNumeric && count >= 3 && count <= 4
+    func isValidCVV(cardNetwork: CardNetwork?) -> Bool {
+        let digits = cardNetwork?.validation?.code.length ?? 4
+        return count == digits
     }
     
     var isTypingValidCardholderName: Bool? {
