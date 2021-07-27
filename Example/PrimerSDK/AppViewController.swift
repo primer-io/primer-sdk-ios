@@ -6,8 +6,16 @@
 //  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
+import PrimerSDK
 import UIKit
 
 class AppViewController: UIViewController {
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false) { _ in
+            Primer.shared.testAutolayout()
+        }
+    }
 }
