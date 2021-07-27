@@ -107,6 +107,8 @@ internal class ErrorHandler {
                 break
             case .dataMissing:
                 break
+            case .directoryServerIdMissing:
+                break
             }
 
         } else if let klarnaException = error as? KlarnaException {

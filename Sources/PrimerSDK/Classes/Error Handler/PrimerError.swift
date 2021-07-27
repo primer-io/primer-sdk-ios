@@ -311,6 +311,7 @@ enum PrimerError: PrimerErrorProtocol {
     case orderIdMissing
     case userDetailsMissing
     case dataMissing(description: String)
+    case directoryServerIdMissing
     
     static var errorDomain: String = "primer"
 
@@ -386,6 +387,8 @@ enum PrimerError: PrimerErrorProtocol {
             return 2500
         case .threeDSFailed:
             return 2600
+        case .directoryServerIdMissing:
+            return 20610
         }
     }
 
@@ -622,6 +625,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Data are missing: \(description)",
                                      comment: "Data are missing - Primer error message")
+            
+        case .directoryServerIdMissing:
+            return NSLocalizedString("primer-error-3ds-ds-missing-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Directory server id missing",
+                                     comment: "Directory server id missing - Primer error message")
         }
     }
 
