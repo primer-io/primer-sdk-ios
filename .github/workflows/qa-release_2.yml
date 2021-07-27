@@ -1,4 +1,4 @@
-name: QA Release
+name: QA Release 2
 on: [pull_request]
 
 jobs:
