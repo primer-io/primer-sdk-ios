@@ -27,26 +27,3 @@ extension Transaction {
             sdkReferenceNumber: sdkReferenceNumber)
     }
 }
-
-extension ThreeDS {
-    static func directoryServerIdFor(scheme: Scheme) -> String {
-//        print(DsRidValues.visa)
-//        return "A000000003"
-        switch scheme {
-        case .visa():
-            return DsRidValues.visa
-        case .mastercard():
-            return DsRidValues.mastercard
-        case .amex():
-            return DsRidValues.amex
-        case .jcb():
-            return DsRidValues.jcb
-        case .diners():
-            return DsRidValues.diners
-        case .union():
-            return DsRidValues.union
-        default:
-            return ""
-        }
-    }
-}

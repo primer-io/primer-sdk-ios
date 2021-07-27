@@ -81,6 +81,25 @@ internal enum CardNetwork: String {
             self = .unknown
         }
     }
+    
+    var directoryServerId: String? {
+        switch self {
+        case .visa:
+            return "A000000003"
+        case .masterCard:
+            return "A000000004"
+        case .amex:
+            return "A000000025"
+        case .jcb:
+            return "A000000065"
+        case .diners:
+            return "A000000152"
+        case .chinaUnionPay:
+            return "A000000333"
+        default:
+            return nil
+        }
+    }
 }
 
 public enum PaymentNetwork: String {
