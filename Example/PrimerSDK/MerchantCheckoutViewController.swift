@@ -54,8 +54,7 @@ class MerchantCheckoutViewController: UIViewController {
             try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
         ]
     )
-
-
+    
     let generalSettings = PrimerSettings(
         merchantIdentifier: "merchant.checkout.team",
         customerId: "my-customer",
