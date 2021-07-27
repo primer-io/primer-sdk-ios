@@ -13,7 +13,6 @@ class CardComponentManagerTests: XCTestCase {
     
     let testCardNumbers: [CardNetwork: [String]] = [
         .amex: [
-            "3700 000000 000002",
             "3700 000001 00018"
         ],
         .diners: [
