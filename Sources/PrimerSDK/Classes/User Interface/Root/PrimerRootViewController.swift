@@ -9,9 +9,10 @@ import UIKit
 
 class PrimerRootViewController: UIViewController {
 
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var childContainerView: UIView!
     @IBOutlet weak var childContainerViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var childContainerViewBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var scrollViewBottomConstraint: NSLayoutConstraint!
     
     class func instantiate() -> PrimerRootViewController {
         let bundle = Bundle.primerFramework
@@ -23,7 +24,23 @@ class PrimerRootViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        scrollViewBottomConstraint.constant = scrollView.bounds.height
+        view.layoutIfNeeded()
+        print("")
         // Do any additional setup after loading the view.
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        scrollViewBottomConstraint.constant = 0.0
+
+        UIView.animate(withDuration: 2, delay: 0.0, options: .curveEaseInOut) {
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+
+        }
+
     }
     
 
@@ -37,4 +54,14 @@ class PrimerRootViewController: UIViewController {
     }
     */
 
+}
+
+class PrimerContainerNavigationController: UINavigationController {
+    
+    
+}
+
+class PrimerContainerViewController: UIViewController {
+    
+    
 }
