@@ -26,15 +26,23 @@ class NetceteraSDK: ThreeDSSDKProtocol {
             try configBuilder.log(to: .debug)
             try configBuilder.license(key: Primer.netceteraLicenseKey)
             
-            let supportedSchemeIds: [String] = ["A999999999"]
+            let state: AppStateProtocol = DependencyContainer.resolve()
             
-            let scheme = Scheme(name: "scheme_name")
-            scheme.ids = supportedSchemeIds
-            scheme.encryptionKeyValue = Certificates.cer1
-            scheme.rootCertificateValue = Certificates.cer3
-            scheme.logoImageName = "visa"
+            guard let clientToken = state.decodedClientToken else {
+                return completion(.failure(PrimerError.clientTokenNull))
+            }
             
-            try configBuilder.add(scheme)
+            if clientToken.env?.uppercased() != "PRODUCTION" {
+                let supportedSchemeIds: [String] = ["A999999999"]
+                
+                let scheme = Scheme(name: "scheme_name")
+                scheme.ids = supportedSchemeIds
+                scheme.encryptionKeyValue = Certificates.cer1
+                scheme.rootCertificateValue = Certificates.cer3
+                scheme.logoImageName = "visa"
+                
+                try configBuilder.add(scheme)
+            }
             
             let configParameters = configBuilder.configParameters()
             
@@ -78,28 +86,13 @@ class NetceteraSDK: ThreeDSSDKProtocol {
     
     func authenticateSdk(cardNetwork: CardNetwork, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void) {
         do {
-            var directoryServerId: String
-            
-            switch cardNetwork {
-            case .visa:
-                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .visa())
-            case .masterCard:
-                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .mastercard())
-            case .diners:
-                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .diners())
-            case .jcb:
-                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .jcb())
-            case .amex:
-                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .amex())
-            case .chinaUnionPay:
-                directoryServerId = ThreeDS.directoryServerIdFor(scheme: .union())
-            default:
-                directoryServerId = "A999999999"
+            if let directoryServerId = cardNetwork.directoryServerId {
+                transaction = try threeDS2Service.createTransaction(directoryServerId: directoryServerId,
+                                                                    messageVersion: protocolVersion.rawValue)
+                completion(.success(transaction!))
+            } else {
+                throw PrimerError.directoryServerIdMissing
             }
-            
-            transaction = try threeDS2Service.createTransaction(directoryServerId: directoryServerId,
-                                                                messageVersion: protocolVersion.rawValue)
-            completion(.success(transaction!))
         } catch {
             completion(.failure(error))
         }
