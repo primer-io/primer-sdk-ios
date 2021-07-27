@@ -29,8 +29,6 @@ platform :ios do
   end
 
   lane :qa_release do
-    puts "Testing"
-    puts "SOURCE_BRANCH: #{ENV['SOURCE_BRANCH']}"
     time = Time.new
     str_time = time.strftime("%Y-%m-%d %H:%M:%S")
     # Set timestamp as version_code to differentiate builds in firebase
@@ -92,7 +90,7 @@ platform :ios do
     )
 
     # Find public key of appetize
-    uri = URI('https://livedemostore.primer.io/appetize/ios/' + sdk_version_name)
+    uri = URI('https://livedemostore.primer.io/appetize/ios/preview_' + sdk_version_name)
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
 
@@ -120,7 +118,7 @@ platform :ios do
       service_credentials_file: "firebase_credentials.json",
       app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
       groups: "primer-internal",
-      release_notes: "PR: " + sdk_version_name + " [" + str_time + "]"
+      release_notes: "Preview release: " + sdk_version_name + " [" + str_time + "]"
     )
   end
 
