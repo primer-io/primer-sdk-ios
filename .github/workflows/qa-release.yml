@@ -1,6 +1,5 @@
 name: QA Release
 on:
-  on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
     branches:
