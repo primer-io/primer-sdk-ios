@@ -233,15 +233,9 @@ public enum CardNetwork: String, CaseIterable {
     
     static func cardNumber(_ cardnumber: String, matchesPatterns patterns: [[Int]]) -> Bool {
         for pattern in patterns {
-            if pattern.count == 1 {
-                let patternStr = String(pattern.first!)
-                if cardnumber.withoutNonNumericCharacters.hasPrefix(patternStr) {
-                    return true
-                }
-                
-            } else if pattern.count == 2 {
+            if pattern.count == 1 || pattern.count == 2 {
                 let min = pattern.first!
-                let max = pattern[1]
+                let max = pattern.count == 2 ? pattern[1] : min
                 
                 for num in min...max {
                     let numStr = String(num)
