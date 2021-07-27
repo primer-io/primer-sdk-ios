@@ -59,7 +59,7 @@ internal extension String {
             }
         }
         
-        return clearedCardNumber.isValidLuhn
+        return clearedCardNumber.count >= 13 && clearedCardNumber.count <= 19 && clearedCardNumber.isValidLuhn
     }
     
     var withoutNonNumericCharacters: String {
