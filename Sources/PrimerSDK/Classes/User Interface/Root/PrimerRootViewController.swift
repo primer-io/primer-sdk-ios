@@ -26,8 +26,6 @@ class PrimerRootViewController: UIViewController {
 
         scrollViewBottomConstraint.constant = scrollView.bounds.height
         view.layoutIfNeeded()
-        print("")
-        // Do any additional setup after loading the view.
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -40,20 +38,8 @@ class PrimerRootViewController: UIViewController {
         } completion: { _ in
 
         }
-
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 class PrimerContainerNavigationController: UINavigationController {
