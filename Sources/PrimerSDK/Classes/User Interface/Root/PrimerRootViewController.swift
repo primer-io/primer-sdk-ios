@@ -13,9 +13,7 @@ class PrimerRootViewController: UIViewController {
     @IBOutlet weak var childContainerView: UIView!
     @IBOutlet weak var childContainerViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollViewBottomConstraint: NSLayoutConstraint!
-    
-    private(set) internal var nc: UINavigationController!
-    
+        
     class func instantiate() -> PrimerRootViewController {
         let bundle = Bundle.primerFramework
         let storyboard = UIStoryboard(name: "Primer", bundle: bundle)
@@ -61,6 +59,8 @@ class PrimerRootViewController: UIViewController {
     func switchFlow(_ flow: PrimerInternalSessionFlow) {
         switch flow {
         case .checkout:
+            break
+        case .checkoutWithCard:
             break
         default:
             break

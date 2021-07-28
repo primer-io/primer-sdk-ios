@@ -20,25 +20,6 @@ class PrimerFormViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        
-        let testView1 = UIView()
-        testView1.backgroundColor = .red
-        testView1.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        verticalStackView.addArrangedSubview(testView1)
-        
-        let testView2 = UIView()
-        testView2.backgroundColor = .green
-        testView2.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        verticalStackView.addArrangedSubview(testView2)
-        
-        let testView3 = UIView()
-        testView3.backgroundColor = .black
-        testView3.heightAnchor.constraint(equalToConstant: 2000).isActive = true
-        verticalStackView.addArrangedSubview(testView3)
-        
-        view.layoutIfNeeded()
-        print("")
     }
     
 }
