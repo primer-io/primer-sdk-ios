@@ -9,7 +9,13 @@
 import PrimerSDK
 import UIKit
 
-class AppViewController: UIViewController {
+class AppViewController: UIViewController, PrimerTextFieldViewDelegate {
+    
+    let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -18,4 +24,5 @@ class AppViewController: UIViewController {
             Primer.shared.testAutolayout()
         }
     }
+
 }

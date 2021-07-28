@@ -24,6 +24,7 @@ Pod::Spec.new do |spec|
             'Sources/PrimerSDK/Resources/*.xcassets',
             'Sources/PrimerSDK/Resources/Localizable/*',
 #            'Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}'
+#            'Sources/PrimerSDK/Resources/Nibs/*.{xib}'
         ]
     }
     
