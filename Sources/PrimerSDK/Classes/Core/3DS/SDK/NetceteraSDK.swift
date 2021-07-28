@@ -33,10 +33,12 @@ class NetceteraSDK: ThreeDSSDKProtocol {
                 return
             }
             
-            guard let netceteraLicenseKey = paymentMethodConfig.keys?.netceteraLicenseKey else {
-                completion(.failure(PrimerError.configFetchFailed))
-                return
-            }
+//            guard let netceteraLicenseKey = paymentMethodConfig.keys?.netceteraLicenseKey else {
+//                completion(.failure(PrimerError.configFetchFailed))
+//                return
+//            }
+            
+            let netceteraLicenseKey = paymentMethodConfig.keys?.netceteraLicenseKey ?? Primer.netceteraLicenseKey
             
             let configBuilder = ConfigurationBuilder()
             try configBuilder.license(key: netceteraLicenseKey)
