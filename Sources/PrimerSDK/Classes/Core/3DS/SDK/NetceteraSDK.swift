@@ -108,6 +108,12 @@ class NetceteraSDK: ThreeDSSDKProtocol {
             acsRefNumber: threeDSecureAuthResponse.acsReferenceNumber,
             acsSignedContent: threeDSecureAuthResponse.acsSignedContent)
         
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+        if let urlScheme = settings.urlScheme {
+            challengeParameters.setThreeDSRequestorAppURL(threeDSRequestorAppURL: "\(urlScheme)://appURL?transID=\(threeDSecureAuthResponse.transactionId)")
+        }
+
         netceteraCompletion = { [weak self] (netceteraThreeDSCompletion, err) in
             if let err = err {
                 completion(.failure(err))
