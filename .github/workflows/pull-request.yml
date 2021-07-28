@@ -1,6 +1,7 @@
 name: Preview PR
 on:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
     branches:
       - "feature/**"
 
