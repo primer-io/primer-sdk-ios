@@ -11,7 +11,7 @@ import UIKit
 class AppViewController: UIViewController {
     
     @IBOutlet weak var environmentSwitch: UISegmentedControl!
-    private var selectedEnvironment: Environment = .sandbox
+    private var selectedEnvironment: Environment = .dev
     @IBOutlet weak var customerIdTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
     @IBOutlet weak var performPaymentSwitch: UISwitch!
@@ -19,10 +19,12 @@ class AppViewController: UIViewController {
     @IBAction func environmentValueChanged(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            selectedEnvironment = .sandbox
+            selectedEnvironment = .dev
         case 1:
-            selectedEnvironment = .staging
+            selectedEnvironment = .sandbox
         case 2:
+            selectedEnvironment = .staging
+        case 3:
             selectedEnvironment = .production
         default:
             break

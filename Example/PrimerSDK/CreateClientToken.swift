@@ -9,7 +9,7 @@
 import Foundation
 
 enum Environment: String, Codable {
-    case sandbox, staging, production
+    case dev, sandbox, staging, production
 }
 
 struct CreateClientTokenRequest: Codable {
