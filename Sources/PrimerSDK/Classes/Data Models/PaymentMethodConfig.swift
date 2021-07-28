@@ -2,6 +2,8 @@ struct PaymentMethodConfig: Codable {
     let coreUrl: String?
     let pciUrl: String?
     let paymentMethods: [ConfigPaymentMethod]?
+    let env: String?
+    let keys: ThreeDS.Keys?
 }
 
 struct ConfigPaymentMethod: Codable {
