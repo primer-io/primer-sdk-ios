@@ -25,9 +25,12 @@ class PrimerRootViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        scrollView.bounces = false
 
-//        scrollViewBottomConstraint.constant = scrollView.bounds.height
-//        childContainerViewHeightConstraint.constant = 500
+        // Hide scrollview at the bottom of the screen
+        scrollViewBottomConstraint.constant = scrollView.bounds.height
+        childContainerViewHeightConstraint.constant = 0
         view.layoutIfNeeded()
     }
     
@@ -47,13 +50,12 @@ class PrimerRootViewController: UIViewController {
         fvc.didMove(toParent: self)
         
         childContainerViewHeightConstraint.constant = fvc.view.frame.height
-        self.view.layoutIfNeeded()
+        
+        UIView.animate(withDuration: 0.3, delay: 1, options: .curveEaseInOut) {
+            self.view.layoutIfNeeded()
+        } completion: { _ in
 
-//        UIView.animate(withDuration: 2, delay: 1, options: .curveEaseInOut) {
-//            self.view.layoutIfNeeded()
-//        } completion: { _ in
-//
-//        }
+        }
     }
     
     func switchFlow(_ flow: PrimerInternalSessionFlow) {
