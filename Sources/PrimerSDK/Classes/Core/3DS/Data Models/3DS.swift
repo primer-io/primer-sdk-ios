@@ -27,13 +27,13 @@ protocol ThreeDSSDKAuthDataProtocol: Codable {
 public struct ThreeDS {
     
     internal struct Keys: Codable {
-        let threeDSecureIoCertificates: [ThreeDS.Certificate]
-        let netceteraLicenseKey: String
+        let threeDSecureIoCertificates: [ThreeDS.Certificate]?
+        let netceteraLicenseKey: String?
     }
     
     internal struct Certificate: Codable {
         let encryptionKey: String
-        let cardNetwork: String?
+        let cardNetwork: String
         let rootCertificate: String
     }
     
