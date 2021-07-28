@@ -1,5 +1,9 @@
-name: QA Release 2
-on: [pull_request]
+name: QA Release
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+    branches:
+      - "release/**"
 
 jobs:
   branch:
