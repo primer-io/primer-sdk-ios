@@ -11,16 +11,21 @@ import UIKit
 
 class MerchantCheckoutViewController: UIViewController {
     
-    class func instantiate(environment: Environment, customerId: String?) -> MerchantCheckoutViewController {
+    class func instantiate(environment: Environment, customerId: String?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
         let mvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
         mvc.environment = environment
         mvc.customerId = customerId
+        mvc.amount = amount ?? 1
+        mvc.performPayment = performPayment
         return mvc
     }
 
     @IBOutlet weak var tableView: UITableView!
     fileprivate var environment: Environment = .sandbox
     fileprivate var customerId: String?
+    var amount: Int = 1
+    fileprivate var performPayment: Bool = false
+    
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
         didSet {
             self.tableView.reloadData()
@@ -29,7 +34,7 @@ class MerchantCheckoutViewController: UIViewController {
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
 //    let endpoint = "http://localhost:8020"
 
-    var amount = 1
+    
     
     var vaultPayPalSettings: PrimerSettings!
     var vaultKlarnaSettings: PrimerSettings!
@@ -235,6 +240,11 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
                 self?.threeDSAlert = nil
             }))
+        }
+        
+        if !performPayment {
+            completion(nil)
+            return
         }
 
         guard let url = URL(string: "\(endpoint)/transaction") else {
