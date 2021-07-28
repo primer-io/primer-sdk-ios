@@ -83,6 +83,8 @@ internal enum CardNetwork: String {
     }
     
     var directoryServerId: String? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
         switch self {
         case .visa:
             return "A000000003"
@@ -97,7 +99,16 @@ internal enum CardNetwork: String {
         case .chinaUnionPay:
             return "A000000333"
         default:
-            return nil
+            if let clientToken = state.decodedClientToken,
+               let env = clientToken.env {
+                if env.uppercased() == "PRODUCTION" {
+                    return nil
+                } else {
+                    return "A999999999"
+                }
+            } else {
+                return nil
+            }
         }
     }
 }
