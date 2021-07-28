@@ -14,6 +14,8 @@ class PrimerRootViewController: UIViewController {
     @IBOutlet weak var childContainerViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollViewBottomConstraint: NSLayoutConstraint!
     
+    private(set) internal var nc: UINavigationController!
+    
     class func instantiate() -> PrimerRootViewController {
         let bundle = Bundle.primerFramework
         let storyboard = UIStoryboard(name: "Primer", bundle: bundle)
@@ -24,7 +26,8 @@ class PrimerRootViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        scrollViewBottomConstraint.constant = scrollView.bounds.height
+//        scrollViewBottomConstraint.constant = scrollView.bounds.height
+//        childContainerViewHeightConstraint.constant = 500
         view.layoutIfNeeded()
     }
     
@@ -32,11 +35,33 @@ class PrimerRootViewController: UIViewController {
         super.viewDidAppear(animated)
         
         scrollViewBottomConstraint.constant = 0.0
+        
+        let fvc = PrimerFormViewController.instantiate()
+        fvc.view.translatesAutoresizingMaskIntoConstraints = false
+        fvc.view.widthAnchor.constraint(equalToConstant: scrollView.frame.width).isActive = true
+        fvc.view.layoutIfNeeded()
+        
+        addChild(fvc)
+        childContainerView.addSubview(fvc.view)
+        
+        fvc.didMove(toParent: self)
+        
+        childContainerViewHeightConstraint.constant = fvc.view.frame.height
+        self.view.layoutIfNeeded()
 
-        UIView.animate(withDuration: 2, delay: 0.0, options: .curveEaseInOut) {
-            self.view.layoutIfNeeded()
-        } completion: { _ in
-
+//        UIView.animate(withDuration: 2, delay: 1, options: .curveEaseInOut) {
+//            self.view.layoutIfNeeded()
+//        } completion: { _ in
+//
+//        }
+    }
+    
+    func switchFlow(_ flow: PrimerInternalSessionFlow) {
+        switch flow {
+        case .checkout:
+            break
+        default:
+            break
         }
     }
     
