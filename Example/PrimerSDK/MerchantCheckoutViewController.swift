@@ -55,7 +55,6 @@ class MerchantCheckoutViewController: UIViewController {
         ]
     )
     
-    
     let generalSettings = PrimerSettings(
         merchantIdentifier: "merchant.checkout.team",
         customerId: "my-customer",
