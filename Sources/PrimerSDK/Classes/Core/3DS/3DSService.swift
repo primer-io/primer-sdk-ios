@@ -203,7 +203,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 }
                 .catch { err in
                     var token = paymentMethodToken
-                    token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v1.rawValue, challengeIssued: true)
+                    token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue, challengeIssued: true)
                     completion(.success(token))
                 }
             }
@@ -216,7 +216,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             }
             .catch { err in
                 var token = paymentMethodToken
-                token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v1.rawValue, challengeIssued: false)
+                token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue, challengeIssued: false)
                 completion(.success(token))
             }
         }
@@ -225,7 +225,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             self.threeDSSDKWindow = nil
             
             var token = paymentMethodToken
-            token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v1.rawValue, challengeIssued: false)
+            token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue, challengeIssued: false)
             completion(.success(token))
         }
     }

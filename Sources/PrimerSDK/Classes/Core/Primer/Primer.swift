@@ -214,7 +214,7 @@ public class Primer {
         let service: ThreeDSServiceProtocol = ThreeDSService()
         service.perform3DS(withSDK: sdk,
                            paymentMethodToken: paymentMethod,
-                           protocolVersion: .v1) {
+                           protocolVersion: .v2) {
             // ...
         } completion: { result in
             switch result {

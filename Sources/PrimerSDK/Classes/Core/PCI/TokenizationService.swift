@@ -68,7 +68,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     threeDSService.perform3DS(
                             withSDK: sdk,
                             paymentMethodToken: paymentMethodToken,
-                            protocolVersion: .v1,
+                            protocolVersion: .v2,
                             sdkDismissed: { () in
                                 
                             }, completion: { result in
