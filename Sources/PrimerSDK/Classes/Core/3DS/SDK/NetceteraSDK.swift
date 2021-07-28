@@ -22,23 +22,38 @@ class NetceteraSDK: ThreeDSSDKProtocol {
     
     func initializeSDK(completion: @escaping (Result<Void, Error>) -> Void) {
         do {
-            let configBuilder = ConfigurationBuilder()
-            try configBuilder.log(to: .debug)
-            try configBuilder.license(key: Primer.netceteraLicenseKey)
-            
             let state: AppStateProtocol = DependencyContainer.resolve()
             
             guard let clientToken = state.decodedClientToken else {
                 return completion(.failure(PrimerError.clientTokenNull))
             }
             
+            guard let paymentMethodConfig = state.paymentMethodConfig else {
+                completion(.failure(PrimerError.configFetchFailed))
+                return
+            }
+            
+            guard let netceteraLicenseKey = paymentMethodConfig.keys?.netceteraLicenseKey else {
+                completion(.failure(PrimerError.configFetchFailed))
+                return
+            }
+            
+            let configBuilder = ConfigurationBuilder()
+            try configBuilder.license(key: netceteraLicenseKey)
+                        
             if clientToken.env?.uppercased() != "PRODUCTION" {
+                try configBuilder.log(to: .debug)
+                
                 let supportedSchemeIds: [String] = ["A999999999"]
                 
                 let scheme = Scheme(name: "scheme_name")
                 scheme.ids = supportedSchemeIds
-                scheme.encryptionKeyValue = Certificates.cer1
-                scheme.rootCertificateValue = Certificates.cer3
+                
+                for certificate in paymentMethodConfig.keys?.threeDSecureIoCertificates ?? [] {
+                    scheme.encryptionKeyValue = certificate.encryptionKey
+                    scheme.rootCertificateValue = certificate.rootCertificate
+                }
+                
                 scheme.logoImageName = "visa"
                 
                 try configBuilder.add(scheme)
