@@ -1,4 +1,4 @@
-name: Preview Pull Request
+name: QA Release
 
 on:
   pull_request:
@@ -8,11 +8,28 @@ on:
       - synchronize
       - closed
     branches:
-      - develop
       - "release/**"
+      - master
 
 jobs:
+  branch:
+    runs-on: ubuntu-18.04
+    # Map a step output to a job output
+    outputs:
+      branch: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
+    steps:
+      - name: Branch name
+        id: branch_name
+        run: |
+          echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF##*/}
+      - name: Build base image
+        run: |
+          echo $SOURCE_BRANCH
+        env:
+          SOURCE_BRANCH: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
+
   build-test:
+    needs: branch
     runs-on: macos-latest
     timeout-minutes: 15
 
@@ -53,8 +70,11 @@ jobs:
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
 
-      - name: Test - Fastlane tests
+      - name: Run Unit Tests
         run: bundle exec fastlane tests
+
+      - name: Run UI Tests
+        run: bundle exec fastlane ui_tests
 
       - name: Create Firebase Service Credentials file
         run: |
@@ -65,7 +85,7 @@ jobs:
 
       - name: Distribute internally on Firebase & Appetize 🚀
         run: |
-          bundle exec fastlane preview
+          bundle exec fastlane qa_release
         env:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
@@ -74,8 +94,8 @@ jobs:
           FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
+          SOURCE_BRANCH: ${{ needs.branch.outputs.branch }}
 
   pod-lint:
     needs: build-test
