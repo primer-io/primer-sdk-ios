@@ -32,9 +32,6 @@ class PrimerFormViewController: UIViewController {
         verticalStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         verticalStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         
-//        let testView = UIView()
-//        testView.heightAnchor.constraint(equalToConstant: 2000).isActive = true
-//        verticalStackView.addArrangedSubview(testView)
     }
     
 }
