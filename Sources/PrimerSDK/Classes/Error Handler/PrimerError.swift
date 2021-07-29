@@ -13,6 +13,20 @@ internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var shouldBePresented: Bool { get }
 }
 
+enum ApayaException: PrimerErrorProtocol {
+    case noToken
+    case failedApiCall
+    case webViewFlowNotComplete
+    case invalidWebViewResult
+    
+    var shouldBePresented: Bool {
+        switch self {
+        default:
+            return true
+        }
+    }
+}
+
 enum KlarnaException: PrimerErrorProtocol {
 
     case invalidUrl
@@ -152,6 +166,8 @@ enum KlarnaException: PrimerErrorProtocol {
     }
 
 }
+
+
 
 enum NetworkServiceError: PrimerErrorProtocol {
 

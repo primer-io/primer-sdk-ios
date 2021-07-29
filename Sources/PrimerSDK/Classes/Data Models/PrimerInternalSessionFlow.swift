@@ -28,6 +28,8 @@
  
  `checkoutWithKlarna`: Can be added in vault and uses the checkout flow.
  
+ `addApayaToVault`: Can be added in vault and uses the vault flow.
+ 
  - Author:
  Primer
  - Version:
@@ -45,6 +47,7 @@ public enum PrimerSessionFlow {
     case addDirectDebit
     case checkoutWithKlarna
     case checkoutWithApplePay
+    case addApayaToVault
 
     internal var internalSessionFlow: PrimerInternalSessionFlow {
         switch self {
@@ -68,6 +71,8 @@ public enum PrimerSessionFlow {
             return .checkoutWithKlarna
         case .checkoutWithApplePay:
             return .checkoutWithApplePay
+        case .addApayaToVault:
+            return .vaultApaya
         }
     }
 }
@@ -84,6 +89,7 @@ internal enum PrimerInternalSessionFlow {
     case vaultKlarna
     case checkoutWithKlarna
     case checkoutWithApplePay
+    case vaultApaya
     
     var vaulted: Bool {
         switch self {
@@ -91,7 +97,8 @@ internal enum PrimerInternalSessionFlow {
              .vaultCard,
              .vaultPayPal,
              .vaultDirectDebit,
-             .vaultKlarna:
+             .vaultKlarna,
+             .vaultApaya:
             return true
         case .checkout,
              .checkoutWithCard,
@@ -109,7 +116,8 @@ internal enum PrimerInternalSessionFlow {
              .vaultCard,
              .vaultPayPal,
              .vaultDirectDebit,
-             .vaultKlarna:
+             .vaultKlarna,
+             .vaultApaya:
             return .VAULT
         case .checkout,
              .checkoutWithCard,

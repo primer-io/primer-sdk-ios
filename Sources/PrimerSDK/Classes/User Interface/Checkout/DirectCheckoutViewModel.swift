@@ -103,6 +103,8 @@ struct PaymentMethodViewModel {
             return ""
         case .klarna:
             return ""
+        case .apaya:
+            return "Pay by mobile"
         default:
             return ""
         }

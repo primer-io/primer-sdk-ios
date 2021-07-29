@@ -526,7 +526,7 @@ extension CountryCode {
 
     // todo: enable locale for local languages too.
     // reference: https://developers.klarna.com/documentation/klarna-payments/in-depth-knowledge/puchase-countries-currencies-locales/
-    var klarnaLocaleCode: String {
+    var localeCode: String {
         switch self {
         case .at, .dk, .fi, .de, .nl, .no, .se, .ch, .us, .au, .gb:
             return "en-\(self.rawValue)"

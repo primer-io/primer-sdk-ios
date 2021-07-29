@@ -159,6 +159,7 @@ public enum PaymentInstrumentType: String {
     case klarna = "KLARNA_AUTHORIZATION_TOKEN"
     case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
     case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"
+    case apayaToken = "APAYA_TOKEN"
     case unknown = "UNKNOWN"
 }
 

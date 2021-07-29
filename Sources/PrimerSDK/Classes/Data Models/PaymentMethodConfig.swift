@@ -17,12 +17,13 @@ enum ConfigPaymentMethodType: String, Codable {
     case goCardlessMandate = "GOCARDLESS"
     case klarna = "KLARNA"
     case payNlIdeal = "PAY_NL_IDEAL"
+    case apaya = "APAYA"
     
     case unknown
     
     var isEnabled: Bool {
         switch self {
-        case .applePay, .payPal, .paymentCard, .goCardlessMandate, .klarna:
+        case .applePay, .payPal, .paymentCard, .goCardlessMandate, .klarna, .apaya:
             return true
         default:
             return false
