@@ -113,6 +113,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Enter your card details"
         
         view.backgroundColor = .white
         
