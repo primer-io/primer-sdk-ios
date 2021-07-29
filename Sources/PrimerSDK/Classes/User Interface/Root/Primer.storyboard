@@ -39,12 +39,12 @@
                             </scrollView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.41568627450000001" green="0.41568627450000001" blue="0.41568627450000001" alpha="0.39365900779257013" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="l4b-fb-dBO" firstAttribute="top" relation="greaterThanOrEqual" secondItem="vDu-zF-Fre" secondAttribute="top" id="4oP-az-XHa"/>
                             <constraint firstItem="l4b-fb-dBO" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" id="CHk-OZ-8NN"/>
-                            <constraint firstItem="l4b-fb-dBO" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="IaQ-j8-ufB"/>
-                            <constraint firstItem="l4b-fb-dBO" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="M7r-Il-cyJ"/>
+                            <constraint firstItem="l4b-fb-dBO" firstAttribute="trailing" secondItem="5EZ-qb-Rvc" secondAttribute="trailing" id="IaQ-j8-ufB"/>
+                            <constraint firstItem="l4b-fb-dBO" firstAttribute="leading" secondItem="5EZ-qb-Rvc" secondAttribute="leading" id="M7r-Il-cyJ"/>
                             <constraint firstItem="uZf-XM-hed" firstAttribute="width" secondItem="5EZ-qb-Rvc" secondAttribute="width" id="USK-ZD-J62"/>
                         </constraints>
                     </view>

@@ -37,7 +37,7 @@ class PrimerRootViewController: UIViewController {
         
         scrollViewBottomConstraint.constant = 0.0
         
-        let fvc = PrimerFormViewController.instantiate()
+        let fvc = PrimerCardFormViewController(flow: .checkout)
         fvc.view.translatesAutoresizingMaskIntoConstraints = false
         fvc.view.widthAnchor.constraint(equalToConstant: scrollView.frame.width).isActive = true
         fvc.view.layoutIfNeeded()

@@ -7,7 +7,7 @@
 
 import UIKit
 
-public final class PrimerCardNumberFieldView: PrimerTextFieldView {
+public class PrimerCardNumberFieldView: PrimerTextFieldView {
         
     var cardNetwork: CardNetwork = .unknown
     internal var cardnumber: String {
