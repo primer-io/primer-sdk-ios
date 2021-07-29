@@ -38,35 +38,39 @@ class NetceteraSDK: ThreeDSSDKProtocol {
 //                return
 //            }
             
-            let netceteraLicenseKey = paymentMethodConfig.keys?.netceteraLicenseKey ?? Primer.netceteraLicenseKey
-            
-            let configBuilder = ConfigurationBuilder()
-            try configBuilder.license(key: netceteraLicenseKey)
-                        
-            if clientToken.env?.uppercased() != "PRODUCTION" {
-                try configBuilder.log(to: .debug)
-                
-                let supportedSchemeIds: [String] = ["A999999999"]
-                
-                let scheme = Scheme(name: "scheme_name")
-                scheme.ids = supportedSchemeIds
-                
-                for certificate in paymentMethodConfig.keys?.threeDSecureIoCertificates ?? [] {
-                    scheme.encryptionKeyValue = certificate.encryptionKey
-                    scheme.rootCertificateValue = certificate.rootCertificate
+            if let netceteraLicenseKey = paymentMethodConfig.keys?.netceteraLicenseKey {
+                let configBuilder = ConfigurationBuilder()
+                try configBuilder.license(key: netceteraLicenseKey)
+                            
+                if clientToken.env?.uppercased() != "PRODUCTION" {
+                    try configBuilder.log(to: .debug)
+                    
+                    let supportedSchemeIds: [String] = ["A999999999"]
+                    
+                    let scheme = Scheme(name: "scheme_name")
+                    scheme.ids = supportedSchemeIds
+                    
+                    for certificate in paymentMethodConfig.keys?.threeDSecureIoCertificates ?? [] {
+                        scheme.encryptionKeyValue = certificate.encryptionKey
+                        scheme.rootCertificateValue = certificate.rootCertificate
+                    }
+                    
+                    scheme.logoImageName = "visa"
+                    
+                    try configBuilder.add(scheme)
                 }
                 
-                scheme.logoImageName = "visa"
+                let configParameters = configBuilder.configParameters()
                 
-                try configBuilder.add(scheme)
+                try threeDS2Service.initialize(configParameters,
+                                               locale: nil,
+                                               uiCustomization: nil)
+                return verifyWarnings(completion: completion)
+                
+            } else {
+                throw PrimerError.threeDSSDKKeyMissing
             }
             
-            let configParameters = configBuilder.configParameters()
-            
-            try threeDS2Service.initialize(configParameters,
-                                           locale: nil,
-                                           uiCustomization: nil)
-            return verifyWarnings(completion: completion)
         } catch {
             completion(.failure(error))
         }
