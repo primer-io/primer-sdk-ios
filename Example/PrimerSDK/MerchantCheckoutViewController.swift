@@ -112,9 +112,9 @@ class MerchantCheckoutViewController: UIViewController {
                 )
             ),
             orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
                 try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
+                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
             ]
         )
         
@@ -166,6 +166,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: applePaySettings)
         Primer.shared.showCheckout(self, flow: .checkoutWithApplePay)
     }
     
