@@ -19,10 +19,18 @@ class PrimerFormViewController: UIViewController {
         verticalStackView.axis = .vertical
         
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
-        verticalStackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        if #available(iOS 11.0, *) {
+            verticalStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        } else {
+            verticalStackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        }
+        if #available(iOS 11.0, *) {
+            verticalStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 20).isActive = true
+        } else {
+            verticalStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 20).isActive = true
+        }
         verticalStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         verticalStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
-        verticalStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 20).isActive = true
         
 //        let testView = UIView()
 //        testView.heightAnchor.constraint(equalToConstant: 2000).isActive = true
