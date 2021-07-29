@@ -10,6 +10,7 @@ import Foundation
 
 // Merchants:
 // Sandbox: demo@primer.test
+// Staging: tester+01@primer.test
 // Production: demo@primer.test
 
 enum Environment: String, Codable {
