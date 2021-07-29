@@ -41,13 +41,18 @@ class PrimerRootViewController: UIViewController {
         fvc.view.translatesAutoresizingMaskIntoConstraints = false
         fvc.view.widthAnchor.constraint(equalToConstant: scrollView.frame.width).isActive = true
         fvc.view.layoutIfNeeded()
+        let nc = UINavigationController(rootViewController: fvc)
+        nc.view.translatesAutoresizingMaskIntoConstraints = false
+        nc.view.widthAnchor.constraint(equalToConstant: fvc.view.frame.width).isActive = true
+        nc.view.heightAnchor.constraint(equalToConstant: fvc.view.frame.height + nc.navigationBar.frame.size.height).isActive = true
+        nc.view.layoutIfNeeded()
         
-        addChild(fvc)
-        childContainerView.addSubview(fvc.view)
+        addChild(nc)
+        childContainerView.addSubview(nc.view)
         
         fvc.didMove(toParent: self)
         
-        childContainerViewHeightConstraint.constant = fvc.view.frame.height
+        childContainerViewHeightConstraint.constant = nc.view.frame.height
         
         UIView.animate(withDuration: 0.3, delay: 1, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
