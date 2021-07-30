@@ -13,7 +13,8 @@ class PrimerRootViewController: UIViewController {
     @IBOutlet weak var childContainerViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var childContainerViewBottomConstraint: NSLayoutConstraint!
     
-    private var nc: UINavigationController?
+    private var nc: PrimerNavigationController?
+    var heightConstraint: NSLayoutConstraint?
     var topPadding: CGFloat = 0.0
     var bottomPadding: CGFloat = 0.0
         
@@ -83,7 +84,7 @@ class PrimerRootViewController: UIViewController {
         cvc.view.layoutIfNeeded()
         
         if nc == nil {
-            nc = UINavigationController(rootViewController: cvc)
+            nc = PrimerNavigationController(rootViewController: cvc)
             nc!.view.translatesAutoresizingMaskIntoConstraints = false
             
             let availableScreenHeight = UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
@@ -128,6 +129,35 @@ class PrimerRootViewController: UIViewController {
             } completion: { _ in
 
             }
+        }
+    }
+    
+    func popViewController() {
+        guard let nc = nc, nc.viewControllers.count > 1 else {
+            return
+        }
+        
+        let viewController = nc.viewControllers[nc.viewControllers.count-2]
+        
+        let availableScreenHeight = UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
+        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc.navigationBar.bounds.height)
+        
+//        nc.view.widthAnchor.constraint(equalToConstant: childContainerView.frame.width).isActive = true
+        heightConstraint?.isActive = false
+        heightConstraint = nc.view.heightAnchor.constraint(equalToConstant: navigationControllerHeight)
+        heightConstraint!.isActive = true
+        
+        childContainerViewBottomConstraint.constant = 0.0
+        childContainerViewHeightConstraint.constant = navigationControllerHeight
+        
+        // FIXME: Scrollview is 44pt less than it should
+        
+        nc.popViewController(animated: true)
+        
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+
         }
     }
     

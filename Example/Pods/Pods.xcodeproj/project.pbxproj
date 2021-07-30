@@ -18,6 +18,7 @@
 		0EA0251CC290B675EA601F0A6CA7CB74 /* PrimerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36CF012184A7E67777E1ED52A3BE765F /* PrimerAPI.swift */; };
 		0EA902C09DF7F9CE7039A35016B31479 /* PaymentMethodComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 611E0D26FE3A304AF8876575D863DE15 /* PaymentMethodComponent.swift */; };
 		1203D66E9FF25C3F082CEB7380CD3172 /* CardScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44F9B59C17F6D70DD43AB4BEDD416588 /* CardScannerViewModel.swift */; };
+		150EC02526B3DCE90004BD5C /* PrimerNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150EC02426B3DCE90004BD5C /* PrimerNavigationController.swift */; };
 		15702078601C776D4A5E2DD77EDB0DD4 /* CoreDataDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952BCAEB94383C635DB65F874C83F267 /* CoreDataDispatcher.swift */; };
 		1668BD7653A99154303C71D46ABB344A /* CancellableThenable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539C247F314EF91781741CFE7673CD2C /* CancellableThenable.swift */; };
 		19C81DCB50AB09F635D980110B52474B /* CardNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5084DDE6144EF2C425F77740F7A0E9 /* CardNetwork.swift */; };
@@ -196,6 +197,7 @@
 		05131FD2419B71DCCEDAD0945C97FA88 /* SequenceWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SequenceWrappers.swift; sourceTree = "<group>"; };
 		06C26AE2FE226A0909061F7B36E2499B /* PrimerSDK-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "PrimerSDK-dummy.m"; sourceTree = "<group>"; };
 		0AE17A25AC8876F913695710853420BF /* WebViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
+		150EC02426B3DCE90004BD5C /* PrimerNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerNavigationController.swift; sourceTree = "<group>"; };
 		1715C841424C85043051C97C2CEAF7D0 /* Resolver.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
 		186DA4A4330CA996EBE1642763A7DD43 /* ErrorViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ErrorViewController.swift; sourceTree = "<group>"; };
 		1A1F53FA92E783533DB5501851B7FEF1 /* PrimerCVVFieldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerCVVFieldView.swift; sourceTree = "<group>"; };
@@ -458,6 +460,7 @@
 				30794C868176F2E72DCD4A4B663F2F4E /* RootViewController.swift */,
 				5FE56BCF173F14803498CA2CE62781F8 /* RootViewController+Router.swift */,
 				49473627F93433B3AC47F8B66DF1B17B /* Route.swift */,
+				150EC02426B3DCE90004BD5C /* PrimerNavigationController.swift */,
 			);
 			name = Root;
 			path = Root;
@@ -1210,6 +1213,7 @@
 				4FA27A75CDAC648126283F885DDF0DA8 /* Catchable.swift in Sources */,
 				9B75AA2292709608D8752DCECA607F26 /* CatchWrappers.swift in Sources */,
 				6CB6A588FE9C838938F2CDB143F238A0 /* ClientToken.swift in Sources */,
+				150EC02526B3DCE90004BD5C /* PrimerNavigationController.swift in Sources */,
 				3914959FC01AC2F8BE54A3BA9696F555 /* ClientTokenService.swift in Sources */,
 				7FD2A7D30A47C1A648AF58ED6DA587A9 /* ConcurrencyLimitedDispatcher.swift in Sources */,
 				09ADE25B86EFBDE6182E44061E8070E8 /* Configuration.swift in Sources */,

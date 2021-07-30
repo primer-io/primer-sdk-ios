@@ -28,9 +28,11 @@ public class Primer {
         }
     }
     
+    let primerRootVC = PrimerRootViewController.instantiate()
+    
     private lazy var primerWindow: UIWindow = {
         let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = PrimerRootViewController.instantiate()
+        window.rootViewController = primerRootVC
         window.backgroundColor = UIColor.clear
         window.windowLevel = UIWindow.Level.normal
         return window
