@@ -203,7 +203,9 @@ class MockAppState: AppStateProtocol {
             paymentMethods: [
                 ConfigPaymentMethod(id: "1", options: nil, processorConfigId: nil, type: .klarna),
                 ConfigPaymentMethod(id: "2", options: nil, processorConfigId: nil, type: .payPal)
-            ]
+            ],
+            env: "dev",
+            keys: nil
         )
     ) {
         self.decodedClientToken = decodedClientToken

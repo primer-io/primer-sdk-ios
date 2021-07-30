@@ -312,6 +312,7 @@ enum PrimerError: PrimerErrorProtocol {
     case userDetailsMissing
     case dataMissing(description: String)
     case directoryServerIdMissing
+    case threeDSSDKKeyMissing
     
     static var errorDomain: String = "primer"
 
@@ -387,8 +388,10 @@ enum PrimerError: PrimerErrorProtocol {
             return 2500
         case .threeDSFailed:
             return 2600
+        case .threeDSSDKKeyMissing:
+            return 2601
         case .directoryServerIdMissing:
-            return 20610
+            return 2610
         }
     }
 
@@ -632,6 +635,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Directory server id missing",
                                      comment: "Directory server id missing - Primer error message")
+            
+        case .threeDSSDKKeyMissing:
+            return NSLocalizedString("primer-error-3ds-ds-sdk-key-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "3DS SDK key missing",
+                                     comment: "3DS SDK key missing missing - Primer error message")
         }
     }
 

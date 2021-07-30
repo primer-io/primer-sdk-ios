@@ -109,6 +109,8 @@ internal class ErrorHandler {
                 break
             case .directoryServerIdMissing:
                 break
+            case .threeDSSDKKeyMissing:
+                break
             }
 
         } else if let klarnaException = error as? KlarnaException {

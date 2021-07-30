@@ -18,7 +18,9 @@ class PaymentMethodConfigServiceTests: XCTestCase {
             pciUrl: "pciUrl",
             paymentMethods: [
                 ConfigPaymentMethod(id: "id123", options: nil, processorConfigId: nil, type: .paymentCard)
-            ]
+            ],
+            env: "dev",
+            keys: nil
         )
 
         let data: Data = try JSONEncoder().encode(config)

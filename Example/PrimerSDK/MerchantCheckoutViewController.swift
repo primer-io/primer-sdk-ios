@@ -24,6 +24,7 @@ class MerchantCheckoutViewController: UIViewController {
     fileprivate var environment: Environment = .sandbox
     fileprivate var customerId: String?
     var amount: Int = 1
+    var currency: Currency = .EUR
     fileprivate var performPayment: Bool = false
     
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
@@ -50,7 +51,7 @@ class MerchantCheckoutViewController: UIViewController {
             merchantIdentifier: "merchant.checkout.team",
             customerId: customerId,
             amount: amount,        // Please don't change on develop (used for UI testing)
-            currency: .EUR,     // Please don't change on develop (used for UI testing)
+            currency: currency,     // Please don't change on develop (used for UI testing)
             countryCode: .fr,
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
@@ -82,8 +83,8 @@ class MerchantCheckoutViewController: UIViewController {
         
         vaultPayPalSettings = PrimerSettings(
             customerId: customerId,
-            currency: .GBP,
-            countryCode: .gb,
+            currency: currency,
+            countryCode: .fr,
             urlScheme: "primer",
             urlSchemeIdentifier: "primer"
         )
@@ -98,7 +99,7 @@ class MerchantCheckoutViewController: UIViewController {
         applePaySettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
             customerId: customerId,
-            currency: .EUR,
+            currency: currency,
             countryCode: .fr,
             businessDetails: BusinessDetails(
                 name: "My Business",
@@ -112,9 +113,9 @@ class MerchantCheckoutViewController: UIViewController {
                 )
             ),
             orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
                 try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
+                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
             ]
         )
         
@@ -166,6 +167,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: applePaySettings)
         Primer.shared.showCheckout(self, flow: .checkoutWithApplePay)
     }
     
@@ -258,7 +260,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: "GBP")
+        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: currency.rawValue)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

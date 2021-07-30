@@ -26,6 +26,17 @@ protocol ThreeDSSDKAuthDataProtocol: Codable {
 
 public struct ThreeDS {
     
+    internal struct Keys: Codable {
+        let threeDSecureIoCertificates: [ThreeDS.Certificate]?
+        let netceteraLicenseKey: String?
+    }
+    
+    internal struct Certificate: Codable {
+        let encryptionKey: String
+        let cardNetwork: String
+        let rootCertificate: String
+    }
+    
     internal enum ProtocolVersion: String {
         case v1 = "2.1.0"
         case v2 = "2.2.0"
