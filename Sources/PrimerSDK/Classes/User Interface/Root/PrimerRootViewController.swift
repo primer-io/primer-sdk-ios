@@ -60,15 +60,17 @@ class PrimerRootViewController: UIViewController {
 //        lvc.view.layoutIfNeeded()
         self.show(viewController: lvc)
         
-//        Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-//            let fvc2 = PrimerCardFormViewController(flow: .checkout)
-//            fvc2.view.translatesAutoresizingMaskIntoConstraints = false
-//            fvc2.view.widthAnchor.constraint(equalToConstant: self.childContainerView.frame.width).isActive = true
-//            self.childContainerViewBottomConstraint.constant = -fvc2.view.bounds.height
-//            fvc2.view.layoutIfNeeded()
-//            self.show(viewController: fvc2)
-//        }
+        Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+            let lvc2 = PrimerLoadingViewController()
+    //        lvc.view.translatesAutoresizingMaskIntoConstraints = false
+            lvc2.view.widthAnchor.constraint(equalToConstant: self.childContainerView.frame.width).isActive = true
+            lvc2.view.heightAnchor.constraint(equalToConstant: 3000).isActive = true
+    //        lvc.view.layoutIfNeeded()
+            self.show(viewController: lvc2)
+        }
     }
+    
+    var heightConstraint: NSLayoutConstraint?
     
     func show(viewController: UIViewController) {
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -88,9 +90,9 @@ class PrimerRootViewController: UIViewController {
             let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc!.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc!.navigationBar.bounds.height)
             let containerViewHeight: CGFloat = navigationControllerHeight
             
-            
             nc!.view.widthAnchor.constraint(equalToConstant: childContainerView.frame.width).isActive = true
-            nc!.view.heightAnchor.constraint(equalToConstant: navigationControllerHeight).isActive = true
+            heightConstraint = nc!.view.heightAnchor.constraint(equalToConstant: navigationControllerHeight)
+            heightConstraint!.isActive = true
             cvc.view.heightAnchor.constraint(equalToConstant: containerViewHeight).isActive = true
             nc!.view.layoutIfNeeded()
             
@@ -108,13 +110,18 @@ class PrimerRootViewController: UIViewController {
             }
         } else {
             let availableScreenHeight = UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
-            let navigationControllerHeight: CGFloat = (cvc.view.bounds.size.height + nc!.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (cvc.view.bounds.size.height + nc!.navigationBar.bounds.height)
+            let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc!.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc!.navigationBar.bounds.height)
+            let containerViewHeight: CGFloat = navigationControllerHeight
+            
             nc!.view.widthAnchor.constraint(equalToConstant: childContainerView.frame.width).isActive = true
-            nc!.view.heightAnchor.constraint(equalToConstant: navigationControllerHeight).isActive = true
+            heightConstraint?.isActive = false
+            heightConstraint = nc!.view.heightAnchor.constraint(equalToConstant: navigationControllerHeight)
+            heightConstraint!.isActive = true
+            cvc.view.heightAnchor.constraint(equalToConstant: containerViewHeight).isActive = true
             nc!.pushViewController(cvc, animated: true)
             
             childContainerViewBottomConstraint.constant = 0.0
-            childContainerViewHeightConstraint.constant = nc!.view.frame.height
+            childContainerViewHeightConstraint.constant = navigationControllerHeight
             
             UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
                 self.view.layoutIfNeeded()
@@ -122,43 +129,6 @@ class PrimerRootViewController: UIViewController {
 
             }
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-//        let fvc = PrimerCardFormViewController(flow: .checkout)
-//        fvc.view.translatesAutoresizingMaskIntoConstraints = false
-//        fvc.view.widthAnchor.constraint(equalToConstant: childContainerView.frame.width).isActive = true
-//        childContainerViewBottomConstraint.constant = -fvc.view.bounds.height
-//        fvc.view.layoutIfNeeded()
-//
-//        let cvc = PrimerContainerViewController(childViewController: fvc)
-//        cvc.view.translatesAutoresizingMaskIntoConstraints = false
-//        cvc.view.widthAnchor.constraint(equalToConstant: childContainerView.frame.width).isActive = true
-//        cvc.view.layoutIfNeeded()
-//
-//        childContainerView.addSubview(cvc.view)
-//        cvc.view.layoutIfNeeded()
-//        cvc.didMove(toParent: self)
-//
-//        childContainerViewBottomConstraint.constant = 0.0
-//        childContainerViewHeightConstraint.constant = cvc.view.frame.height
-//
-//        UIView.animate(withDuration: 0.3, delay: 1, options: .curveEaseInOut) {
-//            self.view.layoutIfNeeded()
-//        } completion: { _ in
-//
-//        }
     }
     
     func switchFlow(_ flow: PrimerInternalSessionFlow) {
