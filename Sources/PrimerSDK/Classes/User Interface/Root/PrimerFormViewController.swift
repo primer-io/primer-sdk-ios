@@ -179,9 +179,9 @@ class PrimerCardFormViewController: PrimerFormViewController {
         button.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
         verticalStackView.addArrangedSubview(button)
         
-//        let testView = UIView()
-//        testView.heightAnchor.constraint(equalToConstant: 2000).isActive = true
-//        verticalStackView.addArrangedSubview(testView)
+        let testView = UIView()
+        testView.heightAnchor.constraint(equalToConstant: 2000).isActive = true
+        verticalStackView.addArrangedSubview(testView)
         
         cardComponentsManager = CardComponentsManager(
             flow: flow,
