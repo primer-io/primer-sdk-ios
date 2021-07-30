@@ -37,7 +37,7 @@ public struct ThreeDS {
         let rootCertificate: String
     }
     
-    internal enum ProtocolVersion: String {
+    internal enum ProtocolVersion: String, Codable {
         case v1 = "2.1.0"
         case v2 = "2.2.0"
     }
@@ -127,36 +127,8 @@ public struct ThreeDS {
     }
     
     internal struct BeginAuthRequest: Codable {
-        
-        static var demoAuthRequest: BeginAuthRequest {
-            let threeDSecureBeginAuthRequest = BeginAuthRequest(testScenario: nil,
-                                                                amount: 100,
-                                                                currencyCode: .EUR,
-                                                                orderId: "test_id",
-                                                                customer: ThreeDS.Customer(name: "Evangelos",
-                                                                                               email: "evangelos@primer.io",
-                                                                                               homePhone: nil,
-                                                                                               mobilePhone: nil,
-                                                                                               workPhone: nil),
-                                                                device: nil,
-                                                                billingAddress: ThreeDS.Address(title: nil,
-                                                                                                    firstName: nil,
-                                                                                                    lastName: nil,
-                                                                                                    email: nil,
-                                                                                                    phoneNumber: nil,
-                                                                                                    addressLine1: "my address line 1",
-                                                                                                    addressLine2: nil,
-                                                                                                    addressLine3: nil,
-                                                                                                    city: "Athens",
-                                                                                                    state: nil,
-                                                                                                    countryCode: .gr,
-                                                                                                    postalCode: "11472"),
-                                                                shippingAddress: nil,
-                                                                customerAccount: nil)
-            return threeDSecureBeginAuthRequest
-        }
-        
         var testScenario: ThreeDS.TestScenario?
+        var maxProtocolVersion: ProtocolVersion
         var amount: Int
         let currencyCode: Currency
         let orderId: String

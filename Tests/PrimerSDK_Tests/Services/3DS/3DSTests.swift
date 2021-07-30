@@ -111,8 +111,34 @@ class ThreeDSTests: XCTestCase {
         let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
         
-        var req = ThreeDS.BeginAuthRequest.demoAuthRequest
-        req.amount = 0
+        var req = ThreeDS.BeginAuthRequest(
+            testScenario: nil,
+            maxProtocolVersion: .v1,
+            amount: 1,
+            currencyCode: .EUR,
+            orderId: "order_id",
+            customer: ThreeDS.Customer(
+                name: "Evangelos",
+                email: "evangelos@primer.io",
+                homePhone: nil,
+                mobilePhone: nil,
+                workPhone: nil),
+            device: nil,
+            billingAddress: ThreeDS.Address(
+                title: nil,
+                firstName: nil,
+                lastName: nil,
+                email: nil,
+                phoneNumber: nil,
+                addressLine1: "my address line 1",
+                addressLine2: nil,
+                addressLine3: nil,
+                city: "Athens",
+                state: nil,
+                countryCode: .gr,
+                postalCode: "11472"),
+            shippingAddress: nil,
+            customerAccount: nil)
         
         do {
             req.device = try JSONParser().parse(ThreeDS.SDKAuthData.self, from: ThreeDSConstants.sdkAuthResponseStr.data(using: .utf8)!)
@@ -180,8 +206,34 @@ class ThreeDSTests: XCTestCase {
                         DependencyContainer.register(state as AppStateProtocol)
                         
                         
-                        var req = ThreeDS.BeginAuthRequest.demoAuthRequest
-                        req.amount = 0
+                        var req = ThreeDS.BeginAuthRequest(
+                            testScenario: nil,
+                            maxProtocolVersion: .v1,
+                            amount: 1,
+                            currencyCode: .EUR,
+                            orderId: "order_id",
+                            customer: ThreeDS.Customer(
+                                name: "Evangelos",
+                                email: "evangelos@primer.io",
+                                homePhone: nil,
+                                mobilePhone: nil,
+                                workPhone: nil),
+                            device: nil,
+                            billingAddress: ThreeDS.Address(
+                                title: nil,
+                                firstName: nil,
+                                lastName: nil,
+                                email: nil,
+                                phoneNumber: nil,
+                                addressLine1: "my address line 1",
+                                addressLine2: nil,
+                                addressLine3: nil,
+                                city: "Athens",
+                                state: nil,
+                                countryCode: .gr,
+                                postalCode: "11472"),
+                            shippingAddress: nil,
+                            customerAccount: nil)
                         
                         do {
                             req.device = try JSONParser().parse(ThreeDS.SDKAuthData.self, from: ThreeDSConstants.sdkAuthResponseStr.data(using: .utf8)!)
