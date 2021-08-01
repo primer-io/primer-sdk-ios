@@ -18,11 +18,30 @@ enum ApayaException: PrimerErrorProtocol {
     case failedApiCall
     case webViewFlowNotComplete
     case invalidWebViewResult
+    case webViewFlowCancelled
+    case webViewFlowError
     
     var shouldBePresented: Bool {
         switch self {
         default:
             return true
+        }
+    }
+    
+    var errorDescription: String? {
+        switch self {
+        case .noToken:
+            return "no token!"
+        case .failedApiCall:
+            return "api call failed"
+        case .webViewFlowNotComplete:
+            return "web view flow is incomplete"
+        case .invalidWebViewResult:
+            return "web view result is invalid"
+        case .webViewFlowCancelled:
+            return "web view flow was cancelled"
+        case .webViewFlowError:
+            return "web view result is error"
         }
     }
 }
