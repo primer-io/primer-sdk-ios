@@ -20,8 +20,8 @@ class AppViewController: UIViewController, PrimerTextFieldViewDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false) { _ in
-            Primer.shared.testAutolayout()
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+            Primer.shared.show(flow: .default)
         }
     }
 
