@@ -29,34 +29,25 @@ class PrimerContainerViewController: PrimerViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        addChild(childViewController)
         scrollView.bounces = false
-                
-        view.addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 11.0, *) {
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
-        } else {
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        }
-        if #available(iOS 11.0, *) {
-            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
-        } else {
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
-        }
-        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         
+        view.addSubview(scrollView)
         scrollView.addSubview(childView)
+        childView.addSubview(childViewController.view)
+        
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         childView.translatesAutoresizingMaskIntoConstraints = false
-        childView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0).isActive = true
-        childView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 0).isActive = true
-        childView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 0).isActive = true
-        childView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: 0).isActive = true
-        childView.widthAnchor.constraint(equalToConstant: view.frame.size.width).isActive = true
+        childViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        scrollView.pin(view: view)
+        childView.pin(view: scrollView)
+        childViewController.view.pin(view: childView)
+        childView.widthAnchor.constraint(equalTo: childViewController.view.widthAnchor).isActive = true
         childViewHeightConstraint = childView.heightAnchor.constraint(equalToConstant: childViewController.view.bounds.size.height)
         childViewHeightConstraint.isActive = true
+        view.layoutIfNeeded()
 
-        childView.addSubview(childViewController.view)
         childViewController.didMove(toParent: self)
     }
 }
