@@ -28,20 +28,18 @@ public class Primer {
         }
     }
     
-    let primerRootVC = PrimerRootViewController.instantiate()
+    var primerRootVC: PrimerRootViewController?
     
-    private lazy var primerWindow: UIWindow = {
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = primerRootVC
-        window.backgroundColor = UIColor.clear
-        window.windowLevel = UIWindow.Level.normal
-        return window
-    }()
+    private var primerWindow: UIWindow?
     
     public func testAutolayout() {
-        primerWindow.makeKeyAndVisible()
+        primerWindow = UIWindow(frame: UIScreen.main.bounds)
+        primerWindow!.rootViewController = primerRootVC
+        primerWindow!.backgroundColor = UIColor.clear
+        primerWindow!.windowLevel = UIWindow.Level.normal
+        primerWindow!.makeKeyAndVisible()
     }
-
+    
     /**
      Set or reload all SDK dependencies.
      
@@ -206,6 +204,33 @@ public class Primer {
     public func dismiss() {
         DispatchQueue.main.async { [weak self] in
             self?.root?.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    public func show(flow: PrimerSessionFlow) {
+        if primerRootVC == nil {
+            primerRootVC = PrimerRootViewController()
+        }
+        
+        if primerWindow == nil {
+            primerWindow = UIWindow(frame: UIScreen.main.bounds)
+            primerWindow!.rootViewController = primerRootVC
+            primerWindow!.backgroundColor = UIColor.clear
+            primerWindow!.windowLevel = UIWindow.Level.normal
+            primerWindow!.makeKeyAndVisible()
+        }
+        
+        
+    }
+    
+    public func dismissPrimer() {
+        DispatchQueue.main.async { [weak self] in
+            self?.primerRootVC?.dismissChildViewController(completion: { () in
+                self?.primerRootVC?.dismiss(animated: false, completion: nil)
+                self?.primerRootVC = nil
+                self?.primerWindow?.resignKey()
+                self?.primerWindow = nil
+            })
         }
     }
 
