@@ -67,13 +67,15 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
 
         if clientToken != nil && state.paymentMethodConfig != nil {
-            if host == .klarna {
+            switch host {
+            case .klarna:
                 let klarnaService: KlarnaServiceProtocol = DependencyContainer.resolve()
                 klarnaService.createPaymentSession(completion)
-
-            } else {
+            case .apaya:
+                let apayaService: ApayaServiceProtocol = DependencyContainer.resolve()
+                apayaService.createPaymentSession(completion)
+            default:
                 let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
-
                 switch Primer.shared.flow.internalSessionFlow.uxMode {
                 case .CHECKOUT:
                     paypalService.startOrderSession(completion)
@@ -81,7 +83,6 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
                     paypalService.startBillingAgreementSession(completion)
                 }
             }
-
         } else {
             loadConfig(host, completion)
         }
@@ -146,7 +147,8 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
     // The actual tokenization call takes place in handleTokenization above.
     // Merge with handleTokenization, as they're one.
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
-        if (host == .klarna) {
+        switch host {
+        case .klarna:
             var instrument = PaymentInstrument()
 
             log(logLevel: .verbose, title: nil, message: "Host: \(host)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
@@ -197,8 +199,22 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
                     }
                 }
             }
-        
-        } else {
+        // Apaya flow
+        case .apaya:
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            switch state.getApayaResult() {
+            case .failure(let error):
+                completion(error)
+            case .success:
+//                let instrument = PaymentInstrument(apayaToken: "")
+//                let request = PaymentMethodTokenizationRequest(
+//                    paymentInstrument: instrument,
+//                    state: state
+//                )
+                completion(nil)
+//                handleTokenization(request: request, with: completion)
+            }
+        default:
             guard let instrument = generatePaypalPaymentInstrument(host, with: completion) else { return }
             let state: AppStateProtocol = DependencyContainer.resolve()
 

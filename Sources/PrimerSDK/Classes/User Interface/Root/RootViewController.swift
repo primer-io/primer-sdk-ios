@@ -51,7 +51,8 @@ internal class RootViewController: PrimerViewController {
         switch Primer.shared.flow.internalSessionFlow {
         case .vaultKlarna,
              .vaultPayPal,
-             .checkoutWithKlarna:
+             .checkoutWithKlarna,
+             .vaultApaya:
             mainView.backgroundColor = settings.isInitialLoadingHidden ? .clear : theme.colorTheme.main1
         default:
             mainView.backgroundColor = theme.colorTheme.main1
@@ -148,6 +149,8 @@ internal class RootViewController: PrimerViewController {
             router.show(.oAuth(host: .klarna))
         case .vaultKlarna:
             router.show(.oAuth(host: .klarna))
+        case .vaultApaya:
+            router.show(.oAuth(host: .apaya))
         case .vault:
             router.show(.vaultCheckout)
         case .checkoutWithApplePay:
