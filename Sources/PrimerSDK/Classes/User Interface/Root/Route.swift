@@ -13,6 +13,7 @@ enum OAuthHost {
     case paypal
     case klarna
     case applePay
+    case apaya
 }
 
 enum Route {
@@ -87,7 +88,7 @@ enum Route {
         case .success:
             return 360
         case .error:
-            return 220
+            return 320
         case .confirmMandate:
             return 580
         case .form(let type, _):
