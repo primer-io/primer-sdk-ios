@@ -559,6 +559,7 @@
 		4D365C704F2524F54A245FF92F01E1D8 /* Payment Services */ = {
 			isa = PBXGroup;
 			children = (
+				1D5E66FC26AF1DB7003037DD /* ApayaService.swift */,
 				83E96ACD53290643736C5BC01ED4B02B /* ApplePayService.swift */,
 				90DBF91D9FF7698E17F385CB6CF69CAD /* ClientTokenService.swift */,
 				C797E2EBBB9FD494E030A4DA2F136E39 /* DirectDebitService.swift */,
@@ -566,7 +567,6 @@
 				8BDA3C7C9F9701606A600CCF13E225C5 /* PaymentMethodConfigService.swift */,
 				E30E8CAC5C6896FD43C4F9F63488A908 /* PayPalService.swift */,
 				9362EF250399F7D0C2A98BA6313FC0DB /* VaultService.swift */,
-				1D5E66FC26AF1DB7003037DD /* ApayaService.swift */,
 			);
 			path = "Payment Services";
 			sourceTree = "<group>";

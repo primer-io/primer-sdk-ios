@@ -27,12 +27,11 @@ internal protocol AppStateProtocol: class {
     var customerToken: String? { get set }
     var sessionId: String? { get set }
     
-    func setApayaResult(_ result: Result<ApayaWebViewResult, Error>)
-    func getApayaResult() -> Result<ApayaWebViewResult, Error>
+    func setApayaResult(_ result: Result<ApayaWebViewResult, ApayaException>)
+    func getApayaResult() -> Result<ApayaWebViewResult, ApayaException>
 }
 
 internal class AppState: AppStateProtocol {
-    
     var viewModels: [PaymentMethodViewModel] = []
     var paymentMethods: [PaymentMethodToken] = []
     var selectedPaymentMethod: String = ""
@@ -51,13 +50,13 @@ internal class AppState: AppStateProtocol {
     var authorizationToken: String?
     var customerToken: String?
     var sessionId: String?
-    var apayaResult: Result<ApayaWebViewResult, Error> = .failure(ApayaException.webViewFlowNotComplete)
+    private var apayaResult: Result<ApayaWebViewResult, ApayaException> = .failure(ApayaException.webViewFlowNotComplete)
     
-    func setApayaResult(_ result: Result<ApayaWebViewResult, Error>) {
+    func setApayaResult(_ result: Result<ApayaWebViewResult, ApayaException>) {
         self.apayaResult = result
     }
     
-    func getApayaResult() -> Result<ApayaWebViewResult, Error> {
+    func getApayaResult() -> Result<ApayaWebViewResult, ApayaException> {
         return self.apayaResult
     }
 

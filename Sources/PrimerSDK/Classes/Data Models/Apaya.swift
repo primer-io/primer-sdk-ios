@@ -8,7 +8,6 @@
 public struct ApayaCreateSessionAPIRequest: Encodable {
     let locale: String
     let itemDescription: String
-    
     init(locale: String, itemDescription: String) {
         self.locale = locale
         self.itemDescription = itemDescription
@@ -19,7 +18,6 @@ public struct ApayaCreateSessionAPIResponse: Decodable {
     let redirectUrl: String
     let token: String
     let passthroughVariable: String
-    
     init(
         redirectUrl: String,
         token: String,

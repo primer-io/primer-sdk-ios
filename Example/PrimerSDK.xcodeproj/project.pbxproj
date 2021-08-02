@@ -44,6 +44,8 @@
 		1D30D5DB2678ED2E001C7812 /* OAuthViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D30D5D92678ECCB001C7812 /* OAuthViewControllerTests.swift */; };
 		1DC7EE0C261FA39200BCBFFC /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC7EE0B261FA39200BCBFFC /* SpinnerViewController.swift */; };
 		1DC7EE14261FA3D400BCBFFC /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC7EE13261FA3D400BCBFFC /* CreateClientToken.swift */; };
+		1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */; };
+		1DEBE0E126B75EBF004E3064 /* ApayaServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -122,6 +124,8 @@
 		1D30D5D92678ECCB001C7812 /* OAuthViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthViewControllerTests.swift; sourceTree = "<group>"; };
 		1DC7EE0B261FA39200BCBFFC /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		1DC7EE13261FA3D400BCBFFC /* CreateClientToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateClientToken.swift; sourceTree = "<group>"; };
+		1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApayaTests.swift; sourceTree = "<group>"; };
+		1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaServiceTests.swift; sourceTree = "<group>"; };
 		3B55FBF1D40BE6B25F29A5D9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		45CA532A34F52954A21835C5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		577FC370D408D20C78CCD0EF /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -169,6 +173,7 @@
 		1582B958260A3F2900C80BD7 /* PrimerSDK_Tests */ = {
 			isa = PBXGroup;
 			children = (
+				1DEBE0DD26B6FC92004E3064 /* Data Models */,
 				1D30D5DD2679046E001C7812 /* ViewControllers */,
 				1582B959260A3F2900C80BD7 /* Mocks */,
 				1582B969260A3F2900C80BD7 /* ViewModels */,
@@ -237,6 +242,7 @@
 		1582B973260A3F2900C80BD7 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */,
 				1582B977260A3F2900C80BD7 /* ClientTokenServiceTests.swift */,
 				1582B975260A3F2900C80BD7 /* KlarnaServiceTests.swift */,
 				1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */,
@@ -331,6 +337,14 @@
 				1DC7EE0B261FA39200BCBFFC /* SpinnerViewController.swift */,
 			);
 			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		1DEBE0DD26B6FC92004E3064 /* Data Models */ = {
+			isa = PBXGroup;
+			children = (
+				1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */,
+			);
+			path = "Data Models";
 			sourceTree = "<group>";
 		};
 		2219974BE4C18C6EEC7E53EF /* Frameworks */ = {
@@ -666,6 +680,7 @@
 				1582B98E260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift in Sources */,
 				1582B97C260A3F2900C80BD7 /* DirectCheckoutViewModel.swift in Sources */,
 				1582B98F260A3F2900C80BD7 /* KlarnaServiceTests.swift in Sources */,
+				1DEBE0E126B75EBF004E3064 /* ApayaServiceTests.swift in Sources */,
 				1582B98A260A3F2900C80BD7 /* OAuthViewModelTests.swift in Sources */,
 				1582B98B260A3F2900C80BD7 /* MaskTests.swift in Sources */,
 				1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */,
@@ -677,6 +692,7 @@
 				1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */,
 				1582B984260A3F2900C80BD7 /* TokenizationService.swift in Sources */,
 				1582B989260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift in Sources */,
+				1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */,
 				1582B97E260A3F2900C80BD7 /* ApplePayViewModel.swift in Sources */,
 				1582B982260A3F2900C80BD7 /* VaultService.swift in Sources */,
 				1582B97D260A3F2900C80BD7 /* VaultCheckoutViewModel.swift in Sources */,
