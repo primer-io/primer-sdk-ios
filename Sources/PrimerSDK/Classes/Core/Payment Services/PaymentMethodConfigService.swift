@@ -19,25 +19,31 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
             return completion(PrimerError.configFetchFailed)
         }
         
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.fetchConfiguration(clientToken: clientToken) { [weak self] (result) in
+        api.fetchConfiguration(clientToken: clientToken) { (result) in
             switch result {
             case .failure(let error):
                 completion(error)
             case .success(let config):
-                state.paymentMethodConfig = config
+                var configs: [ConfigPaymentMethod] = [ConfigPaymentMethod(id: "123", type: .apaya)]
+                config.paymentMethods?.forEach {
+                    configs.append($0)
+                }
+                state.paymentMethodConfig = PaymentMethodConfig(
+                    coreUrl: config.coreUrl,
+                    pciUrl: config.pciUrl,
+                    paymentMethods: configs
+                )
 
                 state.viewModels = []
 
-                config.paymentMethods?.forEach({ method in
+                state.paymentMethodConfig?.paymentMethods?.forEach({ method in
                     guard let type = method.type else { return }
                     if !type.isEnabled { return }
                     state.viewModels.append(PaymentMethodViewModel(type: type))
                 })
-
+                
                 // Ensure Apple Pay is always first if present.
                 // This is because of Apple's guidelines.
                 let viewModels = state.viewModels
@@ -46,7 +52,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                     arr.insert(PaymentMethodViewModel(type: .applePay), at: 0)
                     state.viewModels = arr
                 }
-
+                
                 completion(nil)
             }
         }
