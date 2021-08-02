@@ -51,7 +51,6 @@ internal extension PrimerAPI {
             return urlStr
         }
     }
-
     // MARK: Path
     var path: String {
         switch self {
