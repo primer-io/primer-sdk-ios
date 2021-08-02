@@ -40,7 +40,7 @@ internal extension PrimerAPI {
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .apayaCreateSession:
-            return "http://localhost:5001/primerdemo-8741b/us-central1"
+            return "https://us-central1-primerdemo-8741b.cloudfunctions.net"
         case .vaultDeletePaymentMethod(let clientToken, _),
              .vaultFetchPaymentMethods(let clientToken),
              .tokenizePaymentMethod(let clientToken, _):
