@@ -16,6 +16,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
     override func xibSetup() {
         super.xibSetup()
         
+        textField.keyboardType = .namePhonePad
         textField.delegate = self
         isValid = { text in
             return text.isTypingValidCardholderName

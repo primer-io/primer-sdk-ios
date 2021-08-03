@@ -17,6 +17,7 @@ public class PrimerCardNumberFieldView: PrimerTextFieldView {
     override func xibSetup() {
         super.xibSetup()
         
+        textField.keyboardType = .numberPad
         textField.delegate = self
         isValid = { text in
             return text.isValidCardNumber
