@@ -136,9 +136,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     
     override func xibSetup() {
         super.xibSetup()
-        
-        textField.inputView = UIView()
-        
+                
         backgroundColor = .clear
         view.backgroundColor = .clear
         textField.backgroundColor = backgroundColor
