@@ -26,9 +26,9 @@ internal protocol AppStateProtocol: class {
     var authorizationToken: String? { get set }
     var customerToken: String? { get set }
     var sessionId: String? { get set }
-    
-    func setApayaResult(_ result: Result<ApayaWebViewResult, ApayaException>)
-    func getApayaResult() -> Result<ApayaWebViewResult, ApayaException>
+    // Apaya
+    func setApayaResult(_ result: Result<Apaya.WebViewResult, ApayaException>)
+    func getApayaResult() -> Result<Apaya.WebViewResult, ApayaException>?
 }
 
 internal class AppState: AppStateProtocol {
@@ -50,17 +50,15 @@ internal class AppState: AppStateProtocol {
     var authorizationToken: String?
     var customerToken: String?
     var sessionId: String?
-    private var apayaResult: Result<ApayaWebViewResult, ApayaException> = .failure(ApayaException.webViewFlowNotComplete)
-    
-    func setApayaResult(_ result: Result<ApayaWebViewResult, ApayaException>) {
+    // Apaya
+    private var apayaResult: Result<Apaya.WebViewResult, ApayaException>?
+    func setApayaResult(_ result: Result<Apaya.WebViewResult, ApayaException>) {
         self.apayaResult = result
     }
-    
-    func getApayaResult() -> Result<ApayaWebViewResult, ApayaException> {
+    func getApayaResult() -> Result<Apaya.WebViewResult, ApayaException>? {
         return self.apayaResult
     }
-
-
+    //
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }

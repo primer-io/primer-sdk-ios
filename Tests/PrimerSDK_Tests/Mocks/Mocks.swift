@@ -148,13 +148,13 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 }
 
 class MockAppState: AppStateProtocol {
-    func setApayaResult(_ result: Result<ApayaWebViewResult, ApayaException>) {
+    func setApayaResult(_ result: Result<Apaya.WebViewResult, ApayaException>) {
         
     }
     
-    func getApayaResult() -> Result<ApayaWebViewResult, ApayaException> {
-        let url = URL(string: "https://primer.io")! // needs query params
-        return ApayaWebViewResult.create(from: url)
+    func getApayaResult() -> Result<Apaya.WebViewResult, ApayaException>? {
+        let url = URL(string: "https://primer.io") // needs query params
+        return Apaya.WebViewResult.create(from: url)
     }
     
     var customerToken: String? = "customerToken"
