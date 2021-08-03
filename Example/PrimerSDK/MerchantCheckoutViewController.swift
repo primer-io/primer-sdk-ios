@@ -56,11 +56,11 @@ class MerchantCheckoutViewController: UIViewController {
     )
 
     let generalSettings = PrimerSettings(
-        merchantIdentifier: "merchant.checkout.team",
+        merchantIdentifier: "test123",
         customerId: "my-customer",
         amount: 100,        // Please don't change on develop (used for UI testing)
-        currency: .EUR,     // Please don't change on develop (used for UI testing)
-        countryCode: .fr,
+        currency: .GBP,     // Please don't change on develop (used for UI testing)
+        countryCode: .gb,
         klarnaSessionType: .recurringPayment,
         klarnaPaymentDescription: nil,
         urlScheme: "primer",
@@ -69,7 +69,11 @@ class MerchantCheckoutViewController: UIViewController {
         hasDisabledSuccessScreen: false,
         businessDetails: nil,
         directDebitHasNoAmount: false,
-        orderItems: [],
+        orderItems: [
+            try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
+            try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
+            try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
+        ],
         isInitialLoadingHidden: false
     )
     
@@ -181,6 +185,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nonTokenizeSuccess\npaymentMethodToken: \(paymentMethodToken)\n")
         guard let token = paymentMethodToken.token else { return completion(NetworkError.missingParams) }
 
         guard let url = URL(string: "\(endpoint)/transaction") else {
