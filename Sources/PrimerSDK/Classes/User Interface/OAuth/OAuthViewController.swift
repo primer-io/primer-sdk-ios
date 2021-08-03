@@ -30,14 +30,6 @@ internal class OAuthViewController: PrimerViewController {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
-        if !settings.isInitialLoadingHidden {
-            view.addSubview(indicator)
-            indicator.color = theme.colorTheme.disabled1
-            indicator.translatesAutoresizingMaskIntoConstraints = false
-            indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-            indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            indicator.startAnimating()
-        }
         
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.generateOAuthURL(host, with: { [weak self] result in
