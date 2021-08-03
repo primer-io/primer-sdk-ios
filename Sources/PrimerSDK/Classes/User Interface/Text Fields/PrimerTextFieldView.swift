@@ -38,6 +38,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     
     @IBOutlet internal weak var textField: PrimerTextField!
     internal var isValid: ((_ text: String) -> Bool?)?
+    internal(set) public var isTextValid: Bool = false
     public var delegate: PrimerTextFieldViewDelegate?
     internal var validation: PrimerTextField.Validation = .notAvailable {
         didSet {
@@ -49,8 +50,6 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
             }
         }
     }
-    internal(set) public var isTextValid: Bool = false
-    
     
     // MARK: - PROXY
     
