@@ -115,6 +115,14 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         return textField.drawPlaceholder(in: rect)
     }
     
+    public override func becomeFirstResponder() -> Bool {
+        return textField.becomeFirstResponder()
+    }
+    
+    public override func resignFirstResponder() -> Bool {
+        return textField.resignFirstResponder()
+    }
+    
 //    public override var inputView: UIView? {
 //        get {
 //            return textField.inputView
