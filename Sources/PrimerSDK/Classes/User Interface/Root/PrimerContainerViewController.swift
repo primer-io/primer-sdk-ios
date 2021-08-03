@@ -29,6 +29,10 @@ class PrimerContainerViewController: PrimerViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem?.tintColor = PrimerColor(rgb: 0x007AFF)
+        
         addChild(childViewController)
         scrollView.bounces = false
         
