@@ -33,6 +33,14 @@ public class PrimerCardNumberFieldView: PrimerTextFieldView {
         cardNetwork = CardNetwork(account: primerTextField._text ?? "")
         delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)
         validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? .valid : .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
+        
+        switch validation {
+        case .valid:
+            delegate?.primerTextFieldView(self, isValid: true)
+        default:
+            delegate?.primerTextFieldView(self, isValid: nil)
+        }
+        
         primerTextField.text = newText.withoutWhiteSpace.separate(every: 4, with: " ")
         return false
     }
