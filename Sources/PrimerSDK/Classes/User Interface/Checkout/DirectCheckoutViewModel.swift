@@ -102,7 +102,11 @@ struct PaymentMethodViewModel {
         case .payPal:
             return ""
         case .klarna:
-            return ""
+            return NSLocalizedString("payment-method-type-klarna",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Klarna.",
+                                     comment: "Klarna - Payment Method Type (Klarna)")
         default:
             return ""
         }
