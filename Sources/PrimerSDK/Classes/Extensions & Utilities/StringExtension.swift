@@ -84,7 +84,7 @@ internal extension String {
         }
         
         // Case where count is 4 will arrive here
-        guard let date = toDate(withFormat: "MMyy") else { return false }
+        guard let date = _self.toDate(withFormat: "MMyy") else { return false }
         return date.endOfMonth > Date()
     }
     
@@ -121,8 +121,7 @@ internal extension String {
     }
     
     var isValidCardholderName: Bool {
-        let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-")
-        return !(self.rangeOfCharacter(from: set.inverted) != nil)
+        return !isEmpty
     }
 
     var isValidEmail: Bool {
