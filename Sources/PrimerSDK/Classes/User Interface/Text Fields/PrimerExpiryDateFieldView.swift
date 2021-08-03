@@ -33,6 +33,13 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         
         validation = (self.isValid?(newText) ?? false) ? .valid : .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
         
+        switch validation {
+        case .valid:
+            delegate?.primerTextFieldView(self, isValid: true)
+        default:
+            delegate?.primerTextFieldView(self, isValid: nil)
+        }
+        
         if string != "" {   // Typing
             if newText.count == 2 {
                 newText += "/"

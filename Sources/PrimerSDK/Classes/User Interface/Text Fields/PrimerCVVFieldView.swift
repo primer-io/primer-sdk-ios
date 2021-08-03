@@ -39,6 +39,13 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
             validation = .notAvailable
         }
         
+        switch validation {
+        case .valid:
+            delegate?.primerTextFieldView(self, isValid: true)
+        default:
+            delegate?.primerTextFieldView(self, isValid: nil)
+        }
+        
         primerTextField._text = newText
         primerTextField.text = newText
         return false

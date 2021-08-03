@@ -40,6 +40,13 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
             validation = .notAvailable
         }
         
+        switch validation {
+        case .valid:
+            delegate?.primerTextFieldView(self, isValid: true)
+        default:
+            delegate?.primerTextFieldView(self, isValid: nil)
+        }
+        
         primerTextField._text = newText
         primerTextField.text = newText
         
