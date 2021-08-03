@@ -7,11 +7,11 @@
 
 import UIKit
 
-class PrimerRootViewController: UIViewController {
 
     @IBOutlet weak var childContainerView: UIView!
     @IBOutlet weak var childContainerViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var childContainerViewBottomConstraint: NSLayoutConstraint!
+internal class PrimerRootViewController: PrimerViewController {
     
     private var nc: PrimerNavigationController?
     var heightConstraint: NSLayoutConstraint?

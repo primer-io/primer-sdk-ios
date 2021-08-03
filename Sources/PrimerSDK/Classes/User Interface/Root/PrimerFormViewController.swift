@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PrimerFormViewController: UIViewController {
+class PrimerFormViewController: PrimerViewController {
 
     internal var verticalStackView: UIStackView = UIStackView()
     
