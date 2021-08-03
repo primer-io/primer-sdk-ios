@@ -34,9 +34,12 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
                 }
                 
                 if let jwtTokenPayload = token.jwtTokenPayload {
+                    state.accessToken = token
                     state.decodedClientToken = jwtTokenPayload
                     completion(nil)
                 } else {
+                    state.accessToken = nil
+                    state.decodedClientToken = nil
                     completion(PrimerError.clientTokenNull)
                 }
             }
