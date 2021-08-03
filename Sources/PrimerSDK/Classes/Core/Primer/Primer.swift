@@ -166,21 +166,39 @@ public class Primer {
      1.4.0
      */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
-        self.presentingViewController = controller
-        Primer.shared.flow = flow
-        
-        DispatchQueue.main.async { [weak self] in
-            if case .checkoutWithApplePay = flow {
-                let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
-                appleViewModel.payWithApple { (err) in
-                    
+        if
+            flow == .default
+            ||
+            flow == .defaultWithVault
+        {
+            if primerRootVC == nil {
+                primerRootVC = PrimerRootViewController(flow: flow)
+            }
+            
+            if primerWindow == nil {
+                primerWindow = UIWindow(frame: UIScreen.main.bounds)
+                primerWindow!.rootViewController = primerRootVC
+                primerWindow!.backgroundColor = UIColor.clear
+                primerWindow!.windowLevel = UIWindow.Level.normal
+                primerWindow!.makeKeyAndVisible()
+            }
+        } else {
+            self.presentingViewController = controller
+            Primer.shared.flow = flow
+            
+            DispatchQueue.main.async { [weak self] in
+                if case .checkoutWithApplePay = flow {
+                    let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
+                    appleViewModel.payWithApple { (err) in
+                        
+                    }
+                } else {
+                    self?.root = RootViewController()
+                    guard let root = self?.root else { return }
+                    let router: RouterDelegate = DependencyContainer.resolve()
+                    router.setRoot(root)
+                    controller.present(root, animated: true)
                 }
-            } else {
-                self?.root = RootViewController()
-                guard let root = self?.root else { return }
-                let router: RouterDelegate = DependencyContainer.resolve()
-                router.setRoot(root)
-                controller.present(root, animated: true)
             }
         }
     }
@@ -209,7 +227,7 @@ public class Primer {
     
     public func show(flow: PrimerSessionFlow) {
         if primerRootVC == nil {
-            primerRootVC = PrimerRootViewController()
+            primerRootVC = PrimerRootViewController(flow: flow)
         }
         
         if primerWindow == nil {
@@ -225,7 +243,7 @@ public class Primer {
     
     public func dismissPrimer() {
         DispatchQueue.main.async { [weak self] in
-            self?.primerRootVC?.dismissChildViewController(completion: { () in
+            self?.primerRootVC?.dismiss(animated: true, completion: {
                 self?.primerRootVC?.dismiss(animated: false, completion: nil)
                 self?.primerRootVC = nil
                 self?.primerWindow?.resignKey()

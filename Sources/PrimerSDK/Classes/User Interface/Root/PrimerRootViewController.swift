@@ -7,31 +7,54 @@
 
 import UIKit
 
-
-    @IBOutlet weak var childContainerView: UIView!
-    @IBOutlet weak var childContainerViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var childContainerViewBottomConstraint: NSLayoutConstraint!
 internal class PrimerRootViewController: PrimerViewController {
     
-    private var nc: PrimerNavigationController?
-    var heightConstraint: NSLayoutConstraint?
-    var topPadding: CGFloat = 0.0
-    var bottomPadding: CGFloat = 0.0
+    var childView: UIView = UIView()
+    var childViewHeightConstraint: NSLayoutConstraint!
+    var childViewBottomConstraint: NSLayoutConstraint!
+    
+    private var nc = PrimerNavigationController()
+    private var topPadding: CGFloat = 0.0
+    private var bottomPadding: CGFloat = 0.0
+    private let presentationDuration: TimeInterval = 0.3
+    private(set) var flow: PrimerSessionFlow
+    
+    private lazy var availableScreenHeight: CGFloat = {
+        return UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
+    }()
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    init(flow: PrimerSessionFlow) {
+        self.flow = flow
+        super.init(nibName: nil, bundle: nil)
+    }
         
-    class func instantiate() -> PrimerRootViewController {
-        let bundle = Bundle.primerFramework
-        let storyboard = UIStoryboard(name: "Primer", bundle: bundle)
-        let prvc = storyboard.instantiateViewController(withIdentifier: "PrimerRootViewController") as! PrimerRootViewController
-        return prvc
+    required init?(coder: NSCoder) {
+        fatalError()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
-        // Hide scrollview at the bottom of the screen
-        childContainerViewBottomConstraint.constant = childContainerView.bounds.height
-        childContainerViewHeightConstraint.constant = 0
+        NotificationCenter.default.addObserver(self,
+               selector: #selector(self.keyboardNotification(notification:)),
+               name: UIResponder.keyboardWillChangeFrameNotification,
+               object: nil)
+        
+        view.addSubview(childView)
+        
+        childView.backgroundColor = .white
+        childView.translatesAutoresizingMaskIntoConstraints = false
+        childView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        childView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        childViewHeightConstraint = NSLayoutConstraint(item: childView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100.0 + bottomPadding)
+        childViewHeightConstraint.isActive = true
+        childViewBottomConstraint = NSLayoutConstraint(item: childView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -childViewHeightConstraint.constant)
+        childViewBottomConstraint.isActive = true
         view.layoutIfNeeded()
         
         if #available(iOS 13.0, *) {
@@ -46,109 +69,162 @@ internal class PrimerRootViewController: PrimerViewController {
             topPadding = 20.0
             bottomPadding = 0.0
         }
+        
+        view.backgroundColor = .black.withAlphaComponent(0.0)
+        UIView.animate(withDuration: presentationDuration) {
+            self.view.backgroundColor = .black.withAlphaComponent(0.4)
+        }
+        
+//        let backgroundTap = UITapGestureRecognizer(
+//            target: self,
+//            action: #selector(dismissGestureRecognizerAction))
+//        view.addGestureRecognizer(backgroundTap)
+        
+        let swipeGesture = UISwipeGestureRecognizer(
+            target: self,
+            action: #selector(dismissGestureRecognizerAction)
+        )
+        swipeGesture.direction = .down
+        childView.addGestureRecognizer(swipeGesture)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        testNavFlow()
+        
+        let lvc = PrimerLoadingViewController(withHeight: 300)
+        show(viewController: lvc)
+
+        let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        
+        viewModel.loadConfig({ [weak self] _ in
+            DispatchQueue.main.async {
+                switch self?.flow {
+                case .default:
+                    let pucvc = PrimerUniversalCheckoutViewController()
+                    self?.show(viewController: pucvc)
+                    
+                case .defaultWithVault:
+                    let pvmvc = PrimerVaultManagerViewController()
+                    self?.show(viewController: pvmvc)
+
+                default:
+                    break
+                }
+                
+                if let lvc = (self?.nc.viewControllers.first as? PrimerContainerViewController)?.children.first as? PrimerLoadingViewController {
+                    // Remove the loading view controller from the navigation stack so user can't pop to it.
+                    self?.nc.viewControllers.removeFirst()
+                }
+            }
+        })
+        
     }
     
-    func testNavFlow() {
-        let cfvc = PrimerCardFormViewController(flow: .checkout)
-        cfvc.view.widthAnchor.constraint(equalToConstant: self.childContainerView.frame.width).isActive = true
-        show(viewController: cfvc)
+    @objc func keyboardNotification(notification: NSNotification) {
+        guard let userInfo = notification.userInfo else { return }
         
-        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
-            let lvc2 = PrimerLoadingViewController(withHeight: 600)
-    //        lvc.view.translatesAutoresizingMaskIntoConstraints = false
-            lvc2.view.widthAnchor.constraint(equalToConstant: self.childContainerView.frame.width).isActive = true
-//            lvc2.view.heightAnchor.constraint(equalToConstant: 3000).isActive = true
-    //        lvc.view.layoutIfNeeded()
-            self.show(viewController: lvc2)
+        let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+        let endFrameY = endFrame?.origin.y ?? 0
+        let duration:TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
+        let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
+        let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
+        let animationCurve:UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
+        
+        if endFrameY >= UIScreen.main.bounds.size.height {
+            childViewBottomConstraint.constant = 0.0
+        } else {
+            childViewBottomConstraint.constant = -(endFrame?.size.height ?? 0.0)
+        }
+        
+        UIView.animate(
+            withDuration: duration,
+            delay: TimeInterval(0),
+            options: animationCurve,
+            animations: { self.view.layoutIfNeeded() },
+            completion: nil)
+    }
+    
+    @objc
+    private func dismissGestureRecognizerAction(sender: UISwipeGestureRecognizer) {
+        Primer.shared.dismissPrimer()
+    }
+    
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        view.endEditing(true)
+        
+        childViewBottomConstraint.constant = childView.bounds.height
+        
+        UIView.animate(withDuration: flag ? presentationDuration : 0, delay: 0, options: .curveEaseInOut) {
+            self.view.alpha = 0
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+            completion?()
         }
     }
     
-    func show(viewController: UIViewController) {
+    internal func show(viewController: UIViewController) {
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
+        viewController.view.widthAnchor.constraint(equalToConstant: childView.frame.width).isActive = true
         viewController.view.layoutIfNeeded()
         
+        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc.navigationBar.bounds.height)
+    
+        // We can now set the childView's height and bottom constraint
+        let isPresented: Bool = nc.viewControllers.isEmpty
+                
         let cvc = PrimerContainerViewController(childViewController: viewController)
-        cvc.view.translatesAutoresizingMaskIntoConstraints = false
-        cvc.view.widthAnchor.constraint(equalToConstant: childContainerView.frame.width).isActive = true
         
-        cvc.view.layoutIfNeeded()
-        
-        if nc == nil {
-            nc = PrimerNavigationController(rootViewController: cvc)
-            nc!.view.translatesAutoresizingMaskIntoConstraints = false
+        if isPresented {
+            nc.setViewControllers([cvc], animated: false)
             
-            let availableScreenHeight = UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
-            let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc!.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc!.navigationBar.bounds.height)
-            let containerViewHeight: CGFloat = navigationControllerHeight
+            let container = UIViewController()
+            container.addChild(nc)
+            container.view.addSubview(nc.view)
             
-            nc!.view.widthAnchor.constraint(equalToConstant: childContainerView.frame.width).isActive = true
-            heightConstraint = nc!.view.heightAnchor.constraint(equalToConstant: navigationControllerHeight)
-            heightConstraint!.isActive = true
-            cvc.view.heightAnchor.constraint(equalToConstant: containerViewHeight).isActive = true
-            nc!.view.layoutIfNeeded()
+            nc.didMove(toParent: container)
             
-            childContainerView.addSubview(nc!.view)
-            nc!.view.layoutIfNeeded()
-            nc!.didMove(toParent: self)
+            addChild(container)
+            childView.addSubview(container.view)
             
-            childContainerViewBottomConstraint.constant = 0.0
-            childContainerViewHeightConstraint.constant = nc!.view.frame.height
-
-            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
-                self.view.layoutIfNeeded()
-            } completion: { _ in
-
-            }
+            container.view.translatesAutoresizingMaskIntoConstraints = false
+            container.view.topAnchor.constraint(equalTo: childView.topAnchor).isActive = true
+            container.view.leadingAnchor.constraint(equalTo: childView.leadingAnchor).isActive = true
+            container.view.trailingAnchor.constraint(equalTo: childView.trailingAnchor).isActive = true
+            container.view.bottomAnchor.constraint(equalTo: childView.bottomAnchor, constant: -bottomPadding).isActive = true
+            container.didMove(toParent: self)
         } else {
-            let availableScreenHeight = UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
-            let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc!.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc!.navigationBar.bounds.height)
-            let containerViewHeight: CGFloat = navigationControllerHeight
-            
-//            nc!.view.widthAnchor.constraint(equalToConstant: childContainerView.frame.width).isActive = true
-            heightConstraint?.isActive = false
-            heightConstraint = nc!.view.heightAnchor.constraint(equalToConstant: navigationControllerHeight)
-            heightConstraint!.isActive = true
-            cvc.view.heightAnchor.constraint(equalToConstant: containerViewHeight).isActive = true
-            nc!.pushViewController(cvc, animated: true)
-            
-            childContainerViewBottomConstraint.constant = 0.0
-            childContainerViewHeightConstraint.constant = navigationControllerHeight
-            
-            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
-                self.view.layoutIfNeeded()
-            } completion: { _ in
+            nc.pushViewController(cvc, animated: true)
+        }
+        
+        childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
+        
+        if isPresented {
+            // Hide the childView before animating it on screen
+            childViewBottomConstraint.constant = childViewHeightConstraint.constant
+            view.layoutIfNeeded()
+        }
+        
+        childViewBottomConstraint.constant = 0
 
-            }
+        UIView.animate(withDuration: presentationDuration, delay: 0, options: .curveEaseInOut) {
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+
         }
     }
     
-    func popViewController() {
-        guard let nc = nc, nc.viewControllers.count > 1 else {
+    internal func popViewController() {
+        guard nc.viewControllers.count > 1,
+              let viewController = (nc.viewControllers[nc.viewControllers.count-2] as? PrimerContainerViewController)?.childViewController else {
             return
         }
         
-        let viewController = nc.viewControllers[nc.viewControllers.count-2]
-        
-        let availableScreenHeight = UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
         let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc.navigationBar.bounds.height)
-        
-//        nc.view.widthAnchor.constraint(equalToConstant: childContainerView.frame.width).isActive = true
-        heightConstraint?.isActive = false
-        heightConstraint = nc.view.heightAnchor.constraint(equalToConstant: navigationControllerHeight)
-        heightConstraint!.isActive = true
-        
-        childContainerViewBottomConstraint.constant = 0.0
-        childContainerViewHeightConstraint.constant = navigationControllerHeight
-        
-        // FIXME: Scrollview is 44pt less than it should
-        
+
+        childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
+
         nc.popViewController(animated: true)
-        
+
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
         } completion: { _ in
