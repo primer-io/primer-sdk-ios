@@ -21,7 +21,7 @@ enum PrimerAPI: Endpoint {
     case klarnaCreatePaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest)
     case klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest)
     case klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
-    case apayaCreateSession(clientToken: DecodedClientToken, request: ApayaCreateSessionAPIRequest)
+    case apayaCreateSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest)
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest)
 }
 
