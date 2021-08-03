@@ -14,9 +14,14 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private var flow: PaymentFlow!
     
     private let cardNumberContainerView = PrimerCustomFieldView()
+    private let cardNumberField = PrimerCardNumberFieldView()
     private let expiryDateContainerView = PrimerCustomFieldView()
+    private let expiryDateField = PrimerExpiryDateFieldView()
     private let cvvContainerView = PrimerCustomFieldView()
+    private let cvvField = PrimerCVVFieldView()
     private let cardholderNameContainerView = PrimerCustomFieldView()
+    private let cardholderNameField = PrimerCardholderNameFieldView()
+    private let submitButton = UIButton()
     
     init(flow: PaymentFlow) {
         self.flow = flow
@@ -29,22 +34,19 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Enter your card details"
+        
+        title = NSLocalizedString("primer-form-type-main-title-card-form",
+                                  tableName: nil,
+                                  bundle: Bundle.primerResources,
+                                  value: "Enter your card details",
+                                  comment: "Enter your card details - Form Type Main Title (Card)")
         
         view.backgroundColor = .white
         
-        verticalStackView.spacing = 8
-//        view.layoutIfNeeded()
+        verticalStackView.spacing = 2
         
-//        let titleLabel = UILabel()
-//        titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .medium)
-//        titleLabel.text = "Checkout"
-//        titleLabel.textAlignment = .center
-//        verticalStackView.addArrangedSubview(titleLabel)
-        
-        let cardNumberField = PrimerCardNumberFieldView()
         cardNumberField.placeholder = "4242 4242 4242 4242"
-        cardNumberField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        cardNumberField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         cardNumberField.textColor = .black
         cardNumberField.borderStyle = .none
         cardNumberField.delegate = self
@@ -59,9 +61,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
         horizontalStackView.alignment = .fill
         horizontalStackView.distribution = .fillEqually
         
-        let expiryDateField = PrimerExpiryDateFieldView()
         expiryDateField.placeholder = "02/22"
-        expiryDateField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        expiryDateField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         expiryDateField.delegate = self
         
         expiryDateContainerView.fieldView = expiryDateField
@@ -69,21 +70,19 @@ class PrimerCardFormViewController: PrimerFormViewController {
         expiryDateContainerView.setup()
         horizontalStackView.addArrangedSubview(expiryDateContainerView)
         
-        let cvvField = PrimerCVVFieldView()
         cvvField.placeholder = "123"
-        cvvField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        cvvField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         cvvField.delegate = self
         
         cvvContainerView.fieldView = cvvField
         cvvContainerView.placeholderText = "CVV/CVC"
         cvvContainerView.setup()
         horizontalStackView.addArrangedSubview(cvvContainerView)
-        horizontalStackView.spacing = 8
+        horizontalStackView.spacing = 16
         verticalStackView.addArrangedSubview(horizontalStackView)
         
-        let cardholderNameField = PrimerCardholderNameFieldView()
         cardholderNameField.placeholder = "John Smith"
-        cardholderNameField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        cardholderNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         cardholderNameField.delegate = self
         
         cardholderNameContainerView.fieldView = cardholderNameField
@@ -91,26 +90,65 @@ class PrimerCardFormViewController: PrimerFormViewController {
         cardholderNameContainerView.setup()
         verticalStackView.addArrangedSubview(cardholderNameContainerView)
         
-        let button = UIButton()
-        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        button.setTitle("Pay", for: .normal)
-        button.setTitleColor(.red, for: .normal)
-        button.backgroundColor = .black
-        button.roundCorners(.allCorners, radius: 8)
-        button.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
-        verticalStackView.addArrangedSubview(button)
+        if flow == .checkout {
+            let saveCardSwitchContainerStackView = UIStackView()
+            saveCardSwitchContainerStackView.axis = .horizontal
+            saveCardSwitchContainerStackView.alignment = .fill
+            saveCardSwitchContainerStackView.spacing = 8.0
+            
+            let saveCardSwitch = UISwitch()
+            saveCardSwitchContainerStackView.addArrangedSubview(saveCardSwitch)
+            
+            let saveCardLabel = UILabel()
+            saveCardLabel.text = "Save this card"
+            saveCardLabel.textColor = .black
+            saveCardLabel.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
+            saveCardSwitchContainerStackView.addArrangedSubview(saveCardLabel)
+            
+            verticalStackView.addArrangedSubview(saveCardSwitchContainerStackView)
+        }
         
-//        let testView = UIView()
-//        testView.heightAnchor.constraint(equalToConstant: 2000).isActive = true
-//        verticalStackView.addArrangedSubview(testView)
+        let separatorView = UIView()
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
+        separatorView.heightAnchor.constraint(equalToConstant: 8).isActive = true
+        verticalStackView.addArrangedSubview(separatorView)
+        
+        var buttonTitle: String = ""
+        if flow == .checkout {
+            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+            buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                            tableName: nil,
+                                            bundle: Bundle.primerResources,
+                                            value: "Pay",
+                                            comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+        } else if flow == .vault {
+            buttonTitle = NSLocalizedString("primer-card-form-add-card",
+                                            tableName: nil,
+                                            bundle: Bundle.primerResources,
+                                            value: "Add card",
+                                            comment: "Add card - Card Form (Vault title text)")
+        }
+        
+        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        submitButton.isEnabled = false
+        submitButton.setTitle(buttonTitle, for: .normal)
+        submitButton.setTitleColor(.white, for: .normal)
+        submitButton.backgroundColor = .lightGray
+        submitButton.layer.cornerRadius = 4
+        submitButton.clipsToBounds = true
+        submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
+        verticalStackView.addArrangedSubview(submitButton)
+        
+        
         
         cardComponentsManager = CardComponentsManager(
+//            clientToken: state.accessToken,
             flow: flow,
             cardnumberField: cardNumberField,
             expiryDateField: expiryDateField,
             cvvField: cvvField,
             cardholderNameField: cardholderNameField)
-        cardComponentsManager.delegate = self
+        cardComponentsManager.delegate = self        
     }
     
     @objc func payButtonTapped(_ sender: UIButton) {
@@ -122,29 +160,93 @@ class PrimerCardFormViewController: PrimerFormViewController {
 extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTextFieldViewDelegate {
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
-        
+        DispatchQueue.main.async { [weak self] in
+            guard let strongSelf = self else { return }
+            if strongSelf.flow == .vault {
+                Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+                
+            } else {
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { [weak self] err in
+                    DispatchQueue.main.async { [weak self] in
+                        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                        
+                        if settings.hasDisabledSuccessScreen {
+                            Primer.shared.dismissPrimer()
+                        } else {
+                            if let err = err {
+                                let evc = ErrorViewController(message: PrimerError.amountMissing.localizedDescription)
+                                evc.view.translatesAutoresizingMaskIntoConstraints = false
+                                evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                                Primer.shared.primerRootVC?.show(viewController: evc)
+                            } else {
+                                let svc = SuccessViewController()
+                                svc.view.translatesAutoresizingMaskIntoConstraints = false
+                                svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                                Primer.shared.primerRootVC?.show(viewController: svc)
+                            }
+                        }
+                    }
+                })
+            }
+        }
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
         
+        if let clientToken = state.accessToken {
+            completion(clientToken, nil)
+        } else {
+            completion(nil, PrimerError.clientTokenNull)
+        }
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
-        print(errors)
-    }
-    
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
-        print("isLoading: \(isLoading)")
-    }
-    
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
         
     }
     
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
+        
+    }
+    
+    func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
         if primerTextFieldView is PrimerCardNumberFieldView {
-            cardNumberContainerView.errorText = "Invalid card number"
+            cardNumberContainerView.errorText = nil
+        } else if primerTextFieldView is PrimerExpiryDateFieldView {
+            expiryDateContainerView.errorText = nil
+        } else if primerTextFieldView is PrimerCVVFieldView {
+            cvvContainerView.errorText = nil
+        } else if primerTextFieldView is PrimerCardholderNameFieldView {
+            cardholderNameContainerView.errorText = nil
         }
+    }
+    
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
+        if primerTextFieldView is PrimerCardNumberFieldView, isValid == false {
+            cardNumberContainerView.errorText = "Invalid card number"
+        } else if primerTextFieldView is PrimerExpiryDateFieldView, isValid == false {
+            expiryDateContainerView.errorText = "Invalid date"
+        } else if primerTextFieldView is PrimerCVVFieldView, isValid == false {
+            cvvContainerView.errorText = "Invalid CVV"
+        } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
+            cardholderNameContainerView.errorText = "Invalid name"
+        }
+
+        if cardNumberField.isTextValid,
+           expiryDateField.isTextValid,
+           cvvField.isTextValid,
+           cardholderNameField.isTextValid
+        {
+            submitButton.isEnabled = true
+            submitButton.backgroundColor = .black
+        } else {
+            submitButton.isEnabled = false
+            submitButton.backgroundColor = .lightGray
+        }
+    }
+    
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {
+
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork) {
@@ -155,7 +257,7 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
 
 class PrimerCustomFieldView: UIView {
 
-    private var stackView: UIStackView = UIStackView()
+    var stackView: UIStackView = UIStackView()
     var placeholderText: String?
     var errorText: String? {
         didSet {
@@ -173,24 +275,26 @@ class PrimerCustomFieldView: UIView {
         let topPlaceholderLabel = UILabel()
         topPlaceholderLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         topPlaceholderLabel.text = placeholderText
+        topPlaceholderLabel.textColor = PrimerColor(rgb: 0x007AFF)
         topPlaceholderLabel.textAlignment = .left
         stackView.addArrangedSubview(topPlaceholderLabel)
 
         let textFieldStackView = UIStackView()
-        textFieldStackView.alignment = .leading
+        textFieldStackView.alignment = .fill
         textFieldStackView.axis = .vertical
         textFieldStackView.addArrangedSubview(fieldView)
         textFieldStackView.spacing = 0
         let bottomLine = UIView()
-        bottomLine.backgroundColor = .blue
+        bottomLine.backgroundColor = PrimerColor(rgb: 0x007AFF)
         bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
         stackView.addArrangedSubview(textFieldStackView)
         stackView.addArrangedSubview(bottomLine)
 
         
         errorLabel.textColor = .red
+        errorLabel.heightAnchor.constraint(equalToConstant: 12.0).isActive = true
         errorLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
-        errorLabel.text = ""
+        errorLabel.text = nil
         errorLabel.textAlignment = .right
         
         stackView.addArrangedSubview(errorLabel)
