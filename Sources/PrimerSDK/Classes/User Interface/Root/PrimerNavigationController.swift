@@ -12,9 +12,14 @@ class PrimerNavigationController: UINavigationController, UINavigationBarDelegat
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationBar.barTintColor = .green
-        navigationBar.titleTextAttributes = [.foregroundColor: UIColor.orange]
-        navigationBar.backItem?.backBarButtonItem?.tintColor = .orange
+        navigationBar.barStyle = .black
+        navigationBar.barTintColor = .white
+        navigationBar.isTranslucent = false
+
+        navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor.black,
+            .font: UIFont.systemFont(ofSize: 17.0, weight: .semibold)
+        ]
     }
     
     func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
