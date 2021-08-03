@@ -50,7 +50,7 @@ internal extension String {
     }
 
     var isValidCardNumber: Bool {
-        return count >= 13 && count <= 19 && isValidLuhn
+        return self.withoutWhiteSpace.count >= 13 && self.withoutWhiteSpace.count <= 19 && self.withoutWhiteSpace.isValidLuhn
     }
     
     var isTypingValidExpiryDate: Bool? {
