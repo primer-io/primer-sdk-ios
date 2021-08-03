@@ -17,7 +17,7 @@ class ApayaDataModelTests: XCTestCase {
     
     func test_apaya_web_view_result_created_from_correct_url() throws {
         let url = URL(string: rootUrl + "token=A9IotQFdJBSYjth7h)hGWmFAgzVjxU6xeGGT)AaAbB=&pt=ExamplePTValue&success=1&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91")
-        let result = ApayaWebViewResult.create(from: url)
+        let result = Apaya.WebViewResult.create(from: url)
         switch result {
         case .success(let value):
             XCTAssertEqual(value.success, "1")
@@ -28,7 +28,7 @@ class ApayaDataModelTests: XCTestCase {
     
     func test_apaya_web_view_result_fails_on_token_not_provided() throws {
         let url = URL(string: rootUrl + "pt=ExamplePTValue&success=1&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91")
-        let result = ApayaWebViewResult.create(from: url)
+        let result = Apaya.WebViewResult.create(from: url)
         switch result {
         case .success:
             XCTFail()
@@ -39,7 +39,7 @@ class ApayaDataModelTests: XCTestCase {
     
     func test_apaya_web_view_result_fails_on_invalid_url() throws {
         let url = URL(string: "")
-        let result = ApayaWebViewResult.create(from: url)
+        let result = Apaya.WebViewResult.create(from: url)
         switch result {
         case .success:
             XCTFail()
@@ -50,7 +50,7 @@ class ApayaDataModelTests: XCTestCase {
     
     func test_apaya_web_view_result_fails_on_error_url() throws {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ERROR")
-        let result = ApayaWebViewResult.create(from: url)
+        let result = Apaya.WebViewResult.create(from: url)
         switch result {
         case .success:
             XCTFail()
@@ -61,7 +61,7 @@ class ApayaDataModelTests: XCTestCase {
     
     func test_apaya_web_view_result_fails_on_cancel_url() throws {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ABANDONED")
-        let result = ApayaWebViewResult.create(from: url)
+        let result = Apaya.WebViewResult.create(from: url)
         switch result {
         case .success:
             XCTFail()
