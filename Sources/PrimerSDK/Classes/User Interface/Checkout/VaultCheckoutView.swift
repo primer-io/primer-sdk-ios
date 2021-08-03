@@ -122,7 +122,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
         //        navItem.leftBarButtonItem = doneItem
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
-        let titleItem = UINavigationItem(title: "Test")
+        let titleItem = UINavigationItem(title: "")
         navBar.setItems([navItem, titleItem], animated: false)
         
         
