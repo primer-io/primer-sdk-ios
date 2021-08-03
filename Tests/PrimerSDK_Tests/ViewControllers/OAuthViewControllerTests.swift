@@ -39,7 +39,7 @@ class OAuthViewControllerTests: XCTestCase {
 
         viewController.viewDidLoad()
         
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 }
 
