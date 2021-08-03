@@ -5,44 +5,44 @@
 //  Created by Carl Eriksson on 27/07/2021.
 //
 
-public struct ApayaCreateSessionAPIRequest: Encodable {
-    let locale: String
-    let itemDescription: String
-    init(locale: String, itemDescription: String) {
-        self.locale = locale
-        self.itemDescription = itemDescription
+public struct Apaya {
+    public struct CreateSessionAPIRequest: Encodable {
+        let locale: String
+        let itemDescription: String
+        init(locale: String, itemDescription: String) {
+            self.locale = locale
+            self.itemDescription = itemDescription
+        }
     }
-}
-
-public struct ApayaCreateSessionAPIResponse: Decodable {
-    let redirectUrl: String
-    let token: String
-    let passthroughVariable: String
-    init(
-        redirectUrl: String,
-        token: String,
-        passthroughVariable: String
-    ) {
-        self.redirectUrl = redirectUrl
-        self.token = token
-        self.passthroughVariable = passthroughVariable
+    public struct CreateSessionAPIResponse: Decodable {
+        let redirectUrl: String
+        let token: String
+        let passthroughVariable: String
+        init(
+            redirectUrl: String,
+            token: String,
+            passthroughVariable: String
+        ) {
+            self.redirectUrl = redirectUrl
+            self.token = token
+            self.passthroughVariable = passthroughVariable
+        }
     }
-}
-
-struct ApayaWebViewResult {
-    let ptNumber: String
-    let mxNumber: String
-    let hashedIdentifier: String
-    let mcc: String
-    let mnc: String
-    let success: String
-    let status: String
-    let token: String
+    public struct WebViewResult {
+        let ptNumber: String
+        let mxNumber: String
+        let hashedIdentifier: String
+        let mcc: String
+        let mnc: String
+        let success: String
+        let status: String
+        let token: String
+    }
 }
 
 // factory methods
-extension ApayaWebViewResult {
-    static func create(from url: URL?) -> Result<ApayaWebViewResult, ApayaException> {
+extension Apaya.WebViewResult {
+    static func create(from url: URL?) -> Result<Apaya.WebViewResult, ApayaException> {
         guard
             let url = url,
             let success = url.queryParameterValue(for: "success"),
@@ -69,7 +69,7 @@ extension ApayaWebViewResult {
         }
 
         return .success(
-            ApayaWebViewResult(
+            Apaya.WebViewResult(
                 ptNumber: ptNumber,
                 mxNumber: mxNumber,
                 hashedIdentifier: hashedIdentifier,
