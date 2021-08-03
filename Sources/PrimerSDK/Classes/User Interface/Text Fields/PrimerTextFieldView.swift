@@ -39,25 +39,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     @IBOutlet internal weak var textField: PrimerTextField!
     internal var isValid: ((_ text: String) -> Bool?)?
     public var delegate: PrimerTextFieldViewDelegate?
-    
-    internal var validation: PrimerTextField.Validation = .notAvailable {
-        didSet {
-            switch validation {
-            case .valid:
-                delegate?.primerTextFieldView(self, isValid: true)
-
-            case .invalid(let err):
-                delegate?.primerTextFieldView(self, isValid: false)
-                
-                if let err = err {
-                    delegate?.primerTextFieldView(self, validationDidFailWithError: err)
-                }
-        
-            case .notAvailable:
-                delegate?.primerTextFieldView(self, isValid: nil)
-            }
-        }
-    }
+    internal var validation: PrimerTextField.Validation = .notAvailable
     
     
     // MARK: - PROXY
@@ -172,6 +154,21 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         guard let primerTextField = textField as? PrimerTextField else { return }
         let err = NSError(domain: "primer.core.kit", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."])
         validation = (self.isValid?(primerTextField._text ?? "") ?? false) ? .valid : .invalid(err)
+        
+        switch validation {
+        case .valid:
+            delegate?.primerTextFieldView(self, isValid: true)
+
+        case .invalid(let err):
+            delegate?.primerTextFieldView(self, isValid: false)
+            
+            if let err = err {
+                delegate?.primerTextFieldView(self, validationDidFailWithError: err)
+            }
+    
+        case .notAvailable:
+            delegate?.primerTextFieldView(self, isValid: nil)
+        }
     }
     
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
