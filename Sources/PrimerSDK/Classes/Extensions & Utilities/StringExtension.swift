@@ -50,7 +50,20 @@ internal extension String {
     }
 
     var isValidCardNumber: Bool {
-        return self.withoutWhiteSpace.count >= 13 && self.withoutWhiteSpace.count <= 19 && self.withoutWhiteSpace.isValidLuhn
+        let clearedCardNumber = self.withoutNonNumericCharacters
+        
+        let cardNetwork = CardNetwork(cardNumber: clearedCardNumber)
+        if let cardNumberValidation = cardNetwork.validation {
+            if !cardNumberValidation.lengths.contains(clearedCardNumber.count) {
+                return false
+            }
+        }
+        
+        return clearedCardNumber.count >= 13 && clearedCardNumber.count <= 19 && clearedCardNumber.isValidLuhn
+    }
+    
+    var withoutNonNumericCharacters: String {
+        return withoutWhiteSpace.filter("0123456789".contains)
     }
     
     var isTypingValidExpiryDate: Bool? {
@@ -104,15 +117,17 @@ internal extension String {
         return date.endOfMonth > Date()
     }
     
-    var isTypingValidCVV: Bool? {
+    func isTypingValidCVV(cardNetwork: CardNetwork?) -> Bool? {
+        let maxDigits = cardNetwork?.validation?.code.length ?? 4
         if !isNumeric && !isEmpty { return false }
-        if count > 4 { return false }
-        if count >= 3 && count <= 4 { return true }
+        if count > maxDigits { return false }
+        if count >= 3 && count <= maxDigits { return true }
         return nil
     }
     
-    var isValidCVV: Bool {
-        return isNumeric && count >= 3 && count <= 4
+    func isValidCVV(cardNetwork: CardNetwork?) -> Bool {
+        let digits = cardNetwork?.validation?.code.length ?? 4
+        return count == digits
     }
     
     var isTypingValidCardholderName: Bool? {
@@ -121,7 +136,8 @@ internal extension String {
     }
     
     var isValidCardholderName: Bool {
-        return !isEmpty
+        let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-")
+        return !(self.rangeOfCharacter(from: set.inverted) != nil)
     }
 
     var isValidEmail: Bool {
@@ -131,7 +147,7 @@ internal extension String {
             "z0-9-]*[\\p{L}0-9])?\\.)+[\\p{L}0-9](?:[\\p{L}0-9-]*[\\p{L}0-9])?|\\[(?:(?:25[0-5" +
             "]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-" +
             "9][0-9]?|[\\p{L}0-9-]*[\\p{L}0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21" +
-        "-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+            "-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
         let emailP = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
         return emailP.evaluate(with: self)
     }
@@ -163,8 +179,8 @@ internal extension String {
         let components = self.split(separator: ".")
         if components.count < 2 { return nil }
         let segment = String(components[1]).padding(toLength: ((String(components[1]).count+3)/4)*4,
-                                                              withPad: "=",
-                                                              startingAt: 0)
+                                                    withPad: "=",
+                                                    startingAt: 0)
         guard !segment.isEmpty, let data = Data(base64Encoded: segment) else { return nil }
         
         return try? JSONParser().parse(DecodedClientToken.self, from: data)
@@ -193,6 +209,19 @@ internal extension String {
         }.joined(separator: separator))
     }
 
+    func separate(on gaps: [Int], with separator: String) -> String {
+        let sortedReversedGaps = gaps.sorted(by: { $0 > $1 })
+        
+        var str = self
+        for gap in sortedReversedGaps {
+            if str.count > gap {
+                str.insert(" ", at: str.index(str.startIndex, offsetBy: gap))
+            }
+        }
+        
+        return str
+    }
+    
 }
 
 #endif

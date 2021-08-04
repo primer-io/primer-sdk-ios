@@ -7,9 +7,9 @@
 
 import UIKit
 
-public class PrimerCardNumberFieldView: PrimerTextFieldView {
+public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         
-    var cardNetwork: CardNetwork = .unknown
+    private(set) public var cardNetwork: CardNetwork = .unknown
     internal var cardnumber: String {
         return (textField._text ?? "").replacingOccurrences(of: " ", with: "").withoutWhiteSpace
     }
@@ -31,7 +31,7 @@ public class PrimerCardNumberFieldView: PrimerTextFieldView {
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         if !newText.withoutWhiteSpace.isNumeric && !string.isEmpty { return false }
         primerTextField._text = newText
-        cardNetwork = CardNetwork(account: primerTextField._text ?? "")
+        cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
         delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)
         validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? .valid : .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
         

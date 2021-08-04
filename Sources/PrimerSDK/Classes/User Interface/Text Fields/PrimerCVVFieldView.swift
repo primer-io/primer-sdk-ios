@@ -12,14 +12,16 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
     internal var cvv: String {
         return textField._text ?? ""
     }
+    public var cardNetwork: CardNetwork = .unknown
     
     override func xibSetup() {
         super.xibSetup()
         
         textField.keyboardType = .numberPad
         textField.delegate = self
-        isValid = { text in
-            return text.isTypingValidCVV
+        isValid = { [weak self] text in
+            guard let strongSelf = self else { return false }
+            return text.isTypingValidCVV(cardNetwork: strongSelf.cardNetwork)
         }
     }
     

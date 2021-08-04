@@ -238,6 +238,25 @@ enum NetworkServiceError: PrimerErrorProtocol {
 
 enum PrimerError: PrimerErrorProtocol {
 
+//    case generic
+//    case clientTokenNull
+//    case customerIDNull
+//    case tokenExpired
+//    case payPalSessionFailed
+//    case vaultFetchFailed
+//    case vaultDeleteFailed
+//    case vaultCreateFailed
+//    case requestFailed
+//    case directDebitSessionFailed
+//    case configFetchFailed
+//    case tokenizationPreRequestFailed
+//    case tokenizationRequestFailed
+//    case failedToLoadSession
+//    case missingURLScheme
+//    case userCancelled
+//    case amountShouldBeNullForPendingOrderItems
+//    case amountCannotBeNullForNonPendingOrderItems
+    
     case generic
     case containerError(errors: [Error])
     case delegateNotSet
@@ -271,6 +290,7 @@ enum PrimerError: PrimerErrorProtocol {
 
     static var errorDomain: String = "primer"
 
+    
     var errorCode: Int {
         switch self {
         case .generic:
