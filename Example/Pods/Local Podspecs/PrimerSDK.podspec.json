@@ -23,11 +23,10 @@
   "resource_bundles": {
     "PrimerResources": [
       "Sources/PrimerSDK/Resources/*.xcassets",
-      "Sources/PrimerSDK/Resources/Localizable/*",
-      "Sources/PrimerSDK/Resources/Frameworks/SDK-License-Primerapi.lic"
+      "Sources/PrimerSDK/Resources/Localizable/*"
     ]
   },
-  "vendored_frameworks": "Sources/PrimerSDK/Resources/Frameworks/ThreeDS_SDK.framework",
+  "vendored_frameworks": "Sources/PrimerSDK/Resources/Frameworks/*",
   "testspecs": [
     {
       "name": "PrimerSDKTests",
