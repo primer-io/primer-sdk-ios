@@ -36,7 +36,7 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            validation = .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
+            validation = .invalid(PrimerError.invalidCVV)
         default:
             validation = .notAvailable
         }

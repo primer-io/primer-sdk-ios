@@ -35,7 +35,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            validation = .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
+            validation = .invalid(PrimerError.invalidCardholderName)
         default:
             validation = .notAvailable
         }

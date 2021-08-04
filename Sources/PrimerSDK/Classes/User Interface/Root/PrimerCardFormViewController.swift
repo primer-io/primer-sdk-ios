@@ -224,12 +224,16 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
         if primerTextFieldView is PrimerCardNumberFieldView, isValid == false {
             cardNumberContainerView.errorText = "Invalid card number"
+            print("PrimerCardNumberFieldView.isValid: \(isValid)")
         } else if primerTextFieldView is PrimerExpiryDateFieldView, isValid == false {
             expiryDateContainerView.errorText = "Invalid date"
+            print("PrimerExpiryDateFieldView.isValid: \(isValid)")
         } else if primerTextFieldView is PrimerCVVFieldView, isValid == false {
             cvvContainerView.errorText = "Invalid CVV"
+            print("PrimerCVVFieldView.isValid: \(isValid)")
         } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
             cardholderNameContainerView.errorText = "Invalid name"
+            print("PrimerCardholderNameFieldView.isValid: \(isValid)")
         }
 
         if cardNumberField.isTextValid,

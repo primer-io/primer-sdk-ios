@@ -167,7 +167,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     
     public func textFieldDidEndEditing(_ textField: UITextField) {
         guard let primerTextField = textField as? PrimerTextField else { return }
-        let err = NSError(domain: "primer.core.kit", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."])
+        let err = PrimerError.invalidValue
         validation = (self.isValid?(primerTextField._text ?? "") ?? false) ? .valid : .invalid(err)
         
         switch validation {

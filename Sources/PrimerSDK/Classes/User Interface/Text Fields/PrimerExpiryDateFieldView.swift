@@ -18,7 +18,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         textField.keyboardType = .numberPad
         textField.delegate = self
         isValid = { text in
-            let isValid = text.isTypingValidExpiryDate
+            let isValid = text.isValidExpiryDate
             return isValid
         }
     }
@@ -31,7 +31,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         if !(newText.isNumeric || newText.isEmpty) { return false }
         if string != "" && newText.withoutWhiteSpace.count >= 5 { return false }
         
-        validation = (self.isValid?(newText) ?? false) ? .valid : .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
+        validation = (self.isValid?(newText) ?? false) ? .valid : .invalid(PrimerError.invalidExpiryDate)
         
         switch validation {
         case .valid:

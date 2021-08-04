@@ -261,6 +261,7 @@ enum PrimerError: PrimerErrorProtocol {
     case containerError(errors: [Error])
     case delegateNotSet
     case userCancelled
+    case invalidValue
     
     case clientTokenNull
     case clientTokenExpirationMissing
@@ -297,6 +298,8 @@ enum PrimerError: PrimerErrorProtocol {
             return 0
         case .containerError:
             return 1
+        case .invalidValue:
+            return 400
         case .delegateNotSet:
             return 500
         case .userCancelled:
@@ -382,6 +385,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Multiple errors occured",
                                      comment: "Multiple errors occured - Primer error message")
+            
+        case .invalidValue:
+            return NSLocalizedString("primer-error-message-invalid-value",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Invalid value",
+                                     comment: "Invalid value - Primer error message")
             
         case .delegateNotSet:
             return NSLocalizedString("primer-error-message-delegate-not-set",
