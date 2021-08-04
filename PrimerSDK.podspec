@@ -23,10 +23,9 @@ Pod::Spec.new do |spec|
         'PrimerResources' => [
             'Sources/PrimerSDK/Resources/*.xcassets',
             'Sources/PrimerSDK/Resources/Localizable/*',
-            'Sources/PrimerSDK/Resources/Frameworks/SDK-License-Primerapi.lic'
         ]
     }
-    spec.vendored_frameworks = 'Sources/PrimerSDK/Resources/Frameworks/ThreeDS_SDK.framework'
+    spec.vendored_frameworks = 'Sources/PrimerSDK/Resources/Frameworks/*'
     
     spec.test_spec 'PrimerSDKTests' do |test_spec|
         test_spec.source_files = 'Tests/**/*.{h,m,swift}'
