@@ -1,5 +1,6 @@
 #if canImport(UIKit)
 
+import ThreeDS_SDK
 import UIKit
 
 // swiftlint:disable identifier_name
@@ -28,6 +29,16 @@ public class Primer {
         }
         
         
+    }
+    
+    public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        return ThreeDSSDKAppDelegate.shared.appOpened(url: url)
+    }
+    
+    public func application(_ application: UIApplication,
+                     continue userActivity: NSUserActivity,
+                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        return ThreeDSSDKAppDelegate.shared.appOpened(userActivity: userActivity)
     }
 
     /**
