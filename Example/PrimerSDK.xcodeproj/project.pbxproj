@@ -608,12 +608,10 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-frameworks.sh",
-				"${PODS_ROOT}/../../Sources/PrimerSDK/Resources/Frameworks/ThreeDS_SDK.framework",
 				"${BUILT_PRODUCTS_DIR}/PrimerSDK/PrimerSDK.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ThreeDS_SDK.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PrimerSDK.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
