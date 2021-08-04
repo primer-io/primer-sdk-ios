@@ -30,7 +30,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
                 }
                 
                 if expDate < Date() {
-                    return completion(PrimerError.tokenExpired)
+                    return completion(PrimerError.clientTokenExpired)
                 }
                 
                 if let jwtTokenPayload = token.jwtTokenPayload {
