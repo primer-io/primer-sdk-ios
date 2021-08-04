@@ -1,5 +1,3 @@
-
-
 #if canImport(UIKit)
 
 import Foundation
