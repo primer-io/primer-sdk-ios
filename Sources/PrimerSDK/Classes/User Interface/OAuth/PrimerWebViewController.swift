@@ -23,7 +23,6 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     let allowedHosts: [String] = ["primer.io"]
     let headerFields = [
         "Content-Type": "application/json",
@@ -31,7 +30,7 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         "Primer-SDK-Client": "IOS_NATIVE"
     ]
     var url: URL?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         renderWebView()
