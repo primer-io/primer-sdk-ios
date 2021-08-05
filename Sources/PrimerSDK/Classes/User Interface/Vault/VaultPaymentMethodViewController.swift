@@ -300,7 +300,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
         if showDeleteIcon {
             cardView.showDeleteIcon(showDeleteIcon)
         } else {
-            cardView.hideIcon(isEnabled)
+            cardView.showCheckmarkIcon(isEnabled)
             cardView.toggleIcon()
         }
 

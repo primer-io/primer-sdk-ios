@@ -191,7 +191,7 @@ internal class CardButton: PrimerButton {
         checkmarkViewHeightConstraint?.constant = showIcon ? 14 : 0
     }
 
-    func hideIcon(_ val: Bool) {
+    func showCheckmarkIcon(_ val: Bool) {
         checkView.isHidden = !val
     }
 
