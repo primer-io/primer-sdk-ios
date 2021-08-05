@@ -8,12 +8,10 @@
 #if canImport(UIKit)
 
 import UIKit
-import WebKit
 
 internal protocol PrimerWebViewModelProtocol: AnyObject {
     func onRedirect(with url: URL)
 }
-
 
 internal class ApayaWebViewModel: PrimerWebViewModelProtocol {
     func onRedirect(with url: URL) {
@@ -24,4 +22,3 @@ internal class ApayaWebViewModel: PrimerWebViewModelProtocol {
 }
 
 #endif
-

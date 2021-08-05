@@ -159,11 +159,15 @@ let mockPaymentMethodConfig = PaymentMethodConfig(
 class MockAppState: AppStateProtocol {
     var apayaResult: Result<Apaya.WebViewResult, ApayaException>?
     
+    var setApayaResultCalled = false
     func setApayaResult(_ result: Result<Apaya.WebViewResult, ApayaException>) {
+        setApayaResultCalled = true
         apayaResult = result
     }
     
+    var getApayaResultCalled = false
     func getApayaResult() -> Result<Apaya.WebViewResult, ApayaException>? {
+        getApayaResultCalled = true
         let url = URL(string: "https://primer.io") // needs query params
         return apayaResult ?? Apaya.WebViewResult.create(from: url)
     }
