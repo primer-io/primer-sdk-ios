@@ -19,6 +19,7 @@
 		103280CBD12E9ECE6772022A7695069C /* FormType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065762A19BDF3D5FED0BE0447CE14740 /* FormType.swift */; };
 		10993E165F6D5C0415BE74E56BE60FC7 /* PrimerCustomStyleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C224448D946DB87A0C3AFEDF5FCBED /* PrimerCustomStyleTextField.swift */; };
 		119BBB48E934F223CBAC4A2E7604057F /* VaultPaymentMethodViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45926F02C19BD2DD56F912A3F33BC84 /* VaultPaymentMethodViewModel.swift */; };
+		151D1E8926BC974B00248D4C /* PrimerOAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151D1E8826BC974A00248D4C /* PrimerOAuthViewModel.swift */; };
 		1B979135735784F1EF3CC3B7B311A505 /* DirectDebitMandate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D9A753E81964B87D6DABB2E6014FC8A /* DirectDebitMandate.swift */; };
 		1D14402D8803E0EE04C749EF04594E6F /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 24E6354D7F863F48172A47818A4D282B /* fr.lproj */; };
 		202B96D3C6FB8A98E3AD76A04082C4BB /* UserDefaultsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8B2D4EA38C8BE145F7343E6E4CF3C4 /* UserDefaultsExtension.swift */; };
@@ -215,6 +216,7 @@
 		12EEA0E3232D1F8A25F2485C9891E102 /* ImageName.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImageName.swift; sourceTree = "<group>"; };
 		13D7F7E5AB82F648241E4CF234F3094E /* NetworkService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		1509609097709A5D7B59530A0DCC18BF /* JSONParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JSONParser.swift; sourceTree = "<group>"; };
+		151D1E8826BC974A00248D4C /* PrimerOAuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerOAuthViewModel.swift; sourceTree = "<group>"; };
 		16D5BFABC6BBADD235328EE107C8CBA6 /* WebViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		1B31AD3B74B9C0F0EA51566F64527089 /* CustomStringConvertible.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomStringConvertible.swift; sourceTree = "<group>"; };
 		1B700972CEA4D462F20D90BEF172AEF5 /* DateExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
@@ -843,6 +845,7 @@
 				DD3F3D0F5B6BEEE717A10AD03923B5F8 /* OAuthViewController.swift */,
 				1D3790F616B25F4C6A93BB58CC196541 /* OAuthViewModel.swift */,
 				16D5BFABC6BBADD235328EE107C8CBA6 /* WebViewController.swift */,
+				151D1E8826BC974A00248D4C /* PrimerOAuthViewModel.swift */,
 			);
 			path = OAuth;
 			sourceTree = "<group>";
@@ -1189,6 +1192,7 @@
 				A54326E68B40D91FAF61BB70A3F77C43 /* ClientTokenService.swift in Sources */,
 				E41E6794C81B0491172BB75C0A5CD9C9 /* ConcurrencyLimitedDispatcher.swift in Sources */,
 				CBE7EFDBF85EE2E3BB81F65031B9BB8A /* Configuration.swift in Sources */,
+				151D1E8926BC974B00248D4C /* PrimerOAuthViewModel.swift in Sources */,
 				B1831D857D67B667AE53C5E988EEBFFA /* ConfirmMandateView.swift in Sources */,
 				681E1DB9BD61308FA6E2979865BD6EFF /* ConfirmMandateViewController.swift in Sources */,
 				CD253D6C053903055DE702DB8987F46E /* ConfirmMandateViewModel.swift in Sources */,
