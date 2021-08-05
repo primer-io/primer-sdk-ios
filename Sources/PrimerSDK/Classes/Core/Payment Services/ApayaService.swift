@@ -20,7 +20,7 @@ internal class ApayaService: ApayaServiceProtocol {
         guard let clientToken = state.decodedClientToken else {
             return completion(.failure(ApayaException.noToken))
         }
-        let body = Apaya.CreateSessionAPIRequest(locale: "en-GB", itemDescription: "nothing")
+        let body = Apaya.CreateSessionAPIRequest(productId: "id123", reference: "ref123")
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.apayaCreateSession(clientToken: clientToken, request: body) { result in
             switch result {
