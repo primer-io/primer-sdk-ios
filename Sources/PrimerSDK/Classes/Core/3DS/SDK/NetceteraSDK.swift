@@ -126,7 +126,7 @@ class NetceteraSDK: ThreeDSSDKProtocol {
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
-        if let urlScheme = settings.urlScheme {
+        if let urlScheme = settings.urlScheme, let transactionId = threeDSecureAuthResponse.transactionId, !transactionId.isEmpty {
             challengeParameters.setThreeDSRequestorAppURL(threeDSRequestorAppURL: "\(urlScheme)://appURL?transID=\(threeDSecureAuthResponse.transactionId)")
         }
 
