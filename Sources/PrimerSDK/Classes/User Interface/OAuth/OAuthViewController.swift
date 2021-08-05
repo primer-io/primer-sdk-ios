@@ -89,7 +89,7 @@ internal class OAuthViewController: PrimerViewController {
         if (host == .apaya) {
             let webViewController = ApayaWebViewController()
             webViewController.url = URL(string: urlString)
-            webViewController.delegate = self
+            webViewController.delegate = self // this is where the completion is handled
             present(webViewController, animated: true, completion: nil)
         } else {
             let webViewController = WebViewController()
@@ -242,6 +242,7 @@ extension OAuthViewController: ASWebAuthenticationPresentationContextProviding {
 extension OAuthViewController: ReloadDelegate {
     func reload() {
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
+        // it would probably make sense to have an ApayaViewModel
         viewModel.tokenize(host, with: { err in
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()

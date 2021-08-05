@@ -48,10 +48,15 @@ enum Route {
             vc.delegate = delegate
             return vc
         case .oAuth(let host):
-            if #available(iOS 11.0, *) {
-                return OAuthViewController(host: host)
-            } else {
-                return nil
+            switch host {
+            case .apaya:
+                return ApayaLoadWebViewController()
+            default:
+                if #available(iOS 11.0, *) {
+                    return OAuthViewController(host: host)
+                } else {
+                    return nil
+                }
             }
         case .applePay:
             return nil

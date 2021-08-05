@@ -15,6 +15,11 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
 
     let webView = WKWebView()
     let allowedHosts: [String] = ["primer.io"]
+    let headerFields = [
+        "Content-Type": "application/json",
+        "Primer-SDK-Version": "1.0.0-beta.0",
+        "Primer-SDK-Client": "IOS_NATIVE"
+    ]
     var url: URL?
     
     override func viewDidLoad() {
@@ -27,11 +32,7 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         if let url = url {
             var request = URLRequest(url: url)
             request.timeoutInterval = 60
-            request.allHTTPHeaderFields = [
-                "Content-Type": "application/json",
-                "Primer-SDK-Version": "1.0.0-beta.0",
-                "Primer-SDK-Client": "IOS_NATIVE"
-            ]
+            request.allHTTPHeaderFields = headerFields
             webView.load(request)
         }
     }
@@ -48,7 +49,7 @@ internal class ApayaWebViewController: PrimerWebViewController {
             let host = url.host, allowedHosts.contains(host)
         {
             let state: AppStateProtocol = DependencyContainer.resolve()
-            let result = ApayaWebViewResult.create(from: url)
+            let result = Apaya.WebViewResult.create(from: url)
             state.setApayaResult(result)
             delegate?.reload()
             decisionHandler(.cancel)

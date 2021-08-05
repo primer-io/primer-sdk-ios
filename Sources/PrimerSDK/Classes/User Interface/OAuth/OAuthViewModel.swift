@@ -203,6 +203,8 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
         case .apaya:
             let state: AppStateProtocol = DependencyContainer.resolve()
             switch state.getApayaResult() {
+            case .none:
+                completion(ApayaException.invalidWebViewResult)
             case .failure(let error):
                 completion(error)
             case .success:

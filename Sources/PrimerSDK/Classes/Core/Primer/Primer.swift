@@ -63,6 +63,7 @@ public class Primer {
         DependencyContainer.register(FormViewModel() as FormViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
+        DependencyContainer.register(ApayaLoadWebViewModel() as ApayaLoadWebViewModelProtocol)
     }
 
     // MARK: - CONFIGURATION
