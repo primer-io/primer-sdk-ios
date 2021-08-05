@@ -35,6 +35,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         title = NSLocalizedString("primer-form-type-main-title-card-form",
                                   tableName: nil,
                                   bundle: Bundle.primerResources,
@@ -106,6 +108,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
             saveCardSwitchContainerStackView.addArrangedSubview(saveCardLabel)
             
             verticalStackView.addArrangedSubview(saveCardSwitchContainerStackView)
+            saveCardSwitchContainerStackView.isHidden = true
         }
         
         let separatorView = UIView()
@@ -132,8 +135,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
         submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         submitButton.isEnabled = false
         submitButton.setTitle(buttonTitle, for: .normal)
-        submitButton.setTitleColor(.white, for: .normal)
-        submitButton.backgroundColor = .lightGray
+        submitButton.setTitleColor(theme.colorTheme.text2, for: .normal)
+        submitButton.backgroundColor = theme.colorTheme.disabled1
         submitButton.layer.cornerRadius = 4
         submitButton.clipsToBounds = true
         submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
