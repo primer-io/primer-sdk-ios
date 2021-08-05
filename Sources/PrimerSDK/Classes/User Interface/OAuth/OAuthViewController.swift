@@ -26,36 +26,24 @@ internal class OAuthViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-        
+
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.generateOAuthURL(host, with: { [weak self] result in
             DispatchQueue.main.async {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                
                 switch result {
                 case .failure(let error):
                     _ = ErrorHandler.shared.handle(error: error)
                     Primer.shared.delegate?.checkoutFailed?(with: error)
-                    
-                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    
-                    let routerDelegate: RouterDelegate = DependencyContainer.resolve()
-                    
-                    let router = routerDelegate as! Router
-                    
+
                     if settings.hasDisabledSuccessScreen {
-                        
-                        let rootViewController = router.root
-                        
-                        UIView.animate(withDuration: 0.3) {
-                            (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.0
-                        } completion: { (_) in
-                            rootViewController?.dismiss(animated: true, completion: nil)
-                        }
+                        Primer.shared.dismissPrimer()
                     } else {
-                        router.show(.error(error: error))
+                        let svc = ErrorViewController(message: error.localizedDescription)
+                        svc.view.translatesAutoresizingMaskIntoConstraints = false
+                        svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                        Primer.shared.primerRootVC?.show(viewController: svc)
                     }
                     
                 case .success(let urlString):
@@ -71,60 +59,61 @@ internal class OAuthViewController: PrimerViewController {
     }
 
     private func presentWebview(_ urlString: String) {
-        let routerDelegate: RouterDelegate = DependencyContainer.resolve()
-        let router = routerDelegate as! Router
-        let rootViewController = router.root
-
-        UIView.animate(withDuration: 0.3) {
-            (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.7
-        }
-        
         let webViewController = WebViewController()
         webViewController.url = URL(string: urlString)
         webViewController.delegate = self
         webViewController.klarnaWebViewCompletion = { [weak self] (_, err) in
-            if let err = err {
-                _ = ErrorHandler.shared.handle(error: err)
-                router.show(.error(error: err))
-                
-            } else {
-                guard let host = self?.host else {
-                    let error = PrimerError.failedToLoadSession
-                    router.show(.error(error: error))
-                    return
-                }
-                
-                let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-                viewModel.tokenize(host, with: { err in
-                    DispatchQueue.main.async {
-                        if let err = err {
-                            _ = ErrorHandler.shared.handle(error: err)
-                            router.show(.error(error: PrimerError.generic))
-                        } else {
-                            router.show(.success(type: .regular))
-                        }
-                    }
-                })
-            }
-            
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
-            if settings.hasDisabledSuccessScreen == false && settings.isInitialLoadingHidden == true {
-                let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-                rootViewController?.mainView.backgroundColor = theme.colorTheme.main1
-                (rootViewController?.children.first as? OAuthViewController)?.indicator.isHidden = false
-
-            } else if settings.hasDisabledSuccessScreen && settings.isInitialLoadingHidden {
-                UIView.animate(withDuration: 0.3) {
-                    (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.0
-                } completion: { (_) in
-                    rootViewController?.dismiss(animated: true, completion: nil)
+            DispatchQueue.main.async {
+                if let err = err {
+                    _ = ErrorHandler.shared.handle(error: err)
+                    
+                    if settings.hasDisabledSuccessScreen {
+                        Primer.shared.dismissPrimer()
+                    } else {
+                        let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
+                        evc.view.translatesAutoresizingMaskIntoConstraints = false
+                        evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                        Primer.shared.primerRootVC?.show(viewController: evc)
+                    }
+                    
+                } else {
+                    guard let host = self?.host else {
+                        let error = PrimerError.failedToLoadSession
+                        
+                        if settings.hasDisabledSuccessScreen {
+                            Primer.shared.dismissPrimer()
+                        } else {
+                            let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
+                            evc.view.translatesAutoresizingMaskIntoConstraints = false
+                            evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                            Primer.shared.primerRootVC?.show(viewController: evc)
+                        }
+                        
+                        return
+                    }
+                    
+                    let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
+                    viewModel.tokenize(host, with: { err in
+                        DispatchQueue.main.async {
+                            if settings.hasDisabledSuccessScreen {
+                                Primer.shared.dismissPrimer()
+                            } else {
+                                let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
+                                evc.view.translatesAutoresizingMaskIntoConstraints = false
+                                evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                                Primer.shared.primerRootVC?.show(viewController: evc)
+                            }
+                        }
+                    })
                 }
             }
             
-            self?.dismiss(animated: true, completion: nil)
+            Primer.shared.primerRootVC?.dismiss(animated: true, completion: nil)
         }
-        present(webViewController, animated: true, completion: nil)
+        
+        Primer.shared.primerRootVC?.present(webViewController, animated: true, completion: nil)
     }
 
     // PayPal
@@ -222,7 +211,6 @@ extension OAuthViewController: ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         return self.view.window ?? ASPresentationAnchor()
     }
-
 }
 
 @available(iOS 11.0, *)
