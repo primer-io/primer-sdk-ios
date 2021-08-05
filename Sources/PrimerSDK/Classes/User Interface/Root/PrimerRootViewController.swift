@@ -174,6 +174,12 @@ internal class PrimerRootViewController: PrimerViewController {
                 
         let cvc = PrimerContainerViewController(childViewController: viewController)
         
+        if (nc.viewControllers.last as? PrimerContainerViewController)?.children.first is PrimerLoadingViewController {
+            // Previous view controller is a loading view controller,
+            // hide back button.
+            cvc.navigationItem.hidesBackButton = true
+        }
+        
         if isPresented {
             nc.setViewControllers([cvc], animated: false)
             
