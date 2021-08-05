@@ -197,7 +197,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
                     }
                 }
             }
-            
+        
         } else {
             guard let instrument = generatePaypalPaymentInstrument(host, with: completion) else { return }
             let state: AppStateProtocol = DependencyContainer.resolve()
