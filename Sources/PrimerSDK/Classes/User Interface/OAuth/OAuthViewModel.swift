@@ -75,12 +75,12 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
 
                 switch Primer.shared.flow.internalSessionFlow.uxMode {
                 case .CHECKOUT:
-                 paypalService.startOrderSession(completion)
+                    paypalService.startOrderSession(completion)
                 case .VAULT:
-                 paypalService.startBillingAgreementSession(completion)
+                    paypalService.startBillingAgreementSession(completion)
                 }
             }
-            
+
         } else {
             loadConfig(host, completion)
         }
@@ -196,7 +196,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
                     }
                 }
             }
-            
+
         } else {
             guard let instrument = generatePaypalPaymentInstrument(host, with: completion) else { return }
             let state: AppStateProtocol = DependencyContainer.resolve()
