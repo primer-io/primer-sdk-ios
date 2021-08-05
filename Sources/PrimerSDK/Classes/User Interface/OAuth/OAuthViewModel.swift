@@ -70,6 +70,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
             if host == .klarna {
                 let klarnaService: KlarnaServiceProtocol = DependencyContainer.resolve()
                 klarnaService.createPaymentSession(completion)
+
             } else {
                 let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
 
@@ -196,7 +197,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
                     }
                 }
             }
-
+            
         } else {
             guard let instrument = generatePaypalPaymentInstrument(host, with: completion) else { return }
             let state: AppStateProtocol = DependencyContainer.resolve()
