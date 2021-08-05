@@ -41,6 +41,18 @@ internal class ErrorViewController: PrimerViewController {
         anchorMessage()
 
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
+        (parent as? PrimerContainerViewController)?.navigationItem.rightBarButtonItem = rightBarButton
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
+        (parent as? PrimerContainerViewController)?.navigationItem.rightBarButtonItem = rightBarButton
+    }
 
     @objc func close() {
         Primer.shared.dismissPrimer()
