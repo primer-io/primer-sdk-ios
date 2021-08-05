@@ -163,16 +163,25 @@ class PrimerCardFormViewController: PrimerFormViewController {
 extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTextFieldViewDelegate {
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
             if strongSelf.flow == .vault {
                 Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
                 
+                if settings.hasDisabledSuccessScreen {
+                    Primer.shared.dismissPrimer()
+                } else {
+                    let svc = SuccessViewController()
+                    svc.view.translatesAutoresizingMaskIntoConstraints = false
+                    svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                    Primer.shared.primerRootVC?.show(viewController: svc)
+                }
+                
             } else {
                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { [weak self] err in
                     DispatchQueue.main.async { [weak self] in
-                        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                        
                         if settings.hasDisabledSuccessScreen {
                             Primer.shared.dismissPrimer()
                         } else {
