@@ -30,8 +30,6 @@ internal class CardButton: PrimerButton {
         guard let model = model else { return }
         accessibilityIdentifier = "saved_payment_method_button"
 
-        log(logLevel: .debug, message: "🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓🍓: \(model)")
-
         addIcon()
         if showIcon {
 
