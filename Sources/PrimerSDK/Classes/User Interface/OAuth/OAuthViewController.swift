@@ -38,6 +38,7 @@ internal class OAuthViewController: PrimerViewController {
             indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
             indicator.startAnimating()
         }
+        
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.generateOAuthURL(host, with: { [weak self] result in
             DispatchQueue.main.async {
@@ -48,7 +49,10 @@ internal class OAuthViewController: PrimerViewController {
                     
                     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                     
-                    let router: RouterDelegate = DependencyContainer.resolve()
+                    let routerDelegate: RouterDelegate = DependencyContainer.resolve()
+
+                    let router = routerDelegate as! Router
+                    
                     if settings.hasDisabledSuccessScreen {
                         
                         let rootViewController = router.root
@@ -238,7 +242,7 @@ extension OAuthViewController: ReloadDelegate {
         viewModel.tokenize(host, with: { err in
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()
-
+                
                 if let err = err {
                     _ = ErrorHandler.shared.handle(error: err)
                     // FIXME: I'm not feeling comfortable doing nothing with the error, showing an error screen and passing a generic error
