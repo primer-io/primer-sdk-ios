@@ -140,7 +140,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     @objc
     func seeAllButtonTapped() {
-        let vc = VaultPaymentMethodViewController()
+        let vc = VaultedPaymentInstrumentsViewController()
         vc.view.translatesAutoresizingMaskIntoConstraints = false
         vc.view.heightAnchor.constraint(equalToConstant: view.bounds.size.height).isActive = true
         Primer.shared.primerRootVC?.show(viewController: vc)
