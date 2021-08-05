@@ -25,7 +25,8 @@ internal class ApayaLoadWebViewController: PrimerLoadWebViewController {
                 case .failure(let error):
                     self?.presentError(error)
                 case .success(let urlString):
-                    let webViewController = ApayaWebViewController()
+                    let apayaWebViewModel: ApayaWebViewModel = DependencyContainer.resolve()
+                    let webViewController = PrimerWebViewController(with: apayaWebViewModel)
                     self?.presentWebview(urlString, webViewController: webViewController)
                 }
             }

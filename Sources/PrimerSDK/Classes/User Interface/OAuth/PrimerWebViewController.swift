@@ -12,8 +12,18 @@ import WebKit
 
 internal class PrimerWebViewController: PrimerViewController, WKNavigationDelegate {
     weak var delegate: ReloadDelegate?
-
-    let webView = WKWebView()
+    weak var viewModel: PrimerWebViewModelProtocol?
+    
+    init(with viewModel: PrimerWebViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
     let allowedHosts: [String] = ["primer.io"]
     let headerFields = [
         "Content-Type": "application/json",
@@ -24,6 +34,11 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        renderWebView()
+    }
+    //
+    private func renderWebView() {
+        let webView = WKWebView()
         webView.isAccessibilityElement = false
         webView.accessibilityIdentifier = "primer_webview"
         webView.scrollView.bounces = false
@@ -36,9 +51,7 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
             webView.load(request)
         }
     }
-}
-
-internal class ApayaWebViewController: PrimerWebViewController {
+    //
     func webView(
         _ webView: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
@@ -48,9 +61,7 @@ internal class ApayaWebViewController: PrimerWebViewController {
             let url = navigationAction.request.url,
             let host = url.host, allowedHosts.contains(host)
         {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            let result = Apaya.WebViewResult.create(from: url)
-            state.setApayaResult(result)
+            viewModel?.onRedirect(with: url)
             delegate?.reload()
             decisionHandler(.cancel)
             dismiss(animated: true, completion: nil)
