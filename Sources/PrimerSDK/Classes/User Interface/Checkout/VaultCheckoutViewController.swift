@@ -91,8 +91,10 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
             cell.accessibilityIdentifier = "payment_method_table_view_paypal_cell"
         case .goCardlessMandate:
             cell.accessibilityIdentifier = "payment_method_table_view_direct_debit_cell"
-        case .paymentCard, .apaya:
+        case .paymentCard:
             cell.accessibilityIdentifier = "payment_method_table_view_card_cell"
+        case .apaya:
+            cell.accessibilityIdentifier = "payment_method_table_view_apaya"
         default:
             break
         }
