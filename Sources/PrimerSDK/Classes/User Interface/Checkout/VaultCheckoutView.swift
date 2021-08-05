@@ -34,7 +34,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
     weak var delegate: VaultCheckoutViewDelegate?
     weak var dataSource: VaultCheckoutViewDataSource?
 
-    weak var heightConstraint: NSLayoutConstraint?
+    weak var checkmarkViewHeightConstraint: NSLayoutConstraint?
     weak var topConstraint: NSLayoutConstraint?
     
     private var isShowingFirstVaultedPaymentMethod: Bool {
@@ -215,8 +215,8 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
             savedCardButtonView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
             
             topConstraint = savedCardButtonView.topAnchor.constraint(equalTo: savedCardTitleLabel.bottomAnchor, constant: 12)
-            heightConstraint = savedCardButtonView.heightAnchor.constraint(equalToConstant: 64)
-            heightConstraint?.isActive = true
+            checkmarkViewHeightConstraint = savedCardButtonView.heightAnchor.constraint(equalToConstant: 64)
+            checkmarkViewHeightConstraint?.isActive = true
             topConstraint?.isActive = true
             
             savedCardButtonView.addTarget(self, action: #selector(toggleSavedCardSelected), for: .touchUpInside)

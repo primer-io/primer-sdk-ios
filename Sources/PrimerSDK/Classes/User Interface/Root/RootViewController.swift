@@ -22,7 +22,7 @@ internal class RootViewController: PrimerViewController {
 
     weak var topConstraint: NSLayoutConstraint?
     weak var bottomConstraint: NSLayoutConstraint?
-    weak var heightConstraint: NSLayoutConstraint?
+    weak var checkmarkViewHeightConstraint: NSLayoutConstraint?
 
     var hasSetPointOrigin = false
     var currentHeight: CGFloat = 0
@@ -82,8 +82,8 @@ internal class RootViewController: PrimerViewController {
             topConstraint = mainView.topAnchor.constraint(equalTo: view.topAnchor)
             topConstraint?.isActive = true
         } else {
-            heightConstraint = mainView.heightAnchor.constraint(equalToConstant: 400)
-            heightConstraint?.isActive = true
+            checkmarkViewHeightConstraint = mainView.heightAnchor.constraint(equalToConstant: 400)
+            checkmarkViewHeightConstraint?.isActive = true
             self.modalPresentationStyle = .custom
             self.transitioningDelegate = transitionDelegate
             let swipeGesture = UISwipeGestureRecognizer(
@@ -112,7 +112,7 @@ internal class RootViewController: PrimerViewController {
     }
     
     func modifyBottomSheetHeight(to height: CGFloat, animated: Bool) {
-        heightConstraint?.constant = height
+        checkmarkViewHeightConstraint?.constant = height
         
         if animated {
             UIView.animate(withDuration: 0.3) {
@@ -177,7 +177,7 @@ internal class RootViewController: PrimerViewController {
            let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
             bottomConstraint?.constant = -keyboardSize.height
             currentHeight = heights.last ?? 0.0
-            heightConstraint?.constant = currentHeight
+            checkmarkViewHeightConstraint?.constant = currentHeight
             
             UIView.animate(withDuration: animationDuration, delay: 0, options: UIView.AnimationOptions(rawValue: animationCurve)) {
                 self.view.layoutIfNeeded()
@@ -199,7 +199,7 @@ internal class RootViewController: PrimerViewController {
                         let secondLast = heights.count - 2
                         let previousHeight = heights[secondLast]
                         currentHeight = previousHeight
-                        heightConstraint?.constant = currentHeight
+                        checkmarkViewHeightConstraint?.constant = currentHeight
                     }
                     
                 } else {
@@ -246,7 +246,7 @@ extension RootViewController {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if !settings.isFullScreenOnly {
-            heightConstraint?.constant = height
+            checkmarkViewHeightConstraint?.constant = height
         }
         
         if animateOnPush {
@@ -255,7 +255,7 @@ extension RootViewController {
                 if settings.isFullScreenOnly {
                     // ...
                 } else {
-                    self.heightConstraint?.constant = height
+                    self.checkmarkViewHeightConstraint?.constant = height
                     self.view.layoutIfNeeded()
                 }
             } completion: { finished in
@@ -328,9 +328,9 @@ extension RootViewController {
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         if settings.isFullScreenOnly {
-            heightConstraint.setFullScreen()
+            checkmarkViewHeightConstraint.setFullScreen()
         } else {
-            heightConstraint?.constant = heights.last ?? 400
+            checkmarkViewHeightConstraint?.constant = heights.last ?? 400
         }
 
         // animate to previous height
@@ -340,10 +340,10 @@ extension RootViewController {
                 
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 if settings.isFullScreenOnly {
-                    strongSelf.heightConstraint.setFullScreen()
+                    strongSelf.checkmarkViewHeightConstraint.setFullScreen()
                     strongSelf.view.layoutIfNeeded()
                 } else {
-                    strongSelf.heightConstraint?.constant = self?.heights.last ?? 400
+                    strongSelf.checkmarkViewHeightConstraint?.constant = self?.heights.last ?? 400
                     strongSelf.view.layoutIfNeeded()
                 }
             })
