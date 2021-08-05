@@ -183,17 +183,6 @@ internal class CardButton: PrimerButton {
 
     func showDeleteIcon(_ flag: Bool) {
         checkView.image = flag ? ImageName.delete.image : ImageName.check2.image
-
-        if checkView.image == ImageName.check2.image {
-            checkmarkViewLeadingConstraint?.constant = -14
-            checkmarkViewTrailingConstraint?.constant = 14
-            checkmarkViewWidthConstraint?.constant = 14
-            checkmarkViewHeightConstraint?.constant = 14
-        } else {
-            checkmarkViewLeadingConstraint?.constant = -10
-            checkmarkViewTrailingConstraint?.constant = -10
-            checkmarkViewWidthConstraint?.constant = 22
-        }
     }
 
     func toggleIcon() {
