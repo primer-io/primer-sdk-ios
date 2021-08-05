@@ -4,10 +4,41 @@ import UIKit
 
 internal class VaultedPaymentInstrumentCell: UITableViewCell {
     
-    
-    func configure() {
-        
+    let cardView = CardButton()
+    var isDeleting: Bool = false {
+        didSet {
+            if isDeleting {
+                cardView.toggleError(isEnabled: isDeleting)
+            } else {
+                cardView.hideIcon(isEnabled)
+                cardView.toggleIcon()
+            }
+        }
     }
+    var isEnabled: Bool = false
+
+    
+    func configure(paymentMethodToken: PaymentMethodToken) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        
+        cardView.isUserInteractionEnabled = false
+        cardView.render(model: paymentMethodToken.cardButtonViewModel)
+        isEnabled = viewModel.selectedId == paymentMethodToken.token ?? ""
+
+        cardView.hideBorder()
+        cardView.addSeparatorLine()
+        addSubview(cardView)
+        
+        cardView.translatesAutoresizingMaskIntoConstraints = false
+        cardView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        cardView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        cardView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        cardView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+
+        backgroundColor = theme.colorTheme.main1
+    }
+
     
 }
 
@@ -20,10 +51,26 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if Primer.shared.flow.internalSessionFlow.vaulted {
+            title = NSLocalizedString("primer-vault-payment-method-available-payment-methods",
+                                      tableName: nil,
+                                      bundle: Bundle.primerResources,
+                                      value: "Available payment methods",
+                                      comment: "Available payment methods - Vault Payment Method (Main title text)")
+        } else {
+            title = NSLocalizedString("primer-vault-payment-method-saved-payment-methods",
+                                      tableName: nil,
+                                      bundle: Bundle.primerResources,
+                                      value: "Saved payment methods",
+                                      comment: "Saved payment methods - Vault Payment Method (Main title text)")
+        }
+
+        
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         rightBarButton = UIBarButtonItem(title: "Edit", style: UIBarButtonItem.Style.plain, target: self, action: #selector(editButtonTapped))
         rightBarButton.tintColor = theme.colorTheme.main1
         
+        view.addSubview(tableView)
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.pin(view: view)
@@ -32,7 +79,7 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         tableView.rowHeight = 46
 //        tableView.tableFooterView = UIView()
         tableView.alwaysBounceVertical = false
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell3")
+        tableView.register(VaultedPaymentInstrumentCell.self, forCellReuseIdentifier: "VaultedPaymentInstrumentCell")
         
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         viewModel.reloadVault { [weak self] _ in
@@ -65,61 +112,10 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        
-        let cell = UITableViewCell()
-
-//        if indexPath.row == viewModel.paymentMethods.count {
-//            let addButton = UIButton()
-//
-//            addButton.setTitle(theme.content.vaultPaymentMethodView.addButtonText, for: .normal)
-//            addButton.setTitleColor(theme.colorTheme.tint1, for: .normal)
-//            addButton.setTitleColor(theme.colorTheme.disabled1, for: .highlighted)
-//            addButton.contentHorizontalAlignment = .left
-//            addButton.addTarget(self, action: #selector(showCardForm), for: .touchUpInside)
-//
-//            addButton.translatesAutoresizingMaskIntoConstraints = false
-//
-//            cell.selectionStyle = .none
-//            cell.contentView.addSubview(addButton)
-//
-//            addButton.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: 10).isActive = true
-//            addButton.centerYAnchor.constraint(equalTo: cell.centerYAnchor).isActive = true
-//
-//            return cell
-//        }
-
-        let token = viewModel.paymentMethods[indexPath.row]
-
-        let cardView = CardButton()
-        cardView.isUserInteractionEnabled = false
-
-        cardView.render(model: token.cardButtonViewModel)
-
-        let isEnabled = viewModel.selectedId == viewModel.paymentMethods[indexPath.row].token ?? ""
-
-        if isDeleting {
-            cardView.toggleError(isEnabled: isDeleting)
-        } else {
-            cardView.hideIcon(isEnabled)
-            cardView.toggleIcon()
-        }
-
-        cardView.hideBorder()
-
-        cardView.addSeparatorLine()
-
-        cell.addSubview(cardView)
-
-        cardView.translatesAutoresizingMaskIntoConstraints = false
-        cardView.topAnchor.constraint(equalTo: cell.topAnchor).isActive = true
-        cardView.leadingAnchor.constraint(equalTo: cell.leadingAnchor).isActive = true
-        cardView.trailingAnchor.constraint(equalTo: cell.trailingAnchor).isActive = true
-        cardView.bottomAnchor.constraint(equalTo: cell.bottomAnchor).isActive = true
-
-        cell.backgroundColor = theme.colorTheme.main1
-
+        let paymentMethod = viewModel.paymentMethods[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "VaultedPaymentInstrumentCell", for: indexPath) as! VaultedPaymentInstrumentCell
+        cell.configure(paymentMethodToken: paymentMethod)
         return cell
     }
     
