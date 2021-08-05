@@ -13,6 +13,7 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
 
 internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
     
+    private var rightBarButton: UIBarButtonItem!
     private var isDeleting: Bool = false
     private var tableView = UITableView()
     
@@ -20,6 +21,8 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         super.viewDidLoad()
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        rightBarButton = UIBarButtonItem(title: "Edit", style: UIBarButtonItem.Style.plain, target: self, action: #selector(editButtonTapped))
+        rightBarButton.tintColor = theme.colorTheme.main1
         
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -35,6 +38,16 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         viewModel.reloadVault { [weak self] _ in
             
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        (parent as? PrimerContainerViewController)?.navigationItem.rightBarButtonItem = rightBarButton
+    }
+    
+    @objc
+    func editButtonTapped(_ sender: UIButton) {
+        
     }
     
 }
