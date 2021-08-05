@@ -50,7 +50,7 @@ internal class OAuthViewController: PrimerViewController {
                     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                     
                     let routerDelegate: RouterDelegate = DependencyContainer.resolve()
-
+                    
                     let router = routerDelegate as! Router
                     
                     if settings.hasDisabledSuccessScreen {
@@ -187,7 +187,6 @@ internal class OAuthViewController: PrimerViewController {
             }
 
             let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-            
             session = SFAuthenticationSession(
                 url: authURL,
                 callbackURLScheme: viewModel.urlSchemeIdentifier,
