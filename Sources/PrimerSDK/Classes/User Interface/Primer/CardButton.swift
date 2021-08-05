@@ -181,8 +181,8 @@ internal class CardButton: PrimerButton {
         checkmarkViewHeightConstraint?.isActive = true
     }
 
-    func toggleError(isEnabled: Bool) {
-        checkView.image = isEnabled ? ImageName.delete.image : ImageName.check2.image
+    func showDeleteIcon(_ flag: Bool) {
+        checkView.image = flag ? ImageName.delete.image : ImageName.check2.image
 
         if checkView.image == ImageName.check2.image {
             checkmarkViewLeadingConstraint?.constant = -14

@@ -8,7 +8,7 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
     var isDeleting: Bool = false {
         didSet {
             if isDeleting {
-                cardView.toggleError(isEnabled: isDeleting)
+                cardView.showDeleteIcon(isDeleting)
             } else {
                 cardView.hideIcon(isEnabled)
                 cardView.toggleIcon()
@@ -298,7 +298,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
         let isEnabled = viewModel.selectedId == viewModel.paymentMethods[indexPath.row].token ?? ""
 
         if showDeleteIcon {
-            cardView.toggleError(isEnabled: showDeleteIcon)
+            cardView.showDeleteIcon(showDeleteIcon)
         } else {
             cardView.hideIcon(isEnabled)
             cardView.toggleIcon()
