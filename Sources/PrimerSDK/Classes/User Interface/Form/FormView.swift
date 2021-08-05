@@ -548,7 +548,7 @@ internal class FormView: PrimerView {
         guard let delegate = delegate else { return }
         switch delegate.formType {
         case .cardForm:
-            (button as? PrimerButton)?.setBusy(theme: theme)
+            (button as? PrimerButton)?.showSpinner(true)
         default:
             break
         }

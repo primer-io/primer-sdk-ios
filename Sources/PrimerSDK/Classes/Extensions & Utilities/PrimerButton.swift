@@ -10,44 +10,39 @@
 import UIKit
 
 internal class PrimerButton: UIButton {
-
-    func setBusy(theme: PrimerThemeProtocol) {
-        let indicator = UIActivityIndicatorView()
-        self.setTitle("", for: .normal)
-        self.addSubview(indicator)
-
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        indicator.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        indicator.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        indicator.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        indicator.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        
-        indicator.color = theme.colorTheme.text2
-        indicator.startAnimating()
-    }
-
-    func showSpinner(_ color: UIColor = .white) {
-        self.isUserInteractionEnabled = false
-        self.setTitle("", for: .normal)
-        let newSpinner = UIActivityIndicatorView()
-        newSpinner.color = color
-        self.addSubview(newSpinner)
-        newSpinner.translatesAutoresizingMaskIntoConstraints = false
-        newSpinner.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-        newSpinner.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        newSpinner.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        newSpinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        newSpinner.startAnimating()
-    }
-
-    func hideSpinner(_ title: String, spinner: UIActivityIndicatorView) {
-        spinner.removeFromSuperview()
-        self.setTitle(title, for: .normal)
-    }
+    
+    var spinner: UIActivityIndicatorView!
+    var titleCopy: String?
 
     func toggleValidity(_ isValid: Bool, validColor: UIColor, defaultColor: UIColor) {
         self.backgroundColor = isValid ? validColor : defaultColor
         self.isEnabled = isValid
+    }
+    
+    func showSpinner(_ flag: Bool, color: UIColor = .white) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
+        if titleCopy == nil {
+            titleCopy = titleLabel?.text
+        }
+        
+        isUserInteractionEnabled = !flag
+        
+        if spinner == nil {
+            spinner = UIActivityIndicatorView()
+            addSubview(spinner)
+            spinner.translatesAutoresizingMaskIntoConstraints = false
+            spinner.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            spinner.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+            spinner.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            spinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        }
+        
+        spinner.color = theme.colorTheme.text2
+        
+        flag ? spinner.startAnimating() : spinner.stopAnimating()
+        flag ? setTitle(nil, for: .normal) : setTitle(titleCopy, for: .normal)
+        spinner.isHidden = !flag
     }
 
 }

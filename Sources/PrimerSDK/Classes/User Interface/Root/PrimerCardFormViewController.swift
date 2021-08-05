@@ -21,7 +21,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let cvvField = PrimerCVVFieldView()
     private let cardholderNameContainerView = PrimerCustomFieldView()
     private let cardholderNameField = PrimerCardholderNameFieldView()
-    private let submitButton = UIButton()
+    private let submitButton = PrimerButton()
     
     init(flow: PaymentFlow) {
         self.flow = flow
@@ -207,6 +207,7 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
         
+        submitButton.showSpinner(isLoading)
     }
     
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
