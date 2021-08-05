@@ -19,6 +19,12 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = NSLocalizedString("primer-vault-nav-bar-title",
+                                  tableName: nil,
+                                  bundle: Bundle.primerResources,
+                                  value: "Add payment method",
+                                  comment: "Add payment method - Vault Navigation Bar Title")
+        
         view.backgroundColor = .white
         
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
@@ -71,8 +77,8 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                     }
                     
                 case .goCardlessMandate:
-                    paymentMethodButton.setTitleColor(.white, for: .normal)
-                    paymentMethodButton.tintColor = .white
+                    paymentMethodButton.setTitleColor(.black, for: .normal)
+                    paymentMethodButton.tintColor = .black
                     paymentMethodButton.layer.borderWidth = 1.0
                     paymentMethodButton.layer.borderColor = UIColor.black.cgColor
                     
@@ -93,31 +99,9 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
         
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        title = NSLocalizedString("primer-vault-nav-bar-title",
-                                  tableName: nil,
-                                  bundle: Bundle.primerResources,
-                                  value: "Add payment method",
-                                  comment: "Add payment method - Vault Navigation Bar Title")
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        title = NSLocalizedString("primer-vault-nav-bar-title",
-                                  tableName: nil,
-                                  bundle: Bundle.primerResources,
-                                  value: "Add payment method",
-                                  comment: "Add payment method - Vault Navigation Bar Title")
-    }
-    
     @objc
     func klarnaButtonTapped() {
-        if #available(iOS 11.0, *) {
-            let oavc = OAuthViewController(host: .klarna)
-            oavc.modalPresentationStyle = .fullScreen
-            present(oavc, animated: true, completion: nil)
-        }
+        Primer.shared.primerRootVC?.presentKlarna()
     }
     
     @objc
