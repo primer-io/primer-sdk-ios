@@ -11,7 +11,7 @@ import UIKit
 
 internal class ErrorViewController: PrimerViewController {
 
-    let navBar = UINavigationBar()
+    var rightBarButton: UIBarButtonItem!
     let icon = UIImageView(image: ImageName.error.image?.withRenderingMode(.alwaysTemplate))
     let message = UILabel()
 
@@ -23,12 +23,18 @@ internal class ErrorViewController: PrimerViewController {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
-
-        view.addSubview(navBar)
+        super.viewDidLoad()
+        
+        (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
+        
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        rightBarButton = UIBarButtonItem(title: "Done", style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
+        rightBarButton.tintColor = theme.colorTheme.main1
+        icon.tintColor = theme.colorTheme.error1
+        
         view.addSubview(icon)
         view.addSubview(message)
 
-        configureNavbar()
         configureMessage()
 
         anchorIcon()
@@ -37,35 +43,12 @@ internal class ErrorViewController: PrimerViewController {
     }
 
     @objc func close() {
-        dismiss(animated: true, completion: nil)
+        Primer.shared.dismissPrimer()
     }
 
 }
 
 internal extension ErrorViewController {
-
-    func configureNavbar() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-        let navItem = UINavigationItem()
-        let backItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(close))
-        backItem.tintColor = theme.colorTheme.tint1
-        navItem.leftBarButtonItem = backItem
-        navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navBar.shadowImage = UIImage()
-        navBar.setItems([navItem], animated: false)
-//        navBar.topItem?.title = ""
-        navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: theme.colorTheme.text1]
-        navBar.translatesAutoresizingMaskIntoConstraints = false
-
-        if #available(iOS 13.0, *) {
-            navBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 6).isActive = true
-        } else {
-            navBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 18).isActive = true
-        }
-
-        navBar.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-    }
 
     func configureMessage() {
         if !message.text.exists {
@@ -84,22 +67,18 @@ internal extension ErrorViewController {
 internal extension ErrorViewController {
 
     func anchorIcon() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        icon.tintColor = theme.colorTheme.error1
         icon.translatesAutoresizingMaskIntoConstraints = false
         icon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         icon.widthAnchor.constraint(equalToConstant: 56).isActive = true
         icon.heightAnchor.constraint(equalToConstant: 56).isActive = true
-        icon.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 24).isActive = true
     }
 
     func anchorMessage() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         message.translatesAutoresizingMaskIntoConstraints = false
-        message.topAnchor.constraint(equalTo: icon.bottomAnchor, constant: 36).isActive = true
+        message.topAnchor.constraint(equalTo: icon.bottomAnchor, constant: 12).isActive = true
         message.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        message.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: theme.layout.safeMargin + 12).isActive = true
-        message.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -(theme.layout.safeMargin + 12)).isActive = true
+        message.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        message.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
     }
 
 }
