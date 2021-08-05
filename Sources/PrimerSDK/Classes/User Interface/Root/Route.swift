@@ -50,7 +50,8 @@ enum Route {
         case .oAuth(let host):
             switch host {
             case .apaya:
-                return ApayaLoadWebViewController()
+                let viewModel: ApayaLoadWebViewModel = DependencyContainer.resolve()
+                return PrimerLoadWebViewController(with: viewModel)
             default:
                 if #available(iOS 11.0, *) {
                     return OAuthViewController(host: host)

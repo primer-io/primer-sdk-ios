@@ -10,7 +10,7 @@
 
 @testable import PrimerSDK
 
-class MockApayaLoadWebViewModel: ApayaLoadWebViewModelProtocol {
+class MockPrimerLoadWebViewModel: PrimerLoadWebViewModelProtocol {
     let url: String
     let shouldThrow: Bool
     let shouldCancel: Bool
@@ -28,6 +28,11 @@ class MockApayaLoadWebViewModel: ApayaLoadWebViewModelProtocol {
     var didCallTokenize = false
     func tokenize() {
         didCallTokenize = true
+    }
+    var getWebViewModelCalled = false
+    func getWebViewModel() -> PrimerWebViewModelProtocol {
+        getWebViewModelCalled = true
+        return ApayaWebViewModel()
     }
 }
 

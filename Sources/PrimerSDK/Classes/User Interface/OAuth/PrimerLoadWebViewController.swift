@@ -1,5 +1,5 @@
 //
-//  LoadWebViewController.swift
+//  PrimerLoadWebViewController.swift
 //  PrimerSDK
 //
 //  Created by Carl Eriksson on 04/08/2021.
@@ -9,20 +9,52 @@
 import UIKit
 
 class PrimerLoadWebViewController: PrimerViewController, ReloadDelegate {
-    //
     let indicator = UIActivityIndicatorView()
-    //
+
+    weak var viewModel: PrimerLoadWebViewModelProtocol?
+
+    init(with viewModel: PrimerLoadWebViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     deinit {
         log(logLevel: .verbose, message: "🧨 destroyed: \(self.self)")
     }
-    //
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        presentLoader()
+        generateUrl()
+    }
+
     internal func presentLoader() {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         if !settings.isInitialLoadingHidden {
             addLoadingView(indicator)
         }
     }
-    //
+
+    internal func generateUrl() {
+        viewModel?.generateWebViewUrl { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .failure(let error):
+                    self?.presentError(error)
+                case .success(let urlString):
+                    if let webViewModel = self?.viewModel?.getWebViewModel() {
+                        let webViewController = PrimerWebViewController(with: webViewModel)
+                        self?.presentWebview(urlString, webViewController: webViewController)
+                    }
+                }
+            }
+        }
+    }
+
     internal func presentError(_ error: Error) {
         _ = ErrorHandler.shared.handle(error: error)
         Primer.shared.delegate?.checkoutFailed?(with: error)
@@ -40,7 +72,7 @@ class PrimerLoadWebViewController: PrimerViewController, ReloadDelegate {
             router.show(.error(error: error))
         }
     }
-    //
+
     internal func presentWebview(_ urlString: String, webViewController: PrimerWebViewController) {
         presentBlurEffect()
         webViewController.url = URL(string: urlString)
@@ -57,8 +89,10 @@ class PrimerLoadWebViewController: PrimerViewController, ReloadDelegate {
             presenter?.blurEffectView.alpha = 0.7
         }
     }
-    //
-    func reload() {}
+
+    func reload() {
+        viewModel?.tokenize()
+    }
 }
 
 #endif

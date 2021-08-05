@@ -7,41 +7,13 @@
 
 #if canImport(UIKit)
 
-internal class PrimerConfigLoader {
-    internal func configDidLoad() -> Bool {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.decodedClientToken != nil && state.paymentMethodConfig != nil
-    }
-    internal func loadConfig(_ completion: @escaping (Result<Bool, ApayaException>) -> Void) {
-        let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-        clientTokenService.loadCheckoutConfig { [weak self] (error) in
-            if let error = error {
-                _ = ErrorHandler.shared.handle(error: error)
-                completion(.failure(ApayaException.failedApiCall))
-            } else {
-                self?.loadPaymentMethodConfig(completion)
-            }
-        }
-    }
-    internal func loadPaymentMethodConfig(_ completion: @escaping (Result<Bool, ApayaException>) -> Void) {
-        let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-        configService.fetchConfig { (error) in
-            if let error = error {
-                _ = ErrorHandler.shared.handle(error: error)
-                completion(.failure(ApayaException.failedApiCall))
-            } else {
-                completion(.success(true))
-            }
-        }
-    }
-}
-
-protocol ApayaLoadWebViewModelProtocol {
+protocol PrimerLoadWebViewModelProtocol: AnyObject {
     func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void)
+    func getWebViewModel() -> PrimerWebViewModelProtocol
     func tokenize()
 }
 
-internal class ApayaLoadWebViewModel: PrimerConfigLoader, ApayaLoadWebViewModelProtocol {
+internal class ApayaLoadWebViewModel: PrimerConfigLoader, PrimerLoadWebViewModelProtocol {
     //
     func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
         if configDidLoad() {
@@ -114,6 +86,40 @@ internal class ApayaLoadWebViewModel: PrimerConfigLoader, ApayaLoadWebViewModelP
             paymentInstrument: instrument,
             state: state
         )
+    }
+    //
+    func getWebViewModel() -> PrimerWebViewModelProtocol {
+        let apayaWebViewModel: ApayaWebViewModel = DependencyContainer.resolve()
+        return apayaWebViewModel
+    }
+}
+
+internal class PrimerConfigLoader {
+    internal func configDidLoad() -> Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.decodedClientToken != nil && state.paymentMethodConfig != nil
+    }
+    internal func loadConfig(_ completion: @escaping (Result<Bool, ApayaException>) -> Void) {
+        let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
+        clientTokenService.loadCheckoutConfig { [weak self] (error) in
+            if let error = error {
+                _ = ErrorHandler.shared.handle(error: error)
+                completion(.failure(ApayaException.failedApiCall))
+            } else {
+                self?.loadPaymentMethodConfig(completion)
+            }
+        }
+    }
+    internal func loadPaymentMethodConfig(_ completion: @escaping (Result<Bool, ApayaException>) -> Void) {
+        let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+        configService.fetchConfig { (error) in
+            if let error = error {
+                _ = ErrorHandler.shared.handle(error: error)
+                completion(.failure(ApayaException.failedApiCall))
+            } else {
+                completion(.success(true))
+            }
+        }
     }
 }
 

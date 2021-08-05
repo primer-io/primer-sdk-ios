@@ -13,16 +13,16 @@ import WebKit
 internal class PrimerWebViewController: PrimerViewController, WKNavigationDelegate {
     weak var delegate: ReloadDelegate?
     weak var viewModel: PrimerWebViewModelProtocol?
-    
+
     init(with viewModel: PrimerWebViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     let allowedHosts: [String] = ["primer.io"]
     let headerFields = [
         "Content-Type": "application/json",
