@@ -36,7 +36,6 @@ internal class CardButton: PrimerButton {
         if showIcon {
 
         } else {
-            self.showIcon = false
             toggleIcon()
         }
 
