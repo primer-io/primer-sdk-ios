@@ -209,8 +209,8 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
-        
         submitButton.showSpinner(isLoading)
+        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = !isLoading
     }
     
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
