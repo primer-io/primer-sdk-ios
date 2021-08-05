@@ -7,11 +7,11 @@
 
 public struct Apaya {
     public struct CreateSessionAPIRequest: Encodable {
-        let locale: String
-        let itemDescription: String
-        init(locale: String, itemDescription: String) {
-            self.locale = locale
-            self.itemDescription = itemDescription
+        let productId: String
+        let reference: String
+        init(productId: String, reference: String) {
+            self.productId = productId
+            self.reference = reference
         }
     }
     public struct CreateSessionAPIResponse: Decodable {
