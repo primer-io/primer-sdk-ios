@@ -10,8 +10,12 @@ import UIKit
 /// UINavigationController subclass that intercepts pop, and handles it through the PrimerRootViewController
 class PrimerNavigationController: UINavigationController, UINavigationBarDelegate {
     
+    var isInitialized = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         delegate = self
         
         navigationBar.barStyle = .black
@@ -22,6 +26,8 @@ class PrimerNavigationController: UINavigationController, UINavigationBarDelegat
             .foregroundColor: UIColor.black,
             .font: UIFont.systemFont(ofSize: 17.0, weight: .semibold)
         ]
+        
+        navigationBar.layer.removeAllAnimations()
     }
     
     func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
@@ -34,6 +40,29 @@ class PrimerNavigationController: UINavigationController, UINavigationBarDelegat
 extension PrimerNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return DissolveAnimator()
+    }
+    
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if isInitialized {
+            navigationBar.layer.removeAllAnimations()
+            let navigationBarAnimation = CATransition()
+            navigationBarAnimation.duration = 0.3
+            navigationBarAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeIn)
+            navigationBarAnimation.type = CATransitionType.fade
+            navigationBarAnimation.subtype = .none
+            navigationBarAnimation.isRemovedOnCompletion = true
+            navigationBar.layer.add(navigationBarAnimation, forKey: nil)
+        } else {
+            isInitialized = true
+        }
+    }
+    
+    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        if viewController == self {
+            if isInitialized {
+                navigationBar.layer.removeAllAnimations()
+            }
+        }
     }
 }
 
