@@ -14,7 +14,7 @@ extension VaultPaymentMethodViewController: ReloadDelegate {
     func reload() {
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         viewModel.reloadVault { [weak self] _ in
-            DispatchQueue.main.async { self?.subView.render() }
+            DispatchQueue.main.async { self?.vaultPaymentMethodView.render() }
         }
     }
 
