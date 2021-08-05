@@ -80,6 +80,7 @@ internal extension ErrorViewController {
 
     func anchorIcon() {
         icon.translatesAutoresizingMaskIntoConstraints = false
+        icon.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -30).isActive = true
         icon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         icon.widthAnchor.constraint(equalToConstant: 56).isActive = true
         icon.heightAnchor.constraint(equalToConstant: 56).isActive = true
