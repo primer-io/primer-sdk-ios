@@ -9,9 +9,14 @@ import UIKit
 
 internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
+    var savedCardButtonView: CardButton!
+    private var seeAllButton: UIButton!
+    private var savedPaymentInstrumentStackView: UIStackView!
+    
     // swiftlint:disable function_body_length
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .blue
         title = NSLocalizedString("primer-checkout-nav-bar-title",
                                           tableName: nil,
                                           bundle: Bundle.primerResources,
@@ -20,10 +25,15 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         view.backgroundColor = .white
         
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-        let availablePaymentMethods = checkoutViewModel.availablePaymentOptions
-        
         verticalStackView.spacing = 14.0
+        
+        renderAmount()
+        renderSelectedPaymentInstrument()
+        renderAvailablePaymentMethods()
+    }
+    
+    private func renderAmount() {
+        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
         if let amountStr = checkoutViewModel.amountStringed {
             let titleLabel = UILabel()
@@ -34,10 +44,40 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             titleLabel.textAlignment = .left
             verticalStackView.addArrangedSubview(titleLabel)
         }
+    }
+    
+    private func renderSelectedPaymentInstrument(insertAt index: Int? = nil) {
+        if seeAllButton != nil {
+            verticalStackView.removeArrangedSubview(seeAllButton)
+            seeAllButton.removeFromSuperview()
+            seeAllButton = nil
+        }
+        
+        if savedCardButtonView != nil {
+            verticalStackView.removeArrangedSubview(savedCardButtonView)
+            savedCardButtonView.removeFromSuperview()
+            savedCardButtonView = nil
+        }
+        
+        if savedPaymentInstrumentStackView != nil {
+            verticalStackView.removeArrangedSubview(savedPaymentInstrumentStackView)
+            savedPaymentInstrumentStackView.removeFromSuperview()
+            savedPaymentInstrumentStackView = nil
+        }
+        
+        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
         if let selectedPaymentInstrument = checkoutViewModel.paymentMethods.first(where: { paymentInstrument in
             return paymentInstrument.token == checkoutViewModel.selectedPaymentMethodId
-        }), let cardButtonViewModel =  selectedPaymentInstrument.cardButtonViewModel {
+        }), let cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
+            if savedPaymentInstrumentStackView == nil {
+                savedPaymentInstrumentStackView = UIStackView()
+                savedPaymentInstrumentStackView.axis = .vertical
+                savedPaymentInstrumentStackView.alignment = .fill
+                savedPaymentInstrumentStackView.distribution = .fill
+                savedPaymentInstrumentStackView.spacing = verticalStackView.spacing
+            }
+            
             let savedPaymentInstrumentTitleLabel = UILabel()
             savedPaymentInstrumentTitleLabel.text = NSLocalizedString("primer-vault-checkout-payment-method-title",
                                                                       tableName: nil,
@@ -47,24 +87,64 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             savedPaymentInstrumentTitleLabel.textColor = PrimerColor(rgb: 0x808080)
             savedPaymentInstrumentTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
             savedPaymentInstrumentTitleLabel.textAlignment = .left
-            verticalStackView.addArrangedSubview(savedPaymentInstrumentTitleLabel)
+            savedPaymentInstrumentStackView.addArrangedSubview(savedPaymentInstrumentTitleLabel)
             
-            let savedCardButtonView = CardButton()
-            savedCardButtonView.translatesAutoresizingMaskIntoConstraints = false
-            savedCardButtonView.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
-            savedCardButtonView.render(model: cardButtonViewModel, showIcon: false)
-            verticalStackView.addArrangedSubview(savedCardButtonView)
+            if savedCardButtonView == nil {
+                savedCardButtonView = CardButton()
+                savedPaymentInstrumentStackView.addArrangedSubview(savedCardButtonView)
+                savedCardButtonView.translatesAutoresizingMaskIntoConstraints = false
+                savedCardButtonView.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
+                savedCardButtonView.render(model: cardButtonViewModel, showIcon: false)
+            }
             
-            let seeAllButton = UIButton()
-            seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-            seeAllButton.setTitle("See all", for: .normal)
-            seeAllButton.setTitleColor(PrimerColor(rgb: 0x007AFF), for: .normal)
-            seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
-            verticalStackView.addArrangedSubview(seeAllButton)
+            if seeAllButton == nil {
+                seeAllButton = UIButton()
+                seeAllButton.translatesAutoresizingMaskIntoConstraints = false
+                seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+                seeAllButton.setTitle("See all", for: .normal)
+                seeAllButton.setTitleColor(PrimerColor(rgb: 0x007AFF), for: .normal)
+                seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
+                savedPaymentInstrumentStackView.addArrangedSubview(seeAllButton)
+            }
+            
+            if let index = index {
+                verticalStackView.insertArrangedSubview(savedPaymentInstrumentStackView, at: index)
+            } else {
+                verticalStackView.addArrangedSubview(savedPaymentInstrumentStackView)
+            }
+        } else {
+            if savedCardButtonView != nil {
+                verticalStackView.removeArrangedSubview(savedCardButtonView)
+                savedCardButtonView.removeFromSuperview()
+                savedCardButtonView = nil
+            }
+            
+            if seeAllButton != nil {
+                verticalStackView.removeArrangedSubview(seeAllButton)
+                seeAllButton.removeFromSuperview()
+                seeAllButton = nil
+            }
+            
+            if savedPaymentInstrumentStackView != nil {
+                verticalStackView.removeArrangedSubview(savedPaymentInstrumentStackView)
+                savedPaymentInstrumentStackView.removeFromSuperview()
+                savedPaymentInstrumentStackView = nil
+            }
         }
+        
+        verticalStackView.layoutIfNeeded()
+        
+        Primer.shared.primerRootVC?.layoutIfNeeded()
+    }
+    
+    private func renderAvailablePaymentMethods() {
+        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        let availablePaymentMethods = checkoutViewModel.availablePaymentOptions
         
         if !availablePaymentMethods.filter({ $0.type != .googlePay }).isEmpty {
             let otherPaymentMethodsTitleLabel = UILabel()
+            otherPaymentMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+            otherPaymentMethodsTitleLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
             otherPaymentMethodsTitleLabel.text = NSLocalizedString("primer-vault-payment-method-available-payment-methods",
                                                                    tableName: nil,
                                                                    bundle: Bundle.primerResources,
@@ -73,6 +153,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             otherPaymentMethodsTitleLabel.textColor = PrimerColor(rgb: 0x808080)
             otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
             otherPaymentMethodsTitleLabel.textAlignment = .left
+            
             verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
             
             for paymentMethod in availablePaymentMethods {
@@ -110,8 +191,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     }
                     
                 case .goCardlessMandate:
-                    paymentMethodButton.setTitleColor(.white, for: .normal)
-                    paymentMethodButton.tintColor = .white
+                    paymentMethodButton.setTitleColor(.black, for: .normal)
+                    paymentMethodButton.tintColor = .black
                     paymentMethodButton.layer.borderWidth = 1.0
                     paymentMethodButton.layer.borderColor = UIColor.black.cgColor
                     
@@ -129,26 +210,20 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 verticalStackView.addArrangedSubview(paymentMethodButton)
             }
         }
-        
-        var backButton = UIButton(frame: CGRect(x: 0, y: 0, width: 22, height: 22))
-        backButton.setImage(UIImage(named: "credit-card"), for: .normal)
-        
-        backButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
-        var leftBarButton = UIBarButtonItem(customView: backButton)
-        navigationItem.leftBarButtonItem = leftBarButton
     }
     
     @objc
     func seeAllButtonTapped() {
-        let vc = VaultPaymentMethodViewController()
-        vc.view.translatesAutoresizingMaskIntoConstraints = false
-        vc.view.heightAnchor.constraint(equalToConstant: 400).isActive = true
-        Primer.shared.primerRootVC?.show(viewController: vc)
-        
-//        let vc = VaultedPaymentInstrumentsViewController()
+//        let vc = VaultPaymentMethodViewController()
 //        vc.view.translatesAutoresizingMaskIntoConstraints = false
-//        vc.view.heightAnchor.constraint(equalToConstant: view.bounds.size.height).isActive = true
+//        vc.view.heightAnchor.constraint(equalToConstant: 400).isActive = true
 //        Primer.shared.primerRootVC?.show(viewController: vc)
+        
+        let vc = VaultedPaymentInstrumentsViewController()
+        vc.delegate = self
+        vc.view.translatesAutoresizingMaskIntoConstraints = false
+        vc.view.heightAnchor.constraint(equalToConstant: view.bounds.size.height).isActive = true
+        Primer.shared.primerRootVC?.show(viewController: vc)
     }
         
     @objc
@@ -161,20 +236,40 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     @objc
     func klarnaButtonTapped() {
-        if #available(iOS 11.0, *) {
-            let oavc = OAuthViewController(host: .klarna)
-            oavc.modalPresentationStyle = .fullScreen
-            present(oavc, animated: true, completion: nil)
-        }
+        let lvc = PrimerLoadingViewController(withHeight: 300)
+        Primer.shared.primerRootVC?.show(viewController: lvc)
+        Primer.shared.primerRootVC?.presentKlarna()
     }
     
     @objc
     func payPalButtonTapped() {
-        if #available(iOS 11.0, *) {
-            let oavc = OAuthViewController(host: .paypal)
-            oavc.modalPresentationStyle = .fullScreen
-            present(oavc, animated: true, completion: nil)
-        }
+        let lvc = PrimerLoadingViewController(withHeight: 300)
+        Primer.shared.primerRootVC?.show(viewController: lvc)
+        
+        let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
+        viewModel.generateOAuthURL(.paypal, with: { [weak self] result in
+            DispatchQueue.main.async {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                
+                switch result {
+                case .failure(let error):
+                    _ = ErrorHandler.shared.handle(error: error)
+                    Primer.shared.delegate?.checkoutFailed?(with: error)
+
+                    if settings.hasDisabledSuccessScreen {
+                        Primer.shared.dismissPrimer()
+                    } else {
+                        let svc = ErrorViewController(message: error.localizedDescription)
+                        svc.view.translatesAutoresizingMaskIntoConstraints = false
+                        svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                        Primer.shared.primerRootVC?.show(viewController: svc)
+                    }
+                    
+                case .success(let urlString):
+                    self?.presentWebview(urlString)
+                }
+            }
+        })
     }
     
     @objc
@@ -183,4 +278,62 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         Primer.shared.primerRootVC?.show(viewController: cfvc)
     }
     
+    private func presentWebview(_ urlString: String) {
+        let webViewController = WebViewController()
+        webViewController.url = URL(string: urlString)
+        webViewController.klarnaWebViewCompletion = { [weak self] (_, err) in
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            DispatchQueue.main.async {
+                if let err = err {
+                    _ = ErrorHandler.shared.handle(error: err)
+                    Primer.shared.primerRootVC?.dismiss(animated: true, completion: nil)
+                    
+                    if settings.hasDisabledSuccessScreen {
+                        Primer.shared.dismissPrimer()
+                    } else {
+                        let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
+                        evc.view.translatesAutoresizingMaskIntoConstraints = false
+                        evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                        Primer.shared.primerRootVC?.show(viewController: evc)
+                    }
+                    
+                } else {
+                    let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
+                    viewModel.tokenize(.klarna, with: { err in
+                        DispatchQueue.main.async {
+                            Primer.shared.primerRootVC?.dismiss(animated: true, completion: nil)
+                            
+                            if settings.hasDisabledSuccessScreen {
+                                Primer.shared.dismissPrimer()
+                            } else {
+                                if err != nil {
+                                    let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
+                                    evc.view.translatesAutoresizingMaskIntoConstraints = false
+                                    evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                                    Primer.shared.primerRootVC?.show(viewController: evc)
+                                    
+                                } else {
+                                    let svc = SuccessViewController()
+                                    svc.view.translatesAutoresizingMaskIntoConstraints = false
+                                    svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                                    Primer.shared.primerRootVC?.show(viewController: svc)
+                                }
+                                
+                            }
+                        }
+                    })
+                }
+            }
+        }
+        
+        webViewController.modalPresentationStyle = .overFullScreen
+        Primer.shared.primerRootVC?.present(webViewController, animated: true, completion: nil)
+    }
+}
+
+extension PrimerUniversalCheckoutViewController: ReloadDelegate {
+    func reload() {
+        renderSelectedPaymentInstrument(insertAt: 1)
+    }
 }

@@ -13,7 +13,7 @@ internal class PrimerRootViewController: PrimerViewController {
     var childViewHeightConstraint: NSLayoutConstraint!
     var childViewBottomConstraint: NSLayoutConstraint!
     
-    private var nc = PrimerNavigationController()
+    var nc = PrimerNavigationController()
     private var topPadding: CGFloat = 0.0
     private var bottomPadding: CGFloat = 0.0
     private let presentationDuration: TimeInterval = 0.3
@@ -44,19 +44,6 @@ internal class PrimerRootViewController: PrimerViewController {
                name: UIResponder.keyboardWillChangeFrameNotification,
                object: nil)
         
-        view.addSubview(childView)
-        
-        childView.backgroundColor = .white
-        childView.translatesAutoresizingMaskIntoConstraints = false
-        childView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        childView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        
-        childViewHeightConstraint = NSLayoutConstraint(item: childView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 100.0 + bottomPadding)
-        childViewHeightConstraint.isActive = true
-        childViewBottomConstraint = NSLayoutConstraint(item: childView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -childViewHeightConstraint.constant)
-        childViewBottomConstraint.isActive = true
-        view.layoutIfNeeded()
-        
         if #available(iOS 13.0, *) {
             let window = UIApplication.shared.windows[0]
             topPadding = window.safeAreaInsets.top
@@ -70,11 +57,23 @@ internal class PrimerRootViewController: PrimerViewController {
             bottomPadding = 0.0
         }
         
-        view.backgroundColor = .black.withAlphaComponent(0.0)
-        UIView.animate(withDuration: presentationDuration) {
-            self.view.backgroundColor = .black.withAlphaComponent(0.4)
-        }
+        view.addSubview(childView)
         
+        childView.backgroundColor = .white
+        nc.view.backgroundColor = .white
+        
+        childView.translatesAutoresizingMaskIntoConstraints = false
+        childView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        childView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        childViewHeightConstraint = NSLayoutConstraint(item: childView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
+        childViewHeightConstraint.isActive = true
+        childViewBottomConstraint = NSLayoutConstraint(item: childView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -childViewHeightConstraint.constant)
+        childViewBottomConstraint.isActive = true
+        view.layoutIfNeeded()
+        
+        
+
 //        let backgroundTap = UITapGestureRecognizer(
 //            target: self,
 //            action: #selector(dismissGestureRecognizerAction))
@@ -86,28 +85,87 @@ internal class PrimerRootViewController: PrimerViewController {
         )
         swipeGesture.direction = .down
         childView.addGestureRecognizer(swipeGesture)
+        
+        render()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+    }
+    
+    func render() {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        let lvc = PrimerLoadingViewController(withHeight: 300)
-        show(viewController: lvc)
-
+        if !settings.isInitialLoadingHidden {
+            UIView.animate(withDuration: presentationDuration) {
+                self.view.backgroundColor = .black.withAlphaComponent(0.4)
+            }
+            
+            let lvc = PrimerLoadingViewController(withHeight: 300)
+            show(viewController: lvc)
+        }
+        
         let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
         viewModel.loadConfig({ [weak self] _ in
             DispatchQueue.main.async {
+                UIView.animate(withDuration: self?.presentationDuration ?? 0.3) {
+                    self?.view.backgroundColor = .black.withAlphaComponent(0.4)
+                }
+                
                 switch self?.flow {
                 case .default:
                     let pucvc = PrimerUniversalCheckoutViewController()
                     self?.show(viewController: pucvc)
                     
+//                    let greenVC = PrimerViewController()
+//                    greenVC.view.backgroundColor = .green
+//                    self?.show(viewController: greenVC)
+                    
                 case .defaultWithVault:
                     let pvmvc = PrimerVaultManagerViewController()
                     self?.show(viewController: pvmvc)
 
-                default:
+                    
+                case .some(.completeDirectCheckout):
+                    break
+                    
+                case .addPayPalToVault:
+                    if #available(iOS 11.0, *) {
+                        let oavc = OAuthViewController(host: .paypal)
+                        self?.show(viewController: oavc)
+                    } else {
+                        print("WARNING: PayPal is not available prior to iOS 11.")
+                    }
+
+                case .addCardToVault:
+                    let cfvc = PrimerCardFormViewController(flow: .vault)
+                    self?.show(viewController: cfvc)
+                    
+                case .addDirectDebitToVault:
+                    break
+                    
+                case .addKlarnaToVault:
+                    self?.presentKlarna()
+                    
+                case .some(.addDirectDebit):
+                    break
+                    
+                case .some(.checkoutWithKlarna):
+                    if #available(iOS 11.0, *) {
+                        let oavc = OAuthViewController(host: .klarna)
+                        self?.show(viewController: oavc)
+                    } else {
+                        print("WARNING: Klarna is not available prior to iOS 11.")
+                    }
+                    
+                case .checkoutWithApplePay:
+                    let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
+                    appleViewModel.payWithApple { (err) in
+                        
+                    }
+                    
+                case .none:
                     break
                 }
                 
@@ -117,7 +175,15 @@ internal class PrimerRootViewController: PrimerViewController {
                 }
             }
         })
+    }
+    
+    func layoutIfNeeded() {
+        for vc in nc.viewControllers {
+            vc.view.layoutIfNeeded()
+        }
         
+        childView.layoutIfNeeded()
+        view.layoutIfNeeded()
     }
     
     @objc func keyboardNotification(notification: NSNotification) {
@@ -173,17 +239,23 @@ internal class PrimerRootViewController: PrimerViewController {
         let isPresented: Bool = nc.viewControllers.isEmpty
                 
         let cvc = PrimerContainerViewController(childViewController: viewController)
+        cvc.view.backgroundColor = .white
         
-        if (nc.viewControllers.last as? PrimerContainerViewController)?.children.first is PrimerLoadingViewController {
-            // Previous view controller is a loading view controller,
-            // hide back button.
+        // Hide back button on some cases
+        if let lastViewController = nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
+            cvc.navigationItem.hidesBackButton = true
+        } else if viewController is PrimerLoadingViewController {
+            cvc.navigationItem.hidesBackButton = true
+        } else if viewController is SuccessViewController {
+            cvc.navigationItem.hidesBackButton = true
+        } else if viewController is ErrorViewController {
             cvc.navigationItem.hidesBackButton = true
         }
         
         if isPresented {
             nc.setViewControllers([cvc], animated: false)
             
-            let container = UIViewController()
+            let container = PrimerViewController()
             container.addChild(nc)
             container.view.addSubview(nc.view)
             
@@ -196,10 +268,10 @@ internal class PrimerRootViewController: PrimerViewController {
             container.view.topAnchor.constraint(equalTo: childView.topAnchor).isActive = true
             container.view.leadingAnchor.constraint(equalTo: childView.leadingAnchor).isActive = true
             container.view.trailingAnchor.constraint(equalTo: childView.trailingAnchor).isActive = true
-            container.view.bottomAnchor.constraint(equalTo: childView.bottomAnchor, constant: -bottomPadding).isActive = true
+            container.view.bottomAnchor.constraint(equalTo: childView.bottomAnchor, constant: 0).isActive = true
             container.didMove(toParent: self)
         } else {
-            nc.pushViewController(cvc, animated: true)
+            nc.pushViewController(cvc, animated: false)
         }
         
         childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
@@ -229,7 +301,7 @@ internal class PrimerRootViewController: PrimerViewController {
 
         childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
 
-        nc.popViewController(animated: true)
+        nc.popViewController(animated: false)
 
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
@@ -238,15 +310,83 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
     
-    func switchFlow(_ flow: PrimerInternalSessionFlow) {
-        switch flow {
-        case .checkout:
-            break
-        case .checkoutWithCard:
-            break
-        default:
-            break
+    func presentKlarna() {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if !settings.isInitialLoadingHidden {
+            let lvc = PrimerLoadingViewController(withHeight: 300)
+            show(viewController: lvc)
         }
+        
+        let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
+        viewModel.generateOAuthURL(.klarna, with: { [weak self] result in
+            DispatchQueue.main.async {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                
+                switch result {
+                case .failure(let error):
+                    _ = ErrorHandler.shared.handle(error: error)
+                    Primer.shared.delegate?.checkoutFailed?(with: error)
+
+                    if settings.hasDisabledSuccessScreen {
+                        Primer.shared.dismissPrimer()
+                    } else {
+                        let svc = ErrorViewController(message: error.localizedDescription)
+                        svc.view.translatesAutoresizingMaskIntoConstraints = false
+                        svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                        Primer.shared.primerRootVC?.show(viewController: svc)
+                    }
+                    
+                case .success(let urlString):
+                    self?.presentOAuthWebViewController(url: URL(string: urlString)!)
+                }
+            }
+        })
+    }
+    
+    private func presentOAuthWebViewController(url: URL) {
+        let webViewController = WebViewController()
+        webViewController.url = url
+        webViewController.klarnaWebViewCompletion = { [weak self] (_, err) in
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            DispatchQueue.main.async {
+                if let err = err {
+                    _ = ErrorHandler.shared.handle(error: err)
+                    
+                    if settings.hasDisabledSuccessScreen {
+                        Primer.shared.dismissPrimer()
+                    } else {
+                        let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
+                        evc.view.translatesAutoresizingMaskIntoConstraints = false
+                        evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                        Primer.shared.primerRootVC?.show(viewController: evc)
+                    }
+                    
+                    webViewController.dismiss(animated: true, completion: nil)
+                    
+                } else {
+                    let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
+                    viewModel.tokenize(.klarna, with: { err in
+                        DispatchQueue.main.async {
+                            webViewController.dismiss(animated: true, completion: nil)
+                            
+                            if settings.hasDisabledSuccessScreen {
+                                Primer.shared.dismissPrimer()
+                            } else {
+                                let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
+                                evc.view.translatesAutoresizingMaskIntoConstraints = false
+                                evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                                Primer.shared.primerRootVC?.show(viewController: evc)
+                            }
+                        }
+                    })
+                }
+            }
+        }
+        
+        webViewController.modalPresentationStyle = .fullScreen
+        present(webViewController, animated: true, completion: nil)
     }
     
 }
