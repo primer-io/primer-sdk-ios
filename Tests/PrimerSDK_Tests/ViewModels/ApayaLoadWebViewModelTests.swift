@@ -17,8 +17,9 @@ class ApayaLoadWebViewModelTests: XCTestCase {
         MockLocator.registerDependencies()
     }
     
-    func test_generateWebViewUrl_calls_apaya_service() throws {
-        let expectation = XCTestExpectation(description: "Generate Apaya URL | Calls Apaya Service.")
+    // MARK: generateWebViewUrl()
+    func test_generateWebViewUrl_calls_apayaService() throws {
+        let expectation = XCTestExpectation(description: "If configs are not nil apaya service should be called.")
         let apayaService = MockApayaService()
         DependencyContainer.register(apayaService as ApayaServiceProtocol)
 
@@ -35,41 +36,41 @@ class ApayaLoadWebViewModelTests: XCTestCase {
         }
         wait(for: [expectation], timeout: 10.0)
     }
-    func test_generateWebViewUrl_without_client_token_load_config() throws {
-        let expectation = XCTestExpectation(description: "Generate Apaya URL Without Token | Calls Token Service.")
+
+    func test_if_config_nil_generateWebViewUrl_fetches_configs() throws {
+        let expectation = XCTestExpectation(description: "If configs are nil fetch calls should be made.")
         let state = MockAppState()
+        let clientTokenService = MockClientTokenService()
+        let paymentMethodConfigService = MockPaymentMethodConfigService()
         state.decodedClientToken = nil
-        let clientTokenService = MockClientTokenService(tokenIsNil: false, throwError: true)
+        
         DependencyContainer.register(state as AppStateProtocol)
         DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)
+        DependencyContainer.register(paymentMethodConfigService as PaymentMethodConfigServiceProtocol)
 
         let viewModel = ApayaLoadWebViewModel()
 
         viewModel.generateWebViewUrl { result in
-            switch result {
-            case .failure:
-                XCTAssertTrue(clientTokenService.loadCheckoutConfigCalled)
-                expectation.fulfill()
-            case .success:
-                XCTFail()
-            }
+            XCTAssertTrue(clientTokenService.loadCheckoutConfigCalled)
+            XCTAssertTrue(paymentMethodConfigService.fetchConfigCalled)
+            expectation.fulfill()
         }
         wait(for: [expectation], timeout: 10.0)
     }
-    
+
     // MARK: tokenize()
     func test_tokenize_apaya_result_none_calls_router_with_error() throws {
-        let expectation = XCTestExpectation(description: "tokenize | Route shown.")
+        let expectation = XCTestExpectation(description: "If apaya result is nil error should show.")
         let router = MockRouter()
         let state = MockAppState()
         router.callback = {
             switch router.route {
             case .error:
                 XCTAssertTrue(router.showCalled)
-                expectation.fulfill()
             default:
                 XCTFail()
             }
+            expectation.fulfill()
         }
         DependencyContainer.register(router as RouterDelegate)
         DependencyContainer.register(state as AppStateProtocol)
@@ -79,7 +80,7 @@ class ApayaLoadWebViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
     func test_tokenize_apaya_result_error_cancelled_calls_router_pop() throws {
-        let expectation = XCTestExpectation(description: "tokenize | Route pop.")
+        let expectation = XCTestExpectation(description: "If apaya result is cancel exception the view should pop.")
         let router = MockRouter()
         let state = MockAppState()
         router.callback = {
@@ -97,17 +98,17 @@ class ApayaLoadWebViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
     func test_tokenize_apaya_result_error_calls_router_with_error() throws {
-        let expectation = XCTestExpectation(description: "tokenize | Route shown.")
+        let expectation = XCTestExpectation(description: "If apaya result is other exception error should show.")
         let router = MockRouter()
         let state = MockAppState()
         router.callback = {
             switch router.route {
             case .error:
                 XCTAssertTrue(router.showCalled)
-                expectation.fulfill()
             default:
                 XCTFail()
             }
+            expectation.fulfill()
         }
         state.setApayaResult(.failure(.failedApiCall))
         DependencyContainer.register(router as RouterDelegate)
