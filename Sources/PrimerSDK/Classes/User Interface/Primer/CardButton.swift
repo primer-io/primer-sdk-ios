@@ -19,8 +19,8 @@ internal class CardButton: PrimerButton {
     private var border = PrimerView()
     private var checkView = UIImageView()
 
-    private weak var widthConstraint: NSLayoutConstraint?
-    private weak var checkmarkViewTrailingConstrint: NSLayoutConstraint?
+    private weak var checkmarkViewWidthConstraint: NSLayoutConstraint?
+    private weak var checkmarkViewTrailingConstraint: NSLayoutConstraint?
     private weak var checkmarkViewLeadingConstraint: NSLayoutConstraint?
     private weak var checkmarkViewHeightConstraint: NSLayoutConstraint?
 
@@ -30,7 +30,7 @@ internal class CardButton: PrimerButton {
         guard let model = model else { return }
         accessibilityIdentifier = "saved_payment_method_button"
 
-        addIcon()
+        addCheckmarkView()
         if showIcon {
 
         } else {
@@ -161,9 +161,8 @@ internal class CardButton: PrimerButton {
         border.isUserInteractionEnabled = false
     }
 
-    private func addIcon() {
+    private func addCheckmarkView() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
         checkView = UIImageView(image: ImageName.check2.image)
 
         // color
@@ -174,10 +173,10 @@ internal class CardButton: PrimerButton {
         addSubview(checkView)
         checkView.translatesAutoresizingMaskIntoConstraints = false
         checkView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        checkmarkViewTrailingConstrint = checkView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14)
-        widthConstraint = checkView.widthAnchor.constraint(equalToConstant: 14)
-        checkmarkViewTrailingConstrint?.isActive = true
-        widthConstraint?.isActive = true
+        checkmarkViewTrailingConstraint = checkView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14)
+        checkmarkViewWidthConstraint = checkView.widthAnchor.constraint(equalToConstant: 14)
+        checkmarkViewTrailingConstraint?.isActive = true
+        checkmarkViewWidthConstraint?.isActive = true
         checkmarkViewHeightConstraint = checkView.heightAnchor.constraint(equalToConstant: 22)
         checkmarkViewHeightConstraint?.isActive = true
     }
@@ -187,19 +186,19 @@ internal class CardButton: PrimerButton {
 
         if checkView.image == ImageName.check2.image {
             checkmarkViewLeadingConstraint?.constant = -14
-            checkmarkViewTrailingConstrint?.constant = 14
-            widthConstraint?.constant = 14
+            checkmarkViewTrailingConstraint?.constant = 14
+            checkmarkViewWidthConstraint?.constant = 14
             checkmarkViewHeightConstraint?.constant = 14
         } else {
             checkmarkViewLeadingConstraint?.constant = -10
-            checkmarkViewTrailingConstrint?.constant = -10
-            widthConstraint?.constant = 22
+            checkmarkViewTrailingConstraint?.constant = -10
+            checkmarkViewWidthConstraint?.constant = 22
         }
     }
 
     func toggleIcon() {
-        checkmarkViewTrailingConstrint?.constant = showIcon ? -14 : 0
-        widthConstraint?.constant = showIcon ? 14 : 0
+        checkmarkViewTrailingConstraint?.constant = showIcon ? -14 : 0
+        checkmarkViewWidthConstraint?.constant = showIcon ? 14 : 0
         checkmarkViewHeightConstraint?.constant = showIcon ? 14 : 0
     }
 
