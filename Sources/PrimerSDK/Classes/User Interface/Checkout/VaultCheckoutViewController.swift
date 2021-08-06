@@ -120,12 +120,6 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
         case .applePay:
             let router: RouterDelegate = DependencyContainer.resolve()
             router.root?.dismiss(animated: true, completion: {
-                DispatchQueue.main.async { [weak self] in
-                    let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
-                    appleViewModel.payWithApple { (err) in
-
-                    }
-                }
             })
         case .paymentCard:
             router.show(.form(type: .cardForm(theme: theme)))

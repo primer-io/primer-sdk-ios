@@ -47,11 +47,8 @@ enum Route {
             vc.delegate = delegate
             return vc
         case .oAuth(let host):
-            if #available(iOS 11.0, *) {
-                return OAuthViewController(host: host)
-            } else {
-                return nil
-            }
+            return nil
+            
         case .applePay:
             return nil
         case .success(let screenType):
