@@ -194,11 +194,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     }
                     
                 case .goCardlessMandate:
-                    paymentMethodButton.setTitleColor(.black, for: .normal)
-                    paymentMethodButton.tintColor = .black
-                    paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = UIColor.black.cgColor
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
+                    // Doesn't work for checkout
+                break
                     
                 case .klarna:
                     paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
