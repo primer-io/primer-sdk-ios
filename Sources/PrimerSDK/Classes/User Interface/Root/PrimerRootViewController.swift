@@ -129,8 +129,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     
                 case .addPayPalToVault:
                     if #available(iOS 11.0, *) {
-                        let oavc = OAuthViewController(host: .paypal)
-                        self?.show(viewController: oavc)
+                        self?.presentPayPal()
                     } else {
                         print("WARNING: PayPal is not available prior to iOS 11.")
                     }
@@ -151,17 +150,13 @@ internal class PrimerRootViewController: PrimerViewController {
                     
                 case .some(.checkoutWithKlarna):
                     if #available(iOS 11.0, *) {
-                        let oavc = OAuthViewController(host: .klarna)
-                        self?.show(viewController: oavc)
+                        self?.presentKlarna()
                     } else {
                         print("WARNING: Klarna is not available prior to iOS 11.")
                     }
                     
                 case .checkoutWithApplePay:
-                    let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
-                    appleViewModel.payWithApple { (err) in
-                        
-                    }
+                    self?.presentApplePay()
                     
                 case .none:
                     break
@@ -308,6 +303,10 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
     
+}
+
+extension PrimerRootViewController {
+    
     func presentKlarna() {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
@@ -316,75 +315,187 @@ internal class PrimerRootViewController: PrimerViewController {
             show(viewController: lvc)
         }
         
-        let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-        viewModel.generateOAuthURL(.klarna, with: { [weak self] result in
+        let klarnaViewModel = KlarnaViewModel()
+        klarnaViewModel.didPresentPaymentMethod = { [weak self] in
+            self?.blurBackground()
+        }
+        
+        firstly {
+            klarnaViewModel.tokenize()
+        }
+        .done { token in
             DispatchQueue.main.async {
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 
-                switch result {
-                case .failure(let error):
-                    _ = ErrorHandler.shared.handle(error: error)
-                    Primer.shared.delegate?.checkoutFailed?(with: error)
-
-                    if settings.hasDisabledSuccessScreen {
-                        Primer.shared.dismissPrimer()
-                    } else {
-                        let svc = ErrorViewController(message: error.localizedDescription)
-                        svc.view.translatesAutoresizingMaskIntoConstraints = false
-                        svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                        Primer.shared.primerRootVC?.show(viewController: svc)
-                    }
-                    
-                case .success(let urlString):
-                    self?.presentOAuthWebViewController(url: URL(string: urlString)!)
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    Primer.shared.delegate?.tokenAddedToVault?(token)
                 }
-            }
-        })
-    }
-    
-    private func presentOAuthWebViewController(url: URL) {
-        let webViewController = WebViewController()
-        webViewController.url = url
-        webViewController.klarnaWebViewCompletion = { [weak self] (_, err) in
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            DispatchQueue.main.async {
-                if let err = err {
-                    _ = ErrorHandler.shared.handle(error: err)
-                    
-                    if settings.hasDisabledSuccessScreen {
-                        Primer.shared.dismissPrimer()
-                    } else {
-                        let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
-                        evc.view.translatesAutoresizingMaskIntoConstraints = false
-                        evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                        Primer.shared.primerRootVC?.show(viewController: evc)
-                    }
-                    
-                    webViewController.dismiss(animated: true, completion: nil)
-                    
-                } else {
-                    let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-                    viewModel.tokenize(.klarna, with: { err in
-                        DispatchQueue.main.async {
-                            webViewController.dismiss(animated: true, completion: nil)
-                            
-                            if settings.hasDisabledSuccessScreen {
-                                Primer.shared.dismissPrimer()
-                            } else {
-                                let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
+                
+                if !settings.hasDisabledSuccessScreen {
+                    let lvc = PrimerLoadingViewController(withHeight: 300)
+                    self.show(viewController: lvc)
+                }
+                
+                Primer.shared.delegate?.onTokenizeSuccess?(token, { err in
+                    DispatchQueue.main.async {
+                        if !settings.hasDisabledSuccessScreen {
+                            if let err = err {
+                                let evc = ErrorViewController(message: PrimerError.payPalSessionFailed.localizedDescription)
                                 evc.view.translatesAutoresizingMaskIntoConstraints = false
-                                evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                                Primer.shared.primerRootVC?.show(viewController: evc)
+                                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                                self.show(viewController: evc)
+                            } else {
+                                let svc = SuccessViewController()
+                                svc.view.translatesAutoresizingMaskIntoConstraints = false
+                                svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                                self.show(viewController: svc)
                             }
+                        } else {
+                            Primer.shared.dismissPrimer()
                         }
-                    })
-                }
+                    }
+                })
             }
         }
+        .ensure {
+            DispatchQueue.main.async {
+                // Dismiss any oauth view controller that has been presented.
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+        .catch { err in
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+            }
+            self.handleError(err)
+        }
+    }
+    
+    func presentApplePay() {
+        let appleViewModel = ApplePayViewModel()
+        appleViewModel.didPresentPaymentMethod = { [weak self] in
+            self?.blurBackground()
+        }
         
-        webViewController.modalPresentationStyle = .fullScreen
-        present(webViewController, animated: true, completion: nil)
+        firstly {
+            appleViewModel.tokenize()
+        }
+        .done { token in
+            DispatchQueue.main.async {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    Primer.shared.delegate?.tokenAddedToVault?(token)
+                }
+                
+                if !settings.hasDisabledSuccessScreen {
+                    let lvc = PrimerLoadingViewController(withHeight: 300)
+                    self.show(viewController: lvc)
+                }
+                
+                Primer.shared.delegate?.onTokenizeSuccess?(token, { err in
+                    if !settings.hasDisabledSuccessScreen {
+                        if let err = err {
+                            let evc = ErrorViewController(message: PrimerError.payPalSessionFailed.localizedDescription)
+                            evc.view.translatesAutoresizingMaskIntoConstraints = false
+                            evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                            self.show(viewController: evc)
+                        } else {
+                            let svc = SuccessViewController()
+                            svc.view.translatesAutoresizingMaskIntoConstraints = false
+                            svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                            self.show(viewController: svc)
+                        }
+                    } else {
+                        Primer.shared.dismissPrimer()
+                    }
+                })
+            }
+        }
+        .ensure {
+            DispatchQueue.main.async {
+                // Dismiss any oauth view controller that has been presented.
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+        .catch { err in
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+            }
+            self.handleError(err)
+        }
+    }
+    
+    @available(iOS 11.0, *)
+    func presentPayPal() {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        let payPalViewModel = PayPalViewModel()
+        payPalViewModel.didPresentPaymentMethod = { [weak self] in
+            self?.blurBackground()
+        }
+        
+        firstly {
+            payPalViewModel.tokenize()
+        }
+        .done { token in
+            DispatchQueue.main.async {
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    Primer.shared.delegate?.tokenAddedToVault?(token)
+                }
+                
+                if !settings.hasDisabledSuccessScreen {
+                    let lvc = PrimerLoadingViewController(withHeight: 300)
+                    self.show(viewController: lvc)
+                }
+                
+                Primer.shared.delegate?.onTokenizeSuccess?(token, { err in
+                    if !settings.hasDisabledSuccessScreen {
+                        if let err = err {
+                            let evc = ErrorViewController(message: PrimerError.payPalSessionFailed.localizedDescription)
+                            evc.view.translatesAutoresizingMaskIntoConstraints = false
+                            evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                            self.show(viewController: evc)
+                        } else {
+                            let svc = SuccessViewController()
+                            svc.view.translatesAutoresizingMaskIntoConstraints = false
+                            svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                            self.show(viewController: svc)
+                        }
+                    } else {
+                        Primer.shared.dismissPrimer()
+                    }
+                })
+            }
+        }
+        .ensure {
+            DispatchQueue.main.async {
+                // Dismiss any oauth view controller that has been presented.
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+        .catch { err in
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+            }
+            self.handleError(err)
+        }
+        
+    }
+    
+    func handleError(_ error: Error) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        DispatchQueue.main.async {
+            if !settings.hasDisabledSuccessScreen {
+                let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
+                evc.view.translatesAutoresizingMaskIntoConstraints = false
+                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                self.show(viewController: evc)
+            } else {
+                Primer.shared.dismissPrimer()
+            }
+        }
     }
     
 }
