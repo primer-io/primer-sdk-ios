@@ -42,6 +42,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
                                   bundle: Bundle.primerResources,
                                   value: "Enter your card details",
                                   comment: "Enter your card details - Form Type Main Title (Card)")
+
         
         view.backgroundColor = .white
         
@@ -56,6 +57,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         cardNumberContainerView.fieldView = cardNumberField
         cardNumberContainerView.placeholderText = "Card number"
         cardNumberContainerView.setup()
+        cardNumberContainerView.tintColor = theme.colorTheme.tint1
         verticalStackView.addArrangedSubview(cardNumberContainerView)
 
         let horizontalStackView = UIStackView()
@@ -70,6 +72,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         expiryDateContainerView.fieldView = expiryDateField
         expiryDateContainerView.placeholderText = "Expiry"
         expiryDateContainerView.setup()
+        expiryDateContainerView.tintColor = theme.colorTheme.tint1
         horizontalStackView.addArrangedSubview(expiryDateContainerView)
         
         cvvField.placeholder = "123"
@@ -79,6 +82,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         cvvContainerView.fieldView = cvvField
         cvvContainerView.placeholderText = "CVV/CVC"
         cvvContainerView.setup()
+        cvvContainerView.tintColor = theme.colorTheme.tint1
         horizontalStackView.addArrangedSubview(cvvContainerView)
         horizontalStackView.spacing = 16
         verticalStackView.addArrangedSubview(horizontalStackView)
@@ -90,6 +94,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         cardholderNameContainerView.fieldView = cardholderNameField
         cardholderNameContainerView.placeholderText = "Name"
         cardholderNameContainerView.setup()
+        cardholderNameContainerView.tintColor = theme.colorTheme.tint1
         verticalStackView.addArrangedSubview(cardholderNameContainerView)
         
         if flow == .checkout {
@@ -273,6 +278,13 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
 }
 
 class PrimerCustomFieldView: UIView {
+    
+    override var tintColor: UIColor! {
+        didSet {
+            topPlaceholderLabel.textColor = tintColor
+            bottomLine.backgroundColor = tintColor
+        }
+    }
 
     var stackView: UIStackView = UIStackView()
     var placeholderText: String?
@@ -283,13 +295,15 @@ class PrimerCustomFieldView: UIView {
     }
     var fieldView: PrimerTextFieldView!
     private let errorLabel = UILabel()
+    private let topPlaceholderLabel = UILabel()
+    private let bottomLine = UIView()
 
     func setup() {
         addSubview(stackView)
         stackView.alignment = .fill
         stackView.axis = .vertical
 
-        let topPlaceholderLabel = UILabel()
+        
         topPlaceholderLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         topPlaceholderLabel.text = placeholderText
         topPlaceholderLabel.textColor = PrimerColor(rgb: 0x007AFF)
@@ -301,7 +315,6 @@ class PrimerCustomFieldView: UIView {
         textFieldStackView.axis = .vertical
         textFieldStackView.addArrangedSubview(fieldView)
         textFieldStackView.spacing = 0
-        let bottomLine = UIView()
         bottomLine.backgroundColor = PrimerColor(rgb: 0x007AFF)
         bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
         stackView.addArrangedSubview(textFieldStackView)
