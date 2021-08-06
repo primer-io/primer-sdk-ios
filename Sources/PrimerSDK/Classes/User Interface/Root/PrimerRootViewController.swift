@@ -215,7 +215,7 @@ internal class PrimerRootViewController: PrimerViewController {
         Primer.shared.dismissPrimer()
     }
     
-    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+    func dismissPrimerRootViewController(animated flag: Bool, completion: (() -> Void)? = nil) {
         view.endEditing(true)
         
         childViewBottomConstraint.constant = childView.bounds.height

@@ -210,8 +210,7 @@ public class Primer {
     
     public func dismissPrimer() {
         DispatchQueue.main.async { [weak self] in
-            self?.primerRootVC?.dismiss(animated: true, completion: {
-                self?.primerRootVC?.dismiss(animated: false, completion: nil)
+            self?.primerRootVC?.dismissPrimerRootViewController(animated: true, completion: {
                 self?.primerRootVC = nil
                 self?.primerWindow?.resignKey()
                 self?.primerWindow = nil
