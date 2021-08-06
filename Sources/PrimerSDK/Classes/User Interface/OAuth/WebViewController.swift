@@ -18,7 +18,7 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
 
     var url: URL?
     // Maybe refactor to delegate.
-    var klarnaWebViewCompletion: ((_ klarnaToken: String?, _ error: Error?) -> Void)?
+    var webViewCompletion: ((_ token: String?, _ error: Error?) -> Void)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,9 +48,9 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        if isBeingDismissed && klarnaWebViewCompletion != nil {
+        if isBeingDismissed && webViewCompletion != nil {
             let err = PrimerError.userCancelled
-            klarnaWebViewCompletion?(nil, err)
+            webViewCompletion?(nil, err)
         }
     }
     
@@ -90,8 +90,8 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
             let urlStateParameter = url.queryParameterValue(for: "state")
             if urlStateParameter == "cancel" {
                 let err = PrimerError.userCancelled
-                klarnaWebViewCompletion?(nil, err)
-                klarnaWebViewCompletion = nil
+                webViewCompletion?(nil, err)
+                webViewCompletion = nil
                 decisionHandler(.cancel)
                 return
             }
@@ -100,8 +100,8 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
             
             if (val ?? "").isEmpty || val == "undefined" || val == "null" {
                 let err = PrimerError.clientTokenNull
-                klarnaWebViewCompletion?(nil, err)
-                klarnaWebViewCompletion = nil
+                webViewCompletion?(nil, err)
+                webViewCompletion = nil
                 decisionHandler(.cancel)
                 return
             }
@@ -112,8 +112,8 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
             let state: AppStateProtocol = DependencyContainer.resolve()
 
             state.authorizationToken = val
-            klarnaWebViewCompletion?(val, nil)
-            klarnaWebViewCompletion = nil
+            webViewCompletion?(val, nil)
+            webViewCompletion = nil
 
             log(logLevel: .info, message: "🚀🚀🚀 \(state.authorizationToken ?? "n/a")")
 
@@ -131,14 +131,14 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
         if !(nsError.domain == "NSURLErrorDomain" && nsError.code == -1002) {
             // Code -1002 means bad URL redirect. Klarna is redirecting to bankid:// which is considered a bad URL
             // Not sure yet if we have to do that only for bankid://
-            klarnaWebViewCompletion?(nil, error)
-            klarnaWebViewCompletion = nil
+            webViewCompletion?(nil, error)
+            webViewCompletion = nil
         }
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        klarnaWebViewCompletion?(nil, error)
-        klarnaWebViewCompletion = nil
+        webViewCompletion?(nil, error)
+        webViewCompletion = nil
     }
     
 }
