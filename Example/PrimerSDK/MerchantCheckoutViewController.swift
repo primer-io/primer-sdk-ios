@@ -38,7 +38,7 @@ class MerchantCheckoutViewController: UIViewController {
     )
     
     let applePaySettings = PrimerSettings(
-        merchantIdentifier: "merchant.primer.dev.evangelos",
+        merchantIdentifier: "merchant.checkout.team",
         currency: .EUR,
         countryCode: .fr,
         hasDisabledSuccessScreen: true,
@@ -62,18 +62,28 @@ class MerchantCheckoutViewController: UIViewController {
     )
     
     let generalSettings = PrimerSettings(
-        merchantIdentifier: "test123",
+        merchantIdentifier: "merchant.checkout.team",
         customerId: "my-customer",
         amount: 100,        // Please don't change on develop (used for UI testing)
-        currency: .GBP,     // Please don't change on develop (used for UI testing)
-        countryCode: .gb,
+        currency: .EUR,     // Please don't change on develop (used for UI testing)
+        countryCode: .fr,
         klarnaSessionType: .recurringPayment,
         klarnaPaymentDescription: nil,
         urlScheme: "primer",
         urlSchemeIdentifier: "primer",
         isFullScreenOnly: false,
         hasDisabledSuccessScreen: false,
-        businessDetails: nil,
+        businessDetails: BusinessDetails(
+            name: "My Business",
+            address: Address(
+                addressLine1: "107 Rue",
+                addressLine2: nil,
+                city: "Paris",
+                state: nil,
+                countryCode: "FR",
+                postalCode: "75001"
+            )
+        ),
         directDebitHasNoAmount: false,
         orderItems: [
             try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
