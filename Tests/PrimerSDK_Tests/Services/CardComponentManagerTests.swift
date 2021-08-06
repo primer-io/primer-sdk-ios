@@ -13,8 +13,7 @@ class CardComponentManagerTests: XCTestCase {
     
     let testCardNumbers: [CardNetwork: [String]] = [
         .amex: [
-            "3700 0000 0000 002",
-            "3700 0000 0100 018"
+            "3700 000001 00018"
         ],
         .diners: [
             "3600 6666 3333 44",
@@ -82,7 +81,7 @@ class CardComponentManagerTests: XCTestCase {
     func test_card_number_network() throws {
         for (cardNetwork, cardnumbers) in testCardNumbers {
             for cardnumber in cardnumbers {
-                XCTAssert(CardNetwork(account: cardnumber.withoutWhiteSpace) == cardNetwork)
+                XCTAssert(CardNetwork(cardNumber: cardnumber.withoutWhiteSpace) == cardNetwork, "Failed to match card \(cardnumber) to network \(cardNetwork.rawValue)")
             }
         }
     }
@@ -90,7 +89,7 @@ class CardComponentManagerTests: XCTestCase {
     func test_is_valid_card_number() throws {
         for (cardNetwork, cardnumbers) in testCardNumbers {
             for cardnumber in cardnumbers {
-                XCTAssert(cardnumber.withoutWhiteSpace.isValidCardNumber, "\(cardnumber) [\(cardNetwork)] failed validation")
+                XCTAssert(cardnumber.isValidCardNumber, "\(cardnumber) [\(cardNetwork)] failed validation")
             }
         }
         
@@ -98,7 +97,29 @@ class CardComponentManagerTests: XCTestCase {
         XCTAssert(!"abcd".isValidCardNumber)
         XCTAssert(!"1".isValidCardNumber)
         XCTAssert(!"1234abcd".isValidCardNumber)
-        XCTAssert(!"4242-4242-4242-4242".isValidCardNumber)
+        XCTAssert("4242-4242-4242-4242".isValidCardNumber)
+    }
+    
+    func test_is_valid_cvv() throws {
+        let threeDigitCVV = "123"
+        let fourDigitCVV = "1234"
+        
+        for (cardNetwork, cardnumbers) in testCardNumbers {
+            for cardnumber in cardnumbers {
+                let cardNetwork = CardNetwork(cardNumber: cardnumber)
+                let cvvDigits = cardNetwork.validation?.code.length ?? 4
+                
+                if cardNetwork != .unknown {
+                    if cvvDigits == 3 {
+                        XCTAssert(threeDigitCVV.isValidCVV(cardNetwork: cardNetwork))
+                    } else if cvvDigits == 4 {
+                        XCTAssert(fourDigitCVV.isValidCVV(cardNetwork: cardNetwork))
+                    } else {
+                        XCTAssert(false)
+                    }
+                }
+            }
+        }
     }
     
 }

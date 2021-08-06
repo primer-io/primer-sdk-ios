@@ -190,7 +190,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             errors.append(PrimerError.invalidExpiryDate)
         }
         
-        if !cvvField.cvv.isValidCVV {
+        if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
             errors.append(PrimerError.invalidCVV)
         }
         

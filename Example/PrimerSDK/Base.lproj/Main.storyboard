@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="ORN-tn-RVh">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
@@ -17,87 +17,25 @@
                         <viewControllerLayoutGuide type="bottom" id="MWG-lh-a11"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P7R-MC-LKq">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
-                                <rect key="frame" x="138" y="433" width="138" height="30"/>
+                                <rect key="frame" x="118.5" y="318.5" width="138" height="30"/>
                                 <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
                                 <state key="normal" title="Initialize Primer SDK"/>
                                 <connections>
                                     <segue destination="rv5-RJ-1cA" kind="show" id="lRu-Go-hvr"/>
                                 </connections>
                             </button>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PeS-dP-X3g" customClass="PrimerCardNumberFieldView" customModule="PrimerSDK">
-                                <rect key="frame" x="40" y="118" width="334" height="50"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="4Tw-OJ-R9n"/>
-                                </constraints>
-                            </view>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="z3P-zC-vmr" customClass="PrimerExpiryDateFieldView" customModule="PrimerSDK">
-                                <rect key="frame" x="40" y="176" width="334" height="50"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="I3H-Od-r5f"/>
-                                </constraints>
-                            </view>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C1O-8f-gsj" customClass="PrimerCVVFieldView" customModule="PrimerSDK">
-                                <rect key="frame" x="40" y="250" width="334" height="50"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="jne-kJ-hrC"/>
-                                </constraints>
-                            </view>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rA3-j6-lTp" customClass="PrimerCardholderNameFieldView" customModule="PrimerSDK">
-                                <rect key="frame" x="40" y="315" width="334" height="50"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="b3H-H4-IvK"/>
-                                </constraints>
-                            </view>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fHg-Z1-k3z">
-                                <rect key="frame" x="20" y="802" width="374" height="40"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="raJ-Yu-wQg"/>
-                                </constraints>
-                                <state key="normal" title="Pay"/>
-                                <connections>
-                                    <action selector="tokenize:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="nUx-98-KgP"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="C1O-8f-gsj" firstAttribute="height" secondItem="z3P-zC-vmr" secondAttribute="height" id="934-Qr-aFV"/>
-                            <constraint firstItem="C1O-8f-gsj" firstAttribute="leading" secondItem="z3P-zC-vmr" secondAttribute="leading" id="9am-Nw-BMy"/>
-                            <constraint firstItem="z3P-zC-vmr" firstAttribute="leading" secondItem="PeS-dP-X3g" secondAttribute="leading" id="9u3-9D-GfU"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerY" secondItem="P7R-MC-LKq" secondAttribute="centerY" id="A4C-4q-2Y2"/>
-                            <constraint firstItem="PeS-dP-X3g" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" constant="20" id="DVm-pe-4Fl"/>
-                            <constraint firstItem="C1O-8f-gsj" firstAttribute="trailing" secondItem="z3P-zC-vmr" secondAttribute="trailing" id="KWX-ZB-Xot"/>
-                            <constraint firstItem="rA3-j6-lTp" firstAttribute="trailing" secondItem="C1O-8f-gsj" secondAttribute="trailing" id="LwN-fC-Mpa"/>
-                            <constraint firstItem="rA3-j6-lTp" firstAttribute="height" secondItem="C1O-8f-gsj" secondAttribute="height" id="Pkg-9f-UAv"/>
-                            <constraint firstItem="z3P-zC-vmr" firstAttribute="top" secondItem="PeS-dP-X3g" secondAttribute="bottom" constant="8" id="QOo-bc-LXX"/>
-                            <constraint firstItem="PeS-dP-X3g" firstAttribute="top" secondItem="Hc4-ia-dRw" secondAttribute="bottom" constant="30" id="Vwe-qU-8Fs"/>
-                            <constraint firstItem="rA3-j6-lTp" firstAttribute="leading" secondItem="C1O-8f-gsj" secondAttribute="leading" id="WET-5W-kOx"/>
-                            <constraint firstItem="rA3-j6-lTp" firstAttribute="top" secondItem="C1O-8f-gsj" secondAttribute="bottom" constant="15" id="bdg-Ns-llq"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="PeS-dP-X3g" secondAttribute="trailing" constant="20" id="beK-Hg-MMt"/>
-                            <constraint firstItem="z3P-zC-vmr" firstAttribute="trailing" secondItem="PeS-dP-X3g" secondAttribute="trailing" id="cU2-hN-gdS"/>
-                            <constraint firstItem="fHg-Z1-k3z" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leading" constant="20" id="dmu-1Z-D11"/>
-                            <constraint firstItem="z3P-zC-vmr" firstAttribute="height" secondItem="PeS-dP-X3g" secondAttribute="height" id="kLg-47-RN8"/>
-                            <constraint firstItem="C1O-8f-gsj" firstAttribute="top" secondItem="z3P-zC-vmr" secondAttribute="bottom" constant="24" id="mhY-mU-pRR"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerX" secondItem="P7R-MC-LKq" secondAttribute="centerX" id="uIm-xc-nvN"/>
-                            <constraint firstItem="MWG-lh-a11" firstAttribute="top" secondItem="fHg-Z1-k3z" secondAttribute="bottom" constant="20" id="wpn-Ld-4KK"/>
-                            <constraint firstAttribute="trailing" secondItem="fHg-Z1-k3z" secondAttribute="trailing" constant="20" id="zQq-yW-vV5"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="kYZ-5n-R2a"/>
-                    <connections>
-                        <outlet property="cardholderFieldView" destination="rA3-j6-lTp" id="Qdw-TC-9nq"/>
-                        <outlet property="cvvFieldView" destination="C1O-8f-gsj" id="cRj-Rl-Q8l"/>
-                        <outlet property="expiryDateFieldView" destination="z3P-zC-vmr" id="XT2-7Y-EjM"/>
-                        <outlet property="primerTextField" destination="PeS-dP-X3g" id="tIB-h0-Ihi"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AfA-pm-mcm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -112,18 +50,18 @@
                         <viewControllerLayoutGuide type="bottom" id="Y9U-da-1f0"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="1AU-v5-4lz">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="40" estimatedRowHeight="40" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="5Bg-Yz-vOr">
-                                <rect key="frame" x="0.0" y="108" width="414" height="362"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="211"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="PaymentMethodCell" rowHeight="40" id="hfT-yD-Z4D" customClass="PaymentMethodCell" customModule="PrimerSDK_Example" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="24.5" width="414" height="40"/>
+                                        <rect key="frame" x="0.0" y="24.5" width="375" height="40"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hfT-yD-Z4D" id="vfo-wa-jVh">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="40"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fMG-7w-kbM">
@@ -133,7 +71,7 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JNC-tf-ocd">
-                                                    <rect key="frame" x="58" y="10" width="336" height="20.5"/>
+                                                    <rect key="frame" x="58" y="10" width="297" height="20.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -160,10 +98,10 @@
                                 </connections>
                             </tableView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Fpg-xO-ASt">
-                                <rect key="frame" x="40" y="490" width="334" height="352"/>
+                                <rect key="frame" x="36" y="295" width="303" height="352"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a9R-Y4-8Wy">
-                                        <rect key="frame" x="0.0" y="0.0" width="334" height="40"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="add_card_button"/>
                                         <constraints>
@@ -177,7 +115,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xhR-QE-h6v">
-                                        <rect key="frame" x="0.0" y="52" width="334" height="40"/>
+                                        <rect key="frame" x="0.0" y="52" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="vault_klarna_button"/>
                                         <constraints>
@@ -191,7 +129,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JQF-YC-d6g">
-                                        <rect key="frame" x="0.0" y="104" width="334" height="40"/>
+                                        <rect key="frame" x="0.0" y="104" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="add_klarna_button"/>
                                         <constraints>
@@ -205,7 +143,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kGA-CG-n4Z">
-                                        <rect key="frame" x="0.0" y="156" width="334" height="40"/>
+                                        <rect key="frame" x="0.0" y="156" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="add_direct_debit_button"/>
                                         <constraints>
@@ -219,7 +157,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g8Q-ku-LZj">
-                                        <rect key="frame" x="0.0" y="208" width="334" height="40"/>
+                                        <rect key="frame" x="0.0" y="208" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="add_direct_debit_button"/>
                                         <constraints>
@@ -233,7 +171,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="but-Bs-no4">
-                                        <rect key="frame" x="0.0" y="260" width="334" height="40"/>
+                                        <rect key="frame" x="0.0" y="260" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="vault_button"/>
                                         <constraints>
@@ -247,7 +185,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pnm-Mo-3XH">
-                                        <rect key="frame" x="0.0" y="312" width="334" height="40"/>
+                                        <rect key="frame" x="0.0" y="312" width="303" height="40"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="universal_checkout_button"/>
                                         <constraints>
@@ -289,7 +227,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ORN-tn-RVh" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="M8m-le-4rJ">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>

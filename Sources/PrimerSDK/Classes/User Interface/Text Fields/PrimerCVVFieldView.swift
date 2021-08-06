@@ -12,13 +12,15 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
     internal var cvv: String {
         return textField._text ?? ""
     }
+    public var cardNetwork: CardNetwork = .unknown
     
     override func xibSetup() {
         super.xibSetup()
         
         textField.delegate = self
-        isValid = { text in
-            return text.isTypingValidCVV
+        isValid = { [weak self] text in
+            guard let strongSelf = self else { return nil }
+            return text.isTypingValidCVV(cardNetwork: strongSelf.cardNetwork)
         }
     }
     
@@ -27,7 +29,9 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         let currentText = primerTextField._text ?? ""
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         if !(newText.isNumeric || newText.isEmpty) { return false }
-        if string != "" && newText.withoutWhiteSpace.count >= 5 { return false }
+        
+        let maxDigits = cardNetwork.validation?.code.length ?? 4
+        if string != "" && newText.withoutNonNumericCharacters.count > maxDigits { return false }
         
         switch self.isValid?(newText) {
         case true:
