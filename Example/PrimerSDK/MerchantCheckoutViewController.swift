@@ -26,7 +26,9 @@ class MerchantCheckoutViewController: UIViewController {
         currency: .GBP,
         countryCode: .gb,
         urlScheme: "primer",
-        urlSchemeIdentifier: "primer"
+        urlSchemeIdentifier: "primer",
+        hasDisabledSuccessScreen: true,
+        isInitialLoadingHidden: true
     )
     
     let vaultKlarnaSettings = PrimerSettings(
@@ -39,6 +41,7 @@ class MerchantCheckoutViewController: UIViewController {
         merchantIdentifier: "merchant.primer.dev.evangelos",
         currency: .EUR,
         countryCode: .fr,
+        hasDisabledSuccessScreen: true,
         businessDetails: BusinessDetails(
             name: "My Business",
             address: Address(
@@ -54,7 +57,8 @@ class MerchantCheckoutViewController: UIViewController {
             try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
             try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
             try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
-        ]
+        ],
+        isInitialLoadingHidden: true
     )
     
     let generalSettings = PrimerSettings(
@@ -133,6 +137,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: applePaySettings)
         Primer.shared.showCheckout(self, flow: .checkoutWithApplePay)
     }
     
@@ -226,7 +231,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func checkoutFailed(with error: Error) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)")
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\(error.localizedDescription)")
     }
     
 }
