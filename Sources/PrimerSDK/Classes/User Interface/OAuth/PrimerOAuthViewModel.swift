@@ -7,6 +7,12 @@
 
 import Foundation
 
+enum OAuthHost {
+    case paypal
+    case klarna
+    case applePay
+}
+
 protocol PrimerOAuthViewModel {
     var host: OAuthHost { get }
     var didPresentPaymentMethod: (() -> Void)? { get set }

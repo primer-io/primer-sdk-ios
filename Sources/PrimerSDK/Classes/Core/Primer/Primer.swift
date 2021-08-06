@@ -12,7 +12,6 @@ public class Primer {
     
     public var delegate: PrimerDelegate?
     private(set) var flow: PrimerSessionFlow = .default
-    internal var root: RootViewController?
     internal var presentingViewController: UIViewController?
 
     // MARK: - INITIALIZATION
@@ -53,7 +52,6 @@ public class Primer {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         DependencyContainer.register(theme as PrimerThemeProtocol)
         DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
-        DependencyContainer.register(Router() as RouterDelegate)
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         DependencyContainer.register(VaultService() as VaultServiceProtocol)
@@ -71,7 +69,6 @@ public class Primer {
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(ConfirmMandateViewModel() as ConfirmMandateViewModelProtocol)
-        DependencyContainer.register(FormViewModel() as FormViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
     }
@@ -187,7 +184,6 @@ public class Primer {
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
         DispatchQueue.main.async { [weak self] in
-            self?.root?.dismiss(animated: true, completion: nil)
             self?.dismissPrimer()
         }
     }

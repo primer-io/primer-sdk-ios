@@ -222,91 +222,13 @@ class MockLocator {
         DependencyContainer.register(MockVaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(MockVaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(MockConfirmMandateViewModel() as ConfirmMandateViewModelProtocol)
-        DependencyContainer.register(MockFormViewModel() as FormViewModelProtocol)
         DependencyContainer.register(MockExternalViewModel() as ExternalViewModelProtocol)
-        DependencyContainer.register(MockRouter() as RouterDelegate)
         DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
     }
 }
 
 class MockDirectDebitService: DirectDebitServiceProtocol {
     func createMandate(_ completion: @escaping (Error?) -> Void) {
-
-    }
-}
-
-class MockRouter: Router {
-    
-    override func presentSuccessScreen(for successScreenType: SuccessScreenType) {
-        
-    }
-    
-    override func presentErrorScreen(with err: Error) {
-        
-    }
-
-    
-    override func setRoot(_ root: RootViewController) {
-
-    }
-    
-    var showCalled = false
-    
-    var callback: (() -> Void)?
-    
-    func setShowCalledTrue() {
-        showCalled = true
-        guard let callback = callback else { return }
-        callback()
-    }
-
-    override func show(_ route: Route) {
-        setShowCalledTrue()
-    }
-
-    override func pop() {
-        
-    }
-
-    override func popAllAndShow(_ route: Route) {
-
-    }
-
-    override func popAndShow(_ route: Route) {
-
-    }
-}
-
-class MockFormViewModel: FormViewModelProtocol {
-    func loadConfig(_ completion: @escaping (Error?) -> Void) {
-        
-    }
-    
-    var popOnComplete: Bool = false
-
-    func getSubmitButtonTitle(formType: FormType) -> String {
-        return "title"
-    }
-
-    func onSubmit(formType: FormType) {
-
-    }
-
-//    func onBottomLinkTapped(delegate: CardScannerViewControllerDelegate) {
-//        
-//    }
-
-    func submit(completion: @escaping (PrimerError?) -> Void) {
-
-    }
-
-    func onReturnButtonTapped() {
-
-    }
-
-    var mandate: DirectDebitMandate = DirectDebitMandate(firstName: "", lastName: "", email: "", iban: "", accountNumber: "", sortCode: "", address: nil)
-
-    func setState(_ value: String?, type: FormTextFieldType) {
 
     }
 }
