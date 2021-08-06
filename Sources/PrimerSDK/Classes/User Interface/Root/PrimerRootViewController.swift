@@ -84,12 +84,14 @@ internal class PrimerRootViewController: PrimerViewController {
         let tapGesture = UITapGestureRecognizer(
             target: self,
             action: #selector(dismissGestureRecognizerAction))
+        tapGesture.delegate = self
         backgroundView.addGestureRecognizer(tapGesture)
         
         let swipeGesture = UISwipeGestureRecognizer(
             target: self,
             action: #selector(dismissGestureRecognizerAction)
         )
+        swipeGesture.delegate = self
         swipeGesture.direction = .down
         childView.addGestureRecognizer(swipeGesture)
         
@@ -505,4 +507,11 @@ extension PrimerRootViewController {
         }
     }
     
+}
+
+extension PrimerRootViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        // ...
+        return true
+    }
 }

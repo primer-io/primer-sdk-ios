@@ -19,12 +19,12 @@ class MerchantCheckoutViewController: UIViewController {
         }
     }
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
-    let amount = 200
+    let amount = 100
     
     let vaultPayPalSettings = PrimerSettings(
         amount: 100,
-        currency: .GBP,
-        countryCode: .gb,
+        currency: .EUR,
+        countryCode: .fr,
         urlScheme: "primer",
         urlSchemeIdentifier: "primer",
         hasDisabledSuccessScreen: true,

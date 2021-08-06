@@ -6,6 +6,10 @@ class KlarnaViewModel: PrimerOAuthViewModel {
     var didPresentPaymentMethod: (() -> Void)?
     private let webViewController = WebViewController()
 
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
     func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
