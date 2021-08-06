@@ -275,6 +275,7 @@ enum PrimerError: PrimerErrorProtocol {
     case amountShouldBeNullForPendingOrderItems
     case amountCannotBeNullForNonPendingOrderItems
     case currencyMissing
+    case orderIdMissing
     
     case requestFailed
     case configFetchFailed
@@ -327,6 +328,8 @@ enum PrimerError: PrimerErrorProtocol {
             return 1720
         case .currencyMissing:
             return 1800
+        case .orderIdMissing:
+            return 1810
             
         // Network
         case .requestFailed:
@@ -533,6 +536,12 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Currency missing",
                                      comment: "Currency missing - Primer error message")
+        case .orderIdMissing:
+            return NSLocalizedString("primer-error-message-missing-order-id",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Order ID missing",
+                                     comment: "Order ID missing - Primer error message")
         case .invalidCardnumber:
             return NSLocalizedString("primer-error-message-invalid-cardnumber",
                                      tableName: nil,
