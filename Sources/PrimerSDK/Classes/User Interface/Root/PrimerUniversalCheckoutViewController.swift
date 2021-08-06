@@ -174,12 +174,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     paymentMethodButton.layer.borderWidth = 1.0
                     paymentMethodButton.layer.borderColor = UIColor.black.cgColor
                     paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
+                    verticalStackView.addArrangedSubview(paymentMethodButton)
                     
                 case .applePay:
                     paymentMethodButton.backgroundColor = .black
                     paymentMethodButton.setTitleColor(.white, for: .normal)
                     paymentMethodButton.tintColor = .white
                     paymentMethodButton.addTarget(self, action: #selector(applePayButtonTapped(_:)), for: .touchUpInside)
+                    verticalStackView.addArrangedSubview(paymentMethodButton)
                     
                 case .payPal:
                     if #available(iOS 11.0, *) {
@@ -188,6 +190,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                         paymentMethodButton.setTitleColor(.white, for: .normal)
                         paymentMethodButton.tintColor = .white
                         paymentMethodButton.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
+                        verticalStackView.addArrangedSubview(paymentMethodButton)
                     }
                     
                 case .goCardlessMandate:
@@ -195,6 +198,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     paymentMethodButton.tintColor = .black
                     paymentMethodButton.layer.borderWidth = 1.0
                     paymentMethodButton.layer.borderColor = UIColor.black.cgColor
+                    verticalStackView.addArrangedSubview(paymentMethodButton)
                     
                 case .klarna:
                     paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
@@ -202,23 +206,17 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     paymentMethodButton.tintColor = .white
                     paymentMethodButton.setImage(nil, for: .normal)
                     paymentMethodButton.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
+                    verticalStackView.addArrangedSubview(paymentMethodButton)
                     
                 default:
                     break
                 }
-                
-                verticalStackView.addArrangedSubview(paymentMethodButton)
             }
         }
     }
     
     @objc
     func seeAllButtonTapped() {
-//        let vc = VaultPaymentMethodViewController()
-//        vc.view.translatesAutoresizingMaskIntoConstraints = false
-//        vc.view.heightAnchor.constraint(equalToConstant: 400).isActive = true
-//        Primer.shared.primerRootVC?.show(viewController: vc)
-        
         let vc = VaultedPaymentInstrumentsViewController()
         vc.delegate = self
         vc.view.translatesAutoresizingMaskIntoConstraints = false
@@ -228,10 +226,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
     @objc
     func applePayButtonTapped(_ sender: UIButton) {
-        let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
-        appleViewModel.payWithApple { (err) in
-            
-        }
+        let lvc = PrimerLoadingViewController(withHeight: 300)
+        Primer.shared.primerRootVC?.show(viewController: lvc)
+        Primer.shared.primerRootVC?.presentApplePay()
     }
     
     @objc
@@ -243,33 +240,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     @objc
     func payPalButtonTapped() {
-        let lvc = PrimerLoadingViewController(withHeight: 300)
-        Primer.shared.primerRootVC?.show(viewController: lvc)
-        
-        let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-        viewModel.generateOAuthURL(.paypal, with: { [weak self] result in
-            DispatchQueue.main.async {
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                
-                switch result {
-                case .failure(let error):
-                    _ = ErrorHandler.shared.handle(error: error)
-                    Primer.shared.delegate?.checkoutFailed?(with: error)
-
-                    if settings.hasDisabledSuccessScreen {
-                        Primer.shared.dismissPrimer()
-                    } else {
-                        let svc = ErrorViewController(message: error.localizedDescription)
-                        svc.view.translatesAutoresizingMaskIntoConstraints = false
-                        svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                        Primer.shared.primerRootVC?.show(viewController: svc)
-                    }
-                    
-                case .success(let urlString):
-                    self?.presentWebview(urlString)
-                }
-            }
-        })
+        if #available(iOS 11.0, *) {
+            let lvc = PrimerLoadingViewController(withHeight: 300)
+            Primer.shared.primerRootVC?.show(viewController: lvc)
+            Primer.shared.primerRootVC?.presentPayPal()
+        }
     }
     
     @objc
@@ -277,59 +252,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         let cfvc = PrimerCardFormViewController(flow: .checkout)
         Primer.shared.primerRootVC?.show(viewController: cfvc)
     }
-    
-    private func presentWebview(_ urlString: String) {
-        let webViewController = WebViewController()
-        webViewController.url = URL(string: urlString)
-        webViewController.klarnaWebViewCompletion = { [weak self] (_, err) in
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            DispatchQueue.main.async {
-                if let err = err {
-                    _ = ErrorHandler.shared.handle(error: err)
-                    Primer.shared.primerRootVC?.dismiss(animated: true, completion: nil)
-                    
-                    if settings.hasDisabledSuccessScreen {
-                        Primer.shared.dismissPrimer()
-                    } else {
-                        let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
-                        evc.view.translatesAutoresizingMaskIntoConstraints = false
-                        evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                        Primer.shared.primerRootVC?.show(viewController: evc)
-                    }
-                    
-                } else {
-                    let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-                    viewModel.tokenize(.klarna, with: { err in
-                        DispatchQueue.main.async {
-                            Primer.shared.primerRootVC?.dismiss(animated: true, completion: nil)
-                            
-                            if settings.hasDisabledSuccessScreen {
-                                Primer.shared.dismissPrimer()
-                            } else {
-                                if err != nil {
-                                    let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
-                                    evc.view.translatesAutoresizingMaskIntoConstraints = false
-                                    evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                                    Primer.shared.primerRootVC?.show(viewController: evc)
-                                    
-                                } else {
-                                    let svc = SuccessViewController()
-                                    svc.view.translatesAutoresizingMaskIntoConstraints = false
-                                    svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                                    Primer.shared.primerRootVC?.show(viewController: svc)
-                                }
-                                
-                            }
-                        }
-                    })
-                }
-            }
-        }
-        
-        webViewController.modalPresentationStyle = .overFullScreen
-        Primer.shared.primerRootVC?.present(webViewController, animated: true, completion: nil)
-    }
+
 }
 
 extension PrimerUniversalCheckoutViewController: ReloadDelegate {
