@@ -22,6 +22,7 @@ class MerchantCheckoutViewController: UIViewController {
     let amount = 200
     
     let vaultPayPalSettings = PrimerSettings(
+        amount: 100,
         currency: .GBP,
         countryCode: .gb,
         urlScheme: "primer",
