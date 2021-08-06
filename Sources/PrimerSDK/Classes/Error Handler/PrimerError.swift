@@ -266,6 +266,8 @@ enum PrimerError: PrimerErrorProtocol {
     case clientTokenNull
     case clientTokenExpirationMissing
     case clientTokenExpired
+    case checkoutNotSupported
+    case vaultNotSupported
     
     case customerIDNull
     
@@ -313,6 +315,10 @@ enum PrimerError: PrimerErrorProtocol {
             return 2002
         case .clientTokenExpired:
             return 2003
+        case .checkoutNotSupported:
+            return 2004
+        case .vaultNotSupported:
+            return 2005
             
         case .customerIDNull:
             return 1400
@@ -423,6 +429,20 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Token has expired",
                                      comment: "Token has expired - DX error message")
+            
+        case .checkoutNotSupported:
+            return NSLocalizedString("primer-error-message-checkout-not-supported",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Checkout is not supported for this payment method",
+                                     comment: "Checkout is not supported for this payment method - DX error message")
+            
+        case .vaultNotSupported:
+            return NSLocalizedString("primer-error-message-vault-not-supported",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Vaulting is not supported for this payment method",
+                                     comment: "Vaulting is not supported for this payment method - DX error message")
 
         case .payPalSessionFailed:
             return NSLocalizedString("primer-error-message-paypal-needs-recharge",
