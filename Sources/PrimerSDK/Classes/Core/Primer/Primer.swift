@@ -189,6 +189,8 @@ public class Primer {
     }
     
     public func show(flow: PrimerSessionFlow) {
+        self.flow = flow
+        
         DispatchQueue.main.async {
             if self.primerRootVC == nil {
                 self.primerRootVC = PrimerRootViewController(flow: flow)
