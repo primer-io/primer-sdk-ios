@@ -101,15 +101,17 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
     
     @objc
     func klarnaButtonTapped() {
+        let lvc = PrimerLoadingViewController(withHeight: 300)
+        Primer.shared.primerRootVC?.show(viewController: lvc)
         Primer.shared.primerRootVC?.presentKlarna()
     }
     
     @objc
     func payPalButtonTapped() {
         if #available(iOS 11.0, *) {
-            let oavc = OAuthViewController(host: .paypal)
-            oavc.modalPresentationStyle = .fullScreen
-            present(oavc, animated: true, completion: nil)
+            let lvc = PrimerLoadingViewController(withHeight: 300)
+            Primer.shared.primerRootVC?.show(viewController: lvc)
+            Primer.shared.primerRootVC?.presentPayPal()
         }
     }
     
