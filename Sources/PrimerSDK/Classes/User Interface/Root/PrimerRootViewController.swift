@@ -9,6 +9,7 @@ import UIKit
 
 internal class PrimerRootViewController: PrimerViewController {
     
+    var backgroundView = UIView()
     var childView: UIView = UIView()
     var childViewHeightConstraint: NSLayoutConstraint!
     var childViewBottomConstraint: NSLayoutConstraint!
@@ -57,9 +58,15 @@ internal class PrimerRootViewController: PrimerViewController {
             bottomPadding = 0.0
         }
         
+        view.addSubview(backgroundView)
+        backgroundView.backgroundColor = .black.withAlphaComponent(0.0)
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        backgroundView.pin(view: view)
+        
         view.addSubview(childView)
         
         childView.backgroundColor = .white
+        childView.isUserInteractionEnabled = true
         nc.view.backgroundColor = .white
         
         childView.translatesAutoresizingMaskIntoConstraints = false
@@ -74,10 +81,10 @@ internal class PrimerRootViewController: PrimerViewController {
         
         
 
-//        let backgroundTap = UITapGestureRecognizer(
-//            target: self,
-//            action: #selector(dismissGestureRecognizerAction))
-//        view.addGestureRecognizer(backgroundTap)
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(dismissGestureRecognizerAction))
+        backgroundView.addGestureRecognizer(tapGesture)
         
         let swipeGesture = UISwipeGestureRecognizer(
             target: self,
@@ -95,7 +102,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     func blurBackground() {
         UIView.animate(withDuration: presentationDuration ?? 0.3) {
-            self.view.backgroundColor = .black.withAlphaComponent(0.4)
+            self.backgroundView.backgroundColor = .black.withAlphaComponent(0.4)
         }
     }
     
