@@ -66,6 +66,7 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                     paymentMethodButton.layer.borderWidth = 1.0
                     paymentMethodButton.layer.borderColor = UIColor.black.cgColor
                     paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
+                    verticalStackView.addArrangedSubview(paymentMethodButton)
                     
                 case .payPal:
                     if #available(iOS 11.0, *) {
@@ -74,6 +75,7 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                         paymentMethodButton.setImage(paymentMethod.toIconName()?.image, for: .normal)
                         paymentMethodButton.tintColor = .white
                         paymentMethodButton.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
+                        verticalStackView.addArrangedSubview(paymentMethodButton)
                     }
                     
                 case .goCardlessMandate:
@@ -81,6 +83,7 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                     paymentMethodButton.tintColor = .black
                     paymentMethodButton.layer.borderWidth = 1.0
                     paymentMethodButton.layer.borderColor = UIColor.black.cgColor
+//                    verticalStackView.addArrangedSubview(paymentMethodButton)
                     
                 case .klarna:
                     paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
@@ -88,12 +91,11 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                     paymentMethodButton.tintColor = .white
                     paymentMethodButton.setImage(nil, for: .normal)
                     paymentMethodButton.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
+                    verticalStackView.addArrangedSubview(paymentMethodButton)
                     
                 default:
                     break
                 }
-                
-                verticalStackView.addArrangedSubview(paymentMethodButton)
             }
         }
         
@@ -117,7 +119,7 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
     
     @objc
     func cardButtonTapped() {
-        let cfvc = PrimerCardFormViewController(flow: .checkout)
+        let cfvc = PrimerCardFormViewController(flow: .vault)
         Primer.shared.primerRootVC?.show(viewController: cfvc)
     }
     
