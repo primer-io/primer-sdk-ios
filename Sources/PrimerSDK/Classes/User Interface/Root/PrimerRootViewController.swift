@@ -93,14 +93,17 @@ internal class PrimerRootViewController: PrimerViewController {
         super.viewDidAppear(animated)
     }
     
+    func blurBackground() {
+        UIView.animate(withDuration: presentationDuration ?? 0.3) {
+            self.view.backgroundColor = .black.withAlphaComponent(0.4)
+        }
+    }
+    
     func render() {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if !settings.isInitialLoadingHidden {
-            UIView.animate(withDuration: presentationDuration) {
-                self.view.backgroundColor = .black.withAlphaComponent(0.4)
-            }
-            
+            blurBackground()
             let lvc = PrimerLoadingViewController(withHeight: 300)
             show(viewController: lvc)
         }
@@ -109,20 +112,14 @@ internal class PrimerRootViewController: PrimerViewController {
         
         viewModel.loadConfig({ [weak self] _ in
             DispatchQueue.main.async {
-                UIView.animate(withDuration: self?.presentationDuration ?? 0.3) {
-                    self?.view.backgroundColor = .black.withAlphaComponent(0.4)
-                }
-                
                 switch self?.flow {
                 case .default:
+                    self?.blurBackground()
                     let pucvc = PrimerUniversalCheckoutViewController()
                     self?.show(viewController: pucvc)
-                    
-//                    let greenVC = PrimerViewController()
-//                    greenVC.view.backgroundColor = .green
-//                    self?.show(viewController: greenVC)
-                    
+
                 case .defaultWithVault:
+                    self?.blurBackground()
                     let pvmvc = PrimerVaultManagerViewController()
                     self?.show(viewController: pvmvc)
 
@@ -139,6 +136,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     }
 
                 case .addCardToVault:
+                    self?.blurBackground()
                     let cfvc = PrimerCardFormViewController(flow: .vault)
                     self?.show(viewController: cfvc)
                     
