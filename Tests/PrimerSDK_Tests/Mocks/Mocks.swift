@@ -151,8 +151,8 @@ let mockPaymentMethodConfig = PaymentMethodConfig(
     coreUrl: "url",
     pciUrl: "url",
     paymentMethods: [
-        ConfigPaymentMethod(id: "1", type: .klarna),
-        ConfigPaymentMethod(id: "2", type: .payPal)
+        ConfigPaymentMethod(id: "1", type: .klarna, options: nil),
+        ConfigPaymentMethod(id: "2", type: .payPal, options: nil)
     ]
 )
 
@@ -210,8 +210,8 @@ class MockAppState: AppStateProtocol {
             coreUrl: "url",
             pciUrl: "url",
             paymentMethods: [
-                ConfigPaymentMethod(id: "1", type: .klarna),
-                ConfigPaymentMethod(id: "2", type: .payPal)
+                ConfigPaymentMethod(id: "1", type: .klarna, options: nil),
+                ConfigPaymentMethod(id: "2", type: .payPal, options: nil)
             ]
         )
     ) {

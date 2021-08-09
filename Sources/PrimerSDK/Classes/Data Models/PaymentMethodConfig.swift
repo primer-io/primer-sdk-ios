@@ -7,6 +7,7 @@ struct PaymentMethodConfig: Codable {
 struct ConfigPaymentMethod: Codable {
     let id: String?
     let type: ConfigPaymentMethodType?
+    let options: PaymentMethodConfigOptions?
 }
 
 enum ConfigPaymentMethodType: String, Codable {
@@ -36,4 +37,13 @@ internal extension PaymentMethodConfig {
         guard let method = self.paymentMethods?.first(where: { method in return method.type == type }) else { return nil }
         return method.id
     }
+    
+    func getProductId(for type: ConfigPaymentMethodType) -> String? {
+        guard let method = self.paymentMethods?.first(where: { method in return method.type == type }) else { return nil }
+        return method.options?.productId
+    }
+}
+
+class PaymentMethodConfigOptions: Codable {
+    let productId: String?
 }
