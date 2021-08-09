@@ -20,6 +20,11 @@ class MerchantCheckoutViewController: UIViewController {
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     let amount = 200
     
+    let vaultApayaSettings = PrimerSettings(
+        hasDisabledSuccessScreen: true,
+        isInitialLoadingHidden: true
+    )
+    
     let vaultPayPalSettings = PrimerSettings(
         currency: .GBP,
         countryCode: .gb,
@@ -106,6 +111,11 @@ class MerchantCheckoutViewController: UIViewController {
 
     // MARK: - ACTIONS
     
+    @IBAction func addApayaButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: vaultApayaSettings)
+        Primer.shared.showCheckout(self, flow: .addApayaToVault)
+    }
+    
     @IBAction func addCardButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
@@ -129,6 +139,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func openVaultButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: generalSettings)
         Primer.shared.showCheckout(self, flow: .defaultWithVault)
     }
     
