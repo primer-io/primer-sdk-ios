@@ -69,6 +69,10 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
             let router: RouterDelegate = DependencyContainer.resolve()
             switch result {
             case .none:
+                // The merchant should detect that this cancels here, however we may need to align on
+                // what to do in the case of cancelled flows - what is the ideal experience and what
+                // is the current expectation of integrating developers?
+                Primer.shared.delegate?.checkoutFailed?(with: PrimerError.userCancelled)
                 router.pop()
             case .failure(let error):
                 Primer.shared.delegate?.checkoutFailed?(with: error)
@@ -84,7 +88,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
             }
         }
     }
-    //
+
     private func generateTokenizationRequest() -> PaymentMethodTokenizationRequest {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let instrument = PaymentInstrument(apayaToken: "")
@@ -93,7 +97,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
             state: state
         )
     }
-    //
+
     func getWebViewModel() -> PrimerWebViewModelProtocol {
         let apayaWebViewModel: ApayaWebViewModel = DependencyContainer.resolve()
         return apayaWebViewModel
