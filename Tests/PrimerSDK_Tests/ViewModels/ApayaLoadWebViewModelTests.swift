@@ -38,7 +38,6 @@ class ApayaLoadWebViewModelTests: XCTestCase {
     }
 
     func test_if_config_nil_generateWebViewUrl_fetches_configs() throws {
-        let expectation = XCTestExpectation(description: "If configs are nil fetch calls should be made.")
         let state = MockAppState()
         let clientTokenService = MockClientTokenService()
         let paymentMethodConfigService = MockPaymentMethodConfigService()
@@ -50,12 +49,9 @@ class ApayaLoadWebViewModelTests: XCTestCase {
 
         let viewModel = ApayaLoadWebViewModel()
 
-        viewModel.generateWebViewUrl { result in
-            XCTAssertTrue(clientTokenService.loadCheckoutConfigCalled)
-            XCTAssertTrue(paymentMethodConfigService.fetchConfigCalled)
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 10.0)
+        viewModel.generateWebViewUrl { _ in }
+        XCTAssertTrue(clientTokenService.loadCheckoutConfigCalled)
+        XCTAssertTrue(paymentMethodConfigService.fetchConfigCalled)
     }
 
     // MARK: tokenize()
@@ -72,24 +68,6 @@ class ApayaLoadWebViewModelTests: XCTestCase {
             }
             expectation.fulfill()
         }
-        DependencyContainer.register(router as RouterDelegate)
-        DependencyContainer.register(state as AppStateProtocol)
-        
-        let viewModel = ApayaLoadWebViewModel()
-        viewModel.tokenize()
-        wait(for: [expectation], timeout: 10.0)
-    }
-    func test_tokenize_apaya_result_error_cancelled_calls_router_pop() throws {
-        let expectation = XCTestExpectation(description: "If apaya result is cancel exception the view should pop.")
-        let router = MockRouter()
-        let state = MockAppState()
-        router.callback = {
-            XCTAssertTrue(router.popCalled)
-            XCTAssertFalse(router.showCalled)
-            XCTAssertNil(router.route)
-            expectation.fulfill()
-        }
-        state.setApayaResult(.failure(.webViewFlowCancelled))
         DependencyContainer.register(router as RouterDelegate)
         DependencyContainer.register(state as AppStateProtocol)
         

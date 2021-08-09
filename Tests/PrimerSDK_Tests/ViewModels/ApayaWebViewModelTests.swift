@@ -17,15 +17,27 @@ class ApayaWebViewModelTests: XCTestCase {
         MockLocator.registerDependencies()
     }
 
-    func test_onRedirect_calls_setApayaResult() throws {
+    func test_onDismiss_calls_setApayaResult_if_result() throws {
         let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
 
         let viewModel = ApayaWebViewModel()
         
         viewModel.onRedirect(with: URL(string: "https://primer.io")!)
+        viewModel.onDismiss()
 
         XCTAssertTrue(state.setApayaResultCalled)
+    }
+    
+    func test_onDismiss_does_not_call_setApayaResult_if_result_nil() throws {
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+
+        let viewModel = ApayaWebViewModel()
+        
+        viewModel.onDismiss()
+
+        XCTAssertFalse(state.setApayaResultCalled)
     }
 }
 
