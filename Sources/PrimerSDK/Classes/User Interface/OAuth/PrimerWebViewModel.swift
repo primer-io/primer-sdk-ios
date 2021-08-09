@@ -17,15 +17,20 @@ internal protocol PrimerWebViewModelProtocol: AnyObject {
 internal class ApayaWebViewModel: PrimerWebViewModelProtocol {
 
     var result: Result<Apaya.WebViewResult, ApayaException>?
+    
+    private func setResult(_ value: Result<Apaya.WebViewResult, ApayaException>?) {
+        result = value
+    }
 
     func onRedirect(with url: URL) {
-        result = Apaya.WebViewResult.create(from: url)
+        setResult(Apaya.WebViewResult.create(from: url))
     }
 
     func onDismiss() {
         guard let result = result else { return }
         let state: AppStateProtocol = DependencyContainer.resolve()
         state.setApayaResult(result)
+        setResult(nil)
     }
 }
 

@@ -31,7 +31,8 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
                     self?.navigate(.failure(error))
                 case .success:
                     guard let strongSelf = self, strongSelf.configDidLoad() else {
-                        return completion(.failure(PrimerError.configFetchFailed))
+                        self?.navigate(.failure(PrimerError.configFetchFailed))
+                        return
                     }
                     // not sure about calling the function from within itself.
                     strongSelf.generateWebViewUrl(completion)
@@ -46,12 +47,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
         case .none:
             navigate(nil)
         case .failure(let error):
-            switch error {
-            case .webViewFlowCancelled:
-                navigate(nil)
-            default:
-                navigate(.failure(error))
-            }
+            navigate(.failure(error))
         case .success:
             navigate(.success(true)) // this is temporary fix until we're able to tokenize in sandbox. See code below.
 
