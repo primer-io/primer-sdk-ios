@@ -35,7 +35,15 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         super.viewDidLoad()
         renderWebView()
     }
-    //
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if isBeingDismissed {
+            viewModel?.onDismiss()
+            delegate?.reload()
+        }
+    }
+
     private func renderWebView() {
         let webView = WKWebView()
         webView.isAccessibilityElement = false
@@ -50,7 +58,7 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
             webView.load(request)
         }
     }
-    //
+
     func webView(
         _ webView: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
@@ -61,7 +69,6 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
             let host = url.host, allowedHosts.contains(host)
         {
             viewModel?.onRedirect(with: url)
-            delegate?.reload()
             decisionHandler(.cancel)
             dismiss(animated: true, completion: nil)
         } else {

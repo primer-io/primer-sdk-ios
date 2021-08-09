@@ -73,6 +73,7 @@ internal class PaymentMethodComponent: PrimerView {
             addSubview(label)
             addSubview(iconView)
             configureLabel(with: method.toString())
+            configureIconView(icon: method.toIconName()?.image, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
         default:

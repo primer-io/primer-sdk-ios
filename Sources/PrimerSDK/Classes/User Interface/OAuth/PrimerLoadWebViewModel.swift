@@ -44,7 +44,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         switch state.getApayaResult() {
         case .none:
-            navigate(.failure(ApayaException.invalidWebViewResult))
+            navigate(nil)
         case .failure(let error):
             switch error {
             case .webViewFlowCancelled:
@@ -53,16 +53,18 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
                 navigate(.failure(error))
             }
         case .success:
-            let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
-            let request = generateTokenizationRequest()
-            tokenizationService.tokenize(request: request) { [weak self] result in
-                switch result {
-                case .failure:
-                    self?.navigate(.failure(ApayaException.failedApiCall))
-                case .success:
-                    self?.navigate(.success(true))
-                }
-            }
+            navigate(.success(true)) // this is temporary fix until we're able to tokenize in sandbox. See code below.
+
+//            let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
+//            let request = generateTokenizationRequest()
+//            tokenizationService.tokenize(request: request) { [weak self] result in
+//                switch result {
+//                case .failure:
+//                    self?.navigate(.failure(ApayaException.failedApiCall))
+//                case .success:
+//                    self?.navigate(.success(true))
+//                }
+//            }
         }
     }
     //
