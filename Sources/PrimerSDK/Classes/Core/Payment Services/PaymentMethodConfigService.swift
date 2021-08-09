@@ -26,7 +26,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
             case .failure(let error):
                 completion(error)
             case .success(let config):
-                var configs: [ConfigPaymentMethod] = [ConfigPaymentMethod(id: "123", type: .apaya)]
+                var configs: [ConfigPaymentMethod] = [ConfigPaymentMethod(id: "123", type: .apaya, options: nil)]
                 config.paymentMethods?.forEach {
                     configs.append($0)
                 }

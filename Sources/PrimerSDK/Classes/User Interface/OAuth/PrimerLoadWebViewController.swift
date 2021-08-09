@@ -43,8 +43,8 @@ class PrimerLoadWebViewController: PrimerViewController, ReloadDelegate {
         viewModel?.generateWebViewUrl { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
-                case .failure(let error):
-                    self?.presentError(error)
+                case .failure:
+                    break // we're gonna refactor this method once merged in with the all the UI updates.
                 case .success(let urlString):
                     if let webViewModel = self?.viewModel?.getWebViewModel() {
                         let webViewController = PrimerWebViewController(with: webViewModel)
@@ -55,23 +55,23 @@ class PrimerLoadWebViewController: PrimerViewController, ReloadDelegate {
         }
     }
 
-    internal func presentError(_ error: Error) {
-        _ = ErrorHandler.shared.handle(error: error)
-        Primer.shared.delegate?.checkoutFailed?(with: error)
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        let router: RouterDelegate = DependencyContainer.resolve()
-        if settings.hasDisabledSuccessScreen {
-            let rootViewController = router.root
-            UIView.animate(withDuration: 0.3) {
-                let presenter = rootViewController?.presentationController as? PresentationController
-                presenter?.blurEffectView.alpha = 0.0
-            } completion: { (_) in
-                rootViewController?.dismiss(animated: true, completion: nil)
-            }
-        } else {
-            router.show(.error(error: error))
-        }
-    }
+//    internal func presentError(_ error: Error) {
+//        _ = ErrorHandler.shared.handle(error: error)
+//        Primer.shared.delegate?.checkoutFailed?(with: error)
+//        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+//        let router: RouterDelegate = DependencyContainer.resolve()
+//        if settings.hasDisabledSuccessScreen {
+//            let rootViewController = router.root
+//            UIView.animate(withDuration: 0.3) {
+//                let presenter = rootViewController?.presentationController as? PresentationController
+//                presenter?.blurEffectView.alpha = 0.0
+//            } completion: { (_) in
+//                rootViewController?.dismiss(animated: true, completion: nil)
+//            }
+//        } else {
+//            router.show(.error(error: error))
+//        }
+//    }
 
     internal func presentWebview(_ urlString: String, webViewController: PrimerWebViewController) {
         presentBlurEffect()

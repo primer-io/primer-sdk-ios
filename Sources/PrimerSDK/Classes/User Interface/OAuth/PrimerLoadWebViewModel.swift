@@ -13,7 +13,7 @@ protocol PrimerLoadWebViewModelProtocol: AnyObject {
     func tokenize()
 }
 
-internal class ApayaLoadWebViewModel: PrimerConfigLoader, PrimerLoadWebViewModelProtocol {
+internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
     //
     func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
         if configDidLoad() {
@@ -21,13 +21,14 @@ internal class ApayaLoadWebViewModel: PrimerConfigLoader, PrimerLoadWebViewModel
             apayaService.createPaymentSession(completion)
         } else {
             // In case we load this view model right away we will be forced to load the config here.
-            // It's probably better if we figure out some middle step so that the payment method view model
+            // It's probably better if we figure out some middle step so that a payment method view model
             // never needs to worry about the config having loaded.
-            // this view should never appear without having loaded the config.
+            // This view should never appear without the config.
             loadConfig { [weak self] result in
                 switch result {
                 case .failure(let error):
-                    completion(.failure(error))
+                    _ = ErrorHandler.shared.handle(error: error)
+                    self?.navigate(.failure(error))
                 case .success:
                     guard let strongSelf = self, strongSelf.configDidLoad() else {
                         return completion(.failure(PrimerError.configFetchFailed))
@@ -65,14 +66,21 @@ internal class ApayaLoadWebViewModel: PrimerConfigLoader, PrimerLoadWebViewModel
         }
     }
     //
-    private func navigate(_ result: Result<Bool, Error>?) {
+    func navigate(_ result: Result<Bool, Error>?) {
         DispatchQueue.main.async {
             let router: RouterDelegate = DependencyContainer.resolve()
             switch result {
             case .none:
                 router.pop()
-            case .failure:
-                router.show(.error(error: PrimerError.generic))
+            case .failure(let error):
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                let router: RouterDelegate = DependencyContainer.resolve()
+                if settings.hasDisabledSuccessScreen {
+                    router.root?.onDisabledSuccessScreenDismiss()
+                } else {
+                    router.show(.error(error: PrimerError.generic))
+                }
             case .success:
                 router.show(.success(type: .regular))
             }
@@ -92,30 +100,30 @@ internal class ApayaLoadWebViewModel: PrimerConfigLoader, PrimerLoadWebViewModel
         let apayaWebViewModel: ApayaWebViewModel = DependencyContainer.resolve()
         return apayaWebViewModel
     }
-}
 
-internal class PrimerConfigLoader {
-    internal func configDidLoad() -> Bool {
+    private func configDidLoad() -> Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.decodedClientToken != nil && state.paymentMethodConfig != nil
     }
-    internal func loadConfig(_ completion: @escaping (Result<Bool, ApayaException>) -> Void) {
+
+    private func loadConfig(_ completion: @escaping (Result<Bool, ApayaException>) -> Void) {
         let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
         clientTokenService.loadCheckoutConfig { [weak self] (error) in
             if let error = error {
                 _ = ErrorHandler.shared.handle(error: error)
-                completion(.failure(ApayaException.failedApiCall))
+                self?.navigate(.failure(error))
             } else {
                 self?.loadPaymentMethodConfig(completion)
             }
         }
     }
-    internal func loadPaymentMethodConfig(_ completion: @escaping (Result<Bool, ApayaException>) -> Void) {
+
+    private func loadPaymentMethodConfig(_ completion: @escaping (Result<Bool, ApayaException>) -> Void) {
         let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-        configService.fetchConfig { (error) in
+        configService.fetchConfig { [weak self] (error) in
             if let error = error {
                 _ = ErrorHandler.shared.handle(error: error)
-                completion(.failure(ApayaException.failedApiCall))
+                self?.navigate(.failure(error))
             } else {
                 completion(.success(true))
             }
