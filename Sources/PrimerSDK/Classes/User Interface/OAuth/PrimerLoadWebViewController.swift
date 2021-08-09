@@ -55,24 +55,6 @@ class PrimerLoadWebViewController: PrimerViewController, ReloadDelegate {
         }
     }
 
-//    internal func presentError(_ error: Error) {
-//        _ = ErrorHandler.shared.handle(error: error)
-//        Primer.shared.delegate?.checkoutFailed?(with: error)
-//        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-//        let router: RouterDelegate = DependencyContainer.resolve()
-//        if settings.hasDisabledSuccessScreen {
-//            let rootViewController = router.root
-//            UIView.animate(withDuration: 0.3) {
-//                let presenter = rootViewController?.presentationController as? PresentationController
-//                presenter?.blurEffectView.alpha = 0.0
-//            } completion: { (_) in
-//                rootViewController?.dismiss(animated: true, completion: nil)
-//            }
-//        } else {
-//            router.show(.error(error: error))
-//        }
-//    }
-
     internal func presentWebview(_ urlString: String, webViewController: PrimerWebViewController) {
         presentBlurEffect()
         webViewController.url = URL(string: urlString)
