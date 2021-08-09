@@ -386,11 +386,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B310260330805517FE17B4EBEF23E21E /* Frameworks */ = {
+		DD5F4E17BD4C1C3EA14E8E5D5C19E573 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40C6EA98872E59CB356F25F7EF47C34B /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -795,6 +794,18 @@
 			);
 			name = Root;
 			path = Root;
+			sourceTree = "<group>";
+		};
+		AF9F9D33F960FD47D0B16E717D560D20 /* Primer */ = {
+			isa = PBXGroup;
+			children = (
+				47CCACE13E37B8351A7EFC56EC48ABA0 /* AppState.swift */,
+				C02007BD915DE1F9D379990037334ACB /* DependencyInjection.swift */,
+				20A51F89AB67F95C10E3CF03B0DF1EAF /* Primer.swift */,
+				AA92CBEFA8A6E5D371565CF0BA722031 /* PrimerDelegate.swift */,
+			);
+			name = Primer;
+			path = Primer;
 			sourceTree = "<group>";
 		};
 		AF9F9D33F960FD47D0B16E717D560D20 /* Primer */ = {
@@ -1331,11 +1342,10 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0E40D1B768B1BF02FCD84B482BD5D325 /* Debug */ = {
+		0A12F5922D2690E1E74A4E3A30FC0B91 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DF6E4F8E7C26A7BBEC17AAD4042A317D /* Pods-PrimerSDK_Tests.debug.xcconfig */;
+			baseConfigurationReference = 79F47E9F79F94EC6E5ED62A704D9459A /* PrimerSDK.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -1345,19 +1355,18 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests-Info.plist";
+				GCC_PREFIX_HEADER = "Target Support Files/PrimerSDK/PrimerSDK-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/PrimerSDK/PrimerSDK-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				MODULEMAP_FILE = "Target Support Files/PrimerSDK/PrimerSDK.modulemap";
+				PRODUCT_MODULE_NAME = PrimerSDK;
+				PRODUCT_NAME = PrimerSDK;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";

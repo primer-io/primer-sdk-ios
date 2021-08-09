@@ -7,9 +7,11 @@
 
 #if canImport(UIKit)
 
-internal protocol ApayaServiceProtocol {
+protocol OAuthServiceProtocol {
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void)
 }
+
+internal protocol ApayaServiceProtocol: OAuthServiceProtocol {}
 
 internal class ApayaService: ApayaServiceProtocol {
     deinit {
@@ -24,7 +26,7 @@ internal class ApayaService: ApayaServiceProtocol {
         }
         let body = Apaya.CreateSessionAPIRequest(productId: productId, reference: "ref123")
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        api.apayaCreateSession(clientToken: clientToken, request: body) { result in
+        api.apayaCreateSession(clientToken: clientToken, request: body) { [weak self] result in
             switch result {
             case .failure:
                 completion(.failure(ApayaException.failedToCreateSession))
@@ -32,8 +34,8 @@ internal class ApayaService: ApayaServiceProtocol {
                 log(
                     logLevel: .info,
                     message: "\(response)",
-                    className: "ApayaService",
-                    function: "createPaymentSession"
+                    className: "\(String(describing: self.self))",
+                    function: #function
                 )
                 completion(.success(response.redirectUrl))
             }
