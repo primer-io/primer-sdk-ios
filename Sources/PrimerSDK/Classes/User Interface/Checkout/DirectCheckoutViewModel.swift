@@ -118,6 +118,7 @@ struct PaymentMethodViewModel {
         case .goCardlessMandate: return .rightArrow
         case .klarna: return .klarna
         case .paymentCard: return .creditCard
+        case .apaya: return .mobile
         default: return nil
         }
     }
