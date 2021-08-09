@@ -42,7 +42,7 @@ public struct Apaya {
 
 // factory methods
 extension Apaya.WebViewResult {
-    static func create(from url: URL?) -> Result<Apaya.WebViewResult, ApayaException> {
+    static func create(from url: URL?) -> Result<Apaya.WebViewResult, ApayaException>? {
         guard
             let url = url,
             let success = url.queryParameterValue(for: "success"),
@@ -54,7 +54,7 @@ extension Apaya.WebViewResult {
             return .failure(ApayaException.webViewFlowError)
         }
         if (status == "SETUP_ABANDONED") {
-            return .failure(ApayaException.webViewFlowCancelled)
+            return nil
         }
         guard
             let ptNumber = url.queryParameterValue(for: "pt"),
