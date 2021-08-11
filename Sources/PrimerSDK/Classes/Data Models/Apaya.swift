@@ -7,12 +7,9 @@
 
 public struct Apaya {
     public struct CreateSessionAPIRequest: Encodable {
-        let productId: String
-        let reference: String // this could maybe be optional?
-        init(productId: String, reference: String) {
-            self.productId = productId
-            self.reference = reference
-        }
+        let merchantAccountId: String
+        let language: String?
+        let currencyCode: String?
     }
     public struct CreateSessionAPIResponse: Decodable {
         let redirectUrl: String
