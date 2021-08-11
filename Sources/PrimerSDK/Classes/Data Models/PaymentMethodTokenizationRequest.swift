@@ -42,8 +42,9 @@ struct PaymentInstrument: Encodable {
     var klarnaCustomerToken: String?
     var sessionData: KlarnaSessionData?
     // Apaya
-    var apayaToken: String?
-    var apayaMxValue: String?
+    var mx: String?
+    var mnc: String?
+    var mcc: String?
 }
 
 enum TokenType: String, Encodable {
