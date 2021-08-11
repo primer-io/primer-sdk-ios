@@ -24,7 +24,7 @@ internal class ApayaService: ApayaServiceProtocol {
         else {
             return completion(.failure(ApayaException.noToken))
         }
-        let body = Apaya.CreateSessionAPIRequest(productId: productId, reference: "ref123")
+        let body = Apaya.CreateSessionAPIRequest(merchantAccountId: productId)
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.apayaCreateSession(clientToken: clientToken, request: body) { [weak self] result in
             switch result {
