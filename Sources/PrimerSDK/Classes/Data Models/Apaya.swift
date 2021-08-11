@@ -8,8 +8,8 @@
 public struct Apaya {
     public struct CreateSessionAPIRequest: Encodable {
         let merchantAccountId: String
-        let language: String?
-        let currencyCode: String?
+        let language: String? = nil
+        let currencyCode: String? = nil
     }
     public struct CreateSessionAPIResponse: Decodable {
         let redirectUrl: String
