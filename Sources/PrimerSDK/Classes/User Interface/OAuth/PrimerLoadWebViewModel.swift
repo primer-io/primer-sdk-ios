@@ -89,9 +89,9 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
         }
     }
 
-    private func generateTokenizationRequest() -> PaymentMethodTokenizationRequest {
+    private func generateTokenizationRequest(with result: Apaya.WebViewResult) -> PaymentMethodTokenizationRequest {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let instrument = PaymentInstrument(apayaToken: "")
+        let instrument = PaymentInstrument(mx: result.mxNumber, mnc: result.mnc, mcc: result.mcc)
         return PaymentMethodTokenizationRequest(
             paymentInstrument: instrument,
             state: state
