@@ -36,11 +36,10 @@ internal extension PrimerAPI {
              .payPalConfirmBillingAgreement(let clientToken, _),
              .klarnaCreatePaymentSession(let clientToken, _),
              .klarnaCreateCustomerToken(let clientToken, _),
-             .klarnaFinalizePaymentSession(let clientToken, _):
+             .klarnaFinalizePaymentSession(let clientToken, _),
+             .apayaCreateSession(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
-        case .apayaCreateSession:
-            return "https://us-central1-primerdemo-8741b.cloudfunctions.net"
         case .vaultDeletePaymentMethod(let clientToken, _),
              .vaultFetchPaymentMethods(let clientToken),
              .tokenizePaymentMethod(let clientToken, _):
@@ -77,7 +76,7 @@ internal extension PrimerAPI {
         case .tokenizePaymentMethod:
             return "/payment-instruments"
         case .apayaCreateSession:
-            return "/apaya"
+            return "/session-token"
         }
     }
 
