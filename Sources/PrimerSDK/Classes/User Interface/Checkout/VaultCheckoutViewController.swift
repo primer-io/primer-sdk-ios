@@ -93,6 +93,8 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
             cell.accessibilityIdentifier = "payment_method_table_view_direct_debit_cell"
         case .paymentCard:
             cell.accessibilityIdentifier = "payment_method_table_view_card_cell"
+        case .apaya:
+            cell.accessibilityIdentifier = "payment_method_table_view_apaya"
         default:
             break
         }
@@ -135,6 +137,8 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
             router.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
         case .klarna:
             router.show(.oAuth(host: .klarna))
+        case .apaya:
+            router.show(.oAuth(host: .apaya))
         default:
             break
         }

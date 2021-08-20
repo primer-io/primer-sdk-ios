@@ -13,6 +13,7 @@ enum OAuthHost {
     case paypal
     case klarna
     case applePay
+    case apaya
 }
 
 enum Route {
@@ -47,10 +48,16 @@ enum Route {
             vc.delegate = delegate
             return vc
         case .oAuth(let host):
-            if #available(iOS 11.0, *) {
-                return OAuthViewController(host: host)
-            } else {
-                return nil
+            switch host {
+            case .apaya:
+                let viewModel: ApayaLoadWebViewModel = DependencyContainer.resolve()
+                return PrimerLoadWebViewController(with: viewModel)
+            default:
+                if #available(iOS 11.0, *) {
+                    return OAuthViewController(host: host)
+                } else {
+                    return nil
+                }
             }
         case .applePay:
             return nil
@@ -87,7 +94,7 @@ enum Route {
         case .success:
             return 360
         case .error:
-            return 220
+            return 320
         case .confirmMandate:
             return 580
         case .form(let type, _):
