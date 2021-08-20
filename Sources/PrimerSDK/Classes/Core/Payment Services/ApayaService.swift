@@ -19,16 +19,20 @@ internal class ApayaService: ApayaServiceProtocol {
     }
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
+        print("🔥 createPaymentSession")
         guard let clientToken = state.decodedClientToken,
-              let productId = state.paymentMethodConfig?.getConfigId(for: .apaya)
+              let merchantId = state.paymentMethodConfig?.getConfigId(for: .apaya),
+              let accountId = state.paymentMethodConfig?.getProductId(for: .apaya)
         else {
             return completion(.failure(ApayaException.noToken))
         }
-        let body = Apaya.CreateSessionAPIRequest(productId: productId, reference: "ref123")
+        print("🔥 merchantId: \(merchantId), accountId: \(accountId)")
+        let body = Apaya.CreateSessionAPIRequest(merchantId: "", merchantAccountId: "2abf9dcd-7b12-509f-ba9c-82ca1bb873a6")
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.apayaCreateSession(clientToken: clientToken, request: body) { [weak self] result in
             switch result {
-            case .failure:
+            case .failure(let error):
+                Primer.shared.delegate?.checkoutFailed?(with: error)
                 completion(.failure(ApayaException.failedToCreateSession))
             case .success(let response):
                 log(
