@@ -7,9 +7,19 @@
 
 public struct Apaya {
     public struct CreateSessionAPIRequest: Encodable {
+        let merchantId: String
         let merchantAccountId: String
+        let reference: String = "scooter ride"
         let language: String? = nil
         let currencyCode: String? = nil
+        
+        enum CodingKeys: String, CodingKey {
+            case merchantId = "merchant_id"
+            case merchantAccountId = "merchant_account_id"
+            case reference = "reference"
+            case language = "language"
+            case currencyCode = "currency_code"
+        }
     }
     public struct CreateSessionAPIResponse: Decodable {
         let redirectUrl: String
