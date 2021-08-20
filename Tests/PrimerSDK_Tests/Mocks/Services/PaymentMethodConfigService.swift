@@ -17,6 +17,7 @@ class MockPaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
 
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
         fetchConfigCalled = true
+        completion(nil)
     }
 }
 

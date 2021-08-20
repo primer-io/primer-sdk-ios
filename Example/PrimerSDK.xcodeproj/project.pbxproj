@@ -46,10 +46,10 @@
 		1DC7EE14261FA3D400BCBFFC /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC7EE13261FA3D400BCBFFC /* CreateClientToken.swift */; };
 		1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */; };
 		1DEBE0E126B75EBF004E3064 /* ApayaServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */; };
-		1DEBE0E926BAC65E004E3064 /* ApayaLoadWebViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0E826BAC65E004E3064 /* ApayaLoadWebViewControllerTests.swift */; };
 		1DEBE0EB26BAC6EE004E3064 /* ApayaLoadWebViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0EA26BAC6EE004E3064 /* ApayaLoadWebViewModel.swift */; };
 		1DEBE0ED26BACD70004E3064 /* ApayaLoadWebViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0EC26BACD70004E3064 /* ApayaLoadWebViewModelTests.swift */; };
 		1DEBE0EF26BACE77004E3064 /* ApayaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0EE26BACE76004E3064 /* ApayaService.swift */; };
+		1DEBE0F326BC4097004E3064 /* ApayaWebViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0F226BC4097004E3064 /* ApayaWebViewModelTests.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -130,10 +130,10 @@
 		1DC7EE13261FA3D400BCBFFC /* CreateClientToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateClientToken.swift; sourceTree = "<group>"; };
 		1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApayaTests.swift; sourceTree = "<group>"; };
 		1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaServiceTests.swift; sourceTree = "<group>"; };
-		1DEBE0E826BAC65E004E3064 /* ApayaLoadWebViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaLoadWebViewControllerTests.swift; sourceTree = "<group>"; };
 		1DEBE0EA26BAC6EE004E3064 /* ApayaLoadWebViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaLoadWebViewModel.swift; sourceTree = "<group>"; };
 		1DEBE0EC26BACD70004E3064 /* ApayaLoadWebViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaLoadWebViewModelTests.swift; sourceTree = "<group>"; };
 		1DEBE0EE26BACE76004E3064 /* ApayaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaService.swift; sourceTree = "<group>"; };
+		1DEBE0F226BC4097004E3064 /* ApayaWebViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaWebViewModelTests.swift; sourceTree = "<group>"; };
 		3B55FBF1D40BE6B25F29A5D9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		45CA532A34F52954A21835C5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		577FC370D408D20C78CCD0EF /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -238,6 +238,7 @@
 				1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */,
 				1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */,
 				1DEBE0EC26BACD70004E3064 /* ApayaLoadWebViewModelTests.swift */,
+				1DEBE0F226BC4097004E3064 /* ApayaWebViewModelTests.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -318,7 +319,6 @@
 			isa = PBXGroup;
 			children = (
 				1D30D5D92678ECCB001C7812 /* OAuthViewControllerTests.swift */,
-				1DEBE0E826BAC65E004E3064 /* ApayaLoadWebViewControllerTests.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -706,13 +706,13 @@
 				1582B985260A3F2900C80BD7 /* KlarnaService.swift in Sources */,
 				1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */,
 				1582B984260A3F2900C80BD7 /* TokenizationService.swift in Sources */,
-				1DEBE0E926BAC65E004E3064 /* ApayaLoadWebViewControllerTests.swift in Sources */,
 				1582B989260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift in Sources */,
 				1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */,
 				1582B97E260A3F2900C80BD7 /* ApplePayViewModel.swift in Sources */,
 				1582B982260A3F2900C80BD7 /* VaultService.swift in Sources */,
 				1582B97D260A3F2900C80BD7 /* VaultCheckoutViewModel.swift in Sources */,
 				1582B987260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift in Sources */,
+				1DEBE0F326BC4097004E3064 /* ApayaWebViewModelTests.swift in Sources */,
 				1582B990260A3F2900C80BD7 /* TokenizationServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
