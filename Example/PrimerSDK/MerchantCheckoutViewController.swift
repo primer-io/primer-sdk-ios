@@ -17,7 +17,8 @@ class MerchantCheckoutViewController: UIViewController {
             self.tableView.reloadData()
         }
     }
-    let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
+    let endpoint = "http://localhost:5001/primerdemo-8741b/us-central1"
+//    let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     let amount = 200
     
     let vaultPayPalSettings = PrimerSettings(
@@ -158,21 +159,29 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             return completion(nil, NetworkError.missingParams)
         }
         
-        callApi(request, completion: { result in
-            switch result {
-            case .success(let data):
-                do {
-                    let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
-
-                    completion(token, nil)
-
-                } catch {
-                    completion(nil, error)
-                }
-            case .failure(let err):
-                completion(nil, err)
-            }
-        })
+        completion("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2Mjk0NjcwNTEsImFjY2Vzc1Rva2VuIjoiODk2ZmI2MzktZTc4Mi00ODA4LWE0YmMtZmFmZjczZDk1OWI2IiwiYW5hbHl0aWNzVXJsIjpudWxsLCJpbnRlbnQiOiJDSEVDS09VVCIsImNvbmZpZ3VyYXRpb25VcmwiOiJodHRwOi8vbG9jYWxob3N0OjgwODUvY2xpZW50LXNkay9jb25maWd1cmF0aW9uIiwiY29yZVVybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4NSIsInBjaVVybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MS9zZGsiLCJlbnYiOiJMT0NBTF9ET0NLRVIiLCJ0aHJlZURTZWN1cmVJbml0VXJsIjoiaHR0cHM6Ly9zb25nYmlyZHN0YWcuY2FyZGluYWxjb21tZXJjZS5jb20vY2FyZGluYWxjcnVpc2UvdjEvc29uZ2JpcmQuanMiLCJ0aHJlZURTZWN1cmVUb2tlbiI6ImV5SjBlWEFpT2lKS1YxUWlMQ0poYkdjaU9pSklVekkxTmlKOS5leUpxZEdraU9pSXhZamd6TlRrek9DMHhORE14TFRRelpEY3RPR00wWVMwMU9ESXdPVEZpTlRNM01qWWlMQ0pwWVhRaU9qRTJNamt6T0RBMk5URXNJbWx6Y3lJNklqVmxZalZpWVdWalpUWmxZemN5Tm1WaE5XWmlZVGRsTlNJc0lrOXlaMVZ1YVhSSlpDSTZJalZsWWpWaVlUUXhaRFE0Wm1Ka05qQTRPRGhpT0dVME5DSjkuX3VCVV90V05BalZlSjhFS0E2RTBLcWRnY2RveEhHSnAtNTMwWmdpTndnOCIsInBheW1lbnRGbG93IjoiUFJFRkVSX1ZBVUxUIn0.cgW9VLVKVA55gzZxkTAi3prNZfB-7-Jw8Dt9H6gTkK4", nil)
+        
+//        callApi(request, completion: { result in
+//            switch result {
+//            case .success(let data):
+//                do {
+//                    let decoded = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+//
+//                    print(decoded)
+//
+////                    guard let token = decoded?["clientToken"] else {
+////                        throw NetworkError.serializationError
+////                    }
+////
+////                    completion(token, nil)
+//
+//                } catch {
+//                    completion(nil, error)
+//                }
+//            case .failure(let err):
+//                completion(nil, err)
+//            }
+//        })
     }
     
     func tokenAddedToVault(_ token: PaymentMethodToken) {
