@@ -34,6 +34,10 @@ class MockPrimerLoadWebViewModel: PrimerLoadWebViewModelProtocol {
         getWebViewModelCalled = true
         return ApayaWebViewModel()
     }
+    var navigateCalled = false
+    func navigate(_ result: Result<Bool, Error>?) {
+        navigateCalled = true
+    }
 }
 
 #endif

@@ -10,11 +10,12 @@
 protocol PrimerLoadWebViewModelProtocol: AnyObject {
     func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void)
     func getWebViewModel() -> PrimerWebViewModelProtocol
+    func navigate(_ result: Result<Bool, Error>?)
     func tokenize()
 }
 
 internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
-    //
+
     func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
         if configDidLoad() {
             let apayaService: ApayaServiceProtocol = DependencyContainer.resolve()
@@ -27,7 +28,6 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
             loadConfig { [weak self] result in
                 switch result {
                 case .failure(let error):
-                    _ = ErrorHandler.shared.handle(error: error)
                     self?.navigate(.failure(error))
                 case .success:
                     guard let strongSelf = self, strongSelf.configDidLoad() else {
@@ -40,7 +40,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
             }
         }
     }
-    //
+
     func tokenize() {
         let state: AppStateProtocol = DependencyContainer.resolve()
         switch state.getApayaResult() {
@@ -48,22 +48,20 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
             navigate(nil)
         case .failure(let error):
             navigate(.failure(error))
-        case .success:
-            navigate(.success(true)) // this is temporary fix until we're able to tokenize in sandbox. See code below.
-
-//            let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
-//            let request = generateTokenizationRequest()
-//            tokenizationService.tokenize(request: request) { [weak self] result in
-//                switch result {
-//                case .failure:
-//                    self?.navigate(.failure(ApayaException.failedApiCall))
-//                case .success:
-//                    self?.navigate(.success(true))
-//                }
-//            }
+        case .success(let result):
+            let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
+            let request = generateTokenizationRequest(with: result)
+            tokenizationService.tokenize(request: request) { [weak self] result in
+                switch result {
+                case .failure:
+                    self?.navigate(.failure(PrimerError.tokenizationRequestFailed))
+                case .success:
+                    self?.navigate(.success(true))
+                }
+            }
         }
     }
-    //
+
     func navigate(_ result: Result<Bool, Error>?) {
         DispatchQueue.main.async {
             let router: RouterDelegate = DependencyContainer.resolve()
@@ -81,6 +79,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
                 if settings.hasDisabledSuccessScreen {
                     router.root?.onDisabledSuccessScreenDismiss()
                 } else {
+                    // this needs a better error
                     router.show(.error(error: PrimerError.generic))
                 }
             case .success:
@@ -89,7 +88,9 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
         }
     }
 
-    private func generateTokenizationRequest(with result: Apaya.WebViewResult) -> PaymentMethodTokenizationRequest {
+    private func generateTokenizationRequest(
+        with result: Apaya.WebViewResult
+    ) -> PaymentMethodTokenizationRequest {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let instrument = PaymentInstrument(mx: result.mxNumber, mnc: result.mnc, mcc: result.mcc)
         return PaymentMethodTokenizationRequest(
@@ -112,7 +113,6 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
         let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
         clientTokenService.loadCheckoutConfig { [weak self] (error) in
             if let error = error {
-                _ = ErrorHandler.shared.handle(error: error)
                 self?.navigate(.failure(error))
             } else {
                 self?.loadPaymentMethodConfig(completion)
@@ -124,7 +124,6 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
         let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
         configService.fetchConfig { [weak self] (error) in
             if let error = error {
-                _ = ErrorHandler.shared.handle(error: error)
                 self?.navigate(.failure(error))
             } else {
                 completion(.success(true))

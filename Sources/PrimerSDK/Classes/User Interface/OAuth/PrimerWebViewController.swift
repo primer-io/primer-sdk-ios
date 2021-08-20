@@ -11,6 +11,7 @@ import UIKit
 import WebKit
 
 internal class PrimerWebViewController: PrimerViewController, WKNavigationDelegate {
+
     weak var delegate: ReloadDelegate?
     weak var viewModel: PrimerWebViewModelProtocol?
 

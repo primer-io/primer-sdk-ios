@@ -41,10 +41,11 @@ class PrimerLoadWebViewController: PrimerViewController, ReloadDelegate {
 
     internal func generateUrl() {
         viewModel?.generateWebViewUrl { [weak self] result in
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
                 switch result {
-                case .failure:
-                    break // we're gonna refactor this method once merged in with the all the UI updates.
+                case .failure(let error):
+                    // we're gonna refactor this method once merged in with the all the UI updates.
+                    self?.viewModel?.navigate(.failure(error))
                 case .success(let urlString):
                     if let webViewModel = self?.viewModel?.getWebViewModel() {
                         let webViewController = PrimerWebViewController(with: webViewModel)

@@ -26,14 +26,16 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
             case .failure(let error):
                 completion(error)
             case .success(let config):
-                var configs: [ConfigPaymentMethod] = [ConfigPaymentMethod(id: "123", type: .apaya, options: nil)]
-                config.paymentMethods?.forEach {
-                    configs.append($0)
+                print("🔥🔥 \(config) 🔥🔥")
+                config.paymentMethods?.forEach { method in
+                    print(method.type)
+                    print(method.processorConfigId)
                 }
+                
                 state.paymentMethodConfig = PaymentMethodConfig(
                     coreUrl: config.coreUrl,
                     pciUrl: config.pciUrl,
-                    paymentMethods: configs
+                    paymentMethods: config.paymentMethods
                 )
 
                 state.viewModels = []
