@@ -42,6 +42,11 @@ public struct ThreeDS {
         case v2 = "2.2.0"
     }
 
+    internal enum ChallengePreference: String, Codable {
+        case noPreference = "NO_PREFERENCE"
+        case requestedByRequestor = "REQUESTED_BY_REQUESTOR"
+    }
+
     internal struct ACSRenderingType: Codable {
         let acsInterface: String?
         let acsUiTemplate: String?
@@ -130,6 +135,7 @@ public struct ThreeDS {
         var testScenario: ThreeDS.TestScenario?
         var maxProtocolVersion: ProtocolVersion
         var amount: Int
+        var challengePreference: ChallengePreference
         let currencyCode: Currency
         let orderId: String
         let customer: ThreeDS.Customer

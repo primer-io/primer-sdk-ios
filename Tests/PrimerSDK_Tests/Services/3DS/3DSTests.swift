@@ -115,6 +115,7 @@ class ThreeDSTests: XCTestCase {
             testScenario: nil,
             maxProtocolVersion: .v1,
             amount: 1,
+            challengePreference: .requestedByRequestor,
             currencyCode: .EUR,
             orderId: "order_id",
             customer: ThreeDS.Customer(
@@ -210,6 +211,7 @@ class ThreeDSTests: XCTestCase {
                             testScenario: nil,
                             maxProtocolVersion: .v1,
                             amount: 1,
+                            challengePreference: .requestedByRequestor,
                             currencyCode: .EUR,
                             orderId: "order_id",
                             customer: ThreeDS.Customer(
