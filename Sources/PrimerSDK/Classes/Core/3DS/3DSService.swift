@@ -146,6 +146,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 let threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(testScenario: nil,
                                                                             maxProtocolVersion: .v1,
                                                                             amount: settings.amount ?? 0,
+                                                                            challengePreference: .requestedByRequestor,
                                                                             currencyCode: settings.currency!,
                                                                             orderId: settings.orderId ?? "",
                                                                             customer: customer,
