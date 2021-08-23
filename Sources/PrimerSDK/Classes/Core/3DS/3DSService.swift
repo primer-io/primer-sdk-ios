@@ -146,9 +146,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             guard let clientToken = state.decodedClientToken else {
                 throw PrimerError.vaultFetchFailed
             }
-            
-            let env = clientToken.env
-                        
+                                    
             do {
                 let threeDSecureAuthData = try transaction.buildThreeDSecureAuthData()
                 let threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(testScenario: nil,
