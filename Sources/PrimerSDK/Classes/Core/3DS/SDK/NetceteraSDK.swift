@@ -178,8 +178,8 @@ extension NetceteraSDK: ChallengeStatusReceiver {
     
     func protocolError(protocolErrorEvent: ProtocolErrorEvent) {
         let userInfo: [String: Any] = [
-            NSLocalizedDescriptionKey: protocolErrorEvent.getErrorMessage(),
-            "sdkTransactionId": protocolErrorEvent.getSDKTransactionID()
+            NSLocalizedDescriptionKey: "\(protocolErrorEvent.getErrorMessage())",
+            "sdkTransactionId": "\(protocolErrorEvent.getSDKTransactionID())"
         ]
         
         let err = NSError(domain: "netcetera", code: -1, userInfo: userInfo)
@@ -188,7 +188,11 @@ extension NetceteraSDK: ChallengeStatusReceiver {
     }
     
     func runtimeError(runtimeErrorEvent: RuntimeErrorEvent) {
-        let err = NSError(domain: "netcetera", code: Int(runtimeErrorEvent.getErrorCode() ?? "-2") ?? -2, userInfo: [NSLocalizedDescriptionKey: runtimeErrorEvent.getErrorMessage()])
+        let userInfo: [String: Any] = [
+            NSLocalizedDescriptionKey: "\(runtimeErrorEvent.getErrorMessage())"
+        ]
+        
+        let err = NSError(domain: "netcetera", code: Int(runtimeErrorEvent.getErrorCode() ?? "-2") ?? -2, userInfo: userInfo)
         ErrorHandler.shared.handle(error: err)
         netceteraCompletion?(nil, err)
     }
