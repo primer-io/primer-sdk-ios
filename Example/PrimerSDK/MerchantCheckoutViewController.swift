@@ -249,7 +249,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             return
         }
 
-        guard let url = URL(string: "\(endpoint)/transaction") else {
+        guard let url = URL(string: "\(endpoint)/payments") else {
             return completion(NetworkError.missingParams)
         }
 
