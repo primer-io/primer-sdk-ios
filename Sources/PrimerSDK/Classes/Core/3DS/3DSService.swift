@@ -141,10 +141,18 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                                  countryCode: CountryCode(rawValue: userDetails.countryCode)!,
                                                  postalCode: userDetails.postalCode)
             
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            
+            guard let clientToken = state.decodedClientToken else {
+                throw PrimerError.vaultFetchFailed
+            }
+            
+            let env = clientToken.env
+                        
             do {
                 let threeDSecureAuthData = try transaction.buildThreeDSecureAuthData()
                 let threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(testScenario: nil,
-                                                                            maxProtocolVersion: .v1,
+                                                                            maxProtocolVersion: (clientToken.env == "SANDBOX" || clientToken.env == "STAGING") ? .v2 : .v1,
                                                                             amount: settings.amount ?? 0,
                                                                             challengePreference: .requestedByRequestor,
                                                                             currencyCode: settings.currency!,
