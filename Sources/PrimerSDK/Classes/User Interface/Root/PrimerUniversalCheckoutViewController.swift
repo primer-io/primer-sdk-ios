@@ -9,7 +9,7 @@ import UIKit
 
 internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
-    var savedCardButtonView: CardButton!
+    var savedCardView: CardButton!
     private var seeAllButton: UIButton!
     private var savedPaymentInstrumentStackView: UIStackView!
     
@@ -53,10 +53,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             seeAllButton = nil
         }
         
-        if savedCardButtonView != nil {
-            verticalStackView.removeArrangedSubview(savedCardButtonView)
-            savedCardButtonView.removeFromSuperview()
-            savedCardButtonView = nil
+        if savedCardView != nil {
+            verticalStackView.removeArrangedSubview(savedCardView)
+            savedCardView.removeFromSuperview()
+            savedCardView = nil
         }
         
         if savedPaymentInstrumentStackView != nil {
@@ -89,12 +89,12 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             savedPaymentInstrumentTitleLabel.textAlignment = .left
             savedPaymentInstrumentStackView.addArrangedSubview(savedPaymentInstrumentTitleLabel)
             
-            if savedCardButtonView == nil {
-                savedCardButtonView = CardButton()
-                savedPaymentInstrumentStackView.addArrangedSubview(savedCardButtonView)
-                savedCardButtonView.translatesAutoresizingMaskIntoConstraints = false
-                savedCardButtonView.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
-                savedCardButtonView.render(model: cardButtonViewModel, showIcon: false)
+            if savedCardView == nil {
+                savedCardView = CardButton()
+                savedPaymentInstrumentStackView.addArrangedSubview(savedCardView)
+                savedCardView.translatesAutoresizingMaskIntoConstraints = false
+                savedCardView.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
+                savedCardView.render(model: cardButtonViewModel, showIcon: false)
             }
             
             if seeAllButton == nil {
@@ -113,10 +113,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 verticalStackView.addArrangedSubview(savedPaymentInstrumentStackView)
             }
         } else {
-            if savedCardButtonView != nil {
-                verticalStackView.removeArrangedSubview(savedCardButtonView)
-                savedCardButtonView.removeFromSuperview()
-                savedCardButtonView = nil
+            if savedCardView != nil {
+                verticalStackView.removeArrangedSubview(savedCardView)
+                savedCardView.removeFromSuperview()
+                savedCardView = nil
             }
             
             if seeAllButton != nil {
