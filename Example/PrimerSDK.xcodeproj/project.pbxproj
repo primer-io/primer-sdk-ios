@@ -927,7 +927,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 205;
+				CURRENT_PROJECT_VERSION = 206;
 				DEVELOPMENT_TEAM = N8UN9TR5DY;
 				INFOPLIST_FILE = PrimerSDK/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
@@ -951,7 +951,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 205;
+				CURRENT_PROJECT_VERSION = 206;
 				DEVELOPMENT_TEAM = N8UN9TR5DY;
 				INFOPLIST_FILE = PrimerSDK/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
