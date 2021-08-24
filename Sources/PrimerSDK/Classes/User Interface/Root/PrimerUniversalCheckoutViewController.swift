@@ -14,6 +14,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var savedPaymentInstrumentStackView: UIStackView!
     private var payButton: PrimerButton!
     private var coveringView: PrimerView!
+    private var selectedPaymentInstrument: PaymentMethodToken?
     
     // swiftlint:disable function_body_length
     override func viewDidLoad() {
@@ -70,9 +71,12 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
+        self.selectedPaymentInstrument = nil
         if let selectedPaymentInstrument = checkoutViewModel.paymentMethods.first(where: { paymentInstrument in
             return paymentInstrument.token == checkoutViewModel.selectedPaymentMethodId
         }), let cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
+            self.selectedPaymentInstrument = selectedPaymentInstrument
+            
             if savedPaymentInstrumentStackView == nil {
                 savedPaymentInstrumentStackView = UIStackView()
                 savedPaymentInstrumentStackView.axis = .vertical
@@ -302,6 +306,36 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     func cardButtonTapped() {
         let cfvc = PrimerCardFormViewController(flow: .checkout)
         Primer.shared.primerRootVC?.show(viewController: cfvc)
+    }
+    
+    @objc
+    func payButtonTapped() {
+        guard let paymentMethodToken = selectedPaymentInstrument else { return }
+        
+        payButton.showSpinner(true, color: .white)
+        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
+            DispatchQueue.main.async { [weak self] in
+                self?.payButton.showSpinner(false)
+                
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                
+                if settings.hasDisabledSuccessScreen {
+                    Primer.shared.dismissPrimer()
+                } else {
+                    if let err = err {
+                        let evc = ErrorViewController(message: PrimerError.amountMissing.localizedDescription)
+                        evc.view.translatesAutoresizingMaskIntoConstraints = false
+                        evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                        Primer.shared.primerRootVC?.show(viewController: evc)
+                    } else {
+                        let svc = SuccessViewController()
+                        svc.view.translatesAutoresizingMaskIntoConstraints = false
+                        svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                        Primer.shared.primerRootVC?.show(viewController: svc)
+                    }
+                }
+            }
+        })
     }
 
 }
