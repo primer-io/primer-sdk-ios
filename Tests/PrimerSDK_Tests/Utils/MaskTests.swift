@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import PrimerSDK
+@testable import Primer3DS_SDK
 
 class MaskTests: XCTestCase {
 

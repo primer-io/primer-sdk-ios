@@ -6,7 +6,7 @@
 //  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
-import PrimerSDK
+import Primer3DS_SDK
 import UIKit
 
 class MerchantCheckoutViewController: UIViewController {

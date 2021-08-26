@@ -7,7 +7,7 @@
 
 #if canImport(UIKit)
 
-@testable import PrimerSDK
+@testable import Primer3DS_SDK
 
 class MockApplePayViewModel: ApplePayViewModelProtocol {
     var amount: Int?

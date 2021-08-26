@@ -8,7 +8,7 @@
 #if canImport(UIKit)
 
 import XCTest
-@testable import PrimerSDK
+@testable import Primer3DS_SDK
 
 class PaymentMethodConfigServiceTests: XCTestCase {
 

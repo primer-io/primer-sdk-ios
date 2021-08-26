@@ -7,7 +7,7 @@
 
 #if canImport(UIKit)
 
-@testable import PrimerSDK
+@testable import Primer3DS_SDK
 
 class MockKlarnaService: KlarnaServiceProtocol {
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {

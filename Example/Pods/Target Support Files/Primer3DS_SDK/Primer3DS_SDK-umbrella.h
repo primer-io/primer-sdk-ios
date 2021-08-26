@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double PrimerSDKVersionNumber;
-FOUNDATION_EXPORT const unsigned char PrimerSDKVersionString[];
+FOUNDATION_EXPORT double Primer3DS_SDKVersionNumber;
+FOUNDATION_EXPORT const unsigned char Primer3DS_SDKVersionString[];
 

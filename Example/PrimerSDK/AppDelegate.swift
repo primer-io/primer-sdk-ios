@@ -6,7 +6,7 @@
 //  Copyright (c) 2021 Evangelos Pittas. All rights reserved.
 //
 
-import PrimerSDK
+import Primer3DS_SDK
 import UIKit
 
 @UIApplicationMain

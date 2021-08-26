@@ -7,7 +7,7 @@
 
 #if canImport(UIKit)
 
-@testable import PrimerSDK
+@testable import Primer3DS_SDK
 
 class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     var mandate: DirectDebitMandate {
