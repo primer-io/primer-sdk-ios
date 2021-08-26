@@ -25,7 +25,6 @@ Pod::Spec.new do |spec|
             'Sources/PrimerSDK/Resources/Localizable/*',
         ]
     }
-    spec.vendored_frameworks = 'Sources/PrimerSDK/Resources/Frameworks/*'
     
     spec.test_spec 'PrimerSDKTests' do |test_spec|
         test_spec.source_files = 'Tests/**/*.{h,m,swift}'

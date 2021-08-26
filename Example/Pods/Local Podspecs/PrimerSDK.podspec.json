@@ -26,7 +26,6 @@
       "Sources/PrimerSDK/Resources/Localizable/*"
     ]
   },
-  "vendored_frameworks": "Sources/PrimerSDK/Resources/Frameworks/*",
   "testspecs": [
     {
       "name": "PrimerSDKTests",
