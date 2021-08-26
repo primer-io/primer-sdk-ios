@@ -5,6 +5,7 @@
 //  Created by Evangelos Pittas on 17/6/21.
 //
 
+#if canImport(ThreeDS_SDK)
 import Foundation
 // FIXME: Netcetera Transaction object needs to get abstracted
 import ThreeDS_SDK
@@ -14,3 +15,4 @@ protocol ThreeDSSDKProtocol {
     func authenticateSdk(cardNetwork: CardNetwork, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void)
     func performChallenge(on transaction: Transaction, with threeDSecureAuthResponse: ThreeDSAuthenticationProtocol, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.ThreeDSSDKAuthCompletion, Error>) -> Void)
 }
+#endif

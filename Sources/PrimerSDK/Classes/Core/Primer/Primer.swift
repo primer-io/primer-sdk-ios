@@ -1,6 +1,8 @@
 #if canImport(UIKit)
 
+#if canImport(ThreeDS_SDK)
 import ThreeDS_SDK
+#endif
 import UIKit
 
 // swiftlint:disable identifier_name
@@ -23,6 +25,18 @@ public class Primer {
     }
 
     fileprivate init() {
+        #if canImport(ThreeDS_SDK)
+        print("Can import ThreeDS_SDK")
+        #else
+        print("Failed to import ThreeDS_SDK")
+        #endif
+        
+        #if canImport(Primer3DS)
+        print("Can import Primer3DS")
+        #else
+        print("Failed to import Primer3DS")
+        #endif
+        
         DispatchQueue.main.async { [weak self] in
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
@@ -32,13 +46,21 @@ public class Primer {
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        #if canImport(ThreeDS_SDK)
         return ThreeDSSDKAppDelegate.shared.appOpened(url: url)
+        #else
+        return false
+        #endif
     }
     
     public func application(_ application: UIApplication,
                      continue userActivity: NSUserActivity,
                      restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        #if canImport(ThreeDS_SDK)
         return ThreeDSSDKAppDelegate.shared.appOpened(userActivity: userActivity)
+        #else
+        return false
+        #endif
     }
 
     /**
@@ -211,6 +233,7 @@ public class Primer {
     // FIXME: Remove me when done testing.
     // swiftlint:disable cyclomatic_complexity
     public func performThreeDS(paymentMethod: PaymentMethodToken, completion: @escaping (Error?) -> Void) {
+        #if canImport(ThreeDS_SDK)
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let clientToken = state.decodedClientToken else {
@@ -231,6 +254,10 @@ public class Primer {
                 completion(err)
             }
         }
+        #else
+        completion(PrimerError.threeDSFailed)
+        #endif
+        
     }
 
 }

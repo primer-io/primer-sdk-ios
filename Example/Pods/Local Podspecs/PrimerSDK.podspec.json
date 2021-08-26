@@ -19,18 +19,32 @@
   "platforms": {
     "ios": "10.0"
   },
-  "source_files": "Sources/PrimerSDK/Classes/**/*.{h,m,swift}",
-  "resource_bundles": {
-    "PrimerResources": [
-      "Sources/PrimerSDK/Resources/*.xcassets",
-      "Sources/PrimerSDK/Resources/Localizable/*"
-    ]
-  },
+  "default_subspecs": "Core",
   "testspecs": [
     {
       "name": "PrimerSDKTests",
       "test_type": "unit",
       "source_files": "Tests/**/*.{h,m,swift}"
+    }
+  ],
+  "subspecs": [
+    {
+      "name": "Core",
+      "source_files": "Sources/PrimerSDK/Classes/**/*.{h,m,swift}",
+      "resource_bundles": {
+        "PrimerResources": [
+          "Sources/PrimerSDK/Resources/*.xcassets",
+          "Sources/PrimerSDK/Resources/Localizable/*"
+        ]
+      }
+    },
+    {
+      "name": "3DS",
+      "dependencies": {
+        "Primer3DS": [
+
+        ]
+      }
     }
   ],
   "swift_version": "5.3"

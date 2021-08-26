@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 11/6/21.
 //
 
+#if canImport(ThreeDS_SDK)
+
 import Foundation
 import ThreeDS_SDK
 
@@ -27,3 +29,5 @@ extension Transaction {
             sdkReferenceNumber: sdkReferenceNumber)
     }
 }
+
+#endif

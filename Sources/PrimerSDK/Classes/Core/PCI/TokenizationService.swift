@@ -57,7 +57,8 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 if state.paymentMethodConfig?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                     isThreeDSEnabled = true
                 }
-                                
+                               
+                #if canImport(ThreeDS_SDK)
                 if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard && paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess && isThreeDSEnabled {
                     let sdk: ThreeDSSDKProtocol = NetceteraSDK()
                     DependencyContainer.register(sdk)
@@ -99,6 +100,19 @@ internal class TokenizationService: TokenizationServiceProtocol {
                         onTokenizeSuccess(.success(paymentMethodToken))
                     }
                 }
+                #else
+                DispatchQueue.main.async {
+                    if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard {
+                        print("\nWARNING!\nCannot perform 3DS. Continue without 3DS\n")
+                    }
+                    
+                    if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
+                        Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+                    }
+                    
+                    onTokenizeSuccess(.success(paymentMethodToken))
+                }
+                #endif
             }
         }
     }

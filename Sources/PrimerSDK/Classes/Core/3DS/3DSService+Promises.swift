@@ -5,6 +5,7 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
+#if canImport(ThreeDS_SDK)
 import Foundation
 import ThreeDS_SDK
 
@@ -82,3 +83,5 @@ extension ThreeDSService {
     }
     
 }
+
+#endif

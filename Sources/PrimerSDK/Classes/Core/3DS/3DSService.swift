@@ -5,6 +5,7 @@
 //  Created by Evangelos Pittas on 17/6/21.
 //
 
+#if canImport(ThreeDS_SDK)
 import Foundation
 import ThreeDS_SDK
 
@@ -367,3 +368,5 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         api.threeDSContinueAuth(clientToken: clientToken, threeDSTokenId: threeDSTokenId, completion: completion)
     }
 }
+
+#endif

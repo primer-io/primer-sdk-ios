@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 1/4/21.
 //
 
-#if canImport(UIKit)
+#if canImport(ThreeDS_SDK)
 
 import Foundation
 import ThreeDS_SDK
