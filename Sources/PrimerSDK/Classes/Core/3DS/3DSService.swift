@@ -101,7 +101,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void
     ) {
         var transaction: Transaction!
-        let cardNetwork = CardNetwork(rawValue: paymentMethodToken.paymentInstrumentData?.network)
+        let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodToken.paymentInstrumentData?.network ?? "")
         
         do {
             try ThreeDSService.validate3DSParameters()
