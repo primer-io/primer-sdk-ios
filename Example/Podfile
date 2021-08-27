@@ -7,7 +7,7 @@ platform :ios, '10.0'
 
 target 'PrimerSDK_Example' do
   pod 'PrimerSDK', :path => '../'
-  pod 'PrimerSDK/3DS', :path => '../'
+#  pod 'PrimerSDK/3DS', :path => '../'
 
   target 'PrimerSDK_Tests' do
     inherit! :search_paths
