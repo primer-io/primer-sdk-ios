@@ -241,7 +241,11 @@ public struct ThreeDS {
             }
             
             token = try container.decode(PaymentMethodToken.self, forKey: .token)
-            resumeToken = try? container.decode(String?.self, forKey: .resumeToken)
+            if let token = try? container.decode(String?.self, forKey: .resumeToken) {
+                resumeToken = token
+            } else {
+                resumeToken = nil
+            }
         }
     }
     
