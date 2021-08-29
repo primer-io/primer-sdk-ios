@@ -9,7 +9,7 @@ public struct Apaya {
     public struct CreateSessionAPIRequest: Encodable {
         let merchantId: String
         let merchantAccountId: String
-        let reference: String = "scooter ride"
+        let reference: String = "recurring"
         let language: String? = "en"
 
         enum CodingKeys: String, CodingKey {
@@ -26,14 +26,14 @@ public struct Apaya {
     }
 
     public struct WebViewResult {
-        let ptNumber: String
+        // let ptNumber: String
         let mxNumber: String
-        let hashedIdentifier: String
+        // let hashedIdentifier: String
         let mcc: String
         let mnc: String
-        let success: String
-        let status: String
-        let token: String
+        // let success: String
+        // let status: String
+        // let token: String
     }
 }
 
@@ -55,12 +55,12 @@ extension Apaya.WebViewResult {
         }
         
         guard
-            let ptNumber = url.queryParameterValue(for: "pt"),
+            // let ptNumber = url.queryParameterValue(for: "pt"),
             let mxNumber = url.queryParameterValue(for: "MX"),
-            let hashedIdentifier = url.queryParameterValue(for: "HashedIdentifier"),
+            // let hashedIdentifier = url.queryParameterValue(for: "HashedIdentifier"),
             let mcc = url.queryParameterValue(for: "MCC"),
             let mnc = url.queryParameterValue(for: "MNC"),
-            let token = url.queryParameterValue(for: "token"),
+            // let token = url.queryParameterValue(for: "token"),
             success == "1"
         else {
             return .failure(ApayaException.invalidWebViewResult)
@@ -68,14 +68,14 @@ extension Apaya.WebViewResult {
 
         return .success(
             Apaya.WebViewResult(
-                ptNumber: ptNumber,
+                // ptNumber: ptNumber,
                 mxNumber: mxNumber,
-                hashedIdentifier: hashedIdentifier,
+                // hashedIdentifier: hashedIdentifier,
                 mcc: mcc,
                 mnc: mnc,
-                success: success,
-                status: status,
-                token: token
+                // success: success,
+                // status: status,
+                // token: token
             )
         )
     }
