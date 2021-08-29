@@ -10,31 +10,21 @@ public struct Apaya {
         let merchantId: String
         let merchantAccountId: String
         let reference: String = "scooter ride"
-        let language: String? = nil
-        let currencyCode: String? = nil
-        
+        let language: String? = "en"
+
         enum CodingKeys: String, CodingKey {
             case merchantId = "merchant_id"
             case merchantAccountId = "merchant_account_id"
             case reference = "reference"
             case language = "language"
-            case currencyCode = "currency_code"
         }
     }
     public struct CreateSessionAPIResponse: Decodable {
-        let redirectUrl: String
-        let token: String
-        let passthroughVariable: String
-        init(
-            redirectUrl: String,
-            token: String,
-            passthroughVariable: String
-        ) {
-            self.redirectUrl = redirectUrl
-            self.token = token
-            self.passthroughVariable = passthroughVariable
-        }
+        let url: String?
+        let token: String?
+        let pt: String?
     }
+
     public struct WebViewResult {
         let ptNumber: String
         let mxNumber: String
@@ -63,6 +53,7 @@ extension Apaya.WebViewResult {
         if (status == "SETUP_ABANDONED") {
             return nil
         }
+        
         guard
             let ptNumber = url.queryParameterValue(for: "pt"),
             let mxNumber = url.queryParameterValue(for: "MX"),

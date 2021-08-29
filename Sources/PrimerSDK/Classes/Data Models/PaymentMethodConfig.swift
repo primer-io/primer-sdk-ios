@@ -46,11 +46,11 @@ internal extension PaymentMethodConfig {
         print("🌺 getProductId")
         guard let method = self.paymentMethods?
                 .first(where: { method in return method.type == type }) else { return nil }
-        print("🌺 method: \(method.processorConfigId)")
-        return method.processorConfigId
+        print("🌺 method: \(method.options?.merchantAccountId)")
+        return method.options?.merchantAccountId
     }
 }
 
 class PaymentMethodConfigOptions: Codable {
-    let productId: String?
+    let merchantAccountId: String?
 }

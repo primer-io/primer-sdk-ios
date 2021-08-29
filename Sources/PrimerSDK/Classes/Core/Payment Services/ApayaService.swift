@@ -26,8 +26,8 @@ internal class ApayaService: ApayaServiceProtocol {
         else {
             return completion(.failure(ApayaException.noToken))
         }
-        print("🔥 merchantId: \(merchantId), accountId: \(accountId)")
-        let body = Apaya.CreateSessionAPIRequest(merchantId: "", merchantAccountId: "2abf9dcd-7b12-509f-ba9c-82ca1bb873a6")
+        print("🐠 merchantId: \(merchantId), accountId: \(accountId)")
+        let body = Apaya.CreateSessionAPIRequest(merchantId: "foo", merchantAccountId: accountId)
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.apayaCreateSession(clientToken: clientToken, request: body) { [weak self] result in
             switch result {
@@ -41,7 +41,8 @@ internal class ApayaService: ApayaServiceProtocol {
                     className: "\(String(describing: self.self))",
                     function: #function
                 )
-                completion(.success(response.redirectUrl))
+                print("🦧🦧🦧🦧🦧🦧 \(response.url)")
+                completion(.success(response.url ?? ""))
             }
         }
     }
