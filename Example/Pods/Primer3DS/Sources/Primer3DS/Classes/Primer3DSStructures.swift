@@ -1,13 +1,7 @@
-//
-//  Primer3DS+Structures.swift
-//  Primer3DS
-//
-//  Created by Evangelos Pittas on 26/8/21.
-//
 
 import Foundation
 
-// Exposes structures
+// Exposed structures
 
 public enum Environment: String, Codable {
     case production = "PRODUCTION"

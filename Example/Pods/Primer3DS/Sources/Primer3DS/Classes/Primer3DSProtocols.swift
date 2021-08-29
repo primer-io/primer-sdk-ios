@@ -1,11 +1,8 @@
-//
-//  Primer3DSProtocols.swift
-//  Primer3DS
-//
-//  Created by Evangelos Pittas on 27/8/21.
-//
+
+#if canImport(UIKit)
 
 import Foundation
+import UIKit
 
 @objc public protocol Primer3DSProtocol {
     @objc func initializeSDK(licenseKey: String, certificates: [Primer3DSCertificate]?) throws
@@ -40,3 +37,5 @@ import Foundation
     var sdkTransactionId: String { get }
     var transactionStatus: String { get }
 }
+
+#endif

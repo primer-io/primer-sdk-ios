@@ -1,4 +1,5 @@
-
+#if canImport(UIKit)
+#if canImport(ThreeDS_SDK)
 import ThreeDS_SDK
 
 public class Primer3DS: NSObject, Primer3DSProtocol {
@@ -10,6 +11,7 @@ public class Primer3DS: NSObject, Primer3DSProtocol {
     
     public init(environment: Environment) {
         self.environment = environment
+        print("bdnajksdas")
     }
     
     public func initializeSDK(licenseKey: String, certificates: [Primer3DSCertificate]? = nil) throws {
@@ -153,3 +155,6 @@ extension Transaction {
             sdkReferenceNumber: sdkReferenceNumber)
     }
 }
+
+#endif
+#endif
