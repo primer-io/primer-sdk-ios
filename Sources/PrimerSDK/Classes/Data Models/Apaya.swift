@@ -7,7 +7,7 @@
 
 public struct Apaya {
     public struct CreateSessionAPIRequest: Encodable {
-        let merchantId: String
+        let merchantId: String = "merchantId"
         let merchantAccountId: String
         let reference: String = "recurring"
         let language: String? = "en"
@@ -20,7 +20,7 @@ public struct Apaya {
         }
     }
     public struct CreateSessionAPIResponse: Decodable {
-        let url: String?
+        let url: String
         let token: String?
         let pt: String?
     }

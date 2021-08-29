@@ -19,7 +19,6 @@ internal class ApayaService: ApayaServiceProtocol {
     }
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        print("🔥 createPaymentSession")
         guard let clientToken = state.decodedClientToken,
               let merchantId = state.paymentMethodConfig?.getConfigId(for: .apaya),
               let accountId = state.paymentMethodConfig?.getProductId(for: .apaya)
@@ -42,7 +41,7 @@ internal class ApayaService: ApayaServiceProtocol {
                     function: #function
                 )
                 print("🦧🦧🦧🦧🦧🦧 \(response.url)")
-                completion(.success(response.url ?? ""))
+                completion(.success(response.url))
             }
         }
     }
