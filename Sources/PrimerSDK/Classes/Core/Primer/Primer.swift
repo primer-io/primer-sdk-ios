@@ -242,8 +242,7 @@ public class Primer {
         
         let sdk: ThreeDSSDKProtocol = NetceteraSDK()
         let service: ThreeDSServiceProtocol = ThreeDSService()
-        service.perform3DS(withSDK: sdk,
-                           paymentMethodToken: paymentMethod,
+        service.perform3DS(paymentMethodToken: paymentMethod,
                            protocolVersion: .v2) {
             // ...
         } completion: { result in
