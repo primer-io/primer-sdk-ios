@@ -1,6 +1,6 @@
 {
   "name": "PrimerSDK",
-  "version": "1.9.0",
+  "version": "1.9.0-beta.3",
   "summary": "Official iOS SDK for Primer",
   "description": "This library contains the official iOS SDK for Primer. Install this Cocoapod to seemlessly integrate the Primer Checkout & API platform in your app.",
   "homepage": "https://www.primer.io",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/primer-io/primer-sdk-ios.git",
-    "tag": "1.9.0"
+    "tag": "1.9.0-beta.3"
   },
   "swift_versions": "4.2",
   "platforms": {
@@ -24,13 +24,7 @@
     "frameworks": [
       "Foundation",
       "UIKit"
-    ],
-    "pod_target_xcconfig": {
-      "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
-    },
-    "user_target_xcconfig": {
-      "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
-    }
+    ]
   },
   "subspecs": [
     {
@@ -42,15 +36,12 @@
             "Sources/PrimerSDK/Resources/*.xcassets",
             "Sources/PrimerSDK/Resources/Localizable/*"
           ]
-        }
-      }
-    },
-    {
-      "name": "3DS",
-      "ios": {
-        "dependencies": {
-          "Primer3DS": [
-
+        },
+        "pod_target_xcconfig": {
+          "FRAMEWORK_SEARCH_PATHS": [
+            "${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS",
+            "${PODS_ROOT}/Primer3DS/Sources/Frameworks",
+            "${PODS_XCFRAMEWORKS_BUILD_DIR}/ThreeDS_SDK"
           ]
         }
       }
