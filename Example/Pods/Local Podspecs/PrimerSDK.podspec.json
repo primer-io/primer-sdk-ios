@@ -52,10 +52,6 @@
           "Primer3DS": [
 
           ]
-        },
-        "user_target_xcconfig": {
-          "PRODUCT_BUNDLE_IDENTIFIER": "org.cocoapods.PrimerSDK-App",
-          "DEVELOPMENT_TEAM": "N8UN9TR5DY"
         }
       }
     }

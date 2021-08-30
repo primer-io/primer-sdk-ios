@@ -160,7 +160,6 @@ public enum PaymentInstrumentType: String, Codable {
     case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
     case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"
     case unknown = "UNKNOWN"
-
     public init(from decoder: Decoder) throws {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
     }

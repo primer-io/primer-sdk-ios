@@ -114,7 +114,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         return Promise { seal in
             do {
                 if let decodedClientToken = decodedClientToken {
-                    try decodedClientToken.validate()
+//                    try decodedClientToken.validate()
                     seal.fulfill(decodedClientToken)
                 } else {
                     firstly {
@@ -160,12 +160,12 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     return
                 }
                 
-                do {
-                    try decodedClientToken.validate()
-                } catch {
-                    seal.reject(error)
-                    return
-                }
+//                do {
+//                    try decodedClientToken.validate()
+//                } catch {
+//                    seal.reject(error)
+//                    return
+//                }
                 
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                 apiClient.fetchConfiguration(clientToken: decodedClientToken) { result in
