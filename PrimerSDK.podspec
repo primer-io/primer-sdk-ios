@@ -25,46 +25,13 @@ Pod::Spec.new do |s|
                 'Sources/PrimerSDK/Resources/Localizable/*',
             ]
         }
-#        ss.ios.pod_target_xcconfig = {
-#            "PRODUCT_BUNDLE_IDENTIFIER" => "org.cocoapods.PrimerSDK",
-#            "DEVELOPMENT_TEAM" => "N8UN9TR5DY",
-##            'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64',
-#        }
+        ss.ios.pod_target_xcconfig = {
+            "FRAMEWORK_SEARCH_PATHS" => [
+                "${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS",
+                "${PODS_ROOT}/Primer3DS/Sources/Frameworks",
+                "${PODS_XCFRAMEWORKS_BUILD_DIR}/ThreeDS_SDK"
+            ]
+        }
     end
-    
-    s.subspec '3DS' do |ss|
-      ss.ios.dependency 'Primer3DS'
-#      ss.ios.pod_target_xcconfig = {
-##          "PRODUCT_BUNDLE_IDENTIFIER" => "io.primer.Primer3DS",
-##          "DEVELOPMENT_TEAM" => "N8UN9TR5DY",
-#            'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64',
-#      }
-#      ss.ios.user_target_xcconfig = {
-#          "PRODUCT_BUNDLE_IDENTIFIER" => "org.cocoapods.PrimerSDK-App",
-#          "DEVELOPMENT_TEAM" => "N8UN9TR5DY",
-##            'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64',
-#      }
-  #    ss.source_files = 'Primer3DS/Classes/**/*'
-  #    ss.vendored_frameworks = 'Primer3DS/Frameworks/ThreeDS_SDK.xcframework'
-    end
-    
-    s.ios.pod_target_xcconfig = {
-#          "PRODUCT_BUNDLE_IDENTIFIER" => "io.primer.Primer3DS",
-#          "DEVELOPMENT_TEAM" => "N8UN9TR5DY",
-        'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64',
-    }
-    s.ios.user_target_xcconfig = {
-        'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64',
-    }
-    
-#    s.user_target_xcconfig = {
-#        "PRODUCT_BUNDLE_IDENTIFIER" => "org.cocoapods.PrimerSDK-App",
-#        "DEVELOPMENT_TEAM" => "N8UN9TR5DY",
-##            'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64',
-#    }
-    
-#    s.test_spec 'PrimerSDKTests' do |test_spec|
-#        test_spec.source_files = 'Tests/**/*.{h,m,swift}'
-#    end
     
 end
