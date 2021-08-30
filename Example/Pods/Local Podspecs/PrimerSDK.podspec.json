@@ -1,6 +1,6 @@
 {
   "name": "PrimerSDK",
-  "version": "1.8.5",
+  "version": "1.9.0",
   "summary": "Official iOS SDK for Primer",
   "description": "This library contains the official iOS SDK for Primer. Install this Cocoapod to seemlessly integrate the Primer Checkout & API platform in your app.",
   "homepage": "https://www.primer.io",
@@ -13,39 +13,52 @@
   },
   "source": {
     "git": "https://github.com/primer-io/primer-sdk-ios.git",
-    "tag": "1.8.5"
+    "tag": "1.9.0"
   },
-  "swift_versions": "5.3",
+  "swift_versions": "4.2",
   "platforms": {
     "ios": "10.0"
   },
   "default_subspecs": "Core",
-  "testspecs": [
-    {
-      "name": "PrimerSDKTests",
-      "test_type": "unit",
-      "source_files": "Tests/**/*.{h,m,swift}"
+  "ios": {
+    "frameworks": [
+      "Foundation",
+      "UIKit"
+    ],
+    "pod_target_xcconfig": {
+      "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
+    },
+    "user_target_xcconfig": {
+      "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
     }
-  ],
+  },
   "subspecs": [
     {
       "name": "Core",
-      "source_files": "Sources/PrimerSDK/Classes/**/*.{h,m,swift}",
-      "resource_bundles": {
-        "PrimerResources": [
-          "Sources/PrimerSDK/Resources/*.xcassets",
-          "Sources/PrimerSDK/Resources/Localizable/*"
-        ]
+      "ios": {
+        "source_files": "Sources/PrimerSDK/Classes/**/*.{h,m,swift}",
+        "resource_bundles": {
+          "PrimerResources": [
+            "Sources/PrimerSDK/Resources/*.xcassets",
+            "Sources/PrimerSDK/Resources/Localizable/*"
+          ]
+        }
       }
     },
     {
       "name": "3DS",
-      "dependencies": {
-        "Primer3DS": [
+      "ios": {
+        "dependencies": {
+          "Primer3DS": [
 
-        ]
+          ]
+        },
+        "user_target_xcconfig": {
+          "PRODUCT_BUNDLE_IDENTIFIER": "org.cocoapods.PrimerSDK-App",
+          "DEVELOPMENT_TEAM": "N8UN9TR5DY"
+        }
       }
     }
   ],
-  "swift_version": "5.3"
+  "swift_version": "4.2"
 }

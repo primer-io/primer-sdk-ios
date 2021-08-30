@@ -1,10 +1,10 @@
 PODS:
-  - Primer3DS (0.1.18)
-  - PrimerSDK (1.8.5):
-    - PrimerSDK/Core (= 1.8.5)
-  - PrimerSDK/3DS (1.8.5):
+  - Primer3DS (0.1.28)
+  - PrimerSDK (1.9.0):
+    - PrimerSDK/Core (= 1.9.0)
+  - PrimerSDK/3DS (1.9.0):
     - Primer3DS
-  - PrimerSDK/Core (1.8.5)
+  - PrimerSDK/Core (1.9.0)
 
 DEPENDENCIES:
   - PrimerSDK (from `../`)
@@ -19,8 +19,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Primer3DS: 572599021661cb9e31671614bb2503f983491d87
-  PrimerSDK: 13374f351efbe82aef09cd250a367d4361daa29c
+  Primer3DS: b02c3a9b53ad9dcc8faa50496984fa392f78ce82
+  PrimerSDK: 0800c0a3358fc9c2a42fc30c5d995a27178b8698
 
 PODFILE CHECKSUM: 76b9ed599b2aa3f5fd7b347c727eebddd319eb6f
 
