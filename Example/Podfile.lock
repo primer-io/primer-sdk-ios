@@ -1,8 +1,8 @@
 PODS:
   - Primer3DS (0.1.28)
-  - PrimerSDK (1.9.0-beta.3):
-    - PrimerSDK/Core (= 1.9.0-beta.3)
-  - PrimerSDK/Core (1.9.0-beta.3)
+  - PrimerSDK (1.9.0-beta.4):
+    - PrimerSDK/Core (= 1.9.0-beta.4)
+  - PrimerSDK/Core (1.9.0-beta.4)
 
 DEPENDENCIES:
   - Primer3DS
@@ -18,8 +18,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Primer3DS: b02c3a9b53ad9dcc8faa50496984fa392f78ce82
-  PrimerSDK: dbe2a67d4f45f757f619dcb6dd76581f33807647
+  PrimerSDK: b2e6a6ddcc988f0f3c894da290b8f692724c7937
 
-PODFILE CHECKSUM: ede8e820a2550897e5f39ae6fe6bf3bcaf55a823
+PODFILE CHECKSUM: 9cc98394d50c8cc3e6691a885a467f82869876ce
 
 COCOAPODS: 1.10.2
