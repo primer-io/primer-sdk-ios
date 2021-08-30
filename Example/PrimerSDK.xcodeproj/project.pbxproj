@@ -117,6 +117,7 @@
 		15ACEA752615C77E004C3EAA /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Main.strings; sourceTree = "<group>"; };
 		15ACEA762615C791004C3EAA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		15ACEA772615C791004C3EAA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Main.strings; sourceTree = "<group>"; };
+		15DC347E26DD1FC900114CA7 /* Primer3DS_SDK.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; name = Primer3DS_SDK.podspec; path = ../Primer3DS_SDK.podspec; sourceTree = "<group>"; };
 		15F5BFFE25FBAFDB00426B1C /* PrimerSDK_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrimerSDK_Example.entitlements; sourceTree = "<group>"; };
 		15F97C622624480500DCB3BA /* AppViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewController.swift; sourceTree = "<group>"; };
 		15F97C672624488700DCB3BA /* MerchantCheckoutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantCheckoutViewController.swift; sourceTree = "<group>"; };
@@ -391,6 +392,7 @@
 			isa = PBXGroup;
 			children = (
 				0BEFFA023E994EF5B370A80C /* PrimerSDK.podspec */,
+				15DC347E26DD1FC900114CA7 /* Primer3DS_SDK.podspec */,
 				45CA532A34F52954A21835C5 /* README.md */,
 				3B55FBF1D40BE6B25F29A5D9 /* LICENSE */,
 			);

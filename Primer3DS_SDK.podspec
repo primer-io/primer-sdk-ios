@@ -1,5 +1,5 @@
 
-Pod::s.new do |s|
+Pod::Spec.new do |s|
     s.name         = "Primer3DS_SDK"
     s.version      = "0.0.2"
     s.summary      = "Official iOS SDK for Primer"
@@ -9,25 +9,12 @@ Pod::s.new do |s|
     s.homepage     = "https://www.primer.io"
     s.license      = { :type => "MIT", :file => "LICENSE" }
     s.author       = { "Primer" => "dx@primer.io" }
-    s.source       = { :git => "primer-sdk-ios-private", :tag => "#{s.version}" }
+    s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios-private.git", :tag => "#{s.version}" }
     
-#     s.swift_version = "5.3"
-#     s.ios.deployment_target = '10.0'
+    s.swift_version = "4.2"
+    s.ios.deployment_target = '10.0'
     
-#     s.source_files = 'Sources/PrimerSDK/Classes/**/*.{h,m,swift}'
-# #    s.resources = [
-# ##        'Sources/PrimerSDK/Resources/*.xcassets',
-# ##        'Sources/PrimerSDK/Resources/Localizable/*'
-# #    ]
-#     s.resource_bundles = {
-#         'PrimerResources' => [
-#             'Sources/PrimerSDK/Resources/*.xcassets',
-#             'Sources/PrimerSDK/Resources/Localizable/*',
-#         ]
-#     }
-#     s.vendored_frameworks = 'Sources/PrimerSDK/Resources/Frameworks/*'
-
-s.default_subspec = 'Core'
+    s.default_subspec = 'Core'
     s.ios.frameworks  = 'Foundation', 'UIKit'
     
     s.subspec 'Core' do |ss|
@@ -69,15 +56,5 @@ s.default_subspec = 'Core'
     s.ios.user_target_xcconfig = {
         'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64',
     }
-    
-#    s.user_target_xcconfig = {
-#        "PRODUCT_BUNDLE_IDENTIFIER" => "org.cocoapods.PrimerSDK-App",
-#        "DEVELOPMENT_TEAM" => "N8UN9TR5DY",
-##            'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64',
-#    }
-    
-#    s.test_spec 'PrimerSDKTests' do |test_spec|
-#        test_s.source_files = 'Tests/**/*.{h,m,swift}'
-#    end
     
 end
