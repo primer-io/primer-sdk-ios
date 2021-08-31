@@ -58,10 +58,8 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     isThreeDSEnabled = true
                 }
                                
-                #if canImport(ThreeDS_SDK)
+                #if canImport(Primer3DS)
                 if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard && paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess && isThreeDSEnabled {
-                    let sdk: ThreeDSSDKProtocol = NetceteraSDK()
-                    DependencyContainer.register(sdk)
                     
                     let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
                     DependencyContainer.register(threeDSService)

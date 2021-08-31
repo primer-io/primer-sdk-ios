@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
-#if canImport(ThreeDS_SDK)
+#if canImport(Primer3DS)
 import Foundation
 import ThreeDS_SDK
 

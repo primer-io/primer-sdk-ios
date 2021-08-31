@@ -6,10 +6,8 @@
 //
 
 #if canImport(Primer3DS)
-#if canImport(ThreeDS_SDK)
 import Foundation
 import Primer3DS
-import ThreeDS_SDK
 
 protocol ThreeDSServiceProtocol {
     func perform3DS(
@@ -382,14 +380,6 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         self.response = response
     }
     
-    func initializeSDK(_ sdk: ThreeDSSDKProtocol, completion: @escaping (Result<Void, Error>) -> Void) {
-        sdk.initializeSDK(completion: completion)
-    }
-    
-    func authenticateSdk(sdk: ThreeDSSDKProtocol, cardNetwork: CardNetwork, protocolVersion: ThreeDS.ProtocolVersion, completion: @escaping (Result<Transaction, Error>) -> Void) {
-        sdk.authenticateSdk(cardNetwork: cardNetwork, protocolVersion: protocolVersion, completion: completion)
-    }
-    
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
@@ -402,18 +392,6 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         api.response = response
         
         api.threeDSBeginAuth(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
-    }
-    
-    func performChallenge(with sdk: ThreeDSSDKProtocol, on transaction: Transaction, threeDSAuth: ThreeDSAuthenticationProtocol, presentOn viewController: UIViewController, completion: @escaping (Result<ThreeDS.ThreeDSSDKAuthCompletion, Error>) -> Void) {
-        
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-            do {
-                let authCompletion = ThreeDS.ThreeDSSDKAuthCompletion(sdkTransactionId: "transaction_id", transactionStatus: .y)
-                completion(.success(authCompletion))
-            } catch {
-                completion(.failure(error))
-            }
-        }
     }
     
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
@@ -431,5 +409,4 @@ class MockThreeDSService: ThreeDSServiceProtocol {
     }
 }
 
-#endif
 #endif

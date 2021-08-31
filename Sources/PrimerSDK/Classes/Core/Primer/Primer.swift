@@ -230,17 +230,14 @@ public class Primer {
         }
     }
     
-    // FIXME: Remove me when done testing.
-    // swiftlint:disable cyclomatic_complexity
     public func performThreeDS(paymentMethod: PaymentMethodToken, completion: @escaping (Error?) -> Void) {
-        #if canImport(ThreeDS_SDK)
+        #if canImport(Primer3DS)
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let clientToken = state.decodedClientToken else {
             return completion(PrimerError.vaultFetchFailed)
         }
         
-        let sdk: ThreeDSSDKProtocol = NetceteraSDK()
         let service: ThreeDSServiceProtocol = ThreeDSService()
         service.perform3DS(paymentMethodToken: paymentMethod,
                            protocolVersion: .v2) {
