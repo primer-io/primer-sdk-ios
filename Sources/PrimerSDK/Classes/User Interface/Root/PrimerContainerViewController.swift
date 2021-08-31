@@ -14,7 +14,7 @@ class PrimerContainerViewController: PrimerViewController {
     internal var scrollView = UIScrollView()
     internal var childView = UIView()
     internal var childViewController: UIViewController
-    internal var mockedNavigationBar = PrimerNavigationBar(frame: CGRect.zero)
+    internal var mockedNavigationBar = PrimerNavigationBar()
     
     init(childViewController: UIViewController) {
         self.childViewController = childViewController

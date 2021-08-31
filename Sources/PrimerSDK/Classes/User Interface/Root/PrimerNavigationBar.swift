@@ -57,8 +57,13 @@ class PrimerNavigationBar: PrimerView {
     
     private var titlelabel = UILabel()
     
+    convenience init() {
+        self.init(frame: CGRect.zero)
+        setup()
+    }
+    
     override init(frame: CGRect) {
-        super.init(frame: CGRect.zero)
+        super.init(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 44.0))
         setup()
     }
     
