@@ -15,18 +15,19 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var payButton: PrimerButton!
     private var coveringView: PrimerView!
     private var selectedPaymentInstrument: PaymentMethodToken?
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     // swiftlint:disable function_body_length
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .blue
+        
         title = NSLocalizedString("primer-checkout-nav-bar-title",
                                           tableName: nil,
                                           bundle: Bundle.primerResources,
                                           value: "Choose payment method",
                                           comment: "Choose payment method - Checkout Navigation Bar Title")
         
-        view.backgroundColor = .white
+        view.backgroundColor = theme.colorTheme.main1
         
         verticalStackView.spacing = 14.0
         
@@ -46,6 +47,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             titleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
             titleLabel.text = amountStr
             titleLabel.textAlignment = .left
+            titleLabel.textColor = theme.colorTheme.text1
             verticalStackView.addArrangedSubview(titleLabel)
         }
     }
@@ -91,7 +93,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                                                       bundle: Bundle.primerResources,
                                                                       value: "SAVED PAYMENT METHOD",
                                                                       comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
-            savedPaymentInstrumentTitleLabel.textColor = PrimerColor(rgb: 0x808080)
+            savedPaymentInstrumentTitleLabel.textColor = theme.colorTheme.secondaryText1
             savedPaymentInstrumentTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
             savedPaymentInstrumentTitleLabel.textAlignment = .left
             savedPaymentInstrumentStackView.addArrangedSubview(savedPaymentInstrumentTitleLabel)
@@ -113,7 +115,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 seeAllButton.translatesAutoresizingMaskIntoConstraints = false
                 seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
                 seeAllButton.setTitle("See all", for: .normal)
-                seeAllButton.setTitleColor(PrimerColor(rgb: 0x007AFF), for: .normal)
+                seeAllButton.setTitleColor(theme.colorTheme.text3, for: .normal)
                 seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
                 savedPaymentInstrumentStackView.addArrangedSubview(seeAllButton)
             }
@@ -161,7 +163,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                                                    bundle: Bundle.primerResources,
                                                                    value: "Available payment methods",
                                                                    comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
-            otherPaymentMethodsTitleLabel.textColor = PrimerColor(rgb: 0x808080)
+            otherPaymentMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
             otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
             otherPaymentMethodsTitleLabel.textAlignment = .left
             
@@ -170,7 +172,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             for paymentMethod in availablePaymentMethods {
                 let paymentMethodButton = UIButton()
                 paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
-                paymentMethodButton.backgroundColor = .white
                 paymentMethodButton.setTitle(paymentMethod.toString(), for: .normal)
                 paymentMethodButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
                 paymentMethodButton.setImage(paymentMethod.toIconName()?.image?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -180,10 +181,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 
                 switch paymentMethod.type {
                 case .paymentCard:
-                    paymentMethodButton.setTitleColor(.black, for: .normal)
-                    paymentMethodButton.tintColor = .black
+                    paymentMethodButton.setTitleColor(theme.colorTheme.text1, for: .normal)
+                    paymentMethodButton.tintColor = theme.colorTheme.text1
                     paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = UIColor.black.cgColor
+                    paymentMethodButton.layer.borderColor = theme.colorTheme.text1.cgColor
                     paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)
                     
@@ -224,13 +225,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     }
     
     private func renderPayButton() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
         if coveringView == nil {
             coveringView = PrimerView()
         }
         
-        coveringView.backgroundColor = .white.withAlphaComponent(0.5)
+        coveringView.backgroundColor = theme.colorTheme.main1.withAlphaComponent(0.5)
         view.addSubview(coveringView)
         coveringView.translatesAutoresizingMaskIntoConstraints = false
         coveringView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -246,7 +245,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         payButton.setTitle(theme.content.vaultCheckout.payButtonText, for: .normal)
         payButton.setTitleColor(theme.colorTheme.text2, for: .normal)
         payButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
-        payButton.backgroundColor = theme.colorTheme.tint1
+        payButton.backgroundColor = theme.colorTheme.main2
         payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
         let imageView = UIImageView(image: ImageName.lock.image)
         payButton.addSubview(imageView)
@@ -272,11 +271,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     @objc
     func seeAllButtonTapped() {
-        let vc = VaultedPaymentInstrumentsViewController()
-        vc.delegate = self
-        vc.view.translatesAutoresizingMaskIntoConstraints = false
-        vc.view.heightAnchor.constraint(equalToConstant: view.bounds.size.height).isActive = true
-        Primer.shared.primerRootVC?.show(viewController: vc)
+        let vpivc = VaultedPaymentInstrumentsViewController()
+        vpivc.delegate = self
+        vpivc.view.translatesAutoresizingMaskIntoConstraints = false
+        vpivc.view.heightAnchor.constraint(equalToConstant: view.bounds.size.height).isActive = true
+        Primer.shared.primerRootVC?.show(viewController: vpivc)
     }
         
     @objc
@@ -312,7 +311,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     func payButtonTapped() {
         guard let paymentMethodToken = selectedPaymentInstrument else { return }
         
-        payButton.showSpinner(true, color: .white)
+        payButton.showSpinner(true, color: theme.colorTheme.text2)
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
             DispatchQueue.main.async { [weak self] in
                 self?.payButton.showSpinner(false)

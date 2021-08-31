@@ -11,9 +11,10 @@ import UIKit
 
 internal class SuccessViewController: PrimerViewController {
 
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     var screenType: SuccessScreenType?
     
-    var rightBarButton: UIBarButtonItem!
+    var rightBarButton: UIButton!
     let icon = UIImageView(image: ImageName.success.image?.withRenderingMode(.alwaysTemplate))
     let message = UILabel()
     let confirmationMessage = UILabel()
@@ -28,12 +29,11 @@ internal class SuccessViewController: PrimerViewController {
         view.addSubview(confirmationMessage)
         view.addSubview(referenceTitle)
         view.addSubview(reference)
-        
-        (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
-        
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        rightBarButton = UIBarButtonItem(title: "Done", style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
-        rightBarButton.tintColor = theme.colorTheme.main1
+                
+        rightBarButton = UIButton()
+        rightBarButton.setTitle("Done", for: .normal)
+        rightBarButton.setTitleColor(theme.colorTheme.main1, for: .normal)
+        rightBarButton.addTarget(self, action: #selector(close), for: .touchUpInside)
         icon.tintColor = theme.colorTheme.main1
 
         configureIcon()
@@ -47,18 +47,18 @@ internal class SuccessViewController: PrimerViewController {
         anchorConfirmationMessage()
         anchorReferenceTitle()
         anchorReferenceLabel()
+        
+        (parent as? PrimerContainerViewController)?.mockedNavigationBar.hidesBackButton = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
-        (parent as? PrimerContainerViewController)?.navigationItem.rightBarButtonItem = rightBarButton
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
-        (parent as? PrimerContainerViewController)?.navigationItem.rightBarButtonItem = rightBarButton
+        (parent as? PrimerContainerViewController)?.mockedNavigationBar.rightBarButton = rightBarButton
     }
 
     @objc func close() {
@@ -71,11 +71,10 @@ internal class SuccessViewController: PrimerViewController {
 internal extension SuccessViewController {
 
     func configureIcon() {
-
+        icon.tintColor = theme.colorTheme.success1
     }
 
     func configureMessage() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         
         message.accessibilityIdentifier = "success_screen_message_label"
@@ -117,6 +116,7 @@ internal extension SuccessViewController {
         icon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         icon.widthAnchor.constraint(equalToConstant: 56).isActive = true
         icon.heightAnchor.constraint(equalToConstant: 56).isActive = true
+        message.topAnchor.constraint(equalTo: icon.bottomAnchor, constant: 6).isActive = true
     }
 
     func anchorMessage() {

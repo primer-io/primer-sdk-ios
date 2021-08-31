@@ -9,6 +9,7 @@ import UIKit
 
 internal class PrimerRootViewController: PrimerViewController {
     
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     var backgroundView = UIView()
     var childView: UIView = UIView()
     var childViewHeightConstraint: NSLayoutConstraint!
@@ -65,9 +66,9 @@ internal class PrimerRootViewController: PrimerViewController {
         
         view.addSubview(childView)
         
-        childView.backgroundColor = .white
+        childView.backgroundColor = theme.colorTheme.main1
         childView.isUserInteractionEnabled = true
-        nc.view.backgroundColor = .white
+        nc.view.backgroundColor = theme.colorTheme.main1
         
         childView.translatesAutoresizingMaskIntoConstraints = false
         childView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -241,7 +242,7 @@ internal class PrimerRootViewController: PrimerViewController {
         let isPresented: Bool = nc.viewControllers.isEmpty
                 
         let cvc = PrimerContainerViewController(childViewController: viewController)
-        cvc.view.backgroundColor = .white
+        cvc.view.backgroundColor = theme.colorTheme.main1
         
         // Hide back button on some cases
         if let lastViewController = nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {

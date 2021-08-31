@@ -11,8 +11,8 @@ import UIKit
 
 class MerchantCheckoutViewController: UIViewController {
 
-    
     @IBOutlet weak var tableView: UITableView!
+    
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
         didSet {
             self.tableView.reloadData()

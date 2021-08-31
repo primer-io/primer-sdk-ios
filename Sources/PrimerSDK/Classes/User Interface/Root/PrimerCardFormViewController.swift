@@ -10,6 +10,7 @@ import UIKit
 /// Subclass of the PrimerFormViewController that uses the checkout components and the card components manager
 class PrimerCardFormViewController: PrimerFormViewController {
     
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private var cardComponentsManager: CardComponentsManager!
     private var flow: PaymentFlow!
     
@@ -34,9 +35,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
+                
         title = NSLocalizedString("primer-form-type-main-title-card-form",
                                   tableName: nil,
                                   bundle: Bundle.primerResources,
@@ -44,13 +43,13 @@ class PrimerCardFormViewController: PrimerFormViewController {
                                   comment: "Enter your card details - Form Type Main Title (Card)")
 
         
-        view.backgroundColor = .white
+        view.backgroundColor = theme.colorTheme.main1
         
         verticalStackView.spacing = 2
         
         cardNumberField.placeholder = "4242 4242 4242 4242"
         cardNumberField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cardNumberField.textColor = .black
+        cardNumberField.textColor = theme.colorTheme.text1
         cardNumberField.borderStyle = .none
         cardNumberField.delegate = self
         
@@ -67,6 +66,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         expiryDateField.placeholder = "02/22"
         expiryDateField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        expiryDateField.textColor = theme.colorTheme.text1
         expiryDateField.delegate = self
         
         expiryDateContainerView.fieldView = expiryDateField
@@ -77,6 +77,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         cvvField.placeholder = "123"
         cvvField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        cvvField.textColor = theme.colorTheme.text1
         cvvField.delegate = self
         
         cvvContainerView.fieldView = cvvField
@@ -89,6 +90,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         cardholderNameField.placeholder = "John Smith"
         cardholderNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        cardholderNameField.textColor = theme.colorTheme.text1
         cardholderNameField.delegate = self
         
         cardholderNameContainerView.fieldView = cardholderNameField
@@ -108,7 +110,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
             
             let saveCardLabel = UILabel()
             saveCardLabel.text = "Save this card"
-            saveCardLabel.textColor = .black
+            saveCardLabel.textColor = theme.colorTheme.text1
             saveCardLabel.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
             saveCardSwitchContainerStackView.addArrangedSubview(saveCardLabel)
             
@@ -260,10 +262,10 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
            cardholderNameField.isTextValid
         {
             submitButton.isEnabled = true
-            submitButton.backgroundColor = .black
+            submitButton.backgroundColor = theme.colorTheme.main2
         } else {
             submitButton.isEnabled = false
-            submitButton.backgroundColor = .lightGray
+            submitButton.backgroundColor = theme.colorTheme.disabled1
         }
     }
     
@@ -297,6 +299,7 @@ class PrimerCustomFieldView: UIView {
     private let errorLabel = UILabel()
     private let topPlaceholderLabel = UILabel()
     private let bottomLine = UIView()
+    private var theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     func setup() {
         addSubview(stackView)
@@ -306,7 +309,7 @@ class PrimerCustomFieldView: UIView {
         
         topPlaceholderLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         topPlaceholderLabel.text = placeholderText
-        topPlaceholderLabel.textColor = PrimerColor(rgb: 0x007AFF)
+        topPlaceholderLabel.textColor = theme.colorTheme.text3
         topPlaceholderLabel.textAlignment = .left
         stackView.addArrangedSubview(topPlaceholderLabel)
 
@@ -315,13 +318,13 @@ class PrimerCustomFieldView: UIView {
         textFieldStackView.axis = .vertical
         textFieldStackView.addArrangedSubview(fieldView)
         textFieldStackView.spacing = 0
-        bottomLine.backgroundColor = PrimerColor(rgb: 0x007AFF)
+        bottomLine.backgroundColor = theme.colorTheme.text3
         bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
         stackView.addArrangedSubview(textFieldStackView)
         stackView.addArrangedSubview(bottomLine)
 
         
-        errorLabel.textColor = .red
+        errorLabel.textColor = theme.colorTheme.error1
         errorLabel.heightAnchor.constraint(equalToConstant: 12.0).isActive = true
         errorLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         errorLabel.text = nil

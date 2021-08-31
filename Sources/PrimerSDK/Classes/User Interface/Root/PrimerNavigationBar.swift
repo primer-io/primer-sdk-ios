@@ -9,6 +9,7 @@ import UIKit
 
 class PrimerNavigationBar: PrimerView {
     
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     internal var hidesBackButton: Bool = false {
         didSet {
             backButton.isHidden = hidesBackButton
@@ -22,11 +23,9 @@ class PrimerNavigationBar: PrimerView {
     
     var rightBarButton: UIButton? {
         didSet {
-            let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-            
             rightBarButton?.translatesAutoresizingMaskIntoConstraints = false
             rightBarButton?.tintColor = theme.colorTheme.tint1
-            rightBarButton?.setTitleColor(theme.colorTheme.main1, for: .normal)
+            rightBarButton?.setTitleColor(theme.colorTheme.tint1, for: .normal)
             
             rightView.subviews.forEach { view in
                 view.removeFromSuperview()
@@ -75,7 +74,7 @@ class PrimerNavigationBar: PrimerView {
     private func setup() {
         translatesAutoresizingMaskIntoConstraints = false
         heightAnchor.constraint(equalToConstant: 44.0).isActive = true
-        backgroundColor = .white
+        backgroundColor = theme.colorTheme.main1
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
@@ -106,7 +105,7 @@ class PrimerNavigationBar: PrimerView {
         titlelabel.translatesAutoresizingMaskIntoConstraints = false
         titlelabel.backgroundColor = .clear
         titlelabel.textAlignment = .center
-        titlelabel.textColor = theme.colorTheme.main1
+        titlelabel.textColor = theme.colorTheme.text1
         titlelabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         horizontalStackView.addArrangedSubview(titlelabel)
         

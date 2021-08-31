@@ -4,6 +4,7 @@ import UIKit
 
 internal class VaultedPaymentInstrumentCell: UITableViewCell {
     
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private(set) var paymentMethodToken: PaymentMethodToken!
     var isDeleting: Bool = false {
         didSet {
@@ -122,21 +123,21 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         
         cardNetworkLabel.text = paymentMethodToken.cardButtonViewModel?.network
         cardNetworkLabel.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        cardNetworkLabel.textColor = .black
+        cardNetworkLabel.textColor = theme.colorTheme.text1
         
         cardholderNameLabel.text = paymentMethodToken.cardButtonViewModel?.cardholder
         cardholderNameLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
-        cardholderNameLabel.textColor = .black
+        cardholderNameLabel.textColor = theme.colorTheme.text1
         
         last4DigitsLabel.text = paymentMethodToken.cardButtonViewModel?.last4
         last4DigitsLabel.textAlignment = .right
         last4DigitsLabel.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        last4DigitsLabel.textColor = .black
+        last4DigitsLabel.textColor = theme.colorTheme.text1
         
         expiryDateLabel.text = paymentMethodToken.cardButtonViewModel?.expiry
         expiryDateLabel.textAlignment = .right
         expiryDateLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
-        expiryDateLabel.textColor = .black
+        expiryDateLabel.textColor = theme.colorTheme.text1
         
         contentView.backgroundColor = theme.colorTheme.main1
     }
@@ -162,18 +163,11 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         title = theme.content.vaultPaymentMethodView.mainTitleText
-        
-//        rightBarButton = UIBarButtonItem(title: "Edit", style: UIBarButtonItem.Style.plain, target: self, action: #selector(editButtonTapped))
-//        rightBarButton.tintColor = theme.colorTheme.main1
-//        rightBarButton.title = theme.content.vaultPaymentMethodView.editButtonText
-//        rightBarButton.tintColor = theme.colorTheme.tint1
-        
-        
+
         rightBarButton = UIButton()
         rightBarButton.setTitle(theme.content.vaultPaymentMethodView.editButtonText, for: .normal)
         rightBarButton.setTitleColor(theme.colorTheme.main1, for: .normal)
         rightBarButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
-//        (self.parent as? PrimerContainerViewController)?.mockedNavigationBar.rightBarButtonItem = rightBarButton
         
         view.addSubview(tableView)
         tableView.dataSource = self
