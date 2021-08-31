@@ -10,7 +10,7 @@ import UIKit
 internal class PrimerRootViewController: PrimerViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    var backgroundView = UIView()
+    var backgroundView = PrimerView()
     var childView: UIView = UIView()
     var childViewHeightConstraint: NSLayoutConstraint!
     var childViewBottomConstraint: NSLayoutConstraint!

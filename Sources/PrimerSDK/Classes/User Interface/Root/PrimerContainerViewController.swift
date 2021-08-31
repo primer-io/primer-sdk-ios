@@ -12,7 +12,7 @@ import UIKit
 class PrimerContainerViewController: PrimerViewController {
     
     internal var scrollView = UIScrollView()
-    internal var childView = UIView()
+    internal var childView = PrimerView()
     internal var childViewController: UIViewController
     internal var mockedNavigationBar = PrimerNavigationBar()
     
