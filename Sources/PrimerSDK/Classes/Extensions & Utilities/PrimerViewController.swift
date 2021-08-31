@@ -7,6 +7,7 @@ internal class PrimerViewController: UIViewController {
     override var title: String? {
         didSet {
             (parent as? PrimerContainerViewController)?.title = title
+            (parent as? PrimerContainerViewController)?.mockedNavigationBar.title = title
         }
     }
     

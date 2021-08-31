@@ -145,7 +145,7 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
 
 internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
     
-    private var rightBarButton: UIBarButtonItem!
+    private var rightBarButton: UIButton!
     private var isDeleting: Bool = false {
         didSet {
             for cell in tableView.visibleCells {
@@ -163,10 +163,17 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         title = theme.content.vaultPaymentMethodView.mainTitleText
         
-        rightBarButton = UIBarButtonItem(title: "Edit", style: UIBarButtonItem.Style.plain, target: self, action: #selector(editButtonTapped))
-        rightBarButton.tintColor = theme.colorTheme.main1
-        rightBarButton.title = theme.content.vaultPaymentMethodView.editButtonText
-        rightBarButton.tintColor = theme.colorTheme.tint1
+//        rightBarButton = UIBarButtonItem(title: "Edit", style: UIBarButtonItem.Style.plain, target: self, action: #selector(editButtonTapped))
+//        rightBarButton.tintColor = theme.colorTheme.main1
+//        rightBarButton.title = theme.content.vaultPaymentMethodView.editButtonText
+//        rightBarButton.tintColor = theme.colorTheme.tint1
+        
+        
+        rightBarButton = UIButton()
+        rightBarButton.setTitle(theme.content.vaultPaymentMethodView.editButtonText, for: .normal)
+        rightBarButton.setTitleColor(theme.colorTheme.main1, for: .normal)
+        rightBarButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
+//        (self.parent as? PrimerContainerViewController)?.mockedNavigationBar.rightBarButtonItem = rightBarButton
         
         view.addSubview(tableView)
         tableView.dataSource = self
@@ -188,13 +195,14 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        (parent as? PrimerContainerViewController)?.navigationItem.rightBarButtonItem = rightBarButton
+        (parent as? PrimerContainerViewController)?.mockedNavigationBar.rightBarButton = rightBarButton
     }
     
     @objc
     func editButtonTapped(_ sender: UIButton) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         isDeleting = !isDeleting
-        rightBarButton.title = isDeleting ? "Done" : "Edit"
+        rightBarButton.setTitle(isDeleting ? "Done" : theme.content.vaultPaymentMethodView.editButtonText, for: .normal)
     }
     
     private func deletePaymentMethod(_ paymentMethodToken: String) {

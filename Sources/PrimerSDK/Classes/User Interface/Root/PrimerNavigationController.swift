@@ -14,20 +14,9 @@ class PrimerNavigationController: UINavigationController, UINavigationBarDelegat
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-        delegate = self
-        
-        navigationBar.barStyle = .black
-        navigationBar.barTintColor = .white
-        navigationBar.isTranslucent = false
 
-        navigationBar.titleTextAttributes = [
-            .foregroundColor: UIColor.black,
-            .font: UIFont.systemFont(ofSize: 17.0, weight: .semibold)
-        ]
-        
-        navigationBar.layer.removeAllAnimations()
+        delegate = self
+        setNavigationBarHidden(true, animated: false)
     }
     
     func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {

@@ -245,13 +245,13 @@ internal class PrimerRootViewController: PrimerViewController {
         
         // Hide back button on some cases
         if let lastViewController = nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
-            cvc.navigationItem.hidesBackButton = true
+            cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is PrimerLoadingViewController {
-            cvc.navigationItem.hidesBackButton = true
+            cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is SuccessViewController {
-            cvc.navigationItem.hidesBackButton = true
+            cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is ErrorViewController {
-            cvc.navigationItem.hidesBackButton = true
+            cvc.mockedNavigationBar.hidesBackButton = true
         }
         
         if isPresented {
@@ -274,6 +274,10 @@ internal class PrimerRootViewController: PrimerViewController {
             container.didMove(toParent: self)
         } else {
             nc.pushViewController(cvc, animated: false)
+        }
+        
+        if nc.viewControllers.count ?? 0 <= 1 {
+            cvc.mockedNavigationBar.hidesBackButton = true
         }
         
         childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding

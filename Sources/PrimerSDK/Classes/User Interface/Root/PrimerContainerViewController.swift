@@ -14,6 +14,7 @@ class PrimerContainerViewController: PrimerViewController {
     internal var scrollView = UIScrollView()
     internal var childView = UIView()
     internal var childViewController: UIViewController
+    internal var mockedNavigationBar = PrimerNavigationBar(frame: CGRect.zero)
     
     init(childViewController: UIViewController) {
         self.childViewController = childViewController
@@ -31,8 +32,16 @@ class PrimerContainerViewController: PrimerViewController {
         super.viewDidLoad()
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem?.tintColor = theme.colorTheme.tint1
+//        navigationController?.setNavigationBarHidden(true, animated: false)
+//        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+//        navigationItem.backBarButtonItem?.tintColor = theme.colorTheme.tint1
+        
+        view.addSubview(mockedNavigationBar)
+        mockedNavigationBar.translatesAutoresizingMaskIntoConstraints = false
+        mockedNavigationBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        mockedNavigationBar.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        mockedNavigationBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        mockedNavigationBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
         addChild(childViewController)
         scrollView.bounces = false
@@ -45,7 +54,11 @@ class PrimerContainerViewController: PrimerViewController {
         childView.translatesAutoresizingMaskIntoConstraints = false
         childViewController.view.translatesAutoresizingMaskIntoConstraints = false
         
-        scrollView.pin(view: view)
+        scrollView.topAnchor.constraint(equalTo: mockedNavigationBar.bottomAnchor, constant: 0.0).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0.0).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0.0).isActive = true
+        
         childView.pin(view: scrollView)
         childViewController.view.pin(view: childView)
         childView.widthAnchor.constraint(equalTo: childViewController.view.widthAnchor).isActive = true
