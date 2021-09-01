@@ -7,7 +7,6 @@
 
 #if canImport(Primer3DS)
 import Foundation
-import ThreeDS_SDK
 
 extension ThreeDSService {
     

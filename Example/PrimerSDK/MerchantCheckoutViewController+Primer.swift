@@ -65,22 +65,6 @@ extension MerchantCheckoutViewController {
             })
         }))
         
-        alert.addAction(UIAlertAction(title: "Perform 3DS", style: .default, handler: { [weak self] _ in
-            Primer.shared.performThreeDS(paymentMethod: result) { (err) in
-                Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (_) in
-                    if let nsErr = err as NSError? {
-                        let threeDSResultAlert = UIAlertController(title: "Error", message: "\(nsErr.domain):\(nsErr.code) | \(nsErr.localizedDescription)", preferredStyle: .alert)
-                        threeDSResultAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                        self?.present(threeDSResultAlert, animated: true, completion: nil)
-                    } else {
-                        let threeDSResultAlert = UIAlertController(title: "Success!", message: "(meaning that we got response)", preferredStyle: .alert)
-                        threeDSResultAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                        self?.present(threeDSResultAlert, animated: true, completion: nil)
-                    }
-                }
-            }
-        }))
-        
         alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
         present(alert, animated: true)
     }

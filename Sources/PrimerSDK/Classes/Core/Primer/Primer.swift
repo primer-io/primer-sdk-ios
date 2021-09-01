@@ -1,7 +1,7 @@
 #if canImport(UIKit)
 
-#if canImport(ThreeDS_SDK)
-import ThreeDS_SDK
+#if canImport(Primer3DS)
+import Primer3DS
 #endif
 import UIKit
 
@@ -25,12 +25,6 @@ public class Primer {
     }
 
     fileprivate init() {
-        #if canImport(ThreeDS_SDK)
-        print("Can import ThreeDS_SDK")
-        #else
-        print("Failed to import ThreeDS_SDK")
-        #endif
-        
         #if canImport(Primer3DS)
         print("Can import Primer3DS")
         #else
@@ -46,21 +40,23 @@ public class Primer {
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        #if canImport(ThreeDS_SDK)
-        return ThreeDSSDKAppDelegate.shared.appOpened(url: url)
-        #else
-        return false
+        #if canImport(Primer3DS)
+//        return Primer3DS.application(_ app: app, open url: url, options: options)
         #endif
+        
+        return false
     }
-    
+
     public func application(_ application: UIApplication,
                      continue userActivity: NSUserActivity,
                      restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        #if canImport(ThreeDS_SDK)
-        return ThreeDSSDKAppDelegate.shared.appOpened(userActivity: userActivity)
-        #else
-        return false
+        #if canImport(Primer3DS)
+//        return Primer3DS.application(_ application: app,
+//                                     userActivity: userActivity,
+//                                     restorationHandler: restorationHandler)
         #endif
+        
+        return false
     }
 
     /**
@@ -228,32 +224,6 @@ public class Primer {
         DispatchQueue.main.async { [weak self] in
             self?.root?.dismiss(animated: true, completion: nil)
         }
-    }
-    
-    public func performThreeDS(paymentMethod: PaymentMethodToken, completion: @escaping (Error?) -> Void) {
-        #if canImport(Primer3DS)
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
-            return completion(PrimerError.vaultFetchFailed)
-        }
-        
-        let service: ThreeDSServiceProtocol = ThreeDSService()
-        service.perform3DS(paymentMethodToken: paymentMethod,
-                           protocolVersion: .v2) {
-            // ...
-        } completion: { result in
-            switch result {
-            case .success:
-                completion(nil)
-            case .failure(let err):
-                completion(err)
-            }
-        }
-        #else
-        completion(PrimerError.threeDSFailed)
-        #endif
-        
     }
 
 }
