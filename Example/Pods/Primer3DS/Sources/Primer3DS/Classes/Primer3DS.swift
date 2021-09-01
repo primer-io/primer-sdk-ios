@@ -1,17 +1,28 @@
 #if canImport(UIKit)
 #if canImport(ThreeDS_SDK)
+
 import ThreeDS_SDK
 
 public class Primer3DS: NSObject, Primer3DSProtocol {
     
     public private(set) var environment: Environment
+    public var is3DSSanityCheckEnabled: Bool = true
     private let sdk: ThreeDS2Service = ThreeDS2ServiceSDK()
     private var sdkCompletion: ((_ netceteraThreeDSCompletion: Primer3DSCompletion?, _ err: Error?) -> Void)?
     private var transaction: Transaction?
     
+    static func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        return ThreeDSSDKAppDelegate.shared.appOpened(url: url)
+    }
+    
+    static func application(_ application: UIApplication,
+                            continue userActivity: NSUserActivity,
+                            restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        return ThreeDSSDKAppDelegate.shared.appOpened(userActivity: userActivity)
+    }
+    
     public init(environment: Environment) {
         self.environment = environment
-        print("bdnajksdas")
     }
     
     public func initializeSDK(licenseKey: String, certificates: [Primer3DSCertificate]? = nil) throws {
@@ -44,19 +55,57 @@ public class Primer3DS: NSObject, Primer3DSProtocol {
         }
     }
     
+    private func verifyWarnings(completion: @escaping (Result<Void, Error>) -> Void) {
+        if !is3DSSanityCheckEnabled {
+            completion(.success(()))
+        } else {
+            var sdkWarnings: [Warning] = []
+            do {
+                sdkWarnings = try sdk.getWarnings()
+            } catch {
+                var userInfo: [String: Any] = [:]
+                userInfo[NSUnderlyingErrorKey] = "\((error as NSError).domain):\((error as NSError).code)"
+                userInfo.merge((error as NSError).userInfo) { (_, new) in new }
+                userInfo[NSLocalizedDescriptionKey] = "Failed to verify device"
+                let nsErr = NSError(domain: "Primer3DS", code: 100, userInfo: userInfo)
+                completion(.failure(nsErr))
+                return
+            }
+            
+            if !sdkWarnings.isEmpty {
+                var message = ""
+                for warning in sdkWarnings {
+                    message += warning.getMessage()
+                    message += "\n"
+                }
+                
+                let nsErr = NSError(domain: "Primer3DS", code: 100, userInfo: [NSLocalizedDescriptionKey: message, "warnings": message])
+                completion(.failure(nsErr))
+            } else {
+                completion(.success(()))
+            }
+        }
+    }
+    
     public func createTransaction(directoryServerId: String, protocolVersion: String) throws -> Primer3DSSDKGeneratedAuthData {
         do {
             transaction = try sdk.createTransaction(directoryServerId: directoryServerId, messageVersion: protocolVersion)
             let sdkAuthData = try transaction!.buildThreeDSecureAuthData()
             return sdkAuthData
         } catch {
-            throw error
+            var userInfo: [String: Any] = [:]
+            userInfo[NSUnderlyingErrorKey] = "\((error as NSError).domain):\((error as NSError).code)"
+            userInfo.merge((error as NSError).userInfo) { (_, new) in new }
+            userInfo[NSLocalizedDescriptionKey] = "Failed to create transaction"
+            let nsErr = NSError(domain: "Primer3DS", code: 100, userInfo: userInfo)
+            throw nsErr
         }
     }
     
     public func performChallenge(with threeDSecureAuthResponse: Primer3DSServerAuthData, urlScheme: String?, presentOn viewController: UIViewController, completion: @escaping (Primer3DSCompletion?, Error?) -> Void) {
         guard let transaction = transaction else {
-            completion(nil, NSError(domain: "Primer3DS", code: 100, userInfo: [NSLocalizedDescriptionKey: "Failed to find transaction"]))
+            let nsErr = NSError(domain: "Primer3DS", code: 100, userInfo: [NSLocalizedDescriptionKey: "Failed to find transaction"])
+            completion(nil, nsErr)
             return
         }
         
@@ -89,8 +138,13 @@ public class Primer3DS: NSObject, Primer3DSProtocol {
                                         inViewController: viewController)
             
         } catch {
+            var userInfo: [String: Any] = [:]
+            userInfo[NSUnderlyingErrorKey] = "\((error as NSError).domain):\((error as NSError).code)"
+            userInfo.merge((error as NSError).userInfo) { (_, new) in new }
+            userInfo[NSLocalizedDescriptionKey] = "Failed to present challenge"
+            let nsErr = NSError(domain: "Primer3DS", code: 100, userInfo: userInfo)
+            completion(nil, nsErr)
             sdkCompletion = nil
-            completion(nil, error)
         }
     }
     
