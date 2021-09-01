@@ -28,8 +28,6 @@ Pod::Spec.new do |s|
         ss.ios.pod_target_xcconfig = {
             "FRAMEWORK_SEARCH_PATHS" => [
                 "${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS",
-                "${PODS_ROOT}/Primer3DS/Sources/Frameworks",
-                "${PODS_XCFRAMEWORKS_BUILD_DIR}/ThreeDS_SDK"
             ]
         }
     end
