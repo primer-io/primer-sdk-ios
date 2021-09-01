@@ -62,6 +62,7 @@ class PrimerLoadWebViewController: PrimerViewController, ReloadDelegate {
         webViewController.delegate = self
         present(webViewController, animated: true, completion: nil)
     }
+    
     // can probably put this in superclass
     private func presentBlurEffect() {
         let routerDelegate: RouterDelegate = DependencyContainer.resolve()

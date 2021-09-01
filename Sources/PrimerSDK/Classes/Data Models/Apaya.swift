@@ -11,12 +11,15 @@ public struct Apaya {
         let merchantAccountId: String
         let reference: String = "recurring"
         let language: String? = "en"
+        let country: String = "GB"
+        let currencyCode: String = "GBP"
 
         enum CodingKeys: String, CodingKey {
             case merchantId = "merchant_id"
             case merchantAccountId = "merchant_account_id"
             case reference = "reference"
             case language = "language"
+            case currencyCode = "currency_code"
         }
     }
     public struct CreateSessionAPIResponse: Decodable {
@@ -72,7 +75,7 @@ extension Apaya.WebViewResult {
                 mxNumber: mxNumber,
                 // hashedIdentifier: hashedIdentifier,
                 mcc: mcc,
-                mnc: mnc,
+                mnc: mnc
                 // success: success,
                 // status: status,
                 // token: token

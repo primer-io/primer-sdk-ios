@@ -24,7 +24,10 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         fatalError("init(coder:) has not been implemented")
     }
 
-    let allowedHosts: [String] = ["primer.io"]
+    let allowedHosts: [String] = [
+        "primer.io",
+        "livedemostore.primer.io"
+    ]
     let headerFields = [
         "Content-Type": "application/json",
         "Primer-SDK-Version": "1.0.0-beta.0",

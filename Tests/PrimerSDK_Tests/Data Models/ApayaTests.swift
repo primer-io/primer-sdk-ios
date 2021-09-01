@@ -22,7 +22,7 @@ class ApayaDataModelTests: XCTestCase {
         case .none:
             XCTFail()
         case .success(let value):
-            XCTAssertEqual(value.success, "1")
+            XCTAssertEqual(value.mcc, "208")
         case .failure:
             XCTFail()
         }
