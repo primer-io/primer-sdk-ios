@@ -41,7 +41,7 @@ public class Primer {
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         #if canImport(Primer3DS)
-//        return Primer3DS.application(_ app: app, open url: url, options: options)
+        return Primer3DS.application(app, open: url, options: options)
         #endif
         
         return false
@@ -51,9 +51,7 @@ public class Primer {
                      continue userActivity: NSUserActivity,
                      restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         #if canImport(Primer3DS)
-//        return Primer3DS.application(_ application: app,
-//                                     userActivity: userActivity,
-//                                     restorationHandler: restorationHandler)
+        return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
         #endif
         
         return false
