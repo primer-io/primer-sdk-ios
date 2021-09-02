@@ -76,12 +76,11 @@ extension MerchantCheckoutViewController {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let body = AuthorizationRequest(
+            environment: environment,
             paymentMethod: token.token!,
             amount: amount,
             type: token.paymentInstrumentType.rawValue,
-            capture: capture,
-            currencyCode: "GBP"
-        )
+            currencyCode: "EUR")
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
