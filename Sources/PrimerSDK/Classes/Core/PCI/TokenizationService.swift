@@ -60,7 +60,6 @@ internal class TokenizationService: TokenizationServiceProtocol {
                                
                 #if canImport(Primer3DS)
                 if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard && paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess && isThreeDSEnabled {
-                    
                     let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
                     DependencyContainer.register(threeDSService)
                     
