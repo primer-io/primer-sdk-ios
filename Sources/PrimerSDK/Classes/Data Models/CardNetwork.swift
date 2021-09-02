@@ -32,7 +32,7 @@ public enum CardNetwork: String, CaseIterable {
     case hipercard
     case jcb
     case maestro
-    case masterCard
+    case masterCard = "mastercard"
     case mir
     case visa
     case unionpay
@@ -297,7 +297,7 @@ public enum CardNetwork: String, CaseIterable {
     public init(cardNetworkStr: String) {
         self = .unknown
         
-        if let cardNetwork = CardNetwork(rawValue: cardNetworkStr) {
+        if let cardNetwork = CardNetwork(rawValue: cardNetworkStr.lowercased()) {
             self = cardNetwork
         }
     }
