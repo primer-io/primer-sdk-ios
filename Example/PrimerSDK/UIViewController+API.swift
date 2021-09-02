@@ -11,10 +11,10 @@ import UIKit
 // MARK: - API HELPER
 
 struct AuthorizationRequest: Encodable {
+    let environment: Environment
     let paymentMethod: String
     let amount: Int
     let type: String?
-    var capture: Bool
     let currencyCode: String
 }
 
@@ -63,6 +63,19 @@ extension UIViewController {
             if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
                 print("Status code: \(httpResponse.statusCode)")
                 completion(.failure(NetworkError.invalidResponse))
+                
+                guard let data = data else {
+                    print("No data")
+                    completion(.failure(NetworkError.invalidResponse))
+                    return
+                }
+                
+                do {
+                    let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                    print("Response body: \(json)")
+                } catch {
+                    print("Error: \(error)")
+                }
                 return
             }
             
