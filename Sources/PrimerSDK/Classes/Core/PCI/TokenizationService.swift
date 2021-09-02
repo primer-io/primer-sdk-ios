@@ -78,7 +78,8 @@ internal class TokenizationService: TokenizationServiceProtocol {
                                                                                 
                                         onTokenizeSuccess(.success(paymentMethodToken))
                                     case .failure(let err):
-                                        onTokenizeSuccess(.failure( PrimerError.tokenizationRequestFailed ))
+                                        // Even if 3DS fails, continue...
+                                        onTokenizeSuccess(.success(paymentMethodToken))
                                     }
                                 }
                                 
