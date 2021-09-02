@@ -21,7 +21,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
 
     @IBOutlet weak var tableView: UITableView!
-    fileprivate var environment: Environment = .sandbox
+    var environment: Environment = .sandbox
     fileprivate var customerId: String?
     var amount: Int = 1
     var currency: Currency = .EUR
@@ -260,7 +260,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: currency.rawValue)
+        let body = AuthorizationRequest(environment: environment, paymentMethod: token, amount: amount, type: type.rawValue, currencyCode: currency.rawValue)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
