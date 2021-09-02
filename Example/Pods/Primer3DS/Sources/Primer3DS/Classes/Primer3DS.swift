@@ -11,11 +11,11 @@ public class Primer3DS: NSObject, Primer3DSProtocol {
     private var sdkCompletion: ((_ netceteraThreeDSCompletion: Primer3DSCompletion?, _ err: Error?) -> Void)?
     private var transaction: Transaction?
     
-    static func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    public static func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         return ThreeDSSDKAppDelegate.shared.appOpened(url: url)
     }
     
-    static func application(_ application: UIApplication,
+    public static func application(_ application: UIApplication,
                             continue userActivity: NSUserActivity,
                             restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         return ThreeDSSDKAppDelegate.shared.appOpened(userActivity: userActivity)
