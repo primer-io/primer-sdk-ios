@@ -1,44 +1,44 @@
+////
+////  ApplePayViewModel.swift
+////  PrimerSDKTests
+////
+////  Created by Carl Eriksson on 16/01/2021.
+////
 //
-//  ApplePayViewModel.swift
-//  PrimerSDKTests
+//#if canImport(UIKit)
 //
-//  Created by Carl Eriksson on 16/01/2021.
+//@testable import PrimerSDK
 //
-
-#if canImport(UIKit)
-
-@testable import PrimerSDK
-
-class MockApplePayViewModel: ApplePayViewModelProtocol {
-    var amount: Int?
-    
-    func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
-        
-    }
-    
-        
-    var orderItems: [OrderItem] { return [] }
-    
-    var clientToken: DecodedClientToken?
-    
-    var isVaulted: Bool { return false }
-    
-    var uxMode: UXMode { return .CHECKOUT }
-    
-    func payWithApple(completion: @escaping (Error?) -> Void) {
-        
-    }
-    
-    var applePayConfigId: String? { return "applePayConfigId" }
-
-    var currency: Currency? { return .EUR }
-
-    var merchantIdentifier: String? { "mid" }
-
-    var countryCode: CountryCode? { return .fr }
-
-    var calledTokenize = false
-
-}
-
-#endif
+//class MockApplePayViewModel: ApplePayViewModelProtocol {
+//    var amount: Int?
+//    
+//    func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
+//        
+//    }
+//    
+//        
+//    var orderItems: [OrderItem] { return [] }
+//    
+//    var clientToken: DecodedClientToken?
+//    
+//    var isVaulted: Bool { return false }
+//    
+//    var uxMode: UXMode { return .CHECKOUT }
+//    
+//    func payWithApple(completion: @escaping (Error?) -> Void) {
+//        
+//    }
+//    
+//    var applePayConfigId: String? { return "applePayConfigId" }
+//
+//    var currency: Currency? { return .EUR }
+//
+//    var merchantIdentifier: String? { "mid" }
+//
+//    var countryCode: CountryCode? { return .fr }
+//
+//    var calledTokenize = false
+//
+//}
+//
+//#endif

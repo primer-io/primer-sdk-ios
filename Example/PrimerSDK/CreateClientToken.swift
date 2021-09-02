@@ -8,9 +8,17 @@
 
 import Foundation
 
+// Merchants:
+// Sandbox: demo@primer.test
+// Staging: tester+01@primer.test
+// Production: demo@primer.test
+
+enum Environment: String, Codable {
+    case dev, sandbox, staging, production
+}
 
 struct CreateClientTokenRequest: Codable {
-    let customerId: String
+    let customerId: String?
     let customerCountryCode: String?
-    var staging: Bool?
+    var environment: Environment = .sandbox
 }

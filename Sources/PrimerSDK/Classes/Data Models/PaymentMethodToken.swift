@@ -23,7 +23,7 @@ public class PaymentMethodToken: NSObject, Codable {
     public var paymentInstrumentType: PaymentInstrumentType
     public var paymentInstrumentData: PaymentInstrumentData?
     public var vaultData: VaultData?
-    public var threeDSecureAuthentication: ThreeDSecureAuthentication?
+    public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
 
     public override var description: String {
         switch self.paymentInstrumentType {
@@ -149,7 +149,7 @@ struct CardButtonViewModel {
  1.2.2
  */
 
-public enum PaymentInstrumentType: String {
+public enum PaymentInstrumentType: String, Codable {
     case paymentCard = "PAYMENT_CARD"
     case payPalOrder = "PAYPAL_ORDER"
     case payPalBillingAgreement = "PAYPAL_BILLING_AGREEMENT"
@@ -160,9 +160,7 @@ public enum PaymentInstrumentType: String {
     case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
     case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"
     case unknown = "UNKNOWN"
-}
 
-extension PaymentInstrumentType: Codable {
     public init(from decoder: Decoder) throws {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
     }
@@ -191,7 +189,7 @@ public struct PaymentInstrumentData: Codable {
     public let externalPayerInfo: ExternalPayerInfo?
     public let shippingAddress: ShippingAddress?
     public let binData: BinData?
-    public let threeDSecureAuthentication: ThreeDSecureAuthentication?
+    public let threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
     public let gocardlessMandateId: String?
     public let authorizationToken: String?
 }
@@ -244,19 +242,6 @@ public struct BinData: Codable {
 
 public struct VaultData: Codable {
     public var customerId: String?
-}
-
-/**
- If available, it contains information on the 3DSecure authentication associated with this payment method token/instrument.
- 
- - Author:
- Primer
- - Version:
- 1.2.2
- */
-
-public struct ThreeDSecureAuthentication: Codable {
-    public var responseCode, reasonCode, reasonText, protocolVersion, challengeIssued: String?
 }
 
 #endif

@@ -10,72 +10,114 @@ import PrimerSDK
 import UIKit
 
 class MerchantCheckoutViewController: UIViewController {
+    
+    class func instantiate(environment: Environment, customerId: String?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
+        let mvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
+        mvc.environment = environment
+        mvc.customerId = customerId
+        mvc.amount = amount ?? 1
+        mvc.performPayment = performPayment
+        return mvc
+    }
 
     @IBOutlet weak var tableView: UITableView!
+    fileprivate var environment: Environment = .sandbox
+    fileprivate var customerId: String?
+    var amount: Int = 1
+    var currency: Currency = .EUR
+    fileprivate var performPayment: Bool = false
+    
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
         didSet {
             self.tableView.reloadData()
         }
     }
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
-    let amount = 200
-    
-    let vaultPayPalSettings = PrimerSettings(
-        currency: .GBP,
-        countryCode: .gb,
-        urlScheme: "primer",
-        urlSchemeIdentifier: "primer"
-    )
-    
-    let vaultKlarnaSettings = PrimerSettings(
-        klarnaSessionType: .recurringPayment,
-        hasDisabledSuccessScreen: true,
-        isInitialLoadingHidden: true
-    )
-    
-    let applePaySettings = PrimerSettings(
-        merchantIdentifier: "merchant.primer.dev.evangelos",
-        currency: .EUR,
-        countryCode: .fr,
-        businessDetails: BusinessDetails(
-            name: "My Business",
-            address: Address(
-                addressLine1: "107 Rue",
-                addressLine2: nil,
-                city: "Paris",
-                state: nil,
-                countryCode: "FR",
-                postalCode: "75001"
-            )
-        ),
-        orderItems: [
-            try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
-            try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-            try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
-        ]
-    )
+//    let endpoint = "http://localhost:8020"
 
-    let generalSettings = PrimerSettings(
-        merchantIdentifier: "merchant.checkout.team",
-        customerId: "my-customer",
-        amount: 100,        // Please don't change on develop (used for UI testing)
-        currency: .EUR,     // Please don't change on develop (used for UI testing)
-        countryCode: .fr,
-        klarnaSessionType: .recurringPayment,
-        klarnaPaymentDescription: nil,
-        urlScheme: "primer",
-        urlSchemeIdentifier: "primer",
-        isFullScreenOnly: false,
-        hasDisabledSuccessScreen: false,
-        businessDetails: nil,
-        directDebitHasNoAmount: false,
-        orderItems: [],
-        isInitialLoadingHidden: false
-    )
+    
+    
+    var vaultPayPalSettings: PrimerSettings!
+    var vaultKlarnaSettings: PrimerSettings!
+    var applePaySettings: PrimerSettings!
+    var generalSettings: PrimerSettings!
+    var threeDSAlert: UIAlertController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Primer"
+        title = "Primer [\(environment.rawValue)]"
+        
+        generalSettings = PrimerSettings(
+            merchantIdentifier: "merchant.checkout.team",
+            customerId: customerId,
+            amount: amount,        // Please don't change on develop (used for UI testing)
+            currency: currency,     // Please don't change on develop (used for UI testing)
+            countryCode: .fr,
+            klarnaSessionType: .recurringPayment,
+            klarnaPaymentDescription: nil,
+            urlScheme: "primer",
+            urlSchemeIdentifier: "primer",
+            isFullScreenOnly: false,
+            hasDisabledSuccessScreen: false,
+            businessDetails: nil,
+            directDebitHasNoAmount: false,
+            orderItems: [],
+            isInitialLoadingHidden: false,
+            is3DSEnabled: true,
+            billingAddress: Address(addressLine1: "Line 1", addressLine2: "Line 2", city: "City", state: "State", countryCode: "GR", postalCode: "15236"),
+            orderId: "order id",
+            userDetails: UserDetails(
+                firstName: "Evans",
+                lastName: "Pie",
+                email: "evans@primer.io",
+                addressLine1: "Line 1",
+                addressLine2: "Line 2",
+                city: "City",
+                postalCode: "15236",
+                countryCode: "GR",
+                homePhone: nil,
+                mobilePhone: nil,
+                workPhone: nil),
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+        )
+        
+        vaultPayPalSettings = PrimerSettings(
+            customerId: customerId,
+            currency: currency,
+            countryCode: .fr,
+            urlScheme: "primer",
+            urlSchemeIdentifier: "primer"
+        )
+        
+        vaultKlarnaSettings = PrimerSettings(
+            customerId: customerId,
+            klarnaSessionType: .recurringPayment,
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true
+        )
+        
+        applePaySettings = PrimerSettings(
+            merchantIdentifier: "merchant.checkout.team",
+            customerId: customerId,
+            currency: currency,
+            countryCode: .fr,
+            businessDetails: BusinessDetails(
+                name: "My Business",
+                address: Address(
+                    addressLine1: "107 Rue",
+                    addressLine2: nil,
+                    city: "Paris",
+                    state: nil,
+                    countryCode: "FR",
+                    postalCode: "75001"
+                )
+            ),
+            orderItems: [
+                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
+            ]
+        )
         
         Primer.shared.delegate = self
         self.configurePrimer()
@@ -125,6 +167,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: applePaySettings)
         Primer.shared.showCheckout(self, flow: .checkoutWithApplePay)
     }
     
@@ -150,7 +193,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: nil, staging: true)
+        let body = CreateClientTokenRequest(customerId: customerId, customerCountryCode: nil, environment: environment)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -163,7 +206,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             case .success(let data):
                 do {
                     let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
-
+                    print("Primer token:\n\(token)")
                     completion(token, nil)
 
                 } catch {
@@ -181,8 +224,32 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         guard let token = paymentMethodToken.token else { return completion(NetworkError.missingParams) }
+        
+        if let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
+           threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess {
+            var message: String = ""
+            
+            if let reasonCode = threeDSecureAuthentication.reasonCode {
+                message += "[\(reasonCode)] "
+            }
+            
+            if let reasonText = threeDSecureAuthentication.reasonText {
+                message += reasonText
+            }
+            
+            
+            threeDSAlert = UIAlertController(title: "3DS Error", message: message, preferredStyle: .alert)
+            threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
+                self?.threeDSAlert = nil
+            }))
+        }
+        
+        if !performPayment {
+            completion(nil)
+            return
+        }
 
-        guard let url = URL(string: "\(endpoint)/transaction") else {
+        guard let url = URL(string: "\(endpoint)/payments") else {
             return completion(NetworkError.missingParams)
         }
 
@@ -193,7 +260,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: "GBP")
+        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: currency.rawValue)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -214,10 +281,14 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func onCheckoutDismissed() {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nPrimer view dismissed\n")
         fetchPaymentMethods()
+        
+        if let threeDSAlert = threeDSAlert {
+            present(threeDSAlert, animated: true, completion: nil)
+        }
     }
     
     func checkoutFailed(with error: Error) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)")
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
     }
     
 }

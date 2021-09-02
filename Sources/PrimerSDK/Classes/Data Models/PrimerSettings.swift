@@ -28,6 +28,19 @@ internal protocol PrimerSettingsProtocol {
 //    var merchantCapabilities: [MerchantCapability]? { get }
     var isInitialLoadingHidden: Bool { get }
     var localeData: LocaleData { get }
+    var is3DSEnabled: Bool { get }
+    var billingAddress: Address? { get }
+    var orderId: String? { get }
+    var userDetails: UserDetails? { get }
+    var debugOptions: PrimerDebugOptions { get }
+}
+
+public struct PrimerDebugOptions {
+    public var is3DSSanityCheckEnabled: Bool = true
+    
+    public init(is3DSSanityCheckEnabled: Bool = true) {
+        self.is3DSSanityCheckEnabled = is3DSSanityCheckEnabled
+    }
 }
 
 /**
@@ -72,6 +85,11 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //    internal(set) public var merchantCapabilities: [MerchantCapability]?
     internal(set) public var isInitialLoadingHidden: Bool
     internal(set) public var localeData: LocaleData
+    internal(set) public var is3DSEnabled: Bool
+    internal(set) public var billingAddress: Address?
+    internal(set) public var orderId: String?
+    internal(set) public var userDetails: UserDetails?
+    internal(set) public var debugOptions: PrimerDebugOptions = PrimerDebugOptions()
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
@@ -111,7 +129,12 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //        supportedNetworks: [PaymentNetwork]? = nil,
 //        merchantCapabilities: [MerchantCapability]? = nil,
         isInitialLoadingHidden: Bool = false,
-        localeData: LocaleData? = nil
+        localeData: LocaleData? = nil,
+        is3DSEnabled: Bool = true,
+        billingAddress: Address? = nil,
+        orderId: String? = nil,
+        userDetails: UserDetails? = nil,
+        debugOptions: PrimerDebugOptions? = nil
     ) {
         self.amount = amount
         self.currency = currency
@@ -136,6 +159,12 @@ public class PrimerSettings: PrimerSettingsProtocol {
             // In case order items have been provided: Replace amount with the sum of the unit amounts
             self.amount = orderItems.filter({ $0.unitAmount != nil }).compactMap({ $0.unitAmount! * $0.quantity }).reduce(0, +)
         }
+        
+        self.is3DSEnabled = is3DSEnabled
+        self.billingAddress = billingAddress
+        self.orderId = orderId
+        self.userDetails = userDetails
+        self.debugOptions = debugOptions ?? PrimerDebugOptions()
     }
 }
 

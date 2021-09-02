@@ -28,7 +28,7 @@ internal class AlertController: UIAlertController {
 
 }
 
-private class ClearViewController: UIViewController {
+internal class ClearViewController: UIViewController {
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return UIApplication.shared.statusBarStyle

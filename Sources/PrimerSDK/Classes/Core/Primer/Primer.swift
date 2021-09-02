@@ -1,5 +1,8 @@
 #if canImport(UIKit)
 
+#if canImport(Primer3DS)
+import Primer3DS
+#endif
 import UIKit
 
 // swiftlint:disable identifier_name
@@ -22,10 +25,36 @@ public class Primer {
     }
 
     fileprivate init() {
+        #if canImport(Primer3DS)
+        print("Can import Primer3DS")
+        #else
+        print("Failed to import Primer3DS")
+        #endif
+        
         DispatchQueue.main.async { [weak self] in
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
         }
+        
+        
+    }
+    
+    public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        #if canImport(Primer3DS)
+        return Primer3DS.application(app, open: url, options: options)
+        #endif
+        
+        return false
+    }
+
+    public func application(_ application: UIApplication,
+                     continue userActivity: NSUserActivity,
+                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        #if canImport(Primer3DS)
+        return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
+        #endif
+        
+        return false
     }
 
     /**

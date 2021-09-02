@@ -80,6 +80,15 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var debugOptions: PrimerDebugOptions
+    
+    var userDetails: UserDetails?
+    
+    var orderId: String?
+    
+    var billingAddress: Address?
+    
+    var is3DSEnabled: Bool
     
     var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
     
@@ -144,6 +153,8 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         self.authorizePayment = authorizePayment
         self.onCheckoutDismiss = onCheckoutDismiss
         self.onTokenizeSuccess = onTokenizeSuccess
+        self.is3DSEnabled = true
+        self.debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
     }
 }
 
@@ -190,9 +201,11 @@ class MockAppState: AppStateProtocol {
             coreUrl: "url",
             pciUrl: "url",
             paymentMethods: [
-                ConfigPaymentMethod(id: "1", type: .klarna),
-                ConfigPaymentMethod(id: "2", type: .payPal)
-            ]
+                ConfigPaymentMethod(id: "1", options: nil, processorConfigId: nil, type: .klarna),
+                ConfigPaymentMethod(id: "2", options: nil, processorConfigId: nil, type: .payPal)
+            ],
+            env: "dev",
+            keys: nil
         )
     ) {
         self.decodedClientToken = decodedClientToken
@@ -215,7 +228,7 @@ class MockLocator {
         DependencyContainer.register(MockTokenizationService() as TokenizationServiceProtocol)
         DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(MockKlarnaService() as KlarnaServiceProtocol)
-        DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
+//        DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
         DependencyContainer.register(MockCardScannerViewModel() as CardScannerViewModelProtocol)
         DependencyContainer.register(MockDirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
         DependencyContainer.register(MockOAuthViewModel() as OAuthViewModelProtocol)

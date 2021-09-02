@@ -20,22 +20,82 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
-                                <rect key="frame" x="118.5" y="318.5" width="138" height="30"/>
-                                <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
-                                <state key="normal" title="Initialize Primer SDK"/>
-                                <connections>
-                                    <segue destination="rv5-RJ-1cA" kind="show" id="lRu-Go-hvr"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="lhy-ef-r7f">
+                                <rect key="frame" x="16" y="64" width="343" height="236"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
+                                        <rect key="frame" x="102.5" y="0.0" width="138" height="30"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
+                                        <state key="normal" title="Initialize Primer SDK"/>
+                                        <connections>
+                                            <action selector="initializeButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="ix2-XA-ujs"/>
+                                        </connections>
+                                    </button>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Gbo-HH-IGR">
+                                        <rect key="frame" x="0.0" y="42" width="343" height="32"/>
+                                        <segments>
+                                            <segment title="Dev"/>
+                                            <segment title="Sandbox"/>
+                                            <segment title="Staging"/>
+                                            <segment title="Production"/>
+                                        </segments>
+                                        <connections>
+                                            <action selector="environmentValueChanged:" destination="Hsc-Wl-Q65" eventType="valueChanged" id="HwU-hT-uQ5"/>
+                                        </connections>
+                                    </segmentedControl>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Provide a customer id" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FzB-bx-JVe">
+                                        <rect key="frame" x="0.0" y="85" width="343" height="48"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="48" id="cXk-Ij-WM7"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Amount (optional)" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ZrA-mV-qKa">
+                                        <rect key="frame" x="0.0" y="145" width="343" height="48"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="48" id="cmF-TU-Iok"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
+                                    </textField>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="146" translatesAutoresizingMaskIntoConstraints="NO" id="EGP-wD-gFp">
+                                        <rect key="frame" x="8" y="205" width="327.5" height="31"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Perform payment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="acr-hZ-8MO">
+                                                <rect key="frame" x="0.0" y="0.0" width="132.5" height="31"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Nmk-qK-wn0">
+                                                <rect key="frame" x="278.5" y="0.0" width="51" height="31"/>
+                                            </switch>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="ZrA-mV-qKa" secondAttribute="trailing" id="2wg-qY-edh"/>
+                                    <constraint firstItem="ZrA-mV-qKa" firstAttribute="leading" secondItem="lhy-ef-r7f" secondAttribute="leading" id="FKP-ji-lAz"/>
+                                    <constraint firstAttribute="trailing" secondItem="FzB-bx-JVe" secondAttribute="trailing" id="hWR-Cg-aLZ"/>
+                                    <constraint firstItem="FzB-bx-JVe" firstAttribute="leading" secondItem="lhy-ef-r7f" secondAttribute="leading" id="n6B-JR-d4x"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerY" secondItem="P7R-MC-LKq" secondAttribute="centerY" id="A4C-4q-2Y2"/>
-                            <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerX" secondItem="P7R-MC-LKq" secondAttribute="centerX" id="uIm-xc-nvN"/>
+                            <constraint firstItem="lhy-ef-r7f" firstAttribute="top" secondItem="Hc4-ia-dRw" secondAttribute="bottom" constant="20" id="9dV-qP-VBl"/>
+                            <constraint firstItem="lhy-ef-r7f" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" id="BO4-hZ-2N7"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="lhy-ef-r7f" secondAttribute="trailing" id="O4Z-aW-ork"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="kYZ-5n-R2a"/>
+                    <connections>
+                        <outlet property="amountTextField" destination="ZrA-mV-qKa" id="CWk-RO-ZKa"/>
+                        <outlet property="customerIdTextField" destination="FzB-bx-JVe" id="WYv-fO-enB"/>
+                        <outlet property="environmentSwitch" destination="Gbo-HH-IGR" id="ZHY-z7-esU"/>
+                        <outlet property="performPaymentSwitch" destination="Nmk-qK-wn0" id="kI9-OM-LCs"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AfA-pm-mcm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -54,7 +114,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="40" estimatedRowHeight="40" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="5Bg-Yz-vOr">
-                                <rect key="frame" x="0.0" y="64" width="375" height="211"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="255"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="PaymentMethodCell" rowHeight="40" id="hfT-yD-Z4D" customClass="PaymentMethodCell" customModule="PrimerSDK_Example" customModuleProvider="target">

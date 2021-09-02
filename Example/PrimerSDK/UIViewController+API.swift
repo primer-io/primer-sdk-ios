@@ -49,24 +49,40 @@ extension UIViewController {
         URLSession.shared.dataTask(with: req, completionHandler: { (data, response, err) in
 
             if err != nil {
+                print("Error: \(err)")
                 completion(.failure(NetworkError.serverError))
                 return
             }
 
             guard let httpResponse = response as? HTTPURLResponse else {
+                print("No response")
                 completion(.failure(NetworkError.invalidResponse))
                 return
             }
 
             if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
+                print("Status code: \(httpResponse.statusCode)")
                 completion(.failure(NetworkError.invalidResponse))
                 return
             }
+            
+            print("Status code: \(httpResponse.statusCode)")
 
             guard let data = data else {
+                print("No data")
                 completion(.failure(NetworkError.invalidResponse))
                 return
             }
+            
+            do {
+                let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                print("Response body: \(json)")
+            } catch {
+                print("Error: \(error)")
+            }
+            
+            let str = String(data: data, encoding: .utf8)
+            print("Response str: \(str)")
 
             completion(.success(data))
 
