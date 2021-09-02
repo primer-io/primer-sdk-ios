@@ -6,8 +6,11 @@
 //
 
 #if canImport(Primer3DS)
+#if canImport(UIKit)
+
 import Foundation
 import Primer3DS
+import UIKit
 
 protocol ThreeDSServiceProtocol {
     func perform3DS(
@@ -409,4 +412,5 @@ class MockThreeDSService: ThreeDSServiceProtocol {
     }
 }
 
+#endif
 #endif
