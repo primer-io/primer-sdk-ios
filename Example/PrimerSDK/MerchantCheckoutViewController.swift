@@ -22,6 +22,7 @@ class MerchantCheckoutViewController: UIViewController {
     let environment = "dev"
     
     let vaultApayaSettings = PrimerSettings(
+        currency: .GBP,
         hasDisabledSuccessScreen: true,
         isInitialLoadingHidden: true
     )
