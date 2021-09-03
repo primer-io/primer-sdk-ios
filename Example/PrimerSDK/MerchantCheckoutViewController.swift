@@ -277,13 +277,13 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                        let id = dic?["id"] as? String,
                        let date = dic?["date"] as? String,
                        let statusStr = dic?["status"] as? String,
-                       let status = PaymentStatus(rawValue: statusStr) {
+                       let status = PaymentStatus(strValue: statusStr) {
                         
                         var requiredAction: RequiredAction?
                         
                         if let requiredActionDic = dic?["requiredAction"] as? [String: Any] {
                             if let requiredActionNameStr = requiredActionDic["name"] as? String,
-                               let requiredActionName = RequiredActionName(rawValue: requiredActionNameStr),
+                               let requiredActionName = RequiredActionName(strValue: requiredActionNameStr),
                                let description = requiredActionDic["description"] as? String {
                                 requiredAction = RequiredAction(name: requiredActionName,
                                                                 description: description,
