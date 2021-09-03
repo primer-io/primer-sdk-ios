@@ -15,6 +15,10 @@ protocol PrimerLoadWebViewModelProtocol: AnyObject {
 }
 
 internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
 
     func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
         if configDidLoad() {
@@ -50,14 +54,40 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
             navigate(.failure(error))
         case .success(let result):
             let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
-            let request = generateTokenizationRequest(with: result)
-            tokenizationService.tokenize(request: request) { [weak self] result in
-                switch result {
-                case .failure:
-                    self?.navigate(.failure(PrimerError.tokenizationRequestFailed))
-                case .success:
-                    self?.navigate(.success(true))
+            
+            do {
+                let request = try generateTokenizationRequest(with: result)
+                tokenizationService.tokenize(request: request) { [weak self] result in
+                    switch result {
+                    case .failure(let err):
+                        DispatchQueue.main.async {
+                            self?.navigate(.failure(PrimerError.tokenizationRequestFailed))
+                            Primer.shared.delegate?.checkoutFailed?(with: err)
+                        }
+                        
+                    case .success(let paymentMethodToken):
+                        DispatchQueue.main.async {
+                            if Primer.shared.flow.internalSessionFlow.vaulted {
+                                self?.navigate(.success(true))
+                                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { (err) in
+                                    // There's not going to be a callback
+                                })
+                            } else {
+                                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { (err) in
+                                    if let err = err {
+                                        self?.navigate(.failure(err))
+                                    } else {
+                                        self?.navigate(.success(true))
+                                    }
+                                })
+                            }
+                            
+                            
+                        }
+                    }
                 }
+            } catch {
+                self.navigate(.failure(PrimerError.tokenizationRequestFailed))
             }
         }
     }
@@ -72,27 +102,38 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
                 // is the current expectation of integrating developers?
                 Primer.shared.delegate?.checkoutFailed?(with: PrimerError.userCancelled)
                 router.pop()
+                
             case .failure(let error):
-                Primer.shared.delegate?.checkoutFailed?(with: error)
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 let router: RouterDelegate = DependencyContainer.resolve()
                 if settings.hasDisabledSuccessScreen {
                     router.root?.onDisabledSuccessScreenDismiss()
                 } else {
                     // this needs a better error
-                    router.show(.error(error: PrimerError.generic))
+                    router.show(.error(error: error))
                 }
+                
             case .success:
                 router.show(.success(type: .regular))
             }
         }
     }
 
-    private func generateTokenizationRequest(
-        with result: Apaya.WebViewResult
-    ) -> PaymentMethodTokenizationRequest {
+    private func generateTokenizationRequest(with result: Apaya.WebViewResult) throws -> PaymentMethodTokenizationRequest {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let instrument = PaymentInstrument(mx: result.mxNumber, mnc: result.mnc, mcc: result.mcc)
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        guard let currencyStr = settings.currency?.rawValue else {
+            throw PaymentException.missingCurrency
+        }
+
+        let instrument = PaymentInstrument(mx: result.mxNumber,
+                                           mnc: result.mnc,
+                                           mcc: result.mcc,
+                                           hashedIdentifier: result.hashedIdentifier,
+                                           productId: result.productId,
+                                           currencyCode: currencyStr)
+        
         return PaymentMethodTokenizationRequest(
             paymentInstrument: instrument,
             state: state
