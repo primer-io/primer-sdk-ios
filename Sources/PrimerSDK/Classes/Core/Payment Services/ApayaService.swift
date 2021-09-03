@@ -32,10 +32,6 @@ internal class ApayaService: ApayaServiceProtocol {
         guard let currency = settings.currency else {
             return completion(.failure(PaymentException.missingCurrency))
         }
-        
-        if clientToken.env != "PRODUCTION" {
-            merchantAccountId = "a1070c8a-40a6-5a92-a6ea-c39e7538bb2d"
-        }
                 
         let body = Apaya.CreateSessionAPIRequest(merchantId: merchantId,
                                                  merchantAccountId: merchantAccountId,

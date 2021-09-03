@@ -69,10 +69,6 @@ public struct Apaya {
             else {
                 return .failure(ApayaException.invalidWebViewResult)
             }
-            
-            if clientToken.env != "PRODUCTION" {
-                merchantAccountId = "a1070c8a-40a6-5a92-a6ea-c39e7538bb2d"
-            }
     
             return .success(
                 Apaya.WebViewResult(
