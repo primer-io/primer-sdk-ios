@@ -49,4 +49,8 @@ internal extension PaymentMethodConfig {
 
 class PaymentMethodConfigOptions: Codable {
     let merchantAccountId: String?
+    
+    init(merchantAccountId: String?) {
+        self.merchantAccountId = merchantAccountId
+    }
 }
