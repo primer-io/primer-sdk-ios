@@ -40,19 +40,20 @@ internal class TokenizationService: TokenizationServiceProtocol {
         log(logLevel: .verbose, title: nil, message: "URL: \(url)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-
+        
         api.tokenizePaymentMethod(clientToken: clientToken, paymentMethodTokenizationRequest: request) { (result) in
-            switch result {
-            case .failure:
-                onTokenizeSuccess(.failure( PrimerError.tokenizationRequestFailed ))
-            case .success(let paymentMethodToken):
-                if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-                    DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                switch result {
+                case .failure:
+                    onTokenizeSuccess(.failure( PrimerError.tokenizationRequestFailed ))
+                    
+                case .success(let paymentMethodToken):
+                    if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
                         Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
                     }
+    
+                    onTokenizeSuccess(.success(paymentMethodToken))
                 }
-                onTokenizeSuccess(.success(paymentMethodToken))
-
             }
         }
     }
