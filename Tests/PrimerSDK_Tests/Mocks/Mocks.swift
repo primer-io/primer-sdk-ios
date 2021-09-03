@@ -25,8 +25,8 @@ var mockSettings = PrimerSettings(
     merchantIdentifier: "mid",
     customerId: "cid",
     amount: 200,
-    currency: .EUR,
-    countryCode: .fr,
+    currency: .GBP,
+    countryCode: .gb,
     urlScheme: "urlScheme",
     urlSchemeIdentifier: "urlSchemeIdentifier",
     orderItems: [try! OrderItem(name: "foo", unitAmount: 200, quantity: 1)]
@@ -147,7 +147,32 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     }
 }
 
+let mockPaymentMethodConfig = PaymentMethodConfig(
+    coreUrl: "url",
+    pciUrl: "url",
+    paymentMethods: [
+        ConfigPaymentMethod(id: "1", type: .klarna, processorConfigId: nil, options: nil),
+        ConfigPaymentMethod(id: "2", type: .payPal, processorConfigId: nil, options: nil),
+        ConfigPaymentMethod(id: "3", type: .apaya, processorConfigId: nil, options: PaymentMethodConfigOptions(merchantAccountId: "merchantAccountId"))
+    ]
+)
+
 class MockAppState: AppStateProtocol {
+    var apayaResult: Result<Apaya.WebViewResult, ApayaException>?
+    
+    var setApayaResultCalled = false
+    func setApayaResult(_ result: Result<Apaya.WebViewResult, ApayaException>) {
+        setApayaResultCalled = true
+        apayaResult = result
+    }
+    
+    var getApayaResultCalled = false
+    func getApayaResult() -> Result<Apaya.WebViewResult, ApayaException>? {
+        getApayaResultCalled = true
+        let url = URL(string: "https://primer.io") // needs query params
+        return apayaResult ?? Apaya.WebViewResult.create(from: url)
+    }
+    
     var customerToken: String? = "customerToken"
 
     var authorizationToken: String? = "authToken"
@@ -190,8 +215,8 @@ class MockAppState: AppStateProtocol {
             coreUrl: "url",
             pciUrl: "url",
             paymentMethods: [
-                ConfigPaymentMethod(id: "1", type: .klarna),
-                ConfigPaymentMethod(id: "2", type: .payPal)
+                ConfigPaymentMethod(id: "1", type: .klarna, processorConfigId: nil, options: nil),
+                ConfigPaymentMethod(id: "2", type: .payPal, processorConfigId: nil, options: nil)
             ]
         )
     ) {
@@ -204,9 +229,12 @@ let mockPayPalBillingAgreement = PayPalConfirmBillingAgreementResponse(billingAg
 
 class MockLocator {
     static func registerDependencies() {
+        let state: AppStateProtocol = MockAppState()
+        state.paymentMethodConfig = mockPaymentMethodConfig
+        DependencyContainer.register(state as AppStateProtocol)
         // register dependencies
         DependencyContainer.register(mockSettings as PrimerSettingsProtocol)
-        DependencyContainer.register(MockAppState() as AppStateProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         DependencyContainer.register(MockVaultService() as VaultServiceProtocol)
         DependencyContainer.register(MockClientTokenService() as ClientTokenServiceProtocol)
@@ -251,8 +279,15 @@ class MockRouter: Router {
     }
     
     var showCalled = false
-    
+    var popCalled = false
+    var route: Route?
     var callback: (() -> Void)?
+    
+    func setPopCalledTrue() {
+        popCalled = true
+        guard let callback = callback else { return }
+        callback()
+    }
     
     func setShowCalledTrue() {
         showCalled = true
@@ -261,11 +296,12 @@ class MockRouter: Router {
     }
 
     override func show(_ route: Route) {
+        self.route = route
         setShowCalledTrue()
     }
 
     override func pop() {
-        
+        setPopCalledTrue()
     }
 
     override func popAllAndShow(_ route: Route) {

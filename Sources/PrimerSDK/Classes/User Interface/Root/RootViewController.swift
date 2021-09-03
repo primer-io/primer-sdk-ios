@@ -51,7 +51,8 @@ internal class RootViewController: PrimerViewController {
         switch Primer.shared.flow.internalSessionFlow {
         case .vaultKlarna,
              .vaultPayPal,
-             .checkoutWithKlarna:
+             .checkoutWithKlarna,
+             .vaultApaya:
             mainView.backgroundColor = settings.isInitialLoadingHidden ? .clear : theme.colorTheme.main1
         default:
             mainView.backgroundColor = theme.colorTheme.main1
@@ -148,9 +149,13 @@ internal class RootViewController: PrimerViewController {
             router.show(.oAuth(host: .klarna))
         case .vaultKlarna:
             router.show(.oAuth(host: .klarna))
+        case .vaultApaya:
+            router.show(.oAuth(host: .apaya))
         case .vault:
             router.show(.vaultCheckout)
         case .checkoutWithApplePay:
+            break
+        default:
             break
         }
     }
@@ -235,6 +240,17 @@ internal extension Optional where Wrapped == NSLayoutConstraint {
 extension RootViewController: UIViewControllerTransitioningDelegate {
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         PresentationController(presentedViewController: presented, presenting: presenting)
+    }
+}
+
+extension RootViewController {
+    func onDisabledSuccessScreenDismiss() {
+        UIView.animate(withDuration: 0.3) {
+            let presenter = self.presentationController as? PresentationController
+            presenter?.blurEffectView.alpha = 0.0
+        } completion: { [weak self] (_) in
+            self?.dismiss(animated: true, completion: nil)
+        }
     }
 }
 

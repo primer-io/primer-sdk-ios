@@ -7,6 +7,8 @@ struct PaymentMethodConfig: Codable {
 struct ConfigPaymentMethod: Codable {
     let id: String?
     let type: ConfigPaymentMethodType?
+    let processorConfigId: String?
+    let options: PaymentMethodConfigOptions?
 }
 
 enum ConfigPaymentMethodType: String, Codable {
@@ -17,12 +19,13 @@ enum ConfigPaymentMethodType: String, Codable {
     case goCardlessMandate = "GOCARDLESS"
     case klarna = "KLARNA"
     case payNlIdeal = "PAY_NL_IDEAL"
+    case apaya = "APAYA"
     
     case unknown
     
     var isEnabled: Bool {
         switch self {
-        case .applePay, .payPal, .paymentCard, .goCardlessMandate, .klarna:
+        case .applePay, .payPal, .paymentCard, .goCardlessMandate, .klarna, .apaya:
             return true
         default:
             return false
@@ -32,7 +35,22 @@ enum ConfigPaymentMethodType: String, Codable {
 
 internal extension PaymentMethodConfig {
     func getConfigId(for type: ConfigPaymentMethodType) -> String? {
-        guard let method = self.paymentMethods?.first(where: { method in return method.type == type }) else { return nil }
+        guard let method = self.paymentMethods?
+                .first(where: { method in return method.type == type }) else { return nil }
         return method.id
+    }
+    
+    func getProductId(for type: ConfigPaymentMethodType) -> String? {
+        guard let method = self.paymentMethods?
+                .first(where: { method in return method.type == type }) else { return nil }
+        return method.options?.merchantAccountId
+    }
+}
+
+class PaymentMethodConfigOptions: Codable {
+    let merchantAccountId: String?
+    
+    init(merchantAccountId: String?) {
+        self.merchantAccountId = merchantAccountId
     }
 }

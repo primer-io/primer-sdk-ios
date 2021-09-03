@@ -11,9 +11,11 @@
 
 class MockClientTokenService: ClientTokenServiceProtocol {
     let tokenIsNil: Bool
+    var throwError: Bool
 
-    init (tokenIsNil: Bool = false) {
+    init (tokenIsNil: Bool = false, throwError: Bool = false) {
         self.tokenIsNil = tokenIsNil
+        self.throwError = throwError
     }
 
     var decodedClientToken: DecodedClientToken? {
@@ -31,9 +33,10 @@ class MockClientTokenService: ClientTokenServiceProtocol {
     }
 
     var loadCheckoutConfigCalled = false
-
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
         loadCheckoutConfigCalled = true
+        if (throwError) { return completion(PrimerError.generic) }
+        return completion(nil)
     }
 }
 
