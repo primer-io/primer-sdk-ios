@@ -35,18 +35,14 @@ enum ConfigPaymentMethodType: String, Codable {
 
 internal extension PaymentMethodConfig {
     func getConfigId(for type: ConfigPaymentMethodType) -> String? {
-        print("🌺 getConfigId")
         guard let method = self.paymentMethods?
                 .first(where: { method in return method.type == type }) else { return nil }
-        print("🌺 method: \(method.id)")
         return method.id
     }
     
     func getProductId(for type: ConfigPaymentMethodType) -> String? {
-        print("🌺 getProductId")
         guard let method = self.paymentMethods?
                 .first(where: { method in return method.type == type }) else { return nil }
-        print("🌺 method: \(method.options?.merchantAccountId)")
         return method.options?.merchantAccountId
     }
 }

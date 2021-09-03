@@ -14,9 +14,11 @@ protocol OAuthServiceProtocol {
 internal protocol ApayaServiceProtocol: OAuthServiceProtocol {}
 
 internal class ApayaService: ApayaServiceProtocol {
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
+    
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         guard let clientToken = state.decodedClientToken,
@@ -25,7 +27,6 @@ internal class ApayaService: ApayaServiceProtocol {
         else {
             return completion(.failure(ApayaException.noToken))
         }
-        print("🐠 merchantId: \(merchantId), accountId: \(accountId)")
         let body = Apaya.CreateSessionAPIRequest(merchantAccountId: "a1070c8a-40a6-5a92-a6ea-c39e7538bb2d")
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.apayaCreateSession(clientToken: clientToken, request: body) { [weak self] result in
@@ -40,10 +41,11 @@ internal class ApayaService: ApayaServiceProtocol {
                     className: "\(String(describing: self.self))",
                     function: #function
                 )
-                print("🦧🦧🦧🦧🦧🦧 \(response.url)")
+
                 completion(.success(response.url))
             }
         }
     }
+    
 }
 #endif

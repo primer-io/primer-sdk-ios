@@ -26,12 +26,6 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
             case .failure(let error):
                 completion(error)
             case .success(let config):
-                print("🔥🔥 \(config) 🔥🔥")
-                config.paymentMethods?.forEach { method in
-                    print(method.type)
-                    print(method.processorConfigId)
-                }
-                
                 state.paymentMethodConfig = PaymentMethodConfig(
                     coreUrl: config.coreUrl,
                     pciUrl: config.pciUrl,
