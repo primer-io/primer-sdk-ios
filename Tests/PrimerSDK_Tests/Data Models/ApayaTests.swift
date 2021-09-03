@@ -16,20 +16,34 @@ class ApayaDataModelTests: XCTestCase {
     let rootUrl = "https://primer.io/apaya/result?"
     
     func test_apaya_web_view_result_created_from_correct_url() throws {
-        let url = URL(string: rootUrl + "token=A9IotQFdJBSYjth7h)hGWmFAgzVjxU6xeGGT)AaAbB=&pt=ExamplePTValue&success=1&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91")
+        let url = URL(string: rootUrl + "token=A9IotQFdJBSYjth7h)hGWmFAgzVjxU6xeGGT)AaAbB=&pt=ExamplePTValue&success=1&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91&success=1")
+        
+        let state: AppStateProtocol = MockAppState()
+        state.paymentMethodConfig = mockPaymentMethodConfig
+        DependencyContainer.register(state as AppStateProtocol)
+        let settings = PrimerSettings(currency: .GBP)
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
         case .none:
             XCTFail()
         case .success(let value):
-            XCTAssertEqual(value.mcc, "208")
+            XCTAssertEqual(value.success, "1")
         case .failure:
             XCTFail()
         }
     }
     
-    func test_apaya_web_view_result_fails_on_token_not_provided() throws {
-        let url = URL(string: rootUrl + "pt=ExamplePTValue&success=1&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91")
+    func test_apaya_web_view_result_fails_on_success_not_provided() throws {
+        let url = URL(string: rootUrl + "pt=ExamplePTValue&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91")
+        
+        let state: AppStateProtocol = MockAppState()
+        state.paymentMethodConfig = mockPaymentMethodConfig
+        DependencyContainer.register(state as AppStateProtocol)
+        let settings = PrimerSettings(currency: .GBP)
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
         case .none:

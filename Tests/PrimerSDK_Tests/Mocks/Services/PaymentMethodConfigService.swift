@@ -14,7 +14,7 @@ class MockPaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
     var viewModels: [PaymentMethodViewModel] = []
 
     var fetchConfigCalled = false
-
+    
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
         fetchConfigCalled = true
         completion(nil)

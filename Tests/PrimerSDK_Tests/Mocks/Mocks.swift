@@ -25,8 +25,8 @@ var mockSettings = PrimerSettings(
     merchantIdentifier: "mid",
     customerId: "cid",
     amount: 200,
-    currency: .EUR,
-    countryCode: .fr,
+    currency: .GBP,
+    countryCode: .gb,
     urlScheme: "urlScheme",
     urlSchemeIdentifier: "urlSchemeIdentifier",
     orderItems: [try! OrderItem(name: "foo", unitAmount: 200, quantity: 1)]
@@ -152,7 +152,8 @@ let mockPaymentMethodConfig = PaymentMethodConfig(
     pciUrl: "url",
     paymentMethods: [
         ConfigPaymentMethod(id: "1", type: .klarna, processorConfigId: nil, options: nil),
-        ConfigPaymentMethod(id: "2", type: .payPal, processorConfigId: nil, options: nil)
+        ConfigPaymentMethod(id: "2", type: .payPal, processorConfigId: nil, options: nil),
+        ConfigPaymentMethod(id: "3", type: .apaya, processorConfigId: nil, options: PaymentMethodConfigOptions(merchantAccountId: "merchantAccountId"))
     ]
 )
 
@@ -228,9 +229,12 @@ let mockPayPalBillingAgreement = PayPalConfirmBillingAgreementResponse(billingAg
 
 class MockLocator {
     static func registerDependencies() {
+        let state: AppStateProtocol = MockAppState()
+        state.paymentMethodConfig = mockPaymentMethodConfig
+        DependencyContainer.register(state as AppStateProtocol)
         // register dependencies
         DependencyContainer.register(mockSettings as PrimerSettingsProtocol)
-        DependencyContainer.register(MockAppState() as AppStateProtocol)
+        DependencyContainer.register(state as AppStateProtocol)
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         DependencyContainer.register(MockVaultService() as VaultServiceProtocol)
         DependencyContainer.register(MockClientTokenService() as ClientTokenServiceProtocol)

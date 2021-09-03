@@ -41,26 +41,7 @@ class ApayaServiceTests: XCTestCase {
         
         wait(for: [expectation], timeout: 10.0)
     }
-    
-    // MARK: createPaymentSession - Success
-    func test_create_apaya_payment_session_success() throws {
-        let expectation = XCTestExpectation(description: "Create Apaya payment session | Success")
-        MockLocator.registerDependencies()
 
-        let service = ApayaService()
-        service.createPaymentSession { (result) in
-            switch result {
-            case .failure(let err):
-                XCTAssert(false, "Test should succeeded, but failed with \(err)")
-            case .success:
-                XCTAssert(true)
-
-            }
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 10.0)
-    }
 }
 
 #endif

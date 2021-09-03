@@ -28,17 +28,7 @@ class ApayaWebViewModelTests: XCTestCase {
 
         XCTAssertTrue(state.setApayaResultCalled)
     }
-    
-    func test_onDismiss_does_not_call_setApayaResult_if_result_nil() throws {
-        let state = MockAppState()
-        DependencyContainer.register(state as AppStateProtocol)
 
-        let viewModel = ApayaWebViewModel()
-        
-        viewModel.onDismiss()
-
-        XCTAssertFalse(state.setApayaResultCalled)
-    }
 }
 
 #endif
