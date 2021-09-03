@@ -17,6 +17,7 @@ struct PaymentMethodTokenizationRequest: Encodable {
 
 }
 
+// feels like we could polymorph this with a protocol, or at least restrict construcions with a specific factory method for each payment instrument.
 struct PaymentInstrument: Encodable {
     // Card
     var number: String?
@@ -40,6 +41,13 @@ struct PaymentInstrument: Encodable {
     // Klarna customer token
     var klarnaCustomerToken: String?
     var sessionData: KlarnaSessionData?
+    // Apaya
+    var mx: String?
+    var mnc: String?
+    var mcc: String?
+    var hashedIdentifier: String?
+    var productId: String?
+    var currencyCode: String?
 }
 
 enum TokenType: String, Encodable {

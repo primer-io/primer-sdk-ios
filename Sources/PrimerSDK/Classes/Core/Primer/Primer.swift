@@ -51,6 +51,7 @@ public class Primer {
         DependencyContainer.register(TokenizationService() as TokenizationServiceProtocol)
         DependencyContainer.register(DirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(KlarnaService() as KlarnaServiceProtocol)
+        DependencyContainer.register(ApayaService() as ApayaServiceProtocol)
         DependencyContainer.register(ApplePayService() as ApplePayServiceProtocol)
         DependencyContainer.register(ApplePayViewModel() as ApplePayViewModelProtocol)
         DependencyContainer.register(CardScannerViewModel() as CardScannerViewModelProtocol)
@@ -62,6 +63,8 @@ public class Primer {
         DependencyContainer.register(FormViewModel() as FormViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
+        DependencyContainer.register(ApayaLoadWebViewModel() as ApayaLoadWebViewModel)
+        DependencyContainer.register(ApayaWebViewModel() as ApayaWebViewModel)
     }
 
     // MARK: - CONFIGURATION
@@ -74,7 +77,7 @@ public class Primer {
      - Version:
      1.4.0
      */
-    
+
     public func configure(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
         DispatchQueue.main.async {
             if let settings = settings {
