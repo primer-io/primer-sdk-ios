@@ -23,11 +23,25 @@ internal class ApayaService: ApayaServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         guard let clientToken = state.decodedClientToken,
               let merchantId = state.paymentMethodConfig?.getConfigId(for: .apaya),
-              let accountId = state.paymentMethodConfig?.getProductId(for: .apaya)
+              var merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
         else {
             return completion(.failure(ApayaException.noToken))
         }
-        let body = Apaya.CreateSessionAPIRequest(merchantAccountId: "a1070c8a-40a6-5a92-a6ea-c39e7538bb2d")
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        guard let currency = settings.currency else {
+            return completion(.failure(PaymentException.missingCurrency))
+        }
+        
+        if clientToken.env != "PRODUCTION" {
+            merchantAccountId = "a1070c8a-40a6-5a92-a6ea-c39e7538bb2d"
+        }
+                
+        let body = Apaya.CreateSessionAPIRequest(merchantId: merchantId,
+                                                 merchantAccountId: merchantAccountId,
+                                                 language: settings.localeData.languageCode ?? "en",
+                                                 currencyCode: currency.rawValue)
+        
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.apayaCreateSession(clientToken: clientToken, request: body) { [weak self] result in
             switch result {
