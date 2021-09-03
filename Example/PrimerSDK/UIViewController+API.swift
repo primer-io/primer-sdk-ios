@@ -6,6 +6,7 @@
 //  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
+import PrimerSDK
 import UIKit
 
 // MARK: - API HELPER
@@ -16,6 +17,20 @@ struct AuthorizationRequest: Encodable {
     let amount: Int
     let type: String?
     let currencyCode: String
+}
+
+struct AuthorizationResponse: PaymentResponseProtocol {
+    var amount: Int
+    var id: String
+    var date: String
+    var status: PaymentStatus
+    var requiredAction: RequiredActionProtocol?
+}
+
+struct RequiredAction: RequiredActionProtocol {
+    var name: RequiredActionName
+    var description: String
+    var clientToken: String?
 }
 
 enum NetworkError: Error {

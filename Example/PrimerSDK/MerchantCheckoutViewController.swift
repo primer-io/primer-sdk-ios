@@ -15,16 +15,16 @@ class MerchantCheckoutViewController: UIViewController {
         let mvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
         mvc.environment = environment
         mvc.customerId = customerId
-        mvc.amount = amount ?? 1
+        mvc.amount = amount ?? 100
         mvc.performPayment = performPayment
         return mvc
     }
-
+    
     @IBOutlet weak var tableView: UITableView!
     var environment: Environment = .sandbox
     fileprivate var customerId: String?
-    var amount: Int = 1
-    var currency: Currency = .EUR
+    var amount: Int = 100
+    var currency: Currency = .GBP
     fileprivate var performPayment: Bool = false
     
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
@@ -33,8 +33,8 @@ class MerchantCheckoutViewController: UIViewController {
         }
     }
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
-//    let endpoint = "http://localhost:8020"
-
+    //    let endpoint = "http://localhost:8020"
+    
     
     
     var vaultPayPalSettings: PrimerSettings!
@@ -145,7 +145,7 @@ class MerchantCheckoutViewController: UIViewController {
             )
         )
     }
-
+    
     // MARK: - ACTIONS
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
@@ -208,7 +208,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
                     print("Primer token:\n\(token)")
                     completion(token, nil)
-
+                    
                 } catch {
                     completion(nil, error)
                 }
@@ -248,15 +248,15 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             completion(nil)
             return
         }
-
+        
         guard let url = URL(string: "\(endpoint)/payments") else {
             return completion(NetworkError.missingParams)
         }
-
+        
         let type = paymentMethodToken.paymentInstrumentType
-
+        
         var request = URLRequest(url: url)
-
+        
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -270,7 +270,39 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         
         callApi(request) { (result) in
             switch result {
-            case .success:
+            case .success(let data):
+                var authResponse: AuthorizationResponse?
+                if let dic = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
+                    if let amount = dic?["amount"] as? Int,
+                       let id = dic?["id"] as? String,
+                       let date = dic?["date"] as? String,
+                       let statusStr = dic?["status"] as? String,
+                       let status = PaymentStatus(rawValue: statusStr) {
+                        
+                        var requiredAction: RequiredAction?
+                        
+                        if let requiredActionDic = dic?["requiredAction"] as? [String: Any] {
+                            if let requiredActionNameStr = requiredActionDic["name"] as? String,
+                               let requiredActionName = RequiredActionName(rawValue: requiredActionNameStr),
+                               let description = requiredActionDic["description"] as? String {
+                                requiredAction = RequiredAction(name: requiredActionName,
+                                                                description: description,
+                                                                clientToken: requiredActionDic["clientToken"] as? String)
+                            }
+                        }
+                        
+                        authResponse = AuthorizationResponse(amount: amount, id: id, date: date, status: status, requiredAction: requiredAction)
+                    }
+                    
+                    
+                    
+//                    authResponse = AuthorizationResponse(amount: dic["amount"] as! Int,
+//                                                             id: dic["id"] as! String,
+//                                                             date: dic["date"] as! String,
+//                                                             status: PaymentStatus(rawValue: dic["status"] as! String)!,
+//                                                             requiredAction: nil)
+                }
+                
                 completion(nil)
             case .failure(let err):
                 completion(err)
