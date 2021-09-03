@@ -45,6 +45,9 @@ struct PaymentInstrument: Encodable {
     var mx: String?
     var mnc: String?
     var mcc: String?
+    var hashedIdentifier: String?
+    var productId: String?
+    var currencyCode: String?
 }
 
 enum TokenType: String, Encodable {

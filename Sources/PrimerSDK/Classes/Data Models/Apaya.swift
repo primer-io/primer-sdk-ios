@@ -7,12 +7,11 @@
 
 public struct Apaya {
     public struct CreateSessionAPIRequest: Encodable {
-        let merchantId: String = "merchantId"
+        let merchantId: String
         let merchantAccountId: String
         let reference: String = "recurring"
-        let language: String? = "en"
-        let country: String = "GB"
-        let currencyCode: String = "GBP"
+        let language: String?
+        let currencyCode: String
 
         enum CodingKeys: String, CodingKey {
             case merchantId = "merchant_id"
@@ -25,61 +24,66 @@ public struct Apaya {
     public struct CreateSessionAPIResponse: Decodable {
         let url: String
         let token: String?
-        let pt: String?
+        let passthroughVariable: String?
     }
-
+    
     public struct WebViewResult {
-        // let ptNumber: String
+        
         let mxNumber: String
-        // let hashedIdentifier: String
+        let hashedIdentifier: String
         let mcc: String
         let mnc: String
-        // let success: String
-        // let status: String
-        // let token: String
-    }
-}
-
-// factory methods
-extension Apaya.WebViewResult {
-    static func create(from url: URL?) -> Result<Apaya.WebViewResult, ApayaException>? {
-        guard
-            let url = url,
-            let success = url.queryParameterValue(for: "success"),
-            let status = url.queryParameterValue(for: "status")
-        else {
-            return .failure(ApayaException.invalidWebViewResult)
-        }
-        if (status == "SETUP_ERROR") {
-            return .failure(ApayaException.webViewFlowError)
-        }
-        if (status == "SETUP_ABANDONED") {
-            return nil
-        }
+        let success: String
+        let status: String
+        let productId: String
         
-        guard
-            // let ptNumber = url.queryParameterValue(for: "pt"),
-            let mxNumber = url.queryParameterValue(for: "MX"),
-            // let hashedIdentifier = url.queryParameterValue(for: "HashedIdentifier"),
-            let mcc = url.queryParameterValue(for: "MCC"),
-            let mnc = url.queryParameterValue(for: "MNC"),
-            // let token = url.queryParameterValue(for: "token"),
-            success == "1"
-        else {
-            return .failure(ApayaException.invalidWebViewResult)
-        }
-
-        return .success(
-            Apaya.WebViewResult(
-                // ptNumber: ptNumber,
-                mxNumber: mxNumber,
-                // hashedIdentifier: hashedIdentifier,
-                mcc: mcc,
-                mnc: mnc
-                // success: success,
-                // status: status,
-                // token: token
+        static func create(from url: URL?) -> Result<Apaya.WebViewResult, ApayaException>? {
+            guard
+                let url = url,
+                let success = url.queryParameterValue(for: "success"),
+                let status = url.queryParameterValue(for: "status")
+            else {
+                return .failure(ApayaException.invalidWebViewResult)
+            }
+            
+            if (status == "SETUP_ERROR") {
+                return .failure(ApayaException.webViewFlowError)
+            }
+            if (status == "SETUP_ABANDONED") {
+                return nil
+            }
+            
+            guard
+                let mxNumber = url.queryParameterValue(for: "MX"),
+                let hashedIdentifier = url.queryParameterValue(for: "HashedIdentifier"),
+                let mcc = url.queryParameterValue(for: "MCC"),
+                let mnc = url.queryParameterValue(for: "MNC"),
+                let success = url.queryParameterValue(for: "success")
+            else {
+                return .failure(ApayaException.invalidWebViewResult)
+            }
+            
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            guard let clientToken = state.decodedClientToken,
+                  var merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
+            else {
+                return .failure(ApayaException.invalidWebViewResult)
+            }
+            
+            if clientToken.env != "PRODUCTION" {
+                merchantAccountId = "a1070c8a-40a6-5a92-a6ea-c39e7538bb2d"
+            }
+    
+            return .success(
+                Apaya.WebViewResult(
+                    mxNumber: mxNumber,
+                    hashedIdentifier: hashedIdentifier,
+                    mcc: mcc,
+                    mnc: mnc,
+                    success: success,
+                    status: status,
+                    productId: merchantAccountId)
             )
-        )
+        }
     }
 }
