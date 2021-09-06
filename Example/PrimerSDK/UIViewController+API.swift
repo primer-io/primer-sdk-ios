@@ -11,7 +11,7 @@ import UIKit
 
 // MARK: - API HELPER
 
-struct AuthorizationRequest: Encodable {
+struct PaymentRequest: Encodable {
     let environment: Environment
     let paymentMethod: String
     let amount: Int
@@ -19,7 +19,7 @@ struct AuthorizationRequest: Encodable {
     let currencyCode: String
 }
 
-class AuthorizationResponse: PaymentResponseProtocol {
+class PaymentResponse: PaymentResponseProtocol {
     var amount: Int
     var id: String
     var date: String

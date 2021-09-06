@@ -75,7 +75,7 @@ extension MerchantCheckoutViewController {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(
+        let body = PaymentRequest(
             environment: environment,
             paymentMethod: token.token!,
             amount: amount,

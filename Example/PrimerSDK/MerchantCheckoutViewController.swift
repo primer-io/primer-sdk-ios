@@ -248,7 +248,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 message += reasonText
             }
             
-            
             threeDSAlert = UIAlertController(title: "3DS Error", message: message, preferredStyle: .alert)
             threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
                 self?.threeDSAlert = nil
@@ -271,7 +270,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(environment: environment, paymentMethod: token, amount: amount, type: type.rawValue, currencyCode: currency.rawValue)
+        let body = PaymentRequest(environment: environment, paymentMethod: token, amount: amount, type: type.rawValue, currencyCode: currency.rawValue)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -282,7 +281,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         callApi(request) { (result) in
             switch result {
             case .success(let data):
-                var authResponse: AuthorizationResponse?
+                var paymentResponse: PaymentResponse?
                 if let dic = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
                     if let amount = dic?["amount"] as? Int,
                        let id = dic?["id"] as? String,
@@ -302,16 +301,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                             }
                         }
                         
-                        authResponse = AuthorizationResponse(amount: amount, id: id, date: date, status: status, requiredAction: requiredAction)
+                        paymentResponse = PaymentResponse(amount: amount, id: id, date: date, status: status, requiredAction: requiredAction)
                     }
-                    
-                    
-                    
-//                    authResponse = AuthorizationResponse(amount: dic["amount"] as! Int,
-//                                                             id: dic["id"] as! String,
-//                                                             date: dic["date"] as! String,
-//                                                             status: PaymentStatus(rawValue: dic["status"] as! String)!,
-//                                                             requiredAction: nil)
                 }
                 
                 completion(nil)
