@@ -230,8 +230,6 @@ public class Primer {
     public func refreshClientToken(_ clientToken: String) throws {
         do {
             try ClientTokenService.storeClientToken(clientToken)
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            print(state.decodedClientToken)
         } catch {
             log(logLevel: .error, message: "Error: \(error)")
             throw error
@@ -241,9 +239,6 @@ public class Primer {
     public func receivedPaymentResponse(_ paymentResponse: PaymentResponseProtocol, for paymentMethodToken: PaymentMethodToken) {
         if paymentResponse.requiredAction?.name == .threeDSAuthentication, let clientToken = paymentResponse.requiredAction?.clientToken {
             try? Primer.shared.refreshClientToken(clientToken)
-            
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            state.decodedClientToken?.env = Environment.sandbox.rawValue
             
             let threeDSService = ThreeDSService()
             threeDSService.perform3DS(paymentMethodToken: paymentMethodToken, protocolVersion: .v2, sdkDismissed: nil) { result in

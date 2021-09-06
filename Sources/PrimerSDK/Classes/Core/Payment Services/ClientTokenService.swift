@@ -14,7 +14,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
     }
     
     static func storeClientToken(_ clientToken: String) throws {
-        guard let jwtTokenPayload = clientToken.jwtTokenPayload,
+        guard var jwtTokenPayload = clientToken.jwtTokenPayload,
               let expDate = jwtTokenPayload.expDate
         else {
             throw PrimerError.clientTokenNull
@@ -25,6 +25,12 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         }
         
         let state: AppStateProtocol = DependencyContainer.resolve()
+        let previousEnv = state.decodedClientToken?.env
+        
+        if jwtTokenPayload.env == nil {
+            // That's because the clientToken returned for dynamic 3DS doesn't contain an env.
+            jwtTokenPayload.env = previousEnv
+        }
         state.decodedClientToken = jwtTokenPayload
     }
 
