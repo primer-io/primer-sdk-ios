@@ -26,11 +26,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
             case .failure(let error):
                 completion(error)
             case .success(let config):
-                state.paymentMethodConfig = PaymentMethodConfig(
-                    coreUrl: config.coreUrl,
-                    pciUrl: config.pciUrl,
-                    paymentMethods: config.paymentMethods,
-                    keys: nil)
+                state.paymentMethodConfig = config
 
                 state.viewModels = []
 
