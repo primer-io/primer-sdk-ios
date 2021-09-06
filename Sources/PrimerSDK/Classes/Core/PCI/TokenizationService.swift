@@ -3,6 +3,7 @@ import Foundation
 #if canImport(UIKit)
 
 internal protocol TokenizationServiceProtocol {
+    var tokenizedPaymentMethodToken: PaymentMethodToken? { get set }
     func tokenize(
         request: PaymentMethodTokenizationRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void
@@ -10,6 +11,8 @@ internal protocol TokenizationServiceProtocol {
 }
 
 internal class TokenizationService: TokenizationServiceProtocol {
+    
+    var tokenizedPaymentMethodToken: PaymentMethodToken?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -57,6 +60,8 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 if state.paymentMethodConfig?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                     isThreeDSEnabled = true
                 }
+                
+                self.tokenizedPaymentMethodToken = paymentMethodToken
                                
 //                #if canImport(Primer3DS)
 //                if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard && paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess && isThreeDSEnabled {
