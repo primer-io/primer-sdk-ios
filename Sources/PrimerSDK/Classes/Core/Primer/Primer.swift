@@ -63,7 +63,7 @@ public class Primer {
      - Parameter settings: Primer settings object
      
      - Author: Primer
-     
+    
      - Version: 1.2.2
      */
     internal func setDependencies(settings: PrimerSettings, theme: PrimerTheme) {
@@ -227,6 +227,40 @@ public class Primer {
         }
     }
 
+    public func refreshClientToken(_ clientToken: String) throws {
+        do {
+            try ClientTokenService.storeClientToken(clientToken)
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            print(state.decodedClientToken)
+        } catch {
+            log(logLevel: .error, message: "Error: \(error)")
+            throw error
+        }
+    }
+    
+    public func receivedPaymentResponse(_ paymentResponse: PaymentResponseProtocol, for paymentMethodToken: PaymentMethodToken) {
+        if paymentResponse.requiredAction?.name == .threeDSAuthentication, let clientToken = paymentResponse.requiredAction?.clientToken {
+            try? Primer.shared.refreshClientToken(clientToken)
+            
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            state.decodedClientToken?.env = Environment.sandbox.rawValue
+            
+            let threeDSService = ThreeDSService()
+            threeDSService.perform3DS(paymentMethodToken: paymentMethodToken, protocolVersion: .v2, sdkDismissed: nil) { result in
+                switch result {
+                case .success(let paymentMethodToken):
+                    Primer.shared.delegate?.onResumeSuccess?(paymentMethodToken, { err in
+                        
+                    })
+                    
+                case .failure(let err):
+                    Primer.shared.delegate?.checkoutFailed?(with: err)
+                }
+                
+                Primer.shared.dismiss()
+            }
+        }
+    }
 }
 
 #endif
