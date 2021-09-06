@@ -10,6 +10,7 @@
 @testable import PrimerSDK
 
 class MockClientTokenService: ClientTokenServiceProtocol {
+    
     let tokenIsNil: Bool
     var throwError: Bool
 
@@ -33,6 +34,11 @@ class MockClientTokenService: ClientTokenServiceProtocol {
     }
 
     var loadCheckoutConfigCalled = false
+    
+    static func storeClientToken(_ clientToken: String) throws {
+        
+    }
+    
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
         loadCheckoutConfigCalled = true
         if (throwError) { return completion(PrimerError.generic) }
