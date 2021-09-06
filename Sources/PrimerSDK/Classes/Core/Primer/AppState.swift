@@ -52,15 +52,17 @@ internal class AppState: AppStateProtocol {
     var sessionId: String?
     // Apaya
     private var apayaResult: Result<Apaya.WebViewResult, ApayaException>?
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
     func setApayaResult(_ result: Result<Apaya.WebViewResult, ApayaException>) {
         self.apayaResult = result
     }
+    
     func getApayaResult() -> Result<Apaya.WebViewResult, ApayaException>? {
         return self.apayaResult
-    }
-    //
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 }
 
