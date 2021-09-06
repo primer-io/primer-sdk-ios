@@ -65,6 +65,17 @@ internal class PaymentMethodComponent: PrimerView {
             addSubview(iconView)
             configureIconView(icon: method.toIconName()?.image, color: theme.colorTheme.text1)
             anchorIconView(inRelationToLabel: false)
+        case .apaya:
+            layer.borderWidth = 1
+            layer.borderColor = theme.colorTheme.disabled1.cgColor
+            backgroundColor = theme.colorTheme.main1
+            label.textColor = theme.colorTheme.text1
+            addSubview(label)
+            addSubview(iconView)
+            configureLabel(with: method.toString())
+            configureIconView(icon: method.toIconName()?.image, color: theme.colorTheme.text1, isMonoColor: true)
+            anchorLabel()
+            anchorIconView(inRelationToLabel: true)
         default:
             break
         }

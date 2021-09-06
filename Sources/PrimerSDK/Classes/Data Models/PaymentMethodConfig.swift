@@ -2,16 +2,32 @@ struct PaymentMethodConfig: Codable {
     let coreUrl: String?
     let pciUrl: String?
     let paymentMethods: [ConfigPaymentMethod]?
-    let env: String
     let keys: ThreeDS.Keys?
+    
+    func getConfigId(for type: ConfigPaymentMethodType) -> String? {
+        guard let method = self.paymentMethods?
+                .first(where: { method in return method.type == type }) else { return nil }
+        return method.id
+    }
+    
+    func getProductId(for type: ConfigPaymentMethodType) -> String? {
+        guard let method = self.paymentMethods?
+                .first(where: { method in return method.type == type }) else { return nil }
+        
+        if let apayaOptions = method.options as? ApayaOptions {
+            return apayaOptions.merchantAccountId
+        } else {
+            return nil
+        }
+    }
 }
 
 struct ConfigPaymentMethod: Codable {
     
     let id: String?
-    let options: PaymentMethodOptions?
     let processorConfigId: String?
     let type: ConfigPaymentMethodType?
+    let options: PaymentMethodOptions?
     
     private enum CodingKeys : String, CodingKey {
         case id, options, processorConfigId, type
@@ -34,6 +50,8 @@ struct ConfigPaymentMethod: Codable {
             options = cardOptions
         } else if let payPalOptions = try? container.decode(PayPalOptions.self, forKey: .options) {
             options = payPalOptions
+        } else if let apayaOptions = try? container.decode(ApayaOptions.self, forKey: .options) {
+            options = apayaOptions
         } else {
             options = nil
         }
@@ -58,6 +76,11 @@ protocol PaymentMethodOptions: Codable { }
 
 extension PaymentMethodOptions { }
 
+struct ApayaOptions: PaymentMethodOptions {
+    let merchantId: String
+    let merchantAccountId: String
+}
+
 struct PayPalOptions: PaymentMethodOptions {
     let clientId: String
 }
@@ -67,6 +90,7 @@ struct CardOptions: PaymentMethodOptions {
     let threeDSecureToken: String?
     let threeDSecureInitUrl: String?
     let threeDSecureProvider: String
+    let processorConfigId: String?
 }
 
 enum ConfigPaymentMethodType: String, Codable {
@@ -77,22 +101,16 @@ enum ConfigPaymentMethodType: String, Codable {
     case goCardlessMandate = "GOCARDLESS"
     case klarna = "KLARNA"
     case payNlIdeal = "PAY_NL_IDEAL"
+    case apaya = "APAYA"
     
     case unknown
     
     var isEnabled: Bool {
         switch self {
-        case .applePay, .payPal, .paymentCard, .goCardlessMandate, .klarna:
+        case .applePay, .payPal, .paymentCard, .goCardlessMandate, .klarna, .apaya:
             return true
         default:
             return false
         }
-    }
-}
-
-internal extension PaymentMethodConfig {
-    func getConfigId(for type: ConfigPaymentMethodType) -> String? {
-        guard let method = self.paymentMethods?.first(where: { method in return method.type == type }) else { return nil }
-        return method.id
     }
 }

@@ -21,7 +21,7 @@ enum PrimerAPI: Endpoint {
     case klarnaCreatePaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest)
     case klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest)
     case klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
-
+    case apayaCreateSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest)
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest)
     
     // 3DS
@@ -40,7 +40,8 @@ internal extension PrimerAPI {
              .payPalConfirmBillingAgreement(let clientToken, _),
              .klarnaCreatePaymentSession(let clientToken, _),
              .klarnaCreateCustomerToken(let clientToken, _),
-             .klarnaFinalizePaymentSession(let clientToken, _):
+             .klarnaFinalizePaymentSession(let clientToken, _),
+             .apayaCreateSession(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .vaultDeletePaymentMethod(let clientToken, _),
@@ -55,7 +56,6 @@ internal extension PrimerAPI {
             return urlStr
         }
     }
-
     // MARK: Path
     
     var path: String {
@@ -86,6 +86,8 @@ internal extension PrimerAPI {
             return "/3ds/\(paymentMethodToken.token!)/auth"
         case .threeDSContinueRemoteAuth(_, let threeDSTokenId):
             return "/3ds/\(threeDSTokenId)/continue"
+        case .apayaCreateSession:
+            return "/session-token"
         }
     }
 
@@ -114,7 +116,8 @@ internal extension PrimerAPI {
              .klarnaFinalizePaymentSession,
              .tokenizePaymentMethod,
              .threeDSBeginRemoteAuth,
-             .threeDSContinueRemoteAuth:
+             .threeDSContinueRemoteAuth,
+             .apayaCreateSession:
             return .post
         }
     }
@@ -143,7 +146,8 @@ internal extension PrimerAPI {
              .klarnaFinalizePaymentSession(let clientToken, _),
              .tokenizePaymentMethod(let clientToken, _),
              .threeDSBeginRemoteAuth(let clientToken, _, _),
-             .threeDSContinueRemoteAuth(let clientToken, _):
+             .threeDSContinueRemoteAuth(let clientToken, _),
+             .apayaCreateSession(let clientToken, _):
             if let token = clientToken.accessToken {
                 headers["Primer-Client-Token"] = token
             }
@@ -179,6 +183,8 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(klarnaCreateCustomerTokenAPIRequest)
         case .klarnaFinalizePaymentSession(_, let klarnaFinalizePaymentSessionRequest):
             return try? JSONEncoder().encode(klarnaFinalizePaymentSessionRequest)
+        case .apayaCreateSession(_, let request):
+            return try? JSONEncoder().encode(request)
         case .tokenizePaymentMethod(_, let paymentMethodTokenizationRequest):
             return try? JSONEncoder().encode(paymentMethodTokenizationRequest)
         case .threeDSBeginRemoteAuth(_, _, let threeDSecureBeginAuthRequest):

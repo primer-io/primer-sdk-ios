@@ -17,6 +17,11 @@ internal class PrimerViewController: UIViewController {
     func removeLoadingView(_ indicator: UIActivityIndicatorView) {
         indicator.removeFromSuperview()
     }
+    
+    func addLoadingView(_ indicator: UIActivityIndicatorView) {
+        view.addSubview(indicator)
+        
+    }
 
 }
 

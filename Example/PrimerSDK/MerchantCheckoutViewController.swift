@@ -23,7 +23,6 @@ class MerchantCheckoutViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     var environment: Environment = .sandbox
     fileprivate var customerId: String?
-    var amount: Int = 100
     var currency: Currency = .GBP
     fileprivate var performPayment: Bool = false
     
@@ -33,7 +32,13 @@ class MerchantCheckoutViewController: UIViewController {
         }
     }
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
-    //    let endpoint = "http://localhost:8020"
+    var amount = 200
+    
+    let vaultApayaSettings = PrimerSettings(
+        currency: .GBP,
+        hasDisabledSuccessScreen: true,
+        isInitialLoadingHidden: true
+    )
     
     
     
@@ -148,6 +153,11 @@ class MerchantCheckoutViewController: UIViewController {
     
     // MARK: - ACTIONS
     
+    @IBAction func addApayaButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: vaultApayaSettings)
+        Primer.shared.showCheckout(self, flow: .addApayaToVault)
+    }
+    
     @IBAction func addCardButtonTapped(_ sender: Any) {
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
@@ -172,6 +182,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func openVaultButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: generalSettings)
         Primer.shared.showCheckout(self, flow: .defaultWithVault)
     }
     
@@ -193,7 +204,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: customerId, customerCountryCode: nil, environment: environment)
+        let body = CreateClientTokenRequest(customerId: customerId, customerCountryCode: "GB", environment: environment)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

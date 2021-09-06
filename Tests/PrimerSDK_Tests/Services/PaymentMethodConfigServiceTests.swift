@@ -19,7 +19,6 @@ class PaymentMethodConfigServiceTests: XCTestCase {
             paymentMethods: [
                 ConfigPaymentMethod(id: "id123", options: nil, processorConfigId: nil, type: .paymentCard)
             ],
-            env: "dev",
             keys: nil
         )
 

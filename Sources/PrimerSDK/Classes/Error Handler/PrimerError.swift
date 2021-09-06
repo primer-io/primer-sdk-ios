@@ -13,6 +13,55 @@ internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var shouldBePresented: Bool { get }
 }
 
+enum ApayaException: PrimerErrorProtocol {
+    case noToken
+    case failedApiCall
+    case failedToCreateSession
+    case webViewFlowNotComplete
+    case invalidWebViewResult
+    case webViewFlowCancelled
+    case webViewFlowError
+    
+    var shouldBePresented: Bool {
+        switch self {
+        default:
+            return true
+        }
+    }
+
+    /**Error description for the end user.*/
+    var errorDescription: String? {
+        switch self {
+        default:
+            return NSLocalizedString("primer-apaya-error-message-failed-operation",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Payment operation failed",
+                                     comment: "Payment operation failed - Error message")
+        }
+    }
+    
+    /** Error description for the developer.*/
+    var technicalDescription: String {
+        switch self {
+        case .noToken:
+            return "The Apaya flow launched, but the SDK client token or payment method config was missing."
+        case .failedApiCall:
+            return "An API call to the Primer platform failed."
+        case .failedToCreateSession:
+            return "The call to create an Apaya payment session (token & redirectUrl) failed."
+        case .webViewFlowNotComplete:
+            return "Tokenization attempted when web view flow has not yet completed successfully."
+        case .invalidWebViewResult:
+            return "The Apaya web view redirection query parameter parsing failed."
+        case .webViewFlowCancelled:
+            return "The user cancelled the Apaya web view flow."
+        case .webViewFlowError:
+            return "The Apaya web view redirected back to the app with an error."
+        }
+    }
+}
+
 enum KlarnaException: PrimerErrorProtocol {
 
     case invalidUrl
@@ -152,6 +201,8 @@ enum KlarnaException: PrimerErrorProtocol {
     }
 
 }
+
+
 
 enum NetworkServiceError: PrimerErrorProtocol {
 

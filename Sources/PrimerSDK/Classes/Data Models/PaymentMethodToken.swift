@@ -159,6 +159,7 @@ public enum PaymentInstrumentType: String, Codable {
     case klarna = "KLARNA_AUTHORIZATION_TOKEN"
     case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
     case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"
+    case apayaToken = "APAYA"
     case unknown = "UNKNOWN"
 
     public init(from decoder: Decoder) throws {
@@ -192,6 +193,13 @@ public struct PaymentInstrumentData: Codable {
     public let threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
     public let gocardlessMandateId: String?
     public let authorizationToken: String?
+    // APAYA
+    public let hashedIdentifier: String?
+    public let mnc: Int?
+    public let mcc: Int?
+    public let mx: String?
+    public let currencyCode: Currency?
+    public let productId: String?
 }
 
 /**
