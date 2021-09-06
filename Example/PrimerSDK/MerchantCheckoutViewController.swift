@@ -305,7 +305,12 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     }
                 }
                 
-                completion(nil)
+                if paymentResponse != nil {
+                    Primer.shared.receivedPaymentResponse(paymentResponse!, for: paymentMethodToken)
+                } else {
+                    completion(nil)
+                }
+                
             case .failure(let err):
                 completion(err)
             }
@@ -323,6 +328,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     
     func checkoutFailed(with error: Error) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
+    }
+    
+    func onResumeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\nResume payment for paymentMethodToken:\n\(paymentMethodToken)")
     }
     
 }
