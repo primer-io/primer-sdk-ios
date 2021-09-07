@@ -12,7 +12,7 @@
 class MockApplePayViewModel: ApplePayViewModelProtocol {
     var amount: Int?
     
-    func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
+    func tokenize(instrument: PaymentMethod.Details, completion: @escaping (Error?) -> Void) {
         
     }
     

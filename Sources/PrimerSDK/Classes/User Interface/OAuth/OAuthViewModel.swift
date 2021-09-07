@@ -100,17 +100,17 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
         })
     }
 
-    private func generatePaypalPaymentInstrument(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) -> PaymentInstrument? {
+    private func generatePaypalPaymentInstrument(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) -> PaymentMethod.Details? {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
             guard let id = orderId else { return nil }
-            return PaymentInstrument(paypalOrderId: id)
+            return PaymentMethod.Details(paypalOrderId: id)
         case .VAULT:
             guard let agreement = confirmedBillingAgreement else {
                 generateBillingAgreementConfirmation(host, with: completion)
                 return nil
             }
-            return PaymentInstrument(
+            return PaymentMethod.Details(
                 paypalBillingAgreementId: agreement.billingAgreementId,
                 shippingAddress: agreement.shippingAddress,
                 externalPayerInfo: agreement.externalPayerInfo
@@ -147,7 +147,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
     // Merge with handleTokenization, as they're one.
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
         if (host == .klarna) {
-            var instrument = PaymentInstrument()
+            var instrument = PaymentMethod.Details()
 
             log(logLevel: .verbose, title: nil, message: "Host: \(host)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 

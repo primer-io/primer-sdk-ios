@@ -2,12 +2,12 @@
 
 struct PaymentMethodTokenizationRequest: Encodable {
     
-    let paymentInstrument: PaymentInstrument
+    let paymentInstrument: PaymentMethod.Details
     let tokenType: TokenType
     let paymentFlow: PaymentFlow?
     let customerId: String?
 
-    init(paymentInstrument: PaymentInstrument, state: AppStateProtocol) {
+    init(paymentInstrument: PaymentMethod.Details, state: AppStateProtocol) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         self.paymentInstrument = paymentInstrument
         self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : .singleUse
@@ -18,37 +18,7 @@ struct PaymentMethodTokenizationRequest: Encodable {
 }
 
 // feels like we could polymorph this with a protocol, or at least restrict construcions with a specific factory method for each payment instrument.
-struct PaymentInstrument: Encodable {
-    // Card
-    var number: String?
-    var cvv: String?
-    var expirationMonth: String?
-    var expirationYear: String?
-    var cardholderName: String?
-    // PayPal
-    var paypalOrderId: String?
-    var paypalBillingAgreementId: String?
-    var shippingAddress: ShippingAddress?
-    var externalPayerInfo: PayPalExternalPayerInfo?
-    // Apple Pay
-    var paymentMethodConfigId: String?
-    var token: ApplePayPaymentResponseToken?
-    var sourceConfig: ApplePaySourceConfig?
-    // Direct Debit (GoCardless)
-    var gocardlessMandateId: String?
-    // Klarna payment session
-    var klarnaAuthorizationToken: String?
-    // Klarna customer token
-    var klarnaCustomerToken: String?
-    var sessionData: KlarnaSessionData?
-    // Apaya
-    var mx: String?
-    var mnc: String?
-    var mcc: String?
-    var hashedIdentifier: String?
-    var productId: String?
-    var currencyCode: String?
-}
+
 
 enum TokenType: String, Encodable {
     case multiUse = "MULTI_USE"

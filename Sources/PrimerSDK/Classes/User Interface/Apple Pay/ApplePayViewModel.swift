@@ -143,7 +143,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                 return completion(err)
                             }
 
-                            let instrument = PaymentInstrument(
+                            let instrument = PaymentMethod.Details(
                                 paymentMethodConfigId: applePayConfigId,
                                 token: applePayPaymentResponse.token,
                                 sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
