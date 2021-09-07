@@ -25,6 +25,7 @@ public class PaymentMethodToken: NSObject, Codable {
     public var vaultData: VaultData?
     public var threeDSecureAuthentication: ThreeDSecureAuthentication?
 
+    // FIXME: rename
     public override var description: String {
         switch self.paymentInstrumentType {
         case .card:

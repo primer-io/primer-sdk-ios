@@ -24,5 +24,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UIBarButtonItem.appearance().tintColor = .white
         UINavigationBar.appearance().tintColor = .white
     }
-
+    
 }
