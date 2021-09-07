@@ -2,12 +2,12 @@
 
 struct PaymentMethodTokenizationRequest: Encodable {
     
-    let paymentInstrument: PaymentMethod.Details
+    let paymentInstrument: PaymentMethodDetailsProtocol
     let tokenType: TokenType
     let paymentFlow: PaymentFlow?
     let customerId: String?
 
-    init(paymentInstrument: PaymentMethod.Details, state: AppStateProtocol) {
+    init(paymentInstrument: PaymentMethodDetailsProtocol, state: AppStateProtocol) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         self.paymentInstrument = paymentInstrument
         self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : .singleUse

@@ -143,13 +143,11 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                 return completion(err)
                             }
 
-                            let instrument = PaymentMethod.Details(
-                                paymentMethodConfigId: applePayConfigId,
-                                token: applePayPaymentResponse.token,
-                                sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
-                            )
+                            let paymentMethodDetails = PaymentMethod.ApplePayDetails(paymentMethodConfigId: applePayConfigId,
+                                                                           token: applePayPaymentResponse.token,
+                                                                           sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier))
                             
-                            applePayService.tokenize(instrument: instrument) { [weak self] (result) in
+                            applePayService.tokenize(paymentMethodDetails: paymentMethodDetails) { [weak self] (result) in
                                 switch result {
                                 case .failure(let err):
                                     // Dismiss and show error screen

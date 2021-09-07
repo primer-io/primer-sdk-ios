@@ -100,21 +100,19 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
         })
     }
 
-    private func generatePaypalPaymentInstrument(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) -> PaymentMethod.Details? {
+    private func generatePaypalPaymentInstrument(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) -> PaymentMethodDetailsProtocol? {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
             guard let id = orderId else { return nil }
-            return PaymentMethod.Details(paypalOrderId: id)
+            return PaymentMethod.PayPalDetails(paypalOrderId: id)
         case .VAULT:
             guard let agreement = confirmedBillingAgreement else {
                 generateBillingAgreementConfirmation(host, with: completion)
                 return nil
             }
-            return PaymentMethod.Details(
-                paypalBillingAgreementId: agreement.billingAgreementId,
-                shippingAddress: agreement.shippingAddress,
-                externalPayerInfo: agreement.externalPayerInfo
-            )
+            return PaymentMethod.PayPalDetails(paypalBillingAgreementId: agreement.billingAgreementId,
+                                               shippingAddress: agreement.shippingAddress,
+                                               externalPayerInfo: agreement.externalPayerInfo)
         }
     }
 
@@ -147,7 +145,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
     // Merge with handleTokenization, as they're one.
     func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
         if (host == .klarna) {
-            var instrument = PaymentMethod.Details()
+            var paymentMethodDetails: PaymentMethodDetailsProtocol!
 
             log(logLevel: .verbose, title: nil, message: "Host: \(host)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
@@ -161,14 +159,13 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
                         _ = ErrorHandler.shared.handle(error: err)
                         completion(err)
                     case .success(let response):
-                        instrument.klarnaCustomerToken = response.customerTokenId
-                        instrument.sessionData = response.sessionData
+                        paymentMethodDetails = PaymentMethod.KlarnaDetails(klarnaAuthorizationToken: nil, klarnaCustomerToken: response.customerTokenId, sessionData: response.sessionData)
 
-                        log(logLevel: .verbose, title: nil, message: "Instrument: \(instrument)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                        log(logLevel: .verbose, title: nil, message: "paymentMethodDetails: \(paymentMethodDetails)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
                         let state: AppStateProtocol = DependencyContainer.resolve()
 
-                        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+                        let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentMethodDetails, state: state)
 
                         log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
@@ -182,14 +179,12 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
                     case .failure(let err):
                         completion(err)
                     case .success(let res):
-                        instrument.sessionData = res.sessionData
-
                         let state: AppStateProtocol = DependencyContainer.resolve()
-                        instrument.klarnaAuthorizationToken = state.authorizationToken
+                        paymentMethodDetails = PaymentMethod.KlarnaDetails(klarnaAuthorizationToken: state.authorizationToken, klarnaCustomerToken: nil, sessionData: res.sessionData)
 
-                        log(logLevel: .verbose, title: nil, message: "Instrument: \(instrument)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                        log(logLevel: .verbose, title: nil, message: "paymentMethodDetails: \(paymentMethodDetails)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
-                        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+                        let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentMethodDetails, state: state)
 
                         log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
