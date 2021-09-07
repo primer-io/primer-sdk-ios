@@ -29,9 +29,4 @@ enum PaymentFlow: String, Encodable {
     case vault = "VAULT"
 }
 
-struct ApplePaySourceConfig: Codable {
-    let source: String
-    let merchantId: String
-}
-
 #endif

@@ -17,46 +17,63 @@ struct PaymentMethod {
     let type: PaymentMethodType
     var details: PaymentMethodDetailsProtocol
     
-    struct CardDetails: PaymentMethodDetailsProtocol {
-        var number: String
-        var cvv: String
-        var expirationMonth: String
-        var expirationYear: String
-        var cardholderName: String?
+    struct Card {
+        struct Details: PaymentMethodDetailsProtocol {
+            var number: String
+            var cvv: String
+            var expirationMonth: String
+            var expirationYear: String
+            var cardholderName: String?
+        }
     }
 
-    struct PayPalDetails: PaymentMethodDetailsProtocol {
-        var paypalOrderId: String?
-        var paypalBillingAgreementId: String?
-        var shippingAddress: ShippingAddress?
-        var externalPayerInfo: PayPalExternalPayerInfo?
+    struct PayPal {
+        struct Details: PaymentMethodDetailsProtocol {
+            var paypalOrderId: String?
+            var paypalBillingAgreementId: String?
+            var shippingAddress: ShippingAddress?
+            var externalPayerInfo: PayPalExternalPayerInfo?
+        }
     }
 
-    struct ApplePayDetails: PaymentMethodDetailsProtocol {
-        var paymentMethodConfigId: String?
-        var token: ApplePayPaymentResponseToken?
-        var sourceConfig: ApplePaySourceConfig?
+    struct ApplePay {
+        struct Details: PaymentMethodDetailsProtocol {
+            var paymentMethodConfigId: String?
+            var token: ApplePayPaymentResponseToken?
+            var sourceConfig: ApplePaySourceConfig?
+        }
+        
+        struct ApplePaySourceConfig: Codable {
+            let source: String
+            let merchantId: String
+        }
     }
 
-    struct GoCardlessDetails: PaymentMethodDetailsProtocol {
-        var gocardlessMandateId: String?
+    struct GoCardless {
+        struct Details: PaymentMethodDetailsProtocol {
+            var gocardlessMandateId: String?
+        }
     }
 
-    struct KlarnaDetails: PaymentMethodDetailsProtocol {
-        // Klarna payment session
-        var klarnaAuthorizationToken: String?
-        // Klarna customer token
-        var klarnaCustomerToken: String?
-        var sessionData: KlarnaSessionData?
+    struct Klarna {
+        struct Details: PaymentMethodDetailsProtocol {
+            // Klarna payment session
+            var klarnaAuthorizationToken: String?
+            // Klarna customer token
+            var klarnaCustomerToken: String?
+            var sessionData: KlarnaSessionData?
+        }
     }
 
-    struct ApayaDetails: PaymentMethodDetailsProtocol {
-        var mx: String
-        var mnc: String
-        var mcc: String
-        var hashedIdentifier: String
-        var productId: String
-        var currencyCode: String
+    struct Apaya {
+        struct Details: PaymentMethodDetailsProtocol {
+            var mx: String
+            var mnc: String
+            var mcc: String
+            var hashedIdentifier: String
+            var productId: String
+            var currencyCode: String
+        }
     }
 }
 

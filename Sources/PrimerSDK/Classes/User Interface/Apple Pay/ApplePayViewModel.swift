@@ -143,9 +143,9 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                 return completion(err)
                             }
 
-                            let paymentMethodDetails = PaymentMethod.ApplePayDetails(paymentMethodConfigId: applePayConfigId,
+                            let paymentMethodDetails = PaymentMethod.ApplePay.Details(paymentMethodConfigId: applePayConfigId,
                                                                            token: applePayPaymentResponse.token,
-                                                                           sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier))
+                                                                           sourceConfig: PaymentMethod.ApplePay.ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier))
                             
                             applePayService.tokenize(paymentMethodDetails: paymentMethodDetails) { [weak self] (result) in
                                 switch result {

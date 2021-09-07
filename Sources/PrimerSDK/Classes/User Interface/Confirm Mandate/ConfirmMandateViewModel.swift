@@ -101,7 +101,7 @@ internal class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
             } else {
                 let state: AppStateProtocol = DependencyContainer.resolve()
                 let request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: PaymentMethod.GoCardlessDetails(gocardlessMandateId: state.mandateId),
+                    paymentInstrument: PaymentMethod.GoCardless.Details(gocardlessMandateId: state.mandateId),
                     state: state
                 )
                 
