@@ -208,7 +208,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: "GBP")
+        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: false, currencyCode: "GBP")
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -250,13 +250,13 @@ extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDele
         let cell = tableView.dequeueReusableCell(withIdentifier: "PaymentMethodCell", for: indexPath) as! PaymentMethodCell
         
         switch paymentMethod.paymentInstrumentType {
-        case .paymentCard:
+        case .card:
             let title = "•••• •••• •••• \(paymentMethod.paymentInstrumentData?.last4Digits ?? "••••")"
             cell.configure(title: title, image: paymentMethod.icon.image!)
         case .payPalBillingAgreement:
             let title = paymentMethod.paymentInstrumentData?.externalPayerInfo?.email ?? "PayPal"
             cell.configure(title: title, image: paymentMethod.icon.image!)
-        case .goCardlessMandate:
+        case .goCardless:
             let title = "Direct Debit"
             cell.configure(title: title, image: paymentMethod.icon.image!)
         case .klarnaCustomerToken:
