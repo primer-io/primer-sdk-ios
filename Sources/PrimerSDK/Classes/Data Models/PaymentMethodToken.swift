@@ -179,6 +179,39 @@ extension PaymentInstrumentType: Codable {
  1.2.2
  */
 
+public protocol PaymentInstrumentDataProtocol: Codable {}
+
+public struct PaymentInstrument: PaymentInstrumentDataProtocol {
+    
+    public var token: String?
+    public var analyticsId: String?
+    public var tokenType: String?
+    public var paymentInstrumentType: PaymentInstrumentType
+    public var paymentInstrumentData: PaymentInstrument.Data?
+    public var vaultData: VaultData?
+    public var threeDSecureAuthentication: ThreeDSecureAuthentication?
+    
+    public struct Data: Codable {
+        public struct Card: PaymentInstrumentDataProtocol {
+            let last4Digits: String
+            let expirationMonth: String
+            let expirationYear: String
+            let cardholderName: String
+            let network: String
+            let isNetworkTokenized: Bool
+        }
+        
+        public struct Apaya: PaymentInstrumentDataProtocol {
+            let hashedIdentifier: String
+            let mnc: Int
+            let mcc: Int
+            let mx: String
+            let currencyCode: Currency
+            let productId: String
+        }
+    }
+}
+
 public struct PaymentInstrumentData: Codable {
     public let paypalBillingAgreementId: String?
     public let last4Digits: String?

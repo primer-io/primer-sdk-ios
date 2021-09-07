@@ -6,7 +6,14 @@ struct PaymentMethodTokenizationRequest: Encodable {
     let tokenType: TokenType
     let paymentFlow: PaymentFlow?
     let customerId: String?
-
+    
+    enum CodingKeys: String, CodingKey {
+        case paymentInstrument
+        case tokenType
+        case paymentFlow
+        case customerId
+    }
+    
     init(paymentInstrument: PaymentMethodDetailsProtocol, state: AppStateProtocol) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         self.paymentInstrument = paymentInstrument
@@ -14,11 +21,31 @@ struct PaymentMethodTokenizationRequest: Encodable {
         self.paymentFlow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
         self.customerId = Primer.shared.flow.internalSessionFlow.vaulted ? settings.customerId : nil
     }
-
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        if let paymentInstrument = paymentInstrument as? PaymentMethod.Apaya.Details {
+            try container.encode(paymentInstrument, forKey: .paymentInstrument)
+        } else if let paymentInstrument = paymentInstrument as? PaymentMethod.ApplePay.Details {
+            try container.encode(paymentInstrument, forKey: .paymentInstrument)
+        } else if let paymentInstrument = paymentInstrument as? PaymentMethod.Card.Details {
+            try container.encode(paymentInstrument, forKey: .paymentInstrument)
+        } else if let paymentInstrument = paymentInstrument as? PaymentMethod.GoCardless.Details {
+            try container.encode(paymentInstrument, forKey: .paymentInstrument)
+        } else if let paymentInstrument = paymentInstrument as? PaymentMethod.Klarna.Details {
+            try container.encode(paymentInstrument, forKey: .paymentInstrument)
+        } else if let paymentInstrument = paymentInstrument as? PaymentMethod.PayPal.Details {
+            try container.encode(paymentInstrument, forKey: .paymentInstrument)
+        } else {
+            assert(true, "paymentInstrument is of no known type and can't be encoded.")
+        }
+        
+        try container.encode(tokenType, forKey: .tokenType)
+        try container.encode(paymentFlow, forKey: .paymentFlow)
+        try container.encode(customerId, forKey: .customerId)
+    }
 }
-
-// feels like we could polymorph this with a protocol, or at least restrict construcions with a specific factory method for each payment instrument.
-
 
 enum TokenType: String, Encodable {
     case multiUse = "MULTI_USE"

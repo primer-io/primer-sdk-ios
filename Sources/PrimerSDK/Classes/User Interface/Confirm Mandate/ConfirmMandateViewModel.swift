@@ -100,8 +100,13 @@ internal class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
                 completion(PrimerError.directDebitSessionFailed)
             } else {
                 let state: AppStateProtocol = DependencyContainer.resolve()
+                guard let mandateId = state.mandateId else {
+                    completion(PrimerError.directDebitSessionFailed)
+                    return
+                }
+                
                 let request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: PaymentMethod.GoCardless.Details(gocardlessMandateId: state.mandateId),
+                    paymentInstrument: PaymentMethod.GoCardless.Details(gocardlessMandateId: mandateId),
                     state: state
                 )
                 
