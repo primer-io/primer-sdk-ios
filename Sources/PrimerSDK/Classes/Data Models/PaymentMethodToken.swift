@@ -27,14 +27,14 @@ public class PaymentMethodToken: NSObject, Codable {
 
     public override var description: String {
         switch self.paymentInstrumentType {
-        case .paymentCard:
+        case .card:
             let last4 = self.paymentInstrumentData?.last4Digits ?? "••••"
             return "•••• •••• •••• \(last4)"
         case .payPalOrder:
             return "PayPal"
         case .payPalBillingAgreement:
             return "PayPal"
-        case .goCardlessMandate:
+        case .goCardless:
             return "Direct Debit"
         case .klarnaCustomerToken:
             return paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token"
@@ -47,7 +47,7 @@ public class PaymentMethodToken: NSObject, Codable {
 
     public var icon: ImageName {
         switch self.paymentInstrumentType {
-        case .paymentCard:
+        case .card:
             guard let network = self.paymentInstrumentData?.network else { return .genericCard }
             switch network {
             case "Visa": return .visa
@@ -56,7 +56,7 @@ public class PaymentMethodToken: NSObject, Codable {
             }
         case .payPalOrder: return .paypal2
         case .payPalBillingAgreement: return .paypal2
-        case .goCardlessMandate: return .bank
+        case .goCardless: return .bank
         case .klarnaCustomerToken: return .klarna
         default: return .creditCard
         }
@@ -73,7 +73,7 @@ public class PaymentMethodToken: NSObject, Codable {
 internal extension PaymentMethodToken {
     var cardButtonViewModel: CardButtonViewModel? {
         switch self.paymentInstrumentType {
-        case .paymentCard:
+        case .card:
             guard let ntwrk = self.paymentInstrumentData?.network else { return nil }
             guard let cardholder = self.paymentInstrumentData?.cardholderName else { return nil }
             guard let last4 = self.paymentInstrumentData?.last4Digits else { return nil }
@@ -95,7 +95,7 @@ internal extension PaymentMethodToken {
         case .payPalBillingAgreement:
             guard let cardholder = self.paymentInstrumentData?.externalPayerInfo?.email else { return nil }
             return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
-        case .goCardlessMandate:
+        case .goCardless:
             return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
         case .klarnaCustomerToken:
             return CardButtonViewModel(
@@ -150,12 +150,12 @@ struct CardButtonViewModel {
  */
 
 public enum PaymentInstrumentType: String {
-    case paymentCard = "PAYMENT_CARD"
+    case card = "PAYMENT_CARD"
     case payPalOrder = "PAYPAL_ORDER"
     case payPalBillingAgreement = "PAYPAL_BILLING_AGREEMENT"
     case applePay = "APPLE_PAY"
     case googlePay = "GOOGLE_PAY"
-    case goCardlessMandate = "GOCARDLESS_MANDATE"
+    case goCardless = "GOCARDLESS_MANDATE"
     case klarna = "KLARNA_AUTHORIZATION_TOKEN"
     case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
     case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"

@@ -89,9 +89,9 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
             cell.accessibilityIdentifier = "payment_method_table_view_klarna_cell"
         case .payPal:
             cell.accessibilityIdentifier = "payment_method_table_view_paypal_cell"
-        case .goCardlessMandate:
+        case .goCardless:
             cell.accessibilityIdentifier = "payment_method_table_view_direct_debit_cell"
-        case .paymentCard:
+        case .card:
             cell.accessibilityIdentifier = "payment_method_table_view_card_cell"
         case .apaya:
             cell.accessibilityIdentifier = "payment_method_table_view_apaya"
@@ -129,11 +129,11 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
                     }
                 }
             })
-        case .paymentCard:
+        case .card:
             router.show(.form(type: .cardForm(theme: theme)))
         case .payPal:
             router.show(.oAuth(host: .paypal))
-        case .goCardlessMandate:
+        case .goCardless:
             router.show(.form(type: .iban(mandate: viewModel.mandate, popOnComplete: false)))
         case .klarna:
             router.show(.oAuth(host: .klarna))

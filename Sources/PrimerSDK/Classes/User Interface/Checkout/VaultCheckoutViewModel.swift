@@ -38,8 +38,8 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         } else {
             return state.paymentMethods.filter {
                 switch $0.paymentInstrumentType {
-                case .goCardlessMandate: return true
-                case .paymentCard: return true
+                case .goCardless: return true
+                case .card: return true
                 default: return false
                 }
             }

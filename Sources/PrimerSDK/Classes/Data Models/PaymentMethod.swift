@@ -2,15 +2,30 @@
 
 import UIKit
 
-public enum PaymentMethodType {
-    case card
-    case paypal
-    case applepay
-    case apaya
-}
-
 protocol PaymentMethodDetailsProtocol: Encodable {
 
+}
+
+enum PaymentMethodType: String, Codable {
+    case applePay = "APPLE_PAY"
+    case payPal = "PAYPAL"
+    case card = "PAYMENT_CARD"
+    case googlePay = "GOOGLE_PAY"
+    case goCardless = "GOCARDLESS"
+    case klarna = "KLARNA"
+    case payNlIdeal = "PAY_NL_IDEAL"
+    case apaya = "APAYA"
+    
+    case unknown
+    
+    var isEnabled: Bool {
+        switch self {
+        case .applePay, .payPal, .card, .goCardless, .klarna, .apaya:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 struct PaymentMethod {

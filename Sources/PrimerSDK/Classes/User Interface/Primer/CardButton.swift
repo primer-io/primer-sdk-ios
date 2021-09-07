@@ -44,7 +44,7 @@ internal class CardButton: PrimerButton {
         addBorder()
 
         switch model.paymentMethodType {
-        case .goCardlessMandate,
+        case .goCardless,
              .klarnaCustomerToken:
             addDDMandateLabel(value: model.network)
         default:

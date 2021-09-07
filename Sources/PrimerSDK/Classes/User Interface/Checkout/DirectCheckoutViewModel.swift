@@ -71,7 +71,7 @@ struct PaymentMethodViewModel {
     func toString() -> String {
         log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         switch type {
-        case .paymentCard:
+        case .card:
             return Primer.shared.flow.internalSessionFlow.vaulted
                 ? NSLocalizedString("payment-method-type-card-vaulted",
                                     tableName: nil,
@@ -92,7 +92,7 @@ struct PaymentMethodViewModel {
                                      value: "Pay",
                                      comment: "Pay - Payment Method Type (Apple pay)")
 
-        case .goCardlessMandate:
+        case .goCardless:
             return NSLocalizedString("payment-method-type-go-cardless",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
@@ -115,15 +115,15 @@ struct PaymentMethodViewModel {
         switch type {
         case .applePay: return .appleIcon
         case .payPal: return  .paypal3
-        case .goCardlessMandate: return .rightArrow
+        case .goCardless: return .rightArrow
         case .klarna: return .klarna
-        case .paymentCard: return .creditCard
+        case .card: return .creditCard
         case .apaya: return .mobile
         default: return nil
         }
     }
 
-    let type: ConfigPaymentMethodType
+    let type: PaymentMethodType
 }
 
 struct AmountViewModel {

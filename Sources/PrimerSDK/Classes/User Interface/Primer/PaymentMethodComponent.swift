@@ -31,7 +31,7 @@ internal class PaymentMethodComponent: PrimerView {
             configureIconView(icon: method.toIconName()?.image, color: .white, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
-        case .paymentCard:
+        case .card:
             layer.borderWidth = 1
             layer.borderColor = theme.colorTheme.disabled1.cgColor
             backgroundColor = theme.colorTheme.main1
@@ -49,7 +49,7 @@ internal class PaymentMethodComponent: PrimerView {
             addSubview(iconView)
             configureIconView(icon: method.toIconName()?.image, color: theme.colorTheme.text1)
             anchorIconView(inRelationToLabel: false)
-        case .goCardlessMandate:
+        case .goCardless:
             layer.borderWidth = 1
             layer.borderColor = theme.colorTheme.disabled1.cgColor
             backgroundColor = theme.colorTheme.main1
