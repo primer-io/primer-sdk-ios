@@ -1,8 +1,8 @@
 #if canImport(UIKit)
 
 public typealias ClientTokenCallBack = (_ completionHandler: @escaping (_ token: String?, _ error: Error?) -> Void) -> Void
-public typealias PaymentMethodTokenCallBack = (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
-public typealias TokenizationSuccessCallBack = (_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
+public typealias PaymentMethodTokenCallBack = (_ result: PaymentInstrument, _ completion:  @escaping (Error?) -> Void) -> Void
+public typealias TokenizationSuccessCallBack = (_ paymentMethodToken: PaymentInstrument, _ completion:  @escaping (Error?) -> Void) -> Void
 public typealias CheckoutDismissalCallback = () -> Void
 
 internal protocol PrimerSettingsProtocol {

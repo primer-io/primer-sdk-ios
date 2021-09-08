@@ -10,7 +10,7 @@ import Foundation
 #if canImport(UIKit)
 
 internal protocol ExternalViewModelProtocol {
-    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void)
+    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentInstrument], Error>) -> Void)
 }
 
 internal class ExternalViewModel: ExternalViewModelProtocol {
@@ -19,7 +19,7 @@ internal class ExternalViewModel: ExternalViewModelProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
-    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
+    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentInstrument], Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         if state.decodedClientToken.exists {

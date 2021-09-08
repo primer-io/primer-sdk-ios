@@ -184,7 +184,7 @@ public class Primer {
      - Version:
      1.4.0
      */
-    public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
+    public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentInstrument], Error>) -> Void) {
         DispatchQueue.main.async {
             let externalViewModel: ExternalViewModelProtocol = DependencyContainer.resolve()
             externalViewModel.fetchVaultedPaymentMethods(completion)

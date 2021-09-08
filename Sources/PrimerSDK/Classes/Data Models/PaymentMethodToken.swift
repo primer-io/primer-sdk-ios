@@ -3,111 +3,13 @@
 import Foundation
 
 struct GetVaultedPaymentMethodsResponse: Decodable {
-    var data: [PaymentMethodToken]
-}
-
-/**
- Each **PaymentMethodToken** represents a payment method added on Primer and carries the necessary information
- for identification (e.g. type), as well as further information to be used if needed.
- 
- - Author:
- Primer
- - Version:
- 1.2.2
- */
-
-public class PaymentMethodToken: NSObject, Codable {
-    public var token: String?
-    public var analyticsId: String?
-    public var tokenType: String?
-    public var paymentInstrumentType: PaymentInstrumentType
-    public var paymentInstrumentData: PaymentInstrumentData?
-    public var vaultData: VaultData?
-    public var threeDSecureAuthentication: ThreeDSecureAuthentication?
-
-    // FIXME: rename
-    public override var description: String {
-        switch self.paymentInstrumentType {
-        case .card:
-            let last4 = self.paymentInstrumentData?.last4Digits ?? "••••"
-            return "•••• •••• •••• \(last4)"
-        case .payPalOrder:
-            return "PayPal"
-        case .payPalBillingAgreement:
-            return "PayPal"
-        case .goCardless:
-            return "Direct Debit"
-        case .klarnaCustomerToken:
-            return paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token"
-        case .klarna:
-            return paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna"
-        default:
-            return "UNKNOWN"
-        }
-    }
-
-    public var icon: ImageName {
-        switch self.paymentInstrumentType {
-        case .card:
-            guard let network = self.paymentInstrumentData?.network else { return .genericCard }
-            switch network {
-            case "Visa": return .visa
-            case "Mastercard": return .masterCard
-            default: return .genericCard
-            }
-        case .payPalOrder: return .paypal2
-        case .payPalBillingAgreement: return .paypal2
-        case .goCardless: return .bank
-        case .klarnaCustomerToken: return .klarna
-        default: return .creditCard
-        }
-    }
-
-    var cardButtonViewModel: CardButtonViewModel? {
-        switch self.paymentInstrumentType {
-        case .card:
-            guard let ntwrk = self.paymentInstrumentData?.network else { return nil }
-            guard let cardholder = self.paymentInstrumentData?.cardholderName else { return nil }
-            guard let last4 = self.paymentInstrumentData?.last4Digits else { return nil }
-            guard let expMonth = self.paymentInstrumentData?.expirationMonth else { return nil }
-            guard let expYear = self.paymentInstrumentData?.expirationYear else { return nil }
-            return CardButtonViewModel(
-                network: ntwrk,
-                cardholder: cardholder,
-                last4: "•••• \(last4)",
-                expiry: NSLocalizedString("primer-saved-card",
-                                          tableName: nil,
-                                          bundle: Bundle.primerResources,
-                                          value: "Expires",
-                                          comment: "Expires - Saved card")
-                    + " \(expMonth) / \(expYear.suffix(2))",
-                imageName: self.icon,
-                paymentMethodType: self.paymentInstrumentType
-            )
-        case .payPalBillingAgreement:
-            guard let cardholder = self.paymentInstrumentData?.externalPayerInfo?.email else { return nil }
-            return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
-        case .goCardless:
-            return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
-        case .klarnaCustomerToken:
-            return CardButtonViewModel(
-                network: paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token",
-                cardholder: "",
-                last4: "",
-                expiry: "",
-                imageName: self.icon,
-                paymentMethodType: self.paymentInstrumentType
-            )
-        default:
-            return nil
-        }
-    }
+    var data: [PaymentInstrument]
 }
 
 struct CardButtonViewModel {
     let network, cardholder, last4, expiry: String
     let imageName: ImageName
-    let paymentMethodType: PaymentInstrumentType
+    let paymentMethodType: PaymentInstrument.PaymentType
 }
 
 /**
@@ -175,13 +77,117 @@ public protocol PaymentInstrumentDataProtocol: Codable {}
 
 public class PaymentInstrument: NSObject, Codable {
     
-    public var token: String
+    public var token: String?
     public var analyticsId: String?
     public var tokenType: String?
     public var paymentInstrumentType: PaymentInstrument.PaymentType
-    public var paymentInstrumentData: PaymentInstrument.Data?
+    public var paymentInstrumentData: PaymentInstrumentDataProtocol?
     public var vaultData: VaultData?
     public var threeDSecureAuthentication: ThreeDSecureAuthentication?
+    public var title: String {
+        if let paymentInstrumentData = paymentInstrumentData as? PaymentInstrument.Data.Card {
+            return "•••• •••• •••• \(paymentInstrumentData.last4Digits)"
+        } else if let paymentInstrumentData = paymentInstrumentData as? PaymentInstrument.Data.KlarnaCustomerToken {
+            return paymentInstrumentData.sessionData.billingAddress?.email ?? "Klarna Customer Token"
+        } else if let paymentInstrumentData = paymentInstrumentData as? PaymentInstrument.Data.KlarnaAuthorizationToken {
+            return paymentInstrumentData.sessionData.billingAddress?.email ?? "Klarna Customer Token"
+        } else if let paymentInstrumentData = paymentInstrumentData as? PaymentInstrument.Data.Apaya {
+            return paymentInstrumentData.hashedIdentifier ?? "Pay by mobile"
+        }
+        
+        switch paymentInstrumentType {
+        case .goCardless:
+            return "Direct Debit"
+        case .payPalOrder,
+             .payPalBillingAgreement:
+            return "PayPal"
+        default:
+            return "Unknown"
+        }
+    }
+    
+    public var icon: ImageName {
+        switch self.paymentInstrumentType {
+        case .card:
+            guard let cardData = self.paymentInstrumentData as? PaymentInstrument.Data.Card else { return .genericCard }
+            switch cardData.network {
+            case "Visa":
+                return .visa
+            case "Mastercard":
+                return .masterCard
+            default:
+                return .genericCard
+            }
+        case .payPalOrder:
+            return .paypal2
+        case .payPalBillingAgreement:
+            return .paypal2
+        case .goCardless:
+            return .bank
+        case .klarnaCustomerToken:
+            return .klarna
+        default:
+            return .creditCard
+        }
+    }
+    
+    var cardButtonViewModel: CardButtonViewModel? {
+        if let cardData = paymentInstrumentData as? PaymentInstrument.Data.Card {
+            guard let ntwrk = cardData.network else { return nil }
+            guard let cardholder = cardData.cardholderName else { return nil }
+            return CardButtonViewModel(
+                network: ntwrk,
+                cardholder: cardholder,
+                last4: "•••• \(cardData.last4Digits)",
+                expiry: NSLocalizedString("primer-saved-card",
+                                          tableName: nil,
+                                          bundle: Bundle.primerResources,
+                                          value: "Expires",
+                                          comment: "Expires - Saved card")
+                    + " \(cardData.expirationMonth) / \(cardData.expirationYear.suffix(2))",
+                imageName: self.icon,
+                paymentMethodType: paymentInstrumentType
+            )
+            
+        } else if let payPalBillingAgreementData = paymentInstrumentData as? PaymentInstrument.Data.PayPalBillingAgreement {
+            guard let cardholder = payPalBillingAgreementData.externalPayerInfo?.email else { return nil }
+            return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+        } else if let payPalBillingAgreementData = paymentInstrumentData as? PaymentInstrument.Data.PayPalOrder {
+            guard let cardholder = payPalBillingAgreementData.externalPayerInfo?.email else { return nil }
+            return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+        } else if let goCardlessData = paymentInstrumentData as? PaymentInstrument.Data.GoCardless {
+            return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+        } else if let klarnaCustomerTokenData = paymentInstrumentData as? PaymentInstrument.Data.KlarnaCustomerToken {
+            return CardButtonViewModel(
+                network: klarnaCustomerTokenData.sessionData.billingAddress?.email ?? "Klarna Customer Token",
+                cardholder: "",
+                last4: "",
+                expiry: "",
+                imageName: self.icon,
+                paymentMethodType: paymentInstrumentType
+            )
+        } else if let klarnaCustomerTokenData = paymentInstrumentData as? PaymentInstrument.Data.KlarnaAuthorizationToken {
+            return CardButtonViewModel(
+                network: klarnaCustomerTokenData.sessionData.billingAddress?.email ?? "Klarna Customer Token",
+                cardholder: "",
+                last4: "",
+                expiry: "",
+                imageName: self.icon,
+                paymentMethodType: paymentInstrumentType
+            )
+        } else if let apayaData = paymentInstrumentData as? PaymentInstrument.Data.Apaya {
+            return CardButtonViewModel(
+                network: apayaData.hashedIdentifier ?? "Pay by mobile",
+                cardholder: "",
+                last4: "",
+                expiry: "",
+                imageName: self.icon,
+                paymentMethodType: paymentInstrumentType
+            )
+        }
+        
+        return nil
+    }
     
     enum CodingKeys: String, CodingKey {
         case token
@@ -198,7 +204,7 @@ public class PaymentInstrument: NSObject, Codable {
         analyticsId: String?,
         tokenType: String?,
         paymentInstrumentType: PaymentInstrument.PaymentType,
-        paymentInstrumentData: PaymentInstrument.Data?,
+        paymentInstrumentData: PaymentInstrumentDataProtocol?,
         vaultData: VaultData?,
         threeDSecureAuthentication: ThreeDSecureAuthentication?
     ) {
@@ -219,9 +225,26 @@ public class PaymentInstrument: NSObject, Codable {
         tokenType = try? values.decode(String?.self, forKey: .tokenType)
         let paymentInstrumentTypeStr = try values.decode(String.self, forKey: .paymentInstrumentType)
         paymentInstrumentType = PaymentInstrument.PaymentType(rawValue: paymentInstrumentTypeStr)!
-        paymentInstrumentData = try? values.decode(PaymentInstrument.Data?.self, forKey: .paymentInstrumentData)
         vaultData = try? values.decode(VaultData?.self, forKey: .vaultData)
         threeDSecureAuthentication = try? values.decode(ThreeDSecureAuthentication?.self, forKey: .threeDSecureAuthentication)
+        
+        if let data = try? values.decode(PaymentInstrument.Data.Card?.self, forKey: .paymentInstrumentData) {
+            paymentInstrumentData = data
+        } else if let data = try? values.decode(PaymentInstrument.Data.PayPalOrder?.self, forKey: .paymentInstrumentData) {
+            paymentInstrumentData = data
+        } else if let data = try? values.decode(PaymentInstrument.Data.PayPalBillingAgreement?.self, forKey: .paymentInstrumentData) {
+            paymentInstrumentData = data
+        } else if let data = try? values.decode(PaymentInstrument.Data.GoCardless?.self, forKey: .paymentInstrumentData) {
+            paymentInstrumentData = data
+        } else if let data = try? values.decode(PaymentInstrument.Data.KlarnaAuthorizationToken?.self, forKey: .paymentInstrumentData) {
+            paymentInstrumentData = data
+        } else if let data = try? values.decode(PaymentInstrument.Data.KlarnaCustomerToken?.self, forKey: .paymentInstrumentData) {
+            paymentInstrumentData = data
+        } else if let data = try? values.decode(PaymentInstrument.Data.PayNLIdeal?.self, forKey: .paymentInstrumentData) {
+            paymentInstrumentData = data
+        } else if let data = try? values.decode(PaymentInstrument.Data.Apaya?.self, forKey: .paymentInstrumentData) {
+            paymentInstrumentData = data
+        }
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -229,9 +252,26 @@ public class PaymentInstrument: NSObject, Codable {
         try container.encode(token, forKey: .token)
         try container.encode(analyticsId, forKey: .analyticsId)
         try container.encode(tokenType, forKey: .tokenType)
-        try container.encode(paymentInstrumentData, forKey: .paymentInstrumentData)
         try container.encode(vaultData, forKey: .vaultData)
         try container.encode(threeDSecureAuthentication, forKey: .threeDSecureAuthentication)
+                
+        if let data = paymentInstrumentData as? PaymentInstrument.Data.Card {
+            try container.encode(data, forKey: .paymentInstrumentData)
+        } else if let data = paymentInstrumentData as? PaymentInstrument.Data.PayPalOrder {
+            try container.encode(data, forKey: .paymentInstrumentData)
+        } else if let data = paymentInstrumentData as? PaymentInstrument.Data.PayPalBillingAgreement {
+            try container.encode(data, forKey: .paymentInstrumentData)
+        } else if let data = paymentInstrumentData as? PaymentInstrument.Data.GoCardless {
+            try container.encode(data, forKey: .paymentInstrumentData)
+        } else if let data = paymentInstrumentData as? PaymentInstrument.Data.KlarnaAuthorizationToken {
+            try container.encode(data, forKey: .paymentInstrumentData)
+        } else if let data = paymentInstrumentData as? PaymentInstrument.Data.KlarnaCustomerToken {
+            try container.encode(data, forKey: .paymentInstrumentData)
+        } else if let data = paymentInstrumentData as? PaymentInstrument.Data.PayNLIdeal {
+            try container.encode(data, forKey: .paymentInstrumentData)
+        } else if let data = paymentInstrumentData as? PaymentInstrument.Data.Apaya {
+            try container.encode(data, forKey: .paymentInstrumentData)
+        }
     }
     
     public enum PaymentType: String, Codable {
@@ -299,31 +339,6 @@ public class PaymentInstrument: NSObject, Codable {
             let productId: String?
         }
     }
-}
-
-public struct PaymentInstrumentData: Codable {
-    public let paypalBillingAgreementId: String?
-    public let last4Digits: String?
-    public let expirationMonth: String?
-    public let expirationYear: String?
-    public let cardholderName: String?
-    public let network: String?
-    public let isNetworkTokenized: Bool?
-    public let klarnaCustomerToken: String?
-    public let sessionData: KlarnaSessionData?
-    public let externalPayerInfo: ExternalPayerInfo?
-    public let shippingAddress: ShippingAddress?
-    public let binData: BinData?
-    public let threeDSecureAuthentication: ThreeDSecureAuthentication?
-    public let gocardlessMandateId: String?
-    public let authorizationToken: String?
-    // APAYA
-    public let hashedIdentifier: String?
-    public let mnc: Int?
-    public let mcc: Int?
-    public let mx: String?
-    public let currencyCode: Currency?
-    public let productId: String?
 }
 
 /**

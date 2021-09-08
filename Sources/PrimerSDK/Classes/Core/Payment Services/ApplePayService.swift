@@ -9,7 +9,7 @@ import Foundation
 
 
 protocol ApplePayServiceProtocol {
-    func tokenize(paymentMethodDetails: PaymentMethodDetailsProtocol, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void)
+    func tokenize(paymentMethodDetails: PaymentMethodDetailsProtocol, completion: @escaping (Result<PaymentInstrument, Error>) -> Void)
     func fetchConfig(_ completion: @escaping (Error?) -> Void)
 }
 
@@ -63,7 +63,7 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
         }
     }
     
-    func tokenize(paymentMethodDetails: PaymentMethodDetailsProtocol, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+    func tokenize(paymentMethodDetails: PaymentMethodDetailsProtocol, completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentMethodDetails, state: state)
 

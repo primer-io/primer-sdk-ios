@@ -9,7 +9,7 @@
 
 internal protocol AppStateProtocol: class {
     var viewModels: [PaymentMethodViewModel] { get set }
-    var paymentMethods: [PaymentMethodToken] { get set }
+    var paymentMethods: [PaymentInstrument] { get set }
     var selectedPaymentMethod: String { get set }
     var decodedClientToken: DecodedClientToken? { get set }
     var paymentMethodConfig: PaymentMethodConfig? { get set }
@@ -33,7 +33,7 @@ internal protocol AppStateProtocol: class {
 
 internal class AppState: AppStateProtocol {
     var viewModels: [PaymentMethodViewModel] = []
-    var paymentMethods: [PaymentMethodToken] = []
+    var paymentMethods: [PaymentInstrument] = []
     var selectedPaymentMethod: String = ""
     var decodedClientToken: DecodedClientToken?
     var paymentMethodConfig: PaymentMethodConfig?
