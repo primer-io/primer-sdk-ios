@@ -159,7 +159,7 @@ internal class FormViewModel: FormViewModelProtocol {
                                                     expirationYear: state.cardData.expiryYear,
                                                     cardholderName: state.cardData.name)
         
-        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+        let request = PaymentInstrumentizationRequest(paymentInstrument: instrument, state: state)
         
         let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
         tokenizationService.tokenize(request: request) { [weak self] result in

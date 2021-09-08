@@ -14,11 +14,11 @@ class MockTokenizationService: TokenizationServiceProtocol {
     let paymentMethodTokenJSON: String = """
         """
 
-    func tokenize(request: PaymentMethodTokenizationRequest, onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void) {
+    func tokenize(request: PaymentInstrumentizationRequest, onTokenizeSuccess: @escaping (Result<PaymentInstrument, PrimerError>) -> Void) {
         tokenizeCalled = true
         
         let paymentMethodTokenData = paymentMethodTokenJSON.data(using: .utf8)!
-        let token = try! JSONParser().parse(PaymentMethodToken.self, from: paymentMethodTokenData) //PaymentMethodToken(token: "tokenID", paymentInstrumentType: .paymentCard, vaultData: VaultData())
+        let token = try! JSONParser().parse(PaymentInstrument.self, from: paymentMethodTokenData) //PaymentInstrument(token: "tokenID", paymentInstrumentType: .paymentCard, vaultData: VaultData())
         return onTokenizeSuccess(.success(token))
     }
 }

@@ -35,7 +35,7 @@ public protocol PrimerDelegate {
     /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
     ///
     /// - Parameters:
-    ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
+    ///   - paymentMethodToken: The PaymentInstrument object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentInstrument, _ completion:  @escaping (Error?) -> Void)
     
@@ -48,7 +48,7 @@ public protocol PrimerDelegate {
     /// Deprecated in favour of onTokenizeSuccess
     ///
     /// - Parameters:
-    ///   - result: The PaymentMethodToken object containing the token's information.
+    ///   - result: The PaymentInstrument object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
     @available(*, deprecated, renamed: "onTokenizeSuccess")
     @objc optional func authorizePayment(_ result: PaymentInstrument, _ completion:  @escaping (Error?) -> Void)

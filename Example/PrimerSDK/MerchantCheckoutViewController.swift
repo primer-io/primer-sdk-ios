@@ -12,7 +12,7 @@ import UIKit
 class MerchantCheckoutViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    var paymentMethodsDataSource: [PaymentMethodToken] = [] {
+    var paymentInstrumentsDataSource: [PaymentInstrument] = [] {
         didSet {
             self.tableView.reloadData()
         }
@@ -190,11 +190,11 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         })
     }
     
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
+    func tokenAddedToVault(_ token: PaymentInstrument) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nToken added to vault\nToken: \(token)\n")
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentInstrument, _ completion: @escaping (Error?) -> Void) {
         guard let token = paymentMethodToken.token else { return completion(NetworkError.missingParams) }
 
         guard let url = URL(string: "\(endpoint)/transaction") else {
@@ -242,30 +242,13 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return paymentMethodsDataSource.count
+        return paymentInstrumentsDataSource.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let paymentMethod = paymentMethodsDataSource[indexPath.row]
+        let paymentInstrument = paymentInstrumentsDataSource[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "PaymentMethodCell", for: indexPath) as! PaymentMethodCell
-        
-        switch paymentMethod.paymentInstrumentType {
-        case .card:
-            let title = "•••• •••• •••• \(paymentMethod.paymentInstrumentData?.last4Digits ?? "••••")"
-            cell.configure(title: title, image: paymentMethod.icon.image!)
-        case .payPalBillingAgreement:
-            let title = paymentMethod.paymentInstrumentData?.externalPayerInfo?.email ?? "PayPal"
-            cell.configure(title: title, image: paymentMethod.icon.image!)
-        case .goCardless:
-            let title = "Direct Debit"
-            cell.configure(title: title, image: paymentMethod.icon.image!)
-        case .klarnaCustomerToken:
-            let title = paymentMethod.paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token"
-            cell.configure(title: title, image: paymentMethod.icon.image!)
-        default:
-            cell.configure(title: "", image: nil)
-        }
-        
+        cell.configure(title: paymentInstrument.title, image: paymentInstrument.icon.image)
         return cell
     }
     

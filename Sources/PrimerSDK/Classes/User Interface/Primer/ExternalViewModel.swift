@@ -54,7 +54,7 @@ internal class ExternalViewModel: ExternalViewModelProtocol {
 }
 
 internal class MockExternalViewModel: ExternalViewModelProtocol {
-    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
+    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentInstrument], Error>) -> Void) {
 
     }
 }

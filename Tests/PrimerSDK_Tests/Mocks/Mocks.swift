@@ -54,18 +54,18 @@ class MockPrimerDelegate: PrimerDelegate {
         completion(token, nil)
     }
     
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
+    func tokenAddedToVault(_ token: PaymentInstrument) {
         
     }
 
     
 
-    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func authorizePayment(_ result: PaymentInstrument, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
         if authorizePaymentFails { completion(PrimerError.clientTokenNull) }
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentInstrument, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
         if authorizePaymentFails { completion(PrimerError.clientTokenNull) }
     }
@@ -128,7 +128,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 
     var clientTokenRequestCallback: ClientTokenCallBack
 
-    var authorizePayment: PaymentMethodTokenCallBack
+    var authorizePayment: PaymentInstrumentCallBack
     
     var onTokenizeSuccess: TokenizationSuccessCallBack
     
@@ -136,7 +136,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 
     init(
         clientTokenRequestCallback: @escaping ClientTokenCallBack = { _ in },
-        authorizePayment: @escaping PaymentMethodTokenCallBack = { _, _  in },
+        authorizePayment: @escaping PaymentInstrumentCallBack = { _, _  in },
         onTokenizeSuccess: @escaping TokenizationSuccessCallBack = { _, _  in },
         onCheckoutDismiss: @escaping CheckoutDismissalCallback = { }
     ) {
@@ -191,7 +191,7 @@ class MockAppState: AppStateProtocol {
 
     var viewModels: [PaymentMethodViewModel] = []
 
-    var paymentMethods: [PaymentMethodToken] = []
+    var paymentMethods: [PaymentInstrument] = []
 
     var selectedPaymentMethod: String = ""
 

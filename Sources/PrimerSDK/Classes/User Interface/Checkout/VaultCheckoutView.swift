@@ -5,11 +5,11 @@ internal protocol VaultCheckoutViewDelegate: class, UITableViewDelegate, UITable
     func cancel()
     func openVault()
     func pay()
-    func selectTokenForPayment(token: PaymentMethodToken)
+    func selectTokenForPayment(token: PaymentInstrument)
 }
 
 internal protocol VaultCheckoutViewDataSource: class {
-    var selectedSavedPaymentMethod: PaymentMethodToken? { get }
+    var selectedSavedPaymentMethod: PaymentInstrument? { get }
     var amount: String? { get }
 }
 

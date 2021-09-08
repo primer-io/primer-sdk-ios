@@ -1,7 +1,7 @@
 #if canImport(UIKit)
 
 public typealias ClientTokenCallBack = (_ completionHandler: @escaping (_ token: String?, _ error: Error?) -> Void) -> Void
-public typealias PaymentMethodTokenCallBack = (_ result: PaymentInstrument, _ completion:  @escaping (Error?) -> Void) -> Void
+public typealias PaymentInstrumentCallBack = (_ result: PaymentInstrument, _ completion:  @escaping (Error?) -> Void) -> Void
 public typealias TokenizationSuccessCallBack = (_ paymentMethodToken: PaymentInstrument, _ completion:  @escaping (Error?) -> Void) -> Void
 public typealias CheckoutDismissalCallback = () -> Void
 
@@ -14,7 +14,7 @@ internal protocol PrimerSettingsProtocol {
     var klarnaPaymentDescription: String? { get }
     var customerId: String? { get }
     var clientTokenRequestCallback: ClientTokenCallBack { get }
-    var authorizePayment: PaymentMethodTokenCallBack { get }
+    var authorizePayment: PaymentInstrumentCallBack { get }
     var onTokenizeSuccess: TokenizationSuccessCallBack { get }
     var onCheckoutDismiss: CheckoutDismissalCallback { get }
     var urlScheme: String? { get }
@@ -77,7 +77,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
     }
 
-    internal var authorizePayment: PaymentMethodTokenCallBack {
+    internal var authorizePayment: PaymentInstrumentCallBack {
         return Primer.shared.delegate?.authorizePayment ?? { _, _ in }
     }
     
@@ -154,15 +154,15 @@ internal class MockDelegate: PrimerDelegate {
         
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentInstrument, _ completion: @escaping (Error?) -> Void) {
         
     }
     
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
+    func tokenAddedToVault(_ token: PaymentInstrument) {
             
     }
 
-    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func authorizePayment(_ result: PaymentInstrument, _ completion: @escaping (Error?) -> Void) {
 
     }
 

@@ -1,10 +1,10 @@
 #if canImport(UIKit)
 
-struct PaymentMethodTokenizationRequest: Encodable {
+struct PaymentInstrumentizationRequest: Encodable {
     
     let paymentInstrument: PaymentMethodDetailsProtocol
     let tokenType: TokenType
-    let paymentFlow: PaymentFlow?
+    let paymentFlow: PaymentFlow
     let customerId: String?
     
     enum CodingKeys: String, CodingKey {
@@ -18,7 +18,7 @@ struct PaymentMethodTokenizationRequest: Encodable {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         self.paymentInstrument = paymentInstrument
         self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : .singleUse
-        self.paymentFlow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
+        self.paymentFlow = .vault // Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .nil
         self.customerId = Primer.shared.flow.internalSessionFlow.vaulted ? settings.customerId : nil
     }
     
@@ -41,9 +41,15 @@ struct PaymentMethodTokenizationRequest: Encodable {
             assert(true, "paymentInstrument is of no known type and can't be encoded.")
         }
         
+//        if let customerId = customerId {
+//            try container.encode(customerId, forKey: .customerId)
+//        }
+        
         try container.encode(tokenType, forKey: .tokenType)
-        try container.encode(paymentFlow, forKey: .paymentFlow)
-        try container.encode(customerId, forKey: .customerId)
+        
+        if paymentFlow == .vault && tokenType == .multiUse {
+            try container.encode(paymentFlow, forKey: .paymentFlow)
+        }
     }
 }
 

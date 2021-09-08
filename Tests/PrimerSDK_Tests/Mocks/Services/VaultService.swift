@@ -10,10 +10,10 @@
 @testable import PrimerSDK
 
 class MockVaultService: VaultServiceProtocol {
-//    var paymentMethods: [PaymentMethodToken] {
+//    var paymentMethods: [PaymentInstrument] {
 //        if (paymentMethodsIsEmpty) { return [] }
 //        return [
-//            PaymentMethodToken(
+//            PaymentInstrument(
 //                token: "tokenId",
 //                analyticsId: "id",
 //                tokenType: "type",
@@ -32,7 +32,7 @@ class MockVaultService: VaultServiceProtocol {
 //        ]
 //    }
 
-    var paymentMethodVMs: [PaymentMethodToken] {
+    var paymentMethodVMs: [PaymentInstrument] {
         return []
     }
 
