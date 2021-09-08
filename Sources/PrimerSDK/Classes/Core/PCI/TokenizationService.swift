@@ -62,59 +62,14 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 }
                 
                 self.tokenizedPaymentMethodToken = paymentMethodToken
-                               
-//                #if canImport(Primer3DS)
-//                if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard && paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess && isThreeDSEnabled {
-//                    let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
-//                    DependencyContainer.register(threeDSService)
-//
-//                    threeDSService.perform3DS(
-//                            paymentMethodToken: paymentMethodToken,
-//                        protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
-//                            sdkDismissed: { () in
-//
-//                            }, completion: { result in
-//                                DispatchQueue.main.async {
-//                                    switch result {
-//                                    case .success(let paymentMethodToken):
-//                                        if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-//                                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
-//                                        }
-//
-//                                        onTokenizeSuccess(.success(paymentMethodToken))
-//                                    case .failure(let err):
-//                                        // Even if 3DS fails, continue...
-//                                        onTokenizeSuccess(.success(paymentMethodToken))
-//                                    }
-//                                }
-//
-//                            })
-//                } else {
-//                    DispatchQueue.main.async {
-//                        if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard {
-//                            print("\nWARNING!\nCannot perform 3DS. Continue without 3DS\n")
-//                        }
-//
-//                        if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-//                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
-//                        }
-//
-//                        onTokenizeSuccess(.success(paymentMethodToken))
-//                    }
-//                }
-//                #else
+                
                 DispatchQueue.main.async {
-//                    if settings.is3DSEnabled && paymentMethodToken.paymentInstrumentType == .paymentCard {
-//                        print("\nWARNING!\nCannot perform 3DS. Continue without 3DS\n")
-//                    }
-                    
                     if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
                         Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
                     }
                     
                     onTokenizeSuccess(.success(paymentMethodToken))
                 }
-//                #endif
             }
         }
     }
