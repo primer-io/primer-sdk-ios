@@ -173,33 +173,130 @@ extension PaymentInstrumentType: Codable {
 
 public protocol PaymentInstrumentDataProtocol: Codable {}
 
-public struct PaymentInstrument {
+public class PaymentInstrument: NSObject, Codable {
     
-    public var token: String?
+    public var token: String
     public var analyticsId: String?
     public var tokenType: String?
-    public var paymentInstrumentType: PaymentInstrumentType
+    public var paymentInstrumentType: PaymentInstrument.PaymentType
     public var paymentInstrumentData: PaymentInstrument.Data?
     public var vaultData: VaultData?
     public var threeDSecureAuthentication: ThreeDSecureAuthentication?
     
-    public struct Data {
+    enum CodingKeys: String, CodingKey {
+        case token
+        case analyticsId
+        case tokenType
+        case paymentInstrumentType
+        case paymentInstrumentData
+        case vaultData
+        case threeDSecureAuthentication
+    }
+    
+    init(
+        token: String,
+        analyticsId: String?,
+        tokenType: String?,
+        paymentInstrumentType: PaymentInstrument.PaymentType,
+        paymentInstrumentData: PaymentInstrument.Data?,
+        vaultData: VaultData?,
+        threeDSecureAuthentication: ThreeDSecureAuthentication?
+    ) {
+        self.token = token
+        self.analyticsId = analyticsId
+        self.tokenType = tokenType
+        self.paymentInstrumentType = paymentInstrumentType
+        self.paymentInstrumentData = paymentInstrumentData
+        self.vaultData = vaultData
+        self.threeDSecureAuthentication = threeDSecureAuthentication
+        super.init()
+    }
+    
+    required public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        token = try values.decode(String.self, forKey: .token)
+        analyticsId = try? values.decode(String?.self, forKey: .analyticsId)
+        tokenType = try? values.decode(String?.self, forKey: .tokenType)
+        let paymentInstrumentTypeStr = try values.decode(String.self, forKey: .paymentInstrumentType)
+        paymentInstrumentType = PaymentInstrument.PaymentType(rawValue: paymentInstrumentTypeStr)!
+        paymentInstrumentData = try? values.decode(PaymentInstrument.Data?.self, forKey: .paymentInstrumentData)
+        vaultData = try? values.decode(VaultData?.self, forKey: .vaultData)
+        threeDSecureAuthentication = try? values.decode(ThreeDSecureAuthentication?.self, forKey: .threeDSecureAuthentication)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(token, forKey: .token)
+        try container.encode(analyticsId, forKey: .analyticsId)
+        try container.encode(tokenType, forKey: .tokenType)
+        try container.encode(paymentInstrumentData, forKey: .paymentInstrumentData)
+        try container.encode(vaultData, forKey: .vaultData)
+        try container.encode(threeDSecureAuthentication, forKey: .threeDSecureAuthentication)
+    }
+    
+    public enum PaymentType: String, Codable {
+        case card = "PAYMENT_CARD"
+        case payPalOrder = "PAYPAL_ORDER"
+        case payPalBillingAgreement = "PAYPAL_BILLING_AGREEMENT"
+        case applePay = "APPLE_PAY"
+        case googlePay = "GOOGLE_PAY"
+        case goCardless = "GOCARDLESS_MANDATE"
+        case klarna = "KLARNA_AUTHORIZATION_TOKEN"
+        case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
+        case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"
+        case apayaToken = "APAYA"
+        case unknown = "UNKNOWN"
+    }
+    
+    public struct Data: Codable {
         public struct Card: PaymentInstrumentDataProtocol {
             let last4Digits: String
             let expirationMonth: String
             let expirationYear: String
-            let cardholderName: String
-            let network: String
+            let cardholderName: String?
+            let network: String?
             let isNetworkTokenized: Bool
+            let binData: BinData?
+        }
+        
+        public struct PayPalOrder: PaymentInstrumentDataProtocol {
+            public let paypalOrderId: String
+            public let externalPayerInfo: ExternalPayerInfo?
+            public let paypalStatus: String?
+        }
+        
+        public struct PayPalBillingAgreement: PaymentInstrumentDataProtocol {
+            public let paypalBillingAgreementId: String
+            public let externalPayerInfo: ExternalPayerInfo?
+            public let shippingAddress: ShippingAddress?
+            public let paypalStatus: String?
+        }
+        
+        public struct GoCardless: PaymentInstrumentDataProtocol {
+            public let gocardlessMandateId: String
+        }
+        
+        public struct KlarnaAuthorizationToken: PaymentInstrumentDataProtocol {
+            public let klarnaAuthorizationToken: String
+            public let sessionData: KlarnaSessionData
+        }
+        
+        public struct KlarnaCustomerToken: PaymentInstrumentDataProtocol {
+            public let klarnaCustomerToken: String
+            public let sessionData: KlarnaSessionData
+        }
+        
+        public struct PayNLIdeal: PaymentInstrumentDataProtocol {
+            public let paymentMethodConfigId: String
         }
         
         public struct Apaya: PaymentInstrumentDataProtocol {
-            let hashedIdentifier: String
-            let mnc: Int
-            let mcc: Int
+            let hashedIdentifier: String?
+            let mnc: Int?
+            let mcc: Int?
             let mx: String
             let currencyCode: Currency
-            let productId: String
+            let productId: String?
         }
     }
 }
