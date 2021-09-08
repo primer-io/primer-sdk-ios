@@ -182,7 +182,7 @@ extension PaymentInstrumentType: Codable {
 
 public protocol PaymentInstrumentDataProtocol: Codable {}
 
-public struct PaymentInstrument: PaymentInstrumentDataProtocol {
+public struct PaymentInstrument {
     
     public var token: String?
     public var analyticsId: String?
@@ -192,7 +192,7 @@ public struct PaymentInstrument: PaymentInstrumentDataProtocol {
     public var vaultData: VaultData?
     public var threeDSecureAuthentication: ThreeDSecureAuthentication?
     
-    public struct Data: Codable {
+    public struct Data {
         public struct Card: PaymentInstrumentDataProtocol {
             let last4Digits: String
             let expirationMonth: String
