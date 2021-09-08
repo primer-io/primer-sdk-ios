@@ -62,16 +62,7 @@ public class PaymentMethodToken: NSObject, Codable {
         default: return .creditCard
         }
     }
-    
-//    public convenience init(token: String, paymentInstrumentType: PaymentInstrumentType, vaultData: VaultData) {
-//        self.init(from: <#Decoder#>)
-//        self.token = token
-//        self.paymentInstrumentType = paymentInstrumentType
-//        self.vaultData = vaultData
-//    }
-}
 
-internal extension PaymentMethodToken {
     var cardButtonViewModel: CardButtonViewModel? {
         switch self.paymentInstrumentType {
         case .card:
