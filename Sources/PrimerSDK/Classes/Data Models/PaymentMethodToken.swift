@@ -73,7 +73,7 @@ extension PaymentInstrumentType: Codable {
  1.2.2
  */
 
-public protocol PaymentInstrumentDataProtocol: Codable {}
+public protocol PaymentMethodDataProtocol: Codable {}
 
 public class PaymentMethod: NSObject, Codable {
     
@@ -81,7 +81,7 @@ public class PaymentMethod: NSObject, Codable {
     public var analyticsId: String?
     public var tokenType: String?
     public var paymentInstrumentType: PaymentMethod.PaymentType
-    public var paymentInstrumentData: PaymentInstrumentDataProtocol?
+    public var paymentInstrumentData: PaymentMethodDataProtocol?
     public var vaultData: VaultData?
     public var threeDSecureAuthentication: ThreeDSecureAuthentication?
     public var title: String {
@@ -204,7 +204,7 @@ public class PaymentMethod: NSObject, Codable {
         analyticsId: String?,
         tokenType: String?,
         paymentInstrumentType: PaymentMethod.PaymentType,
-        paymentInstrumentData: PaymentInstrumentDataProtocol?,
+        paymentInstrumentData: PaymentMethodDataProtocol?,
         vaultData: VaultData?,
         threeDSecureAuthentication: ThreeDSecureAuthentication?
     ) {
@@ -289,7 +289,7 @@ public class PaymentMethod: NSObject, Codable {
     }
     
     public struct Data: Codable {
-        public struct Card: PaymentInstrumentDataProtocol {
+        public struct Card: PaymentMethodDataProtocol {
             let last4Digits: String
             let expirationMonth: String
             let expirationYear: String
@@ -299,38 +299,38 @@ public class PaymentMethod: NSObject, Codable {
             let binData: BinData?
         }
         
-        public struct PayPalOrder: PaymentInstrumentDataProtocol {
+        public struct PayPalOrder: PaymentMethodDataProtocol {
             public let paypalOrderId: String
             public let externalPayerInfo: ExternalPayerInfo?
             public let paypalStatus: String?
         }
         
-        public struct PayPalBillingAgreement: PaymentInstrumentDataProtocol {
+        public struct PayPalBillingAgreement: PaymentMethodDataProtocol {
             public let paypalBillingAgreementId: String
             public let externalPayerInfo: ExternalPayerInfo?
             public let shippingAddress: ShippingAddress?
             public let paypalStatus: String?
         }
         
-        public struct GoCardless: PaymentInstrumentDataProtocol {
+        public struct GoCardless: PaymentMethodDataProtocol {
             public let gocardlessMandateId: String
         }
         
-        public struct KlarnaAuthorizationToken: PaymentInstrumentDataProtocol {
+        public struct KlarnaAuthorizationToken: PaymentMethodDataProtocol {
             public let klarnaAuthorizationToken: String
             public let sessionData: KlarnaSessionData
         }
         
-        public struct KlarnaCustomerToken: PaymentInstrumentDataProtocol {
+        public struct KlarnaCustomerToken: PaymentMethodDataProtocol {
             public let klarnaCustomerToken: String
             public let sessionData: KlarnaSessionData
         }
         
-        public struct PayNLIdeal: PaymentInstrumentDataProtocol {
+        public struct PayNLIdeal: PaymentMethodDataProtocol {
             public let paymentMethodConfigId: String
         }
         
-        public struct Apaya: PaymentInstrumentDataProtocol {
+        public struct Apaya: PaymentMethodDataProtocol {
             let hashedIdentifier: String?
             let mnc: Int?
             let mcc: Int?
