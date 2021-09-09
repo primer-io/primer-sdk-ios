@@ -11,7 +11,7 @@ struct ConfigPaymentMethod: Codable {
     let options: PaymentMethodConfigOptions?
 }
 
-enum ConfigPaymentMethodType: String, Codable {
+public enum ConfigPaymentMethodType: String, Codable {
     case applePay = "APPLE_PAY"
     case payPal = "PAYPAL"
     case paymentCard = "PAYMENT_CARD"
