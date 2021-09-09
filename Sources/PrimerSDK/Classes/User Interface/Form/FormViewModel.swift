@@ -153,7 +153,7 @@ internal class FormViewModel: FormViewModelProtocol {
     func submit(completion: @escaping (PrimerError?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        let instrument = PaymentMethod.Card.Details(number: state.cardData.number,
+        let instrument = PaymentMethodOptions.Card.Details(number: state.cardData.number,
                                                     cvv: state.cardData.cvc,
                                                     expirationMonth: state.cardData.expiryMonth,
                                                     expirationYear: state.cardData.expiryYear,

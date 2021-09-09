@@ -24,7 +24,7 @@ enum PaymentMethodType: String, Codable {
 
 protocol PaymentMethodDetailsProtocol: Codable {}
 
-struct PaymentMethod {
+struct PaymentMethodOptions {
     
     let type: PaymentMethodType
     var details: PaymentMethodDetailsProtocol

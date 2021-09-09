@@ -127,7 +127,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
             throw PaymentException.missingCurrency
         }
 
-        let instrument = PaymentMethod.Apaya.Details(mx: result.mxNumber,
+        let instrument = PaymentMethodOptions.Apaya.Details(mx: result.mxNumber,
                                                      mnc: result.mnc,
                                                      mcc: result.mcc,
                                                      hashedIdentifier: result.hashedIdentifier,

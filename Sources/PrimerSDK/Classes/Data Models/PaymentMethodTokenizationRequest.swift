@@ -25,17 +25,17 @@ struct PaymentInstrumentizationRequest: Encodable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        if let paymentInstrument = paymentInstrument as? PaymentMethod.Apaya.Details {
+        if let paymentInstrument = paymentInstrument as? PaymentMethodOptions.Apaya.Details {
             try container.encode(paymentInstrument, forKey: .paymentInstrument)
-        } else if let paymentInstrument = paymentInstrument as? PaymentMethod.ApplePay.Details {
+        } else if let paymentInstrument = paymentInstrument as? PaymentMethodOptions.ApplePay.Details {
             try container.encode(paymentInstrument, forKey: .paymentInstrument)
-        } else if let paymentInstrument = paymentInstrument as? PaymentMethod.Card.Details {
+        } else if let paymentInstrument = paymentInstrument as? PaymentMethodOptions.Card.Details {
             try container.encode(paymentInstrument, forKey: .paymentInstrument)
-        } else if let paymentInstrument = paymentInstrument as? PaymentMethod.GoCardless.Details {
+        } else if let paymentInstrument = paymentInstrument as? PaymentMethodOptions.GoCardless.Details {
             try container.encode(paymentInstrument, forKey: .paymentInstrument)
-        } else if let paymentInstrument = paymentInstrument as? PaymentMethod.Klarna.Details {
+        } else if let paymentInstrument = paymentInstrument as? PaymentMethodOptions.Klarna.Details {
             try container.encode(paymentInstrument, forKey: .paymentInstrument)
-        } else if let paymentInstrument = paymentInstrument as? PaymentMethod.PayPal.Details {
+        } else if let paymentInstrument = paymentInstrument as? PaymentMethodOptions.PayPal.Details {
             try container.encode(paymentInstrument, forKey: .paymentInstrument)
         } else {
             assert(true, "paymentInstrument is of no known type and can't be encoded.")

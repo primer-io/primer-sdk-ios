@@ -106,7 +106,7 @@ internal class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
                 }
                 
                 let request = PaymentInstrumentizationRequest(
-                    paymentInstrument: PaymentMethod.GoCardless.Details(gocardlessMandateId: mandateId),
+                    paymentInstrument: PaymentMethodOptions.GoCardless.Details(gocardlessMandateId: mandateId),
                     state: state
                 )
                 
