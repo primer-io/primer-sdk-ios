@@ -12,7 +12,7 @@ import UIKit
 class MerchantCheckoutViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    var paymentInstrumentsDataSource: [PaymentInstrument] = [] {
+    var paymentInstrumentsDataSource: [PaymentMethod] = [] {
         didSet {
             self.tableView.reloadData()
         }
@@ -190,11 +190,11 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         })
     }
     
-    func tokenAddedToVault(_ token: PaymentInstrument) {
+    func tokenAddedToVault(_ token: PaymentMethod) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nToken added to vault\nToken: \(token)\n")
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentInstrument, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
         guard let token = paymentMethodToken.token else { return completion(NetworkError.missingParams) }
 
         guard let url = URL(string: "\(endpoint)/transaction") else {

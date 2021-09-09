@@ -69,7 +69,7 @@ extension MerchantCheckoutViewController {
         present(alert, animated: true)
     }
     
-    internal func generateRequest(_ token: PaymentInstrument, capture: Bool) -> URLRequest? {
+    internal func generateRequest(_ token: PaymentMethod, capture: Bool) -> URLRequest? {
         guard let url = URL(string: "\(endpoint)/transaction") else { return nil }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

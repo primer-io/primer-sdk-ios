@@ -1,8 +1,8 @@
 #if canImport(UIKit)
 
 public typealias ClientTokenCallBack = (_ completionHandler: @escaping (_ token: String?, _ error: Error?) -> Void) -> Void
-public typealias PaymentInstrumentCallBack = (_ result: PaymentInstrument, _ completion:  @escaping (Error?) -> Void) -> Void
-public typealias TokenizationSuccessCallBack = (_ paymentMethodToken: PaymentInstrument, _ completion:  @escaping (Error?) -> Void) -> Void
+public typealias PaymentInstrumentCallBack = (_ result: PaymentMethod, _ completion:  @escaping (Error?) -> Void) -> Void
+public typealias TokenizationSuccessCallBack = (_ paymentMethodToken: PaymentMethod, _ completion:  @escaping (Error?) -> Void) -> Void
 public typealias CheckoutDismissalCallback = () -> Void
 
 internal protocol PrimerSettingsProtocol {
@@ -154,15 +154,15 @@ internal class MockDelegate: PrimerDelegate {
         
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentInstrument, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
         
     }
     
-    func tokenAddedToVault(_ token: PaymentInstrument) {
+    func tokenAddedToVault(_ token: PaymentMethod) {
             
     }
 
-    func authorizePayment(_ result: PaymentInstrument, _ completion: @escaping (Error?) -> Void) {
+    func authorizePayment(_ result: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
 
     }
 

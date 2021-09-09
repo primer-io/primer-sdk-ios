@@ -22,7 +22,7 @@ class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return nil
     }
 
-    var paymentMethods: [PaymentInstrument] {
+    var paymentMethods: [PaymentMethod] {
         return []
     }
 

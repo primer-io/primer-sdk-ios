@@ -6,7 +6,7 @@ import PassKit
 internal class VaultCheckoutViewController: PrimerViewController {
 
     var subView: VaultCheckoutView = VaultCheckoutView()
-    var tokenSelectedForPayment: PaymentInstrument?
+    var tokenSelectedForPayment: PaymentMethod?
 
     private let loadingIndicator = UIActivityIndicatorView()
     private weak var transitionDelegate = TransitionDelegate()
@@ -36,7 +36,7 @@ internal class VaultCheckoutViewController: PrimerViewController {
 }
 
 extension VaultCheckoutViewController: VaultCheckoutViewDataSource {
-    var selectedSavedPaymentMethod: PaymentInstrument? {
+    var selectedSavedPaymentMethod: PaymentMethod? {
         let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         return viewModel.paymentMethods.first(where: { paymentMethod in
             return paymentMethod.token == viewModel.selectedPaymentMethodId
@@ -157,7 +157,7 @@ extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
         router.pop()
     }
 
-    func selectTokenForPayment(token: PaymentInstrument) {
+    func selectTokenForPayment(token: PaymentMethod) {
         tokenSelectedForPayment = token
     }
 

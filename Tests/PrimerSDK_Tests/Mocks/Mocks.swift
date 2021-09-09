@@ -54,18 +54,18 @@ class MockPrimerDelegate: PrimerDelegate {
         completion(token, nil)
     }
     
-    func tokenAddedToVault(_ token: PaymentInstrument) {
+    func tokenAddedToVault(_ token: PaymentMethod) {
         
     }
 
     
 
-    func authorizePayment(_ result: PaymentInstrument, _ completion: @escaping (Error?) -> Void) {
+    func authorizePayment(_ result: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
         if authorizePaymentFails { completion(PrimerError.clientTokenNull) }
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentInstrument, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
         if authorizePaymentFails { completion(PrimerError.clientTokenNull) }
     }
@@ -191,7 +191,7 @@ class MockAppState: AppStateProtocol {
 
     var viewModels: [PaymentMethodViewModel] = []
 
-    var paymentMethods: [PaymentInstrument] = []
+    var paymentMethods: [PaymentMethod] = []
 
     var selectedPaymentMethod: String = ""
 
