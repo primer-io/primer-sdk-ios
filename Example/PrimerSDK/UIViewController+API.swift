@@ -15,7 +15,8 @@ struct AuthorizationRequest: Encodable {
     let amount: Int
     let type: String?
     var capture: Bool
-    let currencyCode: String
+    let currencyCode: String?
+    let customerCountryCode: String?
 }
 
 enum NetworkError: Error {
