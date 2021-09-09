@@ -168,6 +168,9 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .checkoutWithApplePay:
                     self?.presentApplePay()
                     
+                case .addApayaToVault:
+                    self?.presentApaya()
+                    
                 case .none:
                     break
                 }
@@ -215,7 +218,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     @objc
     private func dismissGestureRecognizerAction(sender: UISwipeGestureRecognizer) {
-        Primer.shared.dismissPrimer()
+        Primer.shared.dismiss()
     }
     
     func dismissPrimerRootViewController(animated flag: Bool, completion: (() -> Void)? = nil) {
@@ -365,7 +368,7 @@ extension PrimerRootViewController {
                                 self.show(viewController: svc)
                             }
                         } else {
-                            Primer.shared.dismissPrimer()
+                            Primer.shared.dismiss()
                         }
                     }
                 })
@@ -421,7 +424,7 @@ extension PrimerRootViewController {
                             self.show(viewController: svc)
                         }
                     } else {
-                        Primer.shared.dismissPrimer()
+                        Primer.shared.dismiss()
                     }
                 })
             }
@@ -438,6 +441,61 @@ extension PrimerRootViewController {
             }
             self.handleError(err)
         }
+    }
+    
+    func presentApaya() {
+//        let appleViewModel = ApplePayViewModel()
+//        appleViewModel.didPresentPaymentMethod = { [weak self] in
+//            self?.blurBackground()
+//        }
+//
+//        firstly {
+//            appleViewModel.tokenize()
+//        }
+//        .done { token in
+//            DispatchQueue.main.async {
+//                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+//
+//                if Primer.shared.flow.internalSessionFlow.vaulted {
+//                    Primer.shared.delegate?.tokenAddedToVault?(token)
+//                }
+//
+//                if !settings.hasDisabledSuccessScreen {
+//                    let lvc = PrimerLoadingViewController(withHeight: 300)
+//                    self.show(viewController: lvc)
+//                }
+//
+//                Primer.shared.delegate?.onTokenizeSuccess?(token, { err in
+//                    if !settings.hasDisabledSuccessScreen {
+//                        if let err = err {
+//                            let evc = ErrorViewController(message: PrimerError.payPalSessionFailed.localizedDescription)
+//                            evc.view.translatesAutoresizingMaskIntoConstraints = false
+//                            evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+//                            self.show(viewController: evc)
+//                        } else {
+//                            let svc = SuccessViewController()
+//                            svc.view.translatesAutoresizingMaskIntoConstraints = false
+//                            svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+//                            self.show(viewController: svc)
+//                        }
+//                    } else {
+//                        Primer.shared.dismiss()
+//                    }
+//                })
+//            }
+//        }
+//        .ensure {
+//            DispatchQueue.main.async {
+//                // Dismiss any oauth view controller that has been presented.
+//                self.dismiss(animated: true, completion: nil)
+//            }
+//        }
+//        .catch { err in
+//            DispatchQueue.main.async {
+//                Primer.shared.delegate?.checkoutFailed?(with: err)
+//            }
+//            self.handleError(err)
+//        }
     }
     
     @available(iOS 11.0, *)
@@ -464,20 +522,23 @@ extension PrimerRootViewController {
                 }
                 
                 Primer.shared.delegate?.onTokenizeSuccess?(token, { err in
-                    if !settings.hasDisabledSuccessScreen {
-                        if let err = err {
-                            let evc = ErrorViewController(message: PrimerError.payPalSessionFailed.localizedDescription)
-                            evc.view.translatesAutoresizingMaskIntoConstraints = false
-                            evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                            self.show(viewController: evc)
+                    DispatchQueue.main.async {
+                        if !settings.hasDisabledSuccessScreen {
+                            
+                            if let err = err {
+                                let evc = ErrorViewController(message: PrimerError.payPalSessionFailed.localizedDescription)
+                                evc.view.translatesAutoresizingMaskIntoConstraints = false
+                                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                                self.show(viewController: evc)
+                            } else {
+                                let svc = SuccessViewController()
+                                svc.view.translatesAutoresizingMaskIntoConstraints = false
+                                svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                                self.show(viewController: svc)
+                            }
                         } else {
-                            let svc = SuccessViewController()
-                            svc.view.translatesAutoresizingMaskIntoConstraints = false
-                            svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                            self.show(viewController: svc)
+                            Primer.shared.dismiss()
                         }
-                    } else {
-                        Primer.shared.dismissPrimer()
                     }
                 })
             }
@@ -507,7 +568,7 @@ extension PrimerRootViewController {
                 evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                 self.show(viewController: evc)
             } else {
-                Primer.shared.dismissPrimer()
+                Primer.shared.dismiss()
             }
         }
     }

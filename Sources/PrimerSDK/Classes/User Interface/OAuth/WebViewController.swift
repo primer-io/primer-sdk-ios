@@ -82,6 +82,7 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
         
         let allowedHosts: [String] = [
             "primer.io",
+            "livedemostore.primer.io"
 //            "api.playground.klarna.com",
 //            "api.sandbox.primer.io"
         ]

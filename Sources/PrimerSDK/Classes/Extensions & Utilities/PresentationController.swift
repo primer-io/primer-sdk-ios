@@ -26,7 +26,8 @@ internal class PresentationController: UIPresentationController {
             switch Primer.shared.flow.internalSessionFlow {
             case .vaultKlarna,
                  .vaultPayPal,
-                 .checkoutWithKlarna:
+                 .checkoutWithKlarna,
+                 .vaultApaya:
                 self.blurEffectView.alpha = settings.isInitialLoadingHidden ? 0 : 0.7
             default:
                 self.blurEffectView.alpha = 0.7

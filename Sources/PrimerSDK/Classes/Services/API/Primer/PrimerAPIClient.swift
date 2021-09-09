@@ -22,10 +22,15 @@ protocol PrimerAPIClientProtocol {
     func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
     func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (_ result: Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void)
     func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
+    func apayaCreateSession(
+        clientToken: DecodedClientToken,
+        request: Apaya.CreateSessionAPIRequest,
+        completion: @escaping (_ result: Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
+    )
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
-
+    
     private let networkService: NetworkService
 
     // MARK: - Object lifecycle
@@ -180,7 +185,23 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-
+    
+    func apayaCreateSession(
+        clientToken: DecodedClientToken,
+        request: Apaya.CreateSessionAPIRequest,
+        completion: @escaping (Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
+    ) {
+        let endpoint = PrimerAPI.apayaCreateSession(clientToken: clientToken, request: request)
+        networkService.request(endpoint) { (result: Result<Apaya.CreateSessionAPIResponse, NetworkServiceError>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response))
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(ApayaException.failedApiCall))
+            }
+        }
+    }
 }
 
 internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
@@ -347,6 +368,22 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
         do {
             let value = try JSONDecoder().decode(PaymentMethodToken.self, from: response)
+            completion(.success(value))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    func apayaCreateSession(
+        clientToken: DecodedClientToken,
+        request: Apaya.CreateSessionAPIRequest,
+        completion: @escaping (Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
+    ) {
+        isCalled = true
+        guard let response = response else { return }
+        
+        do {
+            let value = try JSONDecoder().decode(Apaya.CreateSessionAPIResponse.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))

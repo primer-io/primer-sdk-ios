@@ -221,7 +221,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             .done { paymentMethodsConfig in
                 self.paymentMethodsConfig = paymentMethodsConfig
                 
-                if self.paymentMethodsConfig?.getConfigId(for: .paymentCard) == nil {
+                if self.paymentMethodsConfig?.getConfig(for: .paymentCard) == nil {
                     throw PrimerError.configFetchFailed
                 }
                 

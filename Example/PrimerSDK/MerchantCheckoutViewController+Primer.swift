@@ -79,7 +79,6 @@ extension MerchantCheckoutViewController {
             paymentMethod: token.token!,
             amount: amount,
             type: token.paymentInstrumentType.rawValue,
-            capture: capture,
             currencyCode: "GBP"
         )
         

@@ -32,7 +32,8 @@ public enum ImageName: String {
         bank,
         camera,
         error,
-        klarna
+        klarna,
+        mobile
 
     public var image: UIImage? {
         guard let image = UIImage(named: rawValue, in: Bundle.primerResources, compatibleWith: nil) else {

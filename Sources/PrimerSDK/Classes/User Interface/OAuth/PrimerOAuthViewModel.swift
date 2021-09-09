@@ -11,6 +11,7 @@ enum OAuthHost {
     case paypal
     case klarna
     case applePay
+    case apaya
 }
 
 protocol PrimerOAuthViewModel {

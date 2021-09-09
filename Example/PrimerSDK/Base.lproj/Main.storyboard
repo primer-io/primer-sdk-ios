@@ -107,11 +107,25 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="bCg-Mf-iQH"/>
                                         </constraints>
+                                        <state key="normal" title="Add Apaya">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="addApayaButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="J81-DH-GU7"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gK5-e0-3v4">
+                                        <rect key="frame" x="0.0" y="52" width="303" height="40"/>
+                                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="add_card_button"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="nXQ-l4-dta"/>
+                                        </constraints>
                                         <state key="normal" title="Add Card">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="addCardButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="1Rq-07-l4q"/>
+                                            <action selector="addCardButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="Q4k-Qa-3q3"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xhR-QE-h6v">

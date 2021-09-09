@@ -19,7 +19,14 @@ class MerchantCheckoutViewController: UIViewController {
         }
     }
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
-    let amount = 100
+    var amount = 200
+    let environment: Environment = .staging
+    
+    let vaultApayaSettings = PrimerSettings(
+        currency: .GBP,
+        hasDisabledSuccessScreen: true,
+        isInitialLoadingHidden: true
+    )
     
     let vaultPayPalSettings = PrimerSettings(
         amount: 100,
@@ -126,6 +133,11 @@ class MerchantCheckoutViewController: UIViewController {
 
     // MARK: - ACTIONS
     
+    @IBAction func addApayaButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: vaultApayaSettings)
+        Primer.shared.showCheckout(self, flow: .addApayaToVault)
+    }
+    
     @IBAction func addCardButtonTapped(_ sender: Any) {
 //        Primer.shared.showCheckout(self, flow: .addCardToVault)
         Primer.shared.configure(settings: generalSettings)
@@ -152,6 +164,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func openVaultButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: generalSettings)
         Primer.shared.showCheckout(self, flow: .defaultWithVault)
     }
     
@@ -173,7 +186,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: nil, environment: .staging)
+        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: "SE", environment: environment)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -187,6 +200,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 do {
                     let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
 
+                    print("🔥 token: \(token)")
+                    
                     completion(token, nil)
 
                 } catch {
@@ -217,7 +232,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: "GBP")
+        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, currencyCode: "GBP")
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

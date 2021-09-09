@@ -35,7 +35,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
     }
     var applePayConfigId: String? {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.paymentMethodConfig?.getConfigId(for: .applePay)
+        return state.paymentMethodConfig?.getConfig(for: .applePay)?.id
     }
     var clientToken: DecodedClientToken? {
         let state: AppStateProtocol = DependencyContainer.resolve()

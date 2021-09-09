@@ -110,12 +110,17 @@ struct PaymentMethodViewModel {
 
         case .payPal:
             return ""
+            
         case .klarna:
             return NSLocalizedString("payment-method-type-klarna",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "Klarna.",
                                      comment: "Klarna - Payment Method Type (Klarna)")
+
+        case .apaya:
+            return "Pay by mobile"
+
         default:
             return ""
         }
@@ -129,6 +134,7 @@ struct PaymentMethodViewModel {
         case .goCardlessMandate: return .rightArrow
         case .klarna: return .klarna
         case .paymentCard: return .creditCard
+        case .apaya: return .mobile
         default: return nil
         }
     }

@@ -62,7 +62,7 @@ internal class SuccessViewController: PrimerViewController {
     }
 
     @objc func close() {
-        Primer.shared.dismissPrimer()
+        Primer.shared.dismiss()
     }
 
 }

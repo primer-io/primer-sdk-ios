@@ -55,7 +55,7 @@ internal class ErrorViewController: PrimerViewController {
     }
 
     @objc func close() {
-        Primer.shared.dismissPrimer()
+        Primer.shared.dismiss()
     }
 
 }

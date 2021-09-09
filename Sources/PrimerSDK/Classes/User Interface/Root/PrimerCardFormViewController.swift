@@ -178,7 +178,7 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
                 Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
                 
                 if settings.hasDisabledSuccessScreen {
-                    Primer.shared.dismissPrimer()
+                    Primer.shared.dismiss()
                 } else {
                     let svc = SuccessViewController()
                     svc.view.translatesAutoresizingMaskIntoConstraints = false
@@ -190,7 +190,7 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { [weak self] err in
                     DispatchQueue.main.async { [weak self] in
                         if settings.hasDisabledSuccessScreen {
-                            Primer.shared.dismissPrimer()
+                            Primer.shared.dismiss()
                         } else {
                             if let err = err {
                                 let evc = ErrorViewController(message: PrimerError.amountMissing.localizedDescription)
@@ -242,6 +242,9 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
+        if isValid == false {
+            
+        }
         if primerTextFieldView is PrimerCardNumberFieldView, isValid == false {
             cardNumberContainerView.errorText = "Invalid card number"
             print("PrimerCardNumberFieldView.isValid: \(isValid)")

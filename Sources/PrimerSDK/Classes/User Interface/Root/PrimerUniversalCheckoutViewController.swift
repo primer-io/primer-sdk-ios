@@ -10,6 +10,7 @@ import UIKit
 internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     var savedCardView: CardButton!
+    private var titleLabel: UILabel!
     private var seeAllButton: UIButton!
     private var savedPaymentInstrumentStackView: UIStackView!
     private var payButton: PrimerButton!
@@ -41,7 +42,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
         if let amountStr = checkoutViewModel.amountStringed {
-            let titleLabel = UILabel()
+            titleLabel = UILabel()
             titleLabel.translatesAutoresizingMaskIntoConstraints = false
             titleLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
             titleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
@@ -235,7 +236,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         coveringView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         coveringView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         coveringView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        coveringView.topAnchor.constraint(equalTo: seeAllButton.topAnchor).isActive = true
+        coveringView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
         
         if payButton == nil {
             payButton = PrimerButton()
@@ -319,7 +320,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 
                 if settings.hasDisabledSuccessScreen {
-                    Primer.shared.dismissPrimer()
+                    Primer.shared.dismiss()
                 } else {
                     if let err = err {
                         let evc = ErrorViewController(message: PrimerError.amountMissing.localizedDescription)
