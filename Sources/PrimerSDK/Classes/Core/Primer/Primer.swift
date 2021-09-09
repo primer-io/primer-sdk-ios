@@ -156,6 +156,7 @@ public class Primer {
      - Version:
      1.4.0
      */
+    @available(*, deprecated, message: "Use showUniversalCheckout or showVaultManager instead.")
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
         self.presentingViewController = controller
         Primer.shared.flow = flow
@@ -172,6 +173,76 @@ public class Primer {
                 let router: RouterDelegate = DependencyContainer.resolve()
                 router.setRoot(root)
                 controller.present(root, animated: true)
+            }
+        }
+    }
+    
+    public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil) {
+        Primer.shared.flow = .default
+        presentingViewController = viewController
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.root = RootViewController()
+            guard let root = self.root else { return }
+            let router: RouterDelegate = DependencyContainer.resolve()
+            router.setRoot(root)
+            viewController.present(root, animated: true)
+        }
+    }
+    
+    public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
+        Primer.shared.flow = .defaultWithVault
+        presentingViewController = viewController
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.root = RootViewController()
+            guard let root = self.root else { return }
+            let router: RouterDelegate = DependencyContainer.resolve()
+            router.setRoot(root)
+            viewController.present(root, animated: true)
+        }
+    }
+    
+    public func showPaymentMethod(_ paymentMethod: ConfigPaymentMethodType, on viewController: UIViewController, with clientToken: String? = nil) {
+        switch paymentMethod {
+        case .apaya:
+            flow = .addApayaToVault
+        case .applePay:
+            flow = .checkoutWithApplePay
+        case .payPal:
+            flow = .addPayPalToVault
+        case .paymentCard:
+            flow = .addCardToVault
+        case .googlePay:
+            return
+        case .goCardlessMandate:
+            flow = .addDirectDebitToVault
+        case .klarna:
+            flow = .addKlarnaToVault
+        case .payNlIdeal:
+            return
+        case .unknown:
+            return
+        }
+        
+        presentingViewController = viewController
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            if case .checkoutWithApplePay = self.flow {
+                let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
+                appleViewModel.payWithApple { (err) in
+                    
+                }
+            } else {
+                self.root = RootViewController()
+                guard let root = self.root else { return }
+                let router: RouterDelegate = DependencyContainer.resolve()
+                router.setRoot(root)
+                viewController.present(root, animated: true)
             }
         }
     }
