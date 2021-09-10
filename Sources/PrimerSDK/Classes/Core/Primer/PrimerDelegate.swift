@@ -37,7 +37,9 @@ public protocol PrimerDelegate {
     /// - Parameters:
     ///   - paymentMethodToken: The PaymentInstrument object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
-    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod, _ completion:  @escaping (Error?) -> Void)
+//    @available(*, deprecated, renamed: "onTokenizeSuccess")
+//    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod, _ completion:  @escaping (Error?) -> Void)
+    @objc optional func onTokenizeSuccess(_ paymentMethod: PaymentMethod, _ completion:  @escaping (Error?) -> Void)
     
     @objc optional func onCheckoutDismissed()
     

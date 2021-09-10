@@ -4,7 +4,7 @@ import Foundation
 
 internal protocol TokenizationServiceProtocol {
     func tokenize(
-        request: PaymentInstrumentizationRequest,
+        request: PaymentMethodRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethod, PrimerError>) -> Void
     )
 }
@@ -16,7 +16,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
     }
 
     func tokenize(
-        request: PaymentInstrumentizationRequest,
+        request: PaymentMethodRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethod, PrimerError>) -> Void
     ) {
         let state: AppStateProtocol = DependencyContainer.resolve()

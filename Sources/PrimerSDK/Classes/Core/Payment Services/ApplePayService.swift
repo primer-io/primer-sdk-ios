@@ -65,7 +65,7 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
     
     func tokenize(paymentMethodDetails: PaymentMethodDetailsProtocol, completion: @escaping (Result<PaymentMethod, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let request = PaymentInstrumentizationRequest(paymentInstrument: paymentMethodDetails, state: state)
+        let request = PaymentMethodRequest(paymentMethodDetails: paymentMethodDetails, state: state)
 
         let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
         tokenizationService.tokenize(request: request) { (result) in

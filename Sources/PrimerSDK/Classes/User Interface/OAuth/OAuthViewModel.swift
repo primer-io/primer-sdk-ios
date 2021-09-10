@@ -116,7 +116,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
         }
     }
 
-    func handleTokenization(request: PaymentInstrumentizationRequest, with completion: @escaping (Error?) -> Void) {
+    func handleTokenization(request: PaymentMethodRequest, with completion: @escaping (Error?) -> Void) {
         let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
         tokenizationService.tokenize(request: request) { [weak self] result in
             switch result {
@@ -165,7 +165,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
 
                         let state: AppStateProtocol = DependencyContainer.resolve()
 
-                        let request = PaymentInstrumentizationRequest(paymentInstrument: paymentMethodDetails, state: state)
+                        let request = PaymentMethodRequest(paymentMethodDetails: paymentMethodDetails, state: state)
 
                         log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
@@ -184,7 +184,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
 
                         log(logLevel: .verbose, title: nil, message: "paymentMethodDetails: \(paymentMethodDetails)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
-                        let request = PaymentInstrumentizationRequest(paymentInstrument: paymentMethodDetails, state: state)
+                        let request = PaymentMethodRequest(paymentMethodDetails: paymentMethodDetails, state: state)
 
                         log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
@@ -197,7 +197,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
             guard let instrument = generatePaypalPaymentInstrument(host, with: completion) else { return }
             let state: AppStateProtocol = DependencyContainer.resolve()
 
-            let request = PaymentInstrumentizationRequest(paymentInstrument: instrument, state: state)
+            let request = PaymentMethodRequest(paymentMethodDetails: instrument, state: state)
 
             log(logLevel: .verbose, title: nil, message: "Request: \(request)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 

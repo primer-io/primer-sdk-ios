@@ -20,14 +20,14 @@ extension MerchantCheckoutViewController {
                 case .failure(let err):
                     print("Error: \(err)")
                 case .success(let tokens):
-                    self?.paymentInstrumentsDataSource = tokens
+                    self?.paymentMethodsDataSource = tokens
                 }
             }
         }
     }
     
     internal func presentPrimerOptions(_ index: Int) {
-        let result = paymentInstrumentsDataSource[index]
+        let result = paymentMethodsDataSource[index]
         let alert = UIAlertController(title: "Pay", message: "Capture the payment, or authorize to capture later.", preferredStyle: .alert)
         let child = SpinnerViewController()
         
@@ -80,7 +80,8 @@ extension MerchantCheckoutViewController {
             amount: amount,
             type: token.paymentInstrumentType.rawValue,
             capture: capture,
-            currencyCode: "GBP"
+            currencyCode: "GBP",
+            customerCountryCode: "GB"
         )
         
         do {

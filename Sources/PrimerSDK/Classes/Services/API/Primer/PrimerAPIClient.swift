@@ -21,7 +21,7 @@ protocol PrimerAPIClientProtocol {
     func klarnaCreatePaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (_ result: Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void)
     func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
     func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (_ result: Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void)
-    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentInstrumentizationRequest, completion: @escaping (_ result: Result<PaymentMethod, Error>) -> Void)
+    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodRequest, completion: @escaping (_ result: Result<PaymentMethod, Error>) -> Void)
     func apayaCreateSession(
         clientToken: DecodedClientToken,
         request: Apaya.CreateSessionAPIRequest,
@@ -173,7 +173,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentInstrumentizationRequest, completion: @escaping (_ result: Result<PaymentMethod, Error>) -> Void) {
+    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodRequest, completion: @escaping (_ result: Result<PaymentMethod, Error>) -> Void) {
         let endpoint = PrimerAPI.tokenizePaymentMethod(clientToken: clientToken, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest)
         networkService.request(endpoint) { (result: Result<PaymentMethod, NetworkServiceError>) in
             switch result {
@@ -362,7 +362,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentInstrumentizationRequest, completion: @escaping (Result<PaymentMethod, Error>) -> Void) {
+    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodRequest, completion: @escaping (Result<PaymentMethod, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 

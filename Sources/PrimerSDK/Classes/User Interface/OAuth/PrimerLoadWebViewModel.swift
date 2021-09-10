@@ -119,7 +119,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
         }
     }
 
-    private func generateTokenizationRequest(with result: Apaya.WebViewResult) throws -> PaymentInstrumentizationRequest {
+    private func generateTokenizationRequest(with result: Apaya.WebViewResult) throws -> PaymentMethodRequest {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
@@ -134,8 +134,8 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
                                                      productId: result.productId,
                                                      currencyCode: currencyStr)
         
-        return PaymentInstrumentizationRequest(
-            paymentInstrument: instrument,
+        return PaymentMethodRequest(
+            paymentMethodDetails: instrument,
             state: state
         )
     }

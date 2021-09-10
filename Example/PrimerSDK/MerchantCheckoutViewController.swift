@@ -12,7 +12,7 @@ import UIKit
 class MerchantCheckoutViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    var paymentInstrumentsDataSource: [PaymentMethod] = [] {
+    var paymentMethodsDataSource: [PaymentMethod] = [] {
         didSet {
             self.tableView.reloadData()
         }
@@ -194,21 +194,21 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nToken added to vault\nToken: \(token)\n")
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
-        guard let token = paymentMethodToken.token else { return completion(NetworkError.missingParams) }
+    func onTokenizeSuccess(_ paymentMethod: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
+        guard let token = paymentMethod.token else { return completion(NetworkError.missingParams) }
 
         guard let url = URL(string: "\(endpoint)/transaction") else {
             return completion(NetworkError.missingParams)
         }
 
-        let type = paymentMethodToken.paymentInstrumentType
+        let type = paymentMethod.paymentInstrumentType
 
         var request = URLRequest(url: url)
 
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: false, currencyCode: "GBP")
+        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: false, currencyCode: "GBP", customerCountryCode: "GB")
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -242,13 +242,13 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return paymentInstrumentsDataSource.count
+        return paymentMethodsDataSource.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let paymentInstrument = paymentInstrumentsDataSource[indexPath.row]
+        let paymentMethod = paymentMethodsDataSource[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "PaymentMethodCell", for: indexPath) as! PaymentMethodCell
-        cell.configure(title: paymentInstrument.title, image: paymentInstrument.icon.image)
+        cell.configure(title: paymentMethod.title, image: paymentMethod.icon.image)
         return cell
     }
     
