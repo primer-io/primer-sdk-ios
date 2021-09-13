@@ -307,6 +307,7 @@ enum PrimerError: PrimerErrorProtocol {
     case userCancelled
     case amountShouldBeNullForPendingOrderItems
     case amountCannotBeNullForNonPendingOrderItems
+    case intentNotSupported(intent: PrimerSessionIntent, paymentMethodType: ConfigPaymentMethodType)
 
     static var errorDomain: String = "primer"
 
@@ -350,6 +351,8 @@ enum PrimerError: PrimerErrorProtocol {
             return 2400
         case .failedToLoadSession:
             return 2500
+        case .intentNotSupported:
+            return 3300
         }
     }
 
@@ -485,6 +488,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Amount cannot be null for order items with isPending == false",
                                      comment: "Amount cannot be null for order items with isPending == false - Primer error message")
+            
+        case .intentNotSupported(let intent, let paymentMethodType):
+            return NSLocalizedString("primer-error-message-intent-not-supported",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Intent is not supported",
+                                     comment: "Intent is not supported - Primer error message") + "\(paymentMethodType.rawValue).\(intent.rawValue)"
         }
     }
 
