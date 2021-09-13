@@ -205,26 +205,35 @@ public class Primer {
         }
     }
     
-    public func showPaymentMethod(_ paymentMethod: ConfigPaymentMethodType, on viewController: UIViewController, with clientToken: String? = nil) {
-        switch paymentMethod {
-        case .apaya:
+    public func showPaymentMethod(_ paymentMethod: ConfigPaymentMethodType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
+        switch (paymentMethod, intent) {
+        case (.apaya, .vault):
             flow = .addApayaToVault
-        case .applePay:
+            
+        case (.applePay, .checkout):
             flow = .checkoutWithApplePay
-        case .payPal:
+            
+        case (.payPal, .vault):
             flow = .addPayPalToVault
-        case .paymentCard:
+            
+        case (.paymentCard, .checkout):
+            flow = .completeDirectCheckout
+            
+        case (.paymentCard, .vault):
             flow = .addCardToVault
-        case .googlePay:
-            return
-        case .goCardlessMandate:
+            
+        case (.goCardlessMandate, .vault):
             flow = .addDirectDebitToVault
-        case .klarna:
+            
+        case (.klarna, .vault):
             flow = .addKlarnaToVault
-        case .payNlIdeal:
-            return
-        case .unknown:
-            return
+            
+        case (.klarna, .checkout):
+            flow = .checkoutWithKlarna
+            
+        default:
+            let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
         }
         
         presentingViewController = viewController
