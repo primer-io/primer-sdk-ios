@@ -24,7 +24,6 @@
 		1A78C06D089E028CB16B6B2237B25277 /* VaultPaymentMethodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0CAE75DCAA1C35678B3ADD34BA5552 /* VaultPaymentMethodView.swift */; };
 		1E53D8FC34BAE78D6B4EB783566C0001 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527B4F26A0B4A21434940B6A4311D2C2 /* Parser.swift */; };
 		1F7A4C5E86C74198F18C42660A990C3C /* PrimerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA92CBEFA8A6E5D371565CF0BA722031 /* PrimerDelegate.swift */; };
-		219020E578E4B98CC743FDB7D449A722 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA560CA5408792AA98457785E43775E /* PaymentMethod.swift */; };
 		225CD68BA5060D0597A6C5FA887F7BEA /* CountryCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B115D03FA30C2645750EF87111D959E0 /* CountryCode.swift */; };
 		2543F329BD5E284E146E6F80BD33EF69 /* PaymentNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ECE392C95298EB9BE4648C29E4FF1BA /* PaymentNetwork.swift */; };
 		26C9D8710AE58FFFD59B1D4D4C4BD3FE /* CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89B3A259833F9C2EA3D52A07BF628DF5 /* CustomStringConvertible.swift */; };
@@ -223,7 +222,6 @@
 		2A809166E9215D25A4BBDFE0D7364975 /* PrimerViewExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerViewExtensions.swift; sourceTree = "<group>"; };
 		2DCF3A1D2A947BAE6F19C956523C8A27 /* PrimerSDK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PrimerSDK.release.xcconfig; sourceTree = "<group>"; };
 		2E48D1728B6B3F71FBA0667CB572EFEB /* Cancellable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Cancellable.swift; sourceTree = "<group>"; };
-		2FA560CA5408792AA98457785E43775E /* PaymentMethod.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethod.swift; sourceTree = "<group>"; };
 		3148ABDA294842236DC868947378EA27 /* Mask.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Mask.swift; sourceTree = "<group>"; };
 		323ACF10996A5D825270FEBE553E38DB /* WebViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		32A00812FFE0D3D8422855286C063284 /* TransitioningDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransitioningDelegate.swift; sourceTree = "<group>"; };
@@ -544,7 +542,6 @@
 				04B9EA92EADC0F24402A8915991AB06E /* ImageName.swift */,
 				17B1F6C4ABA8063D35E00F5238E46C48 /* Klarna.swift */,
 				839C954000E4CB5966D1C6288E15BED9 /* OrderItem.swift */,
-				2FA560CA5408792AA98457785E43775E /* PaymentMethod.swift */,
 				A669942C317630FB0A44CA77F72DD957 /* PaymentMethodConfig.swift */,
 				384F718DBB271F2C3E4F1D2B5025E839 /* PaymentMethodToken.swift */,
 				34E0C43AE01B5AE0E1E9E30E4788C78F /* PaymentMethodTokenizationRequest.swift */,
@@ -1234,7 +1231,6 @@
 				87C47178043A54C2D012A948B76B96E4 /* Optional+Extensions.swift in Sources */,
 				9AE9538633F5F9D3B0DBCDB02ECE957E /* OrderItem.swift in Sources */,
 				1E53D8FC34BAE78D6B4EB783566C0001 /* Parser.swift in Sources */,
-				219020E578E4B98CC743FDB7D449A722 /* PaymentMethod.swift in Sources */,
 				F7332F4AA92B0A47D0AFF7D960AC69C4 /* PaymentMethodComponent.swift in Sources */,
 				87D586BCD6C5A6447F431F36D177456C /* PaymentMethodConfig.swift in Sources */,
 				7ECA4029624BD6D8015DAF0A7ABB58B9 /* PaymentMethodConfigService.swift in Sources */,
