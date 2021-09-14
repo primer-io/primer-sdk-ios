@@ -263,7 +263,22 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 break
             }
             
-            self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
+            if #available(iOS 13.0, *) {
+                let windowScene = UIApplication.shared
+                    .connectedScenes
+                    .filter { $0.activationState == .foregroundActive }
+                    .first
+                
+                if let windowScene = windowScene as? UIWindowScene {
+                    self.threeDSSDKWindow = UIWindow(windowScene: windowScene)
+                    self.threeDSSDKWindow?.frame = UIScreen.main.bounds
+                }
+            }
+            
+            if self.threeDSSDKWindow == nil {
+                self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
+            }
+            
             self.threeDSSDKWindow?.rootViewController = ClearViewController()
             self.threeDSSDKWindow?.backgroundColor = UIColor.clear
             self.threeDSSDKWindow?.windowLevel = UIWindow.Level.normal
