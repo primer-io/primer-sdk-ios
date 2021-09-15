@@ -68,7 +68,7 @@ class MerchantCheckoutViewController: UIViewController {
             directDebitHasNoAmount: false,
             orderItems: [],
             isInitialLoadingHidden: false,
-            is3DSEnabled: true,
+            is3DSOnVaultingEnabled: true,
             billingAddress: Address(addressLine1: "Line 1", addressLine2: "Line 2", city: "City", state: "State", countryCode: "GR", postalCode: "15236"),
             orderId: "order id",
             userDetails: UserDetails(

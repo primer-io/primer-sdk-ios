@@ -88,7 +88,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     
     var billingAddress: Address?
     
-    var is3DSOnTokenizationEnabled: Bool
+    var is3DSOnVaultingEnabled: Bool
     
     var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
     
@@ -153,7 +153,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         self.authorizePayment = authorizePayment
         self.onCheckoutDismiss = onCheckoutDismiss
         self.onTokenizeSuccess = onTokenizeSuccess
-        self.is3DSOnTokenizationEnabled = true
+        self.is3DSOnVaultingEnabled = true
         self.debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
     }
 }
