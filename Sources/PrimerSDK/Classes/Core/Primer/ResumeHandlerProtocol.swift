@@ -9,6 +9,7 @@ import Foundation
 
 @objc
 public protocol ResumeHandlerProtocol {
-    func resume(withError error: Error)
-    func resume(withClientToken clientToken: String?)
+    func handle(error: Error)
+    func handle(newClientToken clientToken: String)
+    func handleSuccess()
 }
