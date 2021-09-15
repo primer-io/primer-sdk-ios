@@ -249,7 +249,8 @@ extension RootViewController {
             let presenter = self.presentationController as? PresentationController
             presenter?.blurEffectView.alpha = 0.0
         } completion: { [weak self] (_) in
-            self?.dismiss(animated: true, completion: nil)
+//            self?.dismiss(animated: true, completion: nil)
+            Primer.shared.dismiss()
         }
     }
 }
