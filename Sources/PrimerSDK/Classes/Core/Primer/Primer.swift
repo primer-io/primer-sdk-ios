@@ -237,24 +237,8 @@ public class Primer {
     }
     
     public func receivedPaymentResponse(_ paymentResponse: PaymentResponseProtocol, for paymentMethodToken: PaymentMethodToken) {
-        if paymentResponse.requiredAction?.name == .threeDSAuthentication, let clientToken = paymentResponse.requiredAction?.clientToken {
-            try? Primer.shared.refreshClientToken(clientToken)
-            
-            let threeDSService = ThreeDSService()
-            threeDSService.perform3DS(paymentMethodToken: paymentMethodToken, protocolVersion: .v2, sdkDismissed: nil) { result in
-                switch result {
-                case .success(let paymentMethodToken):
-                    Primer.shared.delegate?.onResumeSuccess?(paymentMethodToken, { err in
-                        
-                    })
-                    
-                case .failure(let err):
-                    Primer.shared.delegate?.checkoutFailed?(with: err)
-                }
-                
-                Primer.shared.dismiss()
-            }
-        }
+        let dynamic3DSViewModel = Dynamic3DSViewModel()
+        dynamic3DSViewModel.receivedPaymentResponse(paymentResponse, for: paymentMethodToken)
     }
 }
 
