@@ -13,13 +13,7 @@ internal class FormViewController: PrimerViewController {
     let subview: FormView = FormView()
 
     weak var reloadDelegate: ReloadDelegate?
-
     var formType: FormType
-    
-    
-    // This is really bad 😢 Since we have no navigation controller logic, and we need a way to
-    // know when we pop the view controller within the 'keyboardWillHide(:)' function, that'll do
-    // for now ¯\_(ツ)_/¯
     var isPopping: Bool = false
 
 
@@ -27,6 +21,10 @@ internal class FormViewController: PrimerViewController {
         let state: AppStateProtocol = DependencyContainer.resolve()
         formType = state.routerState.formType!
         super.init(nibName: nil, bundle: nil)
+    }
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -39,16 +37,13 @@ internal class FormViewController: PrimerViewController {
         view.layoutIfNeeded()
         
         let viewModel: FormViewModelProtocol = DependencyContainer.resolve()
-        viewModel.loadConfig({ [weak self] _ in
+        viewModel.loadConfig({ _ in
             DispatchQueue.main.async {
 
             }
         })
     }
 
-    deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
-    }
 }
 
 extension FormViewController: UITextFieldDelegate {

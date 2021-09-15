@@ -1,14 +1,14 @@
 #if canImport(UIKit)
 import UIKit
 
-internal protocol VaultCheckoutViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
+internal protocol VaultCheckoutViewDelegate: UITableViewDelegate, UITableViewDataSource {
     func cancel()
     func openVault()
     func pay()
     func selectTokenForPayment(token: PaymentMethodToken)
 }
 
-internal protocol VaultCheckoutViewDataSource: class {
+internal protocol VaultCheckoutViewDataSource: AnyObject {
     var selectedSavedPaymentMethod: PaymentMethodToken? { get }
     var amount: String? { get }
 }

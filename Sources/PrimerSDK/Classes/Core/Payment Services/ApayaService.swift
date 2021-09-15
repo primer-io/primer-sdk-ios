@@ -23,7 +23,7 @@ internal class ApayaService: ApayaServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         guard let clientToken = state.decodedClientToken,
               let merchantId = state.paymentMethodConfig?.getConfigId(for: .apaya),
-              var merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
+              let merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
         else {
             return completion(.failure(ApayaException.noToken))
         }

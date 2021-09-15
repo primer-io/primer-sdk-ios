@@ -2,7 +2,7 @@
 
 import UIKit
 
-internal protocol ScannerViewDelegate: class {
+internal protocol ScannerViewDelegate: AnyObject {
     func cancel()
 }
 

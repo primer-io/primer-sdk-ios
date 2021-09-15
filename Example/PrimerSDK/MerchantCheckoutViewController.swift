@@ -19,7 +19,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     let amount = 200
-    let environment = "dev"
+    let environment = "staging"
     
     let vaultApayaSettings = PrimerSettings(
         currency: .GBP,
@@ -41,7 +41,7 @@ class MerchantCheckoutViewController: UIViewController {
     )
     
     let applePaySettings = PrimerSettings(
-        merchantIdentifier: "merchant.primer.dev.evangelos",
+        merchantIdentifier: "merchant.checkout.team",
         currency: .EUR,
         countryCode: .fr,
         businessDetails: BusinessDetails(
@@ -137,6 +137,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
+        Primer.shared.configure(settings: applePaySettings)
         Primer.shared.showCheckout(self, flow: .checkoutWithApplePay)
     }
     

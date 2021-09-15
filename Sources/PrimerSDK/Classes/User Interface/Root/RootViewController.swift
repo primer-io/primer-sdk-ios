@@ -155,8 +155,6 @@ internal class RootViewController: PrimerViewController {
             router.show(.vaultCheckout)
         case .checkoutWithApplePay:
             break
-        default:
-            break
         }
     }
     

@@ -1,6 +1,6 @@
 #if canImport(UIKit)
 
-internal protocol VaultPaymentMethodViewModelProtocol: class {
+internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     var paymentMethods: [PaymentMethodToken] { get }
     var selectedId: String { get set }
     func reloadVault(with completion: @escaping (Error?) -> Void)
