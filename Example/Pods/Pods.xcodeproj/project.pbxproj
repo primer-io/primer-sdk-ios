@@ -21,6 +21,7 @@
 		11F1F93AF5A7B8C9E8763C8AD6587089 /* PrimerInternalSessionFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A136CA1C7B39537C043350D344B2AC /* PrimerInternalSessionFlow.swift */; };
 		149916CB2BDFEBA5F6D4606C8A9FEE93 /* PayPal.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1827D1DDD40AA20DB03AE6B2F34912 /* PayPal.swift */; };
 		15C3BCA226F20C92007F5210 /* Dynamic3DSViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C3BCA126F20C92007F5210 /* Dynamic3DSViewModel.swift */; };
+		15C3BCA426F22717007F5210 /* ResumeHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C3BCA326F22717007F5210 /* ResumeHandlerProtocol.swift */; };
 		16E2255A234E3B6D85857324364BE8A2 /* VaultPaymentMethodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB289941612332CBB5BB035E0066E70 /* VaultPaymentMethodView.swift */; };
 		1835C607B3D1271ED89EA323E7C30D6E /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FD5D3A78B25012BDC9CBC616239F71 /* Validation.swift */; };
 		1898AB66D36168277643260523119687 /* PrimerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD081470382203AF28D77D6E5DCF7FC /* PrimerAPI.swift */; };
@@ -236,6 +237,7 @@
 		137EEAE1C144C2F38DA6545AB4C11DD5 /* PrimerCVVFieldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerCVVFieldView.swift; sourceTree = "<group>"; };
 		14EAF41F5E8A59B44441CAB6276C6ADD /* Endpoint.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		15C3BCA126F20C92007F5210 /* Dynamic3DSViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dynamic3DSViewModel.swift; sourceTree = "<group>"; };
+		15C3BCA326F22717007F5210 /* ResumeHandlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeHandlerProtocol.swift; sourceTree = "<group>"; };
 		167F5A550F0637FB6461FD3B0CFB2A81 /* AlertController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		18353CBB1A09222660ECE18E730EC888 /* PrimerTheme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerTheme.swift; sourceTree = "<group>"; };
 		1944AB46F436F20942610066F6537BA8 /* ApplePayViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePayViewModel.swift; sourceTree = "<group>"; };
@@ -990,6 +992,7 @@
 				2074D7FDDF5FF7AB50B15C05EA994920 /* DependencyInjection.swift */,
 				93438C0AF6B60FDDB225C9525467CE0D /* Primer.swift */,
 				281E4411E1E99A551B1F3B84C828F483 /* PrimerDelegate.swift */,
+				15C3BCA326F22717007F5210 /* ResumeHandlerProtocol.swift */,
 			);
 			path = Primer;
 			sourceTree = "<group>";
@@ -1449,6 +1452,7 @@
 				5766125A75092D0724395AA88847F0C8 /* LoadingViewController.swift in Sources */,
 				7AAC078A8275444FA99CDB9846246113 /* LogEvent.swift in Sources */,
 				BD855B816426BCEA9AD9AE85DC85F885 /* Logger.swift in Sources */,
+				15C3BCA426F22717007F5210 /* ResumeHandlerProtocol.swift in Sources */,
 				58CC9281693FA6DACDFC4D4859477D95 /* Mask.swift in Sources */,
 				A969EA943C68C619ABD9C36C268192E8 /* NetworkService.swift in Sources */,
 				74E11EB4221874B8F7AE4E7644DF95F1 /* OAuthViewController.swift in Sources */,
