@@ -8,7 +8,7 @@
 import Foundation
 
 @objc
-public enum PaymentStatus: Int, Codable {
+internal enum PaymentStatus: Int, Codable {
     case pending = 0
     case failed
     case authorized
@@ -43,7 +43,7 @@ public enum PaymentStatus: Int, Codable {
 }
 
 @objc
-public enum RequiredActionName: Int, Codable {
+internal enum RequiredActionName: Int, Codable {
     case threeDSAuthentication = 0
     case usePrimerSDK
     case unknown = 1000
@@ -61,7 +61,7 @@ public enum RequiredActionName: Int, Codable {
 }
 
 @objc
-public protocol PaymentResponseProtocol {
+internal protocol PaymentResponseProtocol {
     var id: String { get }
     var date: String { get }
     var status: PaymentStatus { get }
@@ -69,7 +69,7 @@ public protocol PaymentResponseProtocol {
 }
 
 @objc
-public protocol RequiredActionProtocol {
+internal protocol RequiredActionProtocol {
     var name: RequiredActionName { get }
     var description: String { get }
     var clientToken: String? { get }
