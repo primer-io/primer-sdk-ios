@@ -307,7 +307,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 }
                 
                 if paymentResponse != nil {
-                    Primer.shared.receivedPaymentResponse(paymentResponse!, for: paymentMethodToken)
+//                    Primer.shared.receivedPaymentResponse(paymentResponse!, for: paymentMethodToken)
                 } else {
                     completion(nil)
                 }

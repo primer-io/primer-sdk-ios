@@ -19,43 +19,43 @@ internal class Dynamic3DSViewModel {
         resumeHandlerDelegate = self
     }
     
-    internal func receivedPaymentResponse(_ paymentResponse: PaymentResponseProtocol, for paymentMethodToken: PaymentMethodToken) {
-        guard let clientToken = paymentResponse.requiredAction?.clientToken else {
-            let err = PaymentException.missingClientToken
-            Primer.shared.delegate?.onResumeError?(err, resumeHandler: self)
-            return
-        }
-        
-        if case .threeDSAuthentication = paymentResponse.requiredAction?.name {
-            switch paymentResponse.status {
-            case .pending:
-                let state: AppStateProtocol = DependencyContainer.resolve()
-                
-                try? Primer.shared.refreshClientToken(clientToken)
-                
-                let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodToken: paymentMethodToken, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
-                    switch result {
-                    case .success(let paymentMethodToken):
-                        Primer.shared.delegate?.onResumeSuccess?(paymentMethodToken.token!, resumeHandler: self)
-                        
-                    case .failure(let err):
-                        log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
-                        Primer.shared.delegate?.onResumeError?(PrimerError.threeDSFailed, resumeHandler: self)
-                    }
-                }
-                
-            case .failed:
-                Primer.shared.delegate?.onResumeError?(PrimerError.threeDSFailed, resumeHandler: self)
-                
-            default:
-                Primer.shared.delegate?.onResumeSuccess?(paymentMethodToken.token!, resumeHandler: self)
-            }
-            
-        } else {
-            Primer.shared.delegate?.onResumeSuccess?(paymentMethodToken.token!, resumeHandler: self)
-        }
-    }
+//    internal func receivedPaymentResponse(_ paymentResponse: PaymentResponseProtocol, for paymentMethodToken: PaymentMethodToken) {
+//        guard let clientToken = paymentResponse.requiredAction?.clientToken else {
+//            let err = PaymentException.missingClientToken
+//            Primer.shared.delegate?.onResumeError?(err, resumeHandler: self)
+//            return
+//        }
+//        
+//        if case .threeDSAuthentication = paymentResponse.requiredAction?.name {
+//            switch paymentResponse.status {
+//            case .pending:
+//                let state: AppStateProtocol = DependencyContainer.resolve()
+//                
+//                try? ClientTokenService.storeClientToken(clientToken)
+//                
+//                let threeDSService = ThreeDSService()
+//                threeDSService.perform3DS(paymentMethodToken: paymentMethodToken, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+//                    switch result {
+//                    case .success(let paymentMethodToken):
+//                        Primer.shared.delegate?.onResumeSuccess?(paymentMethodToken.token!, resumeHandler: self)
+//                        
+//                    case .failure(let err):
+//                        log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
+//                        Primer.shared.delegate?.onResumeError?(PrimerError.threeDSFailed, resumeHandler: self)
+//                    }
+//                }
+//                
+//            case .failed:
+//                Primer.shared.delegate?.onResumeError?(PrimerError.threeDSFailed, resumeHandler: self)
+//                
+//            default:
+//                Primer.shared.delegate?.onResumeSuccess?(paymentMethodToken.token!, resumeHandler: self)
+//            }
+//            
+//        } else {
+//            Primer.shared.delegate?.onResumeSuccess?(paymentMethodToken.token!, resumeHandler: self)
+//        }
+//    }
         
     internal func navigate(withResult result: Result<String?, Error>) {
         DispatchQueue.main.async {
