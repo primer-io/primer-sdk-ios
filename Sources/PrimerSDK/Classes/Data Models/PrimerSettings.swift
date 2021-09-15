@@ -28,7 +28,7 @@ internal protocol PrimerSettingsProtocol {
 //    var merchantCapabilities: [MerchantCapability]? { get }
     var isInitialLoadingHidden: Bool { get }
     var localeData: LocaleData { get }
-    var is3DSEnabled: Bool { get }
+    var is3DSOnTokenizationEnabled: Bool { get }
     var billingAddress: Address? { get }
     var orderId: String? { get }
     var userDetails: UserDetails? { get }
@@ -85,7 +85,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //    internal(set) public var merchantCapabilities: [MerchantCapability]?
     internal(set) public var isInitialLoadingHidden: Bool
     internal(set) public var localeData: LocaleData
-    internal(set) public var is3DSEnabled: Bool
+    internal(set) public var is3DSOnTokenizationEnabled: Bool
     internal(set) public var billingAddress: Address?
     internal(set) public var orderId: String?
     internal(set) public var userDetails: UserDetails?
@@ -130,7 +130,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //        merchantCapabilities: [MerchantCapability]? = nil,
         isInitialLoadingHidden: Bool = false,
         localeData: LocaleData? = nil,
-        is3DSEnabled: Bool = true,
+        is3DSOnTokenizationEnabled: Bool = true,
         billingAddress: Address? = nil,
         orderId: String? = nil,
         userDetails: UserDetails? = nil,
@@ -160,7 +160,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
             self.amount = orderItems.filter({ $0.unitAmount != nil }).compactMap({ $0.unitAmount! * $0.quantity }).reduce(0, +)
         }
         
-        self.is3DSEnabled = is3DSEnabled
+        self.is3DSOnTokenizationEnabled = is3DSOnTokenizationEnabled
         self.billingAddress = billingAddress
         self.orderId = orderId
         self.userDetails = userDetails
