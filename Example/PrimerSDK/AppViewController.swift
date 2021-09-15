@@ -11,10 +11,16 @@ import UIKit
 class AppViewController: UIViewController {
     
     @IBOutlet weak var environmentSwitch: UISegmentedControl!
-    private var selectedEnvironment: Environment = .dev
+    private var selectedEnvironment: Environment = .sandbox
     @IBOutlet weak var customerIdTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
     @IBOutlet weak var performPaymentSwitch: UISwitch!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        performPaymentSwitch.isOn = true
+        environmentSwitch.selectedSegmentIndex = 1
+    }
     
     @IBAction func environmentValueChanged(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
@@ -38,7 +44,8 @@ class AppViewController: UIViewController {
             amount = Int(dblVal*100)
         }
         
-        let mvc = MerchantCheckoutViewController.instantiate(environment: selectedEnvironment, customerId: customerIdTextField.text, amount: amount, performPayment: performPaymentSwitch.isOn)
+        let customerId = (customerIdTextField.text ?? "").isEmpty ? "customer_id" : customerIdTextField.text
+        let mvc = MerchantCheckoutViewController.instantiate(environment: selectedEnvironment, customerId: customerId, amount: amount, performPayment: performPaymentSwitch.isOn)
         navigationController?.pushViewController(mvc, animated: true)
     }
     

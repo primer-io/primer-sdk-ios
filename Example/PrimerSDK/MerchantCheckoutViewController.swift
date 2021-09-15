@@ -23,7 +23,7 @@ class MerchantCheckoutViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     var environment: Environment = .sandbox
     fileprivate var customerId: String?
-    var currency: Currency = .GBP
+    var currency: Currency = .EUR
     fileprivate var performPayment: Bool = false
     
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
@@ -35,7 +35,7 @@ class MerchantCheckoutViewController: UIViewController {
     var amount = 200
     
     let vaultApayaSettings = PrimerSettings(
-        currency: .GBP,
+        currency: .EUR,
         hasDisabledSuccessScreen: true,
         isInitialLoadingHidden: true
     )
@@ -187,6 +187,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func openUniversalCheckoutTapped(_ sender: Any) {
+        Primer.shared.configure(settings: generalSettings)
         Primer.shared.showCheckout(self, flow: .default)
     }
     
@@ -327,13 +328,27 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func checkoutFailed(with error: Error) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
     }
     
-    func onResumeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\nResume payment for paymentMethodToken:\n\(paymentMethodToken)")
+    func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken)")
+        resumeHandler.resume(withClientToken: clientToken)
     }
     
+    func onResumeError(_ error: Error, resumeHandler: ResumeHandlerProtocol) {
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
+        resumeHandler.resume(withError: NSError(domain: "merchant", code: 100, userInfo: [NSLocalizedDescriptionKey: "Bla bla bla"]))
+    }
+    
+//    func onResumeSuccess(_ clientToken: String?) {
+//        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken)")
+//    }
+//
+//    func onResumeError(_ error: Error) {
+//        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
+//    }
+        
 }
 
 // MARK: - TABLE VIEW DATA SOURCE & DELEGATE
