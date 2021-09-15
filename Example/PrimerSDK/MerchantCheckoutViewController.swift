@@ -282,35 +282,28 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         callApi(request) { (result) in
             switch result {
             case .success(let data):
-                var paymentResponse: PaymentResponse?
+//                var paymentResponse: PaymentResponse?
+                
                 if let dic = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
                     if let amount = dic?["amount"] as? Int,
                        let id = dic?["id"] as? String,
                        let date = dic?["date"] as? String,
-                       let statusStr = dic?["status"] as? String,
-                       let status = PaymentStatus(strValue: statusStr) {
-                        
-                        var requiredAction: RequiredAction?
-                        
+                       let status = dic?["status"] as? String {
+
                         if let requiredActionDic = dic?["requiredAction"] as? [String: Any] {
-                            if let requiredActionNameStr = requiredActionDic["name"] as? String,
-                               let requiredActionName = RequiredActionName(strValue: requiredActionNameStr),
-                               let description = requiredActionDic["description"] as? String {
-                                requiredAction = RequiredAction(name: requiredActionName,
-                                                                description: description,
-                                                                clientToken: requiredActionDic["clientToken"] as? String)
+                            if let requiredActionName = requiredActionDic["name"] as? String,
+                               let clientToken = requiredActionDic["clientToken"] as? String {
+                                
+                                if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
+                                    // resumehander return token
+                                    return
+                                }
                             }
                         }
-                        
-                        paymentResponse = PaymentResponse(amount: amount, id: id, date: date, status: status, requiredAction: requiredAction)
                     }
                 }
                 
-                if paymentResponse != nil {
-//                    Primer.shared.receivedPaymentResponse(paymentResponse!, for: paymentMethodToken)
-                } else {
-                    completion(nil)
-                }
+                completion(nil)
                 
             case .failure(let err):
                 completion(err)
@@ -333,12 +326,12 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     
     func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken)")
-        resumeHandler.resume(withClientToken: clientToken)
+        resumeHandler.handleSuccess()
     }
     
     func onResumeError(_ error: Error, resumeHandler: ResumeHandlerProtocol) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
-        resumeHandler.resume(withError: NSError(domain: "merchant", code: 100, userInfo: [NSLocalizedDescriptionKey: "Bla bla bla"]))
+        resumeHandler.handle(error: NSError(domain: "merchant", code: 100, userInfo: [NSLocalizedDescriptionKey: "Bla bla bla"]))
     }
     
 //    func onResumeSuccess(_ clientToken: String?) {
