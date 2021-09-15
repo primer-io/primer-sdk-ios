@@ -89,17 +89,15 @@ internal class Dynamic3DSViewModel {
 }
 
 extension Dynamic3DSViewModel: ResumeHandlerProtocol {
-    func resume(withError error: Error) {
+    func handle(error: Error) {
         navigate(withResult: .failure(error))
     }
     
-    func resume(withClientToken clientToken: String? = nil) {
-        if let clientToken = clientToken, let decodedClientToken = clientToken.jwtTokenPayload {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            state.accessToken = clientToken
-            state.decodedClientToken = decodedClientToken
-        }
-        
+    func handle(newClientToken clientToken: String) {
+        try? ClientTokenService.storeClientToken(clientToken)
+    }
+    
+    func handleSuccess() {
         navigate(withResult: .success(nil))
     }
 }
