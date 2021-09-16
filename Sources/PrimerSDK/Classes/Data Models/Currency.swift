@@ -36,20 +36,20 @@ public enum Currency: String, Codable {
 }
 
 extension Currency {
-    func withSymbol(for value: String) -> String {
+    var symbol: String? {
         switch self {
         case .USD:
-            return "$\(value)"
+            return "$"
         case .GBP:
-            return "£\(value)"
+            return "£"
         case .EUR:
-            return "€\(value)"
+            return "€"
         case .JPY:
-            return "¥\(value)"
+            return "¥"
         case .KRW:
-            return "₩\(value)"
+            return "₩"
         default:
-            return "\(value) \(self.rawValue)"
+            return nil
         }
     }
 
@@ -61,12 +61,5 @@ extension Currency {
             return false
         }
     }
-
-    func format(value: Double) -> String {
-        if (isZeroDecimal) {
-            return String(format: "%.0f", value)
-        } else {
-            return String(format: "%.2f", value)
-        }
-    }
+        
 }
