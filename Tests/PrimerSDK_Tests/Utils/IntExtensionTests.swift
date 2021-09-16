@@ -11,7 +11,7 @@ import XCTest
 
 class IntExtensionTests: XCTestCase {
     
-    let amount: Int = 100
+    var amount: Int = 100
     
     func test_usd_formats_correctly() throws {
         let currency = Currency.USD
@@ -53,5 +53,26 @@ class IntExtensionTests: XCTestCase {
         let currency = Currency.CNY
         let formattedAmount = amount.toCurrencyString(currency: currency)
         XCTAssertEqual(formattedAmount, "1.00 CNY")
+    }
+    
+    func test_usd_huge_amount_formats_correctly() throws {
+        amount = 999999997
+        let currency = Currency.USD
+        let formattedAmount = amount.toCurrencyString(currency: currency)
+        XCTAssertEqual(formattedAmount, "$9999999.97")
+    }
+    
+    func test_usd_small_amount_formats_correctly() throws {
+        amount = 1
+        let currency = Currency.USD
+        let formattedAmount = amount.toCurrencyString(currency: currency)
+        XCTAssertEqual(formattedAmount, "$0.01")
+    }
+    
+    func test_jpy_small_amount_formats_correctly() throws {
+        amount = 1
+        let currency = Currency.JPY
+        let formattedAmount = amount.toCurrencyString(currency: currency)
+        XCTAssertEqual(formattedAmount, "¥1")
     }
 }
