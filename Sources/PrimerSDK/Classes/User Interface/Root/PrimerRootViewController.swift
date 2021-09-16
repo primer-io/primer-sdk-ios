@@ -444,6 +444,63 @@ extension PrimerRootViewController {
     }
     
     func presentApaya() {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if !settings.isInitialLoadingHidden {
+            let lvc = PrimerLoadingViewController(withHeight: 300)
+            show(viewController: lvc)
+        }
+        
+        let viewModel: ApayaLoadWebViewModel = DependencyContainer.resolve()
+        let apayaWebViewModel = viewModel.getWebViewModel()
+        
+        viewModel.generateWebViewUrl { [weak self] result in
+            DispatchQueue.main.async { [weak self] in
+                switch result {
+                case .failure(let error):
+                    // we're gonna refactor this method once merged in with the all the UI updates.
+                    viewModel.navigate(.failure(error))
+                    
+                case .success(let urlString):
+                    let webViewController = PrimerWebViewController(with: apayaWebViewModel)
+                    Primer.shared.primerRootVC?.blurBackground()
+                    webViewController.url = URL(string: urlString)
+                    webViewController.delegate = apayaWebViewModel
+                    webViewController.modalPresentationStyle = .fullScreen
+                    self?.present(webViewController, animated: true, completion: nil)
+                }
+            }
+        }
+        
+        (apayaWebViewModel as! ApayaWebViewModel).onCompletion = { result in
+            switch result {
+            case .failure(let error):
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                
+                if !settings.hasDisabledSuccessScreen {
+                    let evc = ErrorViewController(message: error.localizedDescription)
+                    evc.view.translatesAutoresizingMaskIntoConstraints = false
+                    evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                    self.show(viewController: evc)
+                    
+                } else {
+                    Primer.shared.dismiss()
+                }
+                
+            case .success(let apayaResult):
+                viewModel.tokenize()
+            }
+        }
+        
+        
+        
+        
+        
+//        let webViewController = PrimerLoadWebViewController(with: viewModel)
+//
+//        show(viewController: webViewController)
+        
+        
 //        let appleViewModel = ApplePayViewModel()
 //        appleViewModel.didPresentPaymentMethod = { [weak self] in
 //            self?.blurBackground()
