@@ -42,25 +42,23 @@ internal enum PaymentStatus: Int, Codable {
     }
 }
 
-@objc
-internal enum RequiredActionName: Int, Codable {
-    case threeDSAuthentication = 0
+internal enum RequiredActionName: String, Codable {
+    case threeDSAuthentication
     case usePrimerSDK
-    case unknown = 1000
-    
-    public init?(strValue: String) {
-        switch strValue.uppercased() {
-        case "3DS_AUTHENTICATION":
-            self = .threeDSAuthentication
-        case "USE_PRIMER_SDK":
-            self = .usePrimerSDK
-        default:
-            return nil
-        }
-    }
+//    case unknown = 1000
+//
+//    public init?(strValue: String) {
+//        switch strValue.uppercased() {
+//        case "3DS_AUTHENTICATION":
+//            self = .threeDSAuthentication
+//        case "USE_PRIMER_SDK":
+//            self = .usePrimerSDK
+//        default:
+//            return nil
+//        }
+//    }
 }
 
-@objc
 internal protocol PaymentResponseProtocol {
     var id: String { get }
     var date: String { get }
@@ -68,7 +66,6 @@ internal protocol PaymentResponseProtocol {
     var requiredAction: RequiredActionProtocol? { get }
 }
 
-@objc
 internal protocol RequiredActionProtocol {
     var name: RequiredActionName { get }
     var description: String { get }
