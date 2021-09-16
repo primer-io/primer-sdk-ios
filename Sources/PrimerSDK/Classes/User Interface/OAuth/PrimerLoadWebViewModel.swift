@@ -21,6 +21,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
     }
 
     func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
+
         if configDidLoad() {
             let apayaService: ApayaServiceProtocol = DependencyContainer.resolve()
             apayaService.createPaymentSession(completion)
@@ -70,7 +71,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
                             if Primer.shared.flow.internalSessionFlow.vaulted {
                                 self?.navigate(.success(true))
                                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { (err) in
-                                    // There's not going to be a callback
+                                    
                                 })
                             } else {
                                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { (err) in
@@ -99,8 +100,19 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
                 // The merchant should detect that this cancels here, however we may need to align on
                 // what to do in the case of cancelled flows - what is the ideal experience and what
                 // is the current expectation of integrating developers?
-                Primer.shared.delegate?.checkoutFailed?(with: PrimerError.userCancelled)
-                Primer.shared.primerRootVC?.popViewController()
+                let err = PrimerError.userCancelled
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+                
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+                if settings.hasDisabledSuccessScreen {
+                    Primer.shared.dismiss()
+                } else {
+                    let evc = ErrorViewController(message: err.localizedDescription)
+                    evc.view.translatesAutoresizingMaskIntoConstraints = false
+                    evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                    Primer.shared.primerRootVC?.show(viewController: evc)
+                }
                 
             case .failure(let error):
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
