@@ -40,7 +40,7 @@ public struct Apaya {
         static func create(from url: URL?) -> Result<Apaya.WebViewResult, ApayaException>? {
             guard
                 let url = url,
-                let success = url.queryParameterValue(for: "success"),
+                url.queryParameterValue(for: "success") != nil,
                 let status = url.queryParameterValue(for: "status")
             else {
                 return .failure(ApayaException.invalidWebViewResult)
@@ -64,8 +64,8 @@ public struct Apaya {
             }
             
             let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let clientToken = state.decodedClientToken,
-                  var merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
+            guard state.decodedClientToken != nil,
+                  let merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
             else {
                 return .failure(ApayaException.invalidWebViewResult)
             }
