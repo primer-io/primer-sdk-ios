@@ -23,28 +23,16 @@ class PrimerNavigationBar: PrimerView {
     
     var rightBarButton: UIButton? {
         didSet {
-            rightBarButton?.translatesAutoresizingMaskIntoConstraints = false
             rightBarButton?.tintColor = theme.colorTheme.tint1
             rightBarButton?.setTitleColor(theme.colorTheme.tint1, for: .normal)
+            rightBarButton?.frame = CGRect(x: 0, y: 0, width: rightView.bounds.size.width, height: rightView.bounds.size.height)
             
             rightView.subviews.forEach { view in
                 view.removeFromSuperview()
             }
-            
+                        
             if let rightBarButton = rightBarButton {
                 rightView.addSubview(rightBarButton)
-                
-                if #available(iOS 11.0, *) {
-                    rightBarButton.pin(view: self, leading: 0, top: 0, trailing: -12, bottom: 0)
-                    rightBarButton.contentHorizontalAlignment = .trailing
-                } else {
-                    rightBarButton.topAnchor.constraint(equalTo: rightView.topAnchor, constant: 0).isActive = true
-                    rightBarButton.bottomAnchor.constraint(equalTo: rightView.bottomAnchor, constant: 0).isActive = true
-                    rightBarButton.leadingAnchor.constraint(greaterThanOrEqualTo: rightView.leadingAnchor).isActive = true
-                    rightBarButton.trailingAnchor.constraint(equalTo: rightView.trailingAnchor, constant: 0).isActive = true
-                }
-                
-                layoutIfNeeded()
             }
         }
     }
