@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal protocol PrimerWebViewModelProtocol: AnyObject {
+internal protocol PrimerWebViewModelProtocol: ReloadDelegate {
     func onRedirect(with url: URL)
     func onDismiss()
 }
@@ -37,6 +37,10 @@ internal class ApayaWebViewModel: PrimerWebViewModelProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         state.setApayaResult(result)
         setResult(nil)
+    }
+    
+    func reload() {
+        
     }
 }
 
