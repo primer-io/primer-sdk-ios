@@ -10,7 +10,8 @@
 
 @testable import PrimerSDK
 
-class MockPrimerLoadWebViewModel: PrimerLoadWebViewModelProtocol {
+class MockPrimerLoadWebViewModel: PrimerWebViewModelProtocol {
+    
     let url: String
     let shouldThrow: Bool
     let shouldCancel: Bool
@@ -35,8 +36,20 @@ class MockPrimerLoadWebViewModel: PrimerLoadWebViewModelProtocol {
         return ApayaWebViewModel()
     }
     var navigateCalled = false
-    func navigate(_ result: Result<Bool, Error>?) {
+    func navigate(_ result: Result<Bool, Error>) {
         navigateCalled = true
+    }
+    
+    func onRedirect(with url: URL) {
+        
+    }
+    
+    func onDismiss() {
+        
+    }
+    
+    func reload() {
+        
     }
 }
 

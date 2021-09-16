@@ -23,7 +23,7 @@ class ApayaLoadWebViewModelTests: XCTestCase {
         let apayaService = MockApayaService()
         DependencyContainer.register(apayaService as ApayaServiceProtocol)
 
-        let viewModel = ApayaLoadWebViewModel()
+        let viewModel = ApayaWebViewModel()
 
         viewModel.generateWebViewUrl { result in
             switch result {
@@ -47,7 +47,7 @@ class ApayaLoadWebViewModelTests: XCTestCase {
         DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)
         DependencyContainer.register(paymentMethodConfigService as PaymentMethodConfigServiceProtocol)
 
-        let viewModel = ApayaLoadWebViewModel()
+        let viewModel = ApayaWebViewModel()
 
         viewModel.generateWebViewUrl { _ in }
         XCTAssertTrue(clientTokenService.loadCheckoutConfigCalled)

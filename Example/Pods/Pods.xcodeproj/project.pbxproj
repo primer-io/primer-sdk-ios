@@ -56,7 +56,6 @@
 		47292B4F18C35FC6BF567D9842255B4E /* StrictRateLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEE81837EC92B284DB91901A1B6BBB0D /* StrictRateLimitedDispatcher.swift */; };
 		4815C833549A9F63328A7F46E5E647BE /* FormType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A18D3C1D3BCA8CB6BEA24DECA5ADD5 /* FormType.swift */; };
 		48974A9EE3AC8589012C8583D08C1EC7 /* UserDefaultsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C17B6025922EAC8D79BB75EDCE5EACE /* UserDefaultsExtension.swift */; };
-		494D22B7CCFE80E79258E0A6149870CA /* PrimerLoadWebViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53A9C1C48C72757AA07BC5502B0376E /* PrimerLoadWebViewModel.swift */; };
 		4DAC493C6147BEA798A20B45A45D5CE5 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98D6372F2CEDF769CC58DBCD31E63C4F /* UIColorExtension.swift */; };
 		4DE264C27AA48C978F93888BDB6A4A21 /* PrimerTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41D0A17A9A27E5DD80C47A8C1656A21 /* PrimerTextField.swift */; };
 		50A35CEF01C23EB43AD0506862D6160F /* URLSessionStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796DA1F0BFB65851B207E8A7FC47A631 /* URLSessionStack.swift */; };
@@ -337,7 +336,6 @@
 		B18FA7132EFD514A6BAEDED1E03D8530 /* PrimerScrollView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerScrollView.swift; sourceTree = "<group>"; };
 		B23BA956BD898AC0647E2F9B06633163 /* ErrorHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
 		B429083200B13F604ED3C87DFFC0C016 /* Pods-PrimerSDK_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-PrimerSDK_Tests.modulemap"; sourceTree = "<group>"; };
-		B53A9C1C48C72757AA07BC5502B0376E /* PrimerLoadWebViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerLoadWebViewModel.swift; sourceTree = "<group>"; };
 		B72AA65E15A68635BAEAD99B6C3327A4 /* SequenceWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SequenceWrappers.swift; sourceTree = "<group>"; };
 		B77065DBF5D30611968C73F84490B680 /* EnsureWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EnsureWrappers.swift; sourceTree = "<group>"; };
 		B8CA559CCF7DBE5CDA1AE7E9C0600A56 /* SuccessViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SuccessViewController.swift; sourceTree = "<group>"; };
@@ -502,7 +500,6 @@
 				77E6C20FC752F2161234AC89C2E77AA5 /* KlarnaViewModel.swift */,
 				5BA9DAEE6B4B52EB8032F24B6AEE864E /* OAuthViewModel.swift */,
 				3314CB0C17C98E2BD0C3B31E7259964D /* PayPalViewModel.swift */,
-				B53A9C1C48C72757AA07BC5502B0376E /* PrimerLoadWebViewModel.swift */,
 				BD2C9D18A9D20D086DBF4E220D667241 /* PrimerOAuthViewModel.swift */,
 				39A0D4F97D71ECE4148E63225FCDEC8B /* PrimerWebViewController.swift */,
 				A5F21297043EB846D1F9DD638633DBD2 /* PrimerWebViewModel.swift */,
@@ -1255,7 +1252,6 @@
 				85DADEE4065CA38CE96B980F39F1A35D /* PrimerFormViewController.swift in Sources */,
 				0DC93D7DE92D118EB8AC96E326E5DF2A /* PrimerInternalSessionFlow.swift in Sources */,
 				0CA7AD7916556103117A5437C3D57E91 /* PrimerLoadingViewController.swift in Sources */,
-				494D22B7CCFE80E79258E0A6149870CA /* PrimerLoadWebViewModel.swift in Sources */,
 				99CC48FF5E5025048B81675B8A88388B /* PrimerNavigationBar.swift in Sources */,
 				C4481908C308FC9EDADC15A3EB2D71E6 /* PrimerNavigationController.swift in Sources */,
 				D0F0A20553859DCEAC2CFC2A2945BCCE /* PrimerNibView.swift in Sources */,

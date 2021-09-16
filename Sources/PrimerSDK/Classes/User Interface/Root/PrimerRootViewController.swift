@@ -451,7 +451,7 @@ extension PrimerRootViewController {
             show(viewController: lvc)
         }
         
-        let viewModel: ApayaLoadWebViewModel = DependencyContainer.resolve()
+        let viewModel: ApayaWebViewModel = DependencyContainer.resolve()
         let apayaWebViewModel = viewModel.getWebViewModel()
         
         viewModel.generateWebViewUrl { [weak self] result in
