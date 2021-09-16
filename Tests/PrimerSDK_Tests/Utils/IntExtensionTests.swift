@@ -62,6 +62,13 @@ class IntExtensionTests: XCTestCase {
         XCTAssertEqual(formattedAmount, "$9999999.97")
     }
     
+    func test_krw_huge_amount_formats_correctly() throws {
+        amount = 999999999997
+        let currency = Currency.JPY
+        let formattedAmount = amount.toCurrencyString(currency: currency)
+        XCTAssertEqual(formattedAmount, "¥999999999997")
+    }
+    
     func test_usd_small_amount_formats_correctly() throws {
         amount = 1
         let currency = Currency.USD
