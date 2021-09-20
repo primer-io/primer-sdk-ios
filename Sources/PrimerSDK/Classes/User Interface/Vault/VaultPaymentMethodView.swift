@@ -2,7 +2,7 @@
 
 import UIKit
 
-internal protocol VaultPaymentMethodViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
+internal protocol VaultPaymentMethodViewDelegate: UITableViewDelegate, UITableViewDataSource {
     func cancel()
     func edit()
     func showPayPal()

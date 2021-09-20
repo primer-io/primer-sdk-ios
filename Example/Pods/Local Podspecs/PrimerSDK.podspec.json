@@ -1,6 +1,6 @@
 {
   "name": "PrimerSDK",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "summary": "Official iOS SDK for Primer",
   "description": "This library contains the official iOS SDK for Primer. Install this Cocoapod to seemlessly integrate the Primer Checkout & API platform in your app.",
   "homepage": "https://www.primer.io",

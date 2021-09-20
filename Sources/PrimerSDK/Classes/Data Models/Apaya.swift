@@ -7,18 +7,18 @@
 
 public struct Apaya {
     public struct CreateSessionAPIRequest: Encodable {
-        let merchantId: String
         let merchantAccountId: String
         let reference: String = "recurring"
         let language: String?
         let currencyCode: String
+        let phoneNumber: String?
 
         enum CodingKeys: String, CodingKey {
-            case merchantId = "merchant_id"
             case merchantAccountId = "merchant_account_id"
             case reference = "reference"
             case language = "language"
             case currencyCode = "currency_code"
+            case phoneNumber = "phone_number"
         }
     }
     public struct CreateSessionAPIResponse: Decodable {
@@ -40,7 +40,7 @@ public struct Apaya {
         static func create(from url: URL?) -> Result<Apaya.WebViewResult, ApayaException>? {
             guard
                 let url = url,
-                let success = url.queryParameterValue(for: "success"),
+                url.queryParameterValue(for: "success") != nil,
                 let status = url.queryParameterValue(for: "status")
             else {
                 return .failure(ApayaException.invalidWebViewResult)
@@ -64,8 +64,8 @@ public struct Apaya {
             }
             
             let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let clientToken = state.decodedClientToken,
-                  var merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
+            guard state.decodedClientToken != nil,
+                  let merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
             else {
                 return .failure(ApayaException.invalidWebViewResult)
             }

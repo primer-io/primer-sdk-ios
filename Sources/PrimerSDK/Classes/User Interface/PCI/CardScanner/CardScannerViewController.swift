@@ -9,7 +9,7 @@ struct PrimerCreditCardDetails {
     var expiryYear: String?
 }
 
-internal protocol CardScannerViewControllerDelegate: class {
+internal protocol CardScannerViewControllerDelegate: AnyObject {
     func setScannedCardDetails(with cardDetails: PrimerCreditCardDetails)
 }
 

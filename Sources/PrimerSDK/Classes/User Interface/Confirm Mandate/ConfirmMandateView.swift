@@ -9,12 +9,12 @@
 
 import UIKit
 
-internal protocol ConfirmMandateViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
+internal protocol ConfirmMandateViewDelegate: UITableViewDelegate, UITableViewDataSource {
     func close()
     func confirm()
 }
 
-internal protocol ConfirmMandateViewDataSource: class {
+internal protocol ConfirmMandateViewDataSource: AnyObject {
     var businessDetails: BusinessDetails? { get }
     var amount: String { get }
 }

@@ -19,13 +19,14 @@ class MerchantCheckoutViewController: UIViewController {
         }
     }
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
-    var amount = 200
-    let environment: Environment = .staging
+    let amount = 200
+    let environment = Environment.staging
     
     let vaultApayaSettings = PrimerSettings(
         currency: .GBP,
         hasDisabledSuccessScreen: true,
-        isInitialLoadingHidden: true
+        isInitialLoadingHidden: true,
+        customer: Customer(mobilePhoneNumber: "07538121305")
     )
     
     let vaultPayPalSettings = PrimerSettings(
@@ -72,8 +73,8 @@ class MerchantCheckoutViewController: UIViewController {
         merchantIdentifier: "merchant.checkout.team",
         customerId: "my-customer",
         amount: 100,        // Please don't change on develop (used for UI testing)
-        currency: .EUR,     // Please don't change on develop (used for UI testing)
-        countryCode: .fr,
+        currency: .SEK,     // Please don't change on develop (used for UI testing)
+        countryCode: .se,
         klarnaSessionType: .recurringPayment,
         klarnaPaymentDescription: nil,
         urlScheme: "primer",
@@ -186,7 +187,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: "SE", environment: environment)
+        let body = CreateClientTokenRequest(customerId: "customer123", customerCountryCode: "GB", environment: environment)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
