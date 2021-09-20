@@ -7,6 +7,7 @@ import SafariServices
 @available(iOS 11.0, *)
 internal class OAuthViewController: PrimerViewController {
 
+    private var resumeHandler: ResumeHandlerProtocol!
     let indicator = UIActivityIndicatorView()
     var session: Any?
     var host: OAuthHost
@@ -26,6 +27,8 @@ internal class OAuthViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        resumeHandler = self
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -106,32 +109,51 @@ internal class OAuthViewController: PrimerViewController {
                 viewModel.tokenize(host, with: { (paymentMethod, err) in
                     DispatchQueue.main.async {
                         if let err = err {
+                            Primer.shared.delegate?.checkoutFailed?(with: err)
                             _ = ErrorHandler.shared.handle(error: err)
                             router.show(.error(error: PrimerError.generic))
+                            
+                        } else if let paymentMethod = paymentMethod {
+                            switch Primer.shared.flow.internalSessionFlow.uxMode {
+                            case .VAULT:
+                                log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                                // This has been called by the tokenization service
+                                // Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
+
+                            case .CHECKOUT:
+                                log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                                Primer.shared.delegate?.authorizePayment?(paymentMethod, { err in
+                                    
+                                })
+                            }
+                            
+                            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
+                                DispatchQueue.main.async {
+                                    let router: RouterDelegate = DependencyContainer.resolve()
+                                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+                                    if settings.hasDisabledSuccessScreen {
+                                        Primer.shared.dismiss()
+                                    } else if let err = err {
+                                        router.show(.error(error: err))
+                                    } else {
+                                        router.show(.success(type: .regular))
+                                    }
+                                }
+                            })
+                            
+                            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                            
                         } else {
-                            router.show(.success(type: .regular))
+                            assert(true, "Will never reach completion handler without a payment method or an error")
                         }
+
                     }
+                    
                 })
             }
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            if settings.hasDisabledSuccessScreen == false && settings.isInitialLoadingHidden == true {
-                let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-                rootViewController?.mainView.backgroundColor = theme.colorTheme.main1
-                (rootViewController?.children.first as? OAuthViewController)?.indicator.isHidden = false
-
-            } else if settings.hasDisabledSuccessScreen && settings.isInitialLoadingHidden {
-                UIView.animate(withDuration: 0.3) {
-                    (rootViewController?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.0
-                } completion: { (_) in
-                    rootViewController?.dismiss(animated: true, completion: nil)
-                }
-            }
-            
-            self?.dismiss(animated: true, completion: nil)
         }
+        
         present(webViewController, animated: true, completion: nil)
     }
 
@@ -209,13 +231,49 @@ internal class OAuthViewController: PrimerViewController {
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         viewModel.tokenize(host, with: { (paymentMethod, err) in
             DispatchQueue.main.async {
-                let router: RouterDelegate = DependencyContainer.resolve()
+                let routerDelegate: RouterDelegate = DependencyContainer.resolve()
+                let router = routerDelegate as! Router
                 
                 if let err = err {
+                    Primer.shared.delegate?.checkoutFailed?(with: err)
+                    _ = ErrorHandler.shared.handle(error: err)
                     router.show(.error(error: PrimerError.generic))
+                    
+                } else if let paymentMethod = paymentMethod {
+                    switch Primer.shared.flow.internalSessionFlow.uxMode {
+                    case .VAULT:
+                        log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                        // This has been called by the tokenization service
+                        // Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
+
+                    case .CHECKOUT:
+                        log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+                        Primer.shared.delegate?.authorizePayment?(paymentMethod, { err in
+                            
+                        })
+                    }
+                    
+                    Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
+                        DispatchQueue.main.async {
+                            let router: RouterDelegate = DependencyContainer.resolve()
+                            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+                            if settings.hasDisabledSuccessScreen {
+                                Primer.shared.dismiss()
+                            } else if let err = err {
+                                router.show(.error(error: err))
+                            } else {
+                                router.show(.success(type: .regular))
+                            }
+                        }
+                    })
+                    
+                    Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                    
                 } else {
-                    router.show(.success(type: .regular))
+                    assert(true, "Will never reach completion handler without a payment method or an error")
                 }
+
             }
         })
     }
@@ -250,6 +308,39 @@ extension OAuthViewController: ReloadDelegate {
                 }
             }
         })
+    }
+}
+
+@available(iOS 11.0, *)
+extension OAuthViewController: ResumeHandlerProtocol {
+    func handle(error: Error) {
+        DispatchQueue.main.async {
+            let router: RouterDelegate = DependencyContainer.resolve()
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                router.show(.error(error: PrimerError.generic))
+            }
+        }
+    }
+    
+    func handle(newClientToken clientToken: String) {
+        
+    }
+    
+    func handleSuccess() {
+        DispatchQueue.main.async {
+            let router: RouterDelegate = DependencyContainer.resolve()
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                router.show(.success(type: .regular))
+            }
+        }
     }
 }
 
