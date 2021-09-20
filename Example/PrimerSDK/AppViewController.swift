@@ -57,7 +57,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             amount = Int(amountDbl * 100)
         }
         
-        let mcvc = MerchantCheckoutViewController.instantiate(environment: env, customerId: customerIdTextField.text, countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""), currency: Currency(rawValue: currencyTextField.text ?? ""), amount: amount)
+        let mcvc = MerchantCheckoutViewController.instantiate(environment: env, customerId: customerIdTextField.text, phoneNumber: phoneNumberTextField.text, countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""), currency: Currency(rawValue: currencyTextField.text ?? ""), amount: amount)
         navigationController?.pushViewController(mcvc, animated: true)
     }
     

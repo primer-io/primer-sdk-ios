@@ -32,7 +32,7 @@ class MerchantCheckoutViewController: UIViewController {
     var phoneNumber: String?
     var countryCode: CountryCode = .gb
     
-    class func instantiate(environment: String, customerId: String?, phoneNumber: String? = nil, countryCode: CountryCode?, currency: Currency?, amount: Int?) -> MerchantCheckoutViewController {
+    class func instantiate(environment: String, customerId: String?, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?) -> MerchantCheckoutViewController {
         let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
         mcvc.environment = environment
         mcvc.customerId = customerId
@@ -295,7 +295,7 @@ extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDele
             cell.configure(title: title, image: paymentMethod.icon.image!)
         case .apayaToken:
             if let apayaViewModel = ApayaViewModel(paymentMethod: paymentMethod) {
-                cell.configure(title: "[\(apayaViewModel.carrier.name)] \(apayaViewModel.hashedIdentifier ?? "")", image: nil)
+                cell.configure(title: "[\(apayaViewModel.carrier.name)] \(apayaViewModel.hashedIdentifier ?? "")", image: UIImage(named: "mobile"))
             }
         default:
             cell.configure(title: "", image: nil)
