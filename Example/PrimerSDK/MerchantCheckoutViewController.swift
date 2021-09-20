@@ -20,13 +20,9 @@ class MerchantCheckoutViewController: UIViewController {
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     let amount = 200
     let environment = "staging"
+    var phoneNumber: String?
     
-    let vaultApayaSettings = PrimerSettings(
-        currency: .GBP,
-        hasDisabledSuccessScreen: true,
-        isInitialLoadingHidden: true,
-        customer: Customer(mobilePhoneNumber: "07538121305")
-    )
+    var vaultApayaSettings: PrimerSettings!
     
     let vaultPayPalSettings = PrimerSettings(
         currency: .GBP,
@@ -81,9 +77,22 @@ class MerchantCheckoutViewController: UIViewController {
         isInitialLoadingHidden: false
     )
     
+    class func instantiate(phoneNumber: String? = nil) -> MerchantCheckoutViewController {
+        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
+        mcvc.phoneNumber = phoneNumber
+        return mcvc
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer"
+        
+        vaultApayaSettings = PrimerSettings(
+            currency: .GBP,
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true,
+            customer: Customer(mobilePhoneNumber: self.phoneNumber)
+        )
         
         Primer.shared.delegate = self
         self.configurePrimer()
