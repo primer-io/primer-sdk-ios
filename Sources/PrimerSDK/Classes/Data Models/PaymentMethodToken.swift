@@ -106,6 +106,20 @@ internal extension PaymentMethodToken {
                 imageName: self.icon,
                 paymentMethodType: self.paymentInstrumentType
             )
+        case .apayaToken:
+            if let apayaViewModel = Apaya.ViewModel(paymentMethod: self) {
+                return CardButtonViewModel(
+                    network: "[\(apayaViewModel.carrier.name)] \(apayaViewModel.hashedIdentifier ?? "")",
+                    cardholder: "Apaya",
+                    last4: "",
+                    expiry: "",
+                    imageName: self.icon,
+                    paymentMethodType: self.paymentInstrumentType
+                )
+            } else {
+                return nil
+            }
+            
         default:
             return nil
         }
