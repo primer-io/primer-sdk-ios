@@ -154,6 +154,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
         let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
         clientTokenService.loadCheckoutConfig { [weak self] (error) in
             if let error = error {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
                 self?.navigate(.failure(error))
             } else {
                 self?.loadPaymentMethodConfig(completion)
@@ -165,6 +166,7 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
         let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
         configService.fetchConfig { [weak self] (error) in
             if let error = error {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
                 self?.navigate(.failure(error))
             } else {
                 completion(.success(true))
