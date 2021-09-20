@@ -24,6 +24,9 @@ internal protocol FormViewModelProtocol {
 
 internal class FormViewModel: FormViewModelProtocol {
     
+    private var resumeHandler: ResumeHandlerProtocol!
+    private var paymentMethod: PaymentMethodToken!
+    
     var popOnComplete: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.directDebitFormCompleted
@@ -36,6 +39,10 @@ internal class FormViewModel: FormViewModelProtocol {
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
+    init() {
+        resumeHandler = self
     }
     
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
@@ -156,34 +163,109 @@ internal class FormViewModel: FormViewModelProtocol {
         
         let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
         tokenizationService.tokenize(request: request) { [weak self] result in
-            switch result {
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(error)
-            case .success(let token):
-                switch Primer.shared.flow.internalSessionFlow {
-                case .checkout,
-                     .checkoutWithCard,
-                     .checkoutWithKlarna:
-                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    settings.authorizePayment(token, { error in
-                        if error.exists {
-                            completion(PrimerError.tokenizationRequestFailed)
-                        } else {
-                            completion(nil)
-                        }
-                    })
-                    settings.onTokenizeSuccess(token, { error in
-                        if error.exists {
-                            completion(PrimerError.tokenizationRequestFailed)
-                        } else {
-                            completion(nil)
-                        }
-                    })
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                
+                switch result {
+                case .failure(let error):
+                    _ = ErrorHandler.shared.handle(error: error)
+                    Primer.shared.delegate?.checkoutFailed?(with: error)
+                    Primer.shared.delegate?.onResumeError?(error, resumeHandler: self)
                     
-                default:
-                    completion(nil)
+                case .success(let token):
+                    self.paymentMethod = token
+                    
+                    switch Primer.shared.flow.internalSessionFlow {
+                    case .checkout,
+                         .checkoutWithCard,
+                         .checkoutWithKlarna:
+                        Primer.shared.delegate?.authorizePayment?(token, { err in
+                            
+                        })
+                        
+                    default:
+                        break
+                    }
+                    
+                    Primer.shared.delegate?.onTokenizeSuccess?(token, resumeHandler: self)
+                    Primer.shared.delegate?.onTokenizeSuccess?(token, { err in
+                        DispatchQueue.main.async {
+                            let router: RouterDelegate = DependencyContainer.resolve()
+                            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+                            if settings.hasDisabledSuccessScreen {
+                                Primer.shared.dismiss()
+                            } else if let err = err {
+                                router.show(.error(error: err))
+                            } else {
+                                router.show(.success(type: .regular))
+                            }
+                        }
+                    })
                 }
+            }
+        }
+    }
+}
+
+extension FormViewModel: ResumeHandlerProtocol {
+    func handle(error: Error) {
+        DispatchQueue.main.async {
+            let router: RouterDelegate = DependencyContainer.resolve()
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                router.show(.error(error: PrimerError.generic))
+            }
+        }
+    }
+    
+    func handle(newClientToken clientToken: String) {
+        do {
+            try ClientTokenService.storeClientToken(clientToken)
+            
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            let decodedClientToken = state.decodedClientToken!
+            
+            if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue, let paymentMethod = paymentMethod {
+                let threeDSService = ThreeDSService()
+                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                    switch result {
+                    case .success(let paymentMethodToken):
+                        guard let threeDSPostAuthResponse = paymentMethodToken.1,
+                              let resumeToken = threeDSPostAuthResponse.resumeToken else {
+                            Primer.shared.delegate?.onResumeError?(PrimerError.threeDSFailed, resumeHandler: self)
+                            return
+                        }
+                        
+                        Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
+                        
+                    case .failure(let err):
+                        log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
+                        Primer.shared.delegate?.onResumeError?(PrimerError.threeDSFailed, resumeHandler: self)
+                    }
+                }
+                
+            } else {
+                Primer.shared.delegate?.onResumeSuccess?(clientToken, resumeHandler: self)
+            }
+            
+        } catch {
+            Primer.shared.delegate?.onResumeError?(error, resumeHandler: self)
+        }
+    }
+    
+    func handleSuccess() {
+        DispatchQueue.main.async {
+            let router: RouterDelegate = DependencyContainer.resolve()
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                router.show(.success(type: .regular))
             }
         }
     }
