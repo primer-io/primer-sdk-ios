@@ -20,6 +20,7 @@
 		0E9AFA6D3F7D572581B0AEC13E2A43C4 /* CancellableThenable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 205C76C684E92B984A0B68BBA0DF166D /* CancellableThenable.swift */; };
 		12C6E26257F408F5FAB240E7757C708C /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A346EE970BAD87B4DC05AC4E1D491F /* Queue.swift */; };
 		144FCEA76D939DB17AA3B6E210247636 /* when.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B5701DDEA4627AAE2AD174833B2E67 /* when.swift */; };
+		15B2E64626F88170005B8343 /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B2E64526F88170005B8343 /* Customer.swift */; };
 		18BB9B7AE085C2EA55912FE7CF472743 /* PrimerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A53668AC2D754496C80780039FDA1D98 /* PrimerError.swift */; };
 		1A78C06D089E028CB16B6B2237B25277 /* VaultPaymentMethodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0CAE75DCAA1C35678B3ADD34BA5552 /* VaultPaymentMethodView.swift */; };
 		1D8A9FD426F0F2E6000D2D71 /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A9FD326F0F2E6000D2D71 /* IntExtension.swift */; };
@@ -203,6 +204,7 @@
 		1389C87445AF2278C6C64F8B6AEF8B9E /* CardScannerViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardScannerViewModel.swift; sourceTree = "<group>"; };
 		13D141CB5E6E39015E09B3A7CBDF3378 /* PresentationController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PresentationController.swift; sourceTree = "<group>"; };
 		151F4980453ABD0DC459536376317684 /* VaultPaymentMethodViewController+ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "VaultPaymentMethodViewController+ReloadDelegate.swift"; sourceTree = "<group>"; };
+		15B2E64526F88170005B8343 /* Customer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		1758A4B39032E08B5657A438308B953C /* firstly.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = firstly.swift; sourceTree = "<group>"; };
 		17B1F6C4ABA8063D35E00F5238E46C48 /* Klarna.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Klarna.swift; sourceTree = "<group>"; };
 		17F02216E249426523A5448009BC6C2F /* Currency.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
@@ -551,6 +553,7 @@
 				FF8EA2E97E8EC0873FB0043F4DB39758 /* SuccessMessage.swift */,
 				EEAB2611B553F85DF1913801B2DEB7F5 /* UXMode.swift */,
 				1BC8E88A670A768C6788875EC48AD74D /* PCI */,
+				15B2E64526F88170005B8343 /* Customer.swift */,
 			);
 			name = "Data Models";
 			path = "Sources/PrimerSDK/Classes/Data Models";
@@ -1214,6 +1217,7 @@
 				219020E578E4B98CC743FDB7D449A722 /* PaymentMethod.swift in Sources */,
 				F7332F4AA92B0A47D0AFF7D960AC69C4 /* PaymentMethodComponent.swift in Sources */,
 				87D586BCD6C5A6447F431F36D177456C /* PaymentMethodConfig.swift in Sources */,
+				15B2E64626F88170005B8343 /* Customer.swift in Sources */,
 				7ECA4029624BD6D8015DAF0A7ABB58B9 /* PaymentMethodConfigService.swift in Sources */,
 				41EA9F70C69D365399D5082A9C866BD5 /* PaymentMethodToken.swift in Sources */,
 				2A8CC9400FD7D0F9A1E705184281CB67 /* PaymentMethodTokenizationRequest.swift in Sources */,
