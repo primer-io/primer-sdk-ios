@@ -162,7 +162,7 @@ enum SuccessScreenType {
     case directDebit
 }
 
-protocol SuccessScreenViewModelProtocol: class {
+protocol SuccessScreenViewModelProtocol: AnyObject {
     var mandate: DirectDebitMandate { get }
     func getMandateId(_ screenType: SuccessScreenType?) -> String
     func getTitle(_ screenType: SuccessScreenType?) -> String

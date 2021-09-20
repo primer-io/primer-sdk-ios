@@ -27,7 +27,7 @@ internal class ApayaWebViewModel: PrimerWebViewModelProtocol {
     }
 
     func onDismiss() {
-        let result = result ?? .failure(ApayaException.webViewFlowCancelled)
+        let result = self.result ?? .failure(ApayaException.webViewFlowCancelled)
         let state: AppStateProtocol = DependencyContainer.resolve()
         state.setApayaResult(result)
         setResult(nil)
