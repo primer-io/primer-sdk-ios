@@ -224,7 +224,14 @@ public class Primer {
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
         DispatchQueue.main.async { [weak self] in
-            self?.root?.dismiss(animated: true, completion: nil)
+            UIView.animate(withDuration: 0.3) {
+                (self?.root?.presentationController as? PresentationController)?.blurEffectView.alpha = 0.0
+            } completion: { (_) in
+                self?.presentingViewController?.dismiss(animated: true, completion: {
+                    self?.presentingViewController = nil
+                    self?.root = nil
+                })
+            }
         }
     }
     
