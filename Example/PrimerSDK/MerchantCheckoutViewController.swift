@@ -273,6 +273,10 @@ extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDele
         case .klarnaCustomerToken:
             let title = paymentMethod.paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token"
             cell.configure(title: title, image: paymentMethod.icon.image!)
+        case .apayaToken:
+            if let apayaViewModel = ApayaViewModel(paymentMethod: paymentMethod) {
+                cell.configure(title: "[\(apayaViewModel.carrier.name)] \(apayaViewModel.hashedIdentifier ?? "")", image: nil)
+            }
         default:
             cell.configure(title: "", image: nil)
         }
