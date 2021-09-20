@@ -64,7 +64,7 @@ class IntExtensionTests: XCTestCase {
         XCTAssertEqual(formattedAmount, "$9\(groupingSeparator)999\(groupingSeparator)999\(decimalSeparator)97", "Formatted amount [\(formattedAmount)] is not correct")
     }
     
-    func test_krw_huge_amount_formats_correctly() throws {
+    func test_jpy_huge_amount_formats_correctly() throws {
         amount = 999999999997
         let currency = Currency.JPY
         let formattedAmount = amount.toCurrencyString(currency: currency)
