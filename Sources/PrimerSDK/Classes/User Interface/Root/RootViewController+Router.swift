@@ -42,14 +42,16 @@ internal class Router: RouterDelegate {
         // FIXME: No decisions on UI elements
         if vc is SuccessViewController {
             if settings.hasDisabledSuccessScreen {
-                return root.dismiss(animated: true, completion: nil)
+                Primer.shared.dismiss()
+                return
             }
 
             root.view.endEditing(true)
 
         } else if vc is ErrorViewController {
             if settings.hasDisabledSuccessScreen {
-                return root.dismiss(animated: true, completion: nil)
+                Primer.shared.dismiss()
+                return
             }
             
             root.view.endEditing(true)
