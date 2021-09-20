@@ -18,6 +18,11 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     var availablePaymentOptions: [PaymentMethodViewModel] {
         let state: AppStateProtocol = DependencyContainer.resolve()
+        
+        if !Primer.shared.flow.internalSessionFlow.vaulted {
+            return state.viewModels.filter({ $0.type != .apaya })
+        }
+        
         return state.viewModels
     }
 
