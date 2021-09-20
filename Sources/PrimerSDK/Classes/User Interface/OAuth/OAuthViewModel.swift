@@ -126,18 +126,6 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
                 ErrorHandler.shared.handle(error: error)
                 completion(nil, error)
             case .success(let token):
-                log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-
-                switch Primer.shared.flow.internalSessionFlow.uxMode {
-                case .VAULT:
-                    log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                    
-                    completion(nil) // self?.onTokenizeSuccess(token, completion)
-                case .CHECKOUT:
-                    log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                    self?.authorizePayment(token, completion)
-                    self?.onTokenizeSuccess(token, completion)
-                }
                 completion(token, nil)
             }
         }
