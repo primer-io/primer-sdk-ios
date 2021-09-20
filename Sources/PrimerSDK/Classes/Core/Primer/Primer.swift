@@ -226,20 +226,7 @@ public class Primer {
             self?.root?.dismiss(animated: true, completion: nil)
         }
     }
-
-//    public func refreshClientToken(_ clientToken: String) throws {
-//        do {
-//            try ClientTokenService.storeClientToken(clientToken)
-//        } catch {
-//            log(logLevel: .error, message: "Error: \(error)")
-//            throw error
-//        }
-//    }
     
-//    public func receivedPaymentResponse(_ paymentResponse: PaymentResponseProtocol, for paymentMethodToken: PaymentMethodToken) {
-//        let dynamic3DSViewModel = Dynamic3DSViewModel()
-//        dynamic3DSViewModel.receivedPaymentResponse(paymentResponse, for: paymentMethodToken)
-//    }
 }
 
 #endif
