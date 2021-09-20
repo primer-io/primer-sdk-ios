@@ -21,30 +21,81 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
-                                <rect key="frame" x="118.5" y="318.5" width="138" height="30"/>
+                                <rect key="frame" x="118.5" y="372.5" width="138" height="30"/>
                                 <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
                                 <state key="normal" title="Initialize Primer SDK"/>
                                 <connections>
                                     <action selector="initializePrimerButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="kia-UZ-chG"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qPf-Sa-EQI">
-                                <rect key="frame" x="20" y="64" width="335" height="34"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Phone number" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qPf-Sa-EQI">
+                                <rect key="frame" x="16" y="169" width="343" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="EUR" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uht-tM-QtC">
+                                <rect key="frame" x="16" y="277" width="60" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="60" id="jYH-li-Bdx"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Amount" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="W9k-iX-6KF">
+                                <rect key="frame" x="84" y="277" width="275" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
+                            </textField>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="OUf-n8-A9K">
+                                <rect key="frame" x="16" y="64" width="343" height="32"/>
+                                <segments>
+                                    <segment title="Dev"/>
+                                    <segment title="Sandbox"/>
+                                    <segment title="Staging"/>
+                                    <segment title="Production"/>
+                                </segments>
+                            </segmentedControl>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Customer ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Q8f-7x-ncT">
+                                <rect key="frame" x="16" y="115" width="343" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Country" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="LRA-Ro-g2N">
+                                <rect key="frame" x="16" y="223" width="343" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
                             </textField>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerY" secondItem="P7R-MC-LKq" secondAttribute="centerY" id="A4C-4q-2Y2"/>
-                            <constraint firstItem="qPf-Sa-EQI" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leading" constant="20" id="BiE-tq-8Ac"/>
-                            <constraint firstItem="qPf-Sa-EQI" firstAttribute="top" secondItem="Hc4-ia-dRw" secondAttribute="bottom" constant="20" id="QRZ-5c-90t"/>
-                            <constraint firstAttribute="trailing" secondItem="qPf-Sa-EQI" secondAttribute="trailing" constant="20" id="aYX-jw-uA7"/>
+                            <constraint firstItem="W9k-iX-6KF" firstAttribute="centerY" secondItem="uht-tM-QtC" secondAttribute="centerY" id="2Vr-n9-7Tt"/>
+                            <constraint firstItem="qPf-Sa-EQI" firstAttribute="top" secondItem="Q8f-7x-ncT" secondAttribute="bottom" constant="20" id="4s0-ti-hps"/>
+                            <constraint firstItem="Q8f-7x-ncT" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" id="6wa-qg-d3E"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="OUf-n8-A9K" secondAttribute="trailing" id="8Cu-il-4cN"/>
+                            <constraint firstItem="Uou-Rn-KOH" firstAttribute="top" secondItem="W9k-iX-6KF" secondAttribute="bottom" constant="61.5" id="KO1-tr-8Uv"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="qPf-Sa-EQI" secondAttribute="trailing" id="Q8O-hL-E5Q"/>
+                            <constraint firstItem="uht-tM-QtC" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" id="T4m-7B-5M3"/>
+                            <constraint firstItem="LRA-Ro-g2N" firstAttribute="trailing" secondItem="P7R-MC-LKq" secondAttribute="trailingMargin" id="X8R-5v-rov"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Q8f-7x-ncT" secondAttribute="trailing" id="arJ-G5-OO1"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="W9k-iX-6KF" secondAttribute="trailing" id="eWo-tP-fsG"/>
+                            <constraint firstItem="W9k-iX-6KF" firstAttribute="leading" secondItem="uht-tM-QtC" secondAttribute="trailing" constant="8" id="lDk-2s-Nmo"/>
+                            <constraint firstItem="qPf-Sa-EQI" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" id="qCY-y0-EBu"/>
+                            <constraint firstItem="OUf-n8-A9K" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" id="sU2-mK-DlC"/>
+                            <constraint firstItem="LRA-Ro-g2N" firstAttribute="top" secondItem="qPf-Sa-EQI" secondAttribute="bottom" constant="20" id="tVd-GJ-tsL"/>
+                            <constraint firstItem="LRA-Ro-g2N" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" id="u6E-0K-tkS"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerX" secondItem="P7R-MC-LKq" secondAttribute="centerX" id="uIm-xc-nvN"/>
+                            <constraint firstItem="Q8f-7x-ncT" firstAttribute="top" secondItem="OUf-n8-A9K" secondAttribute="bottom" constant="20" id="vGY-ez-ne3"/>
+                            <constraint firstItem="OUf-n8-A9K" firstAttribute="top" secondItem="Hc4-ia-dRw" secondAttribute="bottom" constant="20" id="vi0-rA-mjd"/>
+                            <constraint firstItem="uht-tM-QtC" firstAttribute="top" secondItem="LRA-Ro-g2N" secondAttribute="bottom" constant="20" id="zze-kW-625"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="kYZ-5n-R2a"/>
                     <connections>
+                        <outlet property="amountTextField" destination="W9k-iX-6KF" id="pRt-ot-cC9"/>
+                        <outlet property="countryCodeTextField" destination="LRA-Ro-g2N" id="Gh5-Fo-30O"/>
+                        <outlet property="currencyTextField" destination="uht-tM-QtC" id="N7Y-8W-14p"/>
+                        <outlet property="customerIdTextField" destination="Q8f-7x-ncT" id="IUu-6E-jOm"/>
+                        <outlet property="environmentControl" destination="OUf-n8-A9K" id="STs-4V-xIH"/>
                         <outlet property="phoneNumberTextField" destination="qPf-Sa-EQI" id="Tlr-os-MLG"/>
                     </connections>
                 </viewController>
