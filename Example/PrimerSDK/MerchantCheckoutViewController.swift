@@ -24,7 +24,8 @@ class MerchantCheckoutViewController: UIViewController {
     let vaultApayaSettings = PrimerSettings(
         currency: .GBP,
         hasDisabledSuccessScreen: true,
-        isInitialLoadingHidden: true
+        isInitialLoadingHidden: true,
+        customer: Customer(mobilePhoneNumber: "07538121305")
     )
     
     let vaultPayPalSettings = PrimerSettings(
