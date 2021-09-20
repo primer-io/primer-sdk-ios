@@ -18,7 +18,7 @@ internal protocol FormViewModelProtocol {
     #if canImport(CardScan)
     func onBottomLinkTapped(delegate: CardScannerViewControllerDelegate)
     #endif
-    func submit(completion: @escaping (PrimerError?) -> Void)
+    func submit()
     func onReturnButtonTapped()
 }
 
@@ -127,15 +127,7 @@ internal class FormViewModel: FormViewModelProtocol {
         case .address:
             router.popAllAndShow(.confirmMandate)
         case .cardForm:
-            submit { error in
-                DispatchQueue.main.async { [weak self] in
-                    if let error = error {
-                        router.show(.error(error: error))
-                    } else {
-                        router.show(.success(type: .regular))
-                    }
-                }
-            }
+            submit()
         }
     }
 
@@ -150,7 +142,7 @@ internal class FormViewModel: FormViewModelProtocol {
         router.pop()
     }
 
-    func submit(completion: @escaping (PrimerError?) -> Void) {
+    func submit() {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         let instrument = PaymentInstrument(

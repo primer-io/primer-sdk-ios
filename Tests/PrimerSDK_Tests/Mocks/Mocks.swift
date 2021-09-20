@@ -345,7 +345,7 @@ class MockFormViewModel: FormViewModelProtocol {
 //        
 //    }
 
-    func submit(completion: @escaping (PrimerError?) -> Void) {
+    func submit() {
 
     }
 
