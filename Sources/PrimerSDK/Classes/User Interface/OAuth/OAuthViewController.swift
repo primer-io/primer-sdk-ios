@@ -207,9 +207,6 @@ internal class OAuthViewController: PrimerViewController {
     // PayPal
     private func onOAuthCompleted(callbackURL: URL?) {
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-        
-            // FIXME: Is switching to the main thread really needed here? If it's needed by the Router that's handling
-            // various UI procedeures, shouldn't it be moved in there?
         viewModel.tokenize(host, with: { (paymentMethod, err) in
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()

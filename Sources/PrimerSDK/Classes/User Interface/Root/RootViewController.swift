@@ -27,6 +27,11 @@ internal class RootViewController: PrimerViewController {
     var hasSetPointOrigin = false
     var currentHeight: CGFloat = 0
 
+    deinit {
+        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     init() {
         super.init(nibName: nil, bundle: nil)
         
@@ -38,11 +43,6 @@ internal class RootViewController: PrimerViewController {
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
-    deinit {
-        log(logLevel: .debug, message: "🧨 destroyed: \(self.self)")
-        NotificationCenter.default.removeObserver(self)
-    }
 
     override func viewDidLoad() {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()

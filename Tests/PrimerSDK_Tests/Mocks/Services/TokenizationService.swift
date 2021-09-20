@@ -10,6 +10,7 @@
 @testable import PrimerSDK
 
 class MockTokenizationService: TokenizationServiceProtocol {
+    
     var tokenizedPaymentMethodToken: PaymentMethodToken?
     
     var tokenizeCalled = false
