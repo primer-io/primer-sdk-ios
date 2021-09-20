@@ -73,7 +73,7 @@ extension VaultPaymentMethodViewController: UITableViewDelegate, UITableViewData
 
         } else {
 
-            guard let methodId = viewModel.paymentMethods[indexPath.row].token else { return }
+            let methodId = viewModel.paymentMethods[indexPath.row].token
 
             let alert = AlertController(
                 title: NSLocalizedString("primer-delete-alert-title",

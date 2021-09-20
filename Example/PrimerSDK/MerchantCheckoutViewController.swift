@@ -226,7 +226,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-        guard let token = paymentMethodToken.token else { return completion(NetworkError.missingParams) }
+        let token = paymentMethodToken.token
 
         guard let url = URL(string: "\(endpoint)/transaction") else {
             return completion(NetworkError.missingParams)
