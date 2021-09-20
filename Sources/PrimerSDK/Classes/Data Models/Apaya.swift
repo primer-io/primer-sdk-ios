@@ -11,12 +11,14 @@ public struct Apaya {
         let reference: String = "recurring"
         let language: String?
         let currencyCode: String
+        let phoneNumber: String?
 
         enum CodingKeys: String, CodingKey {
             case merchantAccountId = "merchant_account_id"
             case reference = "reference"
             case language = "language"
             case currencyCode = "currency_code"
+            case phoneNumber = "phone_number"
         }
     }
     public struct CreateSessionAPIResponse: Decodable {
