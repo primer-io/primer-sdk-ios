@@ -80,6 +80,7 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var customer: Customer?
     
     var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
     

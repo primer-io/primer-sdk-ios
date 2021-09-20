@@ -28,6 +28,7 @@ internal protocol PrimerSettingsProtocol {
 //    var merchantCapabilities: [MerchantCapability]? { get }
     var isInitialLoadingHidden: Bool { get }
     var localeData: LocaleData { get }
+    var customer: Customer? { get set }
 }
 
 /**
@@ -72,6 +73,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //    internal(set) public var merchantCapabilities: [MerchantCapability]?
     internal(set) public var isInitialLoadingHidden: Bool
     internal(set) public var localeData: LocaleData
+    internal(set) public var customer: Customer?
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
@@ -111,7 +113,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //        supportedNetworks: [PaymentNetwork]? = nil,
 //        merchantCapabilities: [MerchantCapability]? = nil,
         isInitialLoadingHidden: Bool = false,
-        localeData: LocaleData? = nil
+        localeData: LocaleData? = nil,
+        customer: Customer? = nil
     ) {
         self.amount = amount
         self.currency = currency
@@ -131,6 +134,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //        self.merchantCapabilities = merchantCapabilities
         self.isInitialLoadingHidden = isInitialLoadingHidden
         self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
+        self.customer = customer
         
         if !orderItems.filter({ $0.unitAmount != nil }).isEmpty {
             // In case order items have been provided: Replace amount with the sum of the unit amounts
