@@ -11,6 +11,9 @@ internal protocol VaultCheckoutViewModelProtocol {
 }
 
 internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
+    
+    private var resumeHandler: ResumeHandlerProtocol!
+    
     var mandate: DirectDebitMandate {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.directDebitMandate
@@ -53,6 +56,10 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
+    init() {
+        resumeHandler = self
     }
 
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
@@ -97,8 +104,23 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.authorizePayment(selectedToken, completion)
         settings.onTokenizeSuccess(selectedToken, completion)
+        Primer.shared.delegate?.onTokenizeSuccess?(selectedToken, resumeHandler: resumeHandler)
     }
 
+}
+
+extension VaultCheckoutViewModel: ResumeHandlerProtocol {
+    func handle(error: Error) {
+        
+    }
+    
+    func handle(newClientToken clientToken: String) {
+        
+    }
+    
+    func handleSuccess() {
+        
+    }
 }
 
 internal extension Int {

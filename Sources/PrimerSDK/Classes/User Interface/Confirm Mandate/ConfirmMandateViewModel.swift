@@ -19,6 +19,8 @@ internal protocol ConfirmMandateViewModelProtocol {
 
 internal class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
     
+    var resumeHandler: ResumeHandlerProtocol!
+    
     var mandate: DirectDebitMandate {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.directDebitMandate
@@ -58,6 +60,10 @@ internal class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
+    init() {
+        resumeHandler = self
     }
 
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
@@ -116,6 +122,7 @@ internal class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
                         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                         settings.authorizePayment(token, completion)
                         settings.onTokenizeSuccess(token, completion)
+                        Primer.shared.delegate?.onTokenizeSuccess?(token, resumeHandler: self.resumeHandler)
                     }
                 }
             }
@@ -125,6 +132,20 @@ internal class ConfirmMandateViewModel: ConfirmMandateViewModelProtocol {
     func eraseData() {
         let state: AppStateProtocol = DependencyContainer.resolve()
         state.directDebitMandate = DirectDebitMandate()
+    }
+}
+
+extension ConfirmMandateViewModel: ResumeHandlerProtocol {
+    func handle(error: Error) {
+        
+    }
+    
+    func handle(newClientToken clientToken: String) {
+        
+    }
+    
+    func handleSuccess() {
+        
     }
 }
 

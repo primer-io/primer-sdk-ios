@@ -5,6 +5,7 @@ import PassKit
 
 internal class VaultCheckoutViewController: PrimerViewController {
 
+    private var resumeHandler: ResumeHandlerProtocol!
     var subView: VaultCheckoutView = VaultCheckoutView()
     var tokenSelectedForPayment: PaymentMethodToken?
 
@@ -17,6 +18,7 @@ internal class VaultCheckoutViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        resumeHandler = self
         
         let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
 
@@ -173,6 +175,38 @@ extension VaultCheckoutViewController: VaultCheckoutViewDelegate {
                 router.show(.success(type: .regular))
             }
         })
+    }
+}
+
+extension VaultCheckoutViewController: ResumeHandlerProtocol {
+    func handle(error: Error) {
+        DispatchQueue.main.async {
+            let router: RouterDelegate = DependencyContainer.resolve()
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                router.show(.error(error: PrimerError.generic))
+            }
+        }
+    }
+    
+    func handle(newClientToken clientToken: String) {
+        //
+    }
+    
+    func handleSuccess() {
+        DispatchQueue.main.async {
+            let router: RouterDelegate = DependencyContainer.resolve()
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                router.show(.success(type: .regular))
+            }
+        }
     }
 }
 
