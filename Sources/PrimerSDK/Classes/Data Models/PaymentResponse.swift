@@ -43,20 +43,8 @@ internal enum PaymentStatus: Int, Codable {
 }
 
 internal enum RequiredActionName: String, Codable {
-    case threeDSAuthentication
-    case usePrimerSDK
-//    case unknown = 1000
-//
-//    public init?(strValue: String) {
-//        switch strValue.uppercased() {
-//        case "3DS_AUTHENTICATION":
-//            self = .threeDSAuthentication
-//        case "USE_PRIMER_SDK":
-//            self = .usePrimerSDK
-//        default:
-//            return nil
-//        }
-//    }
+    case threeDSAuthentication = "3DS_AUTHENTICATION"
+    case usePrimerSDK = "USE_PRIMER_SDK"
 }
 
 internal protocol PaymentResponseProtocol {
