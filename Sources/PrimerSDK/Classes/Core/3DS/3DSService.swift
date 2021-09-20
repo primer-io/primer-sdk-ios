@@ -17,7 +17,7 @@ protocol ThreeDSServiceProtocol {
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
         sdkDismissed: (() -> Void)?,
-        completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void
+        completion: @escaping (_ result: Result<(PaymentMethodToken, ThreeDS.PostAuthResponse?), Error>) -> Void
     )
     
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
@@ -124,7 +124,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
         sdkDismissed: (() -> Void)?,
-        completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void
+        completion: @escaping (_ result: Result<(PaymentMethodToken, ThreeDS.PostAuthResponse?), Error>) -> Void
     ) {
         do {
             try ThreeDSService.validate3DSParameters()
@@ -241,19 +241,19 @@ class ThreeDSService: ThreeDSServiceProtocol {
             case .authSuccess:
                 // Frictionless pass
                 // Frictionless attempt
-                completion(.success(beginAuthResponse.token))
+                completion(.success((beginAuthResponse.token, nil)))
                 return
             case .notPerformed:
                 // Not enough data to perform 3DS. Won't be returned.
                 break
             case .skipped:
                 // Skipped because of a technical failure.
-                completion(.success(beginAuthResponse.token))
+                completion(.success((beginAuthResponse.token, nil)))
                 return
             case .authFailed:
                 // Frictionless fail
                 // Frictionless not authenticated
-                completion(.success(beginAuthResponse.token))
+                completion(.success((beginAuthResponse.token, nil)))
                 return
             case .challenge:
                 // Continue to present the challenge
@@ -282,16 +282,16 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token!)
             }
             .done { postAuthResponse in
-                completion(.success(postAuthResponse.token))
+                completion(.success((postAuthResponse.token, postAuthResponse)))
             }
             .ensure {
                 self.threeDSSDKWindow?.isHidden = true
                 self.threeDSSDKWindow = nil
             }
             .catch { err in
-                var token = paymentMethodToken
+                let token = paymentMethodToken
                 token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue, challengeIssued: true)
-                completion(.success(token))
+                completion(.success((token, nil)))
             }
             
         }
@@ -300,9 +300,9 @@ class ThreeDSService: ThreeDSServiceProtocol {
 //            self.threeDSSDKWindow = nil
 //        }
         .catch { err in
-            var token = paymentMethodToken
+            let token = paymentMethodToken
             token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue, challengeIssued: false)
-            completion(.success(token))
+            completion(.success((token, nil)))
         }
     }
     
@@ -371,7 +371,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
         sdkDismissed: (() -> Void)?,
-        completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void
+        completion: @escaping (_ result: Result<(PaymentMethodToken, ThreeDS.PostAuthResponse?), Error>) -> Void
     ) { }
     
     

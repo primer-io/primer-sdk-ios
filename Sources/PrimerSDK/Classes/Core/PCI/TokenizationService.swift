@@ -86,15 +86,16 @@ internal class TokenizationService: TokenizationServiceProtocol {
                                     switch result {
                                     case .success(let paymentMethodToken):
                                         if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-                                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+                                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken.0)
                                         }
 
-                                        onTokenizeSuccess(.success(paymentMethodToken))
+                                        onTokenizeSuccess(.success(paymentMethodToken.0))
                                         
                                     case .failure(let err):
                                         // Even if 3DS fails, continue...
                                         log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
                                         onTokenizeSuccess(.success(paymentMethodToken))
+                                        
                                     }
                                 }
 

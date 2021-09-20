@@ -124,8 +124,8 @@ extension VaultCheckoutViewController: UITableViewDelegate, UITableViewDataSourc
             router.root?.dismiss(animated: true, completion: {
                 DispatchQueue.main.async { [weak self] in
                     let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
-                    appleViewModel.payWithApple { (err) in
-
+                    appleViewModel.payWithApple { (token, err) in
+                        
                     }
                 }
             })

@@ -192,7 +192,7 @@ public class Primer {
         DispatchQueue.main.async { [weak self] in
             if case .checkoutWithApplePay = flow {
                 let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
-                appleViewModel.payWithApple { (err) in
+                appleViewModel.payWithApple { (tok, err) in
                     
                 }
             } else {

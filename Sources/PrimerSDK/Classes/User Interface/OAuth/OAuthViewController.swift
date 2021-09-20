@@ -103,7 +103,7 @@ internal class OAuthViewController: PrimerViewController {
                 }
                 
                 let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-                viewModel.tokenize(host, with: { err in
+                viewModel.tokenize(host, with: { (paymentMethod, err) in
                     DispatchQueue.main.async {
                         if let err = err {
                             _ = ErrorHandler.shared.handle(error: err)
@@ -208,9 +208,9 @@ internal class OAuthViewController: PrimerViewController {
     private func onOAuthCompleted(callbackURL: URL?) {
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
         
-        viewModel.tokenize(host, with: { err in
             // FIXME: Is switching to the main thread really needed here? If it's needed by the Router that's handling
             // various UI procedeures, shouldn't it be moved in there?
+        viewModel.tokenize(host, with: { (paymentMethod, err) in
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()
                 
@@ -238,7 +238,7 @@ extension OAuthViewController: ReloadDelegate {
     // Not used in Klarna, check PayPal
     func reload() {
         let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-        viewModel.tokenize(host, with: { err in
+        viewModel.tokenize(host, with: { (paymentMethod, err) in
             DispatchQueue.main.async {
                 let router: RouterDelegate = DependencyContainer.resolve()
                 
