@@ -190,14 +190,15 @@ public class Primer {
         Primer.shared.flow = flow
         
         DispatchQueue.main.async { [weak self] in
-            if case .checkoutWithApplePay = flow {
+            guard let self = self else { return }
+            if flow == .checkoutWithApplePay {
                 let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
                 appleViewModel.payWithApple { (tok, err) in
                     
                 }
             } else {
-                self?.root = RootViewController()
-                guard let root = self?.root else { return }
+                self.root = RootViewController()
+                guard let root = self.root else { return }
                 let router: RouterDelegate = DependencyContainer.resolve()
                 router.setRoot(root)
                 controller.present(root, animated: true)
