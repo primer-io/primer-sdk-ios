@@ -43,7 +43,7 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if isBeingDismissed {
-            viewModel?.onDismiss()
+            viewModel?.onDismiss(error: nil)
             delegate?.reload()
         }
     }
@@ -81,14 +81,10 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
     }
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         let nsError = error as NSError
-        if nsError.domain == NSURLErrorDomain {
-            if (-1006 ... -1000).contains(nsError.code) ||
-                (-1011 ... -1009).contains(nsError.code)
-            {
-                let alert = UIAlertController(title: "Error", message: "It seems your internet connection is offline. Please try again later.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
-            }
+        if nsError.domain == NSURLErrorDomain && webView.url == nil {
+            Primer.shared.delegate?.checkoutFailed?(with: error)
+            viewModel?.onDismiss(error: error)
+            dismiss(animated: true, completion: nil)
         }
     }
     
