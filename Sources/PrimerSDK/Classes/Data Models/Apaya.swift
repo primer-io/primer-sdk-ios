@@ -37,7 +37,7 @@ public struct Apaya {
         let status: String
         let productId: String
         
-        static func create(from url: URL?) -> Result<Apaya.WebViewResult, ApayaException>? {
+        static func create(from url: URL?) -> Result<Apaya.WebViewResult, Error>? {
             guard
                 let url = url,
                 url.queryParameterValue(for: "success") != nil,

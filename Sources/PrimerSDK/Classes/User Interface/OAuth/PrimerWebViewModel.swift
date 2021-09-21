@@ -16,9 +16,9 @@ internal protocol PrimerWebViewModelProtocol: AnyObject {
 
 internal class ApayaWebViewModel: PrimerWebViewModelProtocol {
 
-    var result: Result<Apaya.WebViewResult, ApayaException>?
+    var result: Result<Apaya.WebViewResult, Error>?
 
-    private func setResult(_ value: Result<Apaya.WebViewResult, ApayaException>?) {
+    private func setResult(_ value: Result<Apaya.WebViewResult, Error>?) {
         result = value
     }
 
