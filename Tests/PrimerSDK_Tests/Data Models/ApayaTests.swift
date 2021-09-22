@@ -93,6 +93,36 @@ class ApayaDataModelTests: XCTestCase {
             XCTFail()
         }
     }
+    
+    func test_apaya_carrier() throws {
+        var carrier: Apaya.Carrier!
+        
+        carrier = Apaya.Carrier(mcc: 234, mnc: 99)
+        if carrier != Apaya.Carrier.EE_UK {
+            XCTFail("Wrong carrier")
+        }
+        
+        carrier = Apaya.Carrier(mcc: 234, mnc: 11)
+        if carrier != Apaya.Carrier.O2_UK {
+            XCTFail("Wrong carrier")
+        }
+        
+        carrier = Apaya.Carrier(mcc: 234, mnc: 15)
+        if carrier != Apaya.Carrier.Vodafone_UK {
+            XCTFail("Wrong carrier")
+        }
+        
+        carrier = Apaya.Carrier(mcc: 234, mnc: 20)
+        if carrier != Apaya.Carrier.Three_UK {
+            XCTFail("Wrong carrier")
+        }
+        
+        carrier = Apaya.Carrier(mcc: 242, mnc: 99)
+        if carrier != Apaya.Carrier.Strex_Norway {
+            XCTFail("Wrong carrier")
+        }
+    }
+    
 }
 
 
