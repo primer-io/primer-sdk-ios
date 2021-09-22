@@ -313,7 +313,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             return
         }
 
-        if let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
+        if paymentMethodToken.paymentInstrumentType == .paymentCard,
+           let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
            threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess {
             var message: String = ""
 
