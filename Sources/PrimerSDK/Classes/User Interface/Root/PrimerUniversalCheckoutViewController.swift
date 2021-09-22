@@ -208,7 +208,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     
                 case .goCardlessMandate:
                     // Doesn't work for checkout
-                break
+                    break
+                    
+                case .apaya:
+                    // Doesn't work for checkout
+                    break
                     
                 case .klarna:
                     paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
