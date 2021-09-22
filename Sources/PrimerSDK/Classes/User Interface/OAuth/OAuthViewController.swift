@@ -327,6 +327,7 @@ extension OAuthViewController: ResumeHandlerProtocol {
             if settings.hasDisabledSuccessScreen {
                 Primer.shared.dismiss()
             } else {
+                self.dismiss(animated: true, completion: nil)
                 router.show(.error(error: PrimerError.generic))
             }
         }
@@ -344,6 +345,7 @@ extension OAuthViewController: ResumeHandlerProtocol {
             if settings.hasDisabledSuccessScreen {
                 Primer.shared.dismiss()
             } else {
+                self.dismiss(animated: true, completion: nil)
                 router.show(.success(type: .regular))
             }
         }
