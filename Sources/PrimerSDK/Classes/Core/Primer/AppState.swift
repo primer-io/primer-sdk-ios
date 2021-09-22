@@ -27,8 +27,8 @@ internal protocol AppStateProtocol: AnyObject {
     var customerToken: String? { get set }
     var sessionId: String? { get set }
     // Apaya
-    func setApayaResult(_ result: Result<Apaya.WebViewResult, ApayaException>)
-    func getApayaResult() -> Result<Apaya.WebViewResult, ApayaException>?
+    func setApayaResult(_ result: Result<Apaya.WebViewResult, Error>)
+    func getApayaResult() -> Result<Apaya.WebViewResult, Error>?
 }
 
 internal class AppState: AppStateProtocol {
@@ -51,11 +51,11 @@ internal class AppState: AppStateProtocol {
     var customerToken: String?
     var sessionId: String?
     // Apaya
-    private var apayaResult: Result<Apaya.WebViewResult, ApayaException>?
-    func setApayaResult(_ result: Result<Apaya.WebViewResult, ApayaException>) {
+    private var apayaResult: Result<Apaya.WebViewResult, Error>?
+    func setApayaResult(_ result: Result<Apaya.WebViewResult, Error>) {
         self.apayaResult = result
     }
-    func getApayaResult() -> Result<Apaya.WebViewResult, ApayaException>? {
+    func getApayaResult() -> Result<Apaya.WebViewResult, Error>? {
         return self.apayaResult
     }
     //

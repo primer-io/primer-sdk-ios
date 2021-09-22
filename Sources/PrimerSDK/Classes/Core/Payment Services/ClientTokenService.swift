@@ -21,7 +21,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
 
         settings.clientTokenRequestCallback({ [weak self] (token, err) in
             if let err = err {
-                completion(PrimerError.clientTokenNull)
+                completion(err)
             } else if let token = token {
                 guard let jwtTokenPayload = token.jwtTokenPayload,
                       let expDate = jwtTokenPayload.expDate

@@ -11,14 +11,14 @@ import UIKit
 
 internal protocol PrimerWebViewModelProtocol: AnyObject {
     func onRedirect(with url: URL)
-    func onDismiss()
+    func onDismiss(error: Error?)
 }
 
 internal class ApayaWebViewModel: PrimerWebViewModelProtocol {
 
-    var result: Result<Apaya.WebViewResult, ApayaException>?
+    var result: Result<Apaya.WebViewResult, Error>?
 
-    private func setResult(_ value: Result<Apaya.WebViewResult, ApayaException>?) {
+    private func setResult(_ value: Result<Apaya.WebViewResult, Error>?) {
         result = value
     }
 
@@ -26,10 +26,17 @@ internal class ApayaWebViewModel: PrimerWebViewModelProtocol {
         setResult(Apaya.WebViewResult.create(from: url))
     }
 
-    func onDismiss() {
-        let result = self.result ?? .failure(ApayaException.webViewFlowCancelled)
+    func onDismiss(error: Error? = nil) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        state.setApayaResult(result)
+        
+        if let err = error {
+            let result: Result<Apaya.WebViewResult, Error> = .failure(err)
+            state.setApayaResult(result)
+        } else {
+            let result = self.result ?? .failure(ApayaException.webViewFlowCancelled)
+            state.setApayaResult(result)
+        }
+        
         setResult(nil)
     }
 }

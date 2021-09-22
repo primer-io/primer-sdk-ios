@@ -88,7 +88,7 @@ class ApayaLoadWebViewModelTests: XCTestCase {
             }
             expectation.fulfill()
         }
-        state.setApayaResult(.failure(.failedApiCall))
+        state.setApayaResult(.failure(ApayaException.failedApiCall))
         DependencyContainer.register(router as RouterDelegate)
         DependencyContainer.register(state as AppStateProtocol)
         
