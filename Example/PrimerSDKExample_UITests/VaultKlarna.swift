@@ -34,17 +34,17 @@ class Klarna: XCTestCase {
     func testInitKlarna() throws {
         try Base().testInitializeSDK()
 
-        app.buttons["vault_klarna_button"].tap()
-
-        let exists = NSPredicate(format: "exists == 1")
-        
-        let webView = app.webViews["primer_webview"]
-        expectation(for: exists, evaluatedWith: webView, handler: nil)
-        waitForExpectations(timeout: 15, handler: nil)
-        
-        let continueButton = app.webViews.buttons["Continue"]
-        expectation(for: exists, evaluatedWith: continueButton, handler: nil)
-        waitForExpectations(timeout: 30, handler: nil)
+//        app.buttons["vault_klarna_button"].tap()
+//
+//        let exists = NSPredicate(format: "exists == 1")
+//        
+//        let webView = app.webViews["primer_webview"]
+//        expectation(for: exists, evaluatedWith: webView, handler: nil)
+//        waitForExpectations(timeout: 15, handler: nil)
+//        
+//        let continueButton = app.webViews.buttons["Continue"]
+//        expectation(for: exists, evaluatedWith: continueButton, handler: nil)
+//        waitForExpectations(timeout: 30, handler: nil)
     }
 
 }

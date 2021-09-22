@@ -8,9 +8,12 @@
 
 import Foundation
 
+enum Environment: String, Codable {
+    case dev, sandbox, staging, production
+}
 
 struct CreateClientTokenRequest: Codable {
-    let customerId: String
+    let customerId: String?
     let customerCountryCode: String?
-    var environment: String?
+    var environment: Environment = .sandbox
 }

@@ -14,7 +14,6 @@ struct AuthorizationRequest: Encodable {
     let paymentMethod: String
     let amount: Int
     let type: String?
-    var capture: Bool
     let currencyCode: String
 }
 

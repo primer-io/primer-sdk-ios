@@ -42,7 +42,7 @@ class PayPalServiceTests: XCTestCase {
 
         XCTAssertEqual(api.isCalled, true)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     func test_startOrderSession_fails_if_client_token_nil() throws {
@@ -72,7 +72,7 @@ class PayPalServiceTests: XCTestCase {
         // Since no token is found, API call shouldn't be performed.
         XCTAssertEqual(api.isCalled, false)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     func test_startOrderSession_fails_if_configId_nil() throws {
@@ -102,7 +102,7 @@ class PayPalServiceTests: XCTestCase {
         // Since no token is found, API call shouldn't be performed.
         XCTAssertEqual(api.isCalled, false)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     // MARK: startBillingAgreementSession
@@ -132,7 +132,7 @@ class PayPalServiceTests: XCTestCase {
 
         XCTAssertEqual(api.isCalled, true)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     func test_startBillingAgreementSession_fails_if_client_token_nil() throws {
@@ -161,7 +161,7 @@ class PayPalServiceTests: XCTestCase {
 
         XCTAssertEqual(api.isCalled, false)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     func test_startBillingAgreementSession_fails_if_configId_nil() throws {
@@ -191,7 +191,7 @@ class PayPalServiceTests: XCTestCase {
         // Since no token is found, API call shouldn't be performed.
         XCTAssertEqual(api.isCalled, false)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     // MARK: confirmBillingAgreement
@@ -221,7 +221,7 @@ class PayPalServiceTests: XCTestCase {
 
         XCTAssertEqual(api.isCalled, true)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     func test_confirmBillingAgreement_fails_if_client_token_nil() throws {
@@ -250,7 +250,7 @@ class PayPalServiceTests: XCTestCase {
 
         XCTAssertEqual(api.isCalled, false)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     func test_confirmBillingAgreement_fails_if_configId_nil() throws {
@@ -280,7 +280,7 @@ class PayPalServiceTests: XCTestCase {
 
         XCTAssertEqual(api.isCalled, false)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 }
 

@@ -344,7 +344,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
         // FIXME: Why would you have a function that takes a UIButton as input, but then perform actions on payButton?
         payButton.isEnabled = false
         log(logLevel: .verbose, title: nil, message: "Paying", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-        payButton.showSpinner()
+        payButton.showSpinner(true)
         delegate?.pay()
     }
 }

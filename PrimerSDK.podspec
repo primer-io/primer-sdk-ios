@@ -8,13 +8,13 @@ Pod::Spec.new do |spec|
     DESC
     spec.homepage     = "https://www.primer.io"
     spec.license      = { :type => "MIT", :file => "LICENSE" }
-    spec.author       = { "Primer" => "carl@primer.io" }
-    spec.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{spec.version}" }
+    spec.author       = { "Primer" => "dx@primer.io" }
+    spec.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{ENV['LIB_VERSION']}" }
     
     spec.swift_version = "5.3"
     spec.ios.deployment_target = '10.0'
     
-    spec.source_files = 'Sources/PrimerSDK/Classes/**/*.{h,m,swift}'
+    spec.source_files = 'Sources/PrimerSDK/Classes/**/*.{h,m,swift,storyboard,xib}'
 #    spec.resources = [
 ##        'Sources/PrimerSDK/Resources/*.xcassets',
 ##        'Sources/PrimerSDK/Resources/Localizable/*'
@@ -22,7 +22,9 @@ Pod::Spec.new do |spec|
     spec.resource_bundles = {
         'PrimerResources' => [
             'Sources/PrimerSDK/Resources/*.xcassets',
-            'Sources/PrimerSDK/Resources/Localizable/*'
+            'Sources/PrimerSDK/Resources/Localizable/*',
+#            'Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}'
+#            'Sources/PrimerSDK/Resources/Nibs/*.{xib}'
         ]
     }
     

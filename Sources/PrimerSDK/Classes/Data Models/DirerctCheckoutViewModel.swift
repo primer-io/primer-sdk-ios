@@ -1,3 +1,12 @@
+//
+//  DirerctCheckoutViewModel.swift
+//  PrimerSDK
+//
+//  Created by Evangelos Pittas on 6/8/21.
+//
+
+import Foundation
+
 #if canImport(UIKit)
 
 import Foundation
@@ -101,10 +110,17 @@ struct PaymentMethodViewModel {
 
         case .payPal:
             return ""
+            
         case .klarna:
-            return ""
+            return NSLocalizedString("payment-method-type-klarna",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Klarna.",
+                                     comment: "Klarna - Payment Method Type (Klarna)")
+
         case .apaya:
             return "Pay by mobile"
+
         default:
             return ""
         }
@@ -159,3 +175,4 @@ struct AmountViewModel {
 }
 
 #endif
+
