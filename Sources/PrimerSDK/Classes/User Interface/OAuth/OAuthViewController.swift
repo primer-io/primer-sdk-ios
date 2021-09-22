@@ -108,6 +108,11 @@ internal class OAuthViewController: PrimerViewController {
                 let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
                 viewModel.tokenize(host, with: { (paymentMethod, err) in
                     DispatchQueue.main.async {
+                        guard let self = self else {
+                            Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
+                            return
+                        }
+                        
                         if let err = err {
                             Primer.shared.delegate?.checkoutFailed?(with: err)
                             _ = ErrorHandler.shared.handle(error: err)
@@ -141,6 +146,7 @@ internal class OAuthViewController: PrimerViewController {
                                     }
                                 }
                             })
+                            
                             
                             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
                             
