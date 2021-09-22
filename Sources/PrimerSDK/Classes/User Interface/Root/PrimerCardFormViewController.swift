@@ -45,7 +45,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         view.backgroundColor = theme.colorTheme.main1
         
-        verticalStackView.spacing = 2
+        verticalStackView.spacing = 6
         
         cardNumberField.placeholder = "4242 4242 4242 4242"
         cardNumberField.heightAnchor.constraint(equalToConstant: 36).isActive = true
@@ -242,21 +242,14 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if isValid == false {
-            
-        }
         if primerTextFieldView is PrimerCardNumberFieldView, isValid == false {
             cardNumberContainerView.errorText = "Invalid card number"
-            print("PrimerCardNumberFieldView.isValid: \(isValid)")
         } else if primerTextFieldView is PrimerExpiryDateFieldView, isValid == false {
             expiryDateContainerView.errorText = "Invalid date"
-            print("PrimerExpiryDateFieldView.isValid: \(isValid)")
         } else if primerTextFieldView is PrimerCVVFieldView, isValid == false {
             cvvContainerView.errorText = "Invalid CVV"
-            print("PrimerCVVFieldView.isValid: \(isValid)")
         } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
             cardholderNameContainerView.errorText = "Invalid name"
-            print("PrimerCardholderNameFieldView.isValid: \(isValid)")
         }
 
         if cardNumberField.isTextValid,
