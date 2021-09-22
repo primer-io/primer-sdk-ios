@@ -182,7 +182,6 @@
 			isa = PBXGroup;
 			children = (
 				1DEBE0DD26B6FC92004E3064 /* Data Models */,
-				1D30D5DD2679046E001C7812 /* ViewControllers */,
 				1582B959260A3F2900C80BD7 /* Mocks */,
 				1582B969260A3F2900C80BD7 /* ViewModels */,
 				1582B96F260A3F2900C80BD7 /* Utils */,
@@ -314,13 +313,6 @@
 				15F97C7C2624730800DCB3BA /* UIViewController+API.swift */,
 			);
 			name = Extensions;
-			sourceTree = "<group>";
-		};
-		1D30D5DD2679046E001C7812 /* ViewControllers */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewControllers;
 			sourceTree = "<group>";
 		};
 		1DC7EE00261FA2A800BCBFFC /* Data Models */ = {
