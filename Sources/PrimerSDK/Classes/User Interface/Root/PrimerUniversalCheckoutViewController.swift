@@ -107,7 +107,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 savedCardView.render(model: cardButtonViewModel, showIcon: false)
                 
                 let tapGesture = UITapGestureRecognizer()
-                tapGesture.addTarget(self, action: #selector(savedCardTapped))
+                tapGesture.addTarget(self, action: #selector(togglePayButton))
                 savedCardView.addGestureRecognizer(tapGesture)
             }
             
@@ -266,10 +266,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         coveringView.isHidden = true
+        
+        let coveringViewTap = UITapGestureRecognizer()
+        coveringViewTap.addTarget(self, action: #selector(togglePayButton))
+        coveringView.addGestureRecognizer(coveringViewTap)
     }
     
     @objc
-    func savedCardTapped() {
+    func togglePayButton() {
         coveringView.isHidden = !coveringView.isHidden
         savedCardView.toggleBorder(isSelected: !coveringView.isHidden, isError: false)
     }
