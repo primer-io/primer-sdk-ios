@@ -50,7 +50,7 @@ class KlarnaServiceTests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
     
     func test_create_klarna_payment_session_without_config_fetched() throws {
@@ -78,7 +78,7 @@ class KlarnaServiceTests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     func test_create_klarna_payment_session_fail_no_client_token() throws {
@@ -112,7 +112,7 @@ class KlarnaServiceTests: XCTestCase {
         // Since no token is found, API call shouldn't be performed.
         XCTAssertEqual(api.isCalled, false)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
     
     func test_create_client_token_success() throws {
@@ -140,7 +140,7 @@ class KlarnaServiceTests: XCTestCase {
 
         XCTAssertEqual(api.isCalled, true)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     func test_create_client_token_fail_invalid_response() throws {
@@ -169,7 +169,7 @@ class KlarnaServiceTests: XCTestCase {
 
         XCTAssertEqual(api.isCalled, true)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     func test_finalize_payment_session_success() throws {
@@ -197,7 +197,7 @@ class KlarnaServiceTests: XCTestCase {
 
         XCTAssertEqual(api.isCalled, true)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     func test_finalize_payment_session_fail_invalid_response() throws {
@@ -225,7 +225,7 @@ class KlarnaServiceTests: XCTestCase {
 
         XCTAssertEqual(api.isCalled, true)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
     func test_finalize_payment_session_fail_no_client_token() throws {
@@ -252,7 +252,7 @@ class KlarnaServiceTests: XCTestCase {
         // Since no token is found, API call shouldn't be performed.
         XCTAssertEqual(api.isCalled, false)
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 }
 

@@ -6,8 +6,13 @@
 //  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
+import PrimerSDK
 import UIKit
 
 class AppViewController: UIViewController {
-    
+        
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+
 }

@@ -80,6 +80,7 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var customer: Customer?
     
     var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
     
@@ -112,17 +113,17 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 
     var urlSchemeIdentifier: String? = ""
 
-    var amount: Int? { return 200 }
+    var amount: Int? = 100
 
-    var currency: Currency? { return .EUR }
+    var currency: Currency? = .EUR
 
-    var merchantIdentifier: String? { return "mid"}
+    var merchantIdentifier: String? = "mid"
 
-    var countryCode: CountryCode? { return .fr }
+    var countryCode: CountryCode? = .fr
 
-    var applePayEnabled: Bool { return false }
+    var applePayEnabled: Bool = false
 
-    var customerId: String? { return "cid" }
+    var customerId: String? = "cid"
 
     var theme: PrimerTheme { return PrimerTheme() }
 
@@ -243,106 +244,20 @@ class MockLocator {
         DependencyContainer.register(MockTokenizationService() as TokenizationServiceProtocol)
         DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(MockKlarnaService() as KlarnaServiceProtocol)
-        DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
+//        DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
         DependencyContainer.register(MockCardScannerViewModel() as CardScannerViewModelProtocol)
         DependencyContainer.register(MockDirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
         DependencyContainer.register(MockOAuthViewModel() as OAuthViewModelProtocol)
         DependencyContainer.register(MockVaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(MockVaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(MockConfirmMandateViewModel() as ConfirmMandateViewModelProtocol)
-        DependencyContainer.register(MockFormViewModel() as FormViewModelProtocol)
         DependencyContainer.register(MockExternalViewModel() as ExternalViewModelProtocol)
-        DependencyContainer.register(MockRouter() as RouterDelegate)
         DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
     }
 }
 
 class MockDirectDebitService: DirectDebitServiceProtocol {
     func createMandate(_ completion: @escaping (Error?) -> Void) {
-
-    }
-}
-
-class MockRouter: Router {
-    
-    override func presentSuccessScreen(for successScreenType: SuccessScreenType) {
-        
-    }
-    
-    override func presentErrorScreen(with err: Error) {
-        
-    }
-
-    
-    override func setRoot(_ root: RootViewController) {
-
-    }
-    
-    var showCalled = false
-    var popCalled = false
-    var route: Route?
-    var callback: (() -> Void)?
-    
-    func setPopCalledTrue() {
-        popCalled = true
-        guard let callback = callback else { return }
-        callback()
-    }
-    
-    func setShowCalledTrue() {
-        showCalled = true
-        guard let callback = callback else { return }
-        callback()
-    }
-
-    override func show(_ route: Route) {
-        self.route = route
-        setShowCalledTrue()
-    }
-
-    override func pop() {
-        setPopCalledTrue()
-    }
-
-    override func popAllAndShow(_ route: Route) {
-
-    }
-
-    override func popAndShow(_ route: Route) {
-
-    }
-}
-
-class MockFormViewModel: FormViewModelProtocol {
-    func loadConfig(_ completion: @escaping (Error?) -> Void) {
-        
-    }
-    
-    var popOnComplete: Bool = false
-
-    func getSubmitButtonTitle(formType: FormType) -> String {
-        return "title"
-    }
-
-    func onSubmit(formType: FormType) {
-
-    }
-
-//    func onBottomLinkTapped(delegate: CardScannerViewControllerDelegate) {
-//        
-//    }
-
-    func submit(completion: @escaping (PrimerError?) -> Void) {
-
-    }
-
-    func onReturnButtonTapped() {
-
-    }
-
-    var mandate: DirectDebitMandate = DirectDebitMandate(firstName: "", lastName: "", email: "", iban: "", accountNumber: "", sortCode: "", address: nil)
-
-    func setState(_ value: String?, type: FormTextFieldType) {
 
     }
 }
