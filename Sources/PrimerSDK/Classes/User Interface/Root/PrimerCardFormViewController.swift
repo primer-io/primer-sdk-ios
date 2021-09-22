@@ -258,7 +258,7 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
            cardholderNameField.isTextValid
         {
             submitButton.isEnabled = true
-            submitButton.backgroundColor = theme.colorTheme.text3
+            submitButton.backgroundColor = theme.colorTheme.main2
         } else {
             submitButton.isEnabled = false
             submitButton.backgroundColor = theme.colorTheme.disabled1
