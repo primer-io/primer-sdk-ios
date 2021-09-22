@@ -22,7 +22,9 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         super.viewDidLoad()
         environmentControl.selectedSegmentIndex = 2
         countryCodeTextField.text = CountryCode.gb.rawValue
+        countryCodeTextField.accessibilityIdentifier = "country_textfield"
         currencyTextField.text = Currency.GBP.rawValue
+        currencyTextField.accessibilityIdentifier = "currency_textfield"
         amountTextField.text = "1.00"
         
         let countryPicker = UIPickerView()
@@ -32,6 +34,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         countryPicker.delegate = self
         
         let currencyPicker = UIPickerView()
+        currencyPicker.accessibilityIdentifier = "currency_picker"
         currencyPicker.tag = 1
         currencyTextField.inputView = currencyPicker
         currencyPicker.dataSource = self

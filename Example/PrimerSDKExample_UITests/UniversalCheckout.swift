@@ -23,6 +23,7 @@ class UniversalCheckout: XCTestCase {
     }
 
     func testUniversalCheckout() throws {
+        try Base().testSandbox()
         try Base().testInitializeSDK()
         
         let universalCheckoutButton = app.buttons["universal_checkout_button"]
@@ -62,29 +63,43 @@ class UniversalCheckout: XCTestCase {
         XCTAssert(paymentMethodsTableView.exists, "Payment methods table view should exist")
         
         // Test that Apple Pay exists and is able to be tapped
-//        let applePayCell = paymentMethodsTableView.cells.element(matching: .cell, identifier: "payment_method_table_view_apple_pay_cell")
-//        XCTAssert(applePayCell.exists, "ApplePay cell should exist")
-//        XCTAssert(applePayCell.isHittable, "ApplePay cell should be able to be tapped")
+        let applePayCell = paymentMethodsTableView.cells.element(matching: .cell, identifier: "payment_method_table_view_apple_pay_cell")
+        XCTAssert(applePayCell.exists, "ApplePay cell should exist")
+        XCTAssert(applePayCell.isHittable, "ApplePay cell should be able to be tapped")
         
         // Test that Klarna exists and is able to be tapped
-//        let klarnaCell = paymentMethodsTableView.cells.element(matching: .cell, identifier: "payment_method_table_view_klarna_cell")
-//        XCTAssert(klarnaCell.exists, "Klarna cell should exist")
-//        XCTAssert(klarnaCell.isHittable, "Klarna cell should be able to be tapped")
+        let klarnaCell = paymentMethodsTableView.cells.element(matching: .cell, identifier: "payment_method_table_view_klarna_cell")
+        XCTAssert(klarnaCell.exists, "Klarna cell should exist")
+        XCTAssert(klarnaCell.isHittable, "Klarna cell should be able to be tapped")
 
         // Test that PayPal exists and is able to be tapped
-//        let payPalCell = paymentMethodsTableView.cells.element(matching: .cell, identifier: "payment_method_table_view_paypal_cell")
-//        XCTAssert(payPalCell.exists, "PayPal cell should exist")
-//        XCTAssert(payPalCell.isHittable, "PayPal cell should be able to be tapped")
+        let payPalCell = paymentMethodsTableView.cells.element(matching: .cell, identifier: "payment_method_table_view_paypal_cell")
+        XCTAssert(payPalCell.exists, "PayPal cell should exist")
+        XCTAssert(payPalCell.isHittable, "PayPal cell should be able to be tapped")
 
         // Test that Direct Debit exists and is able to be tapped
-//        let directDebitCell = paymentMethodsTableView.cells.element(matching: .cell, identifier: "payment_method_table_view_direct_debit_cell")
-//        XCTAssert(directDebitCell.exists, "Direct Debit cell should exist")
-//        XCTAssert(directDebitCell.isHittable, "Direct Debit cell should be able to be tapped")
+        let directDebitCell = paymentMethodsTableView.cells.element(matching: .cell, identifier: "payment_method_table_view_direct_debit_cell")
+        XCTAssert(directDebitCell.exists, "Direct Debit cell should exist")
+        XCTAssert(directDebitCell.isHittable, "Direct Debit cell should be able to be tapped")
 
         // Test that Card cell exists and is able to be tapped
-//        let cardCell = paymentMethodsTableView.cells.element(matching: .cell, identifier: "payment_method_table_view_card_cell")
-//        XCTAssert(cardCell.exists, "Card cell should exist")
-//        XCTAssert(cardCell.isHittable, "Card cell should be able to be tapped")
+        let cardCell = paymentMethodsTableView.cells.element(matching: .cell, identifier: "payment_method_table_view_card_cell")
+        XCTAssert(cardCell.exists, "Card cell should exist")
+        XCTAssert(cardCell.isHittable, "Card cell should be able to be tapped")
     }
 
+}
+
+extension XCUIElement {
+    func clearText() {
+        guard let stringValue = self.value as? String else {
+            return
+        }
+
+        var deleteString = String()
+        for _ in stringValue {
+            deleteString += XCUIKeyboardKey.delete.rawValue
+        }
+        typeText(deleteString)
+    }
 }
