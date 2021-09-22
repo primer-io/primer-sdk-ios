@@ -23,6 +23,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         environmentControl.selectedSegmentIndex = 2
         countryCodeTextField.text = CountryCode.gb.rawValue
         currencyTextField.text = Currency.GBP.rawValue
+        amountTextField.text = "1.00"
         
         let countryPicker = UIPickerView()
         countryPicker.tag = 0
