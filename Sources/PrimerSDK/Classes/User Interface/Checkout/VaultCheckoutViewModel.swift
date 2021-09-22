@@ -111,15 +111,33 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
 extension VaultCheckoutViewModel: ResumeHandlerProtocol {
     func handle(error: Error) {
-        
+        DispatchQueue.main.async {
+            let router: RouterDelegate = DependencyContainer.resolve()
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                router.show(.error(error: PrimerError.generic))
+            }
+        }
     }
     
     func handle(newClientToken clientToken: String) {
-        
+        try? ClientTokenService.storeClientToken(clientToken)
     }
     
     func handleSuccess() {
-        
+        DispatchQueue.main.async {
+            let router: RouterDelegate = DependencyContainer.resolve()
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                router.show(.success(type: .regular))
+            }
+        }
     }
 }
 

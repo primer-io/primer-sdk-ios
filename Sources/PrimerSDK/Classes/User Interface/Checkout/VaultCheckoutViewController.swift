@@ -193,7 +193,7 @@ extension VaultCheckoutViewController: ResumeHandlerProtocol {
     }
     
     func handle(newClientToken clientToken: String) {
-        //
+        try? ClientTokenService.storeClientToken(clientToken)
     }
     
     func handleSuccess() {
