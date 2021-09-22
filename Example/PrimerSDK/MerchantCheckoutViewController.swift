@@ -32,7 +32,7 @@ class MerchantCheckoutViewController: UIViewController {
         }
     }
     let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
-    var amount = 4
+    var amount = 200
     
     let vaultApayaSettings = PrimerSettings(
         currency: .GBP,

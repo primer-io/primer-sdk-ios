@@ -131,7 +131,7 @@ public class Primer {
     public func setFormTopTitle(_ text: String, for formType: PrimerFormType) {
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-            var theme = themeProtocol as! PrimerTheme
+            let theme = themeProtocol as! PrimerTheme
             theme.content.formTopTitles.setTopTitle(text, for: formType)
         }
     }
@@ -147,7 +147,7 @@ public class Primer {
     public func setFormMainTitle(_ text: String, for formType: PrimerFormType) {
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-            var theme = themeProtocol as! PrimerTheme
+            let theme = themeProtocol as! PrimerTheme
             theme.content.formMainTitles.setMainTitle(text, for: formType)
         }
     }

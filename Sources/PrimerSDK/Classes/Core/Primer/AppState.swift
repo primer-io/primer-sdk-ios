@@ -7,7 +7,7 @@
 
 #if canImport(UIKit)
 
-internal protocol AppStateProtocol: class {
+internal protocol AppStateProtocol: AnyObject {
     var viewModels: [PaymentMethodViewModel] { get set }
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethod: String { get set }

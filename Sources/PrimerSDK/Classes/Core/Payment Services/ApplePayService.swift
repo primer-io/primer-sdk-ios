@@ -29,9 +29,7 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
         guard let clientToken = state.decodedClientToken else {
             return completion(PrimerError.configFetchFailed)
         }
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
+                
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
         api.fetchConfiguration(clientToken: clientToken) { [weak self] (result) in

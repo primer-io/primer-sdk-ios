@@ -9,7 +9,7 @@
 
 import UIKit
 
-protocol RouterDelegate: class {
+protocol RouterDelegate: AnyObject {
     var root: RootViewController? { get }
     func setRoot(_ root: RootViewController)
     func show(_ route: Route)

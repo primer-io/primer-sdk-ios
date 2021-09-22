@@ -141,16 +141,4 @@ extension VaultCheckoutViewModel: ResumeHandlerProtocol {
     }
 }
 
-internal extension Int {
-    func toCurrencyString(currency: Currency) -> String {
-        switch currency {
-        case .USD: return String(format: "$%.2f", Float(self) / 100)
-        case .EUR: return String(format: "€%.2f", Float(self) / 100)
-        case .GBP: return String(format: "£%.2f", Float(self) / 100)
-        default:
-            return "\(self) \(currency.rawValue)"
-        }
-    }
-}
-
 #endif

@@ -11,7 +11,7 @@ import UIKit
 
 let enableCardScanner = false
 
-internal protocol FormViewDelegate: class, UITextFieldDelegate {
+internal protocol FormViewDelegate: UITextFieldDelegate {
     var formType: FormType { get }
     var submitButtonTitle: String { get }
     func back()
