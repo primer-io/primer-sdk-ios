@@ -72,6 +72,7 @@ internal extension SuccessViewController {
 
     func configureIcon() {
         icon.tintColor = theme.colorTheme.success1
+        icon.contentMode = .scaleAspectFit
     }
 
     func configureMessage() {
@@ -114,8 +115,8 @@ internal extension SuccessViewController {
     func anchorIcon() {
         icon.translatesAutoresizingMaskIntoConstraints = false
         icon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        icon.widthAnchor.constraint(equalToConstant: 56).isActive = true
-        icon.heightAnchor.constraint(equalToConstant: 56).isActive = true
+        icon.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        icon.heightAnchor.constraint(equalToConstant: 40).isActive = true
         message.topAnchor.constraint(equalTo: icon.bottomAnchor, constant: 6).isActive = true
     }
 
