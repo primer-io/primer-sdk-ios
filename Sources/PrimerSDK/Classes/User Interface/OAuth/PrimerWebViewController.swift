@@ -46,16 +46,10 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         webView.scrollView.bounces = false
         webView.navigationDelegate = self // Control which sites can be visited
         view = webView
-        if let url = url {
-            let frameworkVersion = Bundle.primerFramework.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-            
+        if let url = url {            
             var request = URLRequest(url: url)
             request.timeoutInterval = 60
-            request.allHTTPHeaderFields = [
-                "Content-Type": "application/json",
-                "Primer-SDK-Version": frameworkVersion ?? "n/a",
-                "Primer-SDK-Client": "IOS_NATIVE"
-            ]
+            request.allHTTPHeaderFields = PrimerAPI.headers
             webView.load(request)
         }
     }
