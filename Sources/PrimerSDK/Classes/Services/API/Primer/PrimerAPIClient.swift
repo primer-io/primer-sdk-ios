@@ -27,6 +27,8 @@ protocol PrimerAPIClientProtocol {
         request: Apaya.CreateSessionAPIRequest,
         completion: @escaping (_ result: Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
     )
+    
+    func generic(req: GenericRequest, completion: @escaping (Result<Data, NetworkServiceError>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -202,10 +204,17 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
+  
+    func generic(req: GenericRequest, completion: @escaping (Result<Data, NetworkServiceError>) -> Void) {
+        let endpoint = PrimerAPI.generic(req: req)
+        networkService.request(endpoint) { (result: Result<Data, NetworkServiceError>) in
+            completion(result)
+        }
+    }
 }
 
 internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
-
+    
     let response: Data?
     let throwsError: Bool
     var isCalled: Bool = false
@@ -389,7 +398,10 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
             completion(.failure(error))
         }
     }
-
+    
+    func generic(req: GenericRequest, completion: @escaping (Result<Data, NetworkServiceError>) -> Void) {
+        
+    }
 }
 
 #endif

@@ -23,6 +23,8 @@ enum PrimerAPI: Endpoint {
     case klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
     case apayaCreateSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest)
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest)
+    
+    case generic(req: GenericRequest)
 }
 
 internal extension PrimerAPI {
@@ -48,6 +50,8 @@ internal extension PrimerAPI {
         case .fetchConfiguration(let clientToken):
             guard let urlStr = clientToken.configurationUrl else { return nil }
             return urlStr
+        case .generic(let req):
+            return req.baseUrl
         }
     }
     // MARK: Path
@@ -77,6 +81,8 @@ internal extension PrimerAPI {
             return "/payment-instruments"
         case .apayaCreateSession:
             return "/session-token"
+        case .generic(let req):
+            return req.endpoint
         }
     }
 
@@ -104,6 +110,8 @@ internal extension PrimerAPI {
              .tokenizePaymentMethod,
              .apayaCreateSession:
             return .post
+        case .generic(let req):
+            return req.method
         }
     }
 
@@ -114,6 +122,7 @@ internal extension PrimerAPI {
             "Primer-SDK-Version": "1.0.0-beta.0",
             "Primer-SDK-Client": "IOS_NATIVE"
         ]
+        
         switch self {
         case .directDebitCreateMandate(let clientToken, _),
              .vaultDeletePaymentMethod(let clientToken, _),
@@ -130,6 +139,8 @@ internal extension PrimerAPI {
             if let token = clientToken.accessToken {
                 headers["Primer-Client-Token"] = token
             }
+        case .generic(let req):
+            headers["Primer-Client-Token"] = req.clientToken
         }
 
         return headers
@@ -138,6 +149,8 @@ internal extension PrimerAPI {
     // MARK: Query Parameters
     var queryParameters: [String: String]? {
         switch self {
+        case .generic(let req):
+            return req.queryParameters
         default:
             return nil
         }
@@ -168,6 +181,8 @@ internal extension PrimerAPI {
              .fetchConfiguration,
              .vaultFetchPaymentMethods:
             return nil
+        case .generic(let req):
+            return req.body
         }
     }
 
