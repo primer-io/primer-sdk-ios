@@ -24,7 +24,9 @@ class ApayaWebViewModelTests: XCTestCase {
         let viewModel = ApayaWebViewModel()
         
         viewModel.onRedirect(with: URL(string: "https://primer.io")!)
-        viewModel.onDismiss()
+        viewModel.onCompletion = { result in
+            
+        }
 
         XCTAssertTrue(state.setApayaResultCalled)
     }

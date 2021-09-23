@@ -17,9 +17,10 @@ struct GetVaultedPaymentMethodsResponse: Decodable {
  */
 
 public class PaymentMethodToken: NSObject, Codable {
-    public var token: String?
+    
+    public var token: String
     public var analyticsId: String?
-    public var tokenType: String?
+    public var tokenType: TokenType
     public var paymentInstrumentType: PaymentInstrumentType
     public var paymentInstrumentData: PaymentInstrumentData?
     public var vaultData: VaultData?
@@ -106,6 +107,20 @@ internal extension PaymentMethodToken {
                 imageName: self.icon,
                 paymentMethodType: self.paymentInstrumentType
             )
+        case .apayaToken:
+            if let apayaViewModel = Apaya.ViewModel(paymentMethod: self) {
+                return CardButtonViewModel(
+                    network: "[\(apayaViewModel.carrier.name)] \(apayaViewModel.hashedIdentifier ?? "")",
+                    cardholder: "Apaya",
+                    last4: "",
+                    expiry: "",
+                    imageName: self.icon,
+                    paymentMethodType: self.paymentInstrumentType
+                )
+            } else {
+                return nil
+            }
+            
         default:
             return nil
         }
@@ -251,7 +266,7 @@ public struct BinData: Codable {
 }
 
 public struct VaultData: Codable {
-    public var customerId: String?
+    public var customerId: String
 }
 
 /**
@@ -264,7 +279,8 @@ public struct VaultData: Codable {
  */
 
 public struct ThreeDSecureAuthentication: Codable {
-    public var responseCode, reasonCode, reasonText, protocolVersion, challengeIssued: String?
+    public var responseCode, reasonCode, reasonText, protocolVersion: String?
+    public var challengeIssued: Bool?
 }
 
 #endif

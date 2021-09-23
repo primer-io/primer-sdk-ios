@@ -57,7 +57,7 @@ struct PaymentInstrument: Encodable {
     var currencyCode: String?
 }
 
-enum TokenType: String, Encodable {
+public enum TokenType: String, Codable {
     case multiUse = "MULTI_USE"
     case singleUse = "SINGLE_USE"
 }

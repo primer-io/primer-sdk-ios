@@ -26,8 +26,6 @@ class ApayaDataModelTests: XCTestCase {
         
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
-        case .none:
-            XCTFail()
         case .success(let value):
             XCTAssertEqual(value.success, "1")
         case .failure:
@@ -46,12 +44,10 @@ class ApayaDataModelTests: XCTestCase {
         
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
-        case .none:
-            XCTFail()
         case .success:
             XCTFail()
         case .failure(let error):
-            XCTAssertEqual(error, ApayaException.invalidWebViewResult)
+            XCTAssertNotNil(error)
         }
     }
     
@@ -59,12 +55,10 @@ class ApayaDataModelTests: XCTestCase {
         let url = URL(string: "")
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
-        case .none:
-            XCTFail()
         case .success:
             XCTFail()
         case .failure(let error):
-            XCTAssertEqual(error, ApayaException.invalidWebViewResult)
+            XCTAssertNotNil(error)
         }
     }
     
@@ -72,12 +66,10 @@ class ApayaDataModelTests: XCTestCase {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ERROR")
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
-        case .none:
-            XCTFail()
         case .success:
             XCTFail()
         case .failure(let error):
-            XCTAssertEqual(error, ApayaException.webViewFlowError)
+            XCTAssertNotNil(error)
         }
     }
     
@@ -85,14 +77,42 @@ class ApayaDataModelTests: XCTestCase {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ABANDONED")
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
-        case .none:
-            XCTAssertTrue(true)
         case .success:
             XCTFail()
         case .failure:
             XCTFail()
         }
     }
+    
+    func test_apaya_carrier() throws {
+        var carrier: Apaya.Carrier!
+        
+        carrier = Apaya.Carrier(mcc: 234, mnc: 99)
+        if carrier != Apaya.Carrier.EE_UK {
+            XCTFail("Wrong carrier")
+        }
+        
+        carrier = Apaya.Carrier(mcc: 234, mnc: 11)
+        if carrier != Apaya.Carrier.O2_UK {
+            XCTFail("Wrong carrier")
+        }
+        
+        carrier = Apaya.Carrier(mcc: 234, mnc: 15)
+        if carrier != Apaya.Carrier.Vodafone_UK {
+            XCTFail("Wrong carrier")
+        }
+        
+        carrier = Apaya.Carrier(mcc: 234, mnc: 20)
+        if carrier != Apaya.Carrier.Three_UK {
+            XCTFail("Wrong carrier")
+        }
+        
+        carrier = Apaya.Carrier(mcc: 242, mnc: 99)
+        if carrier != Apaya.Carrier.Strex_Norway {
+            XCTFail("Wrong carrier")
+        }
+    }
+    
 }
 
 
