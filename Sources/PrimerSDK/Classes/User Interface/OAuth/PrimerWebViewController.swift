@@ -15,6 +15,10 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
     weak var delegate: ReloadDelegate?
     weak var viewModel: PrimerWebViewModelProtocol?
 
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
     init(with viewModel: PrimerWebViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
