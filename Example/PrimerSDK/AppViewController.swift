@@ -21,6 +21,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         environmentControl.selectedSegmentIndex = 2
+        phoneNumberTextField.text = "07538121305"
         countryCodeTextField.text = CountryCode.gb.rawValue
         currencyTextField.text = Currency.GBP.rawValue
         
@@ -38,16 +39,16 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     }
     
     @IBAction func initializePrimerButtonTapped(_ sender: Any) {
-        var env: String = ""
+        var env: Environment!
         switch environmentControl.selectedSegmentIndex {
         case 0:
-            env = "dev"
+            env = .dev
         case 1:
-            env = "sandbox"
+            env = .sandbox
         case 2:
-            env = "staging"
+            env = .staging
         case 3:
-            env = "production"
+            env = .production
         default:
             break
         }

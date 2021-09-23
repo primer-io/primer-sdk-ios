@@ -28,12 +28,12 @@ class MerchantCheckoutViewController: UIViewController {
     
     var amount = 200
     var currency: Currency = .EUR
-    var environment = "staging"
+    var environment = Environment.staging
     var customerId: String?
     var phoneNumber: String?
     var countryCode: CountryCode = .gb
     
-    class func instantiate(environment: String, customerId: String?, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?) -> MerchantCheckoutViewController {
+    class func instantiate(environment: Environment, customerId: String?, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?) -> MerchantCheckoutViewController {
         let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
         mcvc.environment = environment
         mcvc.customerId = customerId
@@ -225,10 +225,12 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func tokenAddedToVault(_ token: PaymentMethodToken) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nToken added to vault\nToken: \(token)\n")
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nToken: \(token)\n")
+        print("")
     }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nToken: \(paymentMethodToken)\n")
         let token = paymentMethodToken.token
 
         guard let url = URL(string: "\(endpoint)/transaction") else {
@@ -267,6 +269,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     
     func checkoutFailed(with error: Error) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\(error.localizedDescription)")
+        print("")
     }
     
 }
