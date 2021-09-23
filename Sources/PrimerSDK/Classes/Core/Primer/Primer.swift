@@ -12,7 +12,6 @@ public class Primer {
     
     public var delegate: PrimerDelegate?
     private(set) var flow: PrimerSessionFlow = .default
-    internal var root: RootViewController?
     internal var presentingViewController: UIViewController?
 
     // MARK: - INITIALIZATION
@@ -27,7 +26,19 @@ public class Primer {
             self?.setDependencies(settings: settings, theme: PrimerTheme())
         }
     }
-
+    
+    var primerRootVC: PrimerRootViewController?
+    
+    private var primerWindow: UIWindow?
+    
+    public func testAutolayout() {
+        primerWindow = UIWindow(frame: UIScreen.main.bounds)
+        primerWindow!.rootViewController = primerRootVC
+        primerWindow!.backgroundColor = UIColor.clear
+        primerWindow!.windowLevel = UIWindow.Level.normal
+        primerWindow!.makeKeyAndVisible()
+    }
+    
     /**
      Set or reload all SDK dependencies.
      
@@ -41,7 +52,6 @@ public class Primer {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         DependencyContainer.register(theme as PrimerThemeProtocol)
         DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
-        DependencyContainer.register(Router() as RouterDelegate)
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         DependencyContainer.register(VaultService() as VaultServiceProtocol)
@@ -60,10 +70,8 @@ public class Primer {
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(ConfirmMandateViewModel() as ConfirmMandateViewModelProtocol)
-        DependencyContainer.register(FormViewModel() as FormViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
-        DependencyContainer.register(ApayaLoadWebViewModel() as ApayaLoadWebViewModel)
         DependencyContainer.register(ApayaWebViewModel() as ApayaWebViewModel)
     }
 
@@ -157,23 +165,7 @@ public class Primer {
      1.4.0
      */
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
-        self.presentingViewController = controller
-        Primer.shared.flow = flow
-        
-        DispatchQueue.main.async { [weak self] in
-            if case .checkoutWithApplePay = flow {
-                let appleViewModel: ApplePayViewModelProtocol = DependencyContainer.resolve()
-                appleViewModel.payWithApple { (err) in
-                    
-                }
-            } else {
-                self?.root = RootViewController()
-                guard let root = self?.root else { return }
-                let router: RouterDelegate = DependencyContainer.resolve()
-                router.setRoot(root)
-                controller.present(root, animated: true)
-            }
-        }
+        show(flow: flow)
     }
 
     /**
@@ -194,7 +186,29 @@ public class Primer {
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
         DispatchQueue.main.async { [weak self] in
-            self?.root?.dismiss(animated: true, completion: nil)
+            self?.primerRootVC?.dismissPrimerRootViewController(animated: true, completion: {
+                self?.primerRootVC = nil
+                self?.primerWindow?.resignKey()
+                self?.primerWindow = nil
+            })
+        }
+    }
+    
+    public func show(flow: PrimerSessionFlow) {
+        self.flow = flow
+        
+        DispatchQueue.main.async {
+            if self.primerRootVC == nil {
+                self.primerRootVC = PrimerRootViewController(flow: flow)
+            }
+            
+            if self.primerWindow == nil {
+                self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
+                self.primerWindow!.rootViewController = self.primerRootVC
+                self.primerWindow!.backgroundColor = UIColor.clear
+                self.primerWindow!.windowLevel = UIWindow.Level.normal
+                self.primerWindow!.makeKeyAndVisible()
+            }
         }
     }
 

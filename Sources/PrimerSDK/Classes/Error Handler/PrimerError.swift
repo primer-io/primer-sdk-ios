@@ -289,49 +289,108 @@ enum NetworkServiceError: PrimerErrorProtocol {
 
 enum PrimerError: PrimerErrorProtocol {
 
+//    case generic
+//    case clientTokenNull
+//    case customerIDNull
+//    case tokenExpired
+//    case payPalSessionFailed
+//    case vaultFetchFailed
+//    case vaultDeleteFailed
+//    case vaultCreateFailed
+//    case requestFailed
+//    case directDebitSessionFailed
+//    case configFetchFailed
+//    case tokenizationPreRequestFailed
+//    case tokenizationRequestFailed
+//    case failedToLoadSession
+//    case missingURLScheme
+//    case userCancelled
+//    case amountShouldBeNullForPendingOrderItems
+//    case amountCannotBeNullForNonPendingOrderItems
+    
     case generic
+    case containerError(errors: [Error])
+    case delegateNotSet
+    case userCancelled
+    case invalidValue
+    
     case clientTokenNull
+    case clientTokenExpirationMissing
+    case clientTokenExpired
+    case checkoutNotSupported
+    case vaultNotSupported
+    
     case customerIDNull
-    case tokenExpired
-    case payPalSessionFailed
-    case vaultFetchFailed
-    case vaultDeleteFailed
-    case vaultCreateFailed
+    
+    case missingURLScheme
+    
+    case amountMissing
+    case amountShouldBeNullForPendingOrderItems
+    case amountCannotBeNullForNonPendingOrderItems
+    case currencyMissing
+    case orderIdMissing
+    
     case requestFailed
-    case directDebitSessionFailed
     case configFetchFailed
     case tokenizationPreRequestFailed
     case tokenizationRequestFailed
+    case vaultFetchFailed
+    case vaultCreateFailed
+    case vaultDeleteFailed
+    case payPalSessionFailed
+    case directDebitSessionFailed
     case failedToLoadSession
-    case missingURLScheme
-    case userCancelled
-    case amountShouldBeNullForPendingOrderItems
-    case amountCannotBeNullForNonPendingOrderItems
+    
+    case invalidCardnumber, invalidExpiryDate, invalidCVV, invalidCardholderName
 
     static var errorDomain: String = "primer"
 
+    
     var errorCode: Int {
         switch self {
         case .generic:
             return 0
-        // Settings
-        case .customerIDNull:
-            return 1400
+        case .containerError:
+            return 1
+        case .invalidValue:
+            return 400
+        case .delegateNotSet:
+            return 500
         case .userCancelled:
             return 1500
+            
+        // Settings
+        case .clientTokenNull:
+            return 2001
+        case .clientTokenExpirationMissing:
+            return 2002
+        case .clientTokenExpired:
+            return 2003
+        case .checkoutNotSupported:
+            return 2004
+        case .vaultNotSupported:
+            return 2005
+            
+        case .customerIDNull:
+            return 1400
+        
         case .missingURLScheme:
             return 1600
+            
+        case .amountMissing:
+            return 1700
         case .amountShouldBeNullForPendingOrderItems:
             return 1710
         case .amountCannotBeNullForNonPendingOrderItems:
             return 1720
+        case .currencyMissing:
+            return 1800
+        case .orderIdMissing:
+            return 1810
+            
         // Network
         case .requestFailed:
             return 2000
-        case .clientTokenNull:
-            return 2001
-        case .tokenExpired:
-            return 2002
         case .configFetchFailed:
             return 2100
         case .tokenizationPreRequestFailed:
@@ -350,6 +409,16 @@ enum PrimerError: PrimerErrorProtocol {
             return 2400
         case .failedToLoadSession:
             return 2500
+            
+        // Validation
+        case .invalidCardnumber:
+            return 3100
+        case .invalidExpiryDate:
+            return 3101
+        case .invalidCVV:
+            return 3102
+        case .invalidCardholderName:
+            return 3103
         }
     }
 
@@ -370,6 +439,27 @@ enum PrimerError: PrimerErrorProtocol {
                                      value: "Something went wrong",
                                      comment: "Something went wrong - Primer error message")
             
+        case .containerError:
+            return NSLocalizedString("primer-error-message-multiple-errors",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Multiple errors occured",
+                                     comment: "Multiple errors occured - Primer error message")
+            
+        case .invalidValue:
+            return NSLocalizedString("primer-error-message-invalid-value",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Invalid value",
+                                     comment: "Invalid value - Primer error message")
+            
+        case .delegateNotSet:
+            return NSLocalizedString("primer-error-message-delegate-not-set",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Delegate has not been set",
+                                     comment: "Delegate has not been set - Primer error message")
+            
         case .clientTokenNull:
             return NSLocalizedString("primer-error-message-client-token-missing",
                                      tableName: nil,
@@ -384,12 +474,26 @@ enum PrimerError: PrimerErrorProtocol {
                                      value: "Customer ID is missing",
                                      comment: "Customer ID is missing - Primer error message")
             
-        case .tokenExpired:
+        case .clientTokenExpired:
             return NSLocalizedString("primer-error-message-token-expired",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "Token has expired",
                                      comment: "Token has expired - DX error message")
+            
+        case .checkoutNotSupported:
+            return NSLocalizedString("primer-error-message-checkout-not-supported",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Checkout is not supported for this payment method",
+                                     comment: "Checkout is not supported for this payment method - DX error message")
+            
+        case .vaultNotSupported:
+            return NSLocalizedString("primer-error-message-vault-not-supported",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Vaulting is not supported for this payment method",
+                                     comment: "Vaulting is not supported for this payment method - DX error message")
 
         case .payPalSessionFailed:
             return NSLocalizedString("primer-error-message-paypal-needs-recharge",
@@ -485,6 +589,57 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Amount cannot be null for order items with isPending == false",
                                      comment: "Amount cannot be null for order items with isPending == false - Primer error message")
+        case .clientTokenExpirationMissing:
+            return NSLocalizedString("primer-error-message-client-token-expiration-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Client token expiration missing",
+                                     comment: "Client token expiration missing - Primer error message")
+        case .amountMissing:
+            return NSLocalizedString("primer-error-message-amount-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Amount missing",
+                                     comment: "Amount missing - Primer error message")
+        case .currencyMissing:
+            return NSLocalizedString("primer-error-message-currency-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Currency missing",
+                                     comment: "Currency missing - Primer error message")
+        case .orderIdMissing:
+            return NSLocalizedString("primer-error-message-missing-order-id",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Order ID missing",
+                                     comment: "Order ID missing - Primer error message")
+        case .invalidCardnumber:
+            return NSLocalizedString("primer-error-message-invalid-cardnumber",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Invalid cardnumber",
+                                     comment: "Invalid cardnumber - Primer error message")
+        case .invalidExpiryDate:
+            return NSLocalizedString("primer-error-message-invalid-expiry-date",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Invalid expiry",
+                                     comment: "Invalid expiry - Primer error message")
+            
+        case .invalidCVV:
+            return NSLocalizedString("primer-error-message-invalid-cvv",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Invalid cvv",
+                                     comment: "Invalid cvv - Primer error message")
+            
+        case .invalidCardholderName:
+            return NSLocalizedString("primer-error-message-invalid-cardholder-name",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Invalid cardholder name",
+                                     comment: "Invalid cardholder name - Primer error message")
+            
         }
     }
 

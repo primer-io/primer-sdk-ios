@@ -74,7 +74,6 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         {
             viewModel?.onRedirect(with: url)
             decisionHandler(.cancel)
-            dismiss(animated: true, completion: nil)
         } else {
             decisionHandler(.allow)
         }
@@ -84,7 +83,6 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         if nsError.domain == NSURLErrorDomain && webView.url == nil {
             Primer.shared.delegate?.checkoutFailed?(with: error)
             viewModel?.onDismiss(error: error)
-            dismiss(animated: true, completion: nil)
         }
     }
     

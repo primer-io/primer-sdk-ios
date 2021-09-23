@@ -36,7 +36,7 @@ class ClientTokenServiceTests: XCTestCase {
 
         service.loadCheckoutConfig { (err) in
             if let err = err {
-                if case PrimerError.tokenExpired = err {
+                if case PrimerError.clientTokenExpired = err {
                     XCTAssert(true, err.localizedDescription)
                 } else {
                     XCTAssert(false, err.localizedDescription)
@@ -46,7 +46,7 @@ class ClientTokenServiceTests: XCTestCase {
             }
         }
 
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 30.0)
     }
 
 }

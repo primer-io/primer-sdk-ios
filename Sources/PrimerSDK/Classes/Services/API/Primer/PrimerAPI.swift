@@ -109,11 +109,14 @@ internal extension PrimerAPI {
 
     // MARK: Headers
     var headers: [String: String]? {
+        let frameworkVersion = Bundle.primerFramework.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        
         var headers: [String: String] = [
             "Content-Type": "application/json",
-            "Primer-SDK-Version": "1.0.0-beta.0",
+            "Primer-SDK-Version": frameworkVersion ?? "n/a",
             "Primer-SDK-Client": "IOS_NATIVE"
         ]
+        
         switch self {
         case .directDebitCreateMandate(let clientToken, _),
              .vaultDeletePaymentMethod(let clientToken, _),

@@ -19,87 +19,19 @@ internal class ErrorHandler {
 
         if let networkServiceError = error as? NetworkServiceError {
             switch networkServiceError {
-            case .invalidURL:
-                // Internal error, the URL wasn't formed correctly.
-                // Present generic error
-                break
-            case .unauthorised(let info):
-                break
-            case .clientError(let statusCode, let info):
-                break
-            case .serverError(let statusCode, let info):
-                break
-            case .noData:
-                break
-            case .parsing(let error, let data):
-                break
-            case .underlyingError(let error):
+            default:
                 break
             }
 
         } else if let primerError = error as? PrimerError {
             switch primerError {
-            case .generic:
-                break
-            case .clientTokenNull:
-                break
-            case .customerIDNull:
-                break
-            case .tokenExpired:
-                break
-            case .payPalSessionFailed:
-                break
-            case .vaultFetchFailed:
-                break
-            case .vaultDeleteFailed:
-                break
-            case .vaultCreateFailed:
-                break
-            case .directDebitSessionFailed:
-                break
-            case .configFetchFailed:
-                break
-            case .tokenizationPreRequestFailed:
-                break
-            case .tokenizationRequestFailed:
-                break
-            case .failedToLoadSession:
-                break
-            case .missingURLScheme:
-                break
-            case .requestFailed:
-                break
-            case .userCancelled:
-                break
-            case .amountCannotBeNullForNonPendingOrderItems:
-                break
-            case .amountShouldBeNullForPendingOrderItems:
+            default:
                 break
             }
 
         } else if let klarnaException = error as? KlarnaException {
             switch klarnaException {
-            case .invalidUrl:
-                break
-            case .noToken:
-                break
-            case .noCoreUrl:
-                break
-            case .failedApiCall:
-                break
-            case .noAmount:
-                break
-            case .noCurrency:
-                break
-            case .noPaymentMethodConfigId:
-                break
-            case .undefinedSessionType:
-                break
-            case .noCountryCode:
-                break
-            case .missingOrderItems:
-                break
-            case .orderItemMissesAmount:
+            default:
                 break
             }
 

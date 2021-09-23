@@ -24,7 +24,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
             return completion(PrimerError.directDebitSessionFailed)
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .goCardlessMandate) else {
+        guard let configId = state.paymentMethodConfig?.getConfig(for: .goCardlessMandate)?.id else {
             return completion(PrimerError.directDebitSessionFailed)
         }
 

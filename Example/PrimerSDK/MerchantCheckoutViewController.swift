@@ -12,6 +12,7 @@ import UIKit
 class MerchantCheckoutViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
+    
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
         didSet {
             self.tableView.reloadData()
@@ -149,6 +150,8 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
+//        Primer.shared.showCheckout(self, flow: .addCardToVault)
+        Primer.shared.configure(settings: generalSettings)
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
     
@@ -239,7 +242,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, capture: true, currencyCode: "GBP")
+        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, currencyCode: "GBP")
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -263,7 +266,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func checkoutFailed(with error: Error) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)")
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\(error.localizedDescription)")
     }
     
 }

@@ -93,30 +93,30 @@ internal class ApayaLoadWebViewModel: PrimerLoadWebViewModelProtocol {
     }
 
     func navigate(_ result: Result<Bool, Error>?) {
-        DispatchQueue.main.async {
-            let router: RouterDelegate = DependencyContainer.resolve()
-            switch result {
-            case .none:
-                // The merchant should detect that this cancels here, however we may need to align on
-                // what to do in the case of cancelled flows - what is the ideal experience and what
-                // is the current expectation of integrating developers?
-                Primer.shared.delegate?.checkoutFailed?(with: PrimerError.userCancelled)
-                router.pop()
-                
-            case .failure(let error):
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                let router: RouterDelegate = DependencyContainer.resolve()
-                if settings.hasDisabledSuccessScreen {
-                    router.root?.onDisabledSuccessScreenDismiss()
-                } else {
-                    // this needs a better error
-                    router.show(.error(error: error))
-                }
-                
-            case .success:
-                router.show(.success(type: .regular))
-            }
-        }
+//        DispatchQueue.main.async {
+//            let router: RouterDelegate = DependencyContainer.resolve()
+//            switch result {
+//            case .none:
+//                // The merchant should detect that this cancels here, however we may need to align on
+//                // what to do in the case of cancelled flows - what is the ideal experience and what
+//                // is the current expectation of integrating developers?
+//                Primer.shared.delegate?.checkoutFailed?(with: PrimerError.userCancelled)
+//                router.pop()
+//
+//            case .failure(let error):
+//                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+//                let router: RouterDelegate = DependencyContainer.resolve()
+//                if settings.hasDisabledSuccessScreen {
+//                    router.root?.onDisabledSuccessScreenDismiss()
+//                } else {
+//                    // this needs a better error
+//                    router.show(.error(error: error))
+//                }
+//                
+//            case .success:
+//                router.show(.success(type: .regular))
+//            }
+//        }
     }
 
     private func generateTokenizationRequest(with result: Apaya.WebViewResult) throws -> PaymentMethodTokenizationRequest {

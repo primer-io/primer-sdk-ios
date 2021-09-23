@@ -1,3 +1,12 @@
+//
+//  VaultCheckoutViewModel.swift
+//  PrimerSDK
+//
+//  Created by Evangelos Pittas on 6/8/21.
+//
+
+import Foundation
+
 #if canImport(UIKit)
 
 internal protocol VaultCheckoutViewModelProtocol {
@@ -106,3 +115,4 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 }
 
 #endif
+
