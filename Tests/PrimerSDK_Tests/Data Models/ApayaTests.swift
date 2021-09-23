@@ -26,8 +26,6 @@ class ApayaDataModelTests: XCTestCase {
         
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
-        case .none:
-            XCTFail()
         case .success(let value):
             XCTAssertEqual(value.success, "1")
         case .failure:
@@ -46,8 +44,6 @@ class ApayaDataModelTests: XCTestCase {
         
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
-        case .none:
-            XCTFail()
         case .success:
             XCTFail()
         case .failure(let error):
@@ -59,8 +55,6 @@ class ApayaDataModelTests: XCTestCase {
         let url = URL(string: "")
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
-        case .none:
-            XCTFail()
         case .success:
             XCTFail()
         case .failure(let error):
@@ -72,8 +66,6 @@ class ApayaDataModelTests: XCTestCase {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ERROR")
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
-        case .none:
-            XCTFail()
         case .success:
             XCTFail()
         case .failure(let error):
@@ -85,8 +77,6 @@ class ApayaDataModelTests: XCTestCase {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ABANDONED")
         let result = Apaya.WebViewResult.create(from: url)
         switch result {
-        case .none:
-            XCTAssertTrue(true)
         case .success:
             XCTFail()
         case .failure:
