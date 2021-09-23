@@ -77,7 +77,7 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         let nsError = error as NSError
         if nsError.domain == NSURLErrorDomain && webView.url == nil {
             Primer.shared.delegate?.checkoutFailed?(with: error)
-            viewModel?.onDismiss(error: error)
+            viewModel?.onError(error)
         }
     }
     
