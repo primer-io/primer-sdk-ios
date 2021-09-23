@@ -40,14 +40,6 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         renderWebView()
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        if isBeingDismissed {
-            viewModel?.onDismiss(error: nil)
-            delegate?.reload()
-        }
-    }
-
     private func renderWebView() {
         let webView = WKWebView()
         webView.isAccessibilityElement = false
