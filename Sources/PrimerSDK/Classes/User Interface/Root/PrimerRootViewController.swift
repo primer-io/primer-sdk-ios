@@ -443,10 +443,9 @@ extension PrimerRootViewController {
             show(viewController: lvc)
         }
         
-        let viewModel: ApayaWebViewModel = DependencyContainer.resolve()
-        let apayaWebViewModel = viewModel.getWebViewModel()
         
         viewModel.generateWebViewUrl { [weak self] result in
+        let apayaWebViewModel = ApayaWebViewModel()
             DispatchQueue.main.async { [weak self] in
                 switch result {
                 case .failure(let error):
