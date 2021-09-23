@@ -12,9 +12,12 @@ import WebKit
 
 internal class PrimerWebViewController: PrimerViewController, WKNavigationDelegate {
 
-    weak var delegate: ReloadDelegate?
-    weak var viewModel: PrimerWebViewModelProtocol?
+    var viewModel: PrimerWebViewModelProtocol?
 
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
     init(with viewModel: PrimerWebViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -28,24 +31,12 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         "primer.io",
         "livedemostore.primer.io"
     ]
-    let headerFields = [
-        "Content-Type": "application/json",
-        "Primer-SDK-Version": "1.0.0-beta.0",
-        "Primer-SDK-Client": "IOS_NATIVE"
-    ]
+
     var url: URL?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         renderWebView()
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        if isBeingDismissed {
-            viewModel?.onDismiss()
-            delegate?.reload()
-        }
     }
 
     private func renderWebView() {
@@ -55,10 +46,10 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         webView.scrollView.bounces = false
         webView.navigationDelegate = self // Control which sites can be visited
         view = webView
-        if let url = url {
+        if let url = url {            
             var request = URLRequest(url: url)
             request.timeoutInterval = 60
-            request.allHTTPHeaderFields = headerFields
+            request.allHTTPHeaderFields = PrimerAPI.headers
             webView.load(request)
         }
     }
@@ -74,11 +65,22 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         {
             viewModel?.onRedirect(with: url)
             decisionHandler(.cancel)
-            dismiss(animated: true, completion: nil)
         } else {
             decisionHandler(.allow)
         }
     }
+    
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        let nsError = error as NSError
+        if nsError.domain == NSURLErrorDomain && webView.url == nil {
+            viewModel?.onError(error)
+        }
+    }
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        
+    }
+    
 }
 
 #endif

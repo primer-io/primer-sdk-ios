@@ -35,7 +35,7 @@ public enum Currency: String, Codable {
     case RON
 }
 
-extension Currency {
+extension Currency: CaseIterable {
     var symbol: String? {
         switch self {
         case .USD:
