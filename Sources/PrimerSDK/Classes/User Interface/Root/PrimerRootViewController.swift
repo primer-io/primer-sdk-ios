@@ -443,107 +443,75 @@ extension PrimerRootViewController {
             show(viewController: lvc)
         }
         
-        
-        viewModel.generateWebViewUrl { [weak self] result in
+        let webViewController: PrimerWebViewController
         let apayaWebViewModel = ApayaWebViewModel()
+        apayaWebViewModel.generateWebViewUrl { [weak self] result in
             DispatchQueue.main.async { [weak self] in
                 switch result {
                 case .failure(let error):
-                    // we're gonna refactor this method once merged in with the all the UI updates.
-                    viewModel.navigate(.failure(error))
+                    Primer.shared.delegate?.checkoutFailed?(with: error)
+                    
+                    if settings.hasDisabledSuccessScreen {
+                        Primer.shared.dismiss()
+                    } else {
+                        let evc = ErrorViewController(message: error.localizedDescription)
+                        evc.view.translatesAutoresizingMaskIntoConstraints = false
+                        evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                        self?.show(viewController: evc)
+                    }
                     
                 case .success(let urlString):
                     let webViewController = PrimerWebViewController(with: apayaWebViewModel)
                     Primer.shared.primerRootVC?.blurBackground()
                     webViewController.url = URL(string: urlString)
-                    webViewController.delegate = apayaWebViewModel
                     webViewController.modalPresentationStyle = .fullScreen
                     self?.present(webViewController, animated: true, completion: nil)
                 }
             }
         }
         
-//        (apayaWebViewModel as! ApayaWebViewModel).onCompletion = { result in
-//            switch result {
-//            case .failure(let error):
-//                Primer.shared.delegate?.checkoutFailed?(with: error)
-//                
-//                if !settings.hasDisabledSuccessScreen {
-//                    let evc = ErrorViewController(message: error.localizedDescription)
-//                    evc.view.translatesAutoresizingMaskIntoConstraints = false
-//                    evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-//                    self.show(viewController: evc)
-//                    
-//                } else {
-//                    Primer.shared.dismiss()
-//                }
-//                
-//            case .success(let apayaResult):
-//                viewModel.tokenize()
-//            }
-//        }
-        
-        
-        
-        
-        
-//        let webViewController = PrimerLoadWebViewController(with: viewModel)
-//
-//        show(viewController: webViewController)
-        
-        
-//        let appleViewModel = ApplePayViewModel()
-//        appleViewModel.didPresentPaymentMethod = { [weak self] in
-//            self?.blurBackground()
-//        }
-//
-//        firstly {
-//            appleViewModel.tokenize()
-//        }
-//        .done { token in
-//            DispatchQueue.main.async {
-//                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-//
-//                if Primer.shared.flow.internalSessionFlow.vaulted {
-//                    Primer.shared.delegate?.tokenAddedToVault?(token)
-//                }
-//
-//                if !settings.hasDisabledSuccessScreen {
-//                    let lvc = PrimerLoadingViewController(withHeight: 300)
-//                    self.show(viewController: lvc)
-//                }
-//
-//                Primer.shared.delegate?.onTokenizeSuccess?(token, { err in
-//                    if !settings.hasDisabledSuccessScreen {
-//                        if let err = err {
-//                            let evc = ErrorViewController(message: PrimerError.payPalSessionFailed.localizedDescription)
-//                            evc.view.translatesAutoresizingMaskIntoConstraints = false
-//                            evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-//                            self.show(viewController: evc)
-//                        } else {
-//                            let svc = SuccessViewController()
-//                            svc.view.translatesAutoresizingMaskIntoConstraints = false
-//                            svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-//                            self.show(viewController: svc)
-//                        }
-//                    } else {
-//                        Primer.shared.dismiss()
-//                    }
-//                })
-//            }
-//        }
-//        .ensure {
-//            DispatchQueue.main.async {
-//                // Dismiss any oauth view controller that has been presented.
-//                self.dismiss(animated: true, completion: nil)
-//            }
-//        }
-//        .catch { err in
-//            DispatchQueue.main.async {
-//                Primer.shared.delegate?.checkoutFailed?(with: err)
-//            }
-//            self.handleError(err)
-//        }
+        apayaWebViewModel.onCompletion = { [weak self] result in
+            DispatchQueue.main.async { [weak self] in
+                switch result {
+                case .failure(let error):
+                    Primer.shared.delegate?.checkoutFailed?(with: error)
+                    
+                    if settings.hasDisabledSuccessScreen {
+                        Primer.shared.dismiss()
+                    } else {
+                        self?.dismiss(animated: true, completion: nil)
+                        let evc = ErrorViewController(message: error.localizedDescription)
+                        evc.view.translatesAutoresizingMaskIntoConstraints = false
+                        evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                        self?.show(viewController: evc)
+                    }
+                    
+                case .success(let paymentMethod):
+                    Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [weak self] err in
+                        DispatchQueue.main.async { [weak self] in
+                            if settings.hasDisabledSuccessScreen {
+                                Primer.shared.dismiss()
+                            } else {
+                                self?.dismiss(animated: true, completion: nil)
+                                
+                                if let err = err {
+                                    let evc = ErrorViewController(message: err.localizedDescription)
+                                    evc.view.translatesAutoresizingMaskIntoConstraints = false
+                                    evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                                    self?.show(viewController: evc)
+                                    
+                                } else {
+                                    let svc = SuccessViewController()
+                                    svc.view.translatesAutoresizingMaskIntoConstraints = false
+                                    svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                                    self?.show(viewController: svc)
+                                }
+                            }
+                        }
+                    })
+                }
+            }
+        }
     }
     
     @available(iOS 11.0, *)
