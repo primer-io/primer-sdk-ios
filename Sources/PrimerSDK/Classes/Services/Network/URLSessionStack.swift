@@ -103,8 +103,12 @@ internal class URLSessionStack: NetworkService {
                 log(logLevel: .debug, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                 #endif
 
-                let result = try self.parser.parse(T.self, from: data)
-                DispatchQueue.main.async { completion(.success(result)) }
+                if T.self == Data.self {
+                    DispatchQueue.main.async { completion(.success(data as! T)) }
+                } else {
+                    let result = try self.parser.parse(T.self, from: data)
+                    DispatchQueue.main.async { completion(.success(result)) }
+                }
             } catch {
                 if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), let jsonDic = json as? [String: Any?],
                    let primerErrorJSON = jsonDic["error"] as? [String: Any] {
