@@ -134,7 +134,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     self?.show(viewController: pvmvc)
 
                     
-                case .some(.completeDirectCheckout):
+                case .completeDirectCheckout:
                     break
                     
                 case .addPayPalToVault:
@@ -155,10 +155,10 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .addKlarnaToVault:
                     self?.presentKlarna()
                     
-                case .some(.addDirectDebit):
+                case .addDirectDebit:
                     break
                     
-                case .some(.checkoutWithKlarna):
+                case .checkoutWithKlarna:
                     if #available(iOS 11.0, *) {
                         self?.presentKlarna()
                     } else {
