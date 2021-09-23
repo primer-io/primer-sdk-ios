@@ -48,12 +48,12 @@ internal class ApayaWebViewModel: PrimerWebViewModelProtocol {
                 case .failure(let error):
                     self?.onCompletion?(.failure(error))
                 case .success:
-                    guard let self = self, self.configDidLoad() else {
+                    guard let strongSelf = self, strongSelf.configDidLoad() else {
                         self?.onCompletion?(.failure(PrimerError.configFetchFailed))
                         return
                     }
 
-                    self.generateWebViewUrl(completion)
+                    strongSelf.generateWebViewUrl(completion)
                 }
             }
         }
