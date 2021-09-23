@@ -12,7 +12,7 @@ import WebKit
 
 internal class PrimerWebViewController: PrimerViewController, WKNavigationDelegate {
 
-    weak var viewModel: PrimerWebViewModelProtocol?
+    var viewModel: PrimerWebViewModelProtocol?
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
