@@ -40,10 +40,20 @@ internal extension PaymentMethodConfig {
         return method.id
     }
     
+    func getConfigId(forName name: String) -> String? {
+        guard let configPaymentMethodType = ConfigPaymentMethodType(rawValue: name) else { return nil }
+        return getConfigId(for: configPaymentMethodType)
+    }
+    
     func getProductId(for type: ConfigPaymentMethodType) -> String? {
         guard let method = self.paymentMethods?
                 .first(where: { method in return method.type == type }) else { return nil }
         return method.options?.merchantAccountId
+    }
+    
+    func getProductId(forName name: String) -> String? {
+        guard let configPaymentMethodType = ConfigPaymentMethodType(rawValue: name) else { return nil }
+        return getProductId(for: configPaymentMethodType)
     }
 }
 
