@@ -148,9 +148,13 @@ internal class RootViewController: PrimerViewController {
         case .checkoutWithKlarna:
             router.show(.oAuth(host: .klarna))
         case .vaultKlarna:
-            router.show(.oAuth(host: .klarna))
+//            router.show(.oAuth(host: .klarna))
+            let at = APMTester()
+            at.testKlarna()
         case .vaultApaya:
-            router.show(.oAuth(host: .apaya))
+//            router.show(.oAuth(host: .apaya))
+            let at = APMTester()
+            at.testApaya()
         case .vault:
             router.show(.vaultCheckout)
         case .checkoutWithApplePay:
