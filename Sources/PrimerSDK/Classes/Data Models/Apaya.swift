@@ -37,7 +37,7 @@ public struct Apaya {
         let status: String
         let productId: String
         
-        static func create(from url: URL?) -> Result<Apaya.WebViewResult, Error>? {
+        static func create(from url: URL?) -> Result<Apaya.WebViewResult, Error> {
             guard
                 let url = url,
                 url.queryParameterValue(for: "success") != nil,
@@ -50,7 +50,7 @@ public struct Apaya {
                 return .failure(ApayaException.webViewFlowError)
             }
             if (status == "SETUP_ABANDONED") {
-                return nil
+                return .failure(ApayaException.webViewFlowCancelled)
             }
             
             guard
