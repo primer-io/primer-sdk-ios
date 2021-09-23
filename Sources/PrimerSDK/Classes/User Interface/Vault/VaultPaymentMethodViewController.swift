@@ -250,9 +250,6 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
             // It will reload the payment instrument on the Universal Checkout view.
             delegate?.reload()
         } else {
-
-            let methodId = viewModel.paymentMethods[indexPath.row].token
-
             let alert = AlertController(
                 title: NSLocalizedString("primer-delete-alert-title",
                                          tableName: nil,
