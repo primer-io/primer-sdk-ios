@@ -31,11 +31,7 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         "primer.io",
         "livedemostore.primer.io"
     ]
-    let headerFields = [
-        "Content-Type": "application/json",
-        "Primer-SDK-Version": "1.0.0-beta.0",
-        "Primer-SDK-Client": "IOS_NATIVE"
-    ]
+
     var url: URL?
 
     override func viewDidLoad() {
@@ -51,9 +47,15 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         webView.navigationDelegate = self // Control which sites can be visited
         view = webView
         if let url = url {
+            let frameworkVersion = Bundle.primerFramework.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+            
             var request = URLRequest(url: url)
             request.timeoutInterval = 60
-            request.allHTTPHeaderFields = headerFields
+            request.allHTTPHeaderFields = [
+                "Content-Type": "application/json",
+                "Primer-SDK-Version": frameworkVersion ?? "n/a",
+                "Primer-SDK-Client": "IOS_NATIVE"
+            ]
             webView.load(request)
         }
     }
