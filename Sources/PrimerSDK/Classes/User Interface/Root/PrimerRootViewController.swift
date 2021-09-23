@@ -343,11 +343,7 @@ extension PrimerRootViewController {
         .done { token in
             DispatchQueue.main.async {
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(token)
-                }
-                
+
                 if !settings.hasDisabledSuccessScreen {
                     let lvc = PrimerLoadingViewController(withHeight: 300)
                     self.show(viewController: lvc)
@@ -400,11 +396,7 @@ extension PrimerRootViewController {
         .done { token in
             DispatchQueue.main.async {
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(token)
-                }
-                
+
                 if !settings.hasDisabledSuccessScreen {
                     let lvc = PrimerLoadingViewController(withHeight: 300)
                     self.show(viewController: lvc)
@@ -569,10 +561,6 @@ extension PrimerRootViewController {
         }
         .done { token in
             DispatchQueue.main.async {
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(token)
-                }
-                
                 if !settings.hasDisabledSuccessScreen {
                     let lvc = PrimerLoadingViewController(withHeight: 300)
                     self.show(viewController: lvc)
