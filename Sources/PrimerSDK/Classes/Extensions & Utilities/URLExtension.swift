@@ -9,21 +9,20 @@ import Foundation
 
 internal extension URL {
 
-    func parseURLQueryParameters() -> [String: String?]? {
-        guard let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: false),
-              let queryItems = urlComponents.queryItems else { return nil }
-        
-        var result: [String: String?] = [:]
-
-        for item in queryItems {
-            result[item.name] = item.value
+    var queryParameters: [String: String]? {
+        if let components = URLComponents(url: self, resolvingAgainstBaseURL: true),
+           let queryItems = components.queryItems {
+            let dic = queryItems.reduce(into: [String: String]()) { (result, item) in
+                result[item.name] = item.value
+            }
+            return dic
         }
-
-        return result.keys.isEmpty ? nil : result
+        
+        return nil
     }
 
     func queryParameterValue(for param: String) -> String? {
-        guard let urlQueryParameters = parseURLQueryParameters(),
+        guard let urlQueryParameters = queryParameters,
               let value = urlQueryParameters[param] else { return nil }
         return value
     }
