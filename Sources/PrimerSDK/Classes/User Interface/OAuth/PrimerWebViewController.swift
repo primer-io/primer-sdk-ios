@@ -73,10 +73,10 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
             decisionHandler(.allow)
         }
     }
+    
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         let nsError = error as NSError
         if nsError.domain == NSURLErrorDomain && webView.url == nil {
-            Primer.shared.delegate?.checkoutFailed?(with: error)
             viewModel?.onError(error)
         }
     }
