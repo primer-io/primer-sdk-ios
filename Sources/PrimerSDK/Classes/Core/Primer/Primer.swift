@@ -190,6 +190,7 @@ public class Primer {
                 self?.primerRootVC = nil
                 self?.primerWindow?.resignKey()
                 self?.primerWindow = nil
+                Primer.shared.delegate?.onCheckoutDismissed?()
             })
         }
     }
