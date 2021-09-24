@@ -8,6 +8,27 @@ internal protocol ClientTokenServiceProtocol {
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
     
+    static func storeClientToken(_ clientToken: String) throws {
+        guard var jwtTokenPayload = clientToken.jwtTokenPayload,
+              let expDate = jwtTokenPayload.expDate
+        else {
+            throw PrimerError.clientTokenNull
+        }
+        
+        if expDate < Date() {
+            throw PrimerError.clientTokenExpired
+        }
+        
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let previousEnv = state.decodedClientToken?.env
+        
+        if jwtTokenPayload.env == nil {
+            jwtTokenPayload.env = previousEnv
+        }
+        
+        state.decodedClientToken = jwtTokenPayload
+    }
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
