@@ -173,7 +173,6 @@ public class Primer {
             try? ClientTokenService.storeClientToken(clientToken)
         }
         
-        Primer.shared.flow = .default
         presentingViewController = viewController
         show(flow: Primer.shared.flow!)
     }
@@ -183,7 +182,6 @@ public class Primer {
             try? ClientTokenService.storeClientToken(clientToken)
         }
         
-        Primer.shared.flow = .defaultWithVault
         presentingViewController = viewController
         show(flow: Primer.shared.flow!)
     }
