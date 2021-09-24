@@ -11,24 +11,31 @@ import UIKit
 
 internal class SuccessViewController: PrimerViewController {
 
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     var screenType: SuccessScreenType?
-
-    let navBar = UINavigationBar()
+    
+    var rightBarButton: UIButton!
     let icon = UIImageView(image: ImageName.success.image?.withRenderingMode(.alwaysTemplate))
     let message = UILabel()
     let confirmationMessage = UILabel()
     let referenceTitle = UILabel()
     let reference = UILabel()
+    
+    
 
     override func viewDidLoad() {
-        view.addSubview(navBar)
         view.addSubview(icon)
         view.addSubview(message)
         view.addSubview(confirmationMessage)
         view.addSubview(referenceTitle)
         view.addSubview(reference)
+                
+        rightBarButton = UIButton()
+        rightBarButton.setTitle("Done", for: .normal)
+        rightBarButton.setTitleColor(theme.colorTheme.main1, for: .normal)
+        rightBarButton.addTarget(self, action: #selector(close), for: .touchUpInside)
+        icon.tintColor = theme.colorTheme.main1
 
-        configureNavbar()
         configureIcon()
         configureMessage()
         configureConfirmationMessage()
@@ -40,45 +47,35 @@ internal class SuccessViewController: PrimerViewController {
         anchorConfirmationMessage()
         anchorReferenceTitle()
         anchorReferenceLabel()
+        
+        (parent as? PrimerContainerViewController)?.mockedNavigationBar.hidesBackButton = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        (parent as? PrimerContainerViewController)?.mockedNavigationBar.rightBarButton = rightBarButton
     }
 
     @objc func close() {
-        dismiss(animated: true, completion: nil)
+        Primer.shared.dismiss()
     }
 
 }
 
 // MARK: Configuration
 internal extension SuccessViewController {
-    func configureNavbar() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-        let navItem = UINavigationItem()
-        let backItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(close))
-        backItem.tintColor = theme.colorTheme.success1
-        navItem.leftBarButtonItem = backItem
-        navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navBar.shadowImage = UIImage()
-        navBar.setItems([navItem], animated: false)
-//        navBar.topItem?.title = theme.content.confirmMandateContent.topTitleText
-        navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: theme.colorTheme.text1]
-        navBar.translatesAutoresizingMaskIntoConstraints = false
-
-        if #available(iOS 13.0, *) {
-            navBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 6).isActive = true
-        } else {
-            navBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 18).isActive = true
-        }
-
-        navBar.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-    }
 
     func configureIcon() {
-
+        icon.tintColor = theme.colorTheme.success1
+        icon.contentMode = .scaleAspectFit
     }
 
     func configureMessage() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         
         message.accessibilityIdentifier = "success_screen_message_label"
@@ -116,32 +113,27 @@ internal extension SuccessViewController {
 // MARK: Constraints
 internal extension SuccessViewController {
     func anchorIcon() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-        icon.tintColor = theme.colorTheme.success1
         icon.translatesAutoresizingMaskIntoConstraints = false
         icon.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        icon.bottomAnchor.constraint(equalTo: message.topAnchor, constant: -18).isActive = true
+        icon.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        icon.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        message.topAnchor.constraint(equalTo: icon.bottomAnchor, constant: 6).isActive = true
     }
 
     func anchorMessage() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
         message.translatesAutoresizingMaskIntoConstraints = false
         message.topAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         message.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        message.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: theme.layout.safeMargin + 12).isActive = true
-        message.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -(theme.layout.safeMargin + 12)).isActive = true
+        message.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        message.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
     }
 
     func anchorConfirmationMessage() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
         confirmationMessage.translatesAutoresizingMaskIntoConstraints = false
         confirmationMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         confirmationMessage.topAnchor.constraint(equalTo: message.bottomAnchor, constant: 24).isActive = true
-        confirmationMessage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: theme.layout.safeMargin + 12).isActive = true
-        confirmationMessage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -(theme.layout.safeMargin + 12)).isActive = true
+        confirmationMessage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        confirmationMessage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
     }
 
     func anchorReferenceTitle() {
@@ -162,7 +154,7 @@ enum SuccessScreenType {
     case directDebit
 }
 
-protocol SuccessScreenViewModelProtocol: class {
+protocol SuccessScreenViewModelProtocol: AnyObject {
     var mandate: DirectDebitMandate { get }
     func getMandateId(_ screenType: SuccessScreenType?) -> String
     func getTitle(_ screenType: SuccessScreenType?) -> String

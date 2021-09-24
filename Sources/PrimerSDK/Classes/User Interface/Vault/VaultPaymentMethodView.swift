@@ -2,7 +2,7 @@
 
 import UIKit
 
-internal protocol VaultPaymentMethodViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
+internal protocol VaultPaymentMethodViewDelegate: UITableViewDelegate, UITableViewDataSource {
     func cancel()
     func edit()
     func showPayPal()
@@ -16,7 +16,7 @@ internal protocol ReactiveView: UIView {
 internal class VaultPaymentMethodView: PrimerView, ReactiveView {
 
     let indicator = UIActivityIndicatorView()
-    let navBar = UINavigationBar()
+//    let navBar = UINavigationBar()
     let tableView = UITableView()
 
     weak var delegate: VaultPaymentMethodViewDelegate?
@@ -24,14 +24,14 @@ internal class VaultPaymentMethodView: PrimerView, ReactiveView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        addSubview(navBar)
+//        addSubview(navBar)
         addSubview(tableView)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func render(isBusy: Bool = false) {
-        configureNavBar()
+//        configureNavBar()
         configureTableView()
 
         anchorNavBar()
@@ -44,7 +44,7 @@ internal extension VaultPaymentMethodView {
     private func configureNavBar() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
-        navBar.backgroundColor = theme.colorTheme.main1
+//        navBar.backgroundColor = theme.colorTheme.main1
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem()
         backItem.action = #selector(cancel)
@@ -57,10 +57,10 @@ internal extension VaultPaymentMethodView {
         editItem.action = #selector(edit)
         navItem.leftBarButtonItem = backItem
         navItem.rightBarButtonItem = editItem
-        navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navBar.shadowImage = UIImage()
-        navBar.setItems([navItem], animated: false)
-        navBar.topItem?.title = theme.content.vaultPaymentMethodView.mainTitleText.uppercased()
+//        navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+//        navBar.shadowImage = UIImage()
+//        navBar.setItems([navItem], animated: false)
+//        navBar.topItem?.title = theme.content.vaultPaymentMethodView.mainTitleText.uppercased()
     }
 
     @objc private func cancel() { delegate?.cancel() }
@@ -85,14 +85,14 @@ internal extension VaultPaymentMethodView {
 // MARK: Anchoring
 internal extension VaultPaymentMethodView {
     private func anchorNavBar() {
-        navBar.translatesAutoresizingMaskIntoConstraints = false
-        navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
-        navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+//        navBar.translatesAutoresizingMaskIntoConstraints = false
+//        navBar.topAnchor.constraint(equalTo: topAnchor, constant: 6).isActive = true
+//        navBar.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     }
 
     private func anchorTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 12).isActive = true
+        tableView.topAnchor.constraint(equalTo: topAnchor, constant: 12).isActive = true
         tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
         tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12).isActive = true
         tableView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12).isActive = true

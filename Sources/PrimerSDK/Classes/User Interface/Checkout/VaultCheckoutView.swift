@@ -1,14 +1,14 @@
 #if canImport(UIKit)
 import UIKit
 
-internal protocol VaultCheckoutViewDelegate: class, UITableViewDelegate, UITableViewDataSource {
+internal protocol VaultCheckoutViewDelegate: UITableViewDelegate, UITableViewDataSource {
     func cancel()
     func openVault()
     func pay()
     func selectTokenForPayment(token: PaymentMethodToken)
 }
 
-internal protocol VaultCheckoutViewDataSource: class {
+internal protocol VaultCheckoutViewDataSource: AnyObject {
     var selectedSavedPaymentMethod: PaymentMethodToken? { get }
     var amount: String? { get }
 }
@@ -344,7 +344,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
         // FIXME: Why would you have a function that takes a UIButton as input, but then perform actions on payButton?
         payButton.isEnabled = false
         log(logLevel: .verbose, title: nil, message: "Paying", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-        payButton.showSpinner()
+        payButton.showSpinner(true)
         delegate?.pay()
     }
 }

@@ -1,36 +1,65 @@
 public enum Currency: String, Codable {
-    case USD = "USD"
-    case GBP = "GBP"
-    case EUR = "EUR"
-    case SEK = "SEK"
-    case NOK = "NOK"
-    case DKK = "DKK"
-    case JPY = "JPY"
-    case AUD = "AUD"
-    case CAD = "CAD"
-    case CHF = "CHF"
-    case CNY = "CNY"
-    case HKD = "HKD"
-    case NZD = "NZD"
-    case KRW = "KRW"
-    case SGD = "SGD"
-    case MXN = "MXN"
-    case INR = "INR"
-    case RUB = "RUB"
-    case ZAR = "ZAR"
-    case TRY = "TRY"
-    case BRL = "BRL"
-    case TWD = "TWD"
-    case PLN = "PLN"
-    case THB = "THB"
-    case IDR = "IDR"
-    case HUF = "HUF"
-    case CZK = "CZK"
-    case ILS = "ILS"
-    case CLP = "CLP"
-    case AED = "AED"
-    case COP = "COP"
-    case SAR = "SAR"
-    case MYR = "MYR"
-    case RON = "RON"
+    case USD
+    case GBP
+    case EUR
+    case SEK
+    case NOK
+    case DKK
+    case JPY
+    case AUD
+    case CAD
+    case CHF
+    case CNY
+    case HKD
+    case NZD
+    case KRW
+    case SGD
+    case MXN
+    case INR
+    case RUB
+    case ZAR
+    case TRY
+    case BRL
+    case TWD
+    case PLN
+    case THB
+    case IDR
+    case HUF
+    case CZK
+    case ILS
+    case CLP
+    case AED
+    case COP
+    case SAR
+    case MYR
+    case RON
+}
+
+extension Currency: CaseIterable {
+    var symbol: String? {
+        switch self {
+        case .USD:
+            return "$"
+        case .GBP:
+            return "£"
+        case .EUR:
+            return "€"
+        case .JPY:
+            return "¥"
+        case .KRW:
+            return "₩"
+        default:
+            return nil
+        }
+    }
+
+    var isZeroDecimal: Bool {
+        switch self {
+        case .JPY, .KRW, .CLP:
+            return true
+        default:
+            return false
+        }
+    }
+        
 }

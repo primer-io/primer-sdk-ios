@@ -22,8 +22,7 @@ internal class ApayaService: ApayaServiceProtocol {
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         guard let clientToken = state.decodedClientToken,
-              let merchantId = state.paymentMethodConfig?.getConfigId(for: .apaya),
-              var merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
+              let merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
         else {
             return completion(.failure(ApayaException.noToken))
         }
@@ -33,10 +32,10 @@ internal class ApayaService: ApayaServiceProtocol {
             return completion(.failure(PaymentException.missingCurrency))
         }
                 
-        let body = Apaya.CreateSessionAPIRequest(merchantId: merchantId,
-                                                 merchantAccountId: merchantAccountId,
+        let body = Apaya.CreateSessionAPIRequest(merchantAccountId: merchantAccountId,
                                                  language: settings.localeData.languageCode ?? "en",
-                                                 currencyCode: currency.rawValue)
+                                                 currencyCode: currency.rawValue,
+                                                 phoneNumber: settings.customer?.mobilePhoneNumber)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.apayaCreateSession(clientToken: clientToken, request: body) { [weak self] result in

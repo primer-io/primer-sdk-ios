@@ -21,22 +21,25 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
 
         settings.clientTokenRequestCallback({ [weak self] (token, err) in
             if let err = err {
-                completion(PrimerError.clientTokenNull)
+                completion(err)
             } else if let token = token {
                 guard let jwtTokenPayload = token.jwtTokenPayload,
                       let expDate = jwtTokenPayload.expDate
                 else {
-                    return completion(PrimerError.clientTokenNull)
+                    return completion(PrimerError.clientTokenExpirationMissing)
                 }
                 
                 if expDate < Date() {
-                    return completion(PrimerError.tokenExpired)
+                    return completion(PrimerError.clientTokenExpired)
                 }
                 
                 if let jwtTokenPayload = token.jwtTokenPayload {
+                    state.accessToken = token
                     state.decodedClientToken = jwtTokenPayload
                     completion(nil)
                 } else {
+                    state.accessToken = nil
+                    state.decodedClientToken = nil
                     completion(PrimerError.clientTokenNull)
                 }
             }

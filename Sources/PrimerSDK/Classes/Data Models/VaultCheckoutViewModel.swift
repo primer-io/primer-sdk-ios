@@ -1,3 +1,12 @@
+//
+//  VaultCheckoutViewModel.swift
+//  PrimerSDK
+//
+//  Created by Evangelos Pittas on 6/8/21.
+//
+
+import Foundation
+
 #if canImport(UIKit)
 
 internal protocol VaultCheckoutViewModelProtocol {
@@ -18,6 +27,11 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     var availablePaymentOptions: [PaymentMethodViewModel] {
         let state: AppStateProtocol = DependencyContainer.resolve()
+        
+        if !Primer.shared.flow.internalSessionFlow.vaulted {
+            return state.viewModels.filter({ $0.type != .apaya })
+        }
+        
         return state.viewModels
     }
 
@@ -89,28 +103,16 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     func authorizePayment(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let selectedToken = state.paymentMethods.first(where: { token in
-            guard let tokenId = token.token else { return false }
-            return tokenId == state.selectedPaymentMethod
+        guard let paymentMethod = state.paymentMethods.first(where: { paymentMethod in
+            return paymentMethod.token == state.selectedPaymentMethod
         }) else { return }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        settings.authorizePayment(selectedToken, completion)
-        settings.onTokenizeSuccess(selectedToken, completion)
+        settings.authorizePayment(paymentMethod, completion)
+        settings.onTokenizeSuccess(paymentMethod, completion)
     }
 
-}
-
-internal extension Int {
-    func toCurrencyString(currency: Currency) -> String {
-        switch currency {
-        case .USD: return String(format: "$%.2f", Float(self) / 100)
-        case .EUR: return String(format: "€%.2f", Float(self) / 100)
-        case .GBP: return String(format: "£%.2f", Float(self) / 100)
-        default:
-            return "\(self) \(currency.rawValue)"
-        }
-    }
 }
 
 #endif
+

@@ -10,34 +10,32 @@
 @testable import PrimerSDK
 
 class MockApplePayViewModel: ApplePayViewModelProtocol {
+
+    var tokenizeCalled = false
+    let paymentMethodTokenJSON: String = """
+        """
+
+    var host: OAuthHost = .applePay
+    var didPresentPaymentMethod: (() -> Void)?
+    
     var amount: Int?
-    
-    func tokenize(instrument: PaymentInstrument, completion: @escaping (Error?) -> Void) {
-        
-    }
-    
-        
     var orderItems: [OrderItem] { return [] }
-    
     var clientToken: DecodedClientToken?
+    var isVaulted: Bool = false
+    var uxMode: UXMode = .CHECKOUT
+    var applePayConfigId: String? = "applePayConfigId"
+    var currency: Currency? = .EUR
+    var merchantIdentifier: String? = "mid"
+    var countryCode: CountryCode? = .fr
     
-    var isVaulted: Bool { return false }
-    
-    var uxMode: UXMode { return .CHECKOUT }
-    
-    func payWithApple(completion: @escaping (Error?) -> Void) {
-        
+    func tokenize() -> Promise<PaymentMethodToken> {
+        tokenizeCalled = true
+        return Promise { seal in
+            let paymentMethodTokenData = paymentMethodTokenJSON.data(using: .utf8)!
+            let token = try! JSONParser().parse(PaymentMethodToken.self, from: paymentMethodTokenData)
+            seal.fulfill(token)
+        }
     }
-    
-    var applePayConfigId: String? { return "applePayConfigId" }
-
-    var currency: Currency? { return .EUR }
-
-    var merchantIdentifier: String? { "mid" }
-
-    var countryCode: CountryCode? { return .fr }
-
-    var calledTokenize = false
 
 }
 

@@ -26,6 +26,12 @@ enum PrimerAPI: Endpoint {
 }
 
 internal extension PrimerAPI {
+    
+    static var headers: [String: String] = [
+        "Content-Type": "application/json",
+        "Primer-SDK-Version": Bundle.primerFramework.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "n/a",
+        "Primer-SDK-Client": "IOS_NATIVE"
+    ]
 
     // MARK: Base URL
     var baseURL: String? {
@@ -109,11 +115,8 @@ internal extension PrimerAPI {
 
     // MARK: Headers
     var headers: [String: String]? {
-        var headers: [String: String] = [
-            "Content-Type": "application/json",
-            "Primer-SDK-Version": "1.0.0-beta.0",
-            "Primer-SDK-Client": "IOS_NATIVE"
-        ]
+        var tmpHeaders = PrimerAPI.headers
+        
         switch self {
         case .directDebitCreateMandate(let clientToken, _),
              .vaultDeletePaymentMethod(let clientToken, _),
@@ -128,11 +131,11 @@ internal extension PrimerAPI {
              .tokenizePaymentMethod(let clientToken, _),
              .apayaCreateSession(let clientToken, _):
             if let token = clientToken.accessToken {
-                headers["Primer-Client-Token"] = token
+                tmpHeaders["Primer-Client-Token"] = token
             }
         }
 
-        return headers
+        return tmpHeaders
     }
 
     // MARK: Query Parameters
