@@ -17,6 +17,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
     override func xibSetup() {
         super.xibSetup()
         
+        textField.keyboardType = .numberPad
         textField.delegate = self
         isValid = { text in
             return text.isValidCardNumber
@@ -26,26 +27,22 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField._text ?? ""
-
+        if string != "" && currentText.withoutWhiteSpace.count == 19 { return false }
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
-        if !newText.withoutNonNumericCharacters.isNumeric && !string.isEmpty { return false }
-        
-        cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
-        let cardNetworkValidation = cardNetwork.validation
-        let maxCardNetworkDigits = cardNetworkValidation?.lengths.max() ?? 19
-        if string != "" && currentText.withoutNonNumericCharacters.count == maxCardNetworkDigits { return false }
-        
+        if !newText.withoutWhiteSpace.isNumeric && !string.isEmpty { return false }
         primerTextField._text = newText
-        
+        cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
         delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)
-        validation = (self.isValid?(primerTextField._text ?? "") ?? false) ? .valid : .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
+        validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? .valid : .invalid(PrimerError.invalidCardnumber)
         
-        if let cardNetworkValidation = cardNetworkValidation {
-            primerTextField.text = newText.withoutNonNumericCharacters.separate(on: cardNetworkValidation.gaps, with: " ")
-        } else {
-            primerTextField.text = newText.withoutNonNumericCharacters.separate(every: 4, with: " ")
+        switch validation {
+        case .valid:
+            delegate?.primerTextFieldView(self, isValid: true)
+        default:
+            delegate?.primerTextFieldView(self, isValid: nil)
         }
         
+        primerTextField.text = newText.withoutWhiteSpace.separate(every: 4, with: " ")
         return false
     }
     

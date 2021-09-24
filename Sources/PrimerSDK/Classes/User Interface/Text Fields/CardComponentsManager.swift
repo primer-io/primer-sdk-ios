@@ -221,10 +221,6 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             .done { paymentMethodsConfig in
                 self.paymentMethodsConfig = paymentMethodsConfig
                 
-                if self.paymentMethodsConfig?.getConfigId(for: .paymentCard) == nil {
-                    throw PrimerError.configFetchFailed
-                }
-                
                 let paymentInstrument = PaymentInstrument(
                     number: self.cardnumberField.cardnumber,
                     cvv: self.cvvField.cvv,

@@ -31,7 +31,9 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
             // That's because the clientToken returned for dynamic 3DS doesn't contain an env.
             jwtTokenPayload.env = previousEnv
         }
+
         state.decodedClientToken = jwtTokenPayload
+        state.accessToken = clientToken
     }
 
     /**
@@ -42,7 +44,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
 
         settings.clientTokenRequestCallback({ [weak self] (token, err) in
             if let err = err {
-                completion(PrimerError.clientTokenNull)
+                completion(err)
             } else if let token = token {
                 do {
                     try ClientTokenService.storeClientToken(token)

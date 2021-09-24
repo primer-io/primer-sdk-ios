@@ -33,6 +33,7 @@ internal protocol PrimerSettingsProtocol {
     var orderId: String? { get }
     var userDetails: UserDetails? { get }
     var debugOptions: PrimerDebugOptions { get }
+    var customer: Customer? { get set }
 }
 
 public struct PrimerDebugOptions {
@@ -90,6 +91,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var orderId: String?
     internal(set) public var userDetails: UserDetails?
     internal(set) public var debugOptions: PrimerDebugOptions = PrimerDebugOptions()
+    internal(set) public var customer: Customer?
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
@@ -134,7 +136,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         billingAddress: Address? = nil,
         orderId: String? = nil,
         userDetails: UserDetails? = nil,
-        debugOptions: PrimerDebugOptions? = nil
+        debugOptions: PrimerDebugOptions? = nil,
+        customer: Customer? = nil
     ) {
         self.amount = amount
         self.currency = currency
@@ -154,6 +157,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //        self.merchantCapabilities = merchantCapabilities
         self.isInitialLoadingHidden = isInitialLoadingHidden
         self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
+        self.customer = customer
         
         if !orderItems.filter({ $0.unitAmount != nil }).isEmpty {
             // In case order items have been provided: Replace amount with the sum of the unit amounts

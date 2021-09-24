@@ -30,6 +30,12 @@ enum PrimerAPI: Endpoint {
 }
 
 internal extension PrimerAPI {
+    
+    static var headers: [String: String] = [
+        "Content-Type": "application/json",
+        "Primer-SDK-Version": Bundle.primerFramework.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "n/a",
+        "Primer-SDK-Client": "IOS_NATIVE"
+    ]
 
     // MARK: Base URL
     var baseURL: String? {
@@ -83,7 +89,7 @@ internal extension PrimerAPI {
         case .tokenizePaymentMethod:
             return "/payment-instruments"
         case .threeDSBeginRemoteAuth(_, let paymentMethodToken, _):
-            return "/3ds/\(paymentMethodToken.token!)/auth"
+            return "/3ds/\(paymentMethodToken.token)/auth"
         case .threeDSContinueRemoteAuth(_, let threeDSTokenId):
             return "/3ds/\(threeDSTokenId)/continue"
         case .apayaCreateSession:
@@ -125,13 +131,7 @@ internal extension PrimerAPI {
     // MARK: Headers
     
     var headers: [String: String]? {
-        let frameworkVersion = Bundle.primerFramework.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-        
-        var headers: [String: String] = [
-            "Content-Type": "application/json",
-            "Primer-SDK-Version": frameworkVersion ?? "n/a",
-            "Primer-SDK-Client": "IOS_NATIVE"
-        ]
+        var tmpHeaders = PrimerAPI.headers
         
         switch self {
         case .directDebitCreateMandate(let clientToken, _),
@@ -149,11 +149,11 @@ internal extension PrimerAPI {
              .threeDSContinueRemoteAuth(let clientToken, _),
              .apayaCreateSession(let clientToken, _):
             if let token = clientToken.accessToken {
-                headers["Primer-Client-Token"] = token
+                tmpHeaders["Primer-Client-Token"] = token
             }
         }
 
-        return headers
+        return tmpHeaders
     }
 
     // MARK: Query Parameters

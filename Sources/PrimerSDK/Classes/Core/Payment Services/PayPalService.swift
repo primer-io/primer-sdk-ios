@@ -40,21 +40,21 @@ internal class PayPalService: PayPalServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let clientToken = state.decodedClientToken else {
-            return completion(.failure(PrimerError.payPalSessionFailed))
+            return completion(.failure(PrimerError.clientTokenNull))
         }
 
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
-            return completion(.failure(PrimerError.payPalSessionFailed))
+            return completion(.failure(PrimerError.configFetchFailed))
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         guard let amount = settings.amount else {
-            return completion(.failure(PrimerError.payPalSessionFailed))
+            return completion(.failure(PrimerError.amountMissing))
         }
 
         guard let currency = settings.currency else {
-            return completion(.failure(PrimerError.payPalSessionFailed))
+            return completion(.failure(PrimerError.currencyMissing))
         }
 
         guard var urlScheme = settings.urlScheme else {

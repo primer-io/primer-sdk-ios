@@ -6,47 +6,87 @@
 //  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
+import PrimerSDK
 import UIKit
 
-class AppViewController: UIViewController {
-    
-    @IBOutlet weak var environmentSwitch: UISegmentedControl!
-    private var selectedEnvironment: Environment = .sandbox
+class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+
+    @IBOutlet weak var environmentControl: UISegmentedControl!
     @IBOutlet weak var customerIdTextField: UITextField!
+    @IBOutlet weak var phoneNumberTextField: UITextField!
+    @IBOutlet weak var countryCodeTextField: UITextField!
+    @IBOutlet weak var currencyTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
-    @IBOutlet weak var performPaymentSwitch: UISwitch!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        performPaymentSwitch.isOn = true
-        environmentSwitch.selectedSegmentIndex = 1
+        environmentControl.selectedSegmentIndex = 1
+        phoneNumberTextField.text = "07538121305"
+        countryCodeTextField.text = CountryCode.gb.rawValue
+        currencyTextField.text = Currency.GBP.rawValue
+        
+        let countryPicker = UIPickerView()
+        countryPicker.tag = 0
+        countryCodeTextField.inputView = countryPicker
+        countryPicker.dataSource = self
+        countryPicker.delegate = self
+        
+        let currencyPicker = UIPickerView()
+        currencyPicker.tag = 1
+        currencyTextField.inputView = currencyPicker
+        currencyPicker.dataSource = self
+        currencyPicker.delegate = self
     }
     
-    @IBAction func environmentValueChanged(_ sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
+    @IBAction func initializePrimerButtonTapped(_ sender: Any) {
+        var env: Environment!
+        switch environmentControl.selectedSegmentIndex {
         case 0:
-            selectedEnvironment = .dev
+            env = .dev
         case 1:
-            selectedEnvironment = .sandbox
+            env = .sandbox
         case 2:
-            selectedEnvironment = .staging
+            env = .staging
         case 3:
-            selectedEnvironment = .production
+            env = .production
         default:
             break
         }
-    }
-    
-    @IBAction func initializeButtonTapped(_ sender: Any) {
+        
         var amount: Int?
-        if let strVal = amountTextField.text,
-           let dblVal = Double(strVal) {
-            amount = Int(dblVal*100)
+        if let amountStr = amountTextField.text, let amountDbl = Double(amountStr) {
+            amount = Int(amountDbl * 100)
         }
         
-        let customerId = (customerIdTextField.text ?? "").isEmpty ? "customer_id" : customerIdTextField.text
-        let mvc = MerchantCheckoutViewController.instantiate(environment: selectedEnvironment, customerId: customerId, amount: amount, performPayment: performPaymentSwitch.isOn)
-        navigationController?.pushViewController(mvc, animated: true)
+        let mcvc = MerchantCheckoutViewController.instantiate(environment: env, customerId: customerIdTextField.text, phoneNumber: phoneNumberTextField.text, countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""), currency: Currency(rawValue: currencyTextField.text ?? ""), amount: amount)
+        navigationController?.pushViewController(mcvc, animated: true)
     }
     
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if pickerView.tag == 0 {
+            return CountryCode.allCases.count
+        } else {
+            return Currency.allCases.count
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if pickerView.tag == 0 {
+            return CountryCode.allCases[row].rawValue
+        } else {
+            return Currency.allCases[row].rawValue
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if pickerView.tag == 0 {
+            countryCodeTextField.text = CountryCode.allCases[row].rawValue
+        } else {
+            currencyTextField.text = Currency.allCases[row].rawValue
+        }
+    }
 }

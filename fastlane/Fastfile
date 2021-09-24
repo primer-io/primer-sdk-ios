@@ -169,6 +169,8 @@ platform :ios do
       keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
+  end
+
 
     # Build for appetize
     build_app(
@@ -306,23 +308,23 @@ platform :ios do
       note: version_name
     )
 
-    # Build for firebase
-    build_app(
-      scheme: "PrimerSDK-Example",
-      workspace: "./Example/PrimerSDK.xcworkspace",
-      configuration: "Debug",
-      export_method: "development",
-      # Build speed optimisation
-      skip_package_pkg: true, 
-    )
+    # # Build for firebase
+    # build_app(
+    #   scheme: "PrimerSDK-Example",
+    #   workspace: "./Example/PrimerSDK.xcworkspace",
+    #   configuration: "Debug",
+    #   export_method: "development",
+    #   # Build speed optimisation
+    #   skip_package_pkg: true, 
+    # )
 
-    # Firebase
-    firebase_app_distribution(
-        service_credentials_file: "firebase_credentials.json",
-        app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
-        groups: "internal-qa-team",
-        release_notes: "PR: " + version_name + " | " + str_time,
-      )
+    # # Firebase
+    # firebase_app_distribution(
+    #     service_credentials_file: "firebase_credentials.json",
+    #     app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
+    #     groups: "internal-qa-team",
+    #     release_notes: "PR: " + version_name + " | " + str_time,
+    #   )
   end
 
 end

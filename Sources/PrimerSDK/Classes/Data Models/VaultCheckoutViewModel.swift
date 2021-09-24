@@ -1,3 +1,12 @@
+//
+//  VaultCheckoutViewModel.swift
+//  PrimerSDK
+//
+//  Created by Evangelos Pittas on 6/8/21.
+//
+
+import Foundation
+
 #if canImport(UIKit)
 
 internal protocol VaultCheckoutViewModelProtocol {
@@ -21,6 +30,11 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     var availablePaymentOptions: [PaymentMethodViewModel] {
         let state: AppStateProtocol = DependencyContainer.resolve()
+        
+        if !Primer.shared.flow.internalSessionFlow.vaulted {
+            return state.viewModels.filter({ $0.type != .apaya })
+        }
+        
         return state.viewModels
     }
 
@@ -96,15 +110,14 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     func authorizePayment(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let selectedToken = state.paymentMethods.first(where: { token in
-            guard let tokenId = token.token else { return false }
-            return tokenId == state.selectedPaymentMethod
+        guard let selectedPaymentMethod = state.paymentMethods.first(where: { paymentMethod in
+            return paymentMethod.token == state.selectedPaymentMethod
         }) else { return }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        settings.authorizePayment(selectedToken, completion)
-        settings.onTokenizeSuccess(selectedToken, completion)
-        Primer.shared.delegate?.onTokenizeSuccess?(selectedToken, resumeHandler: resumeHandler)
+        settings.authorizePayment(selectedPaymentMethod, completion)
+        settings.onTokenizeSuccess(selectedPaymentMethod, completion)
+        Primer.shared.delegate?.onTokenizeSuccess?(selectedPaymentMethod, resumeHandler: self)
     }
 
 }
@@ -112,13 +125,15 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 extension VaultCheckoutViewModel: ResumeHandlerProtocol {
     func handle(error: Error) {
         DispatchQueue.main.async {
-            let router: RouterDelegate = DependencyContainer.resolve()
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
             if settings.hasDisabledSuccessScreen {
                 Primer.shared.dismiss()
             } else {
-                router.show(.error(error: PrimerError.generic))
+                let evc = ErrorViewController(message: PrimerError.payPalSessionFailed.localizedDescription)
+                evc.view.translatesAutoresizingMaskIntoConstraints = false
+                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                Primer.shared.primerRootVC?.show(viewController: evc)
             }
         }
     }
@@ -129,16 +144,19 @@ extension VaultCheckoutViewModel: ResumeHandlerProtocol {
     
     func handleSuccess() {
         DispatchQueue.main.async {
-            let router: RouterDelegate = DependencyContainer.resolve()
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
             if settings.hasDisabledSuccessScreen {
                 Primer.shared.dismiss()
             } else {
-                router.show(.success(type: .regular))
+                let svc = SuccessViewController()
+                svc.view.translatesAutoresizingMaskIntoConstraints = false
+                svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                Primer.shared.primerRootVC?.show(viewController: svc)
             }
         }
     }
 }
 
 #endif
+

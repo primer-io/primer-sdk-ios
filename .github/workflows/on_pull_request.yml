@@ -10,6 +10,7 @@ on:
     branches:
       - develop
       - "release/**"
+      - "preview/**"
 
 jobs:
   build-test:
@@ -53,8 +54,8 @@ jobs:
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
 
-      - name: Test - Fastlane tests
-        run: bundle exec fastlane tests
+      # - name: Test - Fastlane tests
+      #   run: bundle exec fastlane tests
 
       - name: Create Firebase Service Credentials file
         run: |

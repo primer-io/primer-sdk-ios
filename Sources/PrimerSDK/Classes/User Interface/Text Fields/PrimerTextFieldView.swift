@@ -17,39 +17,39 @@ public protocol PrimerTextFieldViewDelegate {
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork)
     /// Will return a the validation error on the text input.
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error)
+    
+    func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView)
+    
+    func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool
+    
+    func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool
 }
 
 public extension PrimerTextFieldViewDelegate {
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {}
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork) {}
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {}
+    func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
+    func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true }
+    func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true}
 }
 
 public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     
     @IBOutlet internal weak var textField: PrimerTextField!
     internal var isValid: ((_ text: String) -> Bool?)?
+    internal(set) public var isTextValid: Bool = false
     public var delegate: PrimerTextFieldViewDelegate?
-    
     internal var validation: PrimerTextField.Validation = .notAvailable {
         didSet {
             switch validation {
             case .valid:
-                delegate?.primerTextFieldView(self, isValid: true)
-
-            case .invalid(let err):
-                delegate?.primerTextFieldView(self, isValid: false)
-                
-                if let err = err {
-                    delegate?.primerTextFieldView(self, validationDidFailWithError: err)
-                }
-        
-            case .notAvailable:
-                delegate?.primerTextFieldView(self, isValid: nil)
+                isTextValid = true
+            default:
+                isTextValid = false
             }
         }
     }
-    
     
     // MARK: - PROXY
     
@@ -115,6 +115,14 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         return textField.drawPlaceholder(in: rect)
     }
     
+    public override func becomeFirstResponder() -> Bool {
+        return textField.becomeFirstResponder()
+    }
+    
+    public override func resignFirstResponder() -> Bool {
+        return textField.resignFirstResponder()
+    }
+    
 //    public override var inputView: UIView? {
 //        get {
 //            return textField.inputView
@@ -136,9 +144,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     
     override func xibSetup() {
         super.xibSetup()
-        
-        textField.inputView = UIView()
-        
+                        
         backgroundColor = .clear
         view.backgroundColor = .clear
         textField.backgroundColor = backgroundColor
@@ -147,10 +153,37 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     
     // MARK: - TEXT FIELD DELEGATE
     
+    public func textFieldDidBeginEditing(_ textField: UITextField) {
+        delegate?.primerTextFieldViewDidBeginEditing(self)
+    }
+    
+    public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        return delegate?.primerTextFieldViewShouldBeginEditing(self) ?? true
+    }
+    
+    public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        return delegate?.primerTextFieldViewShouldEndEditing(self) ?? true
+    }
+    
     public func textFieldDidEndEditing(_ textField: UITextField) {
         guard let primerTextField = textField as? PrimerTextField else { return }
-        let err = NSError(domain: "primer.core.kit", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."])
+        let err = PrimerError.invalidValue
         validation = (self.isValid?(primerTextField._text ?? "") ?? false) ? .valid : .invalid(err)
+        
+        switch validation {
+        case .valid:
+            delegate?.primerTextFieldView(self, isValid: true)
+
+        case .invalid(let err):
+            delegate?.primerTextFieldView(self, isValid: false)
+            
+            if let err = err {
+                delegate?.primerTextFieldView(self, validationDidFailWithError: err)
+            }
+    
+        case .notAvailable:
+            delegate?.primerTextFieldView(self, isValid: nil)
+        }
     }
     
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

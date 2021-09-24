@@ -7,6 +7,7 @@
 
 #if canImport(UIKit)
 
+// swiftlint:disable file_length
 import Foundation
 
 internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
@@ -351,10 +352,13 @@ enum PrimerError: PrimerErrorProtocol {
     case containerError(errors: [Error])
     case delegateNotSet
     case userCancelled
+    case invalidValue
     
     case clientTokenNull
     case clientTokenExpirationMissing
     case clientTokenExpired
+    case checkoutNotSupported
+    case vaultNotSupported
     
     case customerIDNull
     
@@ -364,6 +368,7 @@ enum PrimerError: PrimerErrorProtocol {
     case amountShouldBeNullForPendingOrderItems
     case amountCannotBeNullForNonPendingOrderItems
     case currencyMissing
+    case orderIdMissing
     
     case requestFailed
     case configFetchFailed
@@ -381,7 +386,6 @@ enum PrimerError: PrimerErrorProtocol {
     case userDetailsAddressLine1Missing
     case userDetailsPostalCodeMissing
     case userDetailsCountryCodeMissing
-    case orderIdMissing
     case userDetailsMissing
     case dataMissing(description: String)
     case directoryServerIdMissing
@@ -403,6 +407,8 @@ enum PrimerError: PrimerErrorProtocol {
             return 0
         case .containerError:
             return 1
+        case .invalidValue:
+            return 400
         case .delegateNotSet:
             return 500
         case .userCancelled:
@@ -415,6 +421,10 @@ enum PrimerError: PrimerErrorProtocol {
             return 2002
         case .clientTokenExpired:
             return 2003
+        case .checkoutNotSupported:
+            return 2004
+        case .vaultNotSupported:
+            return 2005
             
         case .customerIDNull:
             return 1400
@@ -430,6 +440,8 @@ enum PrimerError: PrimerErrorProtocol {
             return 1720
         case .currencyMissing:
             return 1800
+        case .orderIdMissing:
+            return 1810
             
         // Network
         case .requestFailed:
@@ -521,6 +533,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      value: "Multiple errors occured",
                                      comment: "Multiple errors occured - Primer error message")
             
+        case .invalidValue:
+            return NSLocalizedString("primer-error-message-invalid-value",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Invalid value",
+                                     comment: "Invalid value - Primer error message")
+            
         case .delegateNotSet:
             return NSLocalizedString("primer-error-message-delegate-not-set",
                                      tableName: nil,
@@ -548,6 +567,20 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Token has expired",
                                      comment: "Token has expired - DX error message")
+            
+        case .checkoutNotSupported:
+            return NSLocalizedString("primer-error-message-checkout-not-supported",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Checkout is not supported for this payment method",
+                                     comment: "Checkout is not supported for this payment method - DX error message")
+            
+        case .vaultNotSupported:
+            return NSLocalizedString("primer-error-message-vault-not-supported",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Vaulting is not supported for this payment method",
+                                     comment: "Vaulting is not supported for this payment method - DX error message")
 
         case .payPalSessionFailed:
             return NSLocalizedString("primer-error-message-paypal-needs-recharge",
@@ -765,12 +798,6 @@ enum PrimerError: PrimerErrorProtocol {
                                      value: "3DS SDK key missing",
                                      comment: "3DS SDK key missing missing - Primer error message")
 
-        case .currencyMissing:
-            return NSLocalizedString("primer-error-message-currency-missing",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Currency missing",
-                                     comment: "Currency missing - Primer error message")
         case .invalidCardnumber:
             return NSLocalizedString("primer-error-message-invalid-cardnumber",
                                      tableName: nil,

@@ -32,7 +32,7 @@ enum TextFieldState {
     }
 }
 
-internal class PrimerTextField_Old: UITextField {
+internal class PrimerCustomStyleTextField: UITextField {
 
     var validationIsOptional = false
 

@@ -16,6 +16,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
     override func xibSetup() {
         super.xibSetup()
         
+        textField.keyboardType = .namePhonePad
         textField.delegate = self
         isValid = { text in
             return text.isTypingValidCardholderName
@@ -34,9 +35,16 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            validation = .invalid(NSError(domain: "primer", code: 100, userInfo: [NSLocalizedDescriptionKey: "Invalid value."]))
+            validation = .invalid(PrimerError.invalidCardholderName)
         default:
             validation = .notAvailable
+        }
+        
+        switch validation {
+        case .valid:
+            delegate?.primerTextFieldView(self, isValid: true)
+        default:
+            delegate?.primerTextFieldView(self, isValid: nil)
         }
         
         primerTextField._text = newText

@@ -77,7 +77,7 @@ extension MerchantCheckoutViewController {
         
         let body = PaymentRequest(
             environment: environment,
-            paymentMethod: token.token!,
+            paymentMethod: token.token,
             amount: amount,
             type: token.paymentInstrumentType.rawValue,
             currencyCode: "EUR")
@@ -92,30 +92,18 @@ extension MerchantCheckoutViewController {
     }
     
     internal func generatePrimerTheme() -> PrimerTheme {
-        let themeColor = UIColor.systemBlue
-        
         if #available(iOS 13.0, *) {
             return PrimerTheme(
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
-                colorTheme: PrimerDefaultTheme(tint1: themeColor),
-                darkTheme: PrimerDarkTheme(tint1: themeColor),
-                layout: PrimerLayout(showTopTitle: true, textFieldHeight: 40)
-//                fontTheme: PrimerFontTheme(
-//                    mainTitleFont: .boldSystemFont(ofSize: 24),
-//                    successMessageFont: UIFont(name: "ChocolateBarDemo", size: 20.0)!
-//                )
-            )
+                colorTheme: PrimerDefaultTheme(),
+                darkTheme: PrimerDarkTheme(),
+                layout: PrimerLayout(showTopTitle: true, textFieldHeight: 40))
         } else {
             return PrimerTheme(
                 cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
-                colorTheme: PrimerDefaultTheme(tint1: themeColor),
+                colorTheme: PrimerDefaultTheme(),
                 layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
-                textFieldTheme: .outlined
-//                fontTheme: PrimerFontTheme(
-//                    mainTitleFont: .boldSystemFont(ofSize: 24),
-//                    successMessageFont: UIFont(name: "ChocolateBarDemo", size: 20.0)!
-//                )
-            )
+                textFieldTheme: .outlined)
         }
     }
     

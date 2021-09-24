@@ -279,7 +279,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 self.performChallenge(with: serverAuthData, urlScheme: nil, presentOn: self.threeDSSDKWindow!.rootViewController!)
             }
             .then { primer3DSCompletion -> Promise<ThreeDS.PostAuthResponse> in
-                self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token!)
+                self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token)
             }
             .done { postAuthResponse in
                 completion(.success((postAuthResponse.token, postAuthResponse)))

@@ -8,7 +8,6 @@ on:
       - synchronize
       - closed
     branches:
-      - "release/**"
       - master
 
 jobs:

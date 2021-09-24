@@ -3,7 +3,7 @@
 import Foundation
 import PassKit
 
-protocol ApplePayViewModelProtocol {
+protocol ApplePayViewModelProtocol: PrimerOAuthViewModel {
     var countryCode: CountryCode? { get }
     var currency: Currency? { get }
     var merchantIdentifier: String? { get }
@@ -12,11 +12,10 @@ protocol ApplePayViewModelProtocol {
     var clientToken: DecodedClientToken? { get }
     var isVaulted: Bool { get }
     var uxMode: UXMode { get }
-    func payWithApple(completion: @escaping (PaymentMethodToken?, Error?) -> Void)
 }
 
 class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
-    
+    var host: OAuthHost = .applePay
     private var resumeHandler: ResumeHandlerProtocol!
     private var applePayWindow: UIWindow?
 
@@ -51,6 +50,8 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
         return Primer.shared.flow.internalSessionFlow.uxMode
     }
     
+    var didPresentPaymentMethod: (() -> Void)?
+    
     private var applePayCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
 
     deinit {
@@ -62,166 +63,129 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
         resumeHandler = self
     }
     
-    func payWithApple(completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
-        initializeApplePay { token, err in
-            if let err = err {
-                DispatchQueue.main.async {
-                    Primer.shared.delegate?.checkoutFailed?(with: err)
-                    self.dismissWithError(err)
-                }
-                
-            } else if let token = token {
-                DispatchQueue.main.async {
-                    if Primer.shared.flow.internalSessionFlow.vaulted {
-                        Primer.shared.delegate?.tokenAddedToVault?(token)
-                        
-                    } else {
-                        Primer.shared.delegate?.authorizePayment?(token, { (err) in
-                        })
-                    }
-                    
-                    Primer.shared.delegate?.onTokenizeSuccess?(token, resumeHandler: self)
-                    
-                    Primer.shared.delegate?.onTokenizeSuccess?(token, { (err) in
-                        if let err = err {
-                            self.dismissWithError(err)
-                        } else {
-                            self.dismissSuccess()
-                        }
-                    })
+    func tokenize() -> Promise<PaymentMethodToken> {
+        return Promise { seal in
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                seal.reject(PrimerError.vaultNotSupported)
+                return
+            }
+            
+            self.payWithApple { (token, err) in
+                if let err = err {
+                    seal.reject(err)
+                } else if let token = token {
+                    seal.fulfill(token)
+                } else {
+                    assert(true)
                 }
             }
         }
     }
+    
+    var request: PKPaymentRequest!
 
     // swiftlint:disable cyclomatic_complexity function_body_length
-    func initializeApplePay(completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if !settings.isInitialLoadingHidden {
-            
+    private func payWithApple(completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
+        guard let countryCode = countryCode else {
+            let err = PaymentException.missingCountryCode
+            _ = ErrorHandler.shared.handle(error: err)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            return completion(nil, err)
         }
         
-        let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-        config.fetchConfig { [weak self] err in
-            guard let self = self else { return }
+        guard let currency = currency else {
+            let err = PaymentException.missingCurrency
+            _ = ErrorHandler.shared.handle(error: err)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            return completion(nil, err)
+        }
+        
+        guard let merchantIdentifier = merchantIdentifier else {
+            let err = AppleException.missingMerchantIdentifier
+            _ = ErrorHandler.shared.handle(error: err)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            return completion(nil, err)
+        }
+        
+        guard !orderItems.isEmpty else {
+            let err = PaymentException.missingOrderItems
+            _ = ErrorHandler.shared.handle(error: err)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            return completion(nil, err)
+        }
+        
+        let applePayRequest = ApplePayRequest(
+            currency: currency,
+            merchantIdentifier: merchantIdentifier,
+            countryCode: countryCode,
+//            supportedNetworks: supportedNetworks,
+            items: orderItems
+//            merchantCapabilities: merchantCapabilities
+        )
+        
+        
+        let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+        if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
+            request = PKPaymentRequest()
+            request.currencyCode = applePayRequest.currency.rawValue
+            request.countryCode = applePayRequest.countryCode.rawValue
+            request.merchantIdentifier = merchantIdentifier
+            request.merchantCapabilities = [.capability3DS]
+            request.supportedNetworks = supportedNetworks
+            request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
             
-            if let err = err {
-                DispatchQueue.main.async {
-                    Primer.shared.delegate?.checkoutFailed?(with: err)
-                    
-                    if !settings.hasDisabledSuccessScreen {
-                        
-                    } else {
-                        
-                    }
-                }
-            } else {
-                guard let countryCode = self.countryCode else {
-                    let err = PaymentException.missingCountryCode
-                    _ = ErrorHandler.shared.handle(error: err)
-                    return completion(nil, err)
-                }
-                
-                guard let currency = self.currency else {
-                    let err = PaymentException.missingCurrency
-                    _ = ErrorHandler.shared.handle(error: err)
-                    return completion(nil, err)
-                }
-                
-                guard let merchantIdentifier = self.merchantIdentifier else {
-                    let err = AppleException.missingMerchantIdentifier
-                    _ = ErrorHandler.shared.handle(error: err)
-                    return completion(nil, err)
-                }
-                
-                guard !self.orderItems.isEmpty else {
-                    let err = PaymentException.missingOrderItems
-                    _ = ErrorHandler.shared.handle(error: err)
-                    return completion(nil, err)
-                }
-                
-                let applePayRequest = ApplePayRequest(
-                    currency: currency,
-                    merchantIdentifier: merchantIdentifier,
-                    countryCode: countryCode,
-        //            supportedNetworks: supportedNetworks,
-                    items: self.orderItems
-        //            merchantCapabilities: merchantCapabilities
-                )
-                
-                
-                let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
-                if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
-                    let request = PKPaymentRequest()
-                    request.currencyCode = applePayRequest.currency.rawValue
-                    request.countryCode = applePayRequest.countryCode.rawValue
-                    request.merchantIdentifier = merchantIdentifier
-                    request.merchantCapabilities = [.capability3DS]
-                    request.supportedNetworks = supportedNetworks
-                    request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
-                    
-                    guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
-                        let err = AppleException.unableToPresentApplePay
-                        _ = ErrorHandler.shared.handle(error: err)
-                        return completion(nil, err)
-                    }
-                    
-                    paymentVC.delegate = self
-                    
-                    self.applePayCompletion = { [weak self] result in
-                        switch result {
-                        case .success(let applePayPaymentResponse):
-                            let applePayService: ApplePayServiceProtocol = DependencyContainer.resolve()
-                            applePayService.fetchConfig { [weak self] (err) in
-                                if let err = err {
+            guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
+                let err = AppleException.unableToPresentApplePay
+                _ = ErrorHandler.shared.handle(error: err)
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+                return completion(nil, err)
+            }
+            
+            paymentVC.delegate = self
+            
+            applePayCompletion = { result in
+                switch result {
+                case .success(let applePayPaymentResponse):
+                    let applePayService: ApplePayServiceProtocol = DependencyContainer.resolve()
+                    applePayService.fetchConfig { [weak self] (err) in
+                        if let err = err {
+                            completion(nil, err)
+                            
+                        } else {
+                            guard let applePayConfigId = self?.applePayConfigId else {
+                                return completion(nil, PaymentException.missingConfigurationId)
+                            }
 
+                            let instrument = PaymentInstrument(
+                                paymentMethodConfigId: applePayConfigId,
+                                token: applePayPaymentResponse.token,
+                                sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
+                            )
+                            
+                            applePayService.tokenize(instrument: instrument) { [weak self] (result) in
+                                switch result {
+                                case .failure(let err):
                                     completion(nil, err)
                                     
-                                } else {
-                                    let state: AppStateProtocol = DependencyContainer.resolve()
-
-                                    guard let applePayConfigId = self?.applePayConfigId else {
-                                        let err = PaymentException.missingConfigurationId
-                                        _ = ErrorHandler.shared.handle(error: err)
-                                        return completion(nil, err)
-                                    }
-
-                                    let instrument = PaymentInstrument(
-                                        paymentMethodConfigId: applePayConfigId,
-                                        token: applePayPaymentResponse.token,
-                                        sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
-                                    )
+                                case .success(let token):
+                                    completion(token, nil)
                                     
-                                    applePayService.tokenize(instrument: instrument) { [weak self] (result) in
-                                        switch result {
-                                        case .failure(let err):
-                                            completion(nil, err)
-                                            
-                                        case .success(let token):
-                                            completion(token, nil)
-                                        }
-                                    }
                                 }
                             }
-                            
-                        case .failure(let err):
-                            completion(nil, err)
                         }
                     }
                     
-                    self.applePayWindow = UIWindow(frame: UIScreen.main.bounds)
-                    self.applePayWindow?.rootViewController = ClearViewController()
-                    self.applePayWindow?.backgroundColor = UIColor.clear
-                    self.applePayWindow?.windowLevel = UIWindow.Level.alert
-                    self.applePayWindow?.makeKeyAndVisible()
-                    self.applePayWindow?.rootViewController?.present(paymentVC, animated: true, completion: nil)
-                    
-                } else {
-                    log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
-                    return completion(nil, AppleException.unableToMakePaymentsOnProvidedNetworks)
+                case .failure(let err):
+                    completion(nil, err)
                 }
             }
+            
+            Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: nil)
+            didPresentPaymentMethod?()
+            
+        } else {
+            log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
+            return completion(nil, AppleException.unableToMakePaymentsOnProvidedNetworks)
         }
         
         
@@ -231,39 +195,39 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
     // swiftlint:enable cyclomatic_complexity function_body_length
     
     private func dismissWithError(_ err: Error) {
-        DispatchQueue.main.async {
-            self.applePayWindow?.rootViewController?.dismiss(animated: true, completion: {
-                DispatchQueue.main.async {
-                    self.applePayWindow = nil
-                    
-                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    if settings.hasDisabledSuccessScreen {
-                        Primer.shared.dismiss()
-                    } else {
-                        let router: RouterDelegate = DependencyContainer.resolve()
-                        router.presentErrorScreen(with: err)
-                    }
-                }
-            })
-        }
+//        DispatchQueue.main.async {
+//            self.applePayWindow?.rootViewController?.dismiss(animated: true, completion: {
+//                DispatchQueue.main.async {
+//                    self.applePayWindow = nil
+//
+//                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+//                    if settings.hasDisabledSuccessScreen {
+//                        Primer.shared.dismiss()
+//                    } else {
+//                        let router: RouterDelegate = DependencyContainer.resolve()
+//                        router.presentErrorScreen(with: err)
+//                    }
+//                }
+//            })
+//        }
     }
     
     private func dismissSuccess() {
-        DispatchQueue.main.async {
-            self.applePayWindow?.rootViewController?.dismiss(animated: true, completion: {
-                DispatchQueue.main.async {
-                    self.applePayWindow = nil
-                    
-                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    if settings.hasDisabledSuccessScreen {
-                        Primer.shared.dismiss()
-                    } else {
-                        let router: RouterDelegate = DependencyContainer.resolve()
-                        router.presentSuccessScreen(for: .regular)
-                    }
-                }
-            })
-        }
+//        DispatchQueue.main.async {
+//            self.applePayWindow?.rootViewController?.dismiss(animated: true, completion: {
+//                DispatchQueue.main.async {
+//                    self.applePayWindow = nil
+//                    
+//                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+//                    if settings.hasDisabledSuccessScreen {
+//                        Primer.shared.dismiss()
+//                    } else {
+//                        let router: RouterDelegate = DependencyContainer.resolve()
+//                        router.presentSuccessScreen(for: .regular)
+//                    }
+//                }
+//            })
+//        }
     }
 }
 

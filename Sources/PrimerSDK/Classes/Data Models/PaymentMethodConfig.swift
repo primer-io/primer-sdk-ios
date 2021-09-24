@@ -5,8 +5,7 @@ struct PaymentMethodConfig: Codable {
     let keys: ThreeDS.Keys?
     
     func getConfigId(for type: ConfigPaymentMethodType) -> String? {
-        guard let method = self.paymentMethods?
-                .first(where: { method in return method.type == type }) else { return nil }
+        guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
         return method.id
     }
     

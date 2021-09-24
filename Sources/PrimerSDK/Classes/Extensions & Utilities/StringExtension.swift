@@ -12,7 +12,7 @@ import Foundation
 internal extension String {
 
     var withoutWhiteSpace: String {
-        return self.replacingOccurrences(of: " ", with: "")
+        return self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var isNotValidIBAN: Bool {
@@ -42,6 +42,11 @@ internal extension String {
         let regex = "^[a-zA-Z0-9]*$"
         let inputP = NSPredicate(format: "SELF MATCHES %@", regex)
         return inputP.evaluate(with: self)
+    }
+    
+    var isOnlyLatinCharacters: Bool {
+        let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ")
+        return !(self.rangeOfCharacter(from: set.inverted) != nil)
     }
 
     var isValidCardNumber: Bool {
@@ -92,7 +97,7 @@ internal extension String {
         }
         
         // Case where count is 4 will arrive here
-        guard let date = toDate(withFormat: "MMyy") else { return false }
+        guard let date = _self.toDate(withFormat: "MMyy") else { return false }
         return date.endOfMonth > Date()
     }
     
@@ -131,6 +136,7 @@ internal extension String {
     }
     
     var isValidCardholderName: Bool {
+        if isEmpty { return false }
         let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-")
         return !(self.rangeOfCharacter(from: set.inverted) != nil)
     }
@@ -197,7 +203,7 @@ internal extension String {
     var isValidAccountNumber: Bool {
         return !self.isEmpty
     }
-
+    
     func separate(every: Int, with separator: String) -> String {
         return String(stride(from: 0, to: Array(self).count, by: every).map {
             Array(Array(self)[$0..<min($0 + every, Array(self).count)])
