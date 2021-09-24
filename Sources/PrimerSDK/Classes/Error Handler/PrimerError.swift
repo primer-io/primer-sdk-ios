@@ -597,8 +597,8 @@ enum PrimerError: PrimerErrorProtocol {
             return NSLocalizedString("primer-error-message-intent-not-supported",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "Intent is not supported",
-                                     comment: "Intent is not supported - Primer error message") + "\(paymentMethodType.rawValue).\(intent.rawValue)"
+                                     value: "Primer Session Intent is not supported",
+                                     comment: "Primer Session Intent is not supported - Primer error message") + "\(paymentMethodType.rawValue).\(intent.rawValue)"
         case .clientTokenExpirationMissing:
             return NSLocalizedString("primer-error-message-client-token-expiration-missing",
                                      tableName: nil,
