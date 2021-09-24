@@ -169,12 +169,20 @@ public class Primer {
     }
     
     public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil) {
+        if let clientToken = clientToken {
+            try? ClientTokenService.storeClientToken(clientToken)
+        }
+        
         Primer.shared.flow = .default
         presentingViewController = viewController
         show(flow: Primer.shared.flow)
     }
     
     public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
+        if let clientToken = clientToken {
+            try? ClientTokenService.storeClientToken(clientToken)
+        }
+        
         Primer.shared.flow = .defaultWithVault
         presentingViewController = viewController
         show(flow: Primer.shared.flow)
