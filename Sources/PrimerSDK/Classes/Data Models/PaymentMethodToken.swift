@@ -75,7 +75,9 @@ extension PaymentInstrumentType: Codable {
 
 public protocol PaymentMethodDataProtocol: Codable {}
 
-public class PaymentMethod: NSObject, Codable {
+public typealias PaymentMethod = PaymentMethodToken
+
+public class PaymentMethodToken: NSObject, Codable {
     
     public var token: String?
     public var analyticsId: String?
