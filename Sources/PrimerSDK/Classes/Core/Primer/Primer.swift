@@ -11,7 +11,7 @@ public class Primer {
     // MARK: - PROPERTIES
     
     public var delegate: PrimerDelegate?
-    private(set) var flow: PrimerSessionFlow = .default
+    private(set) var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
 
     // MARK: - INITIALIZATION
@@ -175,7 +175,7 @@ public class Primer {
         
         Primer.shared.flow = .default
         presentingViewController = viewController
-        show(flow: Primer.shared.flow)
+        show(flow: Primer.shared.flow!)
     }
     
     public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
@@ -185,7 +185,7 @@ public class Primer {
         
         Primer.shared.flow = .defaultWithVault
         presentingViewController = viewController
-        show(flow: Primer.shared.flow)
+        show(flow: Primer.shared.flow!)
     }
     
     public func showPaymentMethod(_ paymentMethod: ConfigPaymentMethodType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
@@ -221,7 +221,7 @@ public class Primer {
         }
         
         presentingViewController = viewController
-        show(flow: flow)
+        show(flow: flow!)
     }
 
     /**
@@ -241,6 +241,8 @@ public class Primer {
 
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
+        flow = nil
+        
         DispatchQueue.main.async { [weak self] in
             self?.primerRootVC?.dismissPrimerRootViewController(animated: true, completion: {
                 self?.primerRootVC = nil
