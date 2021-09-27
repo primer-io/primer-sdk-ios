@@ -16,6 +16,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         super.xibSetup()
         
         textField.keyboardType = .numberPad
+        textField.accessibilityIdentifier = "expiry_txt_fld"
         textField.delegate = self
         isValid = { text in
             let isValid = text.isValidExpiryDate

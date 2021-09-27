@@ -21,27 +21,6 @@ class UniversalCheckout: XCTestCase {
     override func tearDown() {
         super.tearDown()
     }
-    
-    func testInitialization() throws {
-        let envSegmentedControl = app.segmentedControls["env_control"]
-        let devEnv = envSegmentedControl.buttons["Dev"]
-        let sandboxEnv = envSegmentedControl.buttons["Sandbox"]
-        let stagingEnv = envSegmentedControl.buttons["Staging"]
-        let prodcutionEnv = envSegmentedControl.buttons["Production"]
-
-        sandboxEnv.tap()
-        devEnv.tap()
-        let phoneNumberTextField = app.textFields["phone_number_txt_field"]
-        phoneNumberTextField.tap()
-        let countryCodeTextField = app.textFields["country_code_txt_field"]
-        countryCodeTextField.tap()
-        let currencyTextField = app.textFields["currency_txt_field"]
-        currencyTextField.tap()
-        let amountTextField = app.textFields["amount_txt_field"]
-        amountTextField.tap()
-        let performPaymentSwitch = app.switches["perform_payment_switch"]
-        performPaymentSwitch.tap()
-    }
 
     func testUniversalCheckout() throws {
         try Base().testInitialize(

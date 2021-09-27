@@ -18,6 +18,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         super.xibSetup()
         
         textField.keyboardType = .numberPad
+        textField.accessibilityIdentifier = "card_txt_fld"
         textField.delegate = self
         isValid = { text in
             return text.isValidCardNumber
