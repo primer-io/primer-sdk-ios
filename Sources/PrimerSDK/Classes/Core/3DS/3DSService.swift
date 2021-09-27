@@ -140,10 +140,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return
         }
         
-        guard let env = Environment(rawValue: decodedClientToken.env ?? "") else {
-            completion(.failure(PrimerError.dataMissing(description: "Failed to find environment in client token")))
-            return
-        }
+        let env = Environment(rawValue: decodedClientToken.env ?? "")
         
         guard let paymentMethodConfig = state.paymentMethodConfig else {
             completion(.failure(PrimerError.configFetchFailed))
@@ -167,8 +164,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             primer3DS = Primer3DS(environment: .production)
         case .staging:
             primer3DS = Primer3DS(environment: .staging)
-        case .sandbox,
-             .local:
+        default:
             primer3DS = Primer3DS(environment: .sandbox)
         }
         
