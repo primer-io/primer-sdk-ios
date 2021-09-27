@@ -54,7 +54,10 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var merchantIdentifier: String?
     public var amount: Int?
     public var currency: Currency?
-    internal var decodedClientToken: DecodedClientToken?
+    internal var decodedClientToken: DecodedClientToken? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.decodedClientToken
+    }
     internal var paymentMethodsConfig: PaymentMethodConfig?
     private(set) public var isLoading: Bool = false
     
@@ -75,11 +78,11 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         self.cardholderField = cardholderNameField
         
         if let clientToken = clientToken, let decodedClientToken = clientToken.jwtTokenPayload {
-            self.decodedClientToken = decodedClientToken
+            try? ClientTokenService.storeClientToken(clientToken)
         }
     }
     
-    private func setIsLoading(_ isLoading: Bool) {
+    internal func setIsLoading(_ isLoading: Bool) {
         if self.isLoading == isLoading { return }
         self.isLoading = isLoading
         delegate?.cardComponentsManager?(self, isLoading: isLoading)
@@ -97,11 +100,10 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 if let err = err {
                     seal.reject(err)
                 } else if let clientToken = clientToken {
-                    if let decodedClientToken = clientToken.jwtTokenPayload {
-                        seal.fulfill(decodedClientToken)
-                    } else {
-                        let err = PrimerError.clientTokenNull
-                        seal.reject(err)
+                    do {
+                        try ClientTokenService.storeClientToken(clientToken)
+                    } catch {
+                        seal.reject(error)
                     }
                 } else {
                     assert(true, "Should always return token or error")
@@ -215,7 +217,6 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 self.fetchClientTokenIfNeeded()
             }
             .then { decodedClientToken -> Promise<PaymentMethodConfig> in
-                self.decodedClientToken = decodedClientToken
                 return self.fetchPaymentMethodConfigIfNeeded()
             }
             .done { paymentMethodsConfig in
@@ -249,8 +250,6 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     case .failure(let err):
                         self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [PrimerError.tokenizationRequestFailed])
                     }
-                    
-                    self.setIsLoading(false)
                 }
             }
             .catch { err in
@@ -291,7 +290,10 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var currency: Currency?
     
-    var decodedClientToken: DecodedClientToken?
+    var decodedClientToken: DecodedClientToken? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.decodedClientToken
+    }
     
     var paymentMethodsConfig: PaymentMethodConfig?
     
@@ -303,8 +305,8 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         self.cvvField = cvvField
         self.cardholderField = cardholderNameField
         
-        if let clientToken = clientToken, let decodedClientToken = clientToken.jwtTokenPayload {
-            self.decodedClientToken = decodedClientToken
+        if let clientToken = clientToken {
+            try? ClientTokenService.storeClientToken(clientToken)
         }
     }
     
@@ -316,7 +318,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         cardnumberFieldView.textField._text = cardnumber
         self.init(clientToken: clientToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderNameField: PrimerCardholderNameFieldView())
         
-        decodedClientToken = clientToken.jwtTokenPayload
+        try? ClientTokenService.storeClientToken(clientToken)
     }
     
     func tokenize() {
