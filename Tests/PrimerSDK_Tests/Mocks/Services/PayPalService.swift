@@ -21,12 +21,14 @@ class MockPayPalService: PayPalServiceProtocol {
 
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         startBillingAgreementSessionCalled = true
+        completion(.success(""))
     }
 
     var startOrderSessionCalled = false
 
     func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         startOrderSessionCalled = true
+        completion(.success(""))
     }
 }
 

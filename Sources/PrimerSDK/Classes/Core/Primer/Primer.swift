@@ -11,7 +11,7 @@ public class Primer {
     // MARK: - PROPERTIES
     
     public var delegate: PrimerDelegate?
-    private(set) var flow: PrimerSessionFlow = .default
+    private(set) var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
 
     // MARK: - INITIALIZATION
@@ -69,7 +69,6 @@ public class Primer {
         DependencyContainer.register(OAuthViewModel() as OAuthViewModelProtocol)
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
-        DependencyContainer.register(ConfirmMandateViewModel() as ConfirmMandateViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
         DependencyContainer.register(ApayaWebViewModel() as ApayaWebViewModel)
@@ -164,8 +163,63 @@ public class Primer {
      - Version:
      1.4.0
      */
+    @available(*, deprecated, message: "Use showUniversalCheckout or showVaultManager instead.")
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
         show(flow: flow)
+    }
+    
+    public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil) {
+        if let clientToken = clientToken {
+            try? ClientTokenService.storeClientToken(clientToken)
+        }
+        
+        presentingViewController = viewController
+        show(flow: Primer.shared.flow!)
+    }
+    
+    public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
+        if let clientToken = clientToken {
+            try? ClientTokenService.storeClientToken(clientToken)
+        }
+        
+        presentingViewController = viewController
+        show(flow: Primer.shared.flow!)
+    }
+    
+    public func showPaymentMethod(_ paymentMethod: ConfigPaymentMethodType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
+        switch (paymentMethod, intent) {
+        case (.apaya, .vault):
+            flow = .addApayaToVault
+            
+        case (.applePay, .checkout):
+            flow = .checkoutWithApplePay
+            
+        case (.payPal, .vault):
+            flow = .addPayPalToVault
+            
+        case (.paymentCard, .checkout):
+            flow = .completeDirectCheckout
+            
+        case (.paymentCard, .vault):
+            flow = .addCardToVault
+            
+        case (.goCardlessMandate, .vault):
+            flow = .addDirectDebitToVault
+            
+        case (.klarna, .vault):
+            flow = .addKlarnaToVault
+            
+        case (.klarna, .checkout):
+            flow = .checkoutWithKlarna
+            
+        default:
+            let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            return
+        }
+        
+        presentingViewController = viewController
+        show(flow: flow!)
     }
 
     /**
@@ -185,6 +239,8 @@ public class Primer {
 
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
+        flow = nil
+        
         DispatchQueue.main.async { [weak self] in
             self?.primerRootVC?.dismissPrimerRootViewController(animated: true, completion: {
                 self?.primerRootVC = nil

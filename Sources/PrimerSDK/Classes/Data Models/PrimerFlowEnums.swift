@@ -128,3 +128,8 @@ internal enum PrimerInternalSessionFlow {
         }
     }
 }
+
+public enum PrimerSessionIntent: String {
+    case checkout
+    case vault
+}

@@ -340,6 +340,7 @@ enum PrimerError: PrimerErrorProtocol {
     case payPalSessionFailed
     case directDebitSessionFailed
     case failedToLoadSession
+    case intentNotSupported(intent: PrimerSessionIntent, paymentMethodType: ConfigPaymentMethodType)
     
     case invalidCardnumber, invalidExpiryDate, invalidCVV, invalidCardholderName
 
@@ -409,6 +410,8 @@ enum PrimerError: PrimerErrorProtocol {
             return 2400
         case .failedToLoadSession:
             return 2500
+        case .intentNotSupported:
+            return 3300
             
         // Validation
         case .invalidCardnumber:
@@ -589,6 +592,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Amount cannot be null for order items with isPending == false",
                                      comment: "Amount cannot be null for order items with isPending == false - Primer error message")
+            
+        case .intentNotSupported(let intent, let paymentMethodType):
+            return NSLocalizedString("primer-error-message-intent-not-supported",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Primer Session Intent is not supported",
+                                     comment: "Primer Session Intent is not supported - Primer error message") + "\(paymentMethodType.rawValue).\(intent.rawValue)"
         case .clientTokenExpirationMissing:
             return NSLocalizedString("primer-error-message-client-token-expiration-missing",
                                      tableName: nil,
