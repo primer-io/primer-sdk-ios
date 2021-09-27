@@ -62,8 +62,8 @@ class MerchantCheckoutViewController: UIViewController {
         generalSettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
             customerId: customerId,
-            amount: amount,        // Please don't change on develop (used for UI testing)
-            currency: currency,     // Please don't change on develop (used for UI testing)
+            amount: amount,
+            currency: currency,
             countryCode: .se,
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
@@ -88,20 +88,23 @@ class MerchantCheckoutViewController: UIViewController {
                 countryCode: "SE",
                 postalCode: "15236"),
             orderId: "order id",
-            userDetails: UserDetails(
-                firstName: "Evans",
-                lastName: "Pie",
-                email: "evans@primer.io",
-                addressLine1: "Line 1",
-                addressLine2: "Line 2",
-                city: "City",
-                postalCode: "15236",
-                countryCode: "SE",
-                homePhone: nil,
-                mobilePhone: nil,
-                workPhone: nil),
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
-            customer: Customer(mobilePhoneNumber: phoneNumber)
+            customer: Customer(
+                firstName: "John",
+                lastName: "Smith",
+                email: "john.smith@primer.io",
+                homePhoneNumber: nil,
+                mobilePhoneNumber: nil,
+                workPhoneNumber: nil,
+                billingAddress: Address(
+                    addressLine1: "1 Rue",
+                    addressLine2: "",
+                    city: "Paris",
+                    state: "",
+                    countryCode: "FR",
+                    postalCode: "75001"
+                )
+            )
         )
 
         Primer.shared.delegate = self

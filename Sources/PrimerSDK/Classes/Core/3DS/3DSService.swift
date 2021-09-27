@@ -82,27 +82,27 @@ class ThreeDSService: ThreeDSServiceProtocol {
             errors.append(PrimerError.orderIdMissing)
         }
         
-        if (settings.userDetails?.addressLine1 ?? "").isEmpty {
+        if (settings.customer?.billingAddress?.addressLine1 ?? "").isEmpty {
             errors.append(PrimerError.userDetailsAddressLine1Missing)
         }
         
-        if (settings.userDetails?.city ?? "").isEmpty {
+        if (settings.customer?.billingAddress?.city ?? "").isEmpty {
             errors.append(PrimerError.userDetailsCityMissing)
         }
         
-        if settings.userDetails?.countryCode == nil {
+        if settings.customer?.billingAddress?.countryCode == nil {
             errors.append(PrimerError.userDetailsCountryCodeMissing)
-        } else if CountryCode(rawValue: settings.userDetails!.countryCode) == nil {
-            errors.append(PrimerError.userDetailsCountryCodeMissing)
-        }
-        
-        if (settings.userDetails?.postalCode ?? "").isEmpty {
+        } else if CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!) == nil {
             errors.append(PrimerError.userDetailsCountryCodeMissing)
         }
         
-        if (settings.userDetails?.firstName ?? "").isEmpty ||
-            (settings.userDetails?.lastName ?? "").isEmpty ||
-            (settings.userDetails?.email ?? "").isEmpty
+        if (settings.customer?.billingAddress?.postalCode ?? "").isEmpty {
+            errors.append(PrimerError.userDetailsCountryCodeMissing)
+        }
+        
+        if (settings.customer?.firstName ?? "").isEmpty ||
+            (settings.customer?.lastName ?? "").isEmpty ||
+            (settings.customer?.email ?? "").isEmpty
         {
             errors.append(PrimerError.userDetailsMissing)
         }
@@ -187,26 +187,25 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        let userDetails = settings.userDetails!
         
-        let customer = ThreeDS.Customer(name: "\(userDetails.firstName) \(userDetails.lastName)",
-                                        email: userDetails.email,
-                                        homePhone: userDetails.homePhone,
-                                        mobilePhone: userDetails.mobilePhone,
-                                        workPhone: userDetails.workPhone)
+        let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
+                                        email: settings.customer!.email!,
+                                        homePhone: settings.customer!.homePhoneNumber,
+                                        mobilePhone: settings.customer!.mobilePhoneNumber,
+                                        workPhone: settings.customer!.workPhoneNumber)
         
         let threeDSAddress = ThreeDS.Address(title: nil,
-                                             firstName: userDetails.firstName,
-                                             lastName: userDetails.lastName,
-                                             email: userDetails.email,
-                                             phoneNumber: userDetails.mobilePhone ?? userDetails.homePhone ?? userDetails.workPhone,
-                                             addressLine1: userDetails.addressLine1,
-                                             addressLine2: settings.userDetails?.addressLine2,
+                                             firstName: settings.customer!.firstName,
+                                             lastName: settings.customer!.lastName,
+                                             email: settings.customer!.email,
+                                             phoneNumber: settings.customer!.mobilePhoneNumber ?? settings.customer!.homePhoneNumber ?? settings.customer!.workPhoneNumber,
+                                             addressLine1: settings.customer!.billingAddress!.addressLine1!,
+                                             addressLine2: settings.customer!.billingAddress!.addressLine2!,
                                              addressLine3: nil,
-                                             city: userDetails.city,
+                                             city: settings.customer!.billingAddress!.city!,
                                              state: nil,
-                                             countryCode: CountryCode(rawValue: userDetails.countryCode)!,
-                                             postalCode: userDetails.postalCode)
+                                             countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!)!,
+                                             postalCode: settings.customer!.billingAddress!.postalCode!)
         
         let threeDSecureAuthData = ThreeDS.SDKAuthData(sdkAppId: data.sdkAppId,
                                                        sdkTransactionId: data.sdkTransactionId,

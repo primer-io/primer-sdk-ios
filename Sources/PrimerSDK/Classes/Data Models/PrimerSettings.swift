@@ -31,7 +31,6 @@ internal protocol PrimerSettingsProtocol {
     var is3DSOnVaultingEnabled: Bool { get }
     var billingAddress: Address? { get }
     var orderId: String? { get }
-    var userDetails: UserDetails? { get }
     var debugOptions: PrimerDebugOptions { get }
     var customer: Customer? { get set }
 }
@@ -89,7 +88,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var is3DSOnVaultingEnabled: Bool
     internal(set) public var billingAddress: Address?
     internal(set) public var orderId: String?
-    internal(set) public var userDetails: UserDetails?
     internal(set) public var debugOptions: PrimerDebugOptions = PrimerDebugOptions()
     internal(set) public var customer: Customer?
 
@@ -135,7 +133,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         is3DSOnVaultingEnabled: Bool = true,
         billingAddress: Address? = nil,
         orderId: String? = nil,
-        userDetails: UserDetails? = nil,
         debugOptions: PrimerDebugOptions? = nil,
         customer: Customer? = nil
     ) {
@@ -167,7 +164,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled
         self.billingAddress = billingAddress
         self.orderId = orderId
-        self.userDetails = userDetails
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
     }
 }

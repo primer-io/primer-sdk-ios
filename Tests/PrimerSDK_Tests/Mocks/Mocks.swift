@@ -81,9 +81,7 @@ class MockPrimerDelegate: PrimerDelegate {
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
     var debugOptions: PrimerDebugOptions
-    
-    var userDetails: UserDetails?
-    
+        
     var orderId: String?
     
     var billingAddress: Address?
