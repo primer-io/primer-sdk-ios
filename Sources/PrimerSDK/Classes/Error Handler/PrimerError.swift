@@ -396,6 +396,7 @@ enum PrimerError: PrimerErrorProtocol {
     case vaultDeleteFailed
     case payPalSessionFailed
     case directDebitSessionFailed
+    case intentNotSupported(intent: PrimerSessionIntent, paymentMethodType: ConfigPaymentMethodType)
     
     case invalidCardnumber, invalidExpiryDate, invalidCVV, invalidCardholderName
 
@@ -501,7 +502,7 @@ enum PrimerError: PrimerErrorProtocol {
             return 2602
         case .threeDSFailed:
             return 2610
-        
+            
         // Validation
         case .invalidCardnumber:
             return 3100
@@ -511,6 +512,9 @@ enum PrimerError: PrimerErrorProtocol {
             return 3102
         case .invalidCardholderName:
             return 3103
+
+        case .intentNotSupported:
+            return 3300
         }
     }
 
@@ -694,12 +698,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Amount cannot be null for order items with isPending == false",
                                      comment: "Amount cannot be null for order items with isPending == false - Primer error message")
-        case .currencyMissing:
-            return NSLocalizedString("primer-error-message-currency-missing",
+            
+        case .intentNotSupported(let intent, let paymentMethodType):
+            return NSLocalizedString("primer-error-message-intent-not-supported",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "Currency is missing",
-                                     comment: "Currency is missing - Primer error message")
+                                     value: "Primer Session Intent is not supported",
+                                     comment: "Primer Session Intent is not supported - Primer error message") + "\(paymentMethodType.rawValue).\(intent.rawValue)"
         case .clientTokenExpirationMissing:
             return NSLocalizedString("primer-error-message-client-token-expiration-missing",
                                      tableName: nil,
@@ -836,6 +841,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Invalid cardholder name",
                                      comment: "Invalid cardholder name - Primer error message")
+            
+        case .currencyMissing:
+            return NSLocalizedString("primer-error-message-currency-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Currency missing",
+                                     comment: "Currency missing - Primer error message")
             
         }
     }

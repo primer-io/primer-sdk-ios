@@ -9,10 +9,6 @@ internal protocol ClientTokenServiceProtocol {
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
     
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
     static func storeClientToken(_ clientToken: String) throws {
         guard var jwtTokenPayload = clientToken.jwtTokenPayload,
               let expDate = jwtTokenPayload.expDate
@@ -34,6 +30,10 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
 
         state.decodedClientToken = jwtTokenPayload
         state.accessToken = clientToken
+    }
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     /**

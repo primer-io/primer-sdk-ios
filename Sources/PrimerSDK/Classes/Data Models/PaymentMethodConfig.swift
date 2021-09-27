@@ -76,7 +76,6 @@ protocol PaymentMethodOptions: Codable { }
 extension PaymentMethodOptions { }
 
 struct ApayaOptions: PaymentMethodOptions {
-    let merchantId: String
     let merchantAccountId: String
 }
 
@@ -92,7 +91,7 @@ struct CardOptions: PaymentMethodOptions {
     let processorConfigId: String?
 }
 
-enum ConfigPaymentMethodType: String, Codable {
+public enum ConfigPaymentMethodType: String, Codable {
     case applePay = "APPLE_PAY"
     case payPal = "PAYPAL"
     case paymentCard = "PAYMENT_CARD"

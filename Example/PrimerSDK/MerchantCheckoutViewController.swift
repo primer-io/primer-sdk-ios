@@ -145,7 +145,7 @@ class MerchantCheckoutViewController: UIViewController {
         )
         
         Primer.shared.configure(settings: vaultApayaSettings)
-        Primer.shared.showCheckout(self, flow: .addApayaToVault)
+        Primer.shared.showPaymentMethod(.apaya, withIntent: .vault, on: self)
     }
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
@@ -215,12 +215,12 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func openVaultButtonTapped(_ sender: Any) {
         Primer.shared.configure(settings: generalSettings)
-        Primer.shared.showCheckout(self, flow: .defaultWithVault)
+        Primer.shared.showVaultManager(on: self)
     }
     
     @IBAction func openUniversalCheckoutTapped(_ sender: Any) {
         Primer.shared.configure(settings: generalSettings)
-        Primer.shared.showCheckout(self, flow: .default)
+        Primer.shared.showUniversalCheckout(on: self)
     }
     
 }

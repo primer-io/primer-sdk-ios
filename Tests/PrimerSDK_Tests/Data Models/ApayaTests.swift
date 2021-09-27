@@ -79,8 +79,12 @@ class ApayaDataModelTests: XCTestCase {
         switch result {
         case .success:
             XCTFail()
-        case .failure:
-            XCTFail()
+        case .failure(let err):
+            if let apayaErr = err as? ApayaException, apayaErr == .webViewFlowCancelled {
+                
+            } else {
+                XCTFail("Error should be .webViewFlowCancelled")
+            }
         }
     }
     

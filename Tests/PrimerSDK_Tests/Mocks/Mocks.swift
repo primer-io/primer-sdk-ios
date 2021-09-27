@@ -163,26 +163,12 @@ let mockPaymentMethodConfig = PaymentMethodConfig(
     paymentMethods: [
         ConfigPaymentMethod(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
         ConfigPaymentMethod(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
-        ConfigPaymentMethod(id: "Apaya", options: ApayaOptions(merchantId: "merchant_id", merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+        ConfigPaymentMethod(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
     ],
     keys: nil
 )
 
 class MockAppState: AppStateProtocol {
-    var apayaResult: Result<Apaya.WebViewResult, Error>?
-    
-    var setApayaResultCalled = false
-    func setApayaResult(_ result: Result<Apaya.WebViewResult, Error>) {
-        setApayaResultCalled = true
-        apayaResult = result
-    }
-    
-    var getApayaResultCalled = false
-    func getApayaResult() -> Result<Apaya.WebViewResult, Error>? {
-        getApayaResultCalled = true
-        let url = URL(string: "https://primer.io") // needs query params
-        return apayaResult ?? Apaya.WebViewResult.create(from: url)
-    }
     
     var customerToken: String? = "customerToken"
 
@@ -224,8 +210,9 @@ class MockAppState: AppStateProtocol {
             coreUrl: "url",
             pciUrl: "url",
             paymentMethods: [
-                ConfigPaymentMethod(id: "1", options: nil, processorConfigId: nil, type: .klarna),
-                ConfigPaymentMethod(id: "2", options: nil, processorConfigId: nil, type: .payPal)
+                ConfigPaymentMethod(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
+                ConfigPaymentMethod(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
+                ConfigPaymentMethod(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
             ],
             keys: nil
         )
@@ -250,7 +237,7 @@ class MockLocator {
         DependencyContainer.register(MockClientTokenService() as ClientTokenServiceProtocol)
         DependencyContainer.register(MockPaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
         DependencyContainer.register(MockPayPalService() as PayPalServiceProtocol)
-        DependencyContainer.register(MockTokenizationService() as TokenizationServiceProtocol)
+        DependencyContainer.register(MockTokenizationService(paymentInstrumentType: ConfigPaymentMethodType.paymentCard.rawValue, tokenType: TokenType.singleUse.rawValue) as TokenizationServiceProtocol)
         DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(MockKlarnaService() as KlarnaServiceProtocol)
         DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
