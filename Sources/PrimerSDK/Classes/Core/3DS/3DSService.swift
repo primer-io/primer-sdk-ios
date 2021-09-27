@@ -290,14 +290,12 @@ class ThreeDSService: ThreeDSServiceProtocol {
             }
             
         }
-//        .ensure {
-//            self.threeDSSDKWindow?.isHidden = true
-//            self.threeDSSDKWindow = nil
-//        }
         .catch { err in
             let token = paymentMethodToken
             token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue, challengeIssued: false)
             completion(.success((token, nil)))
+            self.threeDSSDKWindow?.isHidden = true
+            self.threeDSSDKWindow = nil
         }
     }
     
