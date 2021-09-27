@@ -17,13 +17,15 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     @IBOutlet weak var countryCodeTextField: UITextField!
     @IBOutlet weak var currencyTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
+    @IBOutlet weak var performPaymentSwitch: UISwitch!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        environmentControl.selectedSegmentIndex = 1
+        environmentControl.selectedSegmentIndex = 0
         phoneNumberTextField.text = "07538121305"
-        countryCodeTextField.text = CountryCode.gb.rawValue
-        currencyTextField.text = Currency.GBP.rawValue
+        countryCodeTextField.text = CountryCode.se.rawValue
+        currencyTextField.text = Currency.SEK.rawValue
+        performPaymentSwitch.isOn = true
         
         let countryPicker = UIPickerView()
         countryPicker.tag = 0
@@ -58,7 +60,15 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             amount = Int(amountDbl * 100)
         }
         
-        let mcvc = MerchantCheckoutViewController.instantiate(environment: env, customerId: customerIdTextField.text, phoneNumber: phoneNumberTextField.text, countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""), currency: Currency(rawValue: currencyTextField.text ?? ""), amount: amount)
+        let mcvc = MerchantCheckoutViewController.instantiate(
+            environment: env,
+            customerId: customerIdTextField.text,
+            phoneNumber: phoneNumberTextField.text,
+            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
+            currency: Currency(rawValue: currencyTextField.text ?? ""),
+            amount: amount,
+            performPayment: performPaymentSwitch.isOn)
+        
         navigationController?.pushViewController(mcvc, animated: true)
     }
     
