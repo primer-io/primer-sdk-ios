@@ -375,6 +375,7 @@ enum PrimerError: PrimerErrorProtocol {
     case tokenizationPreRequestFailed
     case tokenizationRequestFailed
     case threeDSFailed
+    case threeDSFrameworkMissing
     case failedToLoadSession
     case billingAddressMissing
     case billingAddressCityMissing
@@ -490,13 +491,17 @@ enum PrimerError: PrimerErrorProtocol {
             return 2400
         case .failedToLoadSession:
             return 2500
-        case .threeDSFailed:
+        
+        // 3DS
+        case .threeDSFrameworkMissing:
             return 2600
         case .threeDSSDKKeyMissing:
             return 2601
         case .directoryServerIdMissing:
+            return 2602
+        case .threeDSFailed:
             return 2610
-            
+        
         // Validation
         case .invalidCardnumber:
             return 3100
@@ -637,6 +642,13 @@ enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "Connection error, your payment method was not saved. Please try again.",
                                      comment: "Connection error, your payment method was not saved. Please try again. - Primer error message")
+        case .threeDSFrameworkMissing:
+            return NSLocalizedString("primer-error-message-3ds-framework-missing",
+                                     tableName: nil,
+                                     bundle: Bundle.primerFramework,
+                                     value: "",
+                                     comment: "3DS framework missing, please add Primer3DS - Primer error message")
+            
         case .threeDSFailed:
             return NSLocalizedString("primer-error-message-3ds-failed",
                                      tableName: nil,
