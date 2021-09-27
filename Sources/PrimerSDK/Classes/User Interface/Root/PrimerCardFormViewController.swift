@@ -24,6 +24,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let cardholderNameContainerView = PrimerCustomFieldView()
     private let cardholderNameField = PrimerCardholderNameFieldView()
     private let submitButton = PrimerButton()
+    private var paymentMethod: PaymentMethodToken?
     
     init(flow: PaymentFlow) {
         self.flow = flow
@@ -171,6 +172,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
 extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTextFieldViewDelegate {
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+        self.paymentMethod = paymentMethodToken
+        
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
             
@@ -180,6 +183,8 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
             
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: strongSelf)
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
+                self?.cardComponentsManager.setIsLoading(false)
+                
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 
                 if let err = err {
@@ -274,6 +279,8 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
 extension PrimerCardFormViewController: ResumeHandlerProtocol {
     func handle(error: Error) {
         DispatchQueue.main.async {
+            self.cardComponentsManager.setIsLoading(false)
+            
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
             if settings.hasDisabledSuccessScreen {
@@ -288,11 +295,44 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
     }
     
     func handle(newClientToken clientToken: String) {
-        try? ClientTokenService.storeClientToken(clientToken)
+        do {
+            try ClientTokenService.storeClientToken(clientToken)
+           
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            let decodedClientToken = state.decodedClientToken!
+           
+            if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue, let paymentMethod = paymentMethod {
+                let threeDSService = ThreeDSService()
+                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                    switch result {
+                    case .success(let paymentMethodToken):
+                        guard let threeDSPostAuthResponse = paymentMethodToken.1,
+                              let resumeToken = threeDSPostAuthResponse.resumeToken else {
+                            Primer.shared.delegate?.onResumeError?(PrimerError.threeDSFailed, resumeHandler: self)
+                            return
+                        }
+                       
+                        Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
+                       
+                    case .failure(let err):
+                        log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
+                        Primer.shared.delegate?.onResumeError?(PrimerError.threeDSFailed, resumeHandler: self)
+                    }
+                }
+               
+            } else {
+                Primer.shared.delegate?.onResumeSuccess?(clientToken, resumeHandler: self)
+            }
+           
+        } catch {
+            Primer.shared.delegate?.onResumeError?(error, resumeHandler: self)
+        }
     }
     
     func handleSuccess() {
         DispatchQueue.main.async {
+            self.cardComponentsManager.setIsLoading(false)
+            
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
             if settings.hasDisabledSuccessScreen {
