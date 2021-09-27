@@ -150,7 +150,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
         Primer.shared.configure(settings: generalSettings)
-        Primer.shared.showCheckout(self, flow: .addCardToVault)
+        Primer.shared.showPaymentMethod(.paymentCard, withIntent: .vault, on: self)
     }
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {
@@ -165,7 +165,7 @@ class MerchantCheckoutViewController: UIViewController {
         )
         
         Primer.shared.configure(settings: vaultPayPalSettings)
-        Primer.shared.showCheckout(self, flow: .addPayPalToVault)
+        Primer.shared.showPaymentMethod(.payPal, withIntent: .vault, on: self)
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
@@ -176,11 +176,7 @@ class MerchantCheckoutViewController: UIViewController {
         )
         
         Primer.shared.configure(settings: vaultKlarnaSettings)
-        Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
-    }
-    
-    @IBAction func addDirectDebitButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .addDirectDebitToVault)
+        Primer.shared.showPaymentMethod(.klarna, withIntent: .vault, on: self)
     }
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
@@ -210,7 +206,7 @@ class MerchantCheckoutViewController: UIViewController {
         )
         
         Primer.shared.configure(settings: applePaySettings)
-        Primer.shared.showCheckout(self, flow: .checkoutWithApplePay)
+        Primer.shared.showPaymentMethod(.applePay, withIntent: .checkout, on: self)
     }
     
     @IBAction func openVaultButtonTapped(_ sender: Any) {
@@ -249,7 +245,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             switch result {
             case .success(let data):
                 do {
-                    let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: String])["clientToken"]!
+                    let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: Any])["clientToken"] as! String
                     print("Primer token:\n\(token)")
                     completion(token, nil)
                     
@@ -261,69 +257,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             }
         })
     }
-    
-//    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-//        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Method: \(paymentMethodToken)\n")
-//
-//        guard let token = paymentMethodToken.token else {
-//            completion(NetworkError.missingParams)
-//            return
-//        }
-//
-//        if let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
-//           threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess {
-//            var message: String = ""
-//
-//            if let reasonCode = threeDSecureAuthentication.reasonCode {
-//                message += "[\(reasonCode)] "
-//            }
-//
-//            if let reasonText = threeDSecureAuthentication.reasonText {
-//                message += reasonText
-//            }
-//
-//            threeDSAlert = UIAlertController(title: "3DS Error", message: message, preferredStyle: .alert)
-//            threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-//                self?.threeDSAlert = nil
-//            }))
-//        }
-//
-//        if !performPayment {
-//            completion(nil)
-//            return
-//        }
-//
-//        guard let url = URL(string: "\(endpoint)/payments") else {
-//            completion(NetworkError.missingParams)
-//            return
-//        }
-//
-//        let type = paymentMethodToken.paymentInstrumentType
-//
-//        var request = URLRequest(url: url)
-//
-//        request.httpMethod = "POST"
-//        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-//
-//        let body = PaymentRequest(environment: environment, paymentMethod: token, amount: amount, type: type.rawValue, currencyCode: currency.rawValue)
-//
-//        do {
-//            request.httpBody = try JSONEncoder().encode(body)
-//        } catch {
-//            completion(NetworkError.missingParams)
-//            return
-//        }
-//
-//        callApi(request) { (result) in
-//            switch result {
-//            case .success(let data):
-//                completion(nil)
-//
-//            case .failure(let err):
-//                completion(err)
-//            }
-//        }
-//    }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Method: \(paymentMethodToken)\n")
