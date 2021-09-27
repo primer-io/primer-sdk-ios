@@ -409,12 +409,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     
     func tokenAddedToVault(_ token: PaymentMethodToken) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nToken added to vault\nToken: \(token)\n")
-        print("")
     }
     
     func onCheckoutDismissed() {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nPrimer view dismissed\n")
-        print("")
         
         fetchPaymentMethods()
         
@@ -425,12 +423,11 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     
     func checkoutFailed(with error: Error) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
-        print("")
     }
     
     func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken)")
-        print("")
+        
         guard let url = URL(string: "\(endpoint)/resume"),
               let transactionResponse = transactionResponse else {
             resumeHandler.handle(error: NetworkError.missingParams)
@@ -467,7 +464,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     
     func onResumeError(_ error: Error, resumeHandler: ResumeHandlerProtocol) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
-        print("")
         resumeHandler.handle(error: NSError(domain: "merchant", code: 100, userInfo: [NSLocalizedDescriptionKey: "Bla bla bla"]))
     }
         
