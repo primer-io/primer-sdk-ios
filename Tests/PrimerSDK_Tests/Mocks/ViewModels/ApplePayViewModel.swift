@@ -1,9 +1,3 @@
-////
-////  ApplePayViewModel.swift
-////  PrimerSDKTests
-////
-////  Created by Carl Eriksson on 16/01/2021.
-////
 //
 //  ApplePayViewModel.swift
 //  PrimerSDKTests
