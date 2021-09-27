@@ -279,7 +279,7 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
             if settings.hasDisabledSuccessScreen {
                 Primer.shared.dismiss()
             } else {
-                let evc = ErrorViewController(message: PrimerError.payPalSessionFailed.localizedDescription)
+                let evc = ErrorViewController(message: error.localizedDescription)
                 evc.view.translatesAutoresizingMaskIntoConstraints = false
                 evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                 Primer.shared.primerRootVC?.show(viewController: evc)
