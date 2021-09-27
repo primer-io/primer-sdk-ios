@@ -11,13 +11,24 @@ import UIKit
 
 class MerchantCheckoutViewController: UIViewController {
     
-    class func instantiate(environment: Environment, customerId: String?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
-        let mvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
-        mvc.environment = environment
-        mvc.customerId = customerId
-        mvc.amount = amount ?? 4
-        mvc.performPayment = true
-        return mvc
+    class func instantiate(environment: Environment, customerId: String?, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
+        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
+        mcvc.environment = environment
+        mcvc.customerId = customerId
+        mcvc.phoneNumber = phoneNumber
+        mcvc.performPayment = performPayment
+        
+        if let countryCode = countryCode {
+            mcvc.countryCode = countryCode
+        }
+        if let currency = currency {
+            mcvc.currency = currency
+        }
+        if let amount = amount {
+            mcvc.amount = amount
+        }
+        
+        return mcvc
     }
     
     @IBOutlet weak var tableView: UITableView!
@@ -44,23 +55,6 @@ class MerchantCheckoutViewController: UIViewController {
     var transactionResponse: TransactionResponse?
     var performPayment: Bool = false
     
-    class func instantiate(environment: Environment, customerId: String?, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?) -> MerchantCheckoutViewController {
-        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
-        mcvc.environment = environment
-        mcvc.customerId = customerId
-        mcvc.phoneNumber = phoneNumber
-        if let countryCode = countryCode {
-            mcvc.countryCode = countryCode
-        }
-        if let currency = currency {
-            mcvc.currency = currency
-        }
-        if let amount = amount {
-            mcvc.amount = amount
-        }
-        return mcvc
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer [\(environment.rawValue)]"
@@ -86,7 +80,13 @@ class MerchantCheckoutViewController: UIViewController {
             ],
             isInitialLoadingHidden: false,
             is3DSOnVaultingEnabled: true,
-            billingAddress: Address(addressLine1: "Line 1", addressLine2: "Line 2", city: "City", state: "State", countryCode: "SE", postalCode: "15236"),
+            billingAddress: Address(
+                addressLine1: "Line 1",
+                addressLine2: "Line 2",
+                city: "City",
+                state: "State",
+                countryCode: "SE",
+                postalCode: "15236"),
             orderId: "order id",
             userDetails: UserDetails(
                 firstName: "Evans",
@@ -100,112 +100,10 @@ class MerchantCheckoutViewController: UIViewController {
                 homePhone: nil,
                 mobilePhone: nil,
                 workPhone: nil),
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-        )
-        
-        vaultPayPalSettings = PrimerSettings(
-            customerId: customerId,
-            currency: currency,
-            countryCode: .se,
-            urlScheme: "primer",
-            urlSchemeIdentifier: "primer",
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: false
-        )
-        
-        vaultKlarnaSettings = PrimerSettings(
-            customerId: customerId,
-            klarnaSessionType: .recurringPayment,
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true
-        )
-        
-        applePaySettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
-            customerId: customerId,
-            currency: currency,
-            countryCode: .se,
-            hasDisabledSuccessScreen: true,
-            businessDetails: BusinessDetails(
-                name: "My Business",
-                address: Address(
-                    addressLine1: "107 Rue",
-                    addressLine2: nil,
-                    city: "Paris",
-                    state: nil,
-                    countryCode: "FR",
-                    postalCode: "75001"
-                )
-            ),
-            orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
-            ],
-            isInitialLoadingHidden: true
-        )
-        
-        generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
-            customerId: customerId,
-            amount: amount,        // Please don't change on develop (used for UI testing)
-            currency: currency,     // Please don't change on develop (used for UI testing)
-            countryCode: countryCode,
-            klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: nil,
-            urlScheme: "primer",
-            urlSchemeIdentifier: "primer",
-            isFullScreenOnly: false,
-            hasDisabledSuccessScreen: false,
-            businessDetails: nil,
-            directDebitHasNoAmount: false,
-            orderItems: [],
-            isInitialLoadingHidden: false,
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
             customer: Customer(mobilePhoneNumber: phoneNumber)
         )
-        
-        vaultApayaSettings = PrimerSettings(
-            currency: currency,
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true,
-            customer: Customer(mobilePhoneNumber: self.phoneNumber)
-        )
-        
-        vaultPayPalSettings = PrimerSettings(
-            currency: currency,
-            countryCode: countryCode,
-            urlScheme: "primer",
-            urlSchemeIdentifier: "primer"
-        )
-        
-        vaultKlarnaSettings = PrimerSettings(
-            klarnaSessionType: .recurringPayment,
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true
-        )
-        
-        applePaySettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
-            currency: currency,
-            countryCode: countryCode,
-            businessDetails: BusinessDetails(
-                name: "My Business",
-                address: Address(
-                    addressLine1: "107 Rue",
-                    addressLine2: nil,
-                    city: "Paris",
-                    state: nil,
-                    countryCode: "FR",
-                    postalCode: "75001"
-                )
-            ),
-            orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
-            ]
-        )
-        
+
         Primer.shared.delegate = self
         self.configurePrimer()
         self.fetchPaymentMethods()
@@ -236,22 +134,44 @@ class MerchantCheckoutViewController: UIViewController {
     // MARK: - ACTIONS
     
     @IBAction func addApayaButtonTapped(_ sender: Any) {
+        vaultApayaSettings = PrimerSettings(
+            currency: currency,
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true,
+            customer: Customer(mobilePhoneNumber: self.phoneNumber)
+        )
+        
         Primer.shared.configure(settings: vaultApayaSettings)
         Primer.shared.showCheckout(self, flow: .addApayaToVault)
     }
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
-//        Primer.shared.showCheckout(self, flow: .addCardToVault)
         Primer.shared.configure(settings: generalSettings)
         Primer.shared.showCheckout(self, flow: .addCardToVault)
     }
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {
+        vaultPayPalSettings = PrimerSettings(
+            customerId: customerId,
+            currency: currency,
+            countryCode: .se,
+            urlScheme: "primer",
+            urlSchemeIdentifier: "primer",
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true
+        )
+        
         Primer.shared.configure(settings: vaultPayPalSettings)
         Primer.shared.showCheckout(self, flow: .addPayPalToVault)
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
+        vaultKlarnaSettings = PrimerSettings(
+            klarnaSessionType: .recurringPayment,
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true
+        )
+        
         Primer.shared.configure(settings: vaultKlarnaSettings)
         Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
     }
@@ -261,6 +181,31 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
+        applePaySettings = PrimerSettings(
+            merchantIdentifier: "merchant.checkout.team",
+            customerId: customerId,
+            currency: currency,
+            countryCode: .se,
+            hasDisabledSuccessScreen: true,
+            businessDetails: BusinessDetails(
+                name: "My Business",
+                address: Address(
+                    addressLine1: "107 Rue",
+                    addressLine2: nil,
+                    city: "Paris",
+                    state: nil,
+                    countryCode: "FR",
+                    postalCode: "75001"
+                )
+            ),
+            orderItems: [
+                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
+            ],
+            isInitialLoadingHidden: true
+        )
+        
         Primer.shared.configure(settings: applePaySettings)
         Primer.shared.showCheckout(self, flow: .checkoutWithApplePay)
     }
@@ -399,10 +344,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             }))
         }
 
-//        if !performPayment {
-//            resumeHandler.handleSuccess()
-//            return
-//        }
+        if !performPayment {
+            resumeHandler.handleSuccess()
+            return
+        }
 
         guard let url = URL(string: "\(endpoint)/payments") else {
             resumeHandler.handle(error: NetworkError.missingParams)
