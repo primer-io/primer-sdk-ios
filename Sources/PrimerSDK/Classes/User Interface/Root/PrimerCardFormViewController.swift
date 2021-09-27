@@ -302,6 +302,7 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
             let decodedClientToken = state.decodedClientToken!
            
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue, let paymentMethod = paymentMethod {
+                #if canImport(Primer3DS)
                 let threeDSService = ThreeDSService()
                 threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
@@ -319,6 +320,10 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
                         Primer.shared.delegate?.onResumeError?(PrimerError.threeDSFailed, resumeHandler: self)
                     }
                 }
+                #else
+                let error = PrimerError.threeDSFailed
+                Primer.shared.delegate?.onResumeError?(error, resumeHandler: self)
+                #endif
                
             } else {
                 Primer.shared.delegate?.onResumeSuccess?(clientToken, resumeHandler: self)
