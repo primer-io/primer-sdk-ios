@@ -29,24 +29,31 @@ class ThreeDS: XCTestCase {
     
     // Test below only works the 1st time the card is added, then it just succeeds.
     func testThreeDSChallenge() throws {
-        try initializeSDK()
+        try Base().testInitialize(
+            env: "dev",
+            customerId: "customer_id",
+            phoneNumber: "+447888888888",
+            countryCode: "SE",
+            currency: "SEK",
+            amount: nil,
+            performPayment: false)
         
         let addCardButton = app.buttons["add_card_button"]
         addCardButton.tap()
         
-        let cardField = app.textFields["cardField"]
+        let cardField = app.textFields["card_txt_fld"]
         cardField.tap()
         cardField.typeText("9120000000000006")
         
-        let expiryField = app.textFields["expiryField"]
+        let expiryField = app.textFields["expiry_txt_fld"]
         expiryField.tap()
         expiryField.typeText("0222")
         
-        let cvcField = app.textFields["cvcField"]
+        let cvcField = app.textFields["cvc_txt_fld"]
         cvcField.tap()
         cvcField.typeText("123")
         
-        let nameField = app.textFields["nameField"]
+        let nameField = app.textFields["card_holder_txt_fld"]
         nameField.tap()
         nameField.typeText("John Doe")
         
