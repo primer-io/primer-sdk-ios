@@ -17,6 +17,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
         super.xibSetup()
         
         textField.keyboardType = .namePhonePad
+        textField.isAccessibilityElement = true
         textField.accessibilityIdentifier = "card_holder_txt_fld"
         textField.delegate = self
         isValid = { text in
