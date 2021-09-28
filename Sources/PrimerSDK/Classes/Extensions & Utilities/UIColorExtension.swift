@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 2/8/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 class PrimerColor: UIColor {}
@@ -26,3 +28,5 @@ internal extension PrimerColor {
        )
    }
 }
+
+#endif
