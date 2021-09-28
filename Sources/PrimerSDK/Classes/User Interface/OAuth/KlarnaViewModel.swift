@@ -1,5 +1,7 @@
 #if canImport(UIKit)
 
+import Foundation
+
 class KlarnaViewModel: PrimerOAuthViewModel {
     
     var host: OAuthHost = .klarna
