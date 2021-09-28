@@ -14,7 +14,7 @@ Pod::Spec.new do |spec|
     spec.swift_version = "5.3"
     spec.ios.deployment_target = '10.0'
     
-    spec.source_files = 'Sources/PrimerSDK/Classes/**/*.{h,m,swift,storyboard,xib}'
+    spec.source_files = 'Sources/PrimerSDK/Classes/**/*.{h,m,swift}'
 #    spec.resources = [
 ##        'Sources/PrimerSDK/Resources/*.xcassets',
 ##        'Sources/PrimerSDK/Resources/Localizable/*'
@@ -23,8 +23,8 @@ Pod::Spec.new do |spec|
         'PrimerResources' => [
             'Sources/PrimerSDK/Resources/*.xcassets',
             'Sources/PrimerSDK/Resources/Localizable/*',
-#            'Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}'
-#            'Sources/PrimerSDK/Resources/Nibs/*.{xib}'
+            'Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}',
+            'Sources/PrimerSDK/Resources/Nibs/*'
         ]
     }
     
