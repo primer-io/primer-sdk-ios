@@ -44,7 +44,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
                                   value: "Enter your card details",
                                   comment: "Enter your card details - Form Type Main Title (Card)")
 
-        
         view.backgroundColor = theme.colorTheme.main1
         
         verticalStackView.spacing = 6
@@ -142,6 +141,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
         }
         
         submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        submitButton.isAccessibilityElement = true
+        submitButton.accessibilityIdentifier = "submit_btn"
         submitButton.isEnabled = false
         submitButton.setTitle(buttonTitle, for: .normal)
         submitButton.setTitleColor(theme.colorTheme.text2, for: .normal)
@@ -150,8 +151,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
         submitButton.clipsToBounds = true
         submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
         verticalStackView.addArrangedSubview(submitButton)
-        
-        
         
         cardComponentsManager = CardComponentsManager(
 //            clientToken: state.accessToken,
