@@ -246,7 +246,55 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in
                     switch result {
                     case .success(let paymentMethodToken):
-                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                        let state: AppStateProtocol = DependencyContainer.resolve()
+                                                
+                        var isThreeDSEnabled: Bool = false
+                        if state.paymentMethodConfig?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                            isThreeDSEnabled = true
+                        }
+
+                        /// 3DS requirements on tokenization are:
+                        ///     - The payment method has to be a card
+                        ///     - It has to be a vault flow
+                        ///     - is3DSOnVaultingEnabled has to be enabled by the developer
+                        ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
+                        if paymentMethodToken.paymentInstrumentType == .paymentCard,
+                           Primer.shared.flow.internalSessionFlow.vaulted,
+                           settings.is3DSOnVaultingEnabled,
+                           paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
+                           isThreeDSEnabled {
+                            #if canImport(Primer3DS)
+                            let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
+                            DependencyContainer.register(threeDSService)
+
+                            threeDSService.perform3DS(
+                                    paymentMethodToken: paymentMethodToken,
+                                protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
+                                    sdkDismissed: { () in
+
+                                    }, completion: { result in
+                                        switch result {
+                                        case .success(let res):
+                                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: res.0)
+                                            
+                                        case .failure(let err):
+                                            // Even if 3DS fails, continue...
+                                            log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
+                                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                                            
+                                        }
+                                    })
+                            
+                            #else
+                            print("\nWARNING!\nCannot perform 3DS, Primer3DS SDK is missing. Continue without 3DS\n")
+                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                            #endif
+                            
+                        } else {
+                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                        }
+                
                     case .failure(let err):
                         self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [PrimerError.tokenizationRequestFailed])
                     }
