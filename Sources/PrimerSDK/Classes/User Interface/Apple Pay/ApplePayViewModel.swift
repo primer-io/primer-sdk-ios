@@ -16,7 +16,6 @@ protocol ApplePayViewModelProtocol: PrimerOAuthViewModel {
 
 class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
     var host: OAuthHost = .applePay
-    private var resumeHandler: ResumeHandlerProtocol!
     private var applePayWindow: UIWindow?
 
     var countryCode: CountryCode? {
@@ -60,7 +59,6 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
     
     override init() {
         super.init()
-        resumeHandler = self
     }
     
     func tokenize() -> Promise<PaymentMethodToken> {
@@ -193,42 +191,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
         
     }
     // swiftlint:enable cyclomatic_complexity function_body_length
-    
-    private func dismissWithError(_ err: Error) {
-//        DispatchQueue.main.async {
-//            self.applePayWindow?.rootViewController?.dismiss(animated: true, completion: {
-//                DispatchQueue.main.async {
-//                    self.applePayWindow = nil
-//
-//                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-//                    if settings.hasDisabledSuccessScreen {
-//                        Primer.shared.dismiss()
-//                    } else {
-//                        let router: RouterDelegate = DependencyContainer.resolve()
-//                        router.presentErrorScreen(with: err)
-//                    }
-//                }
-//            })
-//        }
-    }
-    
-    private func dismissSuccess() {
-//        DispatchQueue.main.async {
-//            self.applePayWindow?.rootViewController?.dismiss(animated: true, completion: {
-//                DispatchQueue.main.async {
-//                    self.applePayWindow = nil
-//                    
-//                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-//                    if settings.hasDisabledSuccessScreen {
-//                        Primer.shared.dismiss()
-//                    } else {
-//                        let router: RouterDelegate = DependencyContainer.resolve()
-//                        router.presentSuccessScreen(for: .regular)
-//                    }
-//                }
-//            })
-//        }
-    }
+
 }
 
 extension ApplePayViewModel: PKPaymentAuthorizationViewControllerDelegate {
@@ -267,20 +230,6 @@ extension ApplePayViewModel: PKPaymentAuthorizationViewControllerDelegate {
         }
     }
     
-}
-
-extension ApplePayViewModel: ResumeHandlerProtocol {
-    func handle(error: Error) {
-        
-    }
-    
-    func handle(newClientToken clientToken: String) {
-        
-    }
-    
-    func handleSuccess() {
-        
-    }
 }
 
 internal extension PKPaymentMethodType {

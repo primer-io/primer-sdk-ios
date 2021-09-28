@@ -19,34 +19,6 @@ struct PaymentRequest: Encodable {
     let currencyCode: String
 }
 
-//class PaymentResponse: PaymentResponseProtocol {
-//    var amount: Int
-//    var id: String
-//    var date: String
-//    var status: PaymentStatus
-//    var requiredAction: RequiredActionProtocol?
-//
-//    init(amount: Int, id: String, date: String, status: PaymentStatus, requiredAction: RequiredAction?) {
-//        self.amount = amount
-//        self.id = id
-//        self.date = date
-//        self.status = status
-//        self.requiredAction = requiredAction
-//    }
-//}
-//
-//class RequiredAction: RequiredActionProtocol {
-//    var name: RequiredActionName
-//    var description: String
-//    var clientToken: String?
-//    
-//    init(name: RequiredActionName, description: String, clientToken: String?) {
-//        self.name = name
-//        self.description = description
-//        self.clientToken = clientToken
-//    }
-//}
-
 enum NetworkError: Error {
     case missingParams
     case unauthorised
