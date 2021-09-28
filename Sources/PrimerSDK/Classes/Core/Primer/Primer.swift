@@ -174,7 +174,7 @@ public class Primer {
         }
         
         presentingViewController = viewController
-        show(flow: Primer.shared.flow!)
+        show(flow: .default)
     }
     
     public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
@@ -183,7 +183,7 @@ public class Primer {
         }
         
         presentingViewController = viewController
-        show(flow: Primer.shared.flow!)
+        show(flow: .defaultWithVault)
     }
     
     public func showPaymentMethod(_ paymentMethod: ConfigPaymentMethodType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
