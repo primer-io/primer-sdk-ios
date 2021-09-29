@@ -294,13 +294,26 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
     }
     
     func handle(newClientToken clientToken: String) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        if state.accessToken == clientToken {
+            let err = PrimerError.invalidValue(key: "clientToken")
+            Primer.shared.delegate?.onResumeError?(err, resumeHandler: self)
+            return
+        }
+        
         do {
             try ClientTokenService.storeClientToken(clientToken)
            
             let state: AppStateProtocol = DependencyContainer.resolve()
             let decodedClientToken = state.decodedClientToken!
+            
+            guard let paymentMethod = paymentMethod else {
+                let err = PrimerError.invalidValue(key: "paymentMethod")
+                Primer.shared.delegate?.onResumeError?(err, resumeHandler: self)
+                return
+            }
            
-            if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue, let paymentMethod = paymentMethod {
+            if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)
                 let threeDSService = ThreeDSService()
                 threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
@@ -325,8 +338,8 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
                 #endif
                
             } else {
-                Primer.shared.delegate?.onResumeSuccess?(clientToken, resumeHandler: self)
                 let err = PrimerError.invalidValue(key: "resumeToken")
+                Primer.shared.delegate?.onResumeError?(err, resumeHandler: self)
             }
            
         } catch {
