@@ -102,6 +102,13 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 } else if let clientToken = clientToken {
                     do {
                         try ClientTokenService.storeClientToken(clientToken)
+                        let state: AppStateProtocol = DependencyContainer.resolve()
+                        if let decodedClientToken = state.decodedClientToken {
+                            seal.fulfill(decodedClientToken)
+                        } else {
+                            seal.reject(PrimerError.clientTokenNull)
+                        }
+                        
                     } catch {
                         seal.reject(error)
                     }
