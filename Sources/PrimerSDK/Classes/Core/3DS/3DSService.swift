@@ -200,7 +200,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                              email: settings.customer!.email,
                                              phoneNumber: settings.customer!.mobilePhoneNumber ?? settings.customer!.homePhoneNumber ?? settings.customer!.workPhoneNumber,
                                              addressLine1: settings.customer!.billingAddress!.addressLine1!,
-                                             addressLine2: settings.customer!.billingAddress!.addressLine2!,
+                                             addressLine2: settings.customer!.billingAddress!.addressLine2,
                                              addressLine3: nil,
                                              city: settings.customer!.billingAddress!.city!,
                                              state: nil,
