@@ -397,9 +397,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
     }
     
-    func onResumeError(_ error: Error, resumeHandler: ResumeHandlerProtocol) {
+    func onResumeError(_ error: Error) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
-        resumeHandler.handle(error: NSError(domain: "merchant", code: 100, userInfo: [NSLocalizedDescriptionKey: "Bla bla bla"]))
     }
         
 }
