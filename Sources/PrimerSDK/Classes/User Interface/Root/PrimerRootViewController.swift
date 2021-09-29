@@ -391,22 +391,15 @@ extension PrimerRootViewController {
             show(viewController: lvc)
         }
         
-        let webViewController: PrimerWebViewController
         let apayaWebViewModel = ApayaWebViewModel()
         apayaWebViewModel.generateWebViewUrl { [weak self] result in
             DispatchQueue.main.async { [weak self] in
                 switch result {
-                case .failure(let error):
-                    Primer.shared.delegate?.checkoutFailed?(with: error)
-                    
-                    if settings.hasDisabledSuccessScreen {
-                        Primer.shared.dismiss()
-                    } else {
-                        let evc = ErrorViewController(message: error.localizedDescription)
-                        evc.view.translatesAutoresizingMaskIntoConstraints = false
-                        evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                        self?.show(viewController: evc)
+                case .failure(let err):
+                    DispatchQueue.main.async {
+                        Primer.shared.delegate?.checkoutFailed?(with: err)
                     }
+                    self?.handleError(err)
                     
                 case .success(let urlString):
                     let webViewController = PrimerWebViewController(with: apayaWebViewModel)
@@ -421,18 +414,11 @@ extension PrimerRootViewController {
         apayaWebViewModel.onCompletion = { [weak self] result in
             DispatchQueue.main.async { [weak self] in
                 switch result {
-                case .failure(let error):
-                    Primer.shared.delegate?.checkoutFailed?(with: error)
-                    
-                    if settings.hasDisabledSuccessScreen {
-                        Primer.shared.dismiss()
-                    } else {
-                        self?.dismiss(animated: true, completion: nil)
-                        let evc = ErrorViewController(message: error.localizedDescription)
-                        evc.view.translatesAutoresizingMaskIntoConstraints = false
-                        evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                        self?.show(viewController: evc)
+                case .failure(let err):
+                    DispatchQueue.main.async {
+                        Primer.shared.delegate?.checkoutFailed?(with: err)
                     }
+                    self?.handleError(err)
                     
                 case .success(let paymentMethod):
                     self?.handleSuccessfulTokenization(paymentMethod: paymentMethod)
