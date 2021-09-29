@@ -313,8 +313,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         callApi(request) { (result) in
             switch result {
             case .success(let data):
-//                var paymentResponse: PaymentResponse?
-
                 if let dic = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
                     if let amount = dic?["amount"] as? Int,
                        let id = dic?["id"] as? String,
