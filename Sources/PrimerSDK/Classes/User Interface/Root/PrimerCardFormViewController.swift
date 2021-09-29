@@ -326,6 +326,7 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
                
             } else {
                 Primer.shared.delegate?.onResumeSuccess?(clientToken, resumeHandler: self)
+                let err = PrimerError.invalidValue(key: "resumeToken")
             }
            
         } catch {
