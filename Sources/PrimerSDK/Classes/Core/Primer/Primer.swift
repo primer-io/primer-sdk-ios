@@ -289,7 +289,18 @@ public class Primer {
             }
             
             if self.primerWindow == nil {
-                self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
+                if #available(iOS 13.0, *) {
+                    if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                        self.primerWindow = UIWindow(windowScene: windowScene)
+                    } else {
+                        // Not opted-in in UISceneDelegate
+                        self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
+                    }
+                } else {
+                    // Fallback on earlier versions
+                    self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
+                }
+                
                 self.primerWindow!.rootViewController = self.primerRootVC
                 self.primerWindow!.backgroundColor = UIColor.clear
                 self.primerWindow!.windowLevel = UIWindow.Level.normal
