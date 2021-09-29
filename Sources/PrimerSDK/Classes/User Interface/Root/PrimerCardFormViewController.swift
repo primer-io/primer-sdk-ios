@@ -297,7 +297,8 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         if state.accessToken == clientToken {
             let err = PrimerError.invalidValue(key: "clientToken")
-            Primer.shared.delegate?.onResumeError?(err, resumeHandler: self)
+            Primer.shared.delegate?.onResumeError?(err)
+            handle(error: err)
             return
         }
         
@@ -309,7 +310,8 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
             
             guard let paymentMethod = paymentMethod else {
                 let err = PrimerError.invalidValue(key: "paymentMethod")
-                Primer.shared.delegate?.onResumeError?(err, resumeHandler: self)
+                Primer.shared.delegate?.onResumeError?(err)
+                handle(error: err)
                 return
             }
            
@@ -321,7 +323,9 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
                     case .success(let paymentMethodToken):
                         guard let threeDSPostAuthResponse = paymentMethodToken.1,
                               let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                            Primer.shared.delegate?.onResumeError?(PrimerError.threeDSFailed, resumeHandler: self)
+                            let err = PrimerError.threeDSFailed
+                            Primer.shared.delegate?.onResumeError?(err)
+                            self.handle(error: err)
                             return
                         }
                        
@@ -329,21 +333,25 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
                        
                     case .failure(let err):
                         log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
-                        Primer.shared.delegate?.onResumeError?(PrimerError.threeDSFailed, resumeHandler: self)
+                        let err = PrimerError.threeDSFailed
+                        Primer.shared.delegate?.onResumeError?(err)
+                        self.handle(error: err)
                     }
                 }
                 #else
                 let error = PrimerError.threeDSFailed
-                Primer.shared.delegate?.onResumeError?(error, resumeHandler: self)
+                Primer.shared.delegate?.onResumeError?(error)
                 #endif
                
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken")
-                Primer.shared.delegate?.onResumeError?(err, resumeHandler: self)
+                Primer.shared.delegate?.onResumeError?(err)
+                handle(error: err)
             }
            
         } catch {
-            Primer.shared.delegate?.onResumeError?(error, resumeHandler: self)
+            Primer.shared.delegate?.onResumeError?(error)
+            handle(error: error)
         }
     }
     

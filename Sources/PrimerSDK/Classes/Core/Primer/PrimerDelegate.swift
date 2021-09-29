@@ -41,7 +41,7 @@ public protocol PrimerDelegate {
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
 
     @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
-    @objc optional func onResumeError(_ error: Error, resumeHandler: ResumeHandlerProtocol)
+    @objc optional func onResumeError(_ error: Error)
     
     @objc optional func onCheckoutDismissed()
     
