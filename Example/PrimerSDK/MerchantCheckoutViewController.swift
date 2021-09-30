@@ -193,14 +193,59 @@ class MerchantCheckoutViewController: UIViewController {
 extension MerchantCheckoutViewController: PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/clientToken") else {
+        guard let url = URL(string: "\(endpoint)/client-session") else {
             return completion(nil, NetworkError.missingParams)
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(customerId: (customerId ?? "").isEmpty ? "customer_id" : customerId!, customerCountryCode: countryCode.rawValue.uppercased(), environment: environment)
+        let body = CreateClientTokenRequest(
+            orderId: "order_id",
+            amount: 123,
+            currencyCode: "EUR",
+            customerId: "customer_id",
+            metadata: [
+                "test": "test"
+            ],
+            customer: Customer(
+                emailAddress: "email@primer.io",
+                billingAddress: Address(
+                    addressLine1: "Lemesou 10",
+                    addressLine2: nil,
+                    city: "Athens",
+                    countryCode: "GR",
+                    postalCode: "15236",
+                    firstName: "Evangelos",
+                    lastName: "Pittas",
+                    state: nil),
+                shippingAddress: Address(
+                    addressLine1: "Lemesou 10",
+                    addressLine2: nil,
+                    city: "Athens",
+                    countryCode: "GR",
+                    postalCode: "15236",
+                    firstName: "Evangelos",
+                    lastName: "Pittas",
+                    state: nil),
+                mobileNumber: "+447888888888"),
+            order: Order(
+                countryCode: "FR",
+                fees: Fees(
+                    amount: 11,
+                    description: "Extra fees"),
+                lineItems: [
+                    LineItem(
+                        itemId: "item_id_1",
+                        description: "item description",
+                        amount: 10,
+                        discountAmount: 0,
+                        quantity: 1,
+                        taxAmount: 0,
+                        taxCode: nil)
+                ],
+                shipping: Shipping(amount: 5)),
+            paymentMethod: PaymentMethod(vaultOnSuccess: true))
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
