@@ -122,7 +122,7 @@ extension MerchantCheckoutViewController {
     internal func generateBusinessDetails() -> BusinessDetails {
         return BusinessDetails(
             name: "My Business",
-            address: Address(
+            address: PrimerSDK.Address(
                 addressLine1: "107 Rue",
                 addressLine2: nil,
                 city: "Paris",
