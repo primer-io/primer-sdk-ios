@@ -151,6 +151,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 let mockPaymentMethodConfig = PaymentMethodConfig(
     coreUrl: "url",
     pciUrl: "url",
+    clientSession: nil,
     paymentMethods: [
         ConfigPaymentMethod(id: "1", type: .klarna, processorConfigId: nil, options: nil),
         ConfigPaymentMethod(id: "2", type: .payPal, processorConfigId: nil, options: nil),
@@ -201,6 +202,7 @@ class MockAppState: AppStateProtocol {
         paymentMethodConfig: PaymentMethodConfig? = PaymentMethodConfig(
             coreUrl: "url",
             pciUrl: "url",
+            clientSession: nil,
             paymentMethods: [
                 ConfigPaymentMethod(
                     id: "klarna_id",
