@@ -74,13 +74,6 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         networkService.request(endpoint) { (result: Result<PaymentMethodConfig, NetworkServiceError>) in
             switch result {
             case .success(let paymentMethodConfig):
-                let encoder = JSONEncoder()
-                encoder.outputFormatting = .prettyPrinted
-                if let configData = (try? encoder.encode(paymentMethodConfig)) {
-                    let configJSON = try? JSONSerialization.jsonObject(with: configData, options: .allowFragments) as? [String: Any]
-                    print(configJSON)
-                }
-                
                 completion(.success(paymentMethodConfig))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)

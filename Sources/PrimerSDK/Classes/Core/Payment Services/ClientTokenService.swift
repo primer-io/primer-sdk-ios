@@ -44,15 +44,15 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
             if let err = err {
                 completion(err)
             } else if let token = token {
-                guard let jwtTokenPayload = token.jwtTokenPayload
-//                      let expDate = jwtTokenPayload.expDate
+                guard let jwtTokenPayload = token.jwtTokenPayload,
+                      let expDate = jwtTokenPayload.expDate
                 else {
                     return completion(PrimerError.clientTokenExpirationMissing)
                 }
                 
-//                if expDate < Date() {
-//                    return completion(PrimerError.clientTokenExpired)
-//                }
+                if expDate < Date() {
+                    return completion(PrimerError.clientTokenExpired)
+                }
                 
                 if let jwtTokenPayload = token.jwtTokenPayload {
                     state.accessToken = token
