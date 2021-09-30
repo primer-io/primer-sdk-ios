@@ -13,7 +13,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private var cardComponentsManager: CardComponentsManager!
     private var flow: PaymentFlow!
-    private var resumeHandler: ResumeHandlerProtocol!
     
     private let cardNumberContainerView = PrimerCustomFieldView()
     private let cardNumberField = PrimerCardNumberFieldView()
@@ -24,7 +23,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let cardholderNameContainerView = PrimerCustomFieldView()
     private let cardholderNameField = PrimerCardholderNameFieldView()
     private let submitButton = PrimerButton()
-    private var paymentMethod: PaymentMethodToken?
     
     init(flow: PaymentFlow) {
         self.flow = flow
@@ -171,8 +169,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
 extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTextFieldViewDelegate {
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
-        self.paymentMethod = paymentMethodToken
-        
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
             
@@ -180,7 +176,7 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
                 Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
             }
             
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: strongSelf)
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: cardComponentsManager)
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
                 self?.cardComponentsManager.setIsLoading(false)
                 
@@ -273,104 +269,6 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
         
     }
     
-}
-
-extension PrimerCardFormViewController: ResumeHandlerProtocol {
-    func handle(error: Error) {
-        DispatchQueue.main.async {
-            self.cardComponentsManager.setIsLoading(false)
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-            if settings.hasDisabledSuccessScreen {
-                Primer.shared.dismiss()
-            } else {
-                let evc = ErrorViewController(message: error.localizedDescription)
-                evc.view.translatesAutoresizingMaskIntoConstraints = false
-                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                Primer.shared.primerRootVC?.show(viewController: evc)
-            }
-        }
-    }
-    
-    func handle(newClientToken clientToken: String) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        if state.accessToken == clientToken {
-            let err = PrimerError.invalidValue(key: "clientToken")
-            Primer.shared.delegate?.onResumeError?(err)
-            handle(error: err)
-            return
-        }
-        
-        do {
-            try ClientTokenService.storeClientToken(clientToken)
-           
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            let decodedClientToken = state.decodedClientToken!
-            
-            guard let paymentMethod = paymentMethod else {
-                let err = PrimerError.invalidValue(key: "paymentMethod")
-                Primer.shared.delegate?.onResumeError?(err)
-                handle(error: err)
-                return
-            }
-           
-            if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                #if canImport(Primer3DS)
-                let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
-                    switch result {
-                    case .success(let paymentMethodToken):
-                        guard let threeDSPostAuthResponse = paymentMethodToken.1,
-                              let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                            let err = PrimerError.threeDSFailed
-                            Primer.shared.delegate?.onResumeError?(err)
-                            self.handle(error: err)
-                            return
-                        }
-                       
-                        Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
-                       
-                    case .failure(let err):
-                        log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
-                        let err = PrimerError.threeDSFailed
-                        Primer.shared.delegate?.onResumeError?(err)
-                        self.handle(error: err)
-                    }
-                }
-                #else
-                let error = PrimerError.threeDSFailed
-                Primer.shared.delegate?.onResumeError?(error)
-                #endif
-               
-            } else {
-                let err = PrimerError.invalidValue(key: "resumeToken")
-                Primer.shared.delegate?.onResumeError?(err)
-                handle(error: err)
-            }
-           
-        } catch {
-            Primer.shared.delegate?.onResumeError?(error)
-            handle(error: error)
-        }
-    }
-    
-    func handleSuccess() {
-        DispatchQueue.main.async {
-            self.cardComponentsManager.setIsLoading(false)
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-            if settings.hasDisabledSuccessScreen {
-                Primer.shared.dismiss()
-            } else {
-                let svc = SuccessViewController()
-                svc.view.translatesAutoresizingMaskIntoConstraints = false
-                svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                Primer.shared.primerRootVC?.show(viewController: svc)
-            }
-        }
-    }
 }
 
 class PrimerCustomFieldView: UIView {
