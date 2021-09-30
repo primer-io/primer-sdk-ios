@@ -1,6 +1,7 @@
 struct PaymentMethodConfig: Codable {
     let coreUrl: String?
     let pciUrl: String?
+    let clientSession: ClientSession?
     let paymentMethods: [ConfigPaymentMethod]?
 }
 

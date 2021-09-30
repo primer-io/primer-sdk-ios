@@ -38,3 +38,54 @@ struct DecodedClientToken: Decodable {
         }
     }
 }
+
+public struct ClientSession: Codable {
+    
+    let metadata: [String: AnyCodable]
+    let paymentMethod: ClientSession.PaymentMethod?
+    let orderDetails: ClientSession.Order?
+    let customerDetails: ClientSession.Customer?
+    
+    
+    public struct PaymentMethod: Codable {
+        let vaultOnSuccess: Bool
+    }
+    
+    public struct Order: Codable {
+        let totalAmount: UInt?
+        let totalTaxAmount: UInt?
+        let countryCode: CountryCode?
+        let currencyCode: Currency?
+
+        let items: [LineItem]
+        let shippingAmount: UInt?
+        
+        public struct LineItem: Codable {
+            let quantity: Int?
+            let unitAmount: UInt?
+            let reference: String?
+            let name: String?
+        }
+    }
+    
+    public struct Customer: Codable {
+        let customerId: String?
+        let firstName: String?
+        let lastName: String?
+        let emailAddress: String?
+        let mobileNumber: String?
+        let billingAddress: ClientSession.Address?
+        let shippingAddress: ClientSession.Address?
+        let taxId: String?
+    }
+    
+    public struct Address: Codable {
+        let firstName: String?
+        let lastName: String?
+        let addressLine1: String?
+        let addressLine2: String?
+        let city: String?
+        let postalCode: String?
+        let countryCode: CountryCode?
+    }
+}
