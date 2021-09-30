@@ -117,6 +117,44 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
     }
     
+    static func buildBeginAuthExtraData() throws -> ThreeDS.BeginAuthExtraData {
+        do {
+            try ThreeDSService.validate3DSParameters()
+        } catch {
+            throw error
+        }
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
+                                        email: settings.customer!.email!,
+                                        homePhone: settings.customer!.homePhoneNumber,
+                                        mobilePhone: settings.customer!.mobilePhoneNumber,
+                                        workPhone: settings.customer!.workPhoneNumber)
+        
+        let threeDSAddress = ThreeDS.Address(title: nil,
+                                             firstName: settings.customer!.firstName,
+                                             lastName: settings.customer!.lastName,
+                                             email: settings.customer!.email,
+                                             phoneNumber: settings.customer!.mobilePhoneNumber ?? settings.customer!.homePhoneNumber ?? settings.customer!.workPhoneNumber,
+                                             addressLine1: settings.customer!.billingAddress!.addressLine1!,
+                                             addressLine2: settings.customer!.billingAddress!.addressLine2,
+                                             addressLine3: nil,
+                                             city: settings.customer!.billingAddress!.city!,
+                                             state: nil,
+                                             countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!)!,
+                                             postalCode: settings.customer!.billingAddress!.postalCode!)
+        
+        return ThreeDS.BeginAuthExtraData(
+            amount: 0,
+            currencyCode: settings.currency!,
+            orderId: settings.orderId ?? "",
+            customer: customer,
+            billingAddress: threeDSAddress,
+            shippingAddress: nil,
+            customerAccount: nil)
+    }
+    
     var primer3DS: Primer3DS?
     
     // swiftlint:disable function_body_length
