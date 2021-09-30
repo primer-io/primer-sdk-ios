@@ -23,6 +23,9 @@
 		12ED7767D45BA22297A028D1EF4E93B3 /* CardNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA93ACA4E8F0D00E5A405FB0D230598F /* CardNetwork.swift */; };
 		14F550F56B3BCE2F396832C32076865C /* PrimerOAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0F4B7463F065B3710149C703FAA773 /* PrimerOAuthViewModel.swift */; };
 		1555C5FC93255B6553038A7E5DCBCAC1 /* PrimerWebViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 780C886E20AF6356F960B8287E28DAF7 /* PrimerWebViewModel.swift */; };
+		156F970327060142004503C0 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F970227060142004503C0 /* AnyCodable.swift */; };
+		156F9705270601B1004503C0 /* AnyEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F9704270601B1004503C0 /* AnyEncodable.swift */; };
+		156F970727060200004503C0 /* AnyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F970627060200004503C0 /* AnyDecodable.swift */; };
 		16B0BEB8984FC464832E0D8FA6542367 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F99FCED5E5E25F5B3C39778B8D7269 /* Configuration.swift */; };
 		174364DA0D8B49392B113286B32A23A5 /* CancellablePromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46DC6D0395B68919AA0425DF59A68D0D /* CancellablePromise.swift */; };
 		197F53A0A058CA58773BF5BB4373A720 /* CatchWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E7DD640A7B6A34642E800E78C870A58 /* CatchWrappers.swift */; };
@@ -218,6 +221,9 @@
 		1339E864F357E82AC105BCB1F3D4F7FC /* Apaya.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Apaya.swift; sourceTree = "<group>"; };
 		148289CD89AB434AE9AF2624C159949C /* WrapperProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WrapperProtocols.swift; sourceTree = "<group>"; };
 		15399E02A73E52490D96C07D369963D5 /* VaultPaymentMethodViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewModel.swift; sourceTree = "<group>"; };
+		156F970227060142004503C0 /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
+		156F9704270601B1004503C0 /* AnyEncodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyEncodable.swift; sourceTree = "<group>"; };
+		156F970627060200004503C0 /* AnyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyDecodable.swift; sourceTree = "<group>"; };
 		1682A060062FA32B42FA1F59AAB28E7C /* PrimerRootViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerRootViewController.swift; sourceTree = "<group>"; };
 		1A1FAE210E453ADCECC73CB234CDC0FB /* PrimerSDK-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "PrimerSDK-dummy.m"; sourceTree = "<group>"; };
 		1A5808D7AD83468E9DFF6535C9C70A31 /* race.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = race.swift; sourceTree = "<group>"; };
@@ -480,6 +486,9 @@
 				E20A11AB956B08ECFE7E64A30EBFAB1F /* URLExtension.swift */,
 				A35544E583AF70391EEEF9B47CC1DCDB /* UserDefaultsExtension.swift */,
 				6140F35C4D0C6AB498DE5230918306D3 /* Validation.swift */,
+				156F970227060142004503C0 /* AnyCodable.swift */,
+				156F9704270601B1004503C0 /* AnyEncodable.swift */,
+				156F970627060200004503C0 /* AnyDecodable.swift */,
 			);
 			name = "Extensions & Utilities";
 			path = "Sources/PrimerSDK/Classes/Extensions & Utilities";
@@ -1193,6 +1202,7 @@
 				A0714101CB314A25AB4CD94D3FD8C85F /* AlertController.swift in Sources */,
 				8D9161EB969367FE1389C97911C6528F /* Apaya.swift in Sources */,
 				0CCA8A3B7D6B88E875AD14AFE35DC6BF /* ApayaService.swift in Sources */,
+				156F970727060200004503C0 /* AnyDecodable.swift in Sources */,
 				630712DD92DD43654A4411CA0210AD7E /* ApplePay.swift in Sources */,
 				5EE9799710097AC2EF2103A424A827A7 /* ApplePayService.swift in Sources */,
 				8DF2A8BFF2EEDA0DB590AED1D82C3E84 /* ApplePayViewModel.swift in Sources */,
@@ -1236,6 +1246,7 @@
 				83A7D4E19600B90EF90C6293D317F71C /* Error.swift in Sources */,
 				43B0EF9B2B062379C447FF0387F1C5BA /* ErrorHandler.swift in Sources */,
 				9061FB25655345107FB14F98B0FE1E63 /* ErrorViewController.swift in Sources */,
+				156F9705270601B1004503C0 /* AnyEncodable.swift in Sources */,
 				11ED2C24B77187288AC7FF26AF10B3BF /* ExternalViewModel.swift in Sources */,
 				E988D1ECB0E29C294043FE879864E940 /* FinallyWrappers.swift in Sources */,
 				5286BF0504FCB28F1951B3370D7822BC /* firstly.swift in Sources */,
@@ -1254,6 +1265,7 @@
 				0DE4C0B5BEA8613F8F9D6A04198F7420 /* KlarnaViewModel.swift in Sources */,
 				AC514C6D2B8CE49EF5C4F00BD24E26AC /* LogEvent.swift in Sources */,
 				03A3767141E3BDF0B03999C0FEAB1C26 /* Logger.swift in Sources */,
+				156F970327060142004503C0 /* AnyCodable.swift in Sources */,
 				599EFB5259466E142E037F37080245BE /* Mask.swift in Sources */,
 				417A2449DED0DB6D7B6B15D841C2A43B /* NetworkService.swift in Sources */,
 				E440832EA3CD8E6D2C9095CD440736BE /* OAuthViewModel.swift in Sources */,
