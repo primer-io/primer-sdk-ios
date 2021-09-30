@@ -20,7 +20,6 @@ public enum ConfigPaymentMethodType: String, Codable {
     case klarna = "KLARNA"
     case payNlIdeal = "PAY_NL_IDEAL"
     case apaya = "APAYA"
-    case hoolah = "HOOLAH"
     
     case unknown
     
