@@ -75,10 +75,19 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     #if canImport(Primer3DS)
                     let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
                     DependencyContainer.register(threeDSService)
+                    
+                    var threeDSBeginAuthExtraData: ThreeDS.BeginAuthExtraData
+                    do {
+                        threeDSBeginAuthExtraData = try ThreeDSService.buildBeginAuthExtraData()
+                    } catch {
+                        onTokenizeSuccess(.success(paymentMethodToken))
+                        return
+                    }
 
                     threeDSService.perform3DS(
                             paymentMethodToken: paymentMethodToken,
                         protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
+                        beginAuthExtraData: threeDSBeginAuthExtraData,
                             sdkDismissed: { () in
 
                             }, completion: { result in

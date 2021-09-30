@@ -16,6 +16,7 @@ protocol ThreeDSServiceProtocol {
     func perform3DS(
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
+        beginAuthExtraData: ThreeDS.BeginAuthExtraData?,
         sdkDismissed: (() -> Void)?,
         completion: @escaping (_ result: Result<(PaymentMethodToken, ThreeDS.PostAuthResponse?), Error>) -> Void
     )
@@ -161,16 +162,10 @@ class ThreeDSService: ThreeDSServiceProtocol {
     func perform3DS(
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
+        beginAuthExtraData: ThreeDS.BeginAuthExtraData? = nil,
         sdkDismissed: (() -> Void)?,
         completion: @escaping (_ result: Result<(PaymentMethodToken, ThreeDS.PostAuthResponse?), Error>) -> Void
     ) {
-        do {
-            try ThreeDSService.validate3DSParameters()
-        } catch {
-            completion(.failure(error))
-            return
-        }
-        
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = state.decodedClientToken else {
@@ -224,27 +219,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return
         }
         
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
-                                        email: settings.customer!.email!,
-                                        homePhone: settings.customer!.homePhoneNumber,
-                                        mobilePhone: settings.customer!.mobilePhoneNumber,
-                                        workPhone: settings.customer!.workPhoneNumber)
-        
-        let threeDSAddress = ThreeDS.Address(title: nil,
-                                             firstName: settings.customer!.firstName,
-                                             lastName: settings.customer!.lastName,
-                                             email: settings.customer!.email,
-                                             phoneNumber: settings.customer!.mobilePhoneNumber ?? settings.customer!.homePhoneNumber ?? settings.customer!.workPhoneNumber,
-                                             addressLine1: settings.customer!.billingAddress!.addressLine1!,
-                                             addressLine2: settings.customer!.billingAddress!.addressLine2,
-                                             addressLine3: nil,
-                                             city: settings.customer!.billingAddress!.city!,
-                                             state: nil,
-                                             countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!)!,
-                                             postalCode: settings.customer!.billingAddress!.postalCode!)
-        
         let threeDSecureAuthData = ThreeDS.SDKAuthData(sdkAppId: data.sdkAppId,
                                                        sdkTransactionId: data.sdkTransactionId,
                                                        sdkTimeout: data.sdkTimeout,
@@ -252,18 +226,54 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                                        sdkEphemPubKey: data.sdkEphemPubKey,
                                                        sdkReferenceNumber: data.sdkReferenceNumber)
         
-        let threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(testScenario: nil,
-                                                                    maxProtocolVersion: env == .production ? .v1 : .v2,
-                                                                    amount: settings.amount ?? 0,
+        var threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(maxProtocolVersion: env == .production ? .v1 : .v2,
                                                                     challengePreference: .requestedByRequestor,
-                                                                    currencyCode: settings.currency!,
-                                                                    orderId: settings.orderId ?? "",
-                                                                    customer: customer,
                                                                     device: threeDSecureAuthData,
-                                                                    billingAddress: threeDSAddress,
+                                                                    amount: nil,
+                                                                    currencyCode: nil,
+                                                                    orderId: nil,
+                                                                    customer: nil,
+                                                                    billingAddress: nil,
                                                                     shippingAddress: nil,
                                                                     customerAccount: nil)
-    
+        
+        if let beginAuthExtraData = beginAuthExtraData {
+            do {
+                try ThreeDSService.validate3DSParameters()
+            } catch {
+                completion(.failure(error))
+                return
+            }
+            
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
+                                            email: settings.customer!.email!,
+                                            homePhone: settings.customer!.homePhoneNumber,
+                                            mobilePhone: settings.customer!.mobilePhoneNumber,
+                                            workPhone: settings.customer!.workPhoneNumber)
+            
+            let threeDSAddress = ThreeDS.Address(title: nil,
+                                                 firstName: settings.customer!.firstName,
+                                                 lastName: settings.customer!.lastName,
+                                                 email: settings.customer!.email,
+                                                 phoneNumber: settings.customer!.mobilePhoneNumber ?? settings.customer!.homePhoneNumber ?? settings.customer!.workPhoneNumber,
+                                                 addressLine1: settings.customer!.billingAddress!.addressLine1!,
+                                                 addressLine2: settings.customer!.billingAddress!.addressLine2,
+                                                 addressLine3: nil,
+                                                 city: settings.customer!.billingAddress!.city!,
+                                                 state: nil,
+                                                 countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!)!,
+                                                 postalCode: settings.customer!.billingAddress!.postalCode!)
+            
+            threeDSecureBeginAuthRequest.amount = beginAuthExtraData.amount
+            threeDSecureBeginAuthRequest.currencyCode = beginAuthExtraData.currencyCode
+            threeDSecureBeginAuthRequest.orderId = beginAuthExtraData.orderId
+            threeDSecureBeginAuthRequest.customer = beginAuthExtraData.customer
+            threeDSecureBeginAuthRequest.billingAddress = beginAuthExtraData.billingAddress
+            threeDSecureBeginAuthRequest.shippingAddress = beginAuthExtraData.shippingAddress
+            threeDSecureBeginAuthRequest.customerAccount = beginAuthExtraData.customerAccount
+        }
         
         
         firstly {
@@ -398,12 +408,15 @@ class ThreeDSService: ThreeDSServiceProtocol {
 }
 
 class MockThreeDSService: ThreeDSServiceProtocol {
+    
     func perform3DS(
         paymentMethodToken: PaymentMethodToken,
         protocolVersion: ThreeDS.ProtocolVersion,
+        beginAuthExtraData: ThreeDS.BeginAuthExtraData?,
         sdkDismissed: (() -> Void)?,
-        completion: @escaping (_ result: Result<(PaymentMethodToken, ThreeDS.PostAuthResponse?), Error>) -> Void
-    ) { }
+        completion: @escaping (Result<(PaymentMethodToken, ThreeDS.PostAuthResponse?), Error>) -> Void) {
+        
+    }
     
     
     var response: Data?

@@ -274,10 +274,20 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                             #if canImport(Primer3DS)
                             let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
                             DependencyContainer.register(threeDSService)
+                            
+                            var beginAuthExtraData: ThreeDS.BeginAuthExtraData
+                            do {
+                                beginAuthExtraData = try ThreeDSService.buildBeginAuthExtraData()
+                            } catch {
+                                self.paymentMethod = paymentMethodToken
+                                self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                                return
+                            }
 
                             threeDSService.perform3DS(
                                     paymentMethodToken: paymentMethodToken,
                                 protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
+                                beginAuthExtraData: beginAuthExtraData,
                                     sdkDismissed: { () in
 
                                     }, completion: { result in
