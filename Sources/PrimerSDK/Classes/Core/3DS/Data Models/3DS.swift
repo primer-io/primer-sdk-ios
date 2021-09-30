@@ -132,14 +132,24 @@ public struct ThreeDS {
     }
     
     internal struct BeginAuthRequest: Codable {
-        var testScenario: ThreeDS.TestScenario?
-        var maxProtocolVersion: ProtocolVersion
-        var amount: Int
-        var challengePreference: ChallengePreference
-        let currencyCode: Currency
+        let maxProtocolVersion: ProtocolVersion
+        let challengePreference: ChallengePreference
+        let device: ThreeDS.SDKAuthData?
+        
+        var amount: Int?
+        var currencyCode: Currency?
+        var orderId: String?
+        var customer: ThreeDS.Customer?
+        var billingAddress: ThreeDS.Address?
+        var shippingAddress: ThreeDS.Address?
+        var customerAccount: ThreeDS.CustomerAccount?
+    }
+    
+    internal struct BeginAuthExtraData: Codable {
+        let amount: Int?
+        let currencyCode: Currency?
         let orderId: String
         let customer: ThreeDS.Customer
-        var device: ThreeDS.SDKAuthData?
         let billingAddress: ThreeDS.Address
         let shippingAddress: ThreeDS.Address?
         let customerAccount: ThreeDS.CustomerAccount?
