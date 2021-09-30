@@ -70,14 +70,14 @@ class MerchantCheckoutViewController: UIViewController {
             directDebitHasNoAmount: false,
             orderItems: [],
             isInitialLoadingHidden: false,
-            customer: PrimerSDK.Customer(mobilePhoneNumber: phoneNumber)
+            customer: PrimerSDK.Customer(mobileNumber: phoneNumber)
         )
         
         vaultApayaSettings = PrimerSettings(
             currency: currency,
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true,
-            customer: PrimerSDK.Customer(mobilePhoneNumber: self.phoneNumber)
+            customer: PrimerSDK.Customer(mobileNumber: self.phoneNumber)
         )
         
         vaultPayPalSettings = PrimerSettings(
@@ -103,9 +103,9 @@ class MerchantCheckoutViewController: UIViewController {
                     addressLine1: "107 Rue",
                     addressLine2: nil,
                     city: "Paris",
+                    postalCode: "75001",
                     state: nil,
-                    countryCode: "FR",
-                    postalCode: "75001"
+                    countryCode: .fr
                 )
             ),
             orderItems: [
@@ -135,9 +135,9 @@ class MerchantCheckoutViewController: UIViewController {
                 addressLine1: "1 Rue",
                 addressLine2: "",
                 city: "Paris",
+                postalCode: "75001",
                 state: "",
-                countryCode: "FR",
-                postalCode: "75001"
+                countryCode: .fr
             )
         )
     }

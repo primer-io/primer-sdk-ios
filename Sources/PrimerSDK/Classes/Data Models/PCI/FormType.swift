@@ -43,7 +43,7 @@ enum FormType {
                 [.addressLine2(mandate.address?.addressLine2)],
                 [.city(mandate.address?.city)],
                 [.postalCode(mandate.address?.postalCode)],
-                [.country(mandate.address?.countryCode)]
+                [.country(mandate.address?.countryCode?.rawValue)]
             ]
         case .cardForm(let theme):
             switch theme.textFieldTheme {

@@ -40,7 +40,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
                 addressLine2: mandate.address?.addressLine2 ?? "",
                 city: mandate.address?.city ?? "",
                 postalCode: mandate.address?.postalCode ?? "",
-                countryCode: mandate.address?.countryCode ?? ""
+                countryCode: mandate.address?.countryCode?.rawValue ?? ""
             ),
             bankDetails: BankDetails(
                 iban: mandate.iban,

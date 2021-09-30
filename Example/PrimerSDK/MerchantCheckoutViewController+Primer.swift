@@ -126,9 +126,9 @@ extension MerchantCheckoutViewController {
                 addressLine1: "107 Rue",
                 addressLine2: nil,
                 city: "Paris",
+                postalCode: "75001",
                 state: nil,
-                countryCode: "FR",
-                postalCode: "75001"
+                countryCode: .fr
             )
         )
     }

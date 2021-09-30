@@ -7,10 +7,4 @@
 
 import Foundation
 
-public struct Customer {
-    var mobilePhoneNumber: String?
-    
-    public init(mobilePhoneNumber: String?) {
-        self.mobilePhoneNumber = mobilePhoneNumber
-    }
-}
+
