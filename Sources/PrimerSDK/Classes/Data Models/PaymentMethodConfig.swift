@@ -3,6 +3,9 @@ struct PaymentMethodConfig: Codable {
     let pciUrl: String?
     let clientSession: ClientSession?
     let paymentMethods: [ConfigPaymentMethod]?
+    var isSetByClientSession: Bool {
+        return clientSession != nil
+    }
 }
 
 struct ConfigPaymentMethod: Codable {
