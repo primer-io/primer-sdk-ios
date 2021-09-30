@@ -257,11 +257,20 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             switch result {
             case .success(let data):
                 do {
-                    let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as! String
-
-                    print("🔥 token: \(token)")
+                    guard let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
+                        completion(nil, NetworkError.missingParams)
+                        return
+                    }
                     
-                    completion(token, nil)
+                    print("Client Token Response:\n\(json)")
+                    
+                    guard let clientToken = json["clientToken"] as? String else {
+                        completion(nil, NetworkError.missingParams)
+                        return
+                    }
+
+                    print("Client Token:\n\(clientToken)")
+                    completion(clientToken, nil)
 
                 } catch {
                     completion(nil, error)
