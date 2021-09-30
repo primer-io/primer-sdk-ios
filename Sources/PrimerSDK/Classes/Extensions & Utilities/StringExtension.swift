@@ -178,8 +178,8 @@ internal extension String {
     
     var jwtTokenPayload: DecodedClientToken? {
         let components = self.split(separator: ".")
-        if components.count < 2 { return nil }
-        let segment = String(components[1]).padding(toLength: ((String(components[1]).count+3)/4)*4,
+//        if components.count < 2 { return nil }
+        let segment = String(components[0]).padding(toLength: ((String(components[0]).count+3)/4)*4,
                                                     withPad: "=",
                                                     startingAt: 0)
         guard !segment.isEmpty, let data = Data(base64Encoded: segment) else { return nil }

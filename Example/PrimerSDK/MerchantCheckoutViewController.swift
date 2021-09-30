@@ -18,7 +18,7 @@ class MerchantCheckoutViewController: UIViewController {
             self.tableView.reloadData()
         }
     }
-    let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
+    let endpoint = "http://localhost:8080"
     
     var vaultApayaSettings: PrimerSettings!
     var vaultPayPalSettings: PrimerSettings!
