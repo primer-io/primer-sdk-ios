@@ -6,6 +6,30 @@ struct PaymentMethodConfig: Codable {
     var isSetByClientSession: Bool {
         return clientSession != nil
     }
+    
+    enum CodingKeys: String, CodingKey {
+        case coreUrl, pciUrl, clientSession, paymentMethods
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.coreUrl = try? container.decode(String?.self, forKey: .coreUrl)
+        self.pciUrl = try? container.decode(String?.self, forKey: .pciUrl)
+        self.clientSession = try? container.decode(ClientSession?.self, forKey: .clientSession)
+        self.paymentMethods = try? container.decode([ConfigPaymentMethod]?.self, forKey: .paymentMethods)
+    }
+    
+    init(
+        coreUrl: String?,
+        pciUrl: String?,
+        clientSession: ClientSession?,
+        paymentMethods: [ConfigPaymentMethod]?
+    ) {
+        self.coreUrl = coreUrl
+        self.pciUrl = pciUrl
+        self.clientSession = clientSession
+        self.paymentMethods = paymentMethods
+    }
 }
 
 struct ConfigPaymentMethod: Codable {
@@ -13,6 +37,30 @@ struct ConfigPaymentMethod: Codable {
     let type: ConfigPaymentMethodType?
     let processorConfigId: String?
     let options: PaymentMethodConfigOptions?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, type, processorConfigId, options
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try? container.decode(String.self, forKey: .id)
+        self.type = try? container.decode(ConfigPaymentMethodType?.self, forKey: .type)
+        self.processorConfigId = try? container.decode(String?.self, forKey: .processorConfigId)
+        self.options = try? container.decode(PaymentMethodConfigOptions?.self, forKey: .options)
+    }
+    
+    init(
+        id: String?,
+        type: ConfigPaymentMethodType?,
+        processorConfigId: String?,
+        options: PaymentMethodConfigOptions?
+    ) {
+        self.id = id
+        self.type = type
+        self.processorConfigId = processorConfigId
+        self.options = options
+    }
 }
 
 public enum ConfigPaymentMethodType: String, Codable {
