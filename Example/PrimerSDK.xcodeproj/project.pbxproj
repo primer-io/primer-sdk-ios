@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		151B098C267A276100FB49B8 /* Vault.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15300DB8267A1211009A1B9C /* Vault.swift */; };
 		15300DBB267A1646009A1B9C /* VaultKlarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15300DBA267A1646009A1B9C /* VaultKlarna.swift */; };
+		156F97092706DDE6004503C0 /* PaymentMethodConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F97082706DDE6004503C0 /* PaymentMethodConfigTests.swift */; };
 		1582B979260A3F2900C80BD7 /* OAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95B260A3F2900C80BD7 /* OAuthViewModel.swift */; };
 		1582B97A260A3F2900C80BD7 /* ConfirmMandateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95C260A3F2900C80BD7 /* ConfirmMandateViewModel.swift */; };
 		1582B97C260A3F2900C80BD7 /* DirectCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95E260A3F2900C80BD7 /* DirectCheckoutViewModel.swift */; };
@@ -79,6 +80,7 @@
 		0BEFFA023E994EF5B370A80C /* PrimerSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = PrimerSDK.podspec; path = ../PrimerSDK.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		15300DB8267A1211009A1B9C /* Vault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vault.swift; sourceTree = "<group>"; };
 		15300DBA267A1646009A1B9C /* VaultKlarna.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultKlarna.swift; sourceTree = "<group>"; };
+		156F97082706DDE6004503C0 /* PaymentMethodConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigTests.swift; sourceTree = "<group>"; };
 		1582B95B260A3F2900C80BD7 /* OAuthViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OAuthViewModel.swift; sourceTree = "<group>"; };
 		1582B95C260A3F2900C80BD7 /* ConfirmMandateViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmMandateViewModel.swift; sourceTree = "<group>"; };
 		1582B95E260A3F2900C80BD7 /* DirectCheckoutViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectCheckoutViewModel.swift; sourceTree = "<group>"; };
@@ -355,6 +357,7 @@
 			isa = PBXGroup;
 			children = (
 				1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */,
+				156F97082706DDE6004503C0 /* PaymentMethodConfigTests.swift */,
 			);
 			path = "Data Models";
 			sourceTree = "<group>";
@@ -705,6 +708,7 @@
 				1582B97F260A3F2900C80BD7 /* Mocks.swift in Sources */,
 				1582B985260A3F2900C80BD7 /* KlarnaService.swift in Sources */,
 				1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */,
+				156F97092706DDE6004503C0 /* PaymentMethodConfigTests.swift in Sources */,
 				1582B984260A3F2900C80BD7 /* TokenizationService.swift in Sources */,
 				1582B989260A3F2900C80BD7 /* DirectCheckoutViewModelTests.swift in Sources */,
 				1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */,
