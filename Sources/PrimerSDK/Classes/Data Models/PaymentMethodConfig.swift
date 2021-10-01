@@ -35,6 +35,10 @@ public enum ConfigPaymentMethodType: String, Codable {
             return false
         }
     }
+    
+    public init(from decoder: Decoder) throws {
+        self = (try? ConfigPaymentMethodType(rawValue: decoder.singleValueContainer().decode(RawValue.self))) ?? .unknown
+    }
 }
 
 internal extension PaymentMethodConfig {
