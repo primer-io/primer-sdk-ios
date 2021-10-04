@@ -171,39 +171,42 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
             
             for paymentMethod in availablePaymentMethods {
-                let paymentMethodButton = UIButton()
-                paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
-                paymentMethodButton.setTitle(paymentMethod.toString(), for: .normal)
-                paymentMethodButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
-                paymentMethodButton.setImage(paymentMethod.toIconName()?.image?.withRenderingMode(.alwaysTemplate), for: .normal)
-                paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
-                paymentMethodButton.layer.cornerRadius = 4.0
-                paymentMethodButton.clipsToBounds = true
+                let paymentMethodButtonView = PaymentMethodButtonView(frame: CGRect.zero, title: nil, image: UIImage(named: "klarna", in: Bundle.primerResources, compatibleWith: nil), surCharge: "Test")
+                paymentMethodButtonView.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
+                paymentMethodButtonView.cornerRadius = 4.0
+                paymentMethodButtonView.borderWidth = 1.0
+                paymentMethodButtonView.borderColor = .clear
+                paymentMethodButtonView.clipsToBounds = true
                 
                 switch paymentMethod.type {
                 case .paymentCard:
-                    paymentMethodButton.setTitleColor(theme.colorTheme.text1, for: .normal)
-                    paymentMethodButton.tintColor = theme.colorTheme.text1
-                    paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = theme.colorTheme.text1.cgColor
-                    paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
+                    paymentMethodButtonView.setTitle(paymentMethod.toString(), for: .normal)
+                    paymentMethodButtonView.setTitleColor(theme.colorTheme.text1, for: .normal)
+                    paymentMethodButtonView.tintColor = theme.colorTheme.text1
+                    paymentMethodButtonView.backgroundColor = .clear
+                    paymentMethodButtonView.setImage(paymentMethod.toIconName()?.image?.withRenderingMode(.alwaysTemplate), for: .normal)
+                    paymentMethodButtonView.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
+                    paymentMethodButtonView.borderColor = theme.colorTheme.text1
+                    paymentMethodButtonView.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
+                    paymentMethodButtonView.surCharge = "Test"
+                    verticalStackView.addArrangedSubview(paymentMethodButtonView)
                     
                 case .applePay:
-                    paymentMethodButton.backgroundColor = .black
-                    paymentMethodButton.setTitleColor(.white, for: .normal)
-                    paymentMethodButton.tintColor = .white
-                    paymentMethodButton.addTarget(self, action: #selector(applePayButtonTapped(_:)), for: .touchUpInside)
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
+                    paymentMethodButtonView.setTitle(paymentMethod.toString(), for: .normal)
+                    paymentMethodButtonView.backgroundColor = .black
+                    paymentMethodButtonView.setTitleColor(.white, for: .normal)
+                    paymentMethodButtonView.setImage(paymentMethod.toIconName()?.image?.withRenderingMode(.alwaysTemplate), for: .normal)
+                    paymentMethodButtonView.tintColor = .white
+                    paymentMethodButtonView.addTarget(self, action: #selector(applePayButtonTapped(_:)), for: .touchUpInside)
+                    verticalStackView.addArrangedSubview(paymentMethodButtonView)
                     
                 case .payPal:
                     if #available(iOS 11.0, *) {
-                        paymentMethodButton.backgroundColor = UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
-                        paymentMethodButton.setImage(paymentMethod.toIconName()?.image, for: .normal)
-                        paymentMethodButton.setTitleColor(.white, for: .normal)
-                        paymentMethodButton.tintColor = .white
-                        paymentMethodButton.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
-                        verticalStackView.addArrangedSubview(paymentMethodButton)
+                        paymentMethodButtonView.backgroundColor = UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
+                        paymentMethodButtonView.setImage(paymentMethod.toIconName()?.image, for: .normal)
+                        paymentMethodButtonView.tintColor = .white
+                        paymentMethodButtonView.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
+                        verticalStackView.addArrangedSubview(paymentMethodButtonView)
                     }
                     
                 case .goCardlessMandate:
@@ -215,12 +218,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     break
                     
                 case .klarna:
-                    paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
-                    paymentMethodButton.setTitleColor(.black, for: .normal)
-                    paymentMethodButton.tintColor = .white
-                    paymentMethodButton.setImage(nil, for: .normal)
-                    paymentMethodButton.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
+                    paymentMethodButtonView.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
+                    paymentMethodButtonView.setImage(UIImage(named: "klarna", in: Bundle.primerResources, compatibleWith: nil), for: .normal)
+                    paymentMethodButtonView.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
+                    verticalStackView.addArrangedSubview(paymentMethodButtonView)
                     
                 default:
                     break

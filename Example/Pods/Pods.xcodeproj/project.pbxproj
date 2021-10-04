@@ -26,6 +26,7 @@
 		156F970327060142004503C0 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F970227060142004503C0 /* AnyCodable.swift */; };
 		156F9705270601B1004503C0 /* AnyEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F9704270601B1004503C0 /* AnyEncodable.swift */; };
 		156F970727060200004503C0 /* AnyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F970627060200004503C0 /* AnyDecodable.swift */; };
+		156F970C27072057004503C0 /* PaymentMethodButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F970B27072057004503C0 /* PaymentMethodButtonView.swift */; };
 		16B0BEB8984FC464832E0D8FA6542367 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F99FCED5E5E25F5B3C39778B8D7269 /* Configuration.swift */; };
 		174364DA0D8B49392B113286B32A23A5 /* CancellablePromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46DC6D0395B68919AA0425DF59A68D0D /* CancellablePromise.swift */; };
 		197F53A0A058CA58773BF5BB4373A720 /* CatchWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E7DD640A7B6A34642E800E78C870A58 /* CatchWrappers.swift */; };
@@ -224,6 +225,7 @@
 		156F970227060142004503C0 /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
 		156F9704270601B1004503C0 /* AnyEncodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyEncodable.swift; sourceTree = "<group>"; };
 		156F970627060200004503C0 /* AnyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyDecodable.swift; sourceTree = "<group>"; };
+		156F970B27072057004503C0 /* PaymentMethodButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodButtonView.swift; sourceTree = "<group>"; };
 		1682A060062FA32B42FA1F59AAB28E7C /* PrimerRootViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerRootViewController.swift; sourceTree = "<group>"; };
 		1A1FAE210E453ADCECC73CB234CDC0FB /* PrimerSDK-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "PrimerSDK-dummy.m"; sourceTree = "<group>"; };
 		1A5808D7AD83468E9DFF6535C9C70A31 /* race.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = race.swift; sourceTree = "<group>"; };
@@ -502,6 +504,14 @@
 			path = "Apple Pay";
 			sourceTree = "<group>";
 		};
+		156F970A2707203F004503C0 /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				156F970B27072057004503C0 /* PaymentMethodButtonView.swift */,
+			);
+			path = Buttons;
+			sourceTree = "<group>";
+		};
 		15E8BC58E5DA5AEE7DFBDBD420918906 /* Payment Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -693,6 +703,7 @@
 		79F6066C8A6BFF8E63938D7355D78709 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
+				156F970A2707203F004503C0 /* Buttons */,
 				1521852D8E0EA4166183742698CEEE66 /* Apple Pay */,
 				839F6CBD775F293F14EA52BFBD8E7DA4 /* Checkout */,
 				CDA658C7D74FDE43A38956CFABA39A77 /* Confirm Mandate */,
@@ -1231,6 +1242,7 @@
 				09EBFEA81CA0D7DC1960106BF2F58880 /* ConfirmMandateViewModel.swift in Sources */,
 				FCCCA85643512368E0394214910102CA /* Consolable.swift in Sources */,
 				1A6231C299D9A028350B02005CFE659D /* CoreDataDispatcher.swift in Sources */,
+				156F970C27072057004503C0 /* PaymentMethodButtonView.swift in Sources */,
 				1C88DE8DC77908A2451CC5E5D3169916 /* CountryCode.swift in Sources */,
 				5F6AD6B7881E15A92413177D97949FE8 /* Currency.swift in Sources */,
 				77A65152D9A80CA6E7CCCABCED243716 /* Customer.swift in Sources */,
