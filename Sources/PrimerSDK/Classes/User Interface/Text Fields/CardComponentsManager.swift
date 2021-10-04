@@ -60,6 +60,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     }
     internal var paymentMethodsConfig: PaymentMethodConfig?
     private(set) public var isLoading: Bool = false
+    internal private(set) var paymentMethod: PaymentMethodToken?
     
     deinit {
         setIsLoading(false)
