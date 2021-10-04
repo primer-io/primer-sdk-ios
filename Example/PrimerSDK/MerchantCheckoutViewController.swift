@@ -376,7 +376,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 
         let bodyDic: [String: Any] = [
             "id": transactionResponse.id,
-            "resumeToken": clientToken
+            "resumeToken": clientToken,
+            "environment": environment.rawValue
         ]
 
         do {
