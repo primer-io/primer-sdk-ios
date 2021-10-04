@@ -77,8 +77,10 @@ enum PaymentMethodIcon: String {
 }
 
 struct PaymentMethodViewModel {
-    func toString() -> String {
-        log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+    
+    let type: ConfigPaymentMethodType
+    
+    var buttonTitle: String? {
         switch type {
         case .paymentCard:
             return Primer.shared.flow.internalSessionFlow.vaulted
@@ -122,24 +124,76 @@ struct PaymentMethodViewModel {
             return "Pay by mobile"
 
         default:
-            return ""
+            break
         }
+        
+        return nil
     }
-
-    func toIconName() -> ImageName? {
-        log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+    
+    var buttonImage: UIImage? {
         switch type {
-        case .applePay: return .appleIcon
-        case .payPal: return  .paypal3
-        case .goCardlessMandate: return .rightArrow
-        case .klarna: return .klarna
-        case .paymentCard: return .creditCard
-        case .apaya: return .mobile
-        default: return nil
+        case .applePay:
+            return UIImage(named: "appleIcon", in: Bundle.primerResources, compatibleWith: nil)
+        case .apaya:
+            return UIImage(named: "mobile", in: Bundle.primerResources, compatibleWith: nil)
+            
+        case .goCardlessMandate:
+            return UIImage(named: "rightArrow", in: Bundle.primerResources, compatibleWith: nil)
+            
+        case .googlePay:
+            break
+            
+        case .klarna:
+            return UIImage(named: "klarna", in: Bundle.primerResources, compatibleWith: nil)
+            
+        case .payNlIdeal:
+            break
+            
+        case .payPal:
+            return UIImage(named: "paypal3", in: Bundle.primerResources, compatibleWith: nil)
+            
+        case .paymentCard:
+            return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)
+
+        case .unknown:
+            break
         }
+        
+        return nil
+    }
+    
+    var logo: UIImage? {
+        switch type {
+        case .applePay:
+            return UIImage(named: "appleIcon", in: Bundle.primerResources, compatibleWith: nil)
+        case .apaya:
+            return UIImage(named: "mobile", in: Bundle.primerResources, compatibleWith: nil)
+            
+        case .goCardlessMandate:
+            return UIImage(named: "rightArrow", in: Bundle.primerResources, compatibleWith: nil)
+            
+        case .googlePay:
+            break
+            
+        case .klarna:
+            return UIImage(named: "klarna", in: Bundle.primerResources, compatibleWith: nil)
+            
+        case .payNlIdeal:
+            break
+            
+        case .payPal:
+            return UIImage(named: "paypal3", in: Bundle.primerResources, compatibleWith: nil)
+            
+        case .paymentCard:
+            return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)
+
+        case .unknown:
+            break
+        }
+        
+        return nil
     }
 
-    let type: ConfigPaymentMethodType
 }
 
 struct AmountViewModel {

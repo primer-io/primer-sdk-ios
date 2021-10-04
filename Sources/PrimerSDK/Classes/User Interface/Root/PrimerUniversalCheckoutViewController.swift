@@ -180,22 +180,21 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 
                 switch paymentMethod.type {
                 case .paymentCard:
-                    paymentMethodButtonView.setTitle(paymentMethod.toString(), for: .normal)
+                    paymentMethodButtonView.setTitle(paymentMethod.buttonTitle, for: .normal)
                     paymentMethodButtonView.setTitleColor(theme.colorTheme.text1, for: .normal)
                     paymentMethodButtonView.tintColor = theme.colorTheme.text1
                     paymentMethodButtonView.backgroundColor = .clear
-                    paymentMethodButtonView.setImage(paymentMethod.toIconName()?.image?.withRenderingMode(.alwaysTemplate), for: .normal)
+                    paymentMethodButtonView.setImage(paymentMethod.buttonImage?.withRenderingMode(.alwaysTemplate), for: .normal)
                     paymentMethodButtonView.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
                     paymentMethodButtonView.borderColor = theme.colorTheme.text1
                     paymentMethodButtonView.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
-                    paymentMethodButtonView.surCharge = "Test"
                     verticalStackView.addArrangedSubview(paymentMethodButtonView)
                     
                 case .applePay:
-                    paymentMethodButtonView.setTitle(paymentMethod.toString(), for: .normal)
+                    paymentMethodButtonView.setTitle(paymentMethod.buttonTitle, for: .normal)
                     paymentMethodButtonView.backgroundColor = .black
                     paymentMethodButtonView.setTitleColor(.white, for: .normal)
-                    paymentMethodButtonView.setImage(paymentMethod.toIconName()?.image?.withRenderingMode(.alwaysTemplate), for: .normal)
+                    paymentMethodButtonView.setImage(paymentMethod.buttonImage?.withRenderingMode(.alwaysTemplate), for: .normal)
                     paymentMethodButtonView.tintColor = .white
                     paymentMethodButtonView.addTarget(self, action: #selector(applePayButtonTapped(_:)), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButtonView)
@@ -203,7 +202,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 case .payPal:
                     if #available(iOS 11.0, *) {
                         paymentMethodButtonView.backgroundColor = UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
-                        paymentMethodButtonView.setImage(paymentMethod.toIconName()?.image, for: .normal)
+                        paymentMethodButtonView.setImage(paymentMethod.buttonImage, for: .normal)
                         paymentMethodButtonView.tintColor = .white
                         paymentMethodButtonView.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
                         verticalStackView.addArrangedSubview(paymentMethodButtonView)
