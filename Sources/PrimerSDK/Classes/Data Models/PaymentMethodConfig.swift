@@ -113,6 +113,6 @@ public enum ConfigPaymentMethodType: String, Codable {
     }
     
     public init(from decoder: Decoder) throws {
-        self = (try? ConfigPaymentMethodType(rawValue: decoder.singleValueContainer().decode(RawValue.self))) ?? .unknown
+        self = ((try? ConfigPaymentMethodType(rawValue: decoder.singleValueContainer().decode(RawValue.self))) ?? nil) ?? .unknown
     }
 }
