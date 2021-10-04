@@ -126,8 +126,11 @@ internal extension String {
     }
     
     func isValidCVV(cardNetwork: CardNetwork?) -> Bool {
-        let digits = cardNetwork?.validation?.code.length ?? 4
-        return count == digits
+        if let numberOfDigits = cardNetwork?.validation?.code.length {
+            return count == numberOfDigits
+        }
+        
+        return count > 2 && count < 5
     }
     
     var isTypingValidCardholderName: Bool? {

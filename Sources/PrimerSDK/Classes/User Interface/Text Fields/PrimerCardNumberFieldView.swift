@@ -18,6 +18,8 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         super.xibSetup()
         
         textField.keyboardType = .numberPad
+        textField.isAccessibilityElement = true
+        textField.accessibilityIdentifier = "card_txt_fld"
         textField.delegate = self
         isValid = { text in
             return text.isValidCardNumber
@@ -33,7 +35,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         primerTextField._text = newText
         cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
         delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)
-        validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? .valid : .invalid(PrimerError.invalidCardnumber)
+        validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? PrimerTextField.Validation.valid : PrimerTextField.Validation.invalid(PrimerError.invalidCardnumber)
         
         switch validation {
         case .valid:

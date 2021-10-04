@@ -26,7 +26,7 @@ let package = Package(
         .target(
             name: "PrimerSDK",
             dependencies: [],
-            path: "Sources",
+            path: "Sources/PrimerSDK",
             resources: [
                 .process("Resources")
             ]

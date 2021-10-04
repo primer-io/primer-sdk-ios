@@ -23,8 +23,14 @@ class Vault: XCTestCase {
     }
 
     func testVault() throws {
-        let initSDKButton = app.buttons["initialize_primer_sdk"]
-        initSDKButton.tap()
+        try Base().testInitialize(
+            env: "sandbox",
+            customerId: "customer_id",
+            phoneNumber: "+447888888888",
+            countryCode: "GB",
+            currency: "GBP",
+            amount: "1.00",
+            performPayment: false)
         
         let vaultButton = app.buttons["vault_button"]
         vaultButton.tap()
@@ -41,8 +47,8 @@ class Vault: XCTestCase {
         // UI tests are a black box, we cannot access the actual amount from the code.
         // Test against € 0.05 since we know that this is the configuration we pass.
         // Test that the amount exists
-        let amountText = app.staticTexts["€0.05"]
-        XCTAssert(!amountText.exists, "Amount '€0.05' should not exist")
+        let amountText = app.staticTexts["£1.00"]
+        XCTAssert(!amountText.exists, "Amount '£1.00' should not exist")
         
         let savedPaymentMethodTitle = app.staticTexts["SAVED PAYMENT METHOD"]
         let seeAllButton = app.buttons["See All"]

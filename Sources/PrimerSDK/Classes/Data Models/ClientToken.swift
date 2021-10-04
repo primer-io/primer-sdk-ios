@@ -14,6 +14,7 @@ struct DecodedClientToken: Decodable {
     var coreUrl: String?
     var pciUrl: String?
     var env: String?
+    var intent: String?
     
     var isValid: Bool {
         do {
