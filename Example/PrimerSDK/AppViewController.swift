@@ -20,7 +20,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        environmentControl.selectedSegmentIndex = 2
+        environmentControl.selectedSegmentIndex = 1
         phoneNumberTextField.text = "07538121305"
         countryCodeTextField.text = CountryCode.gb.rawValue
         currencyTextField.text = Currency.GBP.rawValue
