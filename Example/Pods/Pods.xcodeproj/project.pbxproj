@@ -22,6 +22,7 @@
 		12763E9752E7D65C19CCC89462D1E9EE /* sv.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 9CE00BB02F6FCE0EFD33F8BBF1F2C91A /* sv.lproj */; };
 		12ED7767D45BA22297A028D1EF4E93B3 /* CardNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA93ACA4E8F0D00E5A405FB0D230598F /* CardNetwork.swift */; };
 		14F550F56B3BCE2F396832C32076865C /* PrimerOAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0F4B7463F065B3710149C703FAA773 /* PrimerOAuthViewModel.swift */; };
+		154C0ECF270B0691004D6D6D /* PaymentMethodsGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154C0ECE270B0691004D6D6D /* PaymentMethodsGroupView.swift */; };
 		1555C5FC93255B6553038A7E5DCBCAC1 /* PrimerWebViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 780C886E20AF6356F960B8287E28DAF7 /* PrimerWebViewModel.swift */; };
 		156F970327060142004503C0 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F970227060142004503C0 /* AnyCodable.swift */; };
 		156F9705270601B1004503C0 /* AnyEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F9704270601B1004503C0 /* AnyEncodable.swift */; };
@@ -222,6 +223,7 @@
 		1339E864F357E82AC105BCB1F3D4F7FC /* Apaya.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Apaya.swift; sourceTree = "<group>"; };
 		148289CD89AB434AE9AF2624C159949C /* WrapperProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WrapperProtocols.swift; sourceTree = "<group>"; };
 		15399E02A73E52490D96C07D369963D5 /* VaultPaymentMethodViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewModel.swift; sourceTree = "<group>"; };
+		154C0ECE270B0691004D6D6D /* PaymentMethodsGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodsGroupView.swift; sourceTree = "<group>"; };
 		156F970227060142004503C0 /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
 		156F9704270601B1004503C0 /* AnyEncodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyEncodable.swift; sourceTree = "<group>"; };
 		156F970627060200004503C0 /* AnyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyDecodable.swift; sourceTree = "<group>"; };
@@ -717,6 +719,7 @@
 				EA81BD1A101C845D4461953055A7DBB4 /* Text Fields */,
 				62607B605CEBBAAB2C048C04E98D5FEA /* UI Delegates */,
 				F01EDF0EC0E2C7E37748D9A52C4F05A5 /* Vault */,
+				154C0ECE270B0691004D6D6D /* PaymentMethodsGroupView.swift */,
 			);
 			name = "User Interface";
 			path = "Sources/PrimerSDK/Classes/User Interface";
@@ -1309,6 +1312,7 @@
 				0276285FF1FC1685281BAA3C68F6A726 /* PrimerDelegate.swift in Sources */,
 				70CEC3BB7A7DFEEE274C83C549651634 /* PrimerError.swift in Sources */,
 				610BF61D1AE5CCD8CC0333C5C1B4ED6B /* PrimerExpiryDateFieldView.swift in Sources */,
+				154C0ECF270B0691004D6D6D /* PaymentMethodsGroupView.swift in Sources */,
 				328BDE49FD5B1524420099168457E106 /* PrimerFlowEnums.swift in Sources */,
 				29B99CFC7C0F8D721710A1FCE7C80724 /* PrimerFormViewController.swift in Sources */,
 				A55403A7B40F7B217C6D4978E36C7B7E /* PrimerLoadingViewController.swift in Sources */,
