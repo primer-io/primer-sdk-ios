@@ -21,7 +21,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return nil
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfig(for: .payPal)?.id else {
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
             return nil
         }
 
@@ -43,7 +43,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return completion(.failure(PrimerError.clientTokenNull))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfig(for: .payPal)?.id else {
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
             return completion(.failure(PrimerError.configFetchFailed))
         }
         
@@ -93,7 +93,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfig(for: .payPal)?.id else {
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
         
@@ -133,7 +133,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfig(for: .payPal)?.id else {
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 

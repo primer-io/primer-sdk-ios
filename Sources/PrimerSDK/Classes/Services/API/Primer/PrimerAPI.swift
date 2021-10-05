@@ -23,6 +23,10 @@ enum PrimerAPI: Endpoint {
     case klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
     case apayaCreateSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest)
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest)
+    
+    // 3DS
+    case threeDSBeginRemoteAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
+    case threeDSContinueRemoteAuth(clientToken: DecodedClientToken, threeDSTokenId: String)
 }
 
 internal extension PrimerAPI {
@@ -48,7 +52,9 @@ internal extension PrimerAPI {
             return urlStr
         case .vaultDeletePaymentMethod(let clientToken, _),
              .vaultFetchPaymentMethods(let clientToken),
-             .tokenizePaymentMethod(let clientToken, _):
+             .tokenizePaymentMethod(let clientToken, _),
+             .threeDSBeginRemoteAuth(let clientToken, _, _),
+             .threeDSContinueRemoteAuth(let clientToken, _):
             guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
         case .fetchConfiguration(let clientToken):
@@ -57,6 +63,7 @@ internal extension PrimerAPI {
         }
     }
     // MARK: Path
+    
     var path: String {
         switch self {
         case .vaultDeletePaymentMethod(_, let id):
@@ -81,6 +88,10 @@ internal extension PrimerAPI {
             return "/gocardless/mandates"
         case .tokenizePaymentMethod:
             return "/payment-instruments"
+        case .threeDSBeginRemoteAuth(_, let paymentMethodToken, _):
+            return "/3ds/\(paymentMethodToken.token)/auth"
+        case .threeDSContinueRemoteAuth(_, let threeDSTokenId):
+            return "/3ds/\(threeDSTokenId)/continue"
         case .apayaCreateSession:
             return "/session-token"
         }
@@ -88,11 +99,13 @@ internal extension PrimerAPI {
 
     // MARK: Port
     // (not needed atm since port is included in the base URL provided by the access token)
+    
     var port: Int? {
         return nil
     }
 
     // MARK: HTTP Method
+    
     var method: HTTPMethod {
         switch self {
         case .vaultDeletePaymentMethod:
@@ -108,12 +121,15 @@ internal extension PrimerAPI {
              .klarnaCreateCustomerToken,
              .klarnaFinalizePaymentSession,
              .tokenizePaymentMethod,
+             .threeDSBeginRemoteAuth,
+             .threeDSContinueRemoteAuth,
              .apayaCreateSession:
             return .post
         }
     }
 
     // MARK: Headers
+    
     var headers: [String: String]? {
         var tmpHeaders = PrimerAPI.headers
         
@@ -129,6 +145,8 @@ internal extension PrimerAPI {
              .klarnaCreateCustomerToken(let clientToken, _),
              .klarnaFinalizePaymentSession(let clientToken, _),
              .tokenizePaymentMethod(let clientToken, _),
+             .threeDSBeginRemoteAuth(let clientToken, _, _),
+             .threeDSContinueRemoteAuth(let clientToken, _),
              .apayaCreateSession(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
@@ -139,6 +157,7 @@ internal extension PrimerAPI {
     }
 
     // MARK: Query Parameters
+    
     var queryParameters: [String: String]? {
         switch self {
         default:
@@ -147,6 +166,7 @@ internal extension PrimerAPI {
     }
 
     // MARK: HTTP Body
+    
     var body: Data? {
         switch self {
         case .directDebitCreateMandate(_, let mandateRequest):
@@ -167,9 +187,12 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(request)
         case .tokenizePaymentMethod(_, let paymentMethodTokenizationRequest):
             return try? JSONEncoder().encode(paymentMethodTokenizationRequest)
+        case .threeDSBeginRemoteAuth(_, _, let threeDSecureBeginAuthRequest):
+            return try? JSONEncoder().encode(threeDSecureBeginAuthRequest)
         case .vaultDeletePaymentMethod,
              .fetchConfiguration,
-             .vaultFetchPaymentMethods:
+             .vaultFetchPaymentMethods,
+             .threeDSContinueRemoteAuth:
             return nil
         }
     }

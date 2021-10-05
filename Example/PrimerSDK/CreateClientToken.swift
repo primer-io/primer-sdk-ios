@@ -156,3 +156,9 @@ public struct PaymentMethod: Codable {
     }
 }
 
+struct TransactionResponse {
+    var id: String
+    var date: String
+    var status: String
+    var requiredAction: [String: Any]
+}

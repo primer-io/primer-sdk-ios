@@ -22,16 +22,14 @@ protocol PrimerAPIClientProtocol {
     func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
     func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (_ result: Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void)
     func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethodTokenizationRequest, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
-    func apayaCreateSession(
-        clientToken: DecodedClientToken,
-        request: Apaya.CreateSessionAPIRequest,
-        completion: @escaping (_ result: Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
-    )
+    func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
+    func threeDSContinueAuth(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
+    func apayaCreateSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest, completion: @escaping (_ result: Result<Apaya.CreateSessionAPIResponse, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
-    
-    private let networkService: NetworkService
+
+    internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
     
@@ -202,11 +200,12 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
+    
 }
 
 internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
-
-    let response: Data?
+    
+    var response: Data?
     let throwsError: Bool
     var isCalled: Bool = false
 

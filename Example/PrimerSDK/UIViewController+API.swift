@@ -6,11 +6,13 @@
 //  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
+import PrimerSDK
 import UIKit
 
 // MARK: - API HELPER
 
-struct AuthorizationRequest: Encodable {
+struct PaymentRequest: Encodable {
+    let environment: Environment
     let paymentMethod: String
     let amount: Int
     let type: String?
@@ -74,8 +76,23 @@ extension UIViewController {
                 }
                 print(msg)
                 completion(.failure(NetworkError.invalidResponse))
+                
+                guard let data = data else {
+                    print("No data")
+                    completion(.failure(NetworkError.invalidResponse))
+                    return
+                }
+                
+                do {
+                    let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                    print("Response body: \(json)")
+                } catch {
+                    print("Error: \(error)")
+                }
                 return
             }
+            
+            print("Status code: \(httpResponse.statusCode)")
 
             guard let data = data else {
                 msg += "Status code: \(httpResponse.statusCode)\n"

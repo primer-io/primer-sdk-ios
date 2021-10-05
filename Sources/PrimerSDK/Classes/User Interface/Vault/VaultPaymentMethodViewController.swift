@@ -28,9 +28,6 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
     private var border = PrimerView()
     private var checkmarmImageView = UIImageView()
     
-    
-//    let cardView = CardButton()
-    
     var isEnabled: Bool = false {
         didSet {
             checkmarmImageView.image = ImageName.check2.image

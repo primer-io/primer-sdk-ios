@@ -10,7 +10,27 @@ import PrimerSDK
 import UIKit
 
 class MerchantCheckoutViewController: UIViewController {
-
+    
+    class func instantiate(environment: Environment, customerId: String?, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
+        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
+        mcvc.environment = environment
+        mcvc.customerId = customerId
+        mcvc.phoneNumber = phoneNumber
+        mcvc.performPayment = performPayment
+        
+        if let countryCode = countryCode {
+            mcvc.countryCode = countryCode
+        }
+        if let currency = currency {
+            mcvc.currency = currency
+        }
+        if let amount = amount {
+            mcvc.amount = amount
+        }
+        
+        return mcvc
+    }
+    
     @IBOutlet weak var tableView: UITableView!
     
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
@@ -25,41 +45,49 @@ class MerchantCheckoutViewController: UIViewController {
     var vaultKlarnaSettings: PrimerSettings!
     var applePaySettings: PrimerSettings!
     var generalSettings: PrimerSettings!
-    
     var amount = 200
     var currency: Currency = .EUR
     var environment = Environment.staging
     var customerId: String?
     var phoneNumber: String?
     var countryCode: CountryCode = .gb
+    var threeDSAlert: UIAlertController?
+    var transactionResponse: TransactionResponse?
+    var performPayment: Bool = false
     
-    class func instantiate(environment: Environment, customerId: String?, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?) -> MerchantCheckoutViewController {
-        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
-        mcvc.environment = environment
-        mcvc.customerId = customerId
-        mcvc.phoneNumber = phoneNumber
-        if let countryCode = countryCode {
-            mcvc.countryCode = countryCode
-        }
-        if let currency = currency {
-            mcvc.currency = currency
-        }
-        if let amount = amount {
-            mcvc.amount = amount
-        }
-        return mcvc
-    }
+    private var address: PrimerSDK.Address!
+    private var customer: PrimerSDK.Customer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Primer"
+        title = "Primer [\(environment.rawValue)]"
+        
+        address = PrimerSDK.Address(
+            firstName: nil,
+            lastName: nil,
+            addressLine1: "1 Rue",
+            addressLine2: nil,
+            city: "Paris",
+            postalCode: "75001",
+            state: nil,
+            countryCode: CountryCode.fr)
+        
+        customer = PrimerSDK.Customer(
+            customerId: customerId,
+            firstName: "John",
+            lastName: "Smith",
+            emailAddress: "john@primer.io",
+            mobileNumber: phoneNumber,
+            billingAddress: address,
+            shippingAddress: address,
+            taxId: nil)
         
         generalSettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
             customerId: customerId,
-            amount: amount,        // Please don't change on develop (used for UI testing)
-            currency: currency,     // Please don't change on develop (used for UI testing)
-            countryCode: countryCode,
+            amount: amount,
+            currency: currency,
+            countryCode: .se,
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "primer",
@@ -68,53 +96,19 @@ class MerchantCheckoutViewController: UIViewController {
             hasDisabledSuccessScreen: false,
             businessDetails: nil,
             directDebitHasNoAmount: false,
-            orderItems: [],
-            isInitialLoadingHidden: false,
-            customer: PrimerSDK.Customer(mobileNumber: phoneNumber)
-        )
-        
-        vaultApayaSettings = PrimerSettings(
-            currency: currency,
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true,
-            customer: PrimerSDK.Customer(mobileNumber: self.phoneNumber)
-        )
-        
-        vaultPayPalSettings = PrimerSettings(
-            currency: currency,
-            countryCode: countryCode,
-            urlScheme: "primer",
-            urlSchemeIdentifier: "primer"
-        )
-        
-        vaultKlarnaSettings = PrimerSettings(
-            klarnaSessionType: .recurringPayment,
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true
-        )
-        
-        applePaySettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
-            currency: currency,
-            countryCode: countryCode,
-            businessDetails: BusinessDetails(
-                name: "My Business",
-                address: PrimerSDK.Address(
-                    addressLine1: "107 Rue",
-                    addressLine2: nil,
-                    city: "Paris",
-                    postalCode: "75001",
-                    state: nil,
-                    countryCode: .fr
-                )
-            ),
             orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 3, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
                 try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 10, isPending: true)
-            ]
+                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
+            ],
+            isInitialLoadingHidden: false,
+            is3DSOnVaultingEnabled: true,
+            billingAddress: address,
+            orderId: "order id",
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
+            customer: customer
         )
-        
+
         Primer.shared.delegate = self
         self.configurePrimer()
         self.fetchPaymentMethods()
@@ -141,48 +135,81 @@ class MerchantCheckoutViewController: UIViewController {
             )
         )
     }
-
+    
     // MARK: - ACTIONS
     
     @IBAction func addApayaButtonTapped(_ sender: Any) {
+        vaultApayaSettings = PrimerSettings(
+            currency: currency,
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true,
+            customer: customer)
+        
         Primer.shared.configure(settings: vaultApayaSettings)
         Primer.shared.showPaymentMethod(.apaya, withIntent: .vault, on: self)
     }
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
-//        Primer.shared.showCheckout(self, flow: .addCardToVault)
         Primer.shared.configure(settings: generalSettings)
-        Primer.shared.showCheckout(self, flow: .addCardToVault)
+        Primer.shared.showPaymentMethod(.paymentCard, withIntent: .vault, on: self)
     }
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {
+        vaultPayPalSettings = PrimerSettings(
+            customerId: customerId,
+            currency: currency,
+            countryCode: .se,
+            urlScheme: "primer",
+            urlSchemeIdentifier: "primer",
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true
+        )
+        
         Primer.shared.configure(settings: vaultPayPalSettings)
-        Primer.shared.showCheckout(self, flow: .addPayPalToVault)
+        Primer.shared.showPaymentMethod(.payPal, withIntent: .vault, on: self)
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
+        vaultKlarnaSettings = PrimerSettings(
+            klarnaSessionType: .recurringPayment,
+            hasDisabledSuccessScreen: true,
+            isInitialLoadingHidden: true
+        )
+        
         Primer.shared.configure(settings: vaultKlarnaSettings)
-        Primer.shared.showCheckout(self, flow: .addKlarnaToVault)
-    }
-    
-    @IBAction func addDirectDebitButtonTapped(_ sender: Any) {
-        Primer.shared.showCheckout(self, flow: .addDirectDebitToVault)
+        Primer.shared.showPaymentMethod(.klarna, withIntent: .vault, on: self)
     }
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
+        applePaySettings = PrimerSettings(
+            merchantIdentifier: "merchant.checkout.team",
+            customerId: customerId,
+            currency: currency,
+            countryCode: .se,
+            hasDisabledSuccessScreen: true,
+            businessDetails: BusinessDetails(
+                name: "My Business",
+                address: address
+            ),
+            orderItems: [
+                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
+            ],
+            isInitialLoadingHidden: true
+        )
+        
         Primer.shared.configure(settings: applePaySettings)
-        Primer.shared.showCheckout(self, flow: .checkoutWithApplePay)
+        Primer.shared.showPaymentMethod(.applePay, withIntent: .checkout, on: self)
     }
     
     @IBAction func openVaultButtonTapped(_ sender: Any) {
         Primer.shared.configure(settings: generalSettings)
-//        Primer.shared.showCheckout(self, flow: .defaultWithVault)
         Primer.shared.showVaultManager(on: self)
     }
     
     @IBAction func openUniversalCheckoutTapped(_ sender: Any) {
         Primer.shared.configure(settings: generalSettings)
-//        Primer.shared.showCheckout(self, flow: .default)
         Primer.shared.showUniversalCheckout(on: self)
     }
     
@@ -281,17 +308,36 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         })
     }
     
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nToken: \(token)\n")
-        print("")
-    }
-    
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nToken: \(paymentMethodToken)\n")
-        let token = paymentMethodToken.token
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol) {
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Method: \(paymentMethodToken)\n")
 
-        guard let url = URL(string: "\(endpoint)/transaction") else {
-            return completion(NetworkError.missingParams)
+        if paymentMethodToken.paymentInstrumentType == .paymentCard,
+           let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
+           threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess {
+            var message: String = ""
+
+            if let reasonCode = threeDSecureAuthentication.reasonCode {
+                message += "[\(reasonCode)] "
+            }
+
+            if let reasonText = threeDSecureAuthentication.reasonText {
+                message += reasonText
+            }
+
+            threeDSAlert = UIAlertController(title: "3DS Error", message: message, preferredStyle: .alert)
+            threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
+                self?.threeDSAlert = nil
+            }))
+        }
+
+        if !performPayment {
+            resumeHandler.handleSuccess()
+            return
+        }
+
+        guard let url = URL(string: "\(endpoint)/payments") else {
+            resumeHandler.handle(error: NetworkError.missingParams)
+            return
         }
 
         let type = paymentMethodToken.paymentInstrumentType
@@ -300,35 +346,108 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let body = AuthorizationRequest(paymentMethod: token, amount: amount, type: type.rawValue, currencyCode: "GBP")
-        
+
+        let body = PaymentRequest(environment: environment, paymentMethod: paymentMethodToken.token, amount: amount, type: type.rawValue, currencyCode: currency.rawValue)
+
         do {
             request.httpBody = try JSONEncoder().encode(body)
         } catch {
-            return completion(NetworkError.missingParams)
+            resumeHandler.handle(error: NetworkError.missingParams)
+            return
         }
-        
+
         callApi(request) { (result) in
             switch result {
-            case .success:
-                completion(nil)
+            case .success(let data):
+                if let dic = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
+                    if let amount = dic?["amount"] as? Int,
+                       let id = dic?["id"] as? String,
+                       let date = dic?["date"] as? String,
+                       let status = dic?["status"] as? String {
+
+                        if let requiredActionDic = dic?["requiredAction"] as? [String: Any] {
+                            self.transactionResponse = TransactionResponse(id: id, date: date, status: status, requiredAction: requiredActionDic)
+                            
+                            if let requiredActionName = requiredActionDic["name"] as? String,
+                               let clientToken = requiredActionDic["clientToken"] as? String {
+
+                                if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
+                                    resumeHandler.handle(newClientToken: clientToken)
+                                    return
+                                }
+                            }
+                        }
+                    }
+                }
+
+                resumeHandler.handleSuccess()
+
             case .failure(let err):
-                completion(err)
+                resumeHandler.handle(error: err)
             }
         }
     }
     
+    func tokenAddedToVault(_ token: PaymentMethodToken) {
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nToken added to vault\nToken: \(token)\n")
+    }
+    
     func onCheckoutDismissed() {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nPrimer view dismissed\n")
+        
         fetchPaymentMethods()
+        
+        if let threeDSAlert = threeDSAlert {
+            present(threeDSAlert, animated: true, completion: nil)
+        }
     }
     
     func checkoutFailed(with error: Error) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\(error.localizedDescription)")
-        print("")
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
     }
     
+    func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken)")
+        
+        guard let url = URL(string: "\(endpoint)/resume"),
+              let transactionResponse = transactionResponse else {
+            resumeHandler.handle(error: NetworkError.missingParams)
+            return
+        }
+        
+        var request = URLRequest(url: url)
+
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let bodyDic: [String: Any] = [
+            "id": transactionResponse.id,
+            "resumeToken": clientToken,
+            "environment": environment.rawValue
+        ]
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: bodyDic, options: .fragmentsAllowed)
+        } catch {
+            resumeHandler.handle(error: NetworkError.missingParams)
+            return
+        }
+
+        callApi(request) { (result) in
+            switch result {
+            case .success(let data):
+                resumeHandler.handleSuccess()
+
+            case .failure(let err):
+                resumeHandler.handle(error: err)
+            }
+        }
+    }
+    
+    func onResumeError(_ error: Error) {
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
+    }
+        
 }
 
 // MARK: - TABLE VIEW DATA SOURCE & DELEGATE

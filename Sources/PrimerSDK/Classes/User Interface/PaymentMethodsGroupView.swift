@@ -17,6 +17,7 @@ class PaymentMethodsGroupView: PrimerView {
     internal private(set) var paymentMethodsViewModels: [PaymentMethodViewModel]!
     private var stackView: UIStackView = UIStackView()
     internal var delegate: PaymentMethodsGroupViewDelegate?
+    internal var titleLabel: UILabel?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -51,12 +52,11 @@ class PaymentMethodsGroupView: PrimerView {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         if let title = title {
-            let label = UILabel()
-            label.text = title
-            label.textAlignment = .right
-            label.textColor = theme.colorTheme.text1
-            label.font = UIFont.systemFont(ofSize: 12, weight: .regular)
-            stackView.addArrangedSubview(label)
+            titleLabel = UILabel()
+            titleLabel!.text = title
+            titleLabel!.textAlignment = .right
+            titleLabel!.textColor = theme.colorTheme.text1
+            stackView.addArrangedSubview(titleLabel!)
         }
         
         for paymentMethodViewModel in paymentMethodsViewModels {

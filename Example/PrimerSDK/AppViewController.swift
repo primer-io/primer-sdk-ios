@@ -17,21 +17,34 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     @IBOutlet weak var countryCodeTextField: UITextField!
     @IBOutlet weak var currencyTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
+    @IBOutlet weak var performPaymentSwitch: UISwitch!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         environmentControl.selectedSegmentIndex = 1
+        environmentControl.accessibilityIdentifier = "env_control"
+        customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
+        phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = "07538121305"
-        countryCodeTextField.text = CountryCode.gb.rawValue
-        currencyTextField.text = Currency.GBP.rawValue
+        phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
+        countryCodeTextField.text = CountryCode.se.rawValue
+        countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
+        currencyTextField.text = Currency.SEK.rawValue
+        currencyTextField.accessibilityIdentifier = "currency_txt_field"
+        amountTextField.text = "1.00"
+        amountTextField.accessibilityIdentifier = "amount_txt_field"
+        performPaymentSwitch.isOn = true
+        performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
         
         let countryPicker = UIPickerView()
+        countryPicker.accessibilityIdentifier = "country_picker"
         countryPicker.tag = 0
         countryCodeTextField.inputView = countryPicker
         countryPicker.dataSource = self
         countryPicker.delegate = self
         
         let currencyPicker = UIPickerView()
+        currencyPicker.accessibilityIdentifier = "currency_picker"
         currencyPicker.tag = 1
         currencyTextField.inputView = currencyPicker
         currencyPicker.dataSource = self
@@ -58,7 +71,15 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             amount = Int(amountDbl * 100)
         }
         
-        let mcvc = MerchantCheckoutViewController.instantiate(environment: env, customerId: customerIdTextField.text, phoneNumber: phoneNumberTextField.text, countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""), currency: Currency(rawValue: currencyTextField.text ?? ""), amount: amount)
+        let mcvc = MerchantCheckoutViewController.instantiate(
+            environment: env,
+            customerId: customerIdTextField.text,
+            phoneNumber: phoneNumberTextField.text,
+            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
+            currency: Currency(rawValue: currencyTextField.text ?? ""),
+            amount: amount,
+            performPayment: performPaymentSwitch.isOn)
+        
         navigationController?.pushViewController(mcvc, animated: true)
     }
     
