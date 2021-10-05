@@ -29,17 +29,20 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
         
         view.backgroundColor = theme.colorTheme.main1
         
+        verticalStackView.spacing = 14.0
+        renderAvailablePaymentMethods()
+    }
+    
+    private func renderAvailablePaymentMethods() {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         var availablePaymentMethods = checkoutViewModel.availablePaymentOptions.filter({ $0.type != .applePay })
-        
-        verticalStackView.spacing = 14.0
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         for (index, paymentMethod) in availablePaymentMethods.enumerated() {
             switch paymentMethod.type {
             case .klarna:
-                availablePaymentMethods[index].surCharge = "+\(settings.currency?.rawValue ?? "")5.36"
+                availablePaymentMethods[index].surCharge = "+\(settings.currency?.symbol ?? "")5.36"
             case .paymentCard:
                 availablePaymentMethods[index].surCharge = "Additional fee may apply"
             default:
@@ -55,9 +58,12 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
         noAdditionalFeesContainerView.delegate = self
         verticalStackView.addArrangedSubview(noAdditionalFeesContainerView)
         
-        let additionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: nil, paymentMethodsViewModels: additionalFeePaymentMethodsViewModels)
-        additionalFeesContainerView.delegate = self
-        verticalStackView.addArrangedSubview(additionalFeesContainerView)
+        for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
+            let title = additionalFeePaymentMethodsViewModel.surCharge
+            let additionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: title, paymentMethodsViewModels: [additionalFeePaymentMethodsViewModel])
+            additionalFeesContainerView.delegate = self
+            verticalStackView.addArrangedSubview(additionalFeesContainerView)
+        }
     }
     
     @objc
