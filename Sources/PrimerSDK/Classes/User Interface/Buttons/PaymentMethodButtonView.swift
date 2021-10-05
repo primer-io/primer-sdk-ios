@@ -12,37 +12,37 @@ class PaymentMethodButtonView: PrimerView {
     internal private(set) var surCharge: String?
     internal private(set) var title: String?
     internal private(set) var image: UIImage?
-
-        @IBInspectable var cornerRadius: CGFloat {
-            get {
-                return button.layer.cornerRadius
-            }
-            set {
-                button.layer.cornerRadius = newValue
-            }
-        }
     
-        @IBInspectable var borderWidth: CGFloat {
-            get {
-                return button.layer.borderWidth
-            }
-            set {
-                button.layer.borderWidth = newValue
-            }
+    @IBInspectable var cornerRadius: CGFloat {
+        get {
+            return button.layer.cornerRadius
         }
+        set {
+            button.layer.cornerRadius = newValue
+        }
+    }
     
-        @IBInspectable var borderColor: UIColor? {
-            get {
-                if let cgColor = button.layer.borderColor {
-                    return UIColor(cgColor: cgColor)
-                } else {
-                    return nil
-                }
-            }
-            set {
-                button.layer.borderColor = newValue?.cgColor
+    @IBInspectable var borderWidth: CGFloat {
+        get {
+            return button.layer.borderWidth
+        }
+        set {
+            button.layer.borderWidth = newValue
+        }
+    }
+    
+    @IBInspectable var borderColor: UIColor? {
+        get {
+            if let cgColor = button.layer.borderColor {
+                return UIColor(cgColor: cgColor)
+            } else {
+                return nil
             }
         }
+        set {
+            button.layer.borderColor = newValue?.cgColor
+        }
+    }
     
     override var tintColor: UIColor! {
         get {
