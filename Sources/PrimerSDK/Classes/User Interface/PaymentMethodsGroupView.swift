@@ -35,8 +35,8 @@ class PaymentMethodsGroupView: PrimerView {
     }
     
     func render() {
-        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .black.withAlphaComponent(0.05)
+        translatesAutoresizingMaskIntoConstraints = false
         layer.cornerRadius = 4.0
         clipsToBounds = true
         
@@ -46,7 +46,6 @@ class PaymentMethodsGroupView: PrimerView {
         stackView.alignment = .fill
         stackView.distribution = .fill
         stackView.spacing = 7.0
-        
         stackView.pin(view: self, leading: 10, top: 10, trailing: -10, bottom: -10)
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -62,6 +61,7 @@ class PaymentMethodsGroupView: PrimerView {
         
         for paymentMethodViewModel in paymentMethodsViewModels {
             let paymentMethodButtonView = PaymentMethodButtonView(frame: .zero, viewModel: paymentMethodViewModel)
+            paymentMethodButtonView.backgroundColor = .clear
             paymentMethodButtonView.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
             paymentMethodButtonView.cornerRadius = 4.0
             paymentMethodButtonView.borderWidth = 1.0
@@ -72,14 +72,14 @@ class PaymentMethodsGroupView: PrimerView {
             case .paymentCard:
                 paymentMethodButtonView.setTitleColor(theme.colorTheme.text1, for: .normal)
                 paymentMethodButtonView.tintColor = theme.colorTheme.text1
-                paymentMethodButtonView.backgroundColor = .clear
+                paymentMethodButtonView.buttonColor = .white
                 paymentMethodButtonView.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
                 paymentMethodButtonView.borderColor = theme.colorTheme.text1
                 paymentMethodButtonView.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
                 stackView.addArrangedSubview(paymentMethodButtonView)
                 
             case .applePay:
-                paymentMethodButtonView.backgroundColor = .black
+                paymentMethodButtonView.buttonColor = .black
                 paymentMethodButtonView.setTitleColor(.white, for: .normal)
                 paymentMethodButtonView.tintColor = .white
                 paymentMethodButtonView.addTarget(self, action: #selector(applePayButtonTapped(_:)), for: .touchUpInside)
@@ -87,7 +87,7 @@ class PaymentMethodsGroupView: PrimerView {
                 
             case .payPal:
                 if #available(iOS 11.0, *) {
-                    paymentMethodButtonView.backgroundColor = UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
+                    paymentMethodButtonView.buttonColor = UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
                     paymentMethodButtonView.tintColor = .white
                     paymentMethodButtonView.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
                     stackView.addArrangedSubview(paymentMethodButtonView)
@@ -96,7 +96,7 @@ class PaymentMethodsGroupView: PrimerView {
             case .goCardlessMandate:
                 paymentMethodButtonView.setTitleColor(theme.colorTheme.text1, for: .normal)
                 paymentMethodButtonView.tintColor = theme.colorTheme.text1
-                paymentMethodButtonView.backgroundColor = .clear
+                paymentMethodButtonView.buttonColor = .white
                 paymentMethodButtonView.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
                 paymentMethodButtonView.borderColor = theme.colorTheme.text1
                 paymentMethodButtonView.addTarget(self, action: #selector(goCardlessButtonTapped), for: .touchUpInside)
@@ -105,14 +105,15 @@ class PaymentMethodsGroupView: PrimerView {
             case .apaya:
                 paymentMethodButtonView.setTitleColor(theme.colorTheme.text1, for: .normal)
                 paymentMethodButtonView.tintColor = theme.colorTheme.text1
-                paymentMethodButtonView.backgroundColor = .clear
+                paymentMethodButtonView.buttonColor = .white
                 paymentMethodButtonView.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
                 paymentMethodButtonView.borderColor = theme.colorTheme.text1
                 paymentMethodButtonView.addTarget(self, action: #selector(apayaButtonTapped), for: .touchUpInside)
                 stackView.addArrangedSubview(paymentMethodButtonView)
                 
             case .klarna:
-                paymentMethodButtonView.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
+
+                paymentMethodButtonView.buttonColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
                 paymentMethodButtonView.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
                 stackView.addArrangedSubview(paymentMethodButtonView)
                 

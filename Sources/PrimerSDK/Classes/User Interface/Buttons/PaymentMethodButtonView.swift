@@ -76,12 +76,9 @@ class PaymentMethodButtonView: PrimerView {
     var verticalStackView = UIStackView()
     var button: UIButton! = UIButton()
     
-    override var backgroundColor: UIColor? {
-        get {
-            return button.backgroundColor
-        }
-        set {
-            button.backgroundColor = newValue
+    var buttonColor: UIColor? {
+        didSet {
+            button?.backgroundColor = buttonColor
         }
     }
     
@@ -94,7 +91,7 @@ class PaymentMethodButtonView: PrimerView {
         render()
     }
     
-    convenience init(frame: CGRect, title: String?, image: UIImage?, surCharge: String?) {
+    private convenience init(frame: CGRect, title: String?, image: UIImage?, surCharge: String?) {
         self.init(frame: frame)
         self.title = title
         self.image = image
@@ -102,7 +99,20 @@ class PaymentMethodButtonView: PrimerView {
         render()
     }
     
+    internal private(set) var paymentMethodViewModel: PaymentMethodViewModel!
+    
+    convenience init(frame: CGRect, viewModel: PaymentMethodViewModel) {
+        self.init(frame: frame)
+        self.paymentMethodViewModel = viewModel
+        self.title = viewModel.buttonTitle
+        self.image = viewModel.buttonImage
+        self.surCharge = viewModel.surCharge
+        render()
+    }
+    
     func render() {
+        translatesAutoresizingMaskIntoConstraints = false
+        
         backgroundColor = .clear
         button.tintColor = tintColor
         
@@ -110,7 +120,7 @@ class PaymentMethodButtonView: PrimerView {
         verticalStackView.axis = .vertical
         verticalStackView.alignment = .fill
         verticalStackView.distribution = .fill
-        verticalStackView.spacing = 6
+        verticalStackView.spacing = 3
         
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
         verticalStackView.pin(view: self)
@@ -120,7 +130,7 @@ class PaymentMethodButtonView: PrimerView {
             surChargeLabel.text = surCharge
             surChargeLabel.textColor = .black
             surChargeLabel.textAlignment = .right
-            surChargeLabel.font = UIFont.systemFont(ofSize: 14.0, weight: .regular)
+            surChargeLabel.font = UIFont.systemFont(ofSize: 15.0, weight: .regular)
             verticalStackView.addArrangedSubview(surChargeLabel)
         }
         
@@ -128,19 +138,20 @@ class PaymentMethodButtonView: PrimerView {
         button.setTitleColor(UIColor.systemBlue, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
         button.layer.cornerRadius = 4.0
-
+        
         if let title = title {
             setTitle(title, for: .normal)
         }
         if let image = image {
             setImage(image, for: .normal)
-            button.imageView?.contentMode = .scaleAspectFit
             button.imageEdgeInsets = UIEdgeInsets(top: title != nil ? 14 : 4, left: 0, bottom: title != nil ? 14 : 4, right: 4)
         }
         
         verticalStackView.addArrangedSubview(button)
         
         layoutIfNeeded()
+        
+        button.imageView?.contentMode = .scaleAspectFit
     }
     
     func setTitle(_ title: String?, for state: UIControl.State) {

@@ -111,14 +111,10 @@ struct PaymentMethodViewModel {
                                      comment: "Bank account - Payment Method Type (Go Cardless)")
 
         case .payPal:
-            return ""
+            break
             
         case .klarna:
-            return NSLocalizedString("payment-method-type-klarna",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Klarna.",
-                                     comment: "Klarna - Payment Method Type (Klarna)")
+            break
 
         case .apaya:
             return "Pay by mobile"
@@ -133,12 +129,13 @@ struct PaymentMethodViewModel {
     var buttonImage: UIImage? {
         switch type {
         case .applePay:
-            return UIImage(named: "appleIcon", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "appleIcon", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+            
         case .apaya:
-            return UIImage(named: "mobile", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "mobile", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
             
         case .goCardlessMandate:
-            return UIImage(named: "rightArrow", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "rightArrow", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
             
         case .googlePay:
             break
@@ -153,7 +150,7 @@ struct PaymentMethodViewModel {
             return UIImage(named: "paypal3", in: Bundle.primerResources, compatibleWith: nil)
             
         case .paymentCard:
-            return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
 
         case .unknown:
             break
@@ -194,6 +191,7 @@ struct PaymentMethodViewModel {
         return nil
     }
 
+    var surCharge: String?
 }
 
 struct AmountViewModel {

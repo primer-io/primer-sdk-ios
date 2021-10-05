@@ -30,76 +30,34 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
         view.backgroundColor = theme.colorTheme.main1
         
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-        let availablePaymentMethods = checkoutViewModel.availablePaymentOptions
+        var availablePaymentMethods = checkoutViewModel.availablePaymentOptions.filter({ $0.type != .applePay })
         
         verticalStackView.spacing = 14.0
         
-        if !availablePaymentMethods.isEmpty {
-            let otherPaymentMethodsTitleLabel = UILabel()
-            otherPaymentMethodsTitleLabel.text = NSLocalizedString("primer-vault-payment-method-available-payment-methods",
-                                                                   tableName: nil,
-                                                                   bundle: Bundle.primerResources,
-                                                                   value: "Available payment methods",
-                                                                   comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
-            otherPaymentMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
-            otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
-            otherPaymentMethodsTitleLabel.textAlignment = .left
-            verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
-            
-            for paymentMethod in availablePaymentMethods {
-                if paymentMethod.type == .applePay || paymentMethod.type == .googlePay {
-                    continue
-                }
-                
-                let paymentMethodButton = UIButton()
-                paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
-                paymentMethodButton.setTitle(paymentMethod.buttonTitle, for: .normal)
-                paymentMethodButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
-                paymentMethodButton.setImage(paymentMethod.buttonImage?.withRenderingMode(.alwaysTemplate), for: .normal)
-                paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
-                paymentMethodButton.layer.cornerRadius = 4.0
-                paymentMethodButton.clipsToBounds = true
-                
-                switch paymentMethod.type {
-                case .paymentCard:
-                    paymentMethodButton.setTitleColor(theme.colorTheme.text1, for: .normal)
-                    paymentMethodButton.tintColor = theme.colorTheme.text1 // We want the card icon colot to be the same color as the text
-                    paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = theme.colorTheme.text1.cgColor
-                    paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
-                    
-                case .payPal:
-                    if #available(iOS 11.0, *) {
-                        paymentMethodButton.backgroundColor = UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
-                        paymentMethodButton.setTitleColor(.white, for: .normal)
-                        paymentMethodButton.setImage(paymentMethod.buttonImage, for: .normal)
-                        paymentMethodButton.tintColor = .white
-                        paymentMethodButton.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
-                        verticalStackView.addArrangedSubview(paymentMethodButton)
-                    }
-                    
-                case .goCardlessMandate:
-                    paymentMethodButton.setTitleColor(theme.colorTheme.text1, for: .normal)
-                    paymentMethodButton.tintColor = theme.colorTheme.tint1
-                    paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = theme.colorTheme.text1.cgColor
-//                    verticalStackView.addArrangedSubview(paymentMethodButton)
-                    
-                case .klarna:
-                    paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
-                    paymentMethodButton.setTitleColor(.black, for: .normal)
-                    paymentMethodButton.tintColor = .white
-                    paymentMethodButton.setImage(nil, for: .normal)
-                    paymentMethodButton.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
-                    
-                default:
-                    break
-                }
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        for (index, paymentMethod) in availablePaymentMethods.enumerated() {
+            switch paymentMethod.type {
+            case .klarna:
+                availablePaymentMethods[index].surCharge = "+\(settings.currency?.rawValue ?? "")5.36"
+            case .paymentCard:
+                availablePaymentMethods[index].surCharge = "Additional fee may apply"
+            default:
+                break
             }
+            
         }
         
+        let noAdditionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge == nil })
+        let additionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge != nil })
+        
+        let noAdditionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: "No additional fee", paymentMethodsViewModels: noAdditionalFeePaymentMethodsViewModels)
+        noAdditionalFeesContainerView.delegate = self
+        verticalStackView.addArrangedSubview(noAdditionalFeesContainerView)
+        
+        let additionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: nil, paymentMethodsViewModels: additionalFeePaymentMethodsViewModels)
+        additionalFeesContainerView.delegate = self
+        verticalStackView.addArrangedSubview(additionalFeesContainerView)
     }
     
     @objc
@@ -124,4 +82,29 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
         Primer.shared.primerRootVC?.show(viewController: cfvc)
     }
     
+}
+
+extension PrimerVaultManagerViewController: PaymentMethodsGroupViewDelegate {
+    func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped paymentMethod: PaymentMethodViewModel) {
+        switch  paymentMethod.type {
+        case .applePay:
+            break
+        case .apaya:
+            break
+        case .payPal:
+            payPalButtonTapped()
+        case .paymentCard:
+            cardButtonTapped()
+        case .googlePay:
+            break
+        case .goCardlessMandate:
+            break
+        case .klarna:
+            klarnaButtonTapped()
+        case .payNlIdeal:
+            break
+        case .unknown:
+            break
+        }
+    }
 }
