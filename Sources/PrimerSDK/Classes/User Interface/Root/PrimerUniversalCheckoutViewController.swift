@@ -13,7 +13,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var titleLabel: UILabel!
     private var savedPaymentMethodStackView: UIStackView!
     private var payButton: PrimerButton!
-    private var coveringView: PrimerView!
     private var selectedPaymentInstrument: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
@@ -34,7 +33,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         renderAmount()
         renderSelectedPaymentInstrument()
         renderAvailablePaymentMethods()
-        renderPayButton()
     }
     
     private func renderAmount() {
@@ -131,7 +129,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if let surCharge = cardButtonViewModel.surCharge {
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 let surChargeLabel = UILabel()
-                surChargeLabel.text = surCharge.toCurrencyString(currency: settings.currency!)
+                surChargeLabel.text = Int(surCharge).toCurrencyString(currency: settings.currency!)
                 surChargeLabel.textColor = .black
                 surChargeLabel.textAlignment = .right
                 surChargeLabel.font = UIFont.systemFont(ofSize: 15.0, weight: .regular)
@@ -145,12 +143,33 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 savedCardView.translatesAutoresizingMaskIntoConstraints = false
                 savedCardView.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
                 savedCardView.render(model: cardButtonViewModel, showIcon: false)
-                
-                let tapGesture = UITapGestureRecognizer()
-                tapGesture.addTarget(self, action: #selector(togglePayButton))
-                savedCardView.addGestureRecognizer(tapGesture)
                 paymentMethodStackView.addArrangedSubview(savedCardView)
             }
+            
+            if payButton == nil {
+                payButton = PrimerButton()
+            }
+            
+            var buttonTitle = theme.content.vaultCheckout.payButtonText
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            var amount: Int = 0
+            amount += settings.amount ?? 0
+            
+            amount += Int(cardButtonViewModel.surCharge ?? 0)
+            
+            if amount != 0, let currency = settings.currency {
+                buttonTitle += " " + amount.toCurrencyString(currency: currency)
+            }
+
+            payButton.layer.cornerRadius = 4
+            payButton.setTitle(buttonTitle, for: .normal)
+            payButton.setTitleColor(theme.colorTheme.text2, for: .normal)
+            payButton.titleLabel?.font = .boldSystemFont(ofSize: 19)
+            payButton.backgroundColor = theme.colorTheme.main2
+            payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
+            payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            paymentMethodStackView.addArrangedSubview(payButton)
             
             if !paymentMethodStackView.arrangedSubviews.isEmpty {
                 savedPaymentMethodStackView.addArrangedSubview(paymentMethodStackView)
@@ -228,55 +247,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 verticalStackView.addArrangedSubview(additionalFeesContainerView)
             }
         }
-    }
-    
-    private func renderPayButton() {
-        if coveringView == nil {
-            coveringView = PrimerView()
-        }
-        
-        coveringView.backgroundColor = theme.colorTheme.main1.withAlphaComponent(0.5)
-        view.addSubview(coveringView)
-        coveringView.translatesAutoresizingMaskIntoConstraints = false
-        coveringView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        coveringView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        coveringView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        coveringView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
-        
-        if payButton == nil {
-            payButton = PrimerButton()
-        }
-        
-        payButton.layer.cornerRadius = 12
-        payButton.setTitle(theme.content.vaultCheckout.payButtonText, for: .normal)
-        payButton.setTitleColor(theme.colorTheme.text2, for: .normal)
-        payButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
-        payButton.backgroundColor = theme.colorTheme.main2
-        payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
-        let imageView = UIImageView(image: ImageName.lock.image)
-        payButton.addSubview(imageView)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.centerYAnchor.constraint(equalTo: payButton.centerYAnchor).isActive = true
-        imageView.trailingAnchor.constraint(equalTo: payButton.trailingAnchor, constant: -16).isActive = true
-        
-        coveringView.addSubview(payButton)
-        payButton.translatesAutoresizingMaskIntoConstraints = false
-        payButton.leadingAnchor.constraint(equalTo: coveringView.leadingAnchor, constant: 20).isActive = true
-        payButton.trailingAnchor.constraint(equalTo: coveringView.trailingAnchor, constant: -20).isActive = true
-        payButton.bottomAnchor.constraint(equalTo: coveringView.bottomAnchor, constant: -10).isActive = true
-        payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        
-        coveringView.isHidden = true
-        
-        let coveringViewTap = UITapGestureRecognizer()
-        coveringViewTap.addTarget(self, action: #selector(togglePayButton))
-        coveringView.addGestureRecognizer(coveringViewTap)
-    }
-    
-    @objc
-    func togglePayButton() {
-        coveringView.isHidden = !coveringView.isHidden
-        savedCardView.toggleBorder(isSelected: !coveringView.isHidden, isError: false)
     }
     
     @objc
