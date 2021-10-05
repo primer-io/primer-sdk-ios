@@ -98,7 +98,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                                                       value: "SAVED PAYMENT METHOD",
                                                                       comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
             savedPaymentMethodLabel.textColor = theme.colorTheme.secondaryText1
-            savedPaymentMethodLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
+            savedPaymentMethodLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
             savedPaymentMethodLabel.textAlignment = .left
             titleHorizontalStackView.addArrangedSubview(savedPaymentMethodLabel)
             
@@ -129,10 +129,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if let surCharge = cardButtonViewModel.surCharge {
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 let surChargeLabel = UILabel()
-                surChargeLabel.text = Int(surCharge).toCurrencyString(currency: settings.currency!)
+                surChargeLabel.text = "+" + Int(surCharge).toCurrencyString(currency: settings.currency!)
                 surChargeLabel.textColor = .black
                 surChargeLabel.textAlignment = .right
-                surChargeLabel.font = UIFont.systemFont(ofSize: 15.0, weight: .regular)
+                surChargeLabel.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                 paymentMethodStackView.addArrangedSubview(surChargeLabel)
             }
             
