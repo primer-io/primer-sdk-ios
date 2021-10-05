@@ -134,7 +134,7 @@ struct CardButtonViewModel {
     let network, cardholder, last4, expiry: String
     let imageName: ImageName
     let paymentMethodType: PaymentInstrumentType
-    var surCharge: Int?
+    var surCharge: UInt?
 }
 
 /**
