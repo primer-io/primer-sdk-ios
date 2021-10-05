@@ -125,15 +125,6 @@ class PaymentMethodButtonView: PrimerView {
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
         verticalStackView.pin(view: self)
         
-        if let surCharge = surCharge {
-            let surChargeLabel = UILabel()
-            surChargeLabel.text = surCharge
-            surChargeLabel.textColor = .black
-            surChargeLabel.textAlignment = .right
-            surChargeLabel.font = UIFont.systemFont(ofSize: 15.0, weight: .regular)
-            verticalStackView.addArrangedSubview(surChargeLabel)
-        }
-        
         button.heightAnchor.constraint(equalToConstant: 45).isActive = true
         button.setTitleColor(UIColor.systemBlue, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)

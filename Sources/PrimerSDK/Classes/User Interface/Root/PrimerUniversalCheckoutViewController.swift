@@ -221,9 +221,12 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(noAdditionalFeesContainerView)
             
             let additionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge != nil })
-            let additionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: nil, paymentMethodsViewModels: additionalFeePaymentMethodsViewModels)
-            additionalFeesContainerView.delegate = self
-            verticalStackView.addArrangedSubview(additionalFeesContainerView)
+            for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
+                let title = additionalFeePaymentMethodsViewModel.surCharge
+                let additionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: title, paymentMethodsViewModels: [additionalFeePaymentMethodsViewModel])
+                additionalFeesContainerView.delegate = self
+                verticalStackView.addArrangedSubview(additionalFeesContainerView)
+            }
         }
     }
     
