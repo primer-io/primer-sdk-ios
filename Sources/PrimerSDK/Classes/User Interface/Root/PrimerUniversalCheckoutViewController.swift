@@ -335,7 +335,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         })
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
     }
-
+    
 }
 
 extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
