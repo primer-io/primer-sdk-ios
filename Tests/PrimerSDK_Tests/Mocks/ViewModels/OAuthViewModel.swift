@@ -27,8 +27,8 @@ class MockOAuthViewModel: OAuthViewModelProtocol {
             completion(.success("https://paypal.com/session"))
         }
     }
-
-    func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
+    
+    func tokenize(_ host: OAuthHost, with completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
         tokenizeCalled = true
     }
 }

@@ -28,7 +28,7 @@ internal class KlarnaService: KlarnaServiceProtocol {
 
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let configId = state.paymentMethodConfig?.getConfig(for: .klarna)?.id else {
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna) else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
@@ -117,7 +117,7 @@ internal class KlarnaService: KlarnaServiceProtocol {
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
-        guard let configId = state.paymentMethodConfig?.getConfig(for: .klarna)?.id,
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
               let authorizationToken = state.authorizationToken,
               let sessionId = state.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
@@ -151,8 +151,7 @@ internal class KlarnaService: KlarnaServiceProtocol {
             return completion(.failure(KlarnaException.noToken))
         }
 
-        guard let config = state.paymentMethodConfig?.getConfig(for: .klarna),
-              let configId = config.id,
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
               let sessionId = state.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }

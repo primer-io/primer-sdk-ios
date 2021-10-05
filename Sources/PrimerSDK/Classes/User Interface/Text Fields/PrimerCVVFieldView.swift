@@ -18,6 +18,8 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         super.xibSetup()
         
         textField.keyboardType = .numberPad
+        textField.isAccessibilityElement = true
+        textField.accessibilityIdentifier = "cvc_txt_fld"
         textField.delegate = self
         isValid = { [weak self] text in
             guard let strongSelf = self else { return false }

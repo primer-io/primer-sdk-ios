@@ -1,6 +1,6 @@
 #if canImport(UIKit)
 
-import UIKit
+import Foundation
 
 internal protocol VaultServiceProtocol {
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void)
@@ -13,6 +13,7 @@ internal class VaultService: VaultServiceProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
+    // swiftlint:disable cyclomatic_complexity
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         

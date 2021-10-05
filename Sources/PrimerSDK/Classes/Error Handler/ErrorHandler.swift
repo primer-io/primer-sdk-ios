@@ -13,7 +13,7 @@ internal class ErrorHandler {
 
     static var shared = ErrorHandler()
 
-    // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable cyclomatic_complexity function_body_length
     func handle(error: Error) -> Bool {
         log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
 
@@ -25,6 +25,78 @@ internal class ErrorHandler {
 
         } else if let primerError = error as? PrimerError {
             switch primerError {
+            case .generic:
+                break
+            case .clientTokenNull:
+                break
+            case .customerIDNull:
+                break
+            case .clientTokenExpired:
+                break
+            case .payPalSessionFailed:
+                break
+            case .vaultFetchFailed:
+                break
+            case .vaultDeleteFailed:
+                break
+            case .vaultCreateFailed:
+                break
+            case .directDebitSessionFailed:
+                break
+            case .configFetchFailed:
+                break
+            case .tokenizationPreRequestFailed:
+                break
+            case .tokenizationRequestFailed:
+                break
+            case .threeDSFailed:
+                break
+            case .failedToLoadSession:
+                break
+            case .missingURLScheme:
+                break
+            case .requestFailed:
+                break
+            case .userCancelled:
+                break
+            case .amountCannotBeNullForNonPendingOrderItems:
+                break
+            case .amountShouldBeNullForPendingOrderItems:
+                break
+            case .currencyMissing:
+                break
+            case .amountMissing:
+                break
+            case .billingAddressMissing:
+                break
+            case .billingAddressCityMissing:
+                break
+            case .billingAddressPostalCodeMissing:
+                break
+            case .billingAddressCountryCodeMissing:
+                break
+            case .orderIdMissing:
+                break
+            case .billingAddressAddressLine1Missing:
+                break
+            case .userDetailsMissing:
+                break
+            case .userDetailsAddressMissing:
+                break
+            case .userDetailsCityMissing:
+                break
+            case .userDetailsAddressLine1Missing:
+                break
+            case .userDetailsPostalCodeMissing:
+                break
+            case .userDetailsCountryCodeMissing:
+                break
+            case .dataMissing:
+                break
+            case .directoryServerIdMissing:
+                break
+            case .threeDSSDKKeyMissing:
+                break
             default:
                 break
             }
