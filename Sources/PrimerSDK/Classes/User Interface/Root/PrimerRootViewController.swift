@@ -353,7 +353,7 @@ extension PrimerRootViewController {
             DispatchQueue.main.async {
                 Primer.shared.delegate?.checkoutFailed?(with: err)
             }
-            self.handleError(err)
+            self.handle(error: err)
         }
     }
     
@@ -379,7 +379,7 @@ extension PrimerRootViewController {
             DispatchQueue.main.async {
                 Primer.shared.delegate?.checkoutFailed?(with: err)
             }
-            self.handleError(err)
+            self.handle(error: err)
         }
     }
     
@@ -399,7 +399,7 @@ extension PrimerRootViewController {
                     DispatchQueue.main.async {
                         Primer.shared.delegate?.checkoutFailed?(with: err)
                     }
-                    self?.handleError(err)
+                    self?.handle(error: err)
                     
                 case .success(let urlString):
                     let webViewController = PrimerWebViewController(with: apayaWebViewModel)
@@ -418,7 +418,7 @@ extension PrimerRootViewController {
                     DispatchQueue.main.async {
                         Primer.shared.delegate?.checkoutFailed?(with: err)
                     }
-                    self?.handleError(err)
+                    self?.handle(error: err)
                     
                 case .success(let paymentMethod):
                     self?.handleSuccessfulTokenization(paymentMethod: paymentMethod)
@@ -452,7 +452,7 @@ extension PrimerRootViewController {
             DispatchQueue.main.async {
                 Primer.shared.delegate?.checkoutFailed?(with: err)
             }
-            self.handleError(err)
+            self.handle(error: err)
         }
         
     }
@@ -495,26 +495,6 @@ extension PrimerRootViewController {
                     }
                 }
             })
-        }
-    }
-    
-    func handleError(_ error: Error) {
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else {
-                Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
-                return
-            }
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            if !settings.hasDisabledSuccessScreen {
-                let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
-                evc.view.translatesAutoresizingMaskIntoConstraints = false
-                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                strongSelf.show(viewController: evc)
-            } else {
-                Primer.shared.dismiss()
-            }
         }
     }
     
