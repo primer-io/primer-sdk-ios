@@ -11,8 +11,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     var savedCardView: CardButton!
     private var titleLabel: UILabel!
-    private var seeAllButton: UIButton!
-    private var savedPaymentInstrumentStackView: UIStackView!
+    private var savedPaymentMethodStackView: UIStackView!
     private var payButton: PrimerButton!
     private var coveringView: PrimerView!
     private var selectedPaymentInstrument: PaymentMethodToken?
@@ -54,54 +53,95 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     }
     
     private func renderSelectedPaymentInstrument(insertAt index: Int? = nil) {
-        if seeAllButton != nil {
-            verticalStackView.removeArrangedSubview(seeAllButton)
-            seeAllButton.removeFromSuperview()
-            seeAllButton = nil
-        }
-        
         if savedCardView != nil {
             verticalStackView.removeArrangedSubview(savedCardView)
             savedCardView.removeFromSuperview()
             savedCardView = nil
         }
         
-        if savedPaymentInstrumentStackView != nil {
-            verticalStackView.removeArrangedSubview(savedPaymentInstrumentStackView)
-            savedPaymentInstrumentStackView.removeFromSuperview()
-            savedPaymentInstrumentStackView = nil
+        if savedPaymentMethodStackView != nil {
+            verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
+            savedPaymentMethodStackView.removeFromSuperview()
+            savedPaymentMethodStackView = nil
         }
         
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
         self.selectedPaymentInstrument = nil
+        
         if let selectedPaymentInstrument = checkoutViewModel.paymentMethods.first(where: { paymentInstrument in
             return paymentInstrument.token == checkoutViewModel.selectedPaymentMethodId
-        }), let cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
-            self.selectedPaymentInstrument = selectedPaymentInstrument
+        }), var cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
             
-            if savedPaymentInstrumentStackView == nil {
-                savedPaymentInstrumentStackView = UIStackView()
-                savedPaymentInstrumentStackView.axis = .vertical
-                savedPaymentInstrumentStackView.alignment = .fill
-                savedPaymentInstrumentStackView.distribution = .fill
-                savedPaymentInstrumentStackView.spacing = verticalStackView.spacing
+            if cardButtonViewModel.paymentMethodType == .klarnaCustomerToken {
+                cardButtonViewModel.surCharge = 536
             }
             
-            let savedPaymentInstrumentTitleLabel = UILabel()
-            savedPaymentInstrumentTitleLabel.text = NSLocalizedString("primer-vault-checkout-payment-method-title",
+            self.selectedPaymentInstrument = selectedPaymentInstrument
+            
+            if savedPaymentMethodStackView == nil {
+                savedPaymentMethodStackView = UIStackView()
+                savedPaymentMethodStackView.axis = .vertical
+                savedPaymentMethodStackView.alignment = .fill
+                savedPaymentMethodStackView.distribution = .fill
+                savedPaymentMethodStackView.spacing = 5.0
+            }
+            
+            let titleHorizontalStackView = UIStackView()
+            titleHorizontalStackView.axis = .horizontal
+            titleHorizontalStackView.alignment = .fill
+            titleHorizontalStackView.distribution = .fillProportionally
+            titleHorizontalStackView.spacing = 8.0
+            
+            let savedPaymentMethodLabel = UILabel()
+            savedPaymentMethodLabel.text = NSLocalizedString("primer-vault-checkout-payment-method-title",
                                                                       tableName: nil,
                                                                       bundle: Bundle.primerResources,
                                                                       value: "SAVED PAYMENT METHOD",
                                                                       comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
-            savedPaymentInstrumentTitleLabel.textColor = theme.colorTheme.secondaryText1
-            savedPaymentInstrumentTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
-            savedPaymentInstrumentTitleLabel.textAlignment = .left
-            savedPaymentInstrumentStackView.addArrangedSubview(savedPaymentInstrumentTitleLabel)
+            savedPaymentMethodLabel.textColor = theme.colorTheme.secondaryText1
+            savedPaymentMethodLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
+            savedPaymentMethodLabel.textAlignment = .left
+            titleHorizontalStackView.addArrangedSubview(savedPaymentMethodLabel)
+            
+            let seeAllButton = UIButton()
+            seeAllButton.translatesAutoresizingMaskIntoConstraints = false
+            seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            seeAllButton.setTitle("See all", for: .normal)
+            seeAllButton.contentHorizontalAlignment = .right
+            seeAllButton.setTitleColor(theme.colorTheme.text3, for: .normal)
+            seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
+            titleHorizontalStackView.addArrangedSubview(seeAllButton)
+            
+            savedPaymentMethodStackView.addArrangedSubview(titleHorizontalStackView)
+            
+            let paymentMethodStackView = UIStackView()
+            paymentMethodStackView.layer.cornerRadius = 4.0
+            paymentMethodStackView.clipsToBounds = true
+            paymentMethodStackView.backgroundColor = .black.withAlphaComponent(0.05)
+            paymentMethodStackView.axis = .vertical
+            paymentMethodStackView.alignment = .fill
+            paymentMethodStackView.distribution = .fill
+            paymentMethodStackView.spacing = 8.0
+            paymentMethodStackView.isLayoutMarginsRelativeArrangement = true
+            if #available(iOS 11.0, *) {
+                paymentMethodStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+            }
+
+            if let surCharge = cardButtonViewModel.surCharge {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                let surChargeLabel = UILabel()
+                surChargeLabel.text = surCharge.toCurrencyString(currency: settings.currency!)
+                surChargeLabel.textColor = .black
+                surChargeLabel.textAlignment = .right
+                surChargeLabel.font = UIFont.systemFont(ofSize: 15.0, weight: .regular)
+                paymentMethodStackView.addArrangedSubview(surChargeLabel)
+            }
             
             if savedCardView == nil {
                 savedCardView = CardButton()
-                savedPaymentInstrumentStackView.addArrangedSubview(savedCardView)
+                savedCardView.backgroundColor = .white
+                savedPaymentMethodStackView.addArrangedSubview(savedCardView)
                 savedCardView.translatesAutoresizingMaskIntoConstraints = false
                 savedCardView.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
                 savedCardView.render(model: cardButtonViewModel, showIcon: false)
@@ -109,22 +149,17 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 let tapGesture = UITapGestureRecognizer()
                 tapGesture.addTarget(self, action: #selector(togglePayButton))
                 savedCardView.addGestureRecognizer(tapGesture)
+                paymentMethodStackView.addArrangedSubview(savedCardView)
             }
             
-            if seeAllButton == nil {
-                seeAllButton = UIButton()
-                seeAllButton.translatesAutoresizingMaskIntoConstraints = false
-                seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-                seeAllButton.setTitle("See all", for: .normal)
-                seeAllButton.setTitleColor(theme.colorTheme.text3, for: .normal)
-                seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
-                savedPaymentInstrumentStackView.addArrangedSubview(seeAllButton)
+            if !paymentMethodStackView.arrangedSubviews.isEmpty {
+                savedPaymentMethodStackView.addArrangedSubview(paymentMethodStackView)
             }
             
             if let index = index {
-                verticalStackView.insertArrangedSubview(savedPaymentInstrumentStackView, at: index)
+                verticalStackView.insertArrangedSubview(savedPaymentMethodStackView, at: index)
             } else {
-                verticalStackView.addArrangedSubview(savedPaymentInstrumentStackView)
+                verticalStackView.addArrangedSubview(savedPaymentMethodStackView)
             }
         } else {
             if savedCardView != nil {
@@ -133,16 +168,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 savedCardView = nil
             }
             
-            if seeAllButton != nil {
-                verticalStackView.removeArrangedSubview(seeAllButton)
-                seeAllButton.removeFromSuperview()
-                seeAllButton = nil
-            }
-            
-            if savedPaymentInstrumentStackView != nil {
-                verticalStackView.removeArrangedSubview(savedPaymentInstrumentStackView)
-                savedPaymentInstrumentStackView.removeFromSuperview()
-                savedPaymentInstrumentStackView = nil
+            if savedPaymentMethodStackView != nil {
+                verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
+                savedPaymentMethodStackView.removeFromSuperview()
+                savedPaymentMethodStackView = nil
             }
         }
         
