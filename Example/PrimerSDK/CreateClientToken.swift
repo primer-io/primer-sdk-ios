@@ -24,6 +24,12 @@ struct CreateClientTokenRequest: Codable {
     let paymentMethod: PaymentMethod?
 }
 
+//struct CreateClientTokenRequest: Codable {
+//    let customerId: String
+//    let customerCountryCode: String?
+//    var environment: Environment?
+//}
+
 public struct Address: Codable {
     let addressLine1: String
     let addressLine2: String?

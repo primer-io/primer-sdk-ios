@@ -193,7 +193,7 @@ class MerchantCheckoutViewController: UIViewController {
 extension MerchantCheckoutViewController: PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/clientSession") else {
+        guard let url = URL(string: "\(endpoint)/clientToken") else {
             return completion(nil, NetworkError.missingParams)
         }
         var request = URLRequest(url: url)
