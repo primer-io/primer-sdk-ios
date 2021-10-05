@@ -140,7 +140,7 @@ class PaymentMethodConfigTests: XCTestCase {
                         XCTFail("Failed to parse Apaya")
                     } else {
                         let apayaConfig = config.paymentMethods!.filter({ $0.type == .apaya }).first!
-                        if apayaConfig.options?.merchantAccountId != "apaya_account_id" {
+                        if (apayaConfig.options as? ApayaOptions)?.merchantAccountId != "apaya_account_id" {
                             XCTFail("Failed to parse merchant account id for Apaya")
                         }
                     }

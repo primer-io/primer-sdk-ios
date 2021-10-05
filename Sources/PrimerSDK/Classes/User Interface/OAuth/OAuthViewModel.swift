@@ -3,7 +3,7 @@
 internal protocol OAuthViewModelProtocol {
     var urlSchemeIdentifier: String? { get }
     func generateOAuthURL(_ host: OAuthHost, with completion: @escaping (Result<String, Error>) -> Void)
-    func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void)
+    func tokenize(_ host: OAuthHost, with completion: @escaping (PaymentMethodToken?, Error?) -> Void)
 }
 
 internal class OAuthViewModel: OAuthViewModelProtocol {
@@ -87,20 +87,20 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
         }
     }
 
-    private func generateBillingAgreementConfirmation(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
+    private func generateBillingAgreementConfirmation(_ host: OAuthHost, with completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
         let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
         paypalService.confirmBillingAgreement({ [weak self] result in
             switch result {
             case .failure(let error):
                 log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                completion(PrimerError.payPalSessionFailed)
+                completion(nil, PrimerError.payPalSessionFailed)
             case .success:
                 self?.tokenize(host, with: completion)
             }
         })
     }
 
-    private func generatePaypalPaymentInstrument(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) -> PaymentInstrument? {
+    private func generatePaypalPaymentInstrument(_ host: OAuthHost, with completion: @escaping (PaymentMethodToken?, Error?) -> Void) -> PaymentInstrument? {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
             guard let id = orderId else { return nil }
@@ -118,26 +118,15 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
         }
     }
 
-    func handleTokenization(request: PaymentMethodTokenizationRequest, with completion: @escaping (Error?) -> Void) {
+    func handleTokenization(request: PaymentMethodTokenizationRequest, with completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
         let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
         tokenizationService.tokenize(request: request) { [weak self] result in
             switch result {
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
-                completion(error)
+                completion(nil, error)
             case .success(let token):
-                log(logLevel: .verbose, title: nil, message: "Token: \(token)", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-
-                switch Primer.shared.flow.internalSessionFlow.uxMode {
-                case .VAULT:
-                    log(logLevel: .verbose, title: nil, message: "Vaulting", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                    
-                    completion(nil) // self?.onTokenizeSuccess(token, completion)
-                case .CHECKOUT:
-                    log(logLevel: .verbose, title: nil, message: "Paying", prefix: "🔥", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                    self?.authorizePayment(token, completion)
-                    self?.onTokenizeSuccess(token, completion)
-                }
+                completion(token, nil)
             }
         }
     }
@@ -145,7 +134,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
     // FIXME: This function is just the first step of tokenization for Klarna (fetches session data first).
     // The actual tokenization call takes place in handleTokenization above.
     // Merge with handleTokenization, as they're one.
-    func tokenize(_ host: OAuthHost, with completion: @escaping (Error?) -> Void) {
+    func tokenize(_ host: OAuthHost, with completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
         if (host == .klarna) {
             var instrument = PaymentInstrument()
 
@@ -159,7 +148,8 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
                     switch result {
                     case .failure(let err):
                         _ = ErrorHandler.shared.handle(error: err)
-                        completion(err)
+                        completion(nil, err)
+                        
                     case .success(let response):
                         instrument.klarnaCustomerToken = response.customerTokenId
                         instrument.sessionData = response.sessionData
@@ -180,7 +170,7 @@ internal class OAuthViewModel: OAuthViewModelProtocol {
                 klarnaService.finalizePaymentSession { [weak self] result in
                     switch result {
                     case .failure(let err):
-                        completion(err)
+                        completion(nil, err)
                     case .success(let res):
                         instrument.sessionData = res.sessionData
 

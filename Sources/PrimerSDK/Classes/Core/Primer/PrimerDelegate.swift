@@ -38,6 +38,10 @@ public protocol PrimerDelegate {
     ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
+    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
+
+    @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
+    @objc optional func onResumeError(_ error: Error)
     
     @objc optional func onCheckoutDismissed()
     

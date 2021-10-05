@@ -107,3 +107,5 @@ id_rsa_github_actions.*
 id_rsa_github_actions
 id_rsa_ios.*
 id_rsa_ios
+
+ThreeDS_SDK.xcframework

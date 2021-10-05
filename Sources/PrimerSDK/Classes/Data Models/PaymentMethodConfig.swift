@@ -3,64 +3,124 @@ struct PaymentMethodConfig: Codable {
     let pciUrl: String?
     let clientSession: ClientSession?
     let paymentMethods: [ConfigPaymentMethod]?
+    let keys: ThreeDS.Keys?
+
     var isSetByClientSession: Bool {
         return clientSession != nil
     }
     
     enum CodingKeys: String, CodingKey {
-        case coreUrl, pciUrl, clientSession, paymentMethods
+        case coreUrl, pciUrl, clientSession, paymentMethods, keys
     }
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.coreUrl = try? container.decode(String?.self, forKey: .coreUrl)
-        self.pciUrl = try? container.decode(String?.self, forKey: .pciUrl)
-        self.clientSession = try? container.decode(ClientSession?.self, forKey: .clientSession)
-        self.paymentMethods = try? container.decode([ConfigPaymentMethod]?.self, forKey: .paymentMethods)
+        self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
+        self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
+        self.clientSession = (try? container.decode(ClientSession?.self, forKey: .clientSession)) ?? nil
+        self.paymentMethods = (try? container.decode([ConfigPaymentMethod]?.self, forKey: .paymentMethods)) ?? nil
+        self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
     }
     
     init(
         coreUrl: String?,
         pciUrl: String?,
         clientSession: ClientSession?,
-        paymentMethods: [ConfigPaymentMethod]?
+        paymentMethods: [ConfigPaymentMethod]?,
+        keys: ThreeDS.Keys?
     ) {
         self.coreUrl = coreUrl
         self.pciUrl = pciUrl
         self.clientSession = clientSession
         self.paymentMethods = paymentMethods
+        self.keys = keys
+    }
+    
+    func getConfigId(for type: ConfigPaymentMethodType) -> String? {
+        guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
+        return method.id
+    }
+    
+    func getProductId(for type: ConfigPaymentMethodType) -> String? {
+        guard let method = self.paymentMethods?
+                .first(where: { method in return method.type == type }) else { return nil }
+        
+        if let apayaOptions = method.options as? ApayaOptions {
+            return apayaOptions.merchantAccountId
+        } else {
+            return nil
+        }
     }
 }
 
 struct ConfigPaymentMethod: Codable {
+    
     let id: String?
-    let type: ConfigPaymentMethodType?
     let processorConfigId: String?
-    let options: PaymentMethodConfigOptions?
+    let type: ConfigPaymentMethodType?
+    let options: PaymentMethodOptions?
     
-    enum CodingKeys: String, CodingKey {
-        case id, type, processorConfigId, options
+    private enum CodingKeys : String, CodingKey {
+        case id, options, processorConfigId, type
     }
     
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try? container.decode(String.self, forKey: .id)
-        self.type = try? container.decode(ConfigPaymentMethodType?.self, forKey: .type)
-        self.processorConfigId = try? container.decode(String?.self, forKey: .processorConfigId)
-        self.options = try? container.decode(PaymentMethodConfigOptions?.self, forKey: .options)
-    }
-    
-    init(
-        id: String?,
-        type: ConfigPaymentMethodType?,
-        processorConfigId: String?,
-        options: PaymentMethodConfigOptions?
-    ) {
+    init(id: String?, options: PaymentMethodOptions?, processorConfigId: String?, type: ConfigPaymentMethodType) {
         self.id = id
-        self.type = type
-        self.processorConfigId = processorConfigId
         self.options = options
+        self.processorConfigId = processorConfigId
+        self.type = type
     }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String?.self, forKey: .id)
+        processorConfigId = try container.decode(String?.self, forKey: .processorConfigId)
+        type = try container.decode(ConfigPaymentMethodType?.self, forKey: .type)
+        
+        if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {
+            options = cardOptions
+        } else if let payPalOptions = try? container.decode(PayPalOptions.self, forKey: .options) {
+            options = payPalOptions
+        } else if let apayaOptions = try? container.decode(ApayaOptions.self, forKey: .options) {
+            options = apayaOptions
+        } else {
+            options = nil
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(processorConfigId, forKey: .processorConfigId)
+        try container.encode(type, forKey: .type)
+        
+        if let cardOptions = options as? CardOptions {
+            try container.encode(cardOptions, forKey: .options)
+        } else if let payPalOptions = options as? PayPalOptions {
+            try container.encode(payPalOptions, forKey: .options)
+        }
+    }
+    
+}
+
+protocol PaymentMethodOptions: Codable { }
+
+extension PaymentMethodOptions { }
+
+struct ApayaOptions: PaymentMethodOptions {
+    let merchantAccountId: String
+}
+
+struct PayPalOptions: PaymentMethodOptions {
+    let clientId: String
+}
+
+struct CardOptions: PaymentMethodOptions {
+    let threeDSecureEnabled: Bool
+    let threeDSecureToken: String?
+    let threeDSecureInitUrl: String?
+    let threeDSecureProvider: String
+    let processorConfigId: String?
 }
 
 public enum ConfigPaymentMethodType: String, Codable {
@@ -85,29 +145,6 @@ public enum ConfigPaymentMethodType: String, Codable {
     }
     
     public init(from decoder: Decoder) throws {
-        self = (try? ConfigPaymentMethodType(rawValue: decoder.singleValueContainer().decode(RawValue.self))) ?? .unknown
-    }
-}
-
-internal extension PaymentMethodConfig {
-    func getConfig(for type: ConfigPaymentMethodType) -> ConfigPaymentMethod? {
-        // guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
-        // return (type == .paymentCard && method.id == nil) ? ConfigPaymentMethodType.paymentCard.rawValue : method.id
-        guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
-        return method
-    }
-    
-    func getProductId(for type: ConfigPaymentMethodType) -> String? {
-        guard let method = self.paymentMethods?
-                .first(where: { method in return method.type == type }) else { return nil }
-        return method.options?.merchantAccountId
-    }
-}
-
-class PaymentMethodConfigOptions: Codable {
-    let merchantAccountId: String?
-    
-    init(merchantAccountId: String?) {
-        self.merchantAccountId = merchantAccountId
+        self = ((try? ConfigPaymentMethodType(rawValue: decoder.singleValueContainer().decode(RawValue.self))) ?? nil) ?? .unknown
     }
 }

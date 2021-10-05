@@ -14,10 +14,13 @@ enum Environment: String, Codable {
 }
 
 struct CreateClientTokenRequest: Codable {
+    let environment: Environment
+    
     let orderId: String
-    let amount: UInt
+    let amount: Int
     let currencyCode: String
     let customerId: String?
+    let customerCountryCode: PrimerSDK.CountryCode?
     let metadata: [String: String]?
     let customer: Customer?
     let order: Order?
@@ -56,21 +59,21 @@ public struct Address: Codable {
 }
 
 public struct Customer: Codable {
-    let emailAddress: String?
+    let email: String?
     let billingAddress: Address?
     let shippingAddress: Address?
-    let mobileNumber: String?
+//    let mobileNumber: String?
     
     public init (
-        emailAddress: String?,
+        email: String?,
         billingAddress: Address?,
-        shippingAddress: Address?,
-        mobileNumber: String?
+        shippingAddress: Address?
+//        mobileNumber: String?
     ) {
-        self.emailAddress = emailAddress
+        self.email = email
         self.billingAddress = billingAddress
         self.shippingAddress = shippingAddress
-        self.mobileNumber = mobileNumber
+//        self.mobileNumber = mobileNumber
     }
 }
 
@@ -104,18 +107,18 @@ public struct LineItem: Codable {
 
 public struct Order: Codable {
     let countryCode: String?
-    let fees: Fees?
+//    let fees: Fees?
     let lineItems: [LineItem]?
     let shipping: Shipping?
     
     public init (
         countryCode: String?,
-        fees: Fees?,
+//        fees: Fees?,
         lineItems: [LineItem]?,
         shipping: Shipping?
     ) {
         self.countryCode = countryCode
-        self.fees = fees
+//        self.fees = fees
         self.lineItems = lineItems
         self.shipping = shipping
     }
@@ -150,3 +153,9 @@ public struct PaymentMethod: Codable {
     }
 }
 
+struct TransactionResponse {
+    var id: String
+    var date: String
+    var status: String
+    var requiredAction: [String: Any]
+}
