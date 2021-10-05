@@ -200,7 +200,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                                                    value: "Available payment methods",
                                                                    comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
             otherPaymentMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
-            otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
+            otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
             otherPaymentMethodsTitleLabel.textAlignment = .left
             
             availablePaymentMethodsContainerStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
@@ -237,7 +237,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
                 let title = additionalFeePaymentMethodsViewModel.surCharge
                 let additionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: title, paymentMethodsViewModels: [additionalFeePaymentMethodsViewModel])
-                additionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
+                additionalFeesContainerView.titleLabel?.font = title == "Additional fee may apply" ? UIFont.systemFont(ofSize: 12.0, weight: .regular) : UIFont.systemFont(ofSize: 16.0, weight: .bold)
                 additionalFeesContainerView.delegate = self
                 availablePaymentMethodsStackView.addArrangedSubview(additionalFeesContainerView)
             }
