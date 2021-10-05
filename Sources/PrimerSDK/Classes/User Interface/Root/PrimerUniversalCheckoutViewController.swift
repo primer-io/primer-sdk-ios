@@ -181,6 +181,12 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     }
     
     private func renderAvailablePaymentMethods() {
+        let availablePaymentMethodsContainerStackView = UIStackView()
+        availablePaymentMethodsContainerStackView.axis = .vertical
+        availablePaymentMethodsContainerStackView.alignment = .fill
+        availablePaymentMethodsContainerStackView.distribution = .fill
+        availablePaymentMethodsContainerStackView.spacing = 5.0
+
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         var availablePaymentMethods = checkoutViewModel.availablePaymentOptions.filter({ $0.type != .apaya && $0.type != .goCardlessMandate })
         
@@ -197,16 +203,16 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
             otherPaymentMethodsTitleLabel.textAlignment = .left
             
-            verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
+            availablePaymentMethodsContainerStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
             for (index, paymentMethod) in availablePaymentMethods.enumerated() {
                 switch paymentMethod.type {
                 case .klarna:
-                    availablePaymentMethods[index].surCharge = "+\(settings.currency?.symbol ?? "")5.36"
+                    availablePaymentMethods[index].surCharge = "+£5.36"
                 case .payPal:
-                    availablePaymentMethods[index].surCharge = "+\(settings.currency?.symbol ?? "")5.36"
+                    availablePaymentMethods[index].surCharge = "+£5.36"
                 case .paymentCard:
                     availablePaymentMethods[index].surCharge = "Additional fee may apply"
                 default:
@@ -214,20 +220,32 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 }
             }
             
+            let availablePaymentMethodsStackView = UIStackView()
+            availablePaymentMethodsStackView.axis = .vertical
+            availablePaymentMethodsStackView.alignment = .fill
+            availablePaymentMethodsStackView.distribution = .fill
+            availablePaymentMethodsStackView.spacing = 10.0
+            
             let noAdditionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge == nil })
             
             let noAdditionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: "No additional fee", paymentMethodsViewModels: noAdditionalFeePaymentMethodsViewModels)
+            noAdditionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
             noAdditionalFeesContainerView.delegate = self
-            verticalStackView.addArrangedSubview(noAdditionalFeesContainerView)
+            availablePaymentMethodsStackView.addArrangedSubview(noAdditionalFeesContainerView)
             
             let additionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge != nil })
             for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
                 let title = additionalFeePaymentMethodsViewModel.surCharge
                 let additionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: title, paymentMethodsViewModels: [additionalFeePaymentMethodsViewModel])
+                additionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                 additionalFeesContainerView.delegate = self
-                verticalStackView.addArrangedSubview(additionalFeesContainerView)
+                availablePaymentMethodsStackView.addArrangedSubview(additionalFeesContainerView)
             }
+            
+            availablePaymentMethodsContainerStackView.addArrangedSubview(availablePaymentMethodsStackView)
         }
+        
+        verticalStackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
     }
     
     private func renderPayButton() {
