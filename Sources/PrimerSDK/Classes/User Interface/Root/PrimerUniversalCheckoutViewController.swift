@@ -350,7 +350,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     Primer.shared.dismiss()
                 } else {
                     if let err = err {
-                        let evc = ErrorViewController(message: PrimerError.amountMissing.localizedDescription)
+                        let evc = ErrorViewController(message: err.localizedDescription)
                         evc.view.translatesAutoresizingMaskIntoConstraints = false
                         evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
                         Primer.shared.primerRootVC?.show(viewController: evc)
@@ -363,8 +363,45 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 }
             }
         })
+        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
     }
 
+}
+
+extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
+    func handle(error: Error) {
+        DispatchQueue.main.async {
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            if !settings.hasDisabledSuccessScreen {
+                let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
+                evc.view.translatesAutoresizingMaskIntoConstraints = false
+                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                Primer.shared.primerRootVC?.show(viewController: evc)
+            } else {
+                Primer.shared.dismiss()
+            }
+        }
+    }
+    
+    func handle(newClientToken clientToken: String) {
+        try? ClientTokenService.storeClientToken(clientToken)
+    }
+    
+    func handleSuccess() {
+        DispatchQueue.main.async { 
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                let svc = SuccessViewController()
+                svc.view.translatesAutoresizingMaskIntoConstraints = false
+                svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                Primer.shared.primerRootVC?.show(viewController: svc)
+            }
+        }
+    }
 }
 
 extension PrimerUniversalCheckoutViewController: ReloadDelegate {
