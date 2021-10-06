@@ -55,17 +55,17 @@ class MerchantCheckoutViewController: UIViewController {
     var transactionResponse: TransactionResponse?
     var performPayment: Bool = false
     
-    private var address: PrimerSDK.Address!
-    private var customer: PrimerSDK.Customer!
+    var customer: PrimerSDK.Customer?
+    var address: PrimerSDK.Address?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer [\(environment.rawValue)]"
         
         address = PrimerSDK.Address(
-            firstName: nil,
-            lastName: nil,
-            addressLine1: "1 Rue",
+            firstName: "John",
+            lastName: "Smith",
+            addressLine1: "107 Rue",
             addressLine2: nil,
             city: "Paris",
             postalCode: "75001",
@@ -106,8 +106,7 @@ class MerchantCheckoutViewController: UIViewController {
             billingAddress: address,
             orderId: "order id",
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
-            customer: customer
-        )
+            customer: customer)
 
         Primer.shared.delegate = self
         self.configurePrimer()
@@ -119,21 +118,6 @@ class MerchantCheckoutViewController: UIViewController {
         
         let theme = generatePrimerTheme()
         Primer.shared.configure(theme: theme)
-        
-        Primer.shared.setDirectDebitDetails(
-            firstName: "John",
-            lastName: "Doe",
-            email: "test@mail.com",
-            iban: "FR1420041010050500013M02606",
-            address: PrimerSDK.Address(
-                addressLine1: "1 Rue",
-                addressLine2: "",
-                city: "Paris",
-                postalCode: "75001",
-                state: "",
-                countryCode: .fr
-            )
-        )
     }
     
     // MARK: - ACTIONS
@@ -189,8 +173,7 @@ class MerchantCheckoutViewController: UIViewController {
             hasDisabledSuccessScreen: true,
             businessDetails: BusinessDetails(
                 name: "My Business",
-                address: address
-            ),
+                address: address!),
             orderItems: [
                 try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
                 try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
@@ -228,15 +211,17 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let body = CreateClientTokenRequest(
+            environment: environment,
             orderId: "order_id",
             amount: 123,
             currencyCode: "EUR",
             customerId: "customer_id",
+            customerCountryCode: PrimerSDK.CountryCode.gb,
             metadata: [
                 "test": "test"
             ],
             customer: Customer(
-                emailAddress: "email@primer.io",
+                email: "email@primer.io",
                 billingAddress: Address(
                     addressLine1: "Lemesou 10",
                     addressLine2: nil,
@@ -246,21 +231,14 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     firstName: "Evangelos",
                     lastName: "Pittas",
                     state: nil),
-                shippingAddress: Address(
-                    addressLine1: "Lemesou 10",
-                    addressLine2: nil,
-                    city: "Athens",
-                    countryCode: "GR",
-                    postalCode: "15236",
-                    firstName: "Evangelos",
-                    lastName: "Pittas",
-                    state: nil),
-                mobileNumber: "+447888888888"),
+                shippingAddress: nil
+//                mobileNumber: "+447888888888"
+            ),
             order: Order(
                 countryCode: "FR",
-                fees: Fees(
-                    amount: 11,
-                    description: "Extra fees"),
+//                fees: Fees(
+//                    amount: 11,
+//                    description: "Extra fees"),
                 lineItems: [
                     LineItem(
                         itemId: "item_id_1",
@@ -271,8 +249,9 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                         taxAmount: 0,
                         taxCode: nil)
                 ],
-                shipping: Shipping(amount: 5)),
-            paymentMethod: PaymentMethod(vaultOnSuccess: true))
+                shipping: Shipping(amount: 5))
+            , paymentMethod: PaymentMethod(vaultOnSuccess: true)
+        )
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
