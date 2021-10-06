@@ -79,7 +79,7 @@ class MerchantCheckoutViewController: UIViewController {
             email: "john@primer.io",
             mobileNumber: phoneNumber,
             billingAddress: address,
-            shippingAddress: address,
+            shippingAddress: nil,
             taxId: nil)
         
         generalSettings = PrimerSettings(
