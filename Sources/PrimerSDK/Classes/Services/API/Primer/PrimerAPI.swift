@@ -152,6 +152,13 @@ internal extension PrimerAPI {
                 tmpHeaders["Primer-Client-Token"] = token
             }
         }
+        
+        switch self {
+        case .fetchConfiguration:
+            tmpHeaders["X-Api-Version"] = "2021-09-27"
+        default:
+            break
+        }
 
         return tmpHeaders
     }

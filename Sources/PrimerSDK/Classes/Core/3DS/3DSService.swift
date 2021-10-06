@@ -103,7 +103,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         if (settings.customer?.firstName ?? "").isEmpty ||
             (settings.customer?.lastName ?? "").isEmpty ||
-            (settings.customer?.emailAddress ?? "").isEmpty
+            (settings.customer?.email ?? "").isEmpty
         {
             errors.append(PrimerError.userDetailsMissing)
         }
@@ -128,7 +128,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
-                                        email: settings.customer!.emailAddress!,
+                                        email: settings.customer!.email!,
                                         homePhone: nil,
                                         mobilePhone: settings.customer!.mobileNumber,
                                         workPhone: nil)
@@ -136,7 +136,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let threeDSAddress = ThreeDS.Address(title: nil,
                                              firstName: settings.customer!.firstName,
                                              lastName: settings.customer!.lastName,
-                                             email: settings.customer!.emailAddress,
+                                             email: settings.customer!.email,
                                              phoneNumber: settings.customer!.mobileNumber,
                                              addressLine1: settings.customer!.billingAddress!.addressLine1!,
                                              addressLine2: settings.customer!.billingAddress!.addressLine2,
@@ -248,7 +248,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
             let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
-                                            email: settings.customer!.emailAddress!,
+                                            email: settings.customer!.email!,
                                             homePhone: nil,
                                             mobilePhone: settings.customer!.mobileNumber,
                                             workPhone: nil)
@@ -256,7 +256,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             let threeDSAddress = ThreeDS.Address(title: nil,
                                                  firstName: settings.customer!.firstName,
                                                  lastName: settings.customer!.lastName,
-                                                 email: settings.customer!.emailAddress,
+                                                 email: settings.customer!.email,
                                                  phoneNumber: settings.customer!.mobileNumber,
                                                  addressLine1: settings.customer!.billingAddress!.addressLine1!,
                                                  addressLine2: settings.customer!.billingAddress!.addressLine2,

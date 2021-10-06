@@ -41,46 +41,75 @@ struct DecodedClientToken: Decodable {
 }
 
 public struct ClientSession: Codable {
-    let metadata: [String: AnyCodable]
-    let paymentMethod: ClientSession.PaymentMethod?
-    let orderDetails: Order?
-    let customerDetails: Customer?
-    
     
     public struct PaymentMethod: Codable {
         let vaultOnSuccess: Bool
     }
+    
+    let metadata: [String: AnyCodable]?
+    let paymentMethod: ClientSession.PaymentMethod?
+    let order: Order?
+    let customer: Customer?
+    
+    enum CodingKeys: String, CodingKey {
+        case metadata, paymentMethod, order, customer
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.metadata = (try? container.decode([String: AnyCodable]?.self, forKey: .metadata)) ?? nil
+        self.paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
+        self.order = (try? container.decode(Order?.self, forKey: .order)) ?? nil
+        self.customer = (try? container.decode(Customer?.self, forKey: .customer)) ?? nil
+    }
 }
 
 public struct Customer: Codable {
-    let customerId: String?
+    let id: String?
     let firstName: String?
     let lastName: String?
-    let emailAddress: String?
+    let email: String?
     let mobileNumber: String?
     let billingAddress: Address?
     let shippingAddress: Address?
     let taxId: String?
     
+    enum CodingKeys: String, CodingKey {
+        case id, firstName, lastName, email, mobileNumber, billingAddress, shippingAddress, taxId
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = (try? container.decode(String?.self, forKey: .id)) ?? nil
+        self.firstName = (try? container.decode(String?.self, forKey: .firstName)) ?? nil
+        self.lastName = (try? container.decode(String?.self, forKey: .lastName)) ?? nil
+        self.email = (try? container.decode(String?.self, forKey: .email)) ?? nil
+        self.mobileNumber = (try? container.decode(String?.self, forKey: .mobileNumber)) ?? nil
+        self.billingAddress = (try? container.decode(Address?.self, forKey: .billingAddress)) ?? nil
+        self.shippingAddress = (try? container.decode(Address?.self, forKey: .shippingAddress)) ?? nil
+        self.taxId = (try? container.decode(String?.self, forKey: .taxId)) ?? nil
+    }
+    
     public init(
-        customerId: String? = nil,
+        id: String? = nil,
         firstName: String? = nil,
         lastName: String? = nil,
-        emailAddress: String? = nil,
+        email: String? = nil,
         mobileNumber: String? = nil,
         billingAddress: Address? = nil,
         shippingAddress: Address? = nil,
         taxId: String? = nil
     ) {
-        self.customerId = customerId
+        self.id = id
         self.firstName = firstName
         self.lastName = lastName
-        self.emailAddress = emailAddress
+        self.email = email
         self.mobileNumber = mobileNumber
         self.billingAddress = billingAddress
         self.shippingAddress = shippingAddress
         self.taxId = taxId
     }
+    
 }
 
 public struct Address: Codable {
@@ -92,6 +121,17 @@ public struct Address: Codable {
     let postalCode: String?
     let state: String?
     let countryCode: CountryCode?
+    
+    enum CodingKeys: String, CodingKey {
+        case firstName = "first_name"
+        case lastName = "last_name"
+        case addressLine1 = "address_line_1"
+        case addressLine2 = "address_line_2"
+        case city
+        case postalCode = "postal_code"
+        case state
+        case countryCode = "country_code"
+    }
     
     public init(
         firstName: String? = nil,
@@ -137,6 +177,7 @@ public struct Order: Codable {
     public struct LineItem: Codable {
         let quantity: Int?
         let unitAmount: UInt?
+        let discountAmount: UInt?
         let reference: String?
         let name: String?
     }

@@ -73,10 +73,10 @@ class MerchantCheckoutViewController: UIViewController {
             countryCode: CountryCode.fr)
         
         customer = PrimerSDK.Customer(
-            customerId: customerId,
+            id: customerId,
             firstName: "John",
             lastName: "Smith",
-            emailAddress: "john@primer.io",
+            email: "john@primer.io",
             mobileNumber: phoneNumber,
             billingAddress: address,
             shippingAddress: nil,
