@@ -228,21 +228,26 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             
             let noAdditionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge == nil })
             
-            let noAdditionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: "No additional fee", paymentMethodsViewModels: noAdditionalFeePaymentMethodsViewModels)
-            noAdditionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-            noAdditionalFeesContainerView.delegate = self
-            availablePaymentMethodsStackView.addArrangedSubview(noAdditionalFeesContainerView)
-            
-            let additionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge != nil })
-            for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
-                let title = additionalFeePaymentMethodsViewModel.surCharge
-                let additionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: title, paymentMethodsViewModels: [additionalFeePaymentMethodsViewModel])
-                additionalFeesContainerView.titleLabel?.font = title == "Additional fee may apply" ? UIFont.systemFont(ofSize: 12.0, weight: .regular) : UIFont.systemFont(ofSize: 16.0, weight: .bold)
-                additionalFeesContainerView.delegate = self
-                availablePaymentMethodsStackView.addArrangedSubview(additionalFeesContainerView)
+            if !noAdditionalFeePaymentMethodsViewModels.isEmpty {
+                let noAdditionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: "No additional fee", paymentMethodsViewModels: noAdditionalFeePaymentMethodsViewModels)
+                noAdditionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
+                noAdditionalFeesContainerView.delegate = self
+                availablePaymentMethodsStackView.addArrangedSubview(noAdditionalFeesContainerView)
             }
             
-            availablePaymentMethodsContainerStackView.addArrangedSubview(availablePaymentMethodsStackView)
+            let additionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge != nil })
+            
+            if !additionalFeePaymentMethodsViewModels.isEmpty {
+                for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
+                    let title = additionalFeePaymentMethodsViewModel.surCharge
+                    let additionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: title, paymentMethodsViewModels: [additionalFeePaymentMethodsViewModel])
+                    additionalFeesContainerView.titleLabel?.font = title == "Additional fee may apply" ? UIFont.systemFont(ofSize: 12.0, weight: .regular) : UIFont.systemFont(ofSize: 16.0, weight: .bold)
+                    additionalFeesContainerView.delegate = self
+                    availablePaymentMethodsStackView.addArrangedSubview(additionalFeesContainerView)
+                }
+                
+                availablePaymentMethodsContainerStackView.addArrangedSubview(availablePaymentMethodsStackView)
+            }
         }
         
         verticalStackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
