@@ -27,11 +27,6 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         fatalError("init(coder:) has not been implemented")
     }
 
-    let allowedHosts: [String] = [
-        "primer.io",
-        "livedemostore.primer.io"
-    ]
-
     var url: URL?
 
     override func viewDidLoad() {
@@ -61,7 +56,8 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
     ) {
         if
             let url = navigationAction.request.url,
-            let host = url.host, allowedHosts.contains(host)
+            let host = url.host,
+            WebViewUtil.allowedHostsContain(host)
         {
             viewModel?.onRedirect(with: url)
             decisionHandler(.cancel)
@@ -70,7 +66,11 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         }
     }
     
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+    func webView(
+        _ webView: WKWebView,
+        didFailProvisionalNavigation navigation: WKNavigation!,
+        withError error: Error
+    ) {
         let nsError = error as NSError
         if nsError.domain == NSURLErrorDomain && webView.url == nil {
             viewModel?.onError(error)
