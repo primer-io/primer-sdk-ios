@@ -145,12 +145,12 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                 switch result {
                 case .success(let applePayPaymentResponse):
                     let applePayService: ApplePayServiceProtocol = DependencyContainer.resolve()
-                    applePayService.fetchConfig { [weak self] (err) in
+                    applePayService.fetchConfig { (err) in
                         if let err = err {
                             completion(nil, err)
                             
                         } else {
-                            guard let applePayConfigId = self?.applePayConfigId else {
+                            guard let applePayConfigId = self.applePayConfigId else {
                                 return completion(nil, PaymentException.missingConfigurationId)
                             }
 
@@ -160,7 +160,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                 sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
                             )
                             
-                            applePayService.tokenize(instrument: instrument) { [weak self] (result) in
+                            applePayService.tokenize(instrument: instrument) { (result) in
                                 switch result {
                                 case .failure(let err):
                                     completion(nil, err)
