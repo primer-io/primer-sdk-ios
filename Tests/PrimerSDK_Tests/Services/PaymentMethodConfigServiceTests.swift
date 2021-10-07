@@ -17,7 +17,7 @@ class PaymentMethodConfigServiceTests: XCTestCase {
             coreUrl: "coreUrl",
             pciUrl: "pciUrl",
             paymentMethods: [
-                ConfigPaymentMethod(id: "id123", options: nil, processorConfigId: nil, type: .paymentCard)
+                ConfigPaymentMethod(id: "id123", options: nil, processorConfigId: "config_id", type: .paymentCard)
             ],
             keys: nil
         )

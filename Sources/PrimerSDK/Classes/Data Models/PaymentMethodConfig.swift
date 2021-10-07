@@ -23,9 +23,9 @@ struct PaymentMethodConfig: Codable {
 
 struct ConfigPaymentMethod: Codable {
     
-    let id: String?
+    let id: String? // Will be nil for cards
     let processorConfigId: String?
-    let type: ConfigPaymentMethodType?
+    let type: ConfigPaymentMethodType
     let options: PaymentMethodOptions?
     
     private enum CodingKeys : String, CodingKey {
@@ -43,7 +43,7 @@ struct ConfigPaymentMethod: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String?.self, forKey: .id)
         processorConfigId = try container.decode(String?.self, forKey: .processorConfigId)
-        type = try container.decode(ConfigPaymentMethodType?.self, forKey: .type)
+        type = try container.decode(ConfigPaymentMethodType.self, forKey: .type)
         
         if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {
             options = cardOptions
