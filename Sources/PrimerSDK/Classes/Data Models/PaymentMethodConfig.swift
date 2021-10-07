@@ -25,12 +25,12 @@ struct PrimerConfiguration: Codable {
     let paymentMethods: [PaymentMethodConfig]?
     let keys: ThreeDS.Keys?
     
-    func getConfigId(for type: ConfigPaymentMethodType) -> String? {
+    func getConfigId(for type: PaymentMethodConfigType) -> String? {
         guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
         return method.id
     }
     
-    func getProductId(for type: ConfigPaymentMethodType) -> String? {
+    func getProductId(for type: PaymentMethodConfigType) -> String? {
         guard let method = self.paymentMethods?
                 .first(where: { method in return method.type == type }) else { return nil }
         
@@ -46,14 +46,14 @@ struct PaymentMethodConfig: Codable {
     
     let id: String? // Will be nil for cards
     let processorConfigId: String?
-    let type: ConfigPaymentMethodType
+    let type: PaymentMethodConfigType
     let options: PaymentMethodOptions?
     
     private enum CodingKeys : String, CodingKey {
         case id, options, processorConfigId, type
     }
     
-    init(id: String?, options: PaymentMethodOptions?, processorConfigId: String?, type: ConfigPaymentMethodType) {
+    init(id: String?, options: PaymentMethodOptions?, processorConfigId: String?, type: PaymentMethodConfigType) {
         self.id = id
         self.options = options
         self.processorConfigId = processorConfigId
@@ -64,7 +64,7 @@ struct PaymentMethodConfig: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String?.self, forKey: .id)
         processorConfigId = try container.decode(String?.self, forKey: .processorConfigId)
-        type = try container.decode(ConfigPaymentMethodType.self, forKey: .type)
+        type = try container.decode(PaymentMethodConfigType.self, forKey: .type)
         
         if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {
             options = cardOptions
@@ -112,7 +112,7 @@ struct CardOptions: PaymentMethodOptions {
     let processorConfigId: String?
 }
 
-public enum ConfigPaymentMethodType: String, Codable {
+public enum PaymentMethodConfigType: String, Codable {
     case applePay = "APPLE_PAY"
     case payPal = "PAYPAL"
     case paymentCard = "PAYMENT_CARD"
@@ -135,7 +135,7 @@ public enum ConfigPaymentMethodType: String, Codable {
     }
     
     public init(from decoder: Decoder) throws {
-        self = ((try? ConfigPaymentMethodType(rawValue: decoder.singleValueContainer().decode(RawValue.self))) ?? nil) ?? .unknown
+        self = ((try? PaymentMethodConfigType(rawValue: decoder.singleValueContainer().decode(RawValue.self))) ?? nil) ?? .unknown
     }
 }
 

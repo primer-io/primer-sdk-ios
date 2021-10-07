@@ -25,7 +25,7 @@ class ApayaWebViewModelTests: XCTestCase {
         
         let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
         let mockTokenizationService = tokenizationService as! MockTokenizationService
-        mockTokenizationService.paymentInstrumentType = ConfigPaymentMethodType.apaya.rawValue
+        mockTokenizationService.paymentInstrumentType = PaymentMethodConfigType.apaya.rawValue
         mockTokenizationService.tokenType = TokenType.multiUse.rawValue
 
         Primer.shared.showPaymentMethod(.apaya, withIntent: .vault, on: UIViewController())
