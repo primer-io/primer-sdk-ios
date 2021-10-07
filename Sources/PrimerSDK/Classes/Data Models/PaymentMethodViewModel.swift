@@ -7,9 +7,13 @@
 
 import Foundation
 
-struct PaymentMethodViewModel {
+class PaymentMethodViewModel {
     
     let type: ConfigPaymentMethodType
+    
+    init(type: ConfigPaymentMethodType) {
+        self.type = type
+    }
     
     func toString() -> String {
         log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
