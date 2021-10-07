@@ -29,7 +29,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     }
 
     var availablePaymentOptions: [PaymentMethodConfigViewModel] {
-        return PaymentMethodConfig.paymentMethodConfigViewModels
+        return PrimerConfiguration.paymentMethodConfigViewModels
     }
 
     var amountStringed: String? {

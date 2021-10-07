@@ -42,7 +42,7 @@ internal class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
         return model
     }
     var paymentMethods: [PaymentMethodConfigViewModel] {
-        return PaymentMethodConfig.paymentMethodConfigViewModels
+        return PrimerConfiguration.paymentMethodConfigViewModels
     }
     
     deinit {

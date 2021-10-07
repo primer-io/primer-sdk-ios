@@ -35,7 +35,7 @@ protocol CardComponentsManagerProtocol {
     var amount: Int? { get }
     var currency: Currency? { get }
     var decodedClientToken: DecodedClientToken? { get }
-    var paymentMethodsConfig: PaymentMethodConfig? { get }
+    var paymentMethodsConfig: PrimerConfiguration? { get }
     
     func tokenize()
 }
@@ -58,7 +58,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.decodedClientToken
     }
-    internal var paymentMethodsConfig: PaymentMethodConfig?
+    internal var paymentMethodsConfig: PrimerConfiguration?
     private(set) public var isLoading: Bool = false
     internal private(set) var paymentMethod: PaymentMethodToken?
     
@@ -160,7 +160,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         }
     }
     
-    private func fetchPaymentMethodConfigIfNeeded() -> Promise<PaymentMethodConfig> {
+    private func fetchPaymentMethodConfigIfNeeded() -> Promise<PrimerConfiguration> {
         return Promise { seal in
             if let paymentMethodsConfig = paymentMethodsConfig {
                 seal.fulfill(paymentMethodsConfig)
@@ -224,7 +224,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             firstly {
                 self.fetchClientTokenIfNeeded()
             }
-            .then { decodedClientToken -> Promise<PaymentMethodConfig> in
+            .then { decodedClientToken -> Promise<PrimerConfiguration> in
                 return self.fetchPaymentMethodConfigIfNeeded()
             }
             .done { paymentMethodsConfig in
@@ -361,7 +361,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         return state.decodedClientToken
     }
     
-    var paymentMethodsConfig: PaymentMethodConfig?
+    var paymentMethodsConfig: PrimerConfiguration?
     
     public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderNameField: PrimerCardholderNameFieldView?) {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)

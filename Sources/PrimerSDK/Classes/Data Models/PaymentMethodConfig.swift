@@ -1,4 +1,6 @@
-struct PaymentMethodConfig: Codable {
+#if canImport(UIKit)
+
+struct PrimerConfiguration: Codable {
     
     static var paymentMethodConfigViewModels: [PaymentMethodConfigViewModel] {
         let state: AppStateProtocol = DependencyContainer.resolve()
@@ -136,3 +138,5 @@ public enum ConfigPaymentMethodType: String, Codable {
         self = ((try? ConfigPaymentMethodType(rawValue: decoder.singleValueContainer().decode(RawValue.self))) ?? nil) ?? .unknown
     }
 }
+
+#endif

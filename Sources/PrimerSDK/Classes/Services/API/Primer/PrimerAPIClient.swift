@@ -13,7 +13,7 @@ protocol PrimerAPIClientProtocol {
     func vaultFetchPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<GetVaultedPaymentMethodsResponse, Error>) -> Void)
     func vaultFetchPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse>
     func vaultDeletePaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Data, Error>) -> Void)
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PaymentMethodConfig, Error>) -> Void)
+    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void)
     func directDebitCreateMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
     func payPalStartOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void)
     func payPalStartBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalCreateBillingAgreementResponse, Error>) -> Void)
@@ -67,9 +67,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PaymentMethodConfig, Error>) -> Void) {
+    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void) {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken)
-        networkService.request(endpoint) { (result: Result<PaymentMethodConfig, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<PrimerConfiguration, NetworkServiceError>) in
             switch result {
             case .success(let paymentMethodConfig):
                 completion(.success(paymentMethodConfig))
@@ -249,12 +249,12 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (Result<PaymentMethodConfig, Error>) -> Void) {
+    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (Result<PrimerConfiguration, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(PaymentMethodConfig.self, from: response)
+            let value = try JSONDecoder().decode(PrimerConfiguration.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))

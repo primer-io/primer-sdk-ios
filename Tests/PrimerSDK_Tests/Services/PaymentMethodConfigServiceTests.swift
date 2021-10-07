@@ -13,7 +13,7 @@ import XCTest
 class PaymentMethodConfigServiceTests: XCTestCase {
 
     func test_fetchConfig_updates_paymentMethodConfig_and_viewModels() throws {
-        let config = PaymentMethodConfig(
+        let config = PrimerConfiguration(
             coreUrl: "coreUrl",
             pciUrl: "pciUrl",
             paymentMethods: [

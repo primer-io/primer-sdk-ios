@@ -157,7 +157,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     }
 }
 
-let mockPaymentMethodConfig = PaymentMethodConfig(
+let mockPaymentMethodConfig = PrimerConfiguration(
     coreUrl: "url",
     pciUrl: "url",
     paymentMethods: [
@@ -192,7 +192,7 @@ class MockAppState: AppStateProtocol {
 
     var decodedClientToken: DecodedClientToken? = mockClientToken
 
-    var paymentMethodConfig: PaymentMethodConfig?
+    var paymentMethodConfig: PrimerConfiguration?
 
     var accessToken: String? = "accessToken"
 
@@ -206,7 +206,7 @@ class MockAppState: AppStateProtocol {
 
     init(
         decodedClientToken: DecodedClientToken? = mockClientToken,
-        paymentMethodConfig: PaymentMethodConfig? = PaymentMethodConfig(
+        paymentMethodConfig: PrimerConfiguration? = PrimerConfiguration(
             coreUrl: "url",
             pciUrl: "url",
             paymentMethods: [
