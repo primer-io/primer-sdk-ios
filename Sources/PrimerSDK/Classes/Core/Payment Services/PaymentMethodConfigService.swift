@@ -32,16 +32,15 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
 
                 state.paymentMethodConfig?.paymentMethods?.forEach({ method in
                     if !method.type.isEnabled { return }
-                    state.viewModels.append(PaymentMethodViewModel(type: method.type))
+                    state.viewModels.append(PaymentMethodConfigViewModel(config: method))
                 })
                 
                 // Ensure Apple Pay is always first if present.
                 // This is because of Apple's guidelines.
-                let viewModels = state.viewModels
-                if (viewModels.contains(where: { model in model.type == .applePay})) {
-                    var arr = viewModels.filter({ model in model.type != .applePay})
-                    arr.insert(PaymentMethodViewModel(type: .applePay), at: 0)
-                    state.viewModels = arr
+                for (index, vm) in state.viewModels.enumerated() {
+                    if vm.config.type == .applePay {
+                        state.viewModels.swapAt(0, index)
+                    }
                 }
                 
                 completion(nil)

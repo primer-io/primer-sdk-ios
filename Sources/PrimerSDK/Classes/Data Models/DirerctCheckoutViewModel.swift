@@ -13,7 +13,7 @@ import Foundation
 
 internal protocol DirectCheckoutViewModelProtocol {
     var amountViewModel: AmountViewModel? { get }
-    var paymentMethods: [PaymentMethodViewModel] { get }
+    var paymentMethods: [PaymentMethodConfigViewModel] { get }
     func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void)
 }
 
@@ -41,7 +41,7 @@ internal class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
         
         return model
     }
-    var paymentMethods: [PaymentMethodViewModel] {
+    var paymentMethods: [PaymentMethodConfigViewModel] {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.viewModels
     }

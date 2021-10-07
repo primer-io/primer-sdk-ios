@@ -47,20 +47,20 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
             
             for paymentMethod in availablePaymentMethods {
-                if paymentMethod.type == .applePay || paymentMethod.type == .googlePay {
+                if paymentMethod.config.type == .applePay || paymentMethod.config.type == .googlePay {
                     continue
                 }
                 
                 let paymentMethodButton = UIButton()
                 paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
-                paymentMethodButton.setTitle(paymentMethod.toString(), for: .normal)
+                paymentMethodButton.setTitle(paymentMethod.buttonTitle, for: .normal)
                 paymentMethodButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
-                paymentMethodButton.setImage(paymentMethod.toIconName()?.image?.withRenderingMode(.alwaysTemplate), for: .normal)
+                paymentMethodButton.setImage(paymentMethod.buttonImage?.withRenderingMode(.alwaysTemplate), for: .normal)
                 paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
                 paymentMethodButton.layer.cornerRadius = 4.0
                 paymentMethodButton.clipsToBounds = true
                 
-                switch paymentMethod.type {
+                switch paymentMethod.config.type {
                 case .paymentCard:
                     paymentMethodButton.setTitleColor(theme.colorTheme.text1, for: .normal)
                     paymentMethodButton.tintColor = theme.colorTheme.text1 // We want the card icon colot to be the same color as the text
@@ -73,7 +73,7 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                     if #available(iOS 11.0, *) {
                         paymentMethodButton.backgroundColor = UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
                         paymentMethodButton.setTitleColor(.white, for: .normal)
-                        paymentMethodButton.setImage(paymentMethod.toIconName()?.image, for: .normal)
+                        paymentMethodButton.setImage(paymentMethod.buttonImage, for: .normal)
                         paymentMethodButton.tintColor = .white
                         paymentMethodButton.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
                         verticalStackView.addArrangedSubview(paymentMethodButton)

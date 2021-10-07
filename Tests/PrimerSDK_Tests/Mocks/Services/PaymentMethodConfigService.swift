@@ -11,7 +11,7 @@
 
 class MockPaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
 
-    var viewModels: [PaymentMethodViewModel] = []
+    var viewModels: [PaymentMethodConfigViewModel] = []
 
     var fetchConfigCalled = false
     

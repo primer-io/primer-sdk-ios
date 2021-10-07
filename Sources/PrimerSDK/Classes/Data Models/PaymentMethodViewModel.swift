@@ -7,17 +7,37 @@
 
 import Foundation
 
-class PaymentMethodViewModel {
+class PaymentMethodConfigViewModel {
     
-    let type: ConfigPaymentMethodType
+    var config: ConfigPaymentMethod
     
-    init(type: ConfigPaymentMethodType) {
-        self.type = type
-    }
+    lazy var title: String = {
+        switch config.type {
+        case .applePay:
+            return "Apple Pay"
+        case .payPal:
+            return "PayPal"
+        case .paymentCard:
+            return "Payment Card"
+        case .googlePay:
+            return "Google Pay"
+        case .goCardlessMandate:
+            return "Go Cardless"
+        case .klarna:
+            return "Klarna"
+        case .payNlIdeal:
+            return "Pay NL Ideal"
+        case .apaya:
+            return "Apaya"
+        case .hoolah:
+            return "Hoolah"
+        case .unknown:
+            return "Unknown"
+        }
+    }()
     
-    func toString() -> String {
-        log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-        switch type {
+    lazy var buttonTitle: String? = {
+        switch config.type {
         case .paymentCard:
             return Primer.shared.flow.internalSessionFlow.vaulted
                 ? NSLocalizedString("payment-method-type-card-vaulted",
@@ -31,53 +51,85 @@ class PaymentMethodViewModel {
                                     bundle: Bundle.primerResources,
                                     value: "Pay with card",
                                     comment: "Pay with card - Payment Method Type (Card Not vaulted)")
-
-        case .applePay:
-            return NSLocalizedString("payment-method-type-apple-pay",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Pay",
-                                     comment: "Pay - Payment Method Type (Apple pay)")
-
+        
         case .goCardlessMandate:
             return NSLocalizedString("payment-method-type-go-cardless",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "Bank account",
                                      comment: "Bank account - Payment Method Type (Go Cardless)")
-
-        case .payPal:
-            return ""
+        
+        case .payNlIdeal:
+            return "Pay NL Ideal"
             
-        case .klarna:
-            return NSLocalizedString("payment-method-type-klarna",
+        case .apaya:
+            return NSLocalizedString("payment-method-type-pay-by-mobile",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "Klarna.",
-                                     comment: "Klarna - Payment Method Type (Klarna)")
-
-        case .apaya:
-            return "Pay by mobile"
-            
+                                     value: "Pay by mobile",
+                                     comment: "Pay by mobile - Payment By Mobile (Apaya)")
         case .hoolah:
             return "Hoolah"
-
-        default:
-            return ""
+        
+        case .applePay:
+            return nil
+        case .googlePay:
+            return nil
+        case .klarna:
+            return nil
+        case .payPal:
+            return nil
+        case .unknown:
+            return nil
         }
+    }()
+    
+    lazy var buttonImage: UIImage? = {
+        switch config.type {
+        case .applePay:
+            return UIImage(named: "appleIcon", in: Bundle.primerResources, compatibleWith: nil)
+        case .payPal:
+            return UIImage(named: "paypal3", in: Bundle.primerResources, compatibleWith: nil)
+        case .paymentCard:
+            return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .googlePay:
+            return nil
+        case .goCardlessMandate:
+            return UIImage(named: "rightArrow", in: Bundle.primerResources, compatibleWith: nil)
+        case .klarna:
+            return UIImage(named: "klarna", in: Bundle.primerResources, compatibleWith: nil)
+        case .payNlIdeal:
+            return nil
+        case .apaya:
+            return UIImage(named: "mobile", in: Bundle.primerResources, compatibleWith: nil)
+        case .hoolah:
+            return nil
+        case .unknown:
+            return nil
+        }
+    }()
+    
+    init(config: ConfigPaymentMethod) {
+        self.config = config
     }
 
-    func toIconName() -> ImageName? {
-        log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-        switch type {
-        case .applePay: return .appleIcon
-        case .payPal: return  .paypal3
-        case .goCardlessMandate: return .rightArrow
-        case .klarna: return .klarna
-        case .paymentCard: return .creditCard
-        case .apaya: return .mobile
-        default: return nil
-        }
+    func tokenize(_ compleion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
+        guard let decodedClientToken = state.decodedClientToken else { return }
+        
+        guard let configId = config.id else { return }
+        
+        let request = AsyncPaymentMethodTokenizationRequest(
+            paymentMethodType: config.type,
+            paymentMethodConfigId: configId)
+        
+        let client: PrimerAPIClient = DependencyContainer.resolve()
+        client.tokenizePaymentMethod(
+            clientToken: decodedClientToken,
+            paymentMethodTokenizationRequest: request) { result in
+                compleion(result)
+            }
     }
     
 }
