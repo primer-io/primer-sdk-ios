@@ -161,9 +161,9 @@ let mockPaymentMethodConfig = PrimerConfiguration(
     coreUrl: "url",
     pciUrl: "url",
     paymentMethods: [
-        ConfigPaymentMethod(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
-        ConfigPaymentMethod(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
-        ConfigPaymentMethod(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+        PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
+        PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
+        PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
     ],
     keys: nil
 )
@@ -210,9 +210,9 @@ class MockAppState: AppStateProtocol {
             coreUrl: "url",
             pciUrl: "url",
             paymentMethods: [
-                ConfigPaymentMethod(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
-                ConfigPaymentMethod(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
-                ConfigPaymentMethod(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+                PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
+                PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
+                PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
             ],
             keys: nil
         )

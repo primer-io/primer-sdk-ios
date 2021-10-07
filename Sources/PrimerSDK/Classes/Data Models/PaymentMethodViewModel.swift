@@ -9,7 +9,7 @@ import Foundation
 
 class PaymentMethodConfigViewModel {
     
-    var config: ConfigPaymentMethod
+    var config: PaymentMethodConfig
     
     lazy var title: String = {
         switch config.type {
@@ -109,7 +109,7 @@ class PaymentMethodConfigViewModel {
         }
     }()
     
-    init(config: ConfigPaymentMethod) {
+    init(config: PaymentMethodConfig) {
         self.config = config
     }
 

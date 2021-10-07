@@ -22,7 +22,7 @@ struct PrimerConfiguration: Codable {
     
     let coreUrl: String?
     let pciUrl: String?
-    let paymentMethods: [ConfigPaymentMethod]?
+    let paymentMethods: [PaymentMethodConfig]?
     let keys: ThreeDS.Keys?
     
     func getConfigId(for type: ConfigPaymentMethodType) -> String? {
@@ -42,7 +42,7 @@ struct PrimerConfiguration: Codable {
     }
 }
 
-struct ConfigPaymentMethod: Codable {
+struct PaymentMethodConfig: Codable {
     
     let id: String? // Will be nil for cards
     let processorConfigId: String?
