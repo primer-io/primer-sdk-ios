@@ -139,7 +139,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if savedCardView == nil {
                 savedCardView = CardButton()
                 savedCardView.backgroundColor = .white
-                savedPaymentMethodStackView.addArrangedSubview(savedCardView)
                 savedCardView.translatesAutoresizingMaskIntoConstraints = false
                 savedCardView.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
                 savedCardView.render(model: cardButtonViewModel, showIcon: false)
@@ -314,11 +313,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     func payButtonTapped() {
         guard let paymentMethodToken = selectedPaymentInstrument else { return }
         
+        enableView(false)
+        
         payButton.showSpinner(true, color: theme.colorTheme.text2)
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
             DispatchQueue.main.async { [weak self] in
                 self?.payButton.showSpinner(false)
-                
+                self?.enableView(true)
+
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 
                 if settings.hasDisabledSuccessScreen {
@@ -339,6 +341,32 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             }
         })
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
+    }
+    
+    // MARK: - Helpers
+    
+    private func enableView(_ isEnabled: Bool) {
+        DispatchQueue.main.async { [weak self] in
+            self?.view?.isUserInteractionEnabled = !isEnabled
+            
+            for sv in (self?.verticalStackView.arrangedSubviews ?? []) {
+                sv.alpha = sv == self?.savedPaymentMethodStackView ? 1.0 : (isEnabled ? 1.0 : 0.5)
+            }
+            
+            for sv in (self?.savedPaymentMethodStackView.arrangedSubviews ?? []) {
+                if let stackView = sv as? UIStackView, !stackView.arrangedSubviews.filter({ $0 is PrimerButton }).isEmpty {
+                    for ssv in stackView.arrangedSubviews {
+                        if ssv is PrimerButton {
+                            ssv.alpha = 1.0
+                        } else {
+                            ssv.alpha = (isEnabled ? 1.0 : 0.5)
+                        }
+                    }
+                } else {
+                    sv.alpha = (isEnabled ? 1.0 : 0.5)
+                }
+            }
+        }
     }
     
 }
