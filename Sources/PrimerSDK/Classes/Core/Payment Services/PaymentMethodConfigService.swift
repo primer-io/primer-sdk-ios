@@ -27,22 +27,6 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                 completion(error)
             case .success(let config):
                 state.paymentMethodConfig = config
-
-                state.viewModels = []
-
-                state.paymentMethodConfig?.paymentMethods?.forEach({ method in
-                    if !method.type.isEnabled { return }
-                    state.viewModels.append(PaymentMethodConfigViewModel(config: method))
-                })
-                
-                // Ensure Apple Pay is always first if present.
-                // This is because of Apple's guidelines.
-                for (index, vm) in state.viewModels.enumerated() {
-                    if vm.config.type == .applePay {
-                        state.viewModels.swapAt(0, index)
-                    }
-                }
-                
                 completion(nil)
             }
         }

@@ -1,4 +1,23 @@
 struct PaymentMethodConfig: Codable {
+    
+    static var paymentMethodConfigViewModels: [PaymentMethodConfigViewModel] {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        var viewModels = state
+            .paymentMethodConfig?
+            .paymentMethods?
+            .compactMap({ PaymentMethodConfigViewModel(config: $0) })
+            .filter({ $0.config.type.isEnabled == true })
+        ?? []
+        
+        for (index, viewModel) in viewModels.enumerated() {
+            if viewModel.config.type == .applePay {
+                viewModels.swapAt(0, index)
+            }
+        }
+        
+        return viewModels
+    }
+    
     let coreUrl: String?
     let pciUrl: String?
     let paymentMethods: [ConfigPaymentMethod]?

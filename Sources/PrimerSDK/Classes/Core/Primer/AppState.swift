@@ -8,7 +8,6 @@
 #if canImport(UIKit)
 
 internal protocol AppStateProtocol: AnyObject {
-    var viewModels: [PaymentMethodConfigViewModel] { get set }
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethod: String { get set }
     var decodedClientToken: DecodedClientToken? { get set }
@@ -28,7 +27,6 @@ internal protocol AppStateProtocol: AnyObject {
 }
 
 internal class AppState: AppStateProtocol {
-    var viewModels: [PaymentMethodConfigViewModel] = []
     var paymentMethods: [PaymentMethodToken] = []
     var selectedPaymentMethod: String = ""
     var decodedClientToken: DecodedClientToken?

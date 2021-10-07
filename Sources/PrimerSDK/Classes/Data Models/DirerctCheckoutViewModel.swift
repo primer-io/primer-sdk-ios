@@ -42,8 +42,7 @@ internal class DirectCheckoutViewModel: DirectCheckoutViewModelProtocol {
         return model
     }
     var paymentMethods: [PaymentMethodConfigViewModel] {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.viewModels
+        return PaymentMethodConfig.paymentMethodConfigViewModels
     }
     
     deinit {
