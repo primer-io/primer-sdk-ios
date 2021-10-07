@@ -87,7 +87,7 @@ class PaymentMethodConfigViewModel {
     lazy var buttonImage: UIImage? = {
         switch config.type {
         case .applePay:
-            return UIImage(named: "appleIcon", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "apple-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .payPal:
             return UIImage(named: "paypal3", in: Bundle.primerResources, compatibleWith: nil)
         case .paymentCard:
@@ -97,7 +97,7 @@ class PaymentMethodConfigViewModel {
         case .goCardlessMandate:
             return UIImage(named: "rightArrow", in: Bundle.primerResources, compatibleWith: nil)
         case .klarna:
-            return UIImage(named: "klarna", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "klarna-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .payNlIdeal:
             return nil
         case .apaya:

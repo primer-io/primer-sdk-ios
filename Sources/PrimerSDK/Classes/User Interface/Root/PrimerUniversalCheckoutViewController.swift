@@ -217,8 +217,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 case .klarna:
                     paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
                     paymentMethodButton.setTitleColor(.black, for: .normal)
-                    paymentMethodButton.tintColor = .white
-                    paymentMethodButton.setImage(nil, for: .normal)
+                    paymentMethodButton.tintColor = .black
                     paymentMethodButton.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)
                     
