@@ -8,6 +8,9 @@
 import Foundation
 
 struct PaymentMethodViewModel {
+    
+    let type: ConfigPaymentMethodType
+    
     func toString() -> String {
         log(logLevel: .debug, title: nil, message: "Payment option: \(self.type)", prefix: "🦋", suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         switch type {
@@ -72,7 +75,5 @@ struct PaymentMethodViewModel {
         default: return nil
         }
     }
-
-    let type: ConfigPaymentMethodType
     
 }
