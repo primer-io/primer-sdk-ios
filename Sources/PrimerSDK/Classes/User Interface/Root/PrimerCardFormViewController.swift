@@ -23,7 +23,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let cvvField = PrimerCVVFieldView()
     private let cardholderNameContainerView = PrimerCustomFieldView()
     private let cardholderNameField = PrimerCardholderNameFieldView()
-    private let submitButton = PrimerButton()
+    private let submitButton = PrimerOldButton()
     private var paymentMethod: PaymentMethodToken?
     
     init(flow: PaymentFlow) {

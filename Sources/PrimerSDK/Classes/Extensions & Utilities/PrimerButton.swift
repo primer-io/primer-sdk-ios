@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class PrimerButton: UIButton {
+internal class PrimerOldButton: UIButton {
     
     var spinner: UIActivityIndicatorView!
     var titleCopy: String?

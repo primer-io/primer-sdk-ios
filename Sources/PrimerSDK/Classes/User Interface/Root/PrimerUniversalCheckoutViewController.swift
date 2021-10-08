@@ -13,7 +13,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var titleLabel: UILabel!
     private var seeAllButton: UIButton!
     private var savedPaymentInstrumentStackView: UIStackView!
-    private var payButton: PrimerButton!
+    private var payButton: PrimerOldButton!
     private var coveringView: PrimerView!
     private var selectedPaymentInstrument: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -242,7 +242,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         coveringView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
         
         if payButton == nil {
-            payButton = PrimerButton()
+            payButton = PrimerOldButton()
         }
         
         payButton.layer.cornerRadius = 12
