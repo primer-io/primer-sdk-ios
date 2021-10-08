@@ -9,7 +9,15 @@
 
 import UIKit
 
-internal class PrimerOldButton: UIButton {
+///
+/// Reserve the name for all primer buttons. If you need to extend UIButton, extend and use this one instead, so we
+/// don't expose unnecessary functionality.
+///
+internal class PrimerButton: UIButton {
+    var id: String?
+}
+
+internal class PrimerOldButton: PrimerButton {
     
     var spinner: UIActivityIndicatorView!
     var titleCopy: String?
