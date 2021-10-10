@@ -29,6 +29,7 @@ platform :ios do
   end
 
   lane :qa_release do
+    xcversion(version: "13.0")
     time = Time.new
     str_time = time.strftime("%Y-%m-%d %H:%M:%S")
     # Set timestamp as version_code to differentiate builds in firebase
