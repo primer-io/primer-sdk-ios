@@ -68,6 +68,8 @@ jobs:
           gem install bundler
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
+          bundle update fastlane
+          bundle exec fastlane update_plugins
 
       - name: Run Unit Tests
         run: bundle exec fastlane tests
