@@ -53,6 +53,7 @@ jobs:
           gem install bundler
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
+          sudo xcode-select -r
 
       # - name: Test - Fastlane tests
       #   run: bundle exec fastlane tests
