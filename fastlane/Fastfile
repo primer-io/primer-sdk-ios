@@ -37,11 +37,11 @@ platform :ios do
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
     sdk_version_name = ENV['SOURCE_BRANCH']
 
-    cocoapods(
-      clean_install: true,
-      verbose: true,
-      podfile: "./Example/Podfile"
-    )
+    # cocoapods(
+    #   clean_install: true,
+    #   verbose: true,
+    #   podfile: "./Example/Podfile"
+    # )
 
     # Set version number
     increment_version_number(
