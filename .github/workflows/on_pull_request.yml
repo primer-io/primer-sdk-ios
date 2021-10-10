@@ -57,11 +57,6 @@ jobs:
           bundle exec fastlane update_plugins
           sudo xcode-select -r
 
-      - name: Install Cocoapods
-        run: |
-          gem install cocoapods
-          pod --version
-
       # - name: Test - Fastlane tests
       #   run: bundle exec fastlane tests
 
