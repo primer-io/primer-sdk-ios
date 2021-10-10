@@ -71,11 +71,11 @@ jobs:
           bundle update fastlane
           bundle exec fastlane update_plugins
 
-      - name: Run Unit Tests
-        run: bundle exec fastlane tests
+      # - name: Run Unit Tests
+      #   run: bundle exec fastlane tests
 
-      - name: Run UI Tests
-        run: bundle exec fastlane ui_tests
+      # - name: Run UI Tests
+      #   run: bundle exec fastlane ui_tests
 
       - name: Create Firebase Service Credentials file
         run: |
