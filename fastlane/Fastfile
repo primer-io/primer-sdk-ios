@@ -39,6 +39,7 @@ platform :ios do
 
     cocoapods(
       clean_install: true,
+      verbose: true,
       podfile: "./Example/Podfile"
     )
 
