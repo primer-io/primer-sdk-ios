@@ -258,14 +258,14 @@ platform :ios do
       xcodeproj: "./Example/PrimerSDK.xcodeproj"
     )
 
-    create_keychain(
-        name: ENV["MATCH_KEYCHAIN_NAME"],
-        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-        default_keychain: true,
-        unlock: true,
-        timeout: 3600,
-        lock_when_sleeps: true
-      )
+    # create_keychain(
+    #     name: ENV["MATCH_KEYCHAIN_NAME"],
+    #     password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+    #     default_keychain: true,
+    #     unlock: true,
+    #     timeout: 3600,
+    #     lock_when_sleeps: true
+    #   )
 
     match(
       type: "development",
