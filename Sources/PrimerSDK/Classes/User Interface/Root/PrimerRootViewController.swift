@@ -105,7 +105,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     func blurBackground() {
         UIView.animate(withDuration: presentationDuration ?? 0.3) {
-            self.backgroundView.backgroundColor = .black.withAlphaComponent(0.4)
+            self.backgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         }
     }
     
