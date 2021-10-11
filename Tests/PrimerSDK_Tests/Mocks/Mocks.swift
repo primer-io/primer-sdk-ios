@@ -184,8 +184,6 @@ class MockAppState: AppStateProtocol {
 
     var mandateId: String?
 
-    var viewModels: [PaymentMethodConfigViewModel] = []
-
     var paymentMethods: [PaymentMethodToken] = []
 
     var selectedPaymentMethod: String = ""

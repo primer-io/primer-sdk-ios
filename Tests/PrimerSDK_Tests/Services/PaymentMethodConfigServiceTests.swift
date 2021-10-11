@@ -34,7 +34,7 @@ class PaymentMethodConfigServiceTests: XCTestCase {
         service.fetchConfig({ _ in })
 
         XCTAssertEqual(state.paymentMethodConfig?.coreUrl, config.coreUrl)
-        XCTAssertEqual(state.viewModels.count, 1)
+        XCTAssertEqual(PrimerConfiguration.paymentMethodConfigViewModels.count, 1)
     }
 }
 
