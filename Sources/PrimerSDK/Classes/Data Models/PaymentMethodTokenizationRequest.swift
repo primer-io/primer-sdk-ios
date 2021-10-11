@@ -1,6 +1,8 @@
 #if canImport(UIKit)
 
-struct PaymentMethodTokenizationRequest: Encodable {
+protocol TokenizationRequest: Encodable {}
+
+struct PaymentMethodTokenizationRequest: TokenizationRequest {
     
     let paymentInstrument: PaymentInstrument
     let tokenType: TokenType
@@ -23,6 +25,11 @@ struct PaymentMethodTokenizationRequest: Encodable {
     }
 
 }
+
+struct AsyncPaymentMethodTokenizationRequest: TokenizationRequest {
+    let paymentInstrument: AsyncPaymentMethod
+}
+
 
 // feels like we could polymorph this with a protocol, or at least restrict construcions with a specific factory method for each payment instrument.
 struct PaymentInstrument: Encodable {
