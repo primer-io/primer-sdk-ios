@@ -170,7 +170,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         for paymentMethod in paymentMethodConfigViewModels {
             if paymentMethod.config.type == .hoolah || paymentMethod.config.type == .payNLIdeal {
                 paymentMethod.tokenizationCompletion = { (tok, err) in
-                
+                    if let err = err {
+                        Primer.shared.primerRootVC?.handle(error: err)
+                    } else {
+                        Primer.shared.primerRootVC?.handleSuccess()
+                    }
                 }
                 verticalStackView.addArrangedSubview(paymentMethod.paymentMethodButton)
                 

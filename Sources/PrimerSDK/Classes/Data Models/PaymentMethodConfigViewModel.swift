@@ -16,6 +16,7 @@ class PaymentMethodConfigViewModel {
     internal var position: Int!
     var tokenizationCompletion: TokenizationCompletion!
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    internal private(set) var paymentMethod: PaymentMethodToken?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -53,9 +54,11 @@ class PaymentMethodConfigViewModel {
         let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
         client.tokenizePaymentMethod(
             clientToken: decodedClientToken,
-            paymentMethodTokenizationRequest: request) { result in
+            paymentMethodTokenizationRequest: request) { [unowned self] result in
                 switch result {
                 case .success(let paymentMethod):
+                    self.paymentMethod = paymentMethod
+                    
                     Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
                         self.tokenizationCompletion?(nil, err)
                         self.tokenizationCompletion = nil
@@ -331,7 +334,6 @@ class PaymentMethodConfigViewModel {
 extension PaymentMethodConfigViewModel: ResumeHandlerProtocol {
     
     func handle(error: Error) {
-        Primer.shared.primerRootVC?.handle(error: error)
         self.tokenizationCompletion?(nil, error)
         self.tokenizationCompletion = nil
     }
@@ -362,8 +364,7 @@ extension PaymentMethodConfigViewModel: ResumeHandlerProtocol {
     }
     
     func handleSuccess() {
-        Primer.shared.primerRootVC?.handleSuccess()
-        self.tokenizationCompletion?(nil, nil)
+        self.tokenizationCompletion?(self.paymentMethod, nil)
         self.tokenizationCompletion = nil
     }
     

@@ -173,16 +173,25 @@ internal class PrimerRootViewController: PrimerViewController {
                     
                 case .checkoutWithHoolah:
                     guard let viewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == .hoolah }).first else { return }
-                    viewModel.tokenizationCompletion = { (tok, err) in
-                    
+                    viewModel.tokenizationCompletion = { [unowned self] (tok, err) in
+                        if let err = err {
+                            self?.handle(error: err)
+                        } else {
+                            self?.handleSuccess()
+                        }
                     }
                     viewModel.tokenize()
                     
                 case .checkoutWithPayNL:
                     guard let viewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == .payNLIdeal }).first else { return }
-                    viewModel.tokenizationCompletion = { (tok, err) in
-                    
+                    viewModel.tokenizationCompletion = { [unowned self] (tok, err) in
+                        if let err = err {
+                            self?.handle(error: err)
+                        } else {
+                            self?.handleSuccess()
+                        }
                     }
+                    
                     viewModel.tokenize()
                     
                 case .none:
