@@ -27,7 +27,7 @@ struct PaymentMethodTokenizationRequest: TokenizationRequest {
 }
 
 struct AsyncPaymentMethodTokenizationRequest: TokenizationRequest {
-    let paymentInstrument: AsyncPaymentMethod
+    let paymentInstrument: AsyncPaymentMethodOptions
 }
 
 

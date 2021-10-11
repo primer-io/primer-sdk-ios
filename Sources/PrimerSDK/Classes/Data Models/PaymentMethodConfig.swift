@@ -17,6 +17,10 @@ struct PrimerConfiguration: Codable {
             }
         }
         
+        for (index, viewModel) in viewModels.enumerated() {
+            viewModel.position = index
+        }
+        
         return viewModels
     }
     
@@ -112,6 +116,12 @@ struct CardOptions: PaymentMethodOptions {
     let processorConfigId: String?
 }
 
+struct AsyncPaymentMethodOptions: PaymentMethodOptions {
+    let type: String = "OFF_SESSION_PAYMENT"
+    let paymentMethodType: PaymentMethodConfigType
+    let paymentMethodConfigId: String
+}
+
 public enum PaymentMethodConfigType: String, Codable {
     case applePay = "APPLE_PAY"
     case payPal = "PAYPAL"
@@ -119,7 +129,7 @@ public enum PaymentMethodConfigType: String, Codable {
     case googlePay = "GOOGLE_PAY"
     case goCardlessMandate = "GOCARDLESS"
     case klarna = "KLARNA"
-    case payNlIdeal = "PAY_NL_IDEAL"
+    case payNLIdeal = "PAY_NL_IDEAL"
     case apaya = "APAYA"
     case hoolah = "HOOLAH"
     
@@ -127,9 +137,20 @@ public enum PaymentMethodConfigType: String, Codable {
     
     var isEnabled: Bool {
         switch self {
-        case .applePay, .payPal, .paymentCard, .goCardlessMandate, .klarna, .apaya:
+        case .goCardlessMandate,
+                .googlePay:
+            return false
+        case .paymentCard,
+                .payPal:
             return true
-        default:
+        case .klarna:
+            return Primer.shared.flow.internalSessionFlow.vaulted
+        case .applePay,
+                .apaya,
+                .hoolah,
+                .payNLIdeal:
+            return !Primer.shared.flow.internalSessionFlow.vaulted
+        case .unknown:
             return false
         }
     }
