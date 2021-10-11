@@ -392,20 +392,3 @@ struct PollingURLs: Decodable {
     let redirect: String
     let complete: String
 }
-
-extension PaymentMethodConfigViewModel {
-    
-    static var dsa: Int = {
-       return 2
-    }()
-    
-}
-
-
-
-
-
-
-
-
-
