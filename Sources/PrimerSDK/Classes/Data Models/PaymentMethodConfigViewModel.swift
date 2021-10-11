@@ -9,6 +9,11 @@ import Foundation
 
 typealias TokenizationCompletion = ((PaymentMethodToken?, Error?) -> Void)
 
+internal protocol PaymentMethodTokenizationViewModelProtocol {
+    func startTokenizationFlow()
+    var completion: TokenizationCompletion? { get set }
+}
+
 class PaymentMethodConfigViewModel {
     
     internal private(set) var config: PaymentMethodConfig
