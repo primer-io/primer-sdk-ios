@@ -12,8 +12,6 @@ import WebKit
 
 internal class WebViewController: PrimerViewController, WKNavigationDelegate {
 
-    weak var delegate: ReloadDelegate?
-
     let webView = WKWebView()
 
     var url: URL?
