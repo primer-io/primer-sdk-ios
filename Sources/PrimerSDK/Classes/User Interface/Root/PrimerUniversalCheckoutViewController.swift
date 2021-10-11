@@ -17,6 +17,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var coveringView: PrimerView!
     private var selectedPaymentInstrument: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    private var paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
     
     // swiftlint:disable function_body_length
     override func viewDidLoad() {
@@ -150,84 +151,83 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         Primer.shared.primerRootVC?.layoutIfNeeded()
     }
-    
+
     private func renderAvailablePaymentMethods() {
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-        let availablePaymentMethods = checkoutViewModel.availablePaymentOptions
+        let otherPaymentMethodsTitleLabel = UILabel()
+        otherPaymentMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        otherPaymentMethodsTitleLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
+        otherPaymentMethodsTitleLabel.text = NSLocalizedString("primer-vault-payment-method-available-payment-methods",
+                                                               tableName: nil,
+                                                               bundle: Bundle.primerResources,
+                                                               value: "Available payment methods",
+                                                               comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
+        otherPaymentMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
+        otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
+        otherPaymentMethodsTitleLabel.textAlignment = .left
         
-        if !availablePaymentMethods.filter({ $0.config.type != .googlePay }).isEmpty {
-            let otherPaymentMethodsTitleLabel = UILabel()
-            otherPaymentMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-            otherPaymentMethodsTitleLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
-            otherPaymentMethodsTitleLabel.text = NSLocalizedString("primer-vault-payment-method-available-payment-methods",
-                                                                   tableName: nil,
-                                                                   bundle: Bundle.primerResources,
-                                                                   value: "Available payment methods",
-                                                                   comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
-            otherPaymentMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
-            otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
-            otherPaymentMethodsTitleLabel.textAlignment = .left
-            
-            verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
-            
-            for paymentMethod in availablePaymentMethods {
+        verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
+
+        for paymentMethod in paymentMethodConfigViewModels {
+            if paymentMethod.config.type == .hoolah || paymentMethod.config.type == .payNLIdeal {
+                paymentMethod.tokenizationCompletion = { (tok, err) in
+                
+                }
+                verticalStackView.addArrangedSubview(paymentMethod.paymentMethodButton)
+                
+            } else {
                 let paymentMethodButton = UIButton()
                 paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
+                paymentMethodButton.backgroundColor = paymentMethod.buttonColor
                 paymentMethodButton.setTitle(paymentMethod.buttonTitle, for: .normal)
+                paymentMethodButton.setTitleColor(paymentMethod.buttonTitleColor, for: .normal)
                 paymentMethodButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
-                paymentMethodButton.setImage(paymentMethod.buttonImage?.withRenderingMode(.alwaysTemplate), for: .normal)
+                paymentMethodButton.setImage(paymentMethod.buttonImage, for: .normal)
+                paymentMethodButton.tintColor = paymentMethod.buttonTintColor
                 paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
-                paymentMethodButton.layer.cornerRadius = 4.0
+                if let buttonCornerRadius = paymentMethod.buttonCornerRadius {
+                    paymentMethodButton.layer.cornerRadius = buttonCornerRadius
+                }
+                paymentMethodButton.layer.borderWidth = paymentMethod.buttonBorderWidth
+                paymentMethodButton.layer.borderColor = paymentMethod.buttonBorderColor?.cgColor
                 paymentMethodButton.clipsToBounds = true
                 
                 switch paymentMethod.config.type {
                 case .paymentCard:
-                    paymentMethodButton.setTitleColor(theme.colorTheme.text1, for: .normal)
-                    paymentMethodButton.tintColor = theme.colorTheme.text1
-                    paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = theme.colorTheme.text1.cgColor
                     paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)
                     
                 case .applePay:
-                    paymentMethodButton.backgroundColor = .black
-                    paymentMethodButton.setTitleColor(.white, for: .normal)
-                    paymentMethodButton.tintColor = .white
                     paymentMethodButton.addTarget(self, action: #selector(applePayButtonTapped(_:)), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)
                     
                 case .payPal:
                     if #available(iOS 11.0, *) {
-                        paymentMethodButton.backgroundColor = UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
-                        paymentMethodButton.setImage(paymentMethod.buttonImage, for: .normal)
-                        paymentMethodButton.setTitleColor(.white, for: .normal)
-                        paymentMethodButton.tintColor = .white
                         paymentMethodButton.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
                         verticalStackView.addArrangedSubview(paymentMethodButton)
                     }
-                    
-                case .goCardlessMandate:
-                    // Doesn't work for checkout
-                    break
-                    
-                case .apaya:
-                    // Doesn't work for checkout
-                    break
-                    
+
                 case .klarna:
-                    paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
-                    paymentMethodButton.setTitleColor(.black, for: .normal)
                     paymentMethodButton.tintColor = .black
                     paymentMethodButton.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)
                     
+                case .apaya,
+                        .goCardlessMandate:
+                    // Doesn't work for checkout
+                    break
+                    
+                case .hoolah,
+                        .payNLIdeal:
+                    // Has been handled by the view model.
+                    break
+
                 default:
                     break
                 }
             }
         }
     }
-    
+
     private func renderPayButton() {
         if coveringView == nil {
             coveringView = PrimerView()
