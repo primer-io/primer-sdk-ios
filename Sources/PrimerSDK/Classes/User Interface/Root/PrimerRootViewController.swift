@@ -114,8 +114,7 @@ internal class PrimerRootViewController: PrimerViewController {
         
         if !settings.isInitialLoadingHidden {
             blurBackground()
-            let lvc = PrimerLoadingViewController(withHeight: 300)
-            show(viewController: lvc)
+            showLoadingScreenIfNeeded()
         }
         
         let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
@@ -320,17 +319,31 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
     
+    internal func showLoadingScreenIfNeeded() {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        var show = true
+        
+        if nc.viewControllers.isEmpty {
+            show = !settings.isInitialLoadingHidden
+        } else if settings.hasDisabledSuccessScreen {
+            show = false
+        }
+        
+        if show {
+            DispatchQueue.main.async { [weak self] in
+                let lvc = PrimerLoadingViewController(withHeight: 300)
+                self?.show(viewController: lvc)
+            }
+        }
+        
+    }
+    
 }
 
 extension PrimerRootViewController {
     
     func presentKlarna() {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if !settings.isInitialLoadingHidden {
-            let lvc = PrimerLoadingViewController(withHeight: 300)
-            show(viewController: lvc)
-        }
+        showLoadingScreenIfNeeded()
         
         let klarnaViewModel = KlarnaViewModel()
         klarnaViewModel.didPresentPaymentMethod = { [weak self] in
@@ -384,12 +397,7 @@ extension PrimerRootViewController {
     }
     
     func presentApaya() {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if !settings.isInitialLoadingHidden {
-            let lvc = PrimerLoadingViewController(withHeight: 300)
-            show(viewController: lvc)
-        }
+        showLoadingScreenIfNeeded()
         
         let apayaWebViewModel = ApayaWebViewModel()
         apayaWebViewModel.generateWebViewUrl { [weak self] result in
@@ -429,8 +437,6 @@ extension PrimerRootViewController {
     
     @available(iOS 11.0, *)
     func presentPayPal() {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
         let payPalViewModel = PayPalViewModel()
         payPalViewModel.didPresentPaymentMethod = { [weak self] in
             self?.blurBackground()
@@ -465,10 +471,7 @@ extension PrimerRootViewController {
             }
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
-            if !settings.hasDisabledSuccessScreen {
-                let lvc = PrimerLoadingViewController(withHeight: 300)
-                strongSelf.show(viewController: lvc)
-            }
+            strongSelf.showLoadingScreenIfNeeded()
             
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: strongSelf)
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
