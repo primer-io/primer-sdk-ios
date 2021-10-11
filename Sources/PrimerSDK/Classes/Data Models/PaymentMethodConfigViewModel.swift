@@ -286,13 +286,14 @@ class PaymentMethodConfigViewModel {
                 .hoolah,
                 .payNLIdeal:
             return .white
+        case .klarna:
+            return .black
         case .paymentCard,
                 .goCardlessMandate,
                 .apaya:
             return theme.colorTheme.text1
         case .payPal,
                 .googlePay,
-                .klarna,
                 .unknown:
             return nil
         }
