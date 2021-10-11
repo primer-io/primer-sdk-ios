@@ -48,7 +48,7 @@ class PaymentMethodConfigViewModel {
             paymentInstrument: AsyncPaymentMethodOptions(
                 paymentMethodType: config.type, paymentMethodConfigId: configId))
         
-        Primer.shared.primerRootVC?.showLoadingScreen()
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
 
         let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
         client.tokenizePaymentMethod(
