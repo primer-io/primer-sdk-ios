@@ -2,12 +2,12 @@
 
 struct PrimerConfiguration: Codable {
     
-    static var paymentMethodConfigViewModels: [PaymentMethodConfigViewModel] {
+    static var paymentMethodConfigViewModels: [AsyncPaymentMethodTokenizationViewModel] {
         let state: AppStateProtocol = DependencyContainer.resolve()
         var viewModels = state
             .paymentMethodConfig?
             .paymentMethods?
-            .compactMap({ PaymentMethodConfigViewModel(config: $0) })
+            .compactMap({ AsyncPaymentMethodTokenizationViewModel(config: $0) })
             .filter({ $0.config.type.isEnabled == true })
         ?? []
         

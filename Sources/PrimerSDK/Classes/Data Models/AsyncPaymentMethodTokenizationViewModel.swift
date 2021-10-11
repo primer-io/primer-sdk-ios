@@ -14,7 +14,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol {
     var completion: TokenizationCompletion? { get set }
 }
 
-class PaymentMethodConfigViewModel {
+class AsyncPaymentMethodTokenizationViewModel {
     
     internal private(set) var config: PaymentMethodConfig
     private var webViewController: WebViewController?
@@ -336,7 +336,7 @@ class PaymentMethodConfigViewModel {
     }()
 }
 
-extension PaymentMethodConfigViewModel: ResumeHandlerProtocol {
+extension AsyncPaymentMethodTokenizationViewModel: ResumeHandlerProtocol {
     
     func handle(error: Error) {
         self.tokenizationCompletion?(nil, error)

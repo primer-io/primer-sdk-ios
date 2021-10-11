@@ -14,7 +14,7 @@ class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return DirectDebitMandate()
     }
 
-    var availablePaymentOptions: [PaymentMethodConfigViewModel] {
+    var availablePaymentOptions: [AsyncPaymentMethodTokenizationViewModel] {
         return []
     }
 

@@ -12,7 +12,7 @@ import Foundation
 internal protocol VaultCheckoutViewModelProtocol {
     var paymentMethods: [PaymentMethodToken] { get }
     var mandate: DirectDebitMandate { get }
-    var availablePaymentOptions: [PaymentMethodConfigViewModel] { get }
+    var availablePaymentOptions: [AsyncPaymentMethodTokenizationViewModel] { get }
     var selectedPaymentMethodId: String { get }
     var amountStringed: String? { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
@@ -28,7 +28,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return state.directDebitMandate
     }
 
-    var availablePaymentOptions: [PaymentMethodConfigViewModel] {
+    var availablePaymentOptions: [AsyncPaymentMethodTokenizationViewModel] {
         return PrimerConfiguration.paymentMethodConfigViewModels
     }
 
