@@ -34,11 +34,7 @@ internal class WebViewController: PrimerViewController, WKNavigationDelegate {
         if let url = url {
             var request = URLRequest(url: url)
             request.timeoutInterval = 60
-            request.allHTTPHeaderFields = [
-                "Content-Type": "application/json",
-                "Primer-SDK-Version": "1.0.0-beta.0",
-                "Primer-SDK-Client": "IOS_NATIVE"
-            ]
+            request.allHTTPHeaderFields = PrimerAPI.headers
             webView.load(request)
         }
     }
