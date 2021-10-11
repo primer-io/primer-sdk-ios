@@ -57,7 +57,7 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         if
             let url = navigationAction.request.url,
             let host = url.host,
-            WebViewUtil.allowedHostsContain(host)
+            WebViewUtil.isPrimerDomain(host)
         {
             viewModel?.onRedirect(with: url)
             decisionHandler(.cancel)
