@@ -104,12 +104,12 @@ internal class PrimerRootViewController: PrimerViewController {
     }
     
     func blurBackground() {
-        UIView.animate(withDuration: presentationDuration ?? 0.3) {
+        UIView.animate(withDuration: presentationDuration) {
             self.backgroundView.backgroundColor = .black.withAlphaComponent(0.4)
         }
     }
     
-    func render() {
+    private func render() {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if !settings.isInitialLoadingHidden {
@@ -174,7 +174,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     break
                 }
                 
-                if let lvc = (self?.nc.viewControllers.first as? PrimerContainerViewController)?.children.first as? PrimerLoadingViewController {
+                if let _ = (self?.nc.viewControllers.first as? PrimerContainerViewController)?.children.first as? PrimerLoadingViewController {
                     // Remove the loading view controller from the navigation stack so user can't pop to it.
                     self?.nc.viewControllers.removeFirst()
                 }
@@ -279,7 +279,7 @@ internal class PrimerRootViewController: PrimerViewController {
             nc.pushViewController(cvc, animated: false)
         }
         
-        if nc.viewControllers.count ?? 0 <= 1 {
+        if nc.viewControllers.count <= 1 {
             cvc.mockedNavigationBar.hidesBackButton = true
         }
         
@@ -483,7 +483,7 @@ extension PrimerRootViewController {
                     
                     if !settings.hasDisabledSuccessScreen {
                         if let err = err {
-                            let evc = ErrorViewController(message: PrimerError.payPalSessionFailed.localizedDescription)
+                            let evc = ErrorViewController(message: err.localizedDescription)
                             evc.view.translatesAutoresizingMaskIntoConstraints = false
                             evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                             strongSelf.show(viewController: evc)
