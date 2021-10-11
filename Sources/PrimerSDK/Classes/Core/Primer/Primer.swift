@@ -240,8 +240,23 @@ public class Primer {
             
         case (.klarna, .checkout):
             flow = .checkoutWithKlarna
+
+        case (.payNLIdeal, .checkout):
+            flow = .checkoutWithPayNL
             
-        default:
+        case (.hoolah, .checkout):
+            flow = .checkoutWithHoolah
+            
+        case (.payPal, .checkout):
+            flow = .checkoutWithPayPal
+            
+        case (.apaya, .checkout),
+            (.applePay, .vault),
+            (.goCardlessMandate, _),
+            (.googlePay, _),
+            (.hoolah, .vault),
+            (.payNLIdeal, .vault),
+            (.unknown, _):
             let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return

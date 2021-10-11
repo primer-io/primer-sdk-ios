@@ -136,7 +136,8 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .completeDirectCheckout:
                     break
                     
-                case .addPayPalToVault:
+                case .addPayPalToVault,
+                        .checkoutWithPayPal:
                     if #available(iOS 11.0, *) {
                         self?.presentPayPal()
                     } else {
@@ -170,8 +171,23 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .addApayaToVault:
                     self?.presentApaya()
                     
+                case .checkoutWithHoolah:
+                    guard let viewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == .hoolah }).first else { return }
+                    viewModel.tokenizationCompletion = { (tok, err) in
+                    
+                    }
+                    viewModel.tokenize()
+                    
+                case .checkoutWithPayNL:
+                    guard let viewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == .payNLIdeal }).first else { return }
+                    viewModel.tokenizationCompletion = { (tok, err) in
+                    
+                    }
+                    viewModel.tokenize()
+                    
                 case .none:
                     break
+
                 }
                 
                 if let _ = (self?.nc.viewControllers.first as? PrimerContainerViewController)?.children.first as? PrimerLoadingViewController {

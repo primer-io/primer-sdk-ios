@@ -143,10 +143,10 @@ public enum PaymentMethodConfigType: String, Codable {
         case .paymentCard,
                 .payPal:
             return true
-        case .klarna:
+        case .apaya,
+                .klarna:
             return Primer.shared.flow.internalSessionFlow.vaulted
         case .applePay,
-                .apaya,
                 .hoolah,
                 .payNLIdeal:
             return !Primer.shared.flow.internalSessionFlow.vaulted
