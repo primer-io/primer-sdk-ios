@@ -59,11 +59,6 @@ jobs:
       # - name: Test - Fastlane tests
       #   run: bundle exec fastlane tests
 
-      - name: Specs Repo
-        run: pod repo add primer-io-primer-podspecs https://${POD_GITHUB_API_TOKEN}@github.com/primer-io/primer-podspecs.git
-        env:
-          POD_GITHUB_API_TOKEN: ${{ secrets.PRIMER_PODSPEC_ACCESS_TOKEN }}
-
       - name: Create Firebase Service Credentials file
         run: |
           echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json.b64
