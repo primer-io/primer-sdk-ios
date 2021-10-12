@@ -28,29 +28,31 @@ internal class PrimerOldButton: PrimerButton {
     }
     
     func showSpinner(_ flag: Bool, color: UIColor = .white) {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-        if titleCopy == nil {
-            titleCopy = titleLabel?.text
+        DispatchQueue.main.async {
+            let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+            
+            if self.titleCopy == nil {
+                self.titleCopy = self.titleLabel?.text
+            }
+            
+            self.isUserInteractionEnabled = !flag
+            
+            if self.spinner == nil {
+                self.spinner = UIActivityIndicatorView()
+                self.addSubview(self.spinner)
+                self.spinner.translatesAutoresizingMaskIntoConstraints = false
+                self.spinner.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+                self.spinner.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+                self.spinner.widthAnchor.constraint(equalToConstant: 20).isActive = true
+                self.spinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            }
+            
+            self.spinner.color = theme.colorTheme.text2
+            
+            flag ? self.spinner.startAnimating() : self.spinner.stopAnimating()
+            flag ? self.setTitle(nil, for: .normal) : self.setTitle(self.titleCopy, for: .normal)
+            self.spinner.isHidden = !flag
         }
-        
-        isUserInteractionEnabled = !flag
-        
-        if spinner == nil {
-            spinner = UIActivityIndicatorView()
-            addSubview(spinner)
-            spinner.translatesAutoresizingMaskIntoConstraints = false
-            spinner.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-            spinner.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-            spinner.widthAnchor.constraint(equalToConstant: 20).isActive = true
-            spinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        }
-        
-        spinner.color = theme.colorTheme.text2
-        
-        flag ? spinner.startAnimating() : spinner.stopAnimating()
-        flag ? setTitle(nil, for: .normal) : setTitle(titleCopy, for: .normal)
-        spinner.isHidden = !flag
     }
     
     func pin(to view: UIView, leading: CGFloat = 0, top: CGFloat = 0, trailing: CGFloat = 0, bottom: CGFloat = 0) {
