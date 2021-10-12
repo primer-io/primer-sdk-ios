@@ -1,4 +1,4 @@
-source 'https://github.com/primer-io/primer-podspecs.git'
+# source 'https://github.com/primer-io/primer-podspecs.git'
 
 use_frameworks!
 
