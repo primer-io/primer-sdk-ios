@@ -80,6 +80,7 @@ platform :ios do
       # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
+      clean: true,
     )
 
     # Appetize needs the .app to be zipped
@@ -111,6 +112,7 @@ platform :ios do
       export_method: "development",
       # Build speed optimisation
       skip_package_pkg: true, 
+      clean: true,
     )
 
     # Firebase
@@ -183,6 +185,7 @@ platform :ios do
       # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
+      clean: true,
     )
 
     # Appetize needs the .app to be zipped
@@ -214,6 +217,7 @@ platform :ios do
       export_method: "development",
       # Build speed optimisation
       skip_package_pkg: true, 
+      clean: true,
     )
 
     # Firebase
@@ -285,6 +289,7 @@ platform :ios do
       # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
+      clean: true,
     )
 
     # Appetize needs the .app to be zipped
