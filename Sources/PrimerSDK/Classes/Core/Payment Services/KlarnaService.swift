@@ -10,7 +10,7 @@
 internal protocol KlarnaServiceProtocol {
     func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func createKlarnaCustomerToken(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
-    func finalizePaymentSession(_ completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void)
+    func finalizePaymentSession(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
 }
 
 internal class KlarnaService: KlarnaServiceProtocol {
@@ -144,7 +144,7 @@ internal class KlarnaService: KlarnaServiceProtocol {
         }
     }
 
-    func finalizePaymentSession(_ completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void) {
+    func finalizePaymentSession(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let clientToken = state.decodedClientToken else {

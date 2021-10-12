@@ -176,7 +176,7 @@ class KlarnaServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Finalize Klarna payment session | Success")
 
         let sessionData = KlarnaSessionData(recurringDescription: "subscription", purchaseCountry: "SE", purchaseCurrency: "SEK", locale: "en-SE", orderAmount: 2000, orderLines: [], billingAddress: nil, tokenDetails: nil)
-        let response = KlarnaFinalizePaymentSessionresponse(sessionData: sessionData)
+        let response = KlarnaCustomerTokenAPIResponse(customerTokenId: nil, sessionData: sessionData)
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
 
@@ -204,7 +204,7 @@ class KlarnaServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Finalize Klarna payment session | Failure: API call failed")
 
         let sessionData = KlarnaSessionData(recurringDescription: "subscription", purchaseCountry: "SE", purchaseCurrency: "SEK", locale: "en-SE", orderAmount: 2000, orderLines: [], billingAddress: nil, tokenDetails: nil)
-        let response = KlarnaFinalizePaymentSessionresponse(sessionData: sessionData)
+        let response = KlarnaCustomerTokenAPIResponse(customerTokenId: nil, sessionData: sessionData)
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: true)
 

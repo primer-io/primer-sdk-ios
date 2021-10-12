@@ -65,7 +65,7 @@ struct CreateKlarnaCustomerTokenAPIRequest: Codable {
 }
 
 struct KlarnaCustomerTokenAPIResponse: Codable {
-    let customerTokenId: String
+    let customerTokenId: String?
     let sessionData: KlarnaSessionData
 }
 
@@ -147,8 +147,4 @@ public struct KlarnaBillingAddress: Codable {
     public let postalCode: String?
     public let state: String?
     public let title: String?
-}
-
-struct KlarnaFinalizePaymentSessionresponse: Codable {
-    let sessionData: KlarnaSessionData
 }
