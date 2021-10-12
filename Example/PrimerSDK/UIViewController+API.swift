@@ -96,8 +96,8 @@ extension UIViewController {
                 print("Error: \(error)")
             }
             
-            let str = String(data: data, encoding: .utf8)
-            print("Response str: \(str)")
+//            let str = String(data: data, encoding: .utf8)
+//            print("Response str: \(str)")
 
             completion(.success(data))
 
