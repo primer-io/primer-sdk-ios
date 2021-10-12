@@ -37,10 +37,10 @@ platform :ios do
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
     sdk_version_name = ENV['SOURCE_BRANCH']
 
-    # cocoapods(
-    #   clean_install: true,
-    #   podfile: "./Example/Podfile"
-    # )
+    cocoapods(
+      clean_install: true,
+      podfile: "./Example/Podfile"
+    )
 
     # Set version number
     increment_version_number(
@@ -140,10 +140,10 @@ platform :ios do
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
     sdk_version_name = ENV['SOURCE_TAG']
 
-    # cocoapods(
-    #   clean_install: true,
-    #   podfile: "./Example/Podfile"
-    # )
+    cocoapods(
+      clean_install: true,
+      podfile: "./Example/Podfile"
+    )
 
     # Set version number
     increment_version_number(
@@ -246,10 +246,10 @@ platform :ios do
     puts "PR_NUMBER: " + pr_number
     version_name = "preview-" + pr_number
 
-    # cocoapods(
-    #   clean_install: true,
-    #   podfile: "./Example/Podfile"
-    # )
+    cocoapods(
+      clean_install: true,
+      podfile: "./Example/Podfile"
+    )
 
     # Set version number
     increment_version_number(
