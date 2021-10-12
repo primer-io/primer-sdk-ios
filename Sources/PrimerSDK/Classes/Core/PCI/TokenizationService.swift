@@ -5,9 +5,10 @@ import Foundation
 internal protocol TokenizationServiceProtocol {
     var tokenizedPaymentMethodToken: PaymentMethodToken? { get set }
     func tokenize(
-        request: PaymentMethodTokenizationRequest,
+        request: TokenizationRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void
     )
+    func tokenize(request: TokenizationRequest) -> Promise<PaymentMethodToken>
 }
 
 internal class TokenizationService: TokenizationServiceProtocol {
@@ -19,7 +20,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
     }
 
     func tokenize(
-        request: PaymentMethodTokenizationRequest,
+        request: TokenizationRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void
     ) {
         let state: AppStateProtocol = DependencyContainer.resolve()
@@ -112,24 +113,24 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     
                     #else
                     print("\nWARNING!\nCannot perform 3DS, Primer3DS SDK is missing. Continue without 3DS\n")
-                    DispatchQueue.main.async {
-                        if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
-                        }
-
-                        onTokenizeSuccess(.success(paymentMethodToken))
-                    }
-                    
+                    onTokenizeSuccess(.success(paymentMethodToken))
                     #endif
                     
                 } else {
-                    DispatchQueue.main.async {
-                        if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
-                        }
-
-                        onTokenizeSuccess(.success(paymentMethodToken))
-                    }
+                    onTokenizeSuccess(.success(paymentMethodToken))
+                }
+            }
+        }
+    }
+    
+    func tokenize(request: TokenizationRequest) -> Promise<PaymentMethodToken> {
+        return Promise { seal in
+            self.tokenize(request: request) { result in
+                switch result {
+                case .failure(let err):
+                    seal.reject(err)
+                case .success(let res):
+                    seal.fulfill(res)
                 }
             }
         }
