@@ -38,7 +38,7 @@ platform :ios do
     sdk_version_name = ENV['SOURCE_BRANCH']
 
     cocoapods(
-      clean_install: true,
+      clean_install: false,
       podfile: "./Example/Podfile"
     )
 
@@ -141,7 +141,7 @@ platform :ios do
     sdk_version_name = ENV['SOURCE_TAG']
 
     cocoapods(
-      clean_install: true,
+      clean_install: false,
       podfile: "./Example/Podfile"
     )
 
@@ -247,7 +247,7 @@ platform :ios do
     version_name = "preview-" + pr_number
 
     cocoapods(
-      clean_install: true,
+      clean_install: false,
       podfile: "./Example/Podfile"
     )
 
