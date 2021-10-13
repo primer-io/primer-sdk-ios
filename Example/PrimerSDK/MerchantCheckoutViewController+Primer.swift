@@ -75,12 +75,12 @@ extension MerchantCheckoutViewController {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = AuthorizationRequest(
+        let body = PaymentRequest(
+            environment: environment,
             paymentMethod: token.token,
             amount: amount,
             type: token.paymentInstrumentType.rawValue,
-            currencyCode: "GBP"
-        )
+            currencyCode: "EUR")
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -92,7 +92,6 @@ extension MerchantCheckoutViewController {
     }
     
     internal func generatePrimerTheme() -> PrimerTheme {
-        
         if #available(iOS 13.0, *) {
             return PrimerTheme()
         } else {

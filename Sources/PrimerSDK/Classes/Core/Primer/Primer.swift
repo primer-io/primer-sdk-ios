@@ -1,5 +1,8 @@
 #if canImport(UIKit)
 
+#if canImport(Primer3DS)
+import Primer3DS
+#endif
 import UIKit
 
 // swiftlint:disable identifier_name
@@ -21,10 +24,36 @@ public class Primer {
     }
 
     fileprivate init() {
+        #if canImport(Primer3DS)
+        print("Can import Primer3DS")
+        #else
+        print("Failed to import Primer3DS")
+        #endif
+        
         DispatchQueue.main.async { [weak self] in
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
         }
+        
+        
+    }
+    
+    public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        #if canImport(Primer3DS)
+        return Primer3DS.application(app, open: url, options: options)
+        #endif
+        
+        return false
+    }
+
+    public func application(_ application: UIApplication,
+                     continue userActivity: NSUserActivity,
+                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        #if canImport(Primer3DS)
+        return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
+        #endif
+        
+        return false
     }
     
     var primerRootVC: PrimerRootViewController?
@@ -45,7 +74,7 @@ public class Primer {
      - Parameter settings: Primer settings object
      
      - Author: Primer
-     
+    
      - Version: 1.2.2
      */
     internal func setDependencies(settings: PrimerSettings, theme: PrimerTheme) {
@@ -174,7 +203,7 @@ public class Primer {
         }
         
         presentingViewController = viewController
-        show(flow: Primer.shared.flow!)
+        show(flow: .default)
     }
     
     public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
@@ -183,7 +212,7 @@ public class Primer {
         }
         
         presentingViewController = viewController
-        show(flow: Primer.shared.flow!)
+        show(flow: .defaultWithVault)
     }
     
     public func showPaymentMethod(_ paymentMethod: ConfigPaymentMethodType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
@@ -260,7 +289,18 @@ public class Primer {
             }
             
             if self.primerWindow == nil {
-                self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
+                if #available(iOS 13.0, *) {
+                    if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                        self.primerWindow = UIWindow(windowScene: windowScene)
+                    } else {
+                        // Not opted-in in UISceneDelegate
+                        self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
+                    }
+                } else {
+                    // Fallback on earlier versions
+                    self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
+                }
+                
                 self.primerWindow!.rootViewController = self.primerRootVC
                 self.primerWindow!.backgroundColor = UIColor.clear
                 self.primerWindow!.windowLevel = UIWindow.Level.normal
@@ -268,7 +308,7 @@ public class Primer {
             }
         }
     }
-
+    
 }
 
 #endif

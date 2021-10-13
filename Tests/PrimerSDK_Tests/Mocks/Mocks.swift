@@ -80,6 +80,13 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    var debugOptions: PrimerDebugOptions
+        
+    var orderId: String?
+    
+    var billingAddress: Address?
+    
+    var is3DSOnVaultingEnabled: Bool
     var customer: Customer?
     
     var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
@@ -145,6 +152,8 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         self.authorizePayment = authorizePayment
         self.onCheckoutDismiss = onCheckoutDismiss
         self.onTokenizeSuccess = onTokenizeSuccess
+        self.is3DSOnVaultingEnabled = true
+        self.debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
     }
 }
 
@@ -152,10 +161,11 @@ let mockPaymentMethodConfig = PaymentMethodConfig(
     coreUrl: "url",
     pciUrl: "url",
     paymentMethods: [
-        ConfigPaymentMethod(id: "1", type: .klarna, processorConfigId: nil, options: nil),
-        ConfigPaymentMethod(id: "2", type: .payPal, processorConfigId: nil, options: nil),
-        ConfigPaymentMethod(id: "3", type: .apaya, processorConfigId: nil, options: PaymentMethodConfigOptions(merchantAccountId: "merchantAccountId"))
-    ]
+        ConfigPaymentMethod(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
+        ConfigPaymentMethod(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
+        ConfigPaymentMethod(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+    ],
+    keys: nil
 )
 
 class MockAppState: AppStateProtocol {
@@ -167,8 +177,6 @@ class MockAppState: AppStateProtocol {
     var sessionId: String? = "klarnaSessionId123"
 
     var cardData: CardData = CardData(name: "", number: "", expiryYear: "", expiryMonth: "", cvc: "")
-
-    var routerState: RouterState = RouterState()
 
     var directDebitMandate: DirectDebitMandate = DirectDebitMandate(firstName: "", lastName: "", email: "", iban: "", accountNumber: "", sortCode: "", address: nil)
 
@@ -202,21 +210,11 @@ class MockAppState: AppStateProtocol {
             coreUrl: "url",
             pciUrl: "url",
             paymentMethods: [
-                ConfigPaymentMethod(
-                    id: "klarna_id",
-                    type: .klarna,
-                    processorConfigId: nil,
-                    options: nil),
-                ConfigPaymentMethod(
-                    id: "paypal_id",
-                    type: .payPal,
-                    processorConfigId: nil, options: nil),
-                ConfigPaymentMethod(
-                    id: "apaya_id",
-                    type: .apaya,
-                    processorConfigId: "processor_config_id",
-                    options: PaymentMethodConfigOptions(merchantAccountId: "merchant_account_id"))
-            ]
+                ConfigPaymentMethod(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
+                ConfigPaymentMethod(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
+                ConfigPaymentMethod(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+            ],
+            keys: nil
         )
     ) {
         self.decodedClientToken = decodedClientToken
@@ -242,13 +240,12 @@ class MockLocator {
         DependencyContainer.register(MockTokenizationService(paymentInstrumentType: ConfigPaymentMethodType.paymentCard.rawValue, tokenType: TokenType.singleUse.rawValue) as TokenizationServiceProtocol)
         DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(MockKlarnaService() as KlarnaServiceProtocol)
-//        DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
+        DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
         DependencyContainer.register(MockCardScannerViewModel() as CardScannerViewModelProtocol)
         DependencyContainer.register(MockDirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
         DependencyContainer.register(MockOAuthViewModel() as OAuthViewModelProtocol)
         DependencyContainer.register(MockVaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(MockVaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
-        DependencyContainer.register(MockConfirmMandateViewModel() as ConfirmMandateViewModelProtocol)
         DependencyContainer.register(MockExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
     }

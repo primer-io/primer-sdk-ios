@@ -1,5 +1,7 @@
 #if canImport(UIKit)
 
+import Foundation
+
 class KlarnaViewModel: PrimerOAuthViewModel {
     
     var host: OAuthHost = .klarna
@@ -21,7 +23,7 @@ class KlarnaViewModel: PrimerOAuthViewModel {
                     
                 case .success(let urlString):
                     guard let url = URL(string: urlString) else {
-                        seal.reject(PrimerError.invalidValue)
+                        seal.reject(PrimerError.invalidValue(key: "URL"))
                         return
                     }
                     

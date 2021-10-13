@@ -190,26 +190,33 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		986780738CF96B69C825C8B7695BF656 /* PBXContainerItemProxy */ = {
+		31558470AB40EBEFCBB0DA3BFEAB5D06 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6F5F0A81CAE773CFE5371059A81B5B6A;
+			remoteInfo = Primer3DS;
+		};
+		7030D31A40163193011F0FE02008F79D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6C144A762E9B598392AFFEC8F873746A;
+			remoteInfo = "Pods-PrimerSDK_Example";
+		};
+		807CF84ABA4AD53B6C6F301BFC568771 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = F3BE9108C53B53949406218CEA55E0B2;
 			remoteInfo = PrimerSDK;
 		};
-		B275D7A997E7137FB6A6C2C588F2B0A2 /* PBXContainerItemProxy */ = {
+		C26D1F2DAE60DA7A8B6A9C41785A0681 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 6E6525C7043FBA7BB34A249010AF5593;
 			remoteInfo = "PrimerSDK-PrimerResources";
-		};
-		E0D02A9AB3F74BF7D16D76781A704A85 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6C144A762E9B598392AFFEC8F873746A;
-			remoteInfo = "Pods-PrimerSDK_Example";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -263,15 +270,16 @@
 		31AD2A77E8197BF126A7823CB36F5EDB /* PrimerSDK.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = PrimerSDK.modulemap; sourceTree = "<group>"; };
 		34A2D8E068736FCA074C3A82CEBAE459 /* AppState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		3780FF276696624E5AD4A629D4CC4AD8 /* Pods-PrimerSDK_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PrimerSDK_Example-umbrella.h"; sourceTree = "<group>"; };
-		37C4DA9FDD8014A1E3A37AB6021ABF6E /* Optional+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
-		3901EFE98236F4E87C3A970D163AD854 /* ConfirmMandateViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConfirmMandateViewModel.swift; sourceTree = "<group>"; };
-		39D1B5C434BD0DB216709FD40C4411BE /* CardButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardButton.swift; sourceTree = "<group>"; };
+		37BD3457C9DA0596324E3CDCC658CF05 /* Primer3DS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Primer3DS.release.xcconfig; sourceTree = "<group>"; };
+		3927FEAC93E23638102EFE5141DC97F4 /* CardScannerViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardScannerViewModel.swift; sourceTree = "<group>"; };
 		3C474C1A0DABE2A3F404B63D4D59F30C /* Pods-PrimerSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		3E12F5A5E5232C4AEB9FD5215D3D224C /* PrimerRootViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerRootViewController.swift; sourceTree = "<group>"; };
-		3FA2BEC81281317878B959A0E605FAA0 /* PrimerLoadingViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerLoadingViewController.swift; sourceTree = "<group>"; };
-		4080AC94563BB29C2C9B4AFB52EE7CB1 /* PrimerCustomStyleTextField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerCustomStyleTextField.swift; sourceTree = "<group>"; };
-		4207139B6B70D8CBC122F52164C1D57D /* PrimerSDK-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerSDK-prefix.pch"; sourceTree = "<group>"; };
-		4463D5F8C4646BF73380834705688C12 /* ConfirmMandateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConfirmMandateView.swift; sourceTree = "<group>"; };
+		3CE5DEAA27699099925F99E71B280E4B /* DependencyInjection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DependencyInjection.swift; sourceTree = "<group>"; };
+		3DF173E8E6FEE051D5C18AB2C43183A1 /* PrimerViewExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerViewExtensions.swift; sourceTree = "<group>"; };
+		3E83FF1A2826B5DCFEB55EE227BAD7C9 /* AppState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		427CF00E20477C9A1EC718979A82644D /* PrimerTheme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerTheme.swift; sourceTree = "<group>"; };
+		43E76CAE06E9FFF050E97C0FD7773F06 /* PrimerAPIClient+3DS.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PrimerAPIClient+3DS.swift"; sourceTree = "<group>"; };
+		448AA0AAC4C95351B1C7203975A4C3D0 /* Resolver.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
+		46B68286F922507DF82FB0ACDC44CE68 /* Dispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Dispatcher.swift; sourceTree = "<group>"; };
 		48627A99264E6679D85F177DBB79DA83 /* Pods-PrimerSDK_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrimerSDK_Tests-Info.plist"; sourceTree = "<group>"; };
 		4B4FA770648286C9872033ECFC8DF680 /* PrimerUniversalCheckoutViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerUniversalCheckoutViewController.swift; sourceTree = "<group>"; };
 		4C7434F53C55E66149A442632499C3B3 /* UserDefaultsExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserDefaultsExtension.swift; sourceTree = "<group>"; };
@@ -292,11 +300,17 @@
 		56306E598C8BF71D531103B242CDB225 /* BundleExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
 		578352C4DEF18E1F0FF741727DDC1CCE /* TransitioningDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransitioningDelegate.swift; sourceTree = "<group>"; };
 		582FD3213F3E32AF1194EEDF7C3BCD3F /* Pods-PrimerSDK_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrimerSDK_Example-acknowledgements.plist"; sourceTree = "<group>"; };
-		5B442A0A69BF379BB036A0FBD6B96325 /* JSONParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JSONParser.swift; sourceTree = "<group>"; };
-		5C07C5E44CCEBB789AB41775BE592D1C /* RecoverWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecoverWrappers.swift; sourceTree = "<group>"; };
-		5CEA3B5F53C13BA40ABD62758EB757FE /* GuaranteeWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuaranteeWrappers.swift; sourceTree = "<group>"; };
-		5FE157EE3AEC48974A3F273314A18594 /* Logger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		60FB32FF94FADE62307C658EED78018D /* hang.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = hang.swift; sourceTree = "<group>"; };
+		5932F26ECD2D61CCF212C28F675CA88C /* PrimerNavigationBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerNavigationBar.swift; sourceTree = "<group>"; };
+		599D6BBFFF03AD9428301812685250B8 /* ThenableWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThenableWrappers.swift; sourceTree = "<group>"; };
+		5CC9B81459167CF5EFD328EE29DCD869 /* Thenable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Thenable.swift; sourceTree = "<group>"; };
+		5D52E5A2D42F5D9BC5372F7175F03C6A /* BundleExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
+		5DB5F96657ABAE54F58E1CD3DFE9A169 /* CancellableThenable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CancellableThenable.swift; sourceTree = "<group>"; };
+		5FD5FC7A9FC5CBF4FCA5AA3D3C722B84 /* PrimerNavigationController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerNavigationController.swift; sourceTree = "<group>"; };
+		5FF4B9F4FC26801A8152D6709F373517 /* PrimerDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerDelegate.swift; sourceTree = "<group>"; };
+		61366AB18EB8F4CCF9DD2B9F1E88E1BA /* PrimerContent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerContent.swift; sourceTree = "<group>"; };
+		613717FE594A8A2D0CAE79F84A669401 /* 3DSService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = 3DSService.swift; sourceTree = "<group>"; };
+		6255611CAB8CE1504DBDFFFF6066E10B /* WrapperProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WrapperProtocols.swift; sourceTree = "<group>"; };
+		6301B7A842E934AB51C3D1A5965B19C8 /* Primer3DS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = Primer3DS.modulemap; sourceTree = "<group>"; };
 		639AE4928116FBD4FAE7B3DD6BD21271 /* Pods-PrimerSDK_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrimerSDK_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
 		66FF9BC4023BAA571CF62FED67BD685E /* en.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = en.lproj; sourceTree = "<group>"; };
 		6879A086960B8ABB150FD41EE6D6BB65 /* KlarnaViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KlarnaViewModel.swift; sourceTree = "<group>"; };
@@ -343,11 +357,12 @@
 		A266A3FE3A65D5C681121B845075C20C /* FinallyWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FinallyWrappers.swift; sourceTree = "<group>"; };
 		A314F2E327938D80F9595E990138B551 /* UXMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UXMode.swift; sourceTree = "<group>"; };
 		A4E7B1C752F38C22267D301DD5A364DF /* Pods-PrimerSDK_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrimerSDK_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
-		A4F352C32A26A19F405C5706439BC72D /* CardScannerViewController+SimpleScanDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CardScannerViewController+SimpleScanDelegate.swift"; sourceTree = "<group>"; };
-		A67F10A6419D2F48A3FF08DC2F57AF15 /* UIDeviceExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
-		A8A4412CF7AC078FA1CE353981565E2D /* PrimerNavigationController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerNavigationController.swift; sourceTree = "<group>"; };
-		A8B3BC107C2BDC3C03D961866F721265 /* PrimerResources.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimerResources.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA46196064BFBD78E51B6BD38BE9702B /* ConfirmMandateViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConfirmMandateViewController.swift; sourceTree = "<group>"; };
+		A54F687F50CBC405851394303C9CEA5C /* CustomStringConvertible.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomStringConvertible.swift; sourceTree = "<group>"; };
+		A727029EA43C7DFC32CED91EBC97ED25 /* Catchable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Catchable.swift; sourceTree = "<group>"; };
+		A7DD1CE8022DEE896EBC4E2D6B354494 /* 3DSService+Promises.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "3DSService+Promises.swift"; sourceTree = "<group>"; };
+		A8B3BC107C2BDC3C03D961866F721265 /* PrimerResources.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = PrimerResources.bundle; path = "PrimerSDK-PrimerResources.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA33C795C67648804BE2D83CA7FDC812 /* PrimerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerViewController.swift; sourceTree = "<group>"; };
+		AA3E9F209C857157575A473FE948A03D /* Primer3DS.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Primer3DS.swift; path = Sources/Primer3DS/Classes/Primer3DS.swift; sourceTree = "<group>"; };
 		AA80C9C550CB6B8B521015719AA66526 /* Pods-PrimerSDK_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-PrimerSDK_Example.modulemap"; sourceTree = "<group>"; };
 		AAAF23141F42F5788ABC5A60C513E86A /* PrimerCardFormViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerCardFormViewController.swift; sourceTree = "<group>"; };
 		AAD3E68F1F919DA53EB4C5D36E198226 /* SuccessViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SuccessViewController.swift; sourceTree = "<group>"; };
@@ -393,10 +408,7 @@
 		DEBA11493129CA45DBA285C396A75B1B /* ApplePay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePay.swift; sourceTree = "<group>"; };
 		DF3B9C99904EACCC2238FC25EC17AE37 /* ErrorHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
 		DF6E4F8E7C26A7BBEC17AAD4042A317D /* Pods-PrimerSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		DFA12BF96229AE5236EDF63C90C3B01E /* DateExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
-		E042270EF20E117D446A3712D4FABAFB /* PrimerAPIClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerAPIClient.swift; sourceTree = "<group>"; };
-		E04D3FA4DA0785D3A2959AABE6028759 /* PaymentMethodComponent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodComponent.swift; sourceTree = "<group>"; };
-		E1687B84EF7D659F0DE4C0D7465B7C01 /* ApplePayViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePayViewModel.swift; sourceTree = "<group>"; };
+		DF91C4EB0A23CBE32B20FFC93EB5AF33 /* WebViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		E1B945985145643C12B1E91600B680DE /* Pods-PrimerSDK_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrimerSDK_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
 		E25CD6D46749475DEC7358B8DC39822E /* Catchable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Catchable.swift; sourceTree = "<group>"; };
 		E27189661F527EA35ACC357EA2E2D03C /* Guarantee.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Guarantee.swift; sourceTree = "<group>"; };
@@ -421,15 +433,33 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		5D0AC2A17529F03CD0D2326D5C0FEAAD /* Frameworks */ = {
+		24452B90BCE9C8C25D8E2669361D0C04 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A5F8D1E6347A756B6F51FCF58DB99A9 /* Foundation.framework in Frameworks */,
+				0F9D0419053430747D2D8A0BF78F24CB /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		604B3A318B44C7E31820C875A75D2B82 /* Frameworks */ = {
+		2C9F05244F6932FBA9215DFA71E2790B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5337EDCC040125C880F4B78107C9E20C /* Foundation.framework in Frameworks */,
+				C7F206D61A8D59DD2647F71132EC8A9B /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F22FD917FB7414DE38A0583984F5835 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				56C22A2F90FC2DF9B1419CFB5D999209 /* Foundation.framework in Frameworks */,
+				B2E945454239C96AB68732575DF48A4A /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		38C45D3E6AF32B6400670DA6C90192BD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -444,56 +474,49 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F5AB717AB3F92445C052B49738FF511C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9AF66B9B4BC649B0DCB6C77ADDB5C6E6 /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0787951DE44DB6094D491B7D76EEA83B /* Apple Pay */ = {
+		08AFB1988C969069B4A0F178EBD91A69 /* Success */ = {
 			isa = PBXGroup;
 			children = (
-				E1687B84EF7D659F0DE4C0D7465B7C01 /* ApplePayViewModel.swift */,
+				FF140328AED11E353C5392769DDC18DF /* SuccessViewController.swift */,
 			);
-			path = "Apple Pay";
+			name = Success;
+			path = Success;
 			sourceTree = "<group>";
 		};
-		0A29E566A7C44914E61BEAF8825CA56B /* Text Fields */ = {
+		0AC36002504D7D2E78A92F6976BF0EE9 /* Text Fields */ = {
 			isa = PBXGroup;
 			children = (
-				EC1534AC517F20D539A5C2108B260BE1 /* CardComponentsManager.swift */,
-				02A0DF5C32CDDCC258DED4CA18606328 /* PrimerCardholderNameFieldView.swift */,
-				69B516D78068DEF282BC0A257C4CFF36 /* PrimerCardNumberFieldView.swift */,
-				CCFA28A03290405118F688FBCA785189 /* PrimerCVVFieldView.swift */,
-				68DB61BECCF81854FB301B8E4D71A3AF /* PrimerExpiryDateFieldView.swift */,
-				B68ECECA5F757449D9CAAF9096FB51C2 /* PrimerNibView.swift */,
-				DB0016BC05FD0F081E513E79E29E1443 /* PrimerTextField.swift */,
-				7C199871B476AD1DC84E88663A0C1D02 /* PrimerTextFieldView.swift */,
-				69CBC33D1B6462D8CA3FD0898107CF6A /* PrimerTextFieldView.xib */,
+				E7B756BB6CFA977A87761BC29DB340D4 /* CardComponentsManager.swift */,
+				4C321E5C2BBFAE0D80960D4AA0C73536 /* PrimerCardholderNameFieldView.swift */,
+				37354B66D8EEDC41BF70C92358FEC770 /* PrimerCardNumberFieldView.swift */,
+				6B17FDDBB771908E6C981B4F28CC39C9 /* PrimerCVVFieldView.swift */,
+				6EBE137AA7F7916F3AD6FAA57EE5FF10 /* PrimerExpiryDateFieldView.swift */,
+				18CC2AD4B97339E63DAFE007F8F4A6E1 /* PrimerNibView.swift */,
+				78C174C01D3C3F1249BF0B42E70BCC6E /* PrimerTextField.swift */,
+				202A74F386A8D2328F136D3B0682E192 /* PrimerTextFieldView.swift */,
 			);
+			name = "Text Fields";
 			path = "Text Fields";
 			sourceTree = "<group>";
 		};
-		0BC95BDB18F362350AD804E24F5A0CB4 /* JSON */ = {
+		0C804E79ED46885DFED61BB4E9ED1BAB /* PCI */ = {
 			isa = PBXGroup;
 			children = (
-				5B442A0A69BF379BB036A0FBD6B96325 /* JSONParser.swift */,
+				569194E5F8DEDE1F1154EFE7113C1AF5 /* CardScanner */,
 			);
-			path = JSON;
+			name = PCI;
+			path = PCI;
 			sourceTree = "<group>";
 		};
-		0D20D92CE055CF14A0A64DEE1641BDDC /* Third Party */ = {
+		1628BF05B4CAFDCC3549A101F5A10A17 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				54F8D8BBED6EAB115AA8A920162C96A6 /* PromiseKit */,
+				59DA5C1F72E1D5BABC43EACBA672C3BA /* iOS */,
 			);
-			name = "Third Party";
-			path = "Sources/PrimerSDK/Classes/Third Party";
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		0DED6FD798EC03D56352B353A8F0352F /* Data Models */ = {
@@ -533,16 +556,29 @@
 		0F0E00D55FE872E754A8EB6812A8750B /* Wrappers */ = {
 			isa = PBXGroup;
 			children = (
-				1EA5BE27DB8258446E9DF790EE1E75D8 /* CatchWrappers.swift */,
-				1F3DF47A4B26EFD8EF9DBB2C9C02DC4C /* EnsureWrappers.swift */,
-				A266A3FE3A65D5C681121B845075C20C /* FinallyWrappers.swift */,
-				5CEA3B5F53C13BA40ABD62758EB757FE /* GuaranteeWrappers.swift */,
-				5C07C5E44CCEBB789AB41775BE592D1C /* RecoverWrappers.swift */,
-				CBCC0826ACB75F012B12E46A330FFA54 /* SequenceWrappers.swift */,
-				A0E150369EFC2FA20E3BAD2456B000BC /* ThenableWrappers.swift */,
-				F096BFE769C9FE5AC9FC3646B64BC58E /* WrapperProtocols.swift */,
+				196B6FBD6722F8CC352130A4C5CF458D /* AlertController.swift */,
+				5D52E5A2D42F5D9BC5372F7175F03C6A /* BundleExtension.swift */,
+				BEF3199946B46FE3714E5611B9352600 /* DateExtension.swift */,
+				833F2E1B20CB06E0C4D5DAACD18A47ED /* IntExtension.swift */,
+				09713EDC7869037F05CDCE567AF3CA37 /* Logger.swift */,
+				BBB278D964EA13708820FDB1D5966A0A /* Mask.swift */,
+				C009D423FAE05791C9964D0A07ADAE60 /* Optional+Extensions.swift */,
+				7FDB6047E825F040376F7986FCE53DCB /* PresentationController.swift */,
+				B2CEFEFB79A179F9106B7DB374012533 /* PrimerButton.swift */,
+				FEEE88E7ED49C5934F58BC27F9A48BBC /* PrimerCustomStyleTextField.swift */,
+				5151C403F1F02F837D3AADE7AC6745C2 /* PrimerScrollView.swift */,
+				7F26F7E2FD3133DAB22297838A152B03 /* PrimerTableViewCell.swift */,
+				AA33C795C67648804BE2D83CA7FDC812 /* PrimerViewController.swift */,
+				3DF173E8E6FEE051D5C18AB2C43183A1 /* PrimerViewExtensions.swift */,
+				DE4B7EEA93E514CBD6110D1A90533448 /* StringExtension.swift */,
+				32E024D9E48AEC50678BD74B5E285925 /* UIColorExtension.swift */,
+				D6D6744DF62423428995950B674BED1C /* UIDeviceExtension.swift */,
+				56F97C34087923B62639FD8BD1F21D93 /* URLExtension.swift */,
+				55B8236AFADC34AE9D38D433B9129297 /* UserDefaultsExtension.swift */,
+				B45297BC30F44D4711C5E0376949D6D5 /* Validation.swift */,
 			);
-			path = Wrappers;
+			name = "Extensions & Utilities";
+			path = "Sources/PrimerSDK/Classes/Extensions & Utilities";
 			sourceTree = "<group>";
 		};
 		13F7B744764403F1B2CD111C4300646E /* PCI */ = {
@@ -557,21 +593,35 @@
 		18888EE376234B89D2D12563AF9B3620 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				E91D263A03CCC5A929C13B8B88448144 /* Payment Services */,
-				BAD6EB7370F2DBA1E5352D78D6F87CBB /* PCI */,
-				345513950B4D96B3706700DD58C4FFC4 /* Primer */,
+				D4855191C04701D41A20F3E005B08D60 /* JSONParser.swift */,
 			);
-			name = Core;
-			path = Sources/PrimerSDK/Classes/Core;
+			name = JSON;
+			path = JSON;
 			sourceTree = "<group>";
 		};
-		1C7F2F5650142B4BF594268DB5BEC3C6 /* Form */ = {
+		25CAB474F7711205953FD54DF6D460B2 /* PCI */ = {
 			isa = PBXGroup;
 			children = (
-				713650A3BE9B7E0062B31D102A3B5542 /* FormView.swift */,
-				507D1CEE671AFC2833EBF0DC288E7073 /* FormViewController.swift */,
+				6BEA92C30F516F2E26B416B5A898D3E0 /* TokenizationService.swift */,
 			);
-			path = Form;
+			name = PCI;
+			path = PCI;
+			sourceTree = "<group>";
+		};
+		28F0D5ADADF6A2C614FFCBE982380827 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				6301B7A842E934AB51C3D1A5965B19C8 /* Primer3DS.modulemap */,
+				77393D72E4B2EFF88AF10EE9F64BB174 /* Primer3DS-dummy.m */,
+				8F2F21CB381261AB34E4F7C0F8C2F446 /* Primer3DS-Info.plist */,
+				1EB79EC7D2058D018AB15B71DA0904C3 /* Primer3DS-prefix.pch */,
+				A163D166B27F20FF6EEF83F5121C4CEA /* Primer3DS-umbrella.h */,
+				01866C554CEF16E126084C5F08741462 /* Primer3DS-xcframeworks.sh */,
+				EB8217820F639BC79E07FFCC65E74429 /* Primer3DS.debug.xcconfig */,
+				37BD3457C9DA0596324E3CDCC658CF05 /* Primer3DS.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/Primer3DS";
 			sourceTree = "<group>";
 		};
 		1DE0352E271495E0007BADAB /* Theme */ = {
@@ -619,80 +669,108 @@
 		214D8D7AE8ED24102314313363C44900 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				40337004AF16E7CCEE71EAB890DC1957 /* API */,
-				C7142BC83A495A8427929B57C945C6D2 /* Network */,
-				AF879185B291868D2009472FC02C4039 /* Parser */,
+				79DA742183DE237D5BB754C68D6C25E2 /* API */,
+				7B665F9CE278FDC35FE3970132D91E49 /* Network */,
+				581A614B49BAC4950566A4FC7450C62C /* Parser */,
 			);
 			name = Services;
 			path = Sources/PrimerSDK/Classes/Services;
 			sourceTree = "<group>";
 		};
-		218B15452689DD0FDF5A56F07411039E /* OAuth */ = {
+		2BB19F7ED797495DC717A8D15AFFC971 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				6879A086960B8ABB150FD41EE6D6BB65 /* KlarnaViewModel.swift */,
-				0DC3A7EF27B5493E903240C12E18E39A /* OAuthViewModel.swift */,
-				30CDE662EDB8E0F57E0E9945E35A6511 /* PayPalViewModel.swift */,
-				D7E758E4D8D1C224A60AE049BB332688 /* PrimerOAuthViewModel.swift */,
-				C4CD3389973F435A7121F9489B222DE6 /* PrimerWebViewController.swift */,
-				B26CAE1FEEE287FE2835B3F4E0607F5D /* PrimerWebViewModel.swift */,
-				6A7EC66510B930125A0CC974A94E4591 /* WebViewController.swift */,
+				77D5B477F719114CAC4457D3E84F43D3 /* LICENSE */,
+				AD0B97C8230EA27F9505EF79D6BC64A1 /* PrimerSDK.podspec */,
+				0D7556526B4459F4DDEB5A24A012B617 /* README.md */,
 			);
-			path = OAuth;
+			name = Pod;
 			sourceTree = "<group>";
 		};
-		345513950B4D96B3706700DD58C4FFC4 /* Primer */ = {
+		3801A9BC7954875A0868ED6C2EBEE2BA /* Primer3DS */ = {
 			isa = PBXGroup;
 			children = (
-				34A2D8E068736FCA074C3A82CEBAE459 /* AppState.swift */,
-				F092BDA5C4D04485C92D13561C91F9B8 /* DependencyInjection.swift */,
-				4E0601C731344C93A4526BF768366998 /* Primer.swift */,
-				14835E5A744EAF7B7F62CBF7FB5212EF /* PrimerDelegate.swift */,
+				AA3E9F209C857157575A473FE948A03D /* Primer3DS.swift */,
+				E6DF772EBD0552229B3F76D49A0EF5F2 /* Primer3DSProtocols.swift */,
+				7492CBAABC98EBF5377CFAD0DED3516E /* Primer3DSStructures.swift */,
+				CFC426E9285DEFC0EE2CE3E9F2D3E316 /* Frameworks */,
+				28F0D5ADADF6A2C614FFCBE982380827 /* Support Files */,
 			);
-			path = Primer;
+			name = Primer3DS;
+			path = Primer3DS;
 			sourceTree = "<group>";
 		};
-		375BD207BA7697B9E8B390EDE406910B /* Checkout */ = {
+		3850A3B80E110E96156D886D4CAE253A /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				8664994D87033BF39FD119DE079F0F68 /* VaultCheckoutView.swift */,
-				71690A4019963AFAA637071B80CB2154 /* VaultCheckoutViewController.swift */,
+				AEAF4D5A163CA3AC2DBB6CA35BC2681A /* 3DS */,
+				49C2949A872482079C8B335E97A2D98C /* Payment Services */,
+				25CAB474F7711205953FD54DF6D460B2 /* PCI */,
+				E0409C4E0919B17DC3DE7C0772E2E801 /* Primer */,
 			);
-			path = Checkout;
+			name = Core;
+			path = Sources/PrimerSDK/Classes/Core;
 			sourceTree = "<group>";
 		};
-		40337004AF16E7CCEE71EAB890DC1957 /* API */ = {
+		3EAB13535C10C86748065624D0D7033E /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				60FAC11170105B24E9DD55AB6A7B2D87 /* Primer */,
+				4CF23422A3152E69D7959690AC20AE19 /* Icons.xcassets */,
+				3850A3B80E110E96156D886D4CAE253A /* Core */,
+				8D95528179BB2335939DDC5F9164E497 /* Data Models */,
+				D4F8C3200868FEC3BFE5840D18847BD3 /* Error Handler */,
+				184D7B6E8D4EC6CF66F80414F14FDA71 /* Extensions & Utilities */,
+				412889D3B929AFD61ABD1E792BF4A453 /* Localizable */,
+				66C31F8E2BB57C5F329C89B12624E004 /* Nibs */,
+				29F7C38A061E7EE2187C64A5CBDB4666 /* Services */,
+				7607B77A74CEBE8CC9811BB251188D7C /* Third Party */,
+				AF457A16C543BB1450F5059F8143C442 /* User Interface */,
 			);
-			path = API;
+			name = Core;
 			sourceTree = "<group>";
 		};
-		42D4816B45817616E46B33D735D60FEC /* Support Files */ = {
+		412889D3B929AFD61ABD1E792BF4A453 /* Localizable */ = {
 			isa = PBXGroup;
 			children = (
-				31AD2A77E8197BF126A7823CB36F5EDB /* PrimerSDK.modulemap */,
-				7B97D42D7E50D8AE7D9234A144B5742D /* PrimerSDK-dummy.m */,
-				8BE75A103CEF746525C0EB61737990B0 /* PrimerSDK-Info.plist */,
-				4207139B6B70D8CBC122F52164C1D57D /* PrimerSDK-prefix.pch */,
-				883E95436CF7B3717F258C54D4973045 /* PrimerSDK-umbrella.h */,
-				D14499D2AADEDD22359FD54A91999567 /* PrimerSDK.debug.xcconfig */,
-				D41F382D2EEF63A4AE2CA3EADAEB52DD /* PrimerSDK.release.xcconfig */,
-				0FFF80F6F85ABC7F873D20F73B8EF5B6 /* ResourceBundle-PrimerResources-PrimerSDK-Info.plist */,
+				FF2BB04B2C0416C61AB79DF58B0CBEE4 /* en.lproj */,
+				1075A7933583DB3FCE89876F8D3C98AA /* fr.lproj */,
+				D38B242674D88209281C9B1D76A45C07 /* sv.lproj */,
 			);
-			name = "Support Files";
-			path = "Example/Pods/Target Support Files/PrimerSDK";
+			name = Localizable;
+			path = Sources/PrimerSDK/Resources/Localizable;
 			sourceTree = "<group>";
 		};
-		46A33A0FF1EB40F997584BE0461FF0D0 /* Primer */ = {
+		42195E8BA424B05603B513F79135B768 /* Root */ = {
 			isa = PBXGroup;
 			children = (
-				39D1B5C434BD0DB216709FD40C4411BE /* CardButton.swift */,
-				7645A015893089668C9C5A429021D8E7 /* ExternalViewModel.swift */,
-				E04D3FA4DA0785D3A2959AABE6028759 /* PaymentMethodComponent.swift */,
+				6B90E97B2080A9AC1A418474FCCB053A /* PrimerCardFormViewController.swift */,
+				F61F8EF58F900B17B2FD05E4F11BDB80 /* PrimerContainerViewController.swift */,
+				69FFD8EB1C6E7178EBB5C8B43ADC4C50 /* PrimerFormViewController.swift */,
+				90A450A992B0BA1635146D243BB221A7 /* PrimerLoadingViewController.swift */,
+				5932F26ECD2D61CCF212C28F675CA88C /* PrimerNavigationBar.swift */,
+				5FD5FC7A9FC5CBF4FCA5AA3D3C722B84 /* PrimerNavigationController.swift */,
+				ACC7DDDDEDB3331529C1B0C170A69DAF /* PrimerRootViewController.swift */,
+				921ABC964528E046415AB5355C3FF821 /* PrimerUniversalCheckoutViewController.swift */,
+				CAC28597B1F55186F147F5FE7A5CC2BF /* PrimerVaultManagerViewController.swift */,
 			);
-			path = Primer;
+			name = Root;
+			path = Root;
+			sourceTree = "<group>";
+		};
+		49C2949A872482079C8B335E97A2D98C /* Payment Services */ = {
+			isa = PBXGroup;
+			children = (
+				B81A22C75363A2C5F580542AA25A3540 /* ApayaService.swift */,
+				DD40A5E31F6D74F3EF31DE218CE247E4 /* ApplePayService.swift */,
+				52825C84B85A0078E21B8023DDD61458 /* ClientTokenService.swift */,
+				2186E718A9D58A712A03B2FA0AF33511 /* DirectDebitService.swift */,
+				6862D04D1AFAF7D29F598DAEF864EFC8 /* KlarnaService.swift */,
+				F9D501419F85046E925BBBF9FC2182BB /* PaymentMethodConfigService.swift */,
+				725C5FA1E9FB04C7F651A91C7B127127 /* PayPalService.swift */,
+				1E3D9AF63C7E4EDCE8AB26592415E5A0 /* VaultService.swift */,
+			);
+			name = "Payment Services";
+			path = "Payment Services";
 			sourceTree = "<group>";
 		};
 		4A1B2ED084737272FEC1A5E090838C23 /* Products */ = {
@@ -700,76 +778,46 @@
 			children = (
 				4D3869E0A461E802A5916AA6523517A4 /* Pods_PrimerSDK_Example.framework */,
 				23FD1D157B8C8E7148BE8A7D354A051F /* Pods_PrimerSDK_Tests.framework */,
+				FFE8CD355A453EF1396E2D5E8E370F7A /* Primer3DS.framework */,
 				A8B3BC107C2BDC3C03D961866F721265 /* PrimerResources.bundle */,
 				28E47791C9F9D0A9BA05C719761A4F3F /* PrimerSDK.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		52F401A11646F33D7D192602B2793097 /* Dispatchers */ = {
+		503BF71041F30841E30A5666A44144C4 /* Data Models */ = {
 			isa = PBXGroup;
 			children = (
-				CF721EBD5EC16FBE55B6935FE6873CCD /* ConcurrencyLimitedDispatcher.swift */,
-				D9DC90A4F8F8B83C7E50AA739C293979 /* CoreDataDispatcher.swift */,
-				AD010EBB7201317587CDBFD4C4BECF3B /* Queue.swift */,
-				79144585A8042CA88B58C98F936972E3 /* RateLimitedDispatcher.swift */,
-				E52C5FA549D3F4017ADCC27C427141AC /* RateLimitedDispatcherBase.swift */,
-				B62FF3682CF06A0B10249F3DF222B290 /* StrictRateLimitedDispatcher.swift */,
+				23D9F8B0C14A28EFCCF8E7C48517E574 /* 3DS.swift */,
 			);
-			path = Dispatchers;
+			name = "Data Models";
+			path = "Data Models";
 			sourceTree = "<group>";
 		};
-		535F3DA1F423125FA7D8963C89BD2FAC /* Extensions & Utilities */ = {
+		54968DFFAA3EE10038FFF6416B16AAD6 /* PromiseKit */ = {
 			isa = PBXGroup;
 			children = (
-				553F5EC1434596D00043827C703E4631 /* AlertController.swift */,
-				56306E598C8BF71D531103B242CDB225 /* BundleExtension.swift */,
-				DFA12BF96229AE5236EDF63C90C3B01E /* DateExtension.swift */,
-				D366C3E9F695AD286D8A2025263A900B /* IntExtension.swift */,
-				5FE157EE3AEC48974A3F273314A18594 /* Logger.swift */,
-				5258D52FAE4A63E0A9FD71180595FF75 /* Mask.swift */,
-				37C4DA9FDD8014A1E3A37AB6021ABF6E /* Optional+Extensions.swift */,
-				70C1F722806D4ED17D7C35FC751E5CA1 /* PresentationController.swift */,
-				71957FD6827851435B0F8122481F4AC9 /* PrimerButton.swift */,
-				4080AC94563BB29C2C9B4AFB52EE7CB1 /* PrimerCustomStyleTextField.swift */,
-				EDDAF7FEB50673A09B5B129BD3859327 /* PrimerScrollView.swift */,
-				0885004E1F0DBC8CD0345493ED18C246 /* PrimerTableViewCell.swift */,
-				23B0A8B512882DC2F777526B23F29A3E /* PrimerViewController.swift */,
-				E5AFC3F0057D42E091A8B1B42CC9871B /* PrimerViewExtensions.swift */,
-				242E2DA9A8079772C3E3BE55A79B885D /* StringExtension.swift */,
-				B07615E02BBAEFE7973B5194C9BDE573 /* UIColorExtension.swift */,
-				A67F10A6419D2F48A3FF08DC2F57AF15 /* UIDeviceExtension.swift */,
-				C67BF93600ED6A8D79B321ACD4C75F86 /* URLExtension.swift */,
-				4C7434F53C55E66149A442632499C3B3 /* UserDefaultsExtension.swift */,
-				8128C2BCD16BC3B8FFB47FAD564D8088 /* Validation.swift */,
+				1FE47DAF9814FFBCC0A0C1F374BE039B /* after.swift */,
+				89D889D46870D1D9B6D2E066059FA90D /* Box.swift */,
+				A727029EA43C7DFC32CED91EBC97ED25 /* Catchable.swift */,
+				B225EA2FF9883902D58B5A0758D97FB2 /* Configuration.swift */,
+				A54F687F50CBC405851394303C9CEA5C /* CustomStringConvertible.swift */,
+				46B68286F922507DF82FB0ACDC44CE68 /* Dispatcher.swift */,
+				BA7CA1B59FB4327F4E87732F79C9452D /* Error.swift */,
+				B8830F9A31A9226D08796DAE026717BE /* firstly.swift */,
+				CAEEF102DF336468389FBCB0F76D84BB /* Guarantee.swift */,
+				133997060D85B9B9881B45167B057E56 /* hang.swift */,
+				57A5DF8CA08D3B96202E4D27DF85FCA2 /* LogEvent.swift */,
+				D775DA53F2C89F88193E2FF8E19E1242 /* Promise.swift */,
+				82A0F8733DAED803AE75CE4874F595E8 /* race.swift */,
+				448AA0AAC4C95351B1C7203975A4C3D0 /* Resolver.swift */,
+				5CC9B81459167CF5EFD328EE29DCD869 /* Thenable.swift */,
+				1DF6999D4446A4E4592C291E414CE204 /* when.swift */,
+				E1E8D96526B82989E9411B9859490432 /* Cancellation */,
+				62A507A92A13432129E2E0E570B6D790 /* Dispatchers */,
+				8BC2A4D8533B8EDF9C0017816B51A0E2 /* Wrappers */,
 			);
-			name = "Extensions & Utilities";
-			path = "Sources/PrimerSDK/Classes/Extensions & Utilities";
-			sourceTree = "<group>";
-		};
-		54F8D8BBED6EAB115AA8A920162C96A6 /* PromiseKit */ = {
-			isa = PBXGroup;
-			children = (
-				25E25423306D4CF45EA3B2D51A3ECF33 /* after.swift */,
-				1EE24485D27EF4391A65F1C87AF92929 /* Box.swift */,
-				E25CD6D46749475DEC7358B8DC39822E /* Catchable.swift */,
-				BCC8B3BB5AB41824EBFA827C57C14953 /* Configuration.swift */,
-				BA442E200F5B83A6B014ECB25D0CE704 /* CustomStringConvertible.swift */,
-				8272C9C5024244B3B63468B82D39F6C4 /* Dispatcher.swift */,
-				4C8053F625B48F092B278D4722915E30 /* Error.swift */,
-				1B25DECB12CF586B278E0C5B73316B16 /* firstly.swift */,
-				E27189661F527EA35ACC357EA2E2D03C /* Guarantee.swift */,
-				60FB32FF94FADE62307C658EED78018D /* hang.swift */,
-				843F54A02536AE8B8A13FB75F29ADE27 /* LogEvent.swift */,
-				10ED3E14912D7B45AF99ACABDBD5C39E /* Promise.swift */,
-				6DCB29E8087B6F7FA7DFAB7A8F32EAB5 /* race.swift */,
-				697552F8E61C4419EB8FCE13DA9D2F8C /* Resolver.swift */,
-				D5BEA93084A66C8C342E3E70E81A473E /* Thenable.swift */,
-				E90ED549EB6F4D21C62C6CA5C3EBC714 /* when.swift */,
-				5C4C9A67249A3897F69CD2775C65F285 /* Cancellation */,
-				52F401A11646F33D7D192602B2793097 /* Dispatchers */,
-				0F0E00D55FE872E754A8EB6812A8750B /* Wrappers */,
-			);
+			name = PromiseKit;
 			path = PromiseKit;
 			sourceTree = "<group>";
 		};
@@ -782,77 +830,91 @@
 			name = "Targets Support Files";
 			sourceTree = "<group>";
 		};
-		578452D2E740E91742655AC8F1636D1F /* iOS */ = {
+		569194E5F8DEDE1F1154EFE7113C1AF5 /* CardScanner */ = {
 			isa = PBXGroup;
 			children = (
-				73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */,
+				4B544A7DC6BE9CE9E2AF2EDD6658B038 /* CardScannerViewController.swift */,
+				30A8FA171D7805B5C36B74E6FD6186C5 /* CardScannerViewController+SimpleScanDelegate.swift */,
+				3927FEAC93E23638102EFE5141DC97F4 /* CardScannerViewModel.swift */,
+				8C7C77A455F61D47A779C750E2BB3240 /* ScannerView.swift */,
+			);
+			name = CardScanner;
+			path = CardScanner;
+			sourceTree = "<group>";
+		};
+		581A614B49BAC4950566A4FC7450C62C /* Parser */ = {
+			isa = PBXGroup;
+			children = (
+				AC8B5E10D51C8D705D01D9B30EE62AAA /* Parser.swift */,
+				1FCD0C28263CCBA9D65A3467E3AAC9D8 /* JSON */,
+			);
+			name = Parser;
+			path = Parser;
+			sourceTree = "<group>";
+		};
+		59DA5C1F72E1D5BABC43EACBA672C3BA /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				EAB6F611E86A4758835A715E4B4184F6 /* Foundation.framework */,
+				D245E0514AAC1A2B9A6D5EA2F383E90F /* UIKit.framework */,
 			);
 			name = iOS;
 			sourceTree = "<group>";
 		};
-		5B3647814AEAA5837E5E6280EEE29CCB /* PCI */ = {
+		62A507A92A13432129E2E0E570B6D790 /* Dispatchers */ = {
 			isa = PBXGroup;
 			children = (
-				628CCEA96EE36FB6F4938E5CE92B0C2B /* CardScanner */,
+				F545A19D9DCFEEA6F5CE9D32192597B9 /* ConcurrencyLimitedDispatcher.swift */,
+				9A22CA53344802ABC27FF40264989BAC /* CoreDataDispatcher.swift */,
+				113A7D339CE2E207D38308DBEC1D406A /* Queue.swift */,
+				6B7230A5C4ABE86D9DE38F4C15C386B4 /* RateLimitedDispatcher.swift */,
+				518E6E16C5CDFF6CEB9EADC178A25EA3 /* RateLimitedDispatcherBase.swift */,
+				11E55C92F6197EFD1C01DA8F986A7F00 /* StrictRateLimitedDispatcher.swift */,
 			);
-			path = PCI;
+			name = Dispatchers;
+			path = Dispatchers;
 			sourceTree = "<group>";
 		};
-		5C4C9A67249A3897F69CD2775C65F285 /* Cancellation */ = {
+		66C31F8E2BB57C5F329C89B12624E004 /* Nibs */ = {
 			isa = PBXGroup;
 			children = (
-				2F4C14FB8EEE4C9B04BA539182E2CE89 /* CancelContext.swift */,
-				9BAE3A77B7EF97AAFBE8CB9EFBE8358D /* Cancellable.swift */,
-				FADC5BF879F884C529B6121752C481FB /* CancellableCatchable.swift */,
-				E932AD3771E68A92270FD50855D72343 /* CancellablePromise.swift */,
-				7223A70A48E126E76087A567B7E8E8C7 /* CancellableThenable.swift */,
+				E1DE0F3FAEB80348BACD55A19C760E14 /* PrimerTextFieldView.xib */,
 			);
-			path = Cancellation;
+			name = Nibs;
+			path = Sources/PrimerSDK/Resources/Nibs;
 			sourceTree = "<group>";
 		};
-		60FAC11170105B24E9DD55AB6A7B2D87 /* Primer */ = {
+		683409749FDC7AA83910441BDDB96D4D /* Primer */ = {
 			isa = PBXGroup;
 			children = (
-				08638A54FA5DB78C2AA081260FF60B19 /* PrimerAPI.swift */,
-				E042270EF20E117D446A3712D4FABAFB /* PrimerAPIClient.swift */,
-				C6D70C1ADA7F7EC3F283699D4BF79907 /* PrimerAPIClient+Promises.swift */,
+				92863F179FD93E88D8B5A6FD082E6715 /* CardButton.swift */,
+				2FD63ED54ADFAB9F139DBB884D5DA5E7 /* ExternalViewModel.swift */,
+				90EE8A4F58F4B800C2C37BFC5661881C /* PaymentMethodComponent.swift */,
 			);
+			name = Primer;
 			path = Primer;
 			sourceTree = "<group>";
 		};
-		628CCEA96EE36FB6F4938E5CE92B0C2B /* CardScanner */ = {
+		7247ACD97AB79769C7D29E910A7E0D09 /* Development Pods */ = {
 			isa = PBXGroup;
 			children = (
-				BCA387DBFA90AD68A2F8BAEFEF1E2660 /* CardScannerViewController.swift */,
-				A4F352C32A26A19F405C5706439BC72D /* CardScannerViewController+SimpleScanDelegate.swift */,
-				6FFF09916FA47BEC73D7A2E197A5DD78 /* CardScannerViewModel.swift */,
-				F3B0E811F4ADE175DB1848A4124A92C3 /* ScannerView.swift */,
+				897693B3A77170FB6F4F8083AFBC1032 /* PrimerSDK */,
 			);
-			path = CardScanner;
+			name = "Development Pods";
 			sourceTree = "<group>";
 		};
-		63C3EE2FDFDC616B96F7246D02CB0207 /* User Interface */ = {
+		7298937EE74DFAC3DDD80AE5C3E75667 /* Vault */ = {
 			isa = PBXGroup;
 			children = (
-				0787951DE44DB6094D491B7D76EEA83B /* Apple Pay */,
-				375BD207BA7697B9E8B390EDE406910B /* Checkout */,
-				FB89A6E49B916CB0211B4FCAC4269DE9 /* Confirm Mandate */,
-				DA65CE8A4D97F7FCFCBA22F0F8FC86DE /* Error */,
-				1C7F2F5650142B4BF594268DB5BEC3C6 /* Form */,
-				218B15452689DD0FDF5A56F07411039E /* OAuth */,
-				5B3647814AEAA5837E5E6280EEE29CCB /* PCI */,
-				46A33A0FF1EB40F997584BE0461FF0D0 /* Primer */,
-				A93AB344CC02ED0EF0C4EBE3B05FD033 /* Root */,
-				FC1D1A417279EDA514FA775CBC1EA672 /* Success */,
-				0A29E566A7C44914E61BEAF8825CA56B /* Text Fields */,
-				C7AC3D67A75EF45A7B62092BC085BE13 /* UI Delegates */,
-				A71C8DDB5BA6ED892D7C23135FCF4A2F /* Vault */,
+				908BA5DF43D15745251466493102C14A /* VaultPaymentMethodView.swift */,
+				F6714372225DD7095663DF9D6E91D8BA /* VaultPaymentMethodViewController.swift */,
+				81014FAE3AB94CEA5ACA39BF0F3E6E07 /* VaultPaymentMethodViewModel.swift */,
 			);
-			name = "User Interface";
-			path = "Sources/PrimerSDK/Classes/User Interface";
+			name = Vault;
+			path = Vault;
 			sourceTree = "<group>";
 		};
-		723501D01E4C675FE62184D655665448 /* PrimerSDK */ = {
+		74D0C4CBDB501DDE03392FF74362F8AB /* PCI */ = {
 			isa = PBXGroup;
 			children = (
 				2D243C2FEE775294DBC748F5DF9F0CFB /* Icons.xcassets */,
@@ -868,102 +930,172 @@
 				0D20D92CE055CF14A0A64DEE1641BDDC /* Third Party */,
 				63C3EE2FDFDC616B96F7246D02CB0207 /* User Interface */,
 			);
-			name = PrimerSDK;
-			path = ../..;
+			name = PCI;
+			path = PCI;
 			sourceTree = "<group>";
 		};
 		85275DA5F671A2DC80607884C96BC66D /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				239F61B20736D547C2F50FD43C93F554 /* LICENSE */,
-				092285FD85073CFE9AB0506C9FFB06F6 /* PrimerSDK.podspec */,
-				DA0D79126F6E49E10E49E47AA6641F11 /* README.md */,
+				7BF5DF6AD98719CF6211D94CC769B1EC /* Primer */,
 			);
-			name = Pod;
+			name = API;
+			path = API;
 			sourceTree = "<group>";
 		};
-		A71C8DDB5BA6ED892D7C23135FCF4A2F /* Vault */ = {
+		7B665F9CE278FDC35FE3970132D91E49 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				9C1806BD2442B10B3AA05B5BEA67167C /* VaultPaymentMethodView.swift */,
-				BF644C50396C2D6747D2AE37979DD809 /* VaultPaymentMethodViewController.swift */,
-				91372C3E192A85DDBD33931EAB3CEB32 /* VaultPaymentMethodViewModel.swift */,
+				9666D62DDDD60701DA772DB9E6EE83A1 /* Endpoint.swift */,
+				07310E2A7C0ADB8F08509DAE379D113B /* NetworkService.swift */,
+				8CE49443522600EC9DEDB75AD0544614 /* URLSessionStack.swift */,
 			);
-			path = Vault;
-			sourceTree = "<group>";
-		};
-		A93AB344CC02ED0EF0C4EBE3B05FD033 /* Root */ = {
-			isa = PBXGroup;
-			children = (
-				AAAF23141F42F5788ABC5A60C513E86A /* PrimerCardFormViewController.swift */,
-				502C0372C1A5FC9C9EF0A9A155EDA40B /* PrimerContainerViewController.swift */,
-				D35D8C005EB5D4DDA657D8A51F59941C /* PrimerFormViewController.swift */,
-				3FA2BEC81281317878B959A0E605FAA0 /* PrimerLoadingViewController.swift */,
-				0A148BBFFACDB17BAB08ADDBA205E0E3 /* PrimerNavigationBar.swift */,
-				A8A4412CF7AC078FA1CE353981565E2D /* PrimerNavigationController.swift */,
-				3E12F5A5E5232C4AEB9FD5215D3D224C /* PrimerRootViewController.swift */,
-				4B4FA770648286C9872033ECFC8DF680 /* PrimerUniversalCheckoutViewController.swift */,
-				4D358936A178D3F2F71A96FCEB08FD4A /* PrimerVaultManagerViewController.swift */,
-				EF69111FC675FC58F472F016B2638034 /* RootViewController.swift */,
-				697094503B4CDAC37FF0E4DEA52EFE5E /* RootViewController+Router.swift */,
-				7908C353D7906B8ADCC4E7D6B810B9BD /* Route.swift */,
-			);
-			path = Root;
-			sourceTree = "<group>";
-		};
-		AF879185B291868D2009472FC02C4039 /* Parser */ = {
-			isa = PBXGroup;
-			children = (
-				538BA20698515AC3464C099156FB9042 /* Parser.swift */,
-				0BC95BDB18F362350AD804E24F5A0CB4 /* JSON */,
-			);
-			path = Parser;
-			sourceTree = "<group>";
-		};
-		B5F5AC9875A9210B1790572994874BEA /* Development Pods */ = {
-			isa = PBXGroup;
-			children = (
-				723501D01E4C675FE62184D655665448 /* PrimerSDK */,
-			);
-			name = "Development Pods";
-			sourceTree = "<group>";
-		};
-		B88D66FAC5D79A953FBD438E4596CA9E /* Localizable */ = {
-			isa = PBXGroup;
-			children = (
-				66FF9BC4023BAA571CF62FED67BD685E /* en.lproj */,
-				6F18EE9C7FAFC5FFBF376C4B496C6CC0 /* fr.lproj */,
-				92B1E28A57A979E647F977F9A7247E25 /* sv.lproj */,
-			);
-			name = Localizable;
-			path = Sources/PrimerSDK/Resources/Localizable;
-			sourceTree = "<group>";
-		};
-		BAD6EB7370F2DBA1E5352D78D6F87CBB /* PCI */ = {
-			isa = PBXGroup;
-			children = (
-				D8234512D4938E052CD408CA6565BFF3 /* TokenizationService.swift */,
-			);
-			path = PCI;
-			sourceTree = "<group>";
-		};
-		C7142BC83A495A8427929B57C945C6D2 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				B1B7971BBAF3FE23F192CDDA08CA333E /* Endpoint.swift */,
-				53F353C0A5842CA5C2C4314B8406FD9C /* NetworkService.swift */,
-				5115EA4ABB95BC3E9DD77558353A3245 /* URLSessionStack.swift */,
-			);
+			name = Network;
 			path = Network;
 			sourceTree = "<group>";
 		};
-		C7AC3D67A75EF45A7B62092BC085BE13 /* UI Delegates */ = {
+		7BF5DF6AD98719CF6211D94CC769B1EC /* Primer */ = {
 			isa = PBXGroup;
 			children = (
-				F67B1F6DF4045B8179499B377A235327 /* ReloadDelegate.swift */,
-				578352C4DEF18E1F0FF741727DDC1CCE /* TransitioningDelegate.swift */,
+				E920A7FFBC6436B3D1562B8E51BD3733 /* PrimerAPI.swift */,
+				0831E59F51403656ED0383648F14F7B0 /* PrimerAPIClient.swift */,
+				E73DC0AFF8C9DBA4C95A2A174C2B14A2 /* PrimerAPIClient+Promises.swift */,
 			);
+			name = Primer;
+			path = Primer;
+			sourceTree = "<group>";
+		};
+		897693B3A77170FB6F4F8083AFBC1032 /* PrimerSDK */ = {
+			isa = PBXGroup;
+			children = (
+				3EAB13535C10C86748065624D0D7033E /* Core */,
+				2BB19F7ED797495DC717A8D15AFFC971 /* Pod */,
+				E0C88C672E33FCBB7B24CDB6A36D22A3 /* Support Files */,
+			);
+			name = PrimerSDK;
+			path = ../..;
+			sourceTree = "<group>";
+		};
+		8BC2A4D8533B8EDF9C0017816B51A0E2 /* Wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				75821E9F332BCF07BE2A51774D4A371B /* CatchWrappers.swift */,
+				4CA4545D24F665B91303552D899C514F /* EnsureWrappers.swift */,
+				F50BC3C32023C246A02CEF666A9084F3 /* FinallyWrappers.swift */,
+				187A700DC2F3AC4D980496686F6CC1F2 /* GuaranteeWrappers.swift */,
+				8B03734A0FEE1A75DDA0DCD87AF3C43C /* RecoverWrappers.swift */,
+				5624C7327C5FC63A6C4D66C3EEE6FCF9 /* SequenceWrappers.swift */,
+				599D6BBFFF03AD9428301812685250B8 /* ThenableWrappers.swift */,
+				6255611CAB8CE1504DBDFFFF6066E10B /* WrapperProtocols.swift */,
+			);
+			name = Wrappers;
+			path = Wrappers;
+			sourceTree = "<group>";
+		};
+		8D95528179BB2335939DDC5F9164E497 /* Data Models */ = {
+			isa = PBXGroup;
+			children = (
+				DCC4F7142BFFC105B1DAC503E96E2A14 /* Apaya.swift */,
+				8E2362652E46011AD466B8AFE4F60E5E /* ApplePay.swift */,
+				F66B66BE146E368176B51B48A7143719 /* CardNetwork.swift */,
+				137C27D833ACC688E11FFC8D812E270A /* ClientToken.swift */,
+				8318C993CBC628157303DBB4C5AF2DF7 /* Consolable.swift */,
+				75EE244891FE8B430637BA2EED9E0505 /* CountryCode.swift */,
+				6FF7059D6D3CE5C0FCB92940CC3464C4 /* Currency.swift */,
+				7B5D4597118608D3FCB3BED3445D6ACF /* Customer.swift */,
+				542CD49441C0FF5379071CDD3EE0B105 /* DirectDebitMandate.swift */,
+				75F45874E9F78F48B1BCC110861D462D /* DirerctCheckoutViewModel.swift */,
+				AC267E18AFBEE2C6510BF2A097B857B8 /* ImageName.swift */,
+				4C8290F3A90D3CC3C6D5A396240EF2A7 /* Klarna.swift */,
+				C48902375D4884370F44D933A41903CA /* OrderItem.swift */,
+				28127967A118E47C7E3E28B344178EA1 /* PaymentMethodConfig.swift */,
+				040F60B57703F4CA994A01EFC884BD04 /* PaymentMethodToken.swift */,
+				0934E3FE39BD90E6EA7BF229015F3ADB /* PaymentMethodTokenizationRequest.swift */,
+				7673235E700E2633E322145859E8C5E2 /* PaymentResponse.swift */,
+				0F9007B401DBEA396B83D3DD5B2D6D2B /* PayPal.swift */,
+				61366AB18EB8F4CCF9DD2B9F1E88E1BA /* PrimerContent.swift */,
+				79991D238BFCA75910416B4DADE5C803 /* PrimerFlowEnums.swift */,
+				B46A1E8724734498DCBB44098F8034A4 /* PrimerSettings.swift */,
+				427CF00E20477C9A1EC718979A82644D /* PrimerTheme.swift */,
+				F282CFBA4B8AFF01D5B02FC275C4ABDB /* SuccessMessage.swift */,
+				F9EC79DF0E55C2073B206EBCAD3EFC6D /* UXMode.swift */,
+				B422A8EC88D7F3D9E828C7FC5882F14C /* VaultCheckoutViewModel.swift */,
+				74D0C4CBDB501DDE03392FF74362F8AB /* PCI */,
+			);
+			name = "Data Models";
+			path = "Sources/PrimerSDK/Classes/Data Models";
+			sourceTree = "<group>";
+		};
+		9448AF66A975C50C90B6C2B4E72D90AC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3801A9BC7954875A0868ED6C2EBEE2BA /* Primer3DS */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		9B022F468ED565EC3F44F8D3AF2A9533 /* OAuth */ = {
+			isa = PBXGroup;
+			children = (
+				D9EEC8494FF1AB6B6FC2EC5D032A651B /* KlarnaViewModel.swift */,
+				582A6082B940B34852FF9DDE4895AEE2 /* OAuthViewModel.swift */,
+				1C242EF7890FA2F8D92C650C5E1C217A /* PayPalViewModel.swift */,
+				CF6F0505DAF05BAE102A56F36AC18E55 /* PrimerOAuthViewModel.swift */,
+				EC4199C97E63385F40B7E46A5965DB82 /* PrimerWebViewController.swift */,
+				A1E420B4BD0FD084632C7C7E5CCA4792 /* PrimerWebViewModel.swift */,
+				DF91C4EB0A23CBE32B20FFC93EB5AF33 /* WebViewController.swift */,
+			);
+			name = OAuth;
+			path = OAuth;
+			sourceTree = "<group>";
+		};
+		9F3E842B1C974602C004B40EB5F3DB06 /* UI Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				132FFF522AD8CFC125246CCB6C8ABFFE /* ReloadDelegate.swift */,
+			);
+			name = "UI Delegates";
 			path = "UI Delegates";
+			sourceTree = "<group>";
+		};
+		A449899408F84896A2C4D778321044FC /* Apple Pay */ = {
+			isa = PBXGroup;
+			children = (
+				02721D5A7357DCF5A13244780F8DAA5F /* ApplePayViewModel.swift */,
+			);
+			name = "Apple Pay";
+			path = "Apple Pay";
+			sourceTree = "<group>";
+		};
+		AEAF4D5A163CA3AC2DBB6CA35BC2681A /* 3DS */ = {
+			isa = PBXGroup;
+			children = (
+				613717FE594A8A2D0CAE79F84A669401 /* 3DSService.swift */,
+				A7DD1CE8022DEE896EBC4E2D6B354494 /* 3DSService+Promises.swift */,
+				503BF71041F30841E30A5666A44144C4 /* Data Models */,
+				4B4BCE6BD2ACE23EC72D7005D6113C63 /* Networking */,
+			);
+			name = 3DS;
+			path = 3DS;
+			sourceTree = "<group>";
+		};
+		AF457A16C543BB1450F5059F8143C442 /* User Interface */ = {
+			isa = PBXGroup;
+			children = (
+				54311EC40A63D1782BE2BA1E55537A4C /* LoadingViewController.swift */,
+				A449899408F84896A2C4D778321044FC /* Apple Pay */,
+				F7CB05E0A5E4C44EC1023E4008C6181C /* Error */,
+				9B022F468ED565EC3F44F8D3AF2A9533 /* OAuth */,
+				0C804E79ED46885DFED61BB4E9ED1BAB /* PCI */,
+				683409749FDC7AA83910441BDDB96D4D /* Primer */,
+				42195E8BA424B05603B513F79135B768 /* Root */,
+				08AFB1988C969069B4A0F178EBD91A69 /* Success */,
+				0AC36002504D7D2E78A92F6976BF0EE9 /* Text Fields */,
+				9F3E842B1C974602C004B40EB5F3DB06 /* UI Delegates */,
+				7298937EE74DFAC3DDD80AE5C3E75667 /* Vault */,
+			);
+			name = "User Interface";
+			path = "Sources/PrimerSDK/Classes/User Interface";
 			sourceTree = "<group>";
 		};
 		C99317E726DB0D5CA94A6EFE2CA8C63E /* Pods-PrimerSDK_Tests */ = {
@@ -986,27 +1118,30 @@
 			isa = PBXGroup;
 			children = (
 				9D940727FF8FB9C785EB98E56350EF41 /* Podfile */,
-				B5F5AC9875A9210B1790572994874BEA /* Development Pods */,
-				D210D550F4EA176C3123ED886F8F87F5 /* Frameworks */,
-				4A1B2ED084737272FEC1A5E090838C23 /* Products */,
+				7247ACD97AB79769C7D29E910A7E0D09 /* Development Pods */,
+				1628BF05B4CAFDCC3549A101F5A10A17 /* Frameworks */,
+				9448AF66A975C50C90B6C2B4E72D90AC /* Pods */,
+				4EBABD94A3E6FD8032DF901C90216D81 /* Products */,
 				56409D50D0FA1C19C592518252ACCB45 /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
 		};
-		D210D550F4EA176C3123ED886F8F87F5 /* Frameworks */ = {
+		CFC426E9285DEFC0EE2CE3E9F2D3E316 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				578452D2E740E91742655AC8F1636D1F /* iOS */,
+				2796B517334A85FE273247C85E3F7711 /* ThreeDS_SDK.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		DA65CE8A4D97F7FCFCBA22F0F8FC86DE /* Error */ = {
+		D4F8C3200868FEC3BFE5840D18847BD3 /* Error Handler */ = {
 			isa = PBXGroup;
 			children = (
-				7D912B4FDBA3F8BCC866F3DDE6A2A6BF /* ErrorViewController.swift */,
+				CEA284A1EDC49DC7B26F760C99F906C5 /* ErrorHandler.swift */,
+				D1B2C2D21276138530BF7F54E3145DBD /* PrimerError.swift */,
 			);
-			path = Error;
+			name = "Error Handler";
+			path = "Sources/PrimerSDK/Classes/Error Handler";
 			sourceTree = "<group>";
 		};
 		DC341534F0F751E90DBE9F9F51531A54 /* Pods-PrimerSDK_Example */ = {
@@ -1026,57 +1161,73 @@
 			path = "Target Support Files/Pods-PrimerSDK_Example";
 			sourceTree = "<group>";
 		};
-		E91D263A03CCC5A929C13B8B88448144 /* Payment Services */ = {
+		E0409C4E0919B17DC3DE7C0772E2E801 /* Primer */ = {
 			isa = PBXGroup;
 			children = (
-				75FCC8375A862C1B30B6E813C0483660 /* ApayaService.swift */,
-				22AEBB3E2C01BDC3618E55DE4BBC7639 /* ApplePayService.swift */,
-				835248B6EF65563FA7276EBAB76DA251 /* ClientTokenService.swift */,
-				522F062882B31E775A4C138D8836E802 /* DirectDebitService.swift */,
-				825DB902013A81D029ED7C04163494E0 /* KlarnaService.swift */,
-				55631EDA335C0E9AE1CA02E5C3A8F371 /* PaymentMethodConfigService.swift */,
-				D99333DCB249905A698BE4C4DE61CB78 /* PayPalService.swift */,
-				ABD4553FA6EA78C4303D1567F60E7185 /* VaultService.swift */,
+				3E83FF1A2826B5DCFEB55EE227BAD7C9 /* AppState.swift */,
+				3CE5DEAA27699099925F99E71B280E4B /* DependencyInjection.swift */,
+				6E8E521D6FB25510941BDDE3CC4ABB7B /* Primer.swift */,
+				5FF4B9F4FC26801A8152D6709F373517 /* PrimerDelegate.swift */,
+				052DE9C30E8839D44E94F57C6D1A2CED /* ResumeHandlerProtocol.swift */,
 			);
-			path = "Payment Services";
+			name = Primer;
+			path = Primer;
 			sourceTree = "<group>";
 		};
-		FB89A6E49B916CB0211B4FCAC4269DE9 /* Confirm Mandate */ = {
+		E0C88C672E33FCBB7B24CDB6A36D22A3 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				4463D5F8C4646BF73380834705688C12 /* ConfirmMandateView.swift */,
-				AA46196064BFBD78E51B6BD38BE9702B /* ConfirmMandateViewController.swift */,
-				3901EFE98236F4E87C3A970D163AD854 /* ConfirmMandateViewModel.swift */,
+				6AB8BD7A248834907AE087649B5D2CFA /* PrimerSDK.modulemap */,
+				0D2E0829A9CF5AACE43592141857A21A /* PrimerSDK-dummy.m */,
+				CDA121516581B97C473067E099C72804 /* PrimerSDK-Info.plist */,
+				68553CD924D242319DF36DF6E249141A /* PrimerSDK-prefix.pch */,
+				C1C216B34934B8F586C68707318953BF /* PrimerSDK-umbrella.h */,
+				0677C6E9834BB4B812F956E42A88E8F3 /* PrimerSDK.debug.xcconfig */,
+				6D615C192F3ED0841230C2EDE0FFEC28 /* PrimerSDK.release.xcconfig */,
+				E83F6E14B5A964FA6F29E380EAC5FF23 /* ResourceBundle-PrimerResources-PrimerSDK-Info.plist */,
 			);
-			path = "Confirm Mandate";
+			name = "Support Files";
+			path = "Example/Pods/Target Support Files/PrimerSDK";
 			sourceTree = "<group>";
 		};
-		FC1D1A417279EDA514FA775CBC1EA672 /* Success */ = {
+		E1E8D96526B82989E9411B9859490432 /* Cancellation */ = {
 			isa = PBXGroup;
 			children = (
-				AAD3E68F1F919DA53EB4C5D36E198226 /* SuccessViewController.swift */,
+				E93FDB94E758911D9DA848A9DF729CF0 /* CancelContext.swift */,
+				752FC399E15D784DCDE39EA8736F196C /* Cancellable.swift */,
+				850847CB164B26CEA78C7C07BF1040C5 /* CancellableCatchable.swift */,
+				0A13936A656B47592E8672C4D5307048 /* CancellablePromise.swift */,
+				5DB5F96657ABAE54F58E1CD3DFE9A169 /* CancellableThenable.swift */,
 			);
-			path = Success;
+			name = Cancellation;
+			path = Cancellation;
 			sourceTree = "<group>";
 		};
-		FD632B44C8ACC0B6BFE67E175E5739FC /* Error Handler */ = {
+		F7CB05E0A5E4C44EC1023E4008C6181C /* Error */ = {
 			isa = PBXGroup;
 			children = (
-				DF3B9C99904EACCC2238FC25EC17AE37 /* ErrorHandler.swift */,
-				03A553C514CD235F6DEE4B1F86AF81CD /* PrimerError.swift */,
+				F49FC8639A4713438D4E461D773692C6 /* ErrorViewController.swift */,
 			);
-			name = "Error Handler";
-			path = "Sources/PrimerSDK/Classes/Error Handler";
+			name = Error;
+			path = Error;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		460E5E467AC565336327C772DF755BA8 /* Headers */ = {
+		36D2DED6B17C03B99E875839823F489B /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				01D04994587BE1B26B3D47E7235E85E8 /* Pods-PrimerSDK_Example-umbrella.h in Headers */,
+				49ADDD1C14E528FCA9B086A18FF414B1 /* PrimerSDK-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7A9C8ACCC618BBE6D30CCDE4E04E7472 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				004979FCB7EEB6C1B3C508269DBCF405 /* Pods-PrimerSDK_Example-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1088,11 +1239,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		99F17F86C06A7C9E29F2B3D83BF4BD68 /* Headers */ = {
+		C6251C7351C4CE3017E418AED8114D85 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				46DA138D87188A321C38FB95C2E2E31A /* PrimerSDK-umbrella.h in Headers */,
+				DF9C55C9D9BED3F9FFCD3A657A541FFF /* Primer3DS-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1111,7 +1262,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				ADDA9BC8900494F94FDDD47C88BE4D87 /* PBXTargetDependency */,
+				4653F2E4472C1C8015351706444FA3DD /* PBXTargetDependency */,
 			);
 			name = "Pods-PrimerSDK_Tests";
 			productName = "Pods-PrimerSDK_Tests";
@@ -1120,17 +1271,18 @@
 		};
 		6C144A762E9B598392AFFEC8F873746A /* Pods-PrimerSDK_Example */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CF532C25035E09659689FB655718B965 /* Build configuration list for PBXNativeTarget "Pods-PrimerSDK_Example" */;
+			buildConfigurationList = C29F5372B51EA0894D6044DE7ED62E4A /* Build configuration list for PBXNativeTarget "Pods-PrimerSDK_Example" */;
 			buildPhases = (
-				460E5E467AC565336327C772DF755BA8 /* Headers */,
-				AF998654B79C38093FE0194BF12CC471 /* Sources */,
-				5D0AC2A17529F03CD0D2326D5C0FEAAD /* Frameworks */,
-				4336DDEC2BDBF110482F766F609DDE07 /* Resources */,
+				7A9C8ACCC618BBE6D30CCDE4E04E7472 /* Headers */,
+				00A1F943CC28578365FA9D5578CDAAE1 /* Sources */,
+				24452B90BCE9C8C25D8E2669361D0C04 /* Frameworks */,
+				F581C7E5F6700A881A879CBC7A536207 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F0FB131C18C467AB1FE263C91BEBC55A /* PBXTargetDependency */,
+				41409CE61229827B2307EDE272746885 /* PBXTargetDependency */,
+				91760C39565D2741C415465DE9527A17 /* PBXTargetDependency */,
 			);
 			name = "Pods-PrimerSDK_Example";
 			productName = "Pods-PrimerSDK_Example";
@@ -1139,11 +1291,11 @@
 		};
 		6E6525C7043FBA7BB34A249010AF5593 /* PrimerSDK-PrimerResources */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F6596274EC0613389765CF4BE4AD0255 /* Build configuration list for PBXNativeTarget "PrimerSDK-PrimerResources" */;
+			buildConfigurationList = 8D1FD7C04F7C1C4F78409807898DFA33 /* Build configuration list for PBXNativeTarget "PrimerSDK-PrimerResources" */;
 			buildPhases = (
-				D14DC2D5FFF2C4DE6633359DA23BF3DB /* Sources */,
-				604B3A318B44C7E31820C875A75D2B82 /* Frameworks */,
-				AAC68D658EC8AF3A02F7B99CD6915DAB /* Resources */,
+				098A67DD6C5222D814AE0ED129BA2BC1 /* Sources */,
+				38C45D3E6AF32B6400670DA6C90192BD /* Frameworks */,
+				106FACF63462851017B9DE18C8C73731 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -1154,9 +1306,28 @@
 			productReference = A8B3BC107C2BDC3C03D961866F721265 /* PrimerResources.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
+		6F5F0A81CAE773CFE5371059A81B5B6A /* Primer3DS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C5F41B3AB1FD7940E37EA8141483F48E /* Build configuration list for PBXNativeTarget "Primer3DS" */;
+			buildPhases = (
+				C6251C7351C4CE3017E418AED8114D85 /* Headers */,
+				86A548BFA482F09E98314F63CC7E693F /* [CP] Copy XCFrameworks */,
+				0FB96E01FBE900E363993E1BEEBB2780 /* Sources */,
+				2C9F05244F6932FBA9215DFA71E2790B /* Frameworks */,
+				0AA1BF746E5D3A1F78EB88C569FAFE10 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Primer3DS;
+			productName = Primer3DS;
+			productReference = FFE8CD355A453EF1396E2D5E8E370F7A /* Primer3DS.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		F3BE9108C53B53949406218CEA55E0B2 /* PrimerSDK */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 79C08FEFC97DC4FE14BD0277DFDFB19D /* Build configuration list for PBXNativeTarget "PrimerSDK" */;
+			buildConfigurationList = F0BE2392DE6FAE2544E60291536A9100 /* Build configuration list for PBXNativeTarget "PrimerSDK" */;
 			buildPhases = (
 				99F17F86C06A7C9E29F2B3D83BF4BD68 /* Headers */,
 				BA1223E45D33DC384237302036FD6859 /* Sources */,
@@ -1166,7 +1337,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				BF6F97BD41AFE5289EBE9FA5C97DCFE8 /* PBXTargetDependency */,
+				347D09F904AE48997936A6F00DBB1FC8 /* PBXTargetDependency */,
 			);
 			name = PrimerSDK;
 			productName = PrimerSDK;
@@ -1191,12 +1362,13 @@
 				Base,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
-			productRefGroup = 4A1B2ED084737272FEC1A5E090838C23 /* Products */;
+			productRefGroup = 4EBABD94A3E6FD8032DF901C90216D81 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				6C144A762E9B598392AFFEC8F873746A /* Pods-PrimerSDK_Example */,
 				6849240CBB3AA7809D185A43939876BA /* Pods-PrimerSDK_Tests */,
+				6F5F0A81CAE773CFE5371059A81B5B6A /* Primer3DS */,
 				F3BE9108C53B53949406218CEA55E0B2 /* PrimerSDK */,
 				6E6525C7043FBA7BB34A249010AF5593 /* PrimerSDK-PrimerResources */,
 			);
@@ -1204,6 +1376,25 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0AA1BF746E5D3A1F78EB88C569FAFE10 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		106FACF63462851017B9DE18C8C73731 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D603CD8CA07859C10B0AAF2D75C6A57C /* en.lproj in Resources */,
+				067D8FFAC4B3F31325776A6F43172C1E /* fr.lproj in Resources */,
+				20A345E1C8252E2647FF02F61862E817 /* Icons.xcassets in Resources */,
+				9AECC13BABA9632BB90612BE310AD3A5 /* PrimerTextFieldView.xib in Resources */,
+				06A88268E07C66E1C7A398FDE9E4B350 /* sv.lproj in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		404FDBE0904AC5809971254D810D1DE6 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1211,33 +1402,43 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4336DDEC2BDBF110482F766F609DDE07 /* Resources */ = {
+		51F887559BB6C0234D91D82A27A8592D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B3785BD9B1FC5184AA04755AE2A3C68 /* PrimerResources.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5FC3093A94CFE066A0B8BBF1E7BFAC62 /* Resources */ = {
+		F581C7E5F6700A881A879CBC7A536207 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D34F34695A8130C0D531DFC6AC41366 /* PrimerResources.bundle in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		AAC68D658EC8AF3A02F7B99CD6915DAB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				FA1F4EA234A9F769F93A7E6E36B437F1 /* en.lproj in Resources */,
-				D517FEEE6F7E6069FF881A8A98E95D60 /* fr.lproj in Resources */,
-				E3125F4D9A6639C3E266FB890C2B8FF7 /* Icons.xcassets in Resources */,
-				73A1DB0672BFCD29E3A8A4DEF6F2E46B /* sv.lproj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		86A548BFA482F09E98314F63CC7E693F /* [CP] Copy XCFrameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Primer3DS/Primer3DS-xcframeworks.sh",
+				"${PODS_ROOT}/Primer3DS/Sources/Frameworks/ThreeDS_SDK.xcframework",
+			);
+			name = "[CP] Copy XCFrameworks";
+			outputPaths = (
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ThreeDS_SDK",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Primer3DS/Primer3DS-xcframeworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8318B32DF1BF1AA64CF7C42E1354DF6A /* Sources */ = {
@@ -1430,40 +1631,58 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D14DC2D5FFF2C4DE6633359DA23BF3DB /* Sources */ = {
+		0FB96E01FBE900E363993E1BEEBB2780 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD2C5573C0844AFDA53B9B21D7456196 /* Primer3DS-dummy.m in Sources */,
+				08DB3BC1092BBC4D28B9AD4C6FDFF028 /* Primer3DS.swift in Sources */,
+				9F1E5CB7471E18234C70E4C251B28629 /* Primer3DSProtocols.swift in Sources */,
+				94527F658B9C33D21B58D08A1AC28DA9 /* Primer3DSStructures.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8318B32DF1BF1AA64CF7C42E1354DF6A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DCF943EE41FCA36BF5E5BE8E4F16011 /* Pods-PrimerSDK_Tests-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		ADDA9BC8900494F94FDDD47C88BE4D87 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Pods-PrimerSDK_Example";
-			target = 6C144A762E9B598392AFFEC8F873746A /* Pods-PrimerSDK_Example */;
-			targetProxy = E0D02A9AB3F74BF7D16D76781A704A85 /* PBXContainerItemProxy */;
-		};
-		BF6F97BD41AFE5289EBE9FA5C97DCFE8 /* PBXTargetDependency */ = {
+		347D09F904AE48997936A6F00DBB1FC8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "PrimerSDK-PrimerResources";
 			target = 6E6525C7043FBA7BB34A249010AF5593 /* PrimerSDK-PrimerResources */;
-			targetProxy = B275D7A997E7137FB6A6C2C588F2B0A2 /* PBXContainerItemProxy */;
+			targetProxy = C26D1F2DAE60DA7A8B6A9C41785A0681 /* PBXContainerItemProxy */;
 		};
-		F0FB131C18C467AB1FE263C91BEBC55A /* PBXTargetDependency */ = {
+		41409CE61229827B2307EDE272746885 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Primer3DS;
+			target = 6F5F0A81CAE773CFE5371059A81B5B6A /* Primer3DS */;
+			targetProxy = 31558470AB40EBEFCBB0DA3BFEAB5D06 /* PBXContainerItemProxy */;
+		};
+		4653F2E4472C1C8015351706444FA3DD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Pods-PrimerSDK_Example";
+			target = 6C144A762E9B598392AFFEC8F873746A /* Pods-PrimerSDK_Example */;
+			targetProxy = 7030D31A40163193011F0FE02008F79D /* PBXContainerItemProxy */;
+		};
+		91760C39565D2741C415465DE9527A17 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = PrimerSDK;
 			target = F3BE9108C53B53949406218CEA55E0B2 /* PrimerSDK */;
-			targetProxy = 986780738CF96B69C825C8B7695BF656 /* PBXContainerItemProxy */;
+			targetProxy = 807CF84ABA4AD53B6C6F301BFC568771 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		05BCC19B08BF8699C1E1F49917709BF0 /* Release */ = {
+		0DA2E4BF19BABF25416F1F4DE207BD50 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41F382D2EEF63A4AE2CA3EADAEB52DD /* PrimerSDK.release.xcconfig */;
+			baseConfigurationReference = 6D615C192F3ED0841230C2EDE0FFEC28 /* PrimerSDK.release.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/PrimerSDK";
 				IBSC_MODULE = PrimerSDK;
@@ -1510,9 +1729,9 @@
 			};
 			name = Debug;
 		};
-		160F854F012B89C7F53497880FB9FAA0 /* Debug */ = {
+		1000412E9E53FFF800BE071CA73595E6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3C474C1A0DABE2A3F404B63D4D59F30C /* Pods-PrimerSDK_Example.debug.xcconfig */;
+			baseConfigurationReference = E884507DF2B84FA8A2E8AD8289881542 /* Pods-PrimerSDK_Example.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -1538,10 +1757,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
-			name = Debug;
+			name = Release;
 		};
 		22B10C39E8B30A440A3B421B359C84E1 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1576,88 +1796,6 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
-		};
-		241C6A62E503896BB4DBB4D1D24700A9 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E884507DF2B84FA8A2E8AD8289881542 /* Pods-PrimerSDK_Example.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		25F9DFC0C0FE806A06B9FB6F1A98C873 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41F382D2EEF63A4AE2CA3EADAEB52DD /* PrimerSDK.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/PrimerSDK/PrimerSDK-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/PrimerSDK/PrimerSDK-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/PrimerSDK/PrimerSDK.modulemap";
-				PRODUCT_MODULE_NAME = PrimerSDK;
-				PRODUCT_NAME = PrimerSDK;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.3;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		7051868061F340FCF8A23C87855BE1EF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D14499D2AADEDD22359FD54A91999567 /* PrimerSDK.debug.xcconfig */;
-			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/PrimerSDK";
-				IBSC_MODULE = PrimerSDK;
-				INFOPLIST_FILE = "Target Support Files/PrimerSDK/ResourceBundle-PrimerResources-PrimerSDK-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				PRODUCT_NAME = PrimerResources;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
 		};
 		7EE7A78859F657F6BEFC651185B43192 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1714,9 +1852,121 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		A193320695C6E7CDA91833894B3ECF01 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 37BD3457C9DA0596324E3CDCC658CF05 /* Primer3DS.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/Primer3DS/Primer3DS-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/Primer3DS/Primer3DS-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/Primer3DS/Primer3DS.modulemap";
+				PRODUCT_MODULE_NAME = Primer3DS;
+				PRODUCT_NAME = Primer3DS;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		B33769A5D3B47686CA0CA577E8885A17 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0677C6E9834BB4B812F956E42A88E8F3 /* PrimerSDK.debug.xcconfig */;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/PrimerSDK";
+				IBSC_MODULE = PrimerSDK;
+				INFOPLIST_FILE = "Target Support Files/PrimerSDK/ResourceBundle-PrimerResources-PrimerSDK-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				PRODUCT_NAME = PrimerResources;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		CA1F89A9E5A5D4583DF95ADBA16C6063 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0677C6E9834BB4B812F956E42A88E8F3 /* PrimerSDK.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/PrimerSDK/PrimerSDK-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/PrimerSDK/PrimerSDK-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/PrimerSDK/PrimerSDK.modulemap";
+				PRODUCT_MODULE_NAME = PrimerSDK;
+				PRODUCT_NAME = PrimerSDK;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		CF57826BD08EEC345D9177914B089A60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6D615C192F3ED0841230C2EDE0FFEC28 /* PrimerSDK.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/PrimerSDK/PrimerSDK-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/PrimerSDK/PrimerSDK-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/PrimerSDK/PrimerSDK.modulemap";
+				PRODUCT_MODULE_NAME = PrimerSDK;
+				PRODUCT_NAME = PrimerSDK;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
@@ -1786,9 +2036,42 @@
 			};
 			name = Debug;
 		};
-		D3D4A630C3542D614EFF364489FF5DFD /* Debug */ = {
+		D8410CC56666F9EE95A89FCBD6CDE178 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D14499D2AADEDD22359FD54A91999567 /* PrimerSDK.debug.xcconfig */;
+			baseConfigurationReference = 3C474C1A0DABE2A3F404B63D4D59F30C /* Pods-PrimerSDK_Example.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		E0EDFC930C8904EF6DA610E59C59A0B1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EB8217820F639BC79E07FFCC65E74429 /* Primer3DS.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -1799,18 +2082,18 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/PrimerSDK/PrimerSDK-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/PrimerSDK/PrimerSDK-Info.plist";
+				GCC_PREFIX_HEADER = "Target Support Files/Primer3DS/Primer3DS-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/Primer3DS/Primer3DS-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/PrimerSDK/PrimerSDK.modulemap";
-				PRODUCT_MODULE_NAME = PrimerSDK;
-				PRODUCT_NAME = PrimerSDK;
+				MODULEMAP_FILE = "Target Support Files/Primer3DS/Primer3DS.modulemap";
+				PRODUCT_MODULE_NAME = Primer3DS;
+				PRODUCT_NAME = Primer3DS;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.3;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1829,11 +2112,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		79C08FEFC97DC4FE14BD0277DFDFB19D /* Build configuration list for PBXNativeTarget "PrimerSDK" */ = {
+		8D1FD7C04F7C1C4F78409807898DFA33 /* Build configuration list for PBXNativeTarget "PrimerSDK-PrimerResources" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D3D4A630C3542D614EFF364489FF5DFD /* Debug */,
-				25F9DFC0C0FE806A06B9FB6F1A98C873 /* Release */,
+				B33769A5D3B47686CA0CA577E8885A17 /* Debug */,
+				0DA2E4BF19BABF25416F1F4DE207BD50 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1847,20 +2130,29 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CF532C25035E09659689FB655718B965 /* Build configuration list for PBXNativeTarget "Pods-PrimerSDK_Example" */ = {
+		C29F5372B51EA0894D6044DE7ED62E4A /* Build configuration list for PBXNativeTarget "Pods-PrimerSDK_Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				160F854F012B89C7F53497880FB9FAA0 /* Debug */,
-				241C6A62E503896BB4DBB4D1D24700A9 /* Release */,
+				D8410CC56666F9EE95A89FCBD6CDE178 /* Debug */,
+				1000412E9E53FFF800BE071CA73595E6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F6596274EC0613389765CF4BE4AD0255 /* Build configuration list for PBXNativeTarget "PrimerSDK-PrimerResources" */ = {
+		C5F41B3AB1FD7940E37EA8141483F48E /* Build configuration list for PBXNativeTarget "Primer3DS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7051868061F340FCF8A23C87855BE1EF /* Debug */,
-				05BCC19B08BF8699C1E1F49917709BF0 /* Release */,
+				E0EDFC930C8904EF6DA610E59C59A0B1 /* Debug */,
+				A193320695C6E7CDA91833894B3ECF01 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F0BE2392DE6FAE2544E60291536A9100 /* Build configuration list for PBXNativeTarget "PrimerSDK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CA1F89A9E5A5D4583DF95ADBA16C6063 /* Debug */,
+				CF57826BD08EEC345D9177914B089A60 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

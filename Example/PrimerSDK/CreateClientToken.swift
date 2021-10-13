@@ -17,3 +17,10 @@ struct CreateClientTokenRequest: Codable {
     let customerCountryCode: String?
     var environment: Environment = .sandbox
 }
+
+struct TransactionResponse {
+    var id: String
+    var date: String
+    var status: String
+    var requiredAction: [String: Any]
+}

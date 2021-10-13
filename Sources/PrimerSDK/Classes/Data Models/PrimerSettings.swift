@@ -28,7 +28,19 @@ internal protocol PrimerSettingsProtocol {
 //    var merchantCapabilities: [MerchantCapability]? { get }
     var isInitialLoadingHidden: Bool { get }
     var localeData: LocaleData { get }
+    var is3DSOnVaultingEnabled: Bool { get }
+    var billingAddress: Address? { get }
+    var orderId: String? { get }
+    var debugOptions: PrimerDebugOptions { get }
     var customer: Customer? { get set }
+}
+
+public struct PrimerDebugOptions {
+    public var is3DSSanityCheckEnabled: Bool = true
+    
+    public init(is3DSSanityCheckEnabled: Bool = true) {
+        self.is3DSSanityCheckEnabled = is3DSSanityCheckEnabled
+    }
 }
 
 /**
@@ -73,6 +85,10 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //    internal(set) public var merchantCapabilities: [MerchantCapability]?
     internal(set) public var isInitialLoadingHidden: Bool
     internal(set) public var localeData: LocaleData
+    internal(set) public var is3DSOnVaultingEnabled: Bool
+    internal(set) public var billingAddress: Address?
+    internal(set) public var orderId: String?
+    internal(set) public var debugOptions: PrimerDebugOptions = PrimerDebugOptions()
     internal(set) public var customer: Customer?
 
     public var clientTokenRequestCallback: ClientTokenCallBack {
@@ -114,6 +130,10 @@ public class PrimerSettings: PrimerSettingsProtocol {
 //        merchantCapabilities: [MerchantCapability]? = nil,
         isInitialLoadingHidden: Bool = false,
         localeData: LocaleData? = nil,
+        is3DSOnVaultingEnabled: Bool = true,
+        billingAddress: Address? = nil,
+        orderId: String? = nil,
+        debugOptions: PrimerDebugOptions? = nil,
         customer: Customer? = nil
     ) {
         self.amount = amount
@@ -136,10 +156,15 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
         self.customer = customer
         
-        if !orderItems.filter({ $0.unitAmount != nil }).isEmpty {
+        if amount == nil && !orderItems.filter({ $0.unitAmount != nil }).isEmpty {
             // In case order items have been provided: Replace amount with the sum of the unit amounts
             self.amount = orderItems.filter({ $0.unitAmount != nil }).compactMap({ $0.unitAmount! * $0.quantity }).reduce(0, +)
         }
+        
+        self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled
+        self.billingAddress = billingAddress
+        self.orderId = orderId
+        self.debugOptions = debugOptions ?? PrimerDebugOptions()
     }
 }
 

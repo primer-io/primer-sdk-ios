@@ -10,9 +10,10 @@
 @testable import PrimerSDK
 
 class MockTokenizationService: TokenizationServiceProtocol {
+    var tokenizedPaymentMethodToken: PaymentMethodToken?
+    
     var paymentInstrumentType: String
     var tokenType: String
-    
     var tokenizeCalled = false
     lazy var paymentMethodTokenJSON: [String: Any] = [
         "token": "payment_method_token",

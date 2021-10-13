@@ -54,9 +54,13 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var merchantIdentifier: String?
     public var amount: Int?
     public var currency: Currency?
-    internal var decodedClientToken: DecodedClientToken?
+    internal var decodedClientToken: DecodedClientToken? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.decodedClientToken
+    }
     internal var paymentMethodsConfig: PaymentMethodConfig?
     private(set) public var isLoading: Bool = false
+    internal private(set) var paymentMethod: PaymentMethodToken?
     
     deinit {
         setIsLoading(false)
@@ -75,11 +79,11 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         self.cardholderField = cardholderNameField
         
         if let clientToken = clientToken, let decodedClientToken = clientToken.jwtTokenPayload {
-            self.decodedClientToken = decodedClientToken
+            try? ClientTokenService.storeClientToken(clientToken)
         }
     }
     
-    private func setIsLoading(_ isLoading: Bool) {
+    internal func setIsLoading(_ isLoading: Bool) {
         if self.isLoading == isLoading { return }
         self.isLoading = isLoading
         delegate?.cardComponentsManager?(self, isLoading: isLoading)
@@ -97,11 +101,17 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 if let err = err {
                     seal.reject(err)
                 } else if let clientToken = clientToken {
-                    if let decodedClientToken = clientToken.jwtTokenPayload {
-                        seal.fulfill(decodedClientToken)
-                    } else {
-                        let err = PrimerError.clientTokenNull
-                        seal.reject(err)
+                    do {
+                        try ClientTokenService.storeClientToken(clientToken)
+                        let state: AppStateProtocol = DependencyContainer.resolve()
+                        if let decodedClientToken = state.decodedClientToken {
+                            seal.fulfill(decodedClientToken)
+                        } else {
+                            seal.reject(PrimerError.clientTokenNull)
+                        }
+                        
+                    } catch {
+                        seal.reject(error)
                     }
                 } else {
                     assert(true, "Should always return token or error")
@@ -215,15 +225,10 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 self.fetchClientTokenIfNeeded()
             }
             .then { decodedClientToken -> Promise<PaymentMethodConfig> in
-                self.decodedClientToken = decodedClientToken
                 return self.fetchPaymentMethodConfigIfNeeded()
             }
             .done { paymentMethodsConfig in
                 self.paymentMethodsConfig = paymentMethodsConfig
-                
-                if self.paymentMethodsConfig?.getConfig(for: .paymentCard) == nil {
-                    throw PrimerError.configFetchFailed
-                }
                 
                 let paymentInstrument = PaymentInstrument(
                     number: self.cardnumberField.cardnumber,
@@ -249,12 +254,68 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in
                     switch result {
                     case .success(let paymentMethodToken):
-                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                        let state: AppStateProtocol = DependencyContainer.resolve()
+                                                
+                        var isThreeDSEnabled: Bool = false
+                        if state.paymentMethodConfig?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                            isThreeDSEnabled = true
+                        }
+
+                        /// 3DS requirements on tokenization are:
+                        ///     - The payment method has to be a card
+                        ///     - It has to be a vault flow
+                        ///     - is3DSOnVaultingEnabled has to be enabled by the developer
+                        ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
+                        if paymentMethodToken.paymentInstrumentType == .paymentCard,
+                           Primer.shared.flow.internalSessionFlow.vaulted,
+                           settings.is3DSOnVaultingEnabled,
+                           paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
+                           isThreeDSEnabled {
+                            #if canImport(Primer3DS)
+                            let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
+                            DependencyContainer.register(threeDSService)
+                            
+                            var beginAuthExtraData: ThreeDS.BeginAuthExtraData
+                            do {
+                                beginAuthExtraData = try ThreeDSService.buildBeginAuthExtraData()
+                            } catch {
+                                self.paymentMethod = paymentMethodToken
+                                self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                                return
+                            }
+
+                            threeDSService.perform3DS(
+                                    paymentMethodToken: paymentMethodToken,
+                                protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
+                                beginAuthExtraData: beginAuthExtraData,
+                                    sdkDismissed: { () in
+
+                                    }, completion: { result in
+                                        switch result {
+                                        case .success(let res):
+                                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: res.0)
+                                            
+                                        case .failure(let err):
+                                            // Even if 3DS fails, continue...
+                                            log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
+                                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                                            
+                                        }
+                                    })
+                            
+                            #else
+                            print("\nWARNING!\nCannot perform 3DS, Primer3DS SDK is missing. Continue without 3DS\n")
+                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                            #endif
+                            
+                        } else {
+                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                        }
+                
                     case .failure(let err):
                         self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [PrimerError.tokenizationRequestFailed])
                     }
-                    
-                    self.setIsLoading(false)
                 }
             }
             .catch { err in
@@ -295,7 +356,10 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var currency: Currency?
     
-    var decodedClientToken: DecodedClientToken?
+    var decodedClientToken: DecodedClientToken? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.decodedClientToken
+    }
     
     var paymentMethodsConfig: PaymentMethodConfig?
     
@@ -307,8 +371,8 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         self.cvvField = cvvField
         self.cardholderField = cardholderNameField
         
-        if let clientToken = clientToken, let decodedClientToken = clientToken.jwtTokenPayload {
-            self.decodedClientToken = decodedClientToken
+        if let clientToken = clientToken {
+            try? ClientTokenService.storeClientToken(clientToken)
         }
     }
     
@@ -320,7 +384,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         cardnumberFieldView.textField._text = cardnumber
         self.init(clientToken: clientToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderNameField: PrimerCardholderNameFieldView())
         
-        decodedClientToken = clientToken.jwtTokenPayload
+        try? ClientTokenService.storeClientToken(clientToken)
     }
     
     func tokenize() {

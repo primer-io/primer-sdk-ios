@@ -16,6 +16,7 @@ protocol ApplePayViewModelProtocol: PrimerOAuthViewModel {
 
 class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
     var host: OAuthHost = .applePay
+    private var applePayWindow: UIWindow?
 
     var countryCode: CountryCode? {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -35,7 +36,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
     }
     var applePayConfigId: String? {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.paymentMethodConfig?.getConfig(for: .applePay)?.id
+        return state.paymentMethodConfig?.getConfigId(for: .applePay)
     }
     var clientToken: DecodedClientToken? {
         let state: AppStateProtocol = DependencyContainer.resolve()
@@ -54,6 +55,10 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
+    override init() {
+        super.init()
     }
     
     func tokenize() -> Promise<PaymentMethodToken> {
@@ -140,12 +145,12 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                 switch result {
                 case .success(let applePayPaymentResponse):
                     let applePayService: ApplePayServiceProtocol = DependencyContainer.resolve()
-                    applePayService.fetchConfig { [weak self] (err) in
+                    applePayService.fetchConfig { (err) in
                         if let err = err {
                             completion(nil, err)
                             
                         } else {
-                            guard let applePayConfigId = self?.applePayConfigId else {
+                            guard let applePayConfigId = self.applePayConfigId else {
                                 return completion(nil, PaymentException.missingConfigurationId)
                             }
 
@@ -155,7 +160,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                                 sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
                             )
                             
-                            applePayService.tokenize(instrument: instrument) { [weak self] (result) in
+                            applePayService.tokenize(instrument: instrument) { (result) in
                                 switch result {
                                 case .failure(let err):
                                     completion(nil, err)
@@ -172,6 +177,7 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
                     completion(nil, err)
                 }
             }
+            
             Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: nil)
             didPresentPaymentMethod?()
             
@@ -179,8 +185,13 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
             log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
             return completion(nil, AppleException.unableToMakePaymentsOnProvidedNetworks)
         }
+        
+        
+        
+        
     }
     // swiftlint:enable cyclomatic_complexity function_body_length
+
 }
 
 extension ApplePayViewModel: PKPaymentAuthorizationViewControllerDelegate {

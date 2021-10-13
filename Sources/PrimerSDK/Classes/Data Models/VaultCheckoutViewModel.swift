@@ -20,6 +20,9 @@ internal protocol VaultCheckoutViewModelProtocol {
 }
 
 internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
+    
+    private var resumeHandler: ResumeHandlerProtocol!
+    
     var mandate: DirectDebitMandate {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.directDebitMandate
@@ -68,6 +71,10 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
+    
+    init() {
+        resumeHandler = self
+    }
 
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
@@ -103,15 +110,52 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     func authorizePayment(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let paymentMethod = state.paymentMethods.first(where: { paymentMethod in
+        guard let selectedPaymentMethod = state.paymentMethods.first(where: { paymentMethod in
             return paymentMethod.token == state.selectedPaymentMethod
         }) else { return }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        settings.authorizePayment(paymentMethod, completion)
-        settings.onTokenizeSuccess(paymentMethod, completion)
+        settings.authorizePayment(selectedPaymentMethod, completion)
+        settings.onTokenizeSuccess(selectedPaymentMethod, completion)
+        Primer.shared.delegate?.onTokenizeSuccess?(selectedPaymentMethod, resumeHandler: self)
     }
 
+}
+
+extension VaultCheckoutViewModel: ResumeHandlerProtocol {
+    func handle(error: Error) {
+        DispatchQueue.main.async {
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                let evc = ErrorViewController(message: error.localizedDescription)
+                evc.view.translatesAutoresizingMaskIntoConstraints = false
+                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                Primer.shared.primerRootVC?.show(viewController: evc)
+            }
+        }
+    }
+    
+    func handle(newClientToken clientToken: String) {
+        try? ClientTokenService.storeClientToken(clientToken)
+    }
+    
+    func handleSuccess() {
+        DispatchQueue.main.async {
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                let svc = SuccessViewController()
+                svc.view.translatesAutoresizingMaskIntoConstraints = false
+                svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+                Primer.shared.primerRootVC?.show(viewController: svc)
+            }
+        }
+    }
 }
 
 #endif
