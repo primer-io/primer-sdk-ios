@@ -10,7 +10,7 @@ import Foundation
 import PrimerSDK
 
 enum Environment: String, Codable {
-    case dev, sandbox, staging, production
+    case local, dev, sandbox, staging, production
 }
 
 struct CreateClientTokenRequest: Codable {

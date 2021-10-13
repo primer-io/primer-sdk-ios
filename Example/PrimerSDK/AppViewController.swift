@@ -55,12 +55,14 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         var env: Environment!
         switch environmentControl.selectedSegmentIndex {
         case 0:
-            env = .dev
+            env = .local
         case 1:
-            env = .sandbox
+            env = .dev
         case 2:
-            env = .staging
+            env = .sandbox
         case 3:
+            env = .staging
+        case 4:
             env = .production
         default:
             break
