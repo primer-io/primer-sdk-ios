@@ -221,7 +221,23 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
-        
+        DispatchQueue.main.async {
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+            
+            let err = PrimerError.containerError(errors: errors)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            if settings.hasDisabledSuccessScreen {
+                Primer.shared.dismiss()
+            } else {
+                let evc = ErrorViewController(message: err.localizedDescription)
+                evc.view.translatesAutoresizingMaskIntoConstraints = false
+                evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                Primer.shared.primerRootVC?.show(viewController: evc)
+            }
+        }
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
