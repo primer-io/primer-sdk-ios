@@ -91,7 +91,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
             anchorPayButton()
             indicator.stopAnimating()
         }
-        
+
         navBar.isHidden = true
 //        amountLabelView.isHidden = !isShowingAmount
 //        savedCardTitleLabel.isHidden = !isShowingFirstVaultedPaymentMethod
@@ -115,17 +115,11 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
     // MARK: Configuration
 
     private func configureNavBar() {
-        //        guard let theme = delegate?.theme else { return }
-        //        navBar.backgroundColor = theme.backgroundColor
         let navItem = UINavigationItem()
-        //        let doneItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancel))
-        //        navItem.leftBarButtonItem = doneItem
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         let titleItem = UINavigationItem(title: "Test")
         navBar.setItems([navItem, titleItem], animated: false)
-        
-
         navBar.topItem?.title = Primer.shared.flow.internalSessionFlow.vaulted ?
             NSLocalizedString("primer-vault-nav-bar-title",
                               tableName: nil,
@@ -173,7 +167,10 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
             amountLabelView.font = .boldSystemFont(ofSize: 32)
             amountLabelView.translatesAutoresizingMaskIntoConstraints = false
             amountLabelView.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 6).isActive = true
-            amountLabelView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.view.safeMargin).isActive = true
+            amountLabelView.leadingAnchor.constraint(
+                equalTo: leadingAnchor,
+                constant: theme.view.safeMargin
+            ).isActive = true
         } else {
             amountLabelView.isHidden = true
         }

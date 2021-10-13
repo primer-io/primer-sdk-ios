@@ -168,9 +168,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             otherPaymentMethodsTitleLabel.textColor = theme.text.subtitle.color
             otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
             otherPaymentMethodsTitleLabel.textAlignment = .left
-            
+
             verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
-            
+
             for paymentMethod in availablePaymentMethods {
                 let paymentMethodButton = UIButton()
                 paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
@@ -180,16 +180,13 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
                 paymentMethodButton.layer.cornerRadius = 4.0
                 paymentMethodButton.clipsToBounds = true
-                
+
                 switch paymentMethod.type {
                 case .paymentCard:
-                    paymentMethodButton.setTitleColor(theme.text.default.color, for: .normal)
-                    paymentMethodButton.tintColor = theme.text.default.color
-                    paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = theme.text.default.color.cgColor
+                    paymentMethodButton.configureCardButton(with: theme)
                     paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)
-                    
+
                 case .applePay:
                     paymentMethodButton.backgroundColor = .black
                     paymentMethodButton.setTitleColor(.white, for: .normal)
@@ -352,5 +349,15 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 extension PrimerUniversalCheckoutViewController: ReloadDelegate {
     func reload() {
         renderSelectedPaymentInstrument(insertAt: 1)
+    }
+}
+
+internal extension UIButton {
+
+    func configureCardButton(with theme: PrimerThemeProtocol) {
+        self.setTitleColor(theme.paymentMethodButton.text.color, for: .normal)
+        self.tintColor = theme.paymentMethodButton.text.color
+        self.layer.borderWidth = theme.paymentMethodButton.border.width
+        self.layer.borderColor = theme.paymentMethodButton.border.color(for: .enabled).cgColor
     }
 }

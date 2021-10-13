@@ -11,6 +11,11 @@ internal struct Fontsize {
 }
 
 internal struct Layout {
+    
+    struct View {
+        static let CornerRadius: CGFloat = 0.0
+        static let SafeArea: CGFloat = 10.0
+    }
 
     struct PaymentMethodButton {
         static let CornerRadius: CGFloat = 4.0

@@ -21,7 +21,7 @@ internal struct ButtonTheme {
                 width: data?.border?.width ?? Layout.MainButton.BorderWidth
             ),
             text: TextTheme(
-                color: data?.text?.defaultColor ?? .white,
+                color: data?.text?.defaultColor ?? Colors.Buttons.Main.Text.Enabled,
                 fontsize: data?.text?.fontsize ?? Fontsize.MainButtonTitle
             )
         )
@@ -44,7 +44,7 @@ internal struct ButtonTheme {
                 width: data?.border?.width ?? Layout.PaymentMethodButton.BorderWidth
             ),
             text: TextTheme(
-                color: data?.text?.defaultColor ?? .white,
+                color: data?.text?.defaultColor ?? Colors.Buttons.PaymentMethod.Text.Enabled,
                 fontsize: data?.text?.fontsize ?? Fontsize.PaymentMethodButtonTitle
             )
         )
