@@ -13,7 +13,7 @@ internal class PrimerTableViewCell: UITableViewCell {
     func addTitle(_ text: String, theme: PrimerThemeProtocol) {
         let titleView = UILabel()
         titleView.text = text
-        titleView.textColor = theme.colorTheme.disabled1
+        titleView.textColor = theme.text.subtitle.color
         titleView.font = .systemFont(ofSize: 13, weight: .light)
         titleView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(titleView)
@@ -24,7 +24,7 @@ internal class PrimerTableViewCell: UITableViewCell {
     func addContent(_ text: String?, theme: PrimerThemeProtocol) {
         let contentView = UILabel()
         contentView.text = text
-        contentView.textColor = theme.colorTheme.text1
+        contentView.textColor = theme.text.default.color
         contentView.font = .systemFont(ofSize: 17)
         contentView.adjustsFontSizeToFitWidth = true
         contentView.translatesAutoresizingMaskIntoConstraints = false

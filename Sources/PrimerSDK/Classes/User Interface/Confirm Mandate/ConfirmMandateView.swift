@@ -47,7 +47,7 @@ internal class ConfirmMandateView: PrimerView {
 
         subviews.forEach { $0.isHidden = isBusy }
         navBar.isHidden = false
-        indicator.color = theme.colorTheme.tint1
+        indicator.color = theme.text.system.color
         indicator.isHidden = !isBusy
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
@@ -79,13 +79,13 @@ internal extension ConfirmMandateView {
         
         let navItem = UINavigationItem()
         let backItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(close))
-        backItem.tintColor = theme.colorTheme.tint1
+        backItem.tintColor = theme.text.system.color
         navItem.leftBarButtonItem = backItem
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
-        navBar.topItem?.title = theme.content.confirmMandateContent.topTitleText
-        navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: theme.colorTheme.text1]
+        navBar.topItem?.title = Content.ConfirmMandateView.NavTitle
+        navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: theme.text.default.color]
         navBar.translatesAutoresizingMaskIntoConstraints = false
 
         if #available(iOS 13.0, *) {
@@ -103,16 +103,21 @@ internal extension ConfirmMandateView {
 
     func addTitle() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-        title.text = theme.content.confirmMandateContent.mainTitleText.uppercased()
-        title.textColor = theme.colorTheme.text1
-        title.font = theme.fontTheme.mainTitle
+        title.text = Content.ConfirmMandateView.Title
+        title.textColor = theme.text.title.color
+        title.font = UIFont.systemFont(ofSize: 20)
         title.textAlignment = .center
         title.translatesAutoresizingMaskIntoConstraints = false
         title.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         title.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 12).isActive = true
-        title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
-        title.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
+        title.leadingAnchor.constraint(
+            equalTo: leadingAnchor,
+            constant: theme.view.safeMargin
+        ).isActive = true
+        title.trailingAnchor.constraint(
+            equalTo: trailingAnchor,
+            constant: -theme.view.safeMargin
+        ).isActive = true
     }
 
     func addTableView() {
@@ -122,10 +127,21 @@ internal extension ConfirmMandateView {
         tableView.delegate = delegate
         tableView.dataSource = delegate
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: theme.layout.confirmMandateListTopMargin).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.confirmMandateListMargin).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.confirmMandateListMargin).isActive = true
-        tableView.heightAnchor.constraint(equalToConstant: theme.layout.confirmMandateListItemHeight * 4).isActive = true
+        tableView.topAnchor.constraint(
+            equalTo: title.bottomAnchor,
+            constant: theme.view.safeMargin
+        ).isActive = true
+        tableView.leadingAnchor.constraint(
+            equalTo: leadingAnchor,
+            constant: theme.view.safeMargin
+        ).isActive = true
+        tableView.trailingAnchor.constraint(
+            equalTo: trailingAnchor,
+            constant: -theme.view.safeMargin
+        ).isActive = true
+        tableView.heightAnchor.constraint(
+            equalToConstant: theme.view.safeMargin * 4
+        ).isActive = true
     }
 
     func addCompanyLabel() {
@@ -135,15 +151,21 @@ internal extension ConfirmMandateView {
         companyLabel.text = business.name + ", " + business.address.toString()
         companyLabel.numberOfLines = 0
         companyLabel.font = .systemFont(ofSize: 13)
-        companyLabel.textColor = theme.colorTheme.neutral1
+        companyLabel.textColor = theme.text.subtitle.color
         companyLabel.translatesAutoresizingMaskIntoConstraints = false
-        companyLabel.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 24).isActive = true
-        companyLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
+        companyLabel.topAnchor.constraint(
+            equalTo: tableView.bottomAnchor,
+            constant: 24 // TODO: make dynamic following UI update
+        ).isActive = true
+        companyLabel.leadingAnchor.constraint(
+            equalTo: leadingAnchor,
+            constant: theme.view.safeMargin
+        ).isActive = true
     }
 
     func addLegalLabel() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
+
         guard let business = dataSource?.businessDetails else { return }
 
         legalLabel.text =
@@ -163,11 +185,13 @@ internal extension ConfirmMandateView {
         legalLabel.numberOfLines = 0
         legalLabel.lineBreakMode = .byWordWrapping
         legalLabel.font = .systemFont(ofSize: 10)
-        legalLabel.textColor = theme.colorTheme.neutral1
+        legalLabel.textColor = theme.text.subtitle.color
         legalLabel.translatesAutoresizingMaskIntoConstraints = false
         legalLabel.topAnchor.constraint(equalTo: companyLabel.bottomAnchor, constant: 8).isActive = true
-        legalLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
-        legalLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
+        legalLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.view.safeMargin)
+            .isActive = true
+        legalLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.view.safeMargin)
+            .isActive = true
     }
 
     func addAmountLabel() {
@@ -176,32 +200,36 @@ internal extension ConfirmMandateView {
         guard let amount = dataSource?.amount else { return }
         amountLabel.text = amount
         amountLabel.font = .boldSystemFont(ofSize: 32)
-        amountLabel.textColor = theme.colorTheme.text1
+        amountLabel.textColor = theme.text.title.color
         amountLabel.textAlignment = .center
         amountLabel.translatesAutoresizingMaskIntoConstraints = false
         amountLabel.topAnchor.constraint(equalTo: legalLabel.bottomAnchor, constant: 12).isActive = true
-        amountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
-        amountLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
+        amountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.view.safeMargin)
+            .isActive = true
+        amountLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.view.safeMargin)
+            .isActive = true
     }
 
     func addConfirmButton() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-        button.setTitle(theme.content.confirmMandateContent.submitButtonLabelText, for: .normal)
-        button.setTitleColor(theme.colorTheme.text2, for: .normal)
+        // TODO: fix injection of string values
+        button.setTitle(Content.ConfirmMandateView.SubmitButtonTitle, for: .normal)
+        button.setTitleColor(theme.mainButton.text.color, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-        button.backgroundColor = theme.colorTheme.tint1
-        button.layer.cornerRadius = theme.cornerRadiusTheme.buttons
+        button.backgroundColor = theme.mainButton.color(for: .enabled)
+        button.layer.cornerRadius = theme.mainButton.cornerRadius
         button.translatesAutoresizingMaskIntoConstraints = false
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
-        button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
+        button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.view.safeMargin)
+            .isActive = true
+        button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.view.safeMargin)
+            .isActive = true
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
         button.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -32).isActive = true
         button.addTarget(self, action: #selector(onConfirm), for: .touchUpInside)
         let image = ImageName.lock.image?.withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView()
-        imageView.tintColor = theme.colorTheme.text2
+        imageView.tintColor = theme.mainButton.text.color
         imageView.image = image
         button.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -211,19 +239,16 @@ internal extension ConfirmMandateView {
 
     @objc private func onConfirm() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
         indicator.removeFromSuperview()
         addSubview(indicator)
         button.setTitle("", for: .normal)
         button.addSubview(indicator)
-        indicator.color = theme.colorTheme.text2
-
+        indicator.color = theme.mainButton.text.color
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.topAnchor.constraint(equalTo: button.topAnchor).isActive = true
         indicator.leadingAnchor.constraint(equalTo: button.leadingAnchor).isActive = true
         indicator.trailingAnchor.constraint(equalTo: button.trailingAnchor).isActive = true
         indicator.bottomAnchor.constraint(equalTo: button.bottomAnchor).isActive = true
-        
         indicator.startAnimating()
         delegate?.confirm()
     }
@@ -233,21 +258,14 @@ internal class ConfirmMandateTableView: UITableView {
 
     func render() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-        rowHeight = theme.layout.confirmMandateListItemHeight
-        backgroundColor = theme.colorTheme.main1
-        layer.cornerRadius = theme.cornerRadiusTheme.confirmMandateList
-//        layer.shadowColor = UIColor.black.cgColor
-//        layer.shadowOpacity = 1
-//        layer.shadowOffset = .zero
-//        layer.shadowRadius = 10
-//        layer.shadowPath = UIBezierPath(rect: bounds).cgPath
+        rowHeight = 60.0 // TODO: make dynamic after UI update
+        backgroundColor = theme.view.backgroundColor
+        layer.cornerRadius = theme.view.cornerRadius
         alwaysBounceVertical = false
         tableFooterView = UIView()
         register(UITableViewCell.self, forCellReuseIdentifier: "cell5")
         reloadData()
     }
-
 }
 
 #endif

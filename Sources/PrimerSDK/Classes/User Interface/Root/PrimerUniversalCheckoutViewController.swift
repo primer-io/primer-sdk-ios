@@ -28,7 +28,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                           value: "Choose payment method",
                                           comment: "Choose payment method - Checkout Navigation Bar Title")
         
-        view.backgroundColor = theme.colorTheme.main1
+        view.backgroundColor = theme.view.backgroundColor
         
         verticalStackView.spacing = 14.0
         
@@ -48,7 +48,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             titleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
             titleLabel.text = amountStr
             titleLabel.textAlignment = .left
-            titleLabel.textColor = theme.colorTheme.text1
+            titleLabel.textColor = theme.text.amountLabel.color
             verticalStackView.addArrangedSubview(titleLabel)
         }
     }
@@ -75,7 +75,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
         self.selectedPaymentInstrument = nil
-        if let selectedPaymentInstrument = checkoutViewModel.paymentMethods.first(where: { paymentInstrument in
+        if let selectedPaymentInstrument = checkoutViewModel.paymentMethods
+            .first(where: { paymentInstrument in
             return paymentInstrument.token == checkoutViewModel.selectedPaymentMethodId
         }), let cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
             self.selectedPaymentInstrument = selectedPaymentInstrument
@@ -94,11 +95,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                                                       bundle: Bundle.primerResources,
                                                                       value: "SAVED PAYMENT METHOD",
                                                                       comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
-            savedPaymentInstrumentTitleLabel.textColor = theme.colorTheme.secondaryText1
+            savedPaymentInstrumentTitleLabel.textColor = theme.text.subtitle.color
             savedPaymentInstrumentTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
             savedPaymentInstrumentTitleLabel.textAlignment = .left
             savedPaymentInstrumentStackView.addArrangedSubview(savedPaymentInstrumentTitleLabel)
-            
+
             if savedCardView == nil {
                 savedCardView = CardButton()
                 savedPaymentInstrumentStackView.addArrangedSubview(savedCardView)
@@ -110,17 +111,17 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 tapGesture.addTarget(self, action: #selector(togglePayButton))
                 savedCardView.addGestureRecognizer(tapGesture)
             }
-            
+
             if seeAllButton == nil {
                 seeAllButton = UIButton()
                 seeAllButton.translatesAutoresizingMaskIntoConstraints = false
                 seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
                 seeAllButton.setTitle("See all", for: .normal)
-                seeAllButton.setTitleColor(theme.colorTheme.text3, for: .normal)
+                seeAllButton.setTitleColor(theme.text.system.color, for: .normal)
                 seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
                 savedPaymentInstrumentStackView.addArrangedSubview(seeAllButton)
             }
-            
+
             if let index = index {
                 verticalStackView.insertArrangedSubview(savedPaymentInstrumentStackView, at: index)
             } else {
@@ -138,14 +139,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 seeAllButton.removeFromSuperview()
                 seeAllButton = nil
             }
-            
+
             if savedPaymentInstrumentStackView != nil {
                 verticalStackView.removeArrangedSubview(savedPaymentInstrumentStackView)
                 savedPaymentInstrumentStackView.removeFromSuperview()
                 savedPaymentInstrumentStackView = nil
             }
         }
-        
+
         verticalStackView.layoutIfNeeded()
         
         Primer.shared.primerRootVC?.layoutIfNeeded()
@@ -154,7 +155,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private func renderAvailablePaymentMethods() {
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         let availablePaymentMethods = checkoutViewModel.availablePaymentOptions
-        
+
         if !availablePaymentMethods.filter({ $0.type != .googlePay }).isEmpty {
             let otherPaymentMethodsTitleLabel = UILabel()
             otherPaymentMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -164,7 +165,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                                                    bundle: Bundle.primerResources,
                                                                    value: "Available payment methods",
                                                                    comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
-            otherPaymentMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
+            otherPaymentMethodsTitleLabel.textColor = theme.text.subtitle.color
             otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
             otherPaymentMethodsTitleLabel.textAlignment = .left
             
@@ -182,10 +183,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 
                 switch paymentMethod.type {
                 case .paymentCard:
-                    paymentMethodButton.setTitleColor(theme.colorTheme.text1, for: .normal)
-                    paymentMethodButton.tintColor = theme.colorTheme.text1
+                    paymentMethodButton.setTitleColor(theme.text.default.color, for: .normal)
+                    paymentMethodButton.tintColor = theme.text.default.color
                     paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = theme.colorTheme.text1.cgColor
+                    paymentMethodButton.layer.borderColor = theme.text.default.color.cgColor
                     paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)
                     
@@ -195,7 +196,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     paymentMethodButton.tintColor = .white
                     paymentMethodButton.addTarget(self, action: #selector(applePayButtonTapped(_:)), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)
-                    
+
                 case .payPal:
                     if #available(iOS 11.0, *) {
                         paymentMethodButton.backgroundColor = UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
@@ -205,7 +206,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                         paymentMethodButton.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
                         verticalStackView.addArrangedSubview(paymentMethodButton)
                     }
-                    
+
                 case .goCardlessMandate:
                     // Doesn't work for checkout
                     break
@@ -213,7 +214,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 case .apaya:
                     // Doesn't work for checkout
                     break
-                    
+
                 case .klarna:
                     paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
                     paymentMethodButton.setTitleColor(.black, for: .normal)
@@ -221,7 +222,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     paymentMethodButton.setImage(nil, for: .normal)
                     paymentMethodButton.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)
-                    
+
                 default:
                     break
                 }
@@ -234,30 +235,30 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             coveringView = PrimerView()
         }
         
-        coveringView.backgroundColor = theme.colorTheme.main1.withAlphaComponent(0.5)
+        coveringView.backgroundColor = theme.view.backgroundColor.withAlphaComponent(0.5)
         view.addSubview(coveringView)
         coveringView.translatesAutoresizingMaskIntoConstraints = false
         coveringView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         coveringView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         coveringView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         coveringView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
-        
+
         if payButton == nil {
             payButton = PrimerButton()
         }
-        
+
         payButton.layer.cornerRadius = 12
-        payButton.setTitle(theme.content.vaultCheckout.payButtonText, for: .normal)
-        payButton.setTitleColor(theme.colorTheme.text2, for: .normal)
+        payButton.setTitle(Content.CheckoutView.PayButtonTitle, for: .normal)
+        payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
         payButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
-        payButton.backgroundColor = theme.colorTheme.main2
+        payButton.backgroundColor = theme.mainButton.color(for: .enabled)
         payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
         let imageView = UIImageView(image: ImageName.lock.image)
         payButton.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.centerYAnchor.constraint(equalTo: payButton.centerYAnchor).isActive = true
         imageView.trailingAnchor.constraint(equalTo: payButton.trailingAnchor, constant: -16).isActive = true
-        
+
         coveringView.addSubview(payButton)
         payButton.translatesAutoresizingMaskIntoConstraints = false
         payButton.leadingAnchor.constraint(equalTo: coveringView.leadingAnchor, constant: 20).isActive = true
@@ -271,13 +272,13 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         coveringViewTap.addTarget(self, action: #selector(togglePayButton))
         coveringView.addGestureRecognizer(coveringViewTap)
     }
-    
+
     @objc
     func togglePayButton() {
         coveringView.isHidden = !coveringView.isHidden
         savedCardView.toggleBorder(isSelected: !coveringView.isHidden, isError: false)
     }
-    
+
     @objc
     func seeAllButtonTapped() {
         let vpivc = VaultedPaymentInstrumentsViewController()
@@ -293,14 +294,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         Primer.shared.primerRootVC?.show(viewController: lvc)
         Primer.shared.primerRootVC?.presentApplePay()
     }
-    
+
     @objc
     func klarnaButtonTapped() {
         let lvc = PrimerLoadingViewController(withHeight: 300)
         Primer.shared.primerRootVC?.show(viewController: lvc)
         Primer.shared.primerRootVC?.presentKlarna()
     }
-    
+
     @objc
     func payPalButtonTapped() {
         if #available(iOS 11.0, *) {
@@ -309,24 +310,24 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             Primer.shared.primerRootVC?.presentPayPal()
         }
     }
-    
+
     @objc
     func cardButtonTapped() {
         let cfvc = PrimerCardFormViewController(flow: .checkout)
         Primer.shared.primerRootVC?.show(viewController: cfvc)
     }
-    
+
     @objc
     func payButtonTapped() {
         guard let paymentMethodToken = selectedPaymentInstrument else { return }
-        
-        payButton.showSpinner(true, color: theme.colorTheme.text2)
+
+        payButton.showSpinner(true, color: theme.mainButton.text.color)
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
             DispatchQueue.main.async { [weak self] in
                 self?.payButton.showSpinner(false)
-                
+
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                
+
                 if settings.hasDisabledSuccessScreen {
                     Primer.shared.dismiss()
                 } else {

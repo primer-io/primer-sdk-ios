@@ -10,7 +10,7 @@ public class Primer {
     
     // MARK: - PROPERTIES
     
-    public var delegate: PrimerDelegate?
+    public var delegate: PrimerDelegate? // TODO: should this be weak?
     private(set) var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
 
@@ -110,7 +110,7 @@ public class Primer {
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
             let theme = themeProtocol as! PrimerTheme
-            theme.content.formTopTitles.setTopTitle(text, for: formType)
+//            theme.content.formTopTitles.setTopTitle(text, for: formType)
         }
     }
 
@@ -126,7 +126,7 @@ public class Primer {
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
             let theme = themeProtocol as! PrimerTheme
-            theme.content.formMainTitles.setMainTitle(text, for: formType)
+//            theme.content.formMainTitles.setMainTitle(text, for: formType)
         }
     }
 

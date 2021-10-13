@@ -10,11 +10,11 @@ enum TextFieldState {
     func getColor(theme: PrimerThemeProtocol) -> UIColor {
         switch self {
         case .default:
-            return theme.colorTheme.neutral1
+            return theme.input.border.color(for: .enabled)
         case .valid:
-            return theme.colorTheme.tint1
+            return theme.input.border.color(for: .selected)
         case .invalid:
-            return theme.colorTheme.error1
+            return theme.colors.error
         }
     }
 
@@ -59,10 +59,10 @@ internal class PrimerCustomStyleTextField: UITextField {
         setLeftPaddingPoints(padding)
         configureErrorMessage()
         configureLabel()
-        
+
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
-        switch theme.textFieldTheme {
+        switch theme.input.inputType {
         case .underlined:
             configureUnderLine()
         case .doublelined:
@@ -77,17 +77,16 @@ internal class PrimerCustomStyleTextField: UITextField {
 
     func renderSubViews(validationState: TextFieldState, showIcon: Bool = true) {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
         let color = validationState.getColor(theme: theme)
 
         // border
-        switch theme.textFieldTheme {
+        switch theme.input.inputType {
         case .doublelined, .underlined:
             underLine.backgroundColor = color
             overLine.backgroundColor = color
         case .outlined:
             layer.borderColor = color.cgColor
-            layer.cornerRadius = theme.cornerRadiusTheme.textFields
+            layer.cornerRadius = theme.input.cornerRadius
         }
 
         // label
@@ -136,7 +135,7 @@ internal class PrimerCustomStyleTextField: UITextField {
         errorMessage.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         errorMessage.topAnchor.constraint(equalTo: bottomAnchor, constant: 2).isActive = true
     }
-    
+
     private func setLeftPaddingPoints(_ amount: CGFloat) {
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
         self.leftView = paddingView

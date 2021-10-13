@@ -20,8 +20,6 @@ internal class SuccessViewController: PrimerViewController {
     let confirmationMessage = UILabel()
     let referenceTitle = UILabel()
     let reference = UILabel()
-    
-    
 
     override func viewDidLoad() {
         view.addSubview(icon)
@@ -32,9 +30,9 @@ internal class SuccessViewController: PrimerViewController {
                 
         rightBarButton = UIButton()
         rightBarButton.setTitle("Done", for: .normal)
-        rightBarButton.setTitleColor(theme.colorTheme.main1, for: .normal)
+        rightBarButton.setTitleColor(theme.view.backgroundColor, for: .normal)
         rightBarButton.addTarget(self, action: #selector(close), for: .touchUpInside)
-        icon.tintColor = theme.colorTheme.main1
+        icon.tintColor = theme.view.backgroundColor
 
         configureIcon()
         configureMessage()
@@ -50,10 +48,10 @@ internal class SuccessViewController: PrimerViewController {
         
         (parent as? PrimerContainerViewController)?.mockedNavigationBar.hidesBackButton = true
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -71,26 +69,25 @@ internal class SuccessViewController: PrimerViewController {
 internal extension SuccessViewController {
 
     func configureIcon() {
-        icon.tintColor = theme.colorTheme.success1
+        icon.tintColor = theme.colors.primary
         icon.contentMode = .scaleAspectFit
     }
 
     func configureMessage() {
         let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
-        
         message.accessibilityIdentifier = "success_screen_message_label"
         message.text = viewModel.getTitle(screenType)
         message.numberOfLines = 0
         message.textAlignment = .center
-        message.textColor = theme.colorTheme.text1
-        message.font = theme.fontTheme.successMessageFont
+        message.textColor = theme.text.default.color
+        message.font = UIFont.systemFont(ofSize: 20)
     }
 
     func configureConfirmationMessage() {
         let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         confirmationMessage.text = viewModel.getConfirmationMessage(screenType)
         confirmationMessage.numberOfLines = 0
-        confirmationMessage.font = .systemFont(ofSize: 13)
+        confirmationMessage.font = UIFont.systemFont(ofSize: 13)
         confirmationMessage.textAlignment = .center
     }
 
@@ -99,14 +96,14 @@ internal extension SuccessViewController {
         
         if screenType != .directDebit { return }
         referenceTitle.text = "Reference".uppercased()
-        referenceTitle.textColor = theme.colorTheme.neutral1
-        referenceTitle.font = .systemFont(ofSize: 13)
+        referenceTitle.textColor = theme.text.subtitle.color
+        referenceTitle.font = UIFont.systemFont(ofSize: 13)
     }
 
     func configureReference() {
         let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         reference.text = viewModel.getReference(screenType)
-        reference.font = .systemFont(ofSize: 17)
+        reference.font = UIFont.systemFont(ofSize: 17)
     }
 }
 
@@ -132,14 +129,23 @@ internal extension SuccessViewController {
         confirmationMessage.translatesAutoresizingMaskIntoConstraints = false
         confirmationMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         confirmationMessage.topAnchor.constraint(equalTo: message.bottomAnchor, constant: 24).isActive = true
-        confirmationMessage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        confirmationMessage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        confirmationMessage.leadingAnchor.constraint(
+            equalTo: view.leadingAnchor,
+            constant: 16
+        ).isActive = true
+        confirmationMessage.trailingAnchor.constraint(
+            equalTo: view.trailingAnchor,
+            constant: -16
+        ).isActive = true
     }
 
     func anchorReferenceTitle() {
         referenceTitle.translatesAutoresizingMaskIntoConstraints = false
         referenceTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        referenceTitle.topAnchor.constraint(equalTo: confirmationMessage.bottomAnchor, constant: 24).isActive = true
+        referenceTitle.topAnchor.constraint(
+            equalTo: confirmationMessage.bottomAnchor,
+            constant: 24
+        ).isActive = true
     }
 
     func anchorReferenceLabel() {
@@ -168,7 +174,7 @@ internal class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.directDebitMandate
     }
-        
+
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
@@ -206,7 +212,7 @@ internal class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
 
     func getConfirmationMessage(_ screenType: SuccessScreenType?) -> String {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
+
         switch screenType {
         case .directDebit:
             guard let name = settings.businessDetails?.name else { return "" }

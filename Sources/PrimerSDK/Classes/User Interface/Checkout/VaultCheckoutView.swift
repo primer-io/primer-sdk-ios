@@ -113,7 +113,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
     }
 
     // MARK: Configuration
-    
+
     private func configureNavBar() {
         //        guard let theme = delegate?.theme else { return }
         //        navBar.backgroundColor = theme.backgroundColor
@@ -125,7 +125,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
         let titleItem = UINavigationItem(title: "Test")
         navBar.setItems([navItem, titleItem], animated: false)
         
-        
+
         navBar.topItem?.title = Primer.shared.flow.internalSessionFlow.vaulted ?
             NSLocalizedString("primer-vault-nav-bar-title",
                               tableName: nil,
@@ -143,7 +143,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
     @objc private func cancel() {
         delegate?.cancel()
     }
-    
+
     private func configureTitleLabel() {
         titleLabel.font = .boldSystemFont(ofSize: 17)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -173,7 +173,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
             amountLabelView.font = .boldSystemFont(ofSize: 32)
             amountLabelView.translatesAutoresizingMaskIntoConstraints = false
             amountLabelView.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 6).isActive = true
-            amountLabelView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
+            amountLabelView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.view.safeMargin).isActive = true
         } else {
             amountLabelView.isHidden = true
         }
@@ -189,17 +189,14 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
                                                          bundle: Bundle.primerResources,
                                                          value: "SAVED PAYMENT METHOD",
                                                          comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
-
-            savedCardTitleLabel.textColor = theme.colorTheme.secondaryText1
+            savedCardTitleLabel.textColor = theme.text.subtitle.color
             savedCardTitleLabel.font = .systemFont(ofSize: 12, weight: .light)
-
-            savedCardTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
-            
-            if isShowingAmount {
-                savedCardTitleLabel.topAnchor.constraint(equalTo: amountLabelView.bottomAnchor, constant: 12).isActive = true
-            } else {
-                savedCardTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12).isActive = true
-            }
+            savedCardTitleLabel.leadingAnchor.constraint(
+                equalTo: leadingAnchor,
+                constant: theme.view.safeMargin
+            ).isActive = true
+            let anchor = isShowingAmount ? amountLabelView.bottomAnchor : titleLabel.bottomAnchor
+            savedCardTitleLabel.topAnchor.constraint(equalTo: anchor, constant: 12).isActive = true
         } else {
             savedCardTitleLabel.isHidden = true
         }
@@ -207,22 +204,17 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
 
     private func configureSavedCardButton() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
         savedCardButtonView.translatesAutoresizingMaskIntoConstraints = false
-        
         if isShowingFirstVaultedPaymentMethod, let buttonViewModel = dataSource?.selectedSavedPaymentMethod?.cardButtonViewModel {
-            savedCardButtonView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
-            savedCardButtonView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
-            
+            savedCardButtonView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.view.safeMargin).isActive = true
+            savedCardButtonView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.view.safeMargin).isActive = true
             topConstraint = savedCardButtonView.topAnchor.constraint(equalTo: savedCardTitleLabel.bottomAnchor, constant: 12)
             heightConstraint = savedCardButtonView.heightAnchor.constraint(equalToConstant: 64)
             heightConstraint?.isActive = true
             topConstraint?.isActive = true
-            
             savedCardButtonView.addTarget(self, action: #selector(toggleSavedCardSelected), for: .touchUpInside)
             savedCardButtonView.subviews.forEach { $0.removeFromSuperview() }
             savedCardButtonView.render(model: buttonViewModel, showIcon: false)
-            
         } else {
             savedCardButtonView.isHidden = true
         }
@@ -242,9 +234,8 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
 
     private func toggleFadeView(isEnabled: Bool) {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
         let val: CGFloat = isEnabled ? 0.5 : 0.0
-        fadeView.backgroundColor = theme.colorTheme.main1.withAlphaComponent(val)
+        fadeView.backgroundColor = theme.view.backgroundColor.withAlphaComponent(val)
         fadeView.isUserInteractionEnabled = isEnabled
     }
 
@@ -259,7 +250,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
 
     private func configureSeeAllLinkLabel() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
+
         seeAllLinkLabel.translatesAutoresizingMaskIntoConstraints = false
         if isShowingFirstVaultedPaymentMethod {
             seeAllLinkLabel.text = NSLocalizedString("primer-vault-checkout-see-all",
@@ -268,7 +259,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
                                     value: "See All",
                                     comment: "See All - Vault Checkout See All Button")
             seeAllLinkLabel.font = .systemFont(ofSize: 14)
-            seeAllLinkLabel.textColor = theme.colorTheme.text3
+            seeAllLinkLabel.textColor = theme.text.system.color
             let tapRecogniser = UITapGestureRecognizer(target: self, action: #selector(openVault))
             seeAllLinkLabel.addGestureRecognizer(tapRecogniser)
             seeAllLinkLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
@@ -287,17 +278,16 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
 
     private func configureOtherMethodsTitleLabel() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
+
         otherMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         otherMethodsTitleLabel.text = NSLocalizedString("primer-vault-payment-method-available-payment-methods",
                                 tableName: nil,
                                 bundle: Bundle.primerResources,
                                 value: "Available payment methods",
                                 comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
-        otherMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
+        otherMethodsTitleLabel.textColor = theme.text.subtitle.color
         otherMethodsTitleLabel.font = .systemFont(ofSize: 12, weight: .light)
-        
+
         if isShowingFirstVaultedPaymentMethod {
             otherMethodsTitleLabel.topAnchor.constraint(equalTo: seeAllLinkLabel.bottomAnchor, constant: 24).isActive = true
         } else if isShowingAmount {
@@ -306,7 +296,10 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
             otherMethodsTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24).isActive = true
         }
 
-        otherMethodsTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
+        otherMethodsTitleLabel.leadingAnchor.constraint(
+            equalTo: leadingAnchor,
+            constant: theme.view.safeMargin
+        ).isActive = true
     }
 
     private func configureTableView() {
@@ -315,7 +308,7 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
         tableView.delegate = delegate
         tableView.dataSource = delegate
         tableView.layer.cornerRadius = 8.0
-        tableView.backgroundColor = theme.colorTheme.main1
+        tableView.backgroundColor = theme.view.backgroundColor
         tableView.rowHeight = 46
         tableView.tableFooterView = UIView()
         tableView.alwaysBounceVertical = false
@@ -327,10 +320,10 @@ internal class VaultCheckoutView: PrimerView, ReactiveView {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         payButton.layer.cornerRadius = 12
-        payButton.setTitle(theme.content.vaultCheckout.payButtonText, for: .normal)
-        payButton.setTitleColor(theme.colorTheme.text2, for: .normal)
+        payButton.setTitle(Content.VaultCheckoutView.PayButtonTitle, for: .normal)
+        payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
         payButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
-        payButton.backgroundColor = theme.colorTheme.tint1
+        payButton.backgroundColor = theme.mainButton.color(for: .enabled)
         payButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
         let imageView = UIImageView(image: ImageName.lock.image)
         payButton.addSubview(imageView)
@@ -359,25 +352,21 @@ internal extension VaultCheckoutView {
 
     private func anchorTableView() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: otherMethodsTitleLabel.bottomAnchor, constant: 0).isActive = true
-        
-        tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
-        
+        tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.view.safeMargin).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.view.safeMargin).isActive = true
         let vaultViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         tableView.heightAnchor.constraint(equalToConstant: 400).isActive = true
     }
 
     private func anchorPayButton() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
         payButton.translatesAutoresizingMaskIntoConstraints = false
         payButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30).isActive = true
         payButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        payButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.layout.safeMargin).isActive = true
-        payButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.layout.safeMargin).isActive = true
+        payButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: theme.view.safeMargin).isActive = true
+        payButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -theme.view.safeMargin).isActive = true
         payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
 }

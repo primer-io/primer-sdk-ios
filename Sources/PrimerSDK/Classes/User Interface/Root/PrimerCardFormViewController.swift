@@ -35,148 +35,152 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
-        title = NSLocalizedString("primer-form-type-main-title-card-form",
-                                  tableName: nil,
-                                  bundle: Bundle.primerResources,
-                                  value: "Enter your card details",
-                                  comment: "Enter your card details - Form Type Main Title (Card)")
-
-        
-        view.backgroundColor = theme.colorTheme.main1
-        
+        title = Content.PrimerCardFormView.Title
+        view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
-        
+        configureCardNumberField()
+        configureExpiryAndCvvRow()
+        configureCardholderNameField()
+        if flow == .checkout { configureSaveCardSwitch() }
+        configureSeparator()
+        configureSubmitButton()
+        cardComponentsManager = CardComponentsManager(
+            flow: flow,
+            cardnumberField: cardNumberField,
+            expiryDateField: expiryDateField,
+            cvvField: cvvField,
+            cardholderNameField: cardholderNameField
+        )
+        cardComponentsManager.delegate = self        
+    }
+
+    @objc func payButtonTapped(_ sender: UIButton) {
+        cardComponentsManager.tokenize()
+    }
+
+    private func configureCardNumberField() {
         cardNumberField.placeholder = "4242 4242 4242 4242"
         cardNumberField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cardNumberField.textColor = theme.colorTheme.text1
+        cardNumberField.textColor = theme.input.text.color
         cardNumberField.borderStyle = .none
         cardNumberField.delegate = self
-        
         cardNumberContainerView.fieldView = cardNumberField
         cardNumberContainerView.placeholderText = "Card number"
         cardNumberContainerView.setup()
-        cardNumberContainerView.tintColor = theme.colorTheme.tint1
+        cardNumberContainerView.tintColor = theme.input.border.color(for: .selected)
         verticalStackView.addArrangedSubview(cardNumberContainerView)
+    }
 
+    private func configureExpiryAndCvvRow() {
         let horizontalStackView = UIStackView()
         horizontalStackView.axis = .horizontal
         horizontalStackView.alignment = .fill
         horizontalStackView.distribution = .fillEqually
-        
+        horizontalStackView.spacing = 16
+        configureExpiryDateField(horizontalStackView)
+        configureCvvField((horizontalStackView))
+        verticalStackView.addArrangedSubview(horizontalStackView)
+    }
+
+    private func configureExpiryDateField(_ view: UIStackView) {
         expiryDateField.placeholder = "02/22"
         expiryDateField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        expiryDateField.textColor = theme.colorTheme.text1
+        expiryDateField.textColor = theme.input.text.color
         expiryDateField.delegate = self
-        
         expiryDateContainerView.fieldView = expiryDateField
         expiryDateContainerView.placeholderText = "Expiry"
         expiryDateContainerView.setup()
-        expiryDateContainerView.tintColor = theme.colorTheme.tint1
-        horizontalStackView.addArrangedSubview(expiryDateContainerView)
-        
+        expiryDateContainerView.tintColor = theme.input.border.color(for: .selected)
+        view.addArrangedSubview(expiryDateContainerView)
+    }
+
+    private func configureCvvField(_ view: UIStackView) {
         cvvField.placeholder = "123"
         cvvField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cvvField.textColor = theme.colorTheme.text1
+        cvvField.textColor = theme.input.text.color
         cvvField.delegate = self
         
         cvvContainerView.fieldView = cvvField
         cvvContainerView.placeholderText = "CVV/CVC"
         cvvContainerView.setup()
-        cvvContainerView.tintColor = theme.colorTheme.tint1
-        horizontalStackView.addArrangedSubview(cvvContainerView)
-        horizontalStackView.spacing = 16
-        verticalStackView.addArrangedSubview(horizontalStackView)
-        
+        cvvContainerView.tintColor = theme.input.border.color(for: .selected)
+        view.addArrangedSubview(cvvContainerView)
+    }
+
+    private func configureCardholderNameField() {
         cardholderNameField.placeholder = "John Smith"
         cardholderNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cardholderNameField.textColor = theme.colorTheme.text1
+        cardholderNameField.textColor = theme.input.text.color
         cardholderNameField.delegate = self
-        
         cardholderNameContainerView.fieldView = cardholderNameField
         cardholderNameContainerView.placeholderText = "Name"
         cardholderNameContainerView.setup()
-        cardholderNameContainerView.tintColor = theme.colorTheme.tint1
+        cardholderNameContainerView.tintColor = theme.input.border.color(for: .selected)
         verticalStackView.addArrangedSubview(cardholderNameContainerView)
-        
-        if flow == .checkout {
-            let saveCardSwitchContainerStackView = UIStackView()
-            saveCardSwitchContainerStackView.axis = .horizontal
-            saveCardSwitchContainerStackView.alignment = .fill
-            saveCardSwitchContainerStackView.spacing = 8.0
-            
-            let saveCardSwitch = UISwitch()
-            saveCardSwitchContainerStackView.addArrangedSubview(saveCardSwitch)
-            
-            let saveCardLabel = UILabel()
-            saveCardLabel.text = "Save this card"
-            saveCardLabel.textColor = theme.colorTheme.text1
-            saveCardLabel.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
-            saveCardSwitchContainerStackView.addArrangedSubview(saveCardLabel)
-            
-            verticalStackView.addArrangedSubview(saveCardSwitchContainerStackView)
-            saveCardSwitchContainerStackView.isHidden = true
-        }
-        
+    }
+
+    private func configureSaveCardSwitch() {
+        let saveCardSwitchContainerStackView = UIStackView()
+        saveCardSwitchContainerStackView.axis = .horizontal
+        saveCardSwitchContainerStackView.alignment = .fill
+        saveCardSwitchContainerStackView.spacing = 8.0
+        let saveCardSwitch = UISwitch()
+        saveCardSwitchContainerStackView.addArrangedSubview(saveCardSwitch)
+        let saveCardLabel = UILabel()
+        saveCardLabel.text = "Save this card"
+        saveCardLabel.textColor = theme.text.default.color
+        saveCardLabel.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
+        saveCardSwitchContainerStackView.addArrangedSubview(saveCardLabel)
+        verticalStackView.addArrangedSubview(saveCardSwitchContainerStackView)
+        saveCardSwitchContainerStackView.isHidden = true
+    }
+
+    private func configureSeparator() {
         let separatorView = UIView()
         separatorView.translatesAutoresizingMaskIntoConstraints = false
         separatorView.heightAnchor.constraint(equalToConstant: 8).isActive = true
         verticalStackView.addArrangedSubview(separatorView)
-        
-        var buttonTitle: String = ""
+    }
+
+    private func generateButtonTitle() -> String {
         if flow == .checkout {
             let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-            buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                            tableName: nil,
-                                            bundle: Bundle.primerResources,
-                                            value: "Pay",
-                                            comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+            let amount = viewModel.amountStringed ?? ""
+            return Content.PrimerCardFormView.PayButtonTitle + " \(amount)"
         } else if flow == .vault {
-            buttonTitle = NSLocalizedString("primer-card-form-add-card",
-                                            tableName: nil,
-                                            bundle: Bundle.primerResources,
-                                            value: "Add card",
-                                            comment: "Add card - Card Form (Vault title text)")
+            return Content.PrimerCardFormView.AddCardButtonTitle
+        } else {
+            return ""
         }
-        
+    }
+
+    private func configureSubmitButton() {
+        let buttonTitle = generateButtonTitle()
         submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         submitButton.isEnabled = false
         submitButton.setTitle(buttonTitle, for: .normal)
-        submitButton.setTitleColor(theme.colorTheme.text2, for: .normal)
-        submitButton.backgroundColor = theme.colorTheme.disabled1
+        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
+        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
         submitButton.layer.cornerRadius = 4
         submitButton.clipsToBounds = true
         submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
         verticalStackView.addArrangedSubview(submitButton)
-        
-        
-        
-        cardComponentsManager = CardComponentsManager(
-//            clientToken: state.accessToken,
-            flow: flow,
-            cardnumberField: cardNumberField,
-            expiryDateField: expiryDateField,
-            cvvField: cvvField,
-            cardholderNameField: cardholderNameField)
-        cardComponentsManager.delegate = self        
     }
-    
-    @objc func payButtonTapped(_ sender: UIButton) {
-        cardComponentsManager.tokenize()
-    }
-    
 }
 
 extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTextFieldViewDelegate {
-    
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+
+    func cardComponentsManager(
+        _ cardComponentsManager: CardComponentsManager,
+        onTokenizeSuccess paymentMethodToken: PaymentMethodToken
+    ) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
+
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
             if strongSelf.flow == .vault {
                 Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
-                
+
                 if settings.hasDisabledSuccessScreen {
                     Primer.shared.dismiss()
                 } else {
@@ -185,15 +189,16 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
                     svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
                     Primer.shared.primerRootVC?.show(viewController: svc)
                 }
-                
+
             } else {
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { [weak self] err in
-                    DispatchQueue.main.async { [weak self] in
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
+                    DispatchQueue.main.async {
                         if settings.hasDisabledSuccessScreen {
                             Primer.shared.dismiss()
                         } else {
-                            if let err = err {
-                                let evc = ErrorViewController(message: PrimerError.amountMissing.localizedDescription)
+                            if (err.exists) {
+                                let message = PrimerError.amountMissing.localizedDescription
+                                let evc = ErrorViewController(message: message)
                                 evc.view.translatesAutoresizingMaskIntoConstraints = false
                                 evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
                                 Primer.shared.primerRootVC?.show(viewController: evc)
@@ -209,26 +214,32 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
             }
         }
     }
-    
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
+
+    func cardComponentsManager(
+        _ cardComponentsManager: CardComponentsManager,
+        clientTokenCallback completion: @escaping (String?, Error?) -> Void
+    ) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        
+
         if let clientToken = state.accessToken {
             completion(clientToken, nil)
         } else {
             completion(nil, PrimerError.clientTokenNull)
         }
     }
-    
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
-        
+
+    func cardComponentsManager(
+        _ cardComponentsManager: CardComponentsManager,
+        tokenizationFailedWith errors: [Error]
+    ) {
+
     }
-    
+
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
         submitButton.showSpinner(isLoading)
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = !isLoading
     }
-    
+
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
         if primerTextFieldView is PrimerCardNumberFieldView {
             cardNumberContainerView.errorText = nil
@@ -240,7 +251,7 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
             cardholderNameContainerView.errorText = nil
         }
     }
-    
+
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
         if primerTextFieldView is PrimerCardNumberFieldView, isValid == false {
             cardNumberContainerView.errorText = "Invalid card number"
@@ -255,28 +266,32 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
         if cardNumberField.isTextValid,
            expiryDateField.isTextValid,
            cvvField.isTextValid,
-           cardholderNameField.isTextValid
-        {
+           cardholderNameField.isTextValid {
             submitButton.isEnabled = true
-            submitButton.backgroundColor = theme.colorTheme.main2
+            submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
         } else {
             submitButton.isEnabled = false
-            submitButton.backgroundColor = theme.colorTheme.disabled1
+            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
         }
     }
-    
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {
+
+    func primerTextFieldView(
+        _ primerTextFieldView: PrimerTextFieldView,
+        validationDidFailWithError error: Error
+    ) {
 
     }
-    
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork) {
-        
+
+    func primerTextFieldView(
+        _ primerTextFieldView: PrimerTextFieldView,
+        didDetectCardNetwork cardNetwork: CardNetwork
+    ) {
+
     }
-    
 }
 
 class PrimerCustomFieldView: UIView {
-    
+
     override var tintColor: UIColor! {
         didSet {
             topPlaceholderLabel.textColor = tintColor
@@ -302,10 +317,9 @@ class PrimerCustomFieldView: UIView {
         stackView.alignment = .fill
         stackView.axis = .vertical
 
-        
         topPlaceholderLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         topPlaceholderLabel.text = placeholderText
-        topPlaceholderLabel.textColor = theme.colorTheme.text3
+        topPlaceholderLabel.textColor = theme.text.system.color
         topPlaceholderLabel.textAlignment = .left
         stackView.addArrangedSubview(topPlaceholderLabel)
 
@@ -314,18 +328,17 @@ class PrimerCustomFieldView: UIView {
         textFieldStackView.axis = .vertical
         textFieldStackView.addArrangedSubview(fieldView)
         textFieldStackView.spacing = 0
-        bottomLine.backgroundColor = theme.colorTheme.text3
+        bottomLine.backgroundColor = theme.text.system.color
         bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
         stackView.addArrangedSubview(textFieldStackView)
         stackView.addArrangedSubview(bottomLine)
 
-        
-        errorLabel.textColor = theme.colorTheme.error1
+        errorLabel.textColor = theme.input.errortext.color
         errorLabel.heightAnchor.constraint(equalToConstant: 12.0).isActive = true
         errorLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         errorLabel.text = nil
         errorLabel.textAlignment = .right
-        
+
         stackView.addArrangedSubview(errorLabel)
 
         stackView.translatesAutoresizingMaskIntoConstraints = false

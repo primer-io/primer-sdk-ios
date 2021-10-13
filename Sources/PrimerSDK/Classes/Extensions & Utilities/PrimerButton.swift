@@ -10,7 +10,7 @@
 import UIKit
 
 internal class PrimerButton: UIButton {
-    
+
     var spinner: UIActivityIndicatorView!
     var titleCopy: String?
 
@@ -38,14 +38,20 @@ internal class PrimerButton: UIButton {
             spinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
         }
         
-        spinner.color = theme.colorTheme.text2
+        spinner.color = theme.mainButton.text.color
         
         flag ? spinner.startAnimating() : spinner.stopAnimating()
         flag ? setTitle(nil, for: .normal) : setTitle(titleCopy, for: .normal)
         spinner.isHidden = !flag
     }
-    
-    func pin(to view: UIView, leading: CGFloat = 0, top: CGFloat = 0, trailing: CGFloat = 0, bottom: CGFloat = 0) {
+
+    func pin(
+        to view: UIView,
+        leading: CGFloat = 0,
+        top: CGFloat = 0,
+        trailing: CGFloat = 0,
+        bottom: CGFloat = 0
+    ) {
         topAnchor.constraint(equalTo: view.topAnchor, constant: top).isActive = true
         bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: bottom).isActive = true
         leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: leading).isActive = true

@@ -1,95 +1,5 @@
-//
-//  PrimerTheme.swift
-//  PrimerSDK
-//
-//  Created by Carl Eriksson on 04/01/2021.
-//
-
-#if canImport(UIKit)
-
-import UIKit
-
-public protocol PrimerThemeProtocol {
-    var cornerRadiusTheme: CornerRadiusTheme { get }
-    var colorTheme: ColorTheme { get }
-    var textFieldTheme: PrimerTextFieldTheme { get }
-    var fontTheme: PrimerFontTheme { get }
-    var content: PrimerContent { get }
-    var layout: PrimerLayout { get }
-}
-
-/**
- Struct that customizes Primer's drop-in User Interface
- 
- *Values*
- 
- `cornerRadiusTheme` Modifies the corner radius on elements such as button, textfield, etc.
- 
- `colorTheme` Modifies the color on elements such as labels (headings, titles, body, etc), textfields, etc.
- 
- `textFieldTheme` Enum that modifies textfields' outline, possible values are **outlined**, **underlined**, **doublelined**.
- 
- `fontTheme` Modifies the font of the dop-in UI. Pre-requisites: Include the font in your app.
- 
- `textFieldTheme` Enum that modifies textfields' outline, possible values are **outlined**, **underlined**, **doublelined**.
- 
- `content` Modifies the form's format.
- 
- `layout` Defines the layout of the form.
- 
- `shadowTheme` Modifies the drop shadow of elements.
- 
- - Author:
- Primer
- - Version:
- 1.2.2
- */
-
-public class PrimerTheme: PrimerThemeProtocol {
-    
-    public let cornerRadiusTheme: CornerRadiusTheme
-    public let colorTheme: ColorTheme
-    public let textFieldTheme: PrimerTextFieldTheme
-    public let fontTheme: PrimerFontTheme
-    public var content: PrimerContent = PrimerContent()
-    public let layout: PrimerLayout
-    public let shadowTheme: PrimerShadowTheme = PrimerShadowTheme(color: UIColor.gray.cgColor, opacity: 0.3, radius: 10)
-
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
-    @available(iOS 13.0, *)
-    public init(
-        cornerRadiusTheme: CornerRadiusTheme = CornerRadiusTheme(),
-        colorTheme: ColorTheme = PrimerDefaultTheme(),
-        darkTheme: ColorTheme = PrimerDarkTheme(),
-        layout: PrimerLayout = PrimerLayout(),
-        textFieldTheme: PrimerTextFieldTheme = .underlined,
-        fontTheme: PrimerFontTheme = PrimerFontTheme()
-    ) {
-        self.cornerRadiusTheme = cornerRadiusTheme
-        self.colorTheme = DefaultColorTheme(lightTheme: colorTheme, darkTheme: darkTheme)
-        self.textFieldTheme = textFieldTheme
-        self.fontTheme = fontTheme
-        self.layout = layout
-    }
-
-    @available(iOS, obsoleted: 13.0)
-    public init(
-        cornerRadiusTheme: CornerRadiusTheme = CornerRadiusTheme(),
-        colorTheme: ColorTheme = PrimerDefaultTheme(),
-        layout: PrimerLayout = PrimerLayout(),
-        textFieldTheme: PrimerTextFieldTheme = .underlined,
-        fontTheme: PrimerFontTheme = PrimerFontTheme()
-    ) {
-        self.cornerRadiusTheme = cornerRadiusTheme
-        self.colorTheme = colorTheme
-        self.textFieldTheme = textFieldTheme
-        self.fontTheme = fontTheme
-        self.layout = layout
-    }
-
+public enum PrimerTextFieldTheme {
+    case outlined, underlined, doublelined
 }
 
 public struct CornerRadiusTheme {
@@ -159,8 +69,24 @@ public struct PrimerLayout {
     }
 }
 
-public enum PrimerTextFieldTheme {
-    case outlined, underlined, doublelined
+
+
+public struct PrimerFontTheme {
+    let mainTitle: UIFont
+    let successMessageFont: UIFont
+
+    public init(
+        mainTitle: UIFont = UIFont.systemFont(ofSize: 20),
+        successMessageFont: UIFont = .systemFont(ofSize: 20)
+    ) {
+        self.mainTitle = mainTitle
+        self.successMessageFont = successMessageFont
+    }
+}
+
+public struct PrimerShadowTheme {
+    var color: CGColor
+    var opacity, radius: CGFloat
 }
 
 public protocol ColorTheme {
@@ -190,7 +116,7 @@ struct DefaultColorTheme: ColorTheme {
     var disabled1: UIColor { return getColor(light: lightTheme.disabled1, dark: darkTheme.disabled1) }
     var error1: UIColor { return getColor(light: lightTheme.error1, dark: darkTheme.error1) }
     var success1: UIColor { return getColor(light: lightTheme.success1, dark: darkTheme.success1) }
-    
+
     let lightTheme: ColorTheme
     let darkTheme: ColorTheme
 
@@ -225,7 +151,7 @@ public struct PrimerDefaultTheme: ColorTheme {
     public var disabled1: UIColor
     public var error1: UIColor
     public var success1: UIColor
-    
+
     public init(
         text1: UIColor = .black,
         text2: UIColor = .white,
@@ -266,7 +192,7 @@ public struct PrimerDarkTheme: ColorTheme {
     public var disabled1: UIColor
     public var error1: UIColor
     public var success1: UIColor
-    
+
     public init(
         text1: UIColor = .white,
         text2: UIColor = .white,
@@ -293,23 +219,3 @@ public struct PrimerDarkTheme: ColorTheme {
         self.success1 = success1
     }
 }
-
-public struct PrimerFontTheme {
-    let mainTitle: UIFont
-    let successMessageFont: UIFont
-    
-    public init(
-        mainTitle: UIFont = UIFont.systemFont(ofSize: 20),
-        successMessageFont: UIFont = .systemFont(ofSize: 20)
-    ) {
-        self.mainTitle = mainTitle
-        self.successMessageFont = successMessageFont
-    }
-}
-
-public struct PrimerShadowTheme {
-    var color: CGColor
-    var opacity, radius: CGFloat
-}
-
-#endif

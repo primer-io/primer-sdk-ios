@@ -66,9 +66,9 @@ internal class PrimerRootViewController: PrimerViewController {
         
         view.addSubview(childView)
         
-        childView.backgroundColor = theme.colorTheme.main1
+        childView.backgroundColor = theme.view.backgroundColor
         childView.isUserInteractionEnabled = true
-        nc.view.backgroundColor = theme.colorTheme.main1
+        nc.view.backgroundColor = theme.view.backgroundColor
         
         childView.translatesAutoresizingMaskIntoConstraints = false
         childView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -80,8 +80,6 @@ internal class PrimerRootViewController: PrimerViewController {
         childViewBottomConstraint.isActive = true
         view.layoutIfNeeded()
         
-        
-
         let tapGesture = UITapGestureRecognizer(
             target: self,
             action: #selector(dismissGestureRecognizerAction))
@@ -133,7 +131,6 @@ internal class PrimerRootViewController: PrimerViewController {
                     let pvmvc = PrimerVaultManagerViewController()
                     self?.show(viewController: pvmvc)
 
-                    
                 case .completeDirectCheckout:
                     break
                     
@@ -151,21 +148,21 @@ internal class PrimerRootViewController: PrimerViewController {
                     
                 case .addDirectDebitToVault:
                     break
-                    
+
                 case .addKlarnaToVault:
-                    self?.presentKlarna()
-                    
-                case .addDirectDebit:
-                    break
-                    
-                case .checkoutWithKlarna:
-                    if #available(iOS 11.0, *) {
                         self?.presentKlarna()
-                    } else {
-                        print("WARNING: Klarna is not available prior to iOS 11.")
-                    }
-                    
-                case .checkoutWithApplePay:
+                        
+                    case .addDirectDebit:
+                        break
+                        
+                    case .checkoutWithKlarna:
+                        if #available(iOS 11.0, *) {
+                            self?.presentKlarna()
+                        } else {
+                            print("WARNING: Klarna is not available prior to iOS 11.")
+                        }
+                        
+                    case .checkoutWithApplePay:
                     self?.presentApplePay()
                     
                 case .addApayaToVault:
@@ -174,8 +171,8 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .none:
                     break
                 }
-                
-                if let lvc = (self?.nc.viewControllers.first as? PrimerContainerViewController)?.children.first as? PrimerLoadingViewController {
+                if let lvc = (self?.nc.viewControllers.first as? PrimerContainerViewController)?
+                    .children.first as? PrimerLoadingViewController {
                     // Remove the loading view controller from the navigation stack so user can't pop to it.
                     self?.nc.viewControllers.removeFirst()
                 }
@@ -245,7 +242,7 @@ internal class PrimerRootViewController: PrimerViewController {
         let isPresented: Bool = nc.viewControllers.isEmpty
                 
         let cvc = PrimerContainerViewController(childViewController: viewController)
-        cvc.view.backgroundColor = theme.colorTheme.main1
+        cvc.view.backgroundColor = theme.view.backgroundColor
         
         // Hide back button on some cases
         if let lastViewController = nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
@@ -389,7 +386,7 @@ extension PrimerRootViewController {
         appleViewModel.didPresentPaymentMethod = { [weak self] in
             self?.blurBackground()
         }
-        
+
         firstly {
             appleViewModel.tokenize()
         }
@@ -401,7 +398,7 @@ extension PrimerRootViewController {
                     let lvc = PrimerLoadingViewController(withHeight: 300)
                     self.show(viewController: lvc)
                 }
-                
+
                 Primer.shared.delegate?.onTokenizeSuccess?(token, { err in
                     if !settings.hasDisabledSuccessScreen {
                         if let err = err {
@@ -434,7 +431,7 @@ extension PrimerRootViewController {
             self.handleError(err)
         }
     }
-    
+
     func presentApaya() {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
@@ -442,7 +439,7 @@ extension PrimerRootViewController {
             let lvc = PrimerLoadingViewController(withHeight: 300)
             show(viewController: lvc)
         }
-        
+
         let webViewController: PrimerWebViewController
         let apayaWebViewModel = ApayaWebViewModel()
         apayaWebViewModel.generateWebViewUrl { [weak self] result in
@@ -469,13 +466,13 @@ extension PrimerRootViewController {
                 }
             }
         }
-        
+
         apayaWebViewModel.onCompletion = { [weak self] result in
             DispatchQueue.main.async { [weak self] in
                 switch result {
                 case .failure(let error):
                     Primer.shared.delegate?.checkoutFailed?(with: error)
-                    
+
                     if settings.hasDisabledSuccessScreen {
                         Primer.shared.dismiss()
                     } else {
@@ -485,7 +482,7 @@ extension PrimerRootViewController {
                         evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                         self?.show(viewController: evc)
                     }
-                    
+
                 case .success(let paymentMethod):
                     Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [weak self] err in
                         DispatchQueue.main.async { [weak self] in
@@ -493,13 +490,13 @@ extension PrimerRootViewController {
                                 Primer.shared.dismiss()
                             } else {
                                 self?.dismiss(animated: true, completion: nil)
-                                
+
                                 if let err = err {
                                     let evc = ErrorViewController(message: err.localizedDescription)
                                     evc.view.translatesAutoresizingMaskIntoConstraints = false
                                     evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                                     self?.show(viewController: evc)
-                                    
+
                                 } else {
                                     let svc = SuccessViewController()
                                     svc.view.translatesAutoresizingMaskIntoConstraints = false
@@ -513,16 +510,16 @@ extension PrimerRootViewController {
             }
         }
     }
-    
+
     @available(iOS 11.0, *)
     func presentPayPal() {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
+
         let payPalViewModel = PayPalViewModel()
         payPalViewModel.didPresentPaymentMethod = { [weak self] in
             self?.blurBackground()
         }
-        
+
         firstly {
             payPalViewModel.tokenize()
         }
@@ -532,11 +529,11 @@ extension PrimerRootViewController {
                     let lvc = PrimerLoadingViewController(withHeight: 300)
                     self.show(viewController: lvc)
                 }
-                
+
                 Primer.shared.delegate?.onTokenizeSuccess?(token, { err in
                     DispatchQueue.main.async {
                         if !settings.hasDisabledSuccessScreen {
-                            
+
                             if let err = err {
                                 let evc = ErrorViewController(message: PrimerError.payPalSessionFailed.localizedDescription)
                                 evc.view.translatesAutoresizingMaskIntoConstraints = false
@@ -567,12 +564,10 @@ extension PrimerRootViewController {
             }
             self.handleError(err)
         }
-        
     }
-    
+
     func handleError(_ error: Error) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
         DispatchQueue.main.async {
             if !settings.hasDisabledSuccessScreen {
                 let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
@@ -584,7 +579,6 @@ extension PrimerRootViewController {
             }
         }
     }
-    
 }
 
 extension PrimerRootViewController: UIGestureRecognizerDelegate {

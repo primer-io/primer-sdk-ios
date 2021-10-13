@@ -26,14 +26,14 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                                   bundle: Bundle.primerResources,
                                   value: "Add payment method",
                                   comment: "Add payment method - Vault Navigation Bar Title")
-        
-        view.backgroundColor = theme.colorTheme.main1
+
+        view.backgroundColor = theme.view.backgroundColor
         
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         let availablePaymentMethods = checkoutViewModel.availablePaymentOptions
         
         verticalStackView.spacing = 14.0
-        
+
         if !availablePaymentMethods.isEmpty {
             let otherPaymentMethodsTitleLabel = UILabel()
             otherPaymentMethodsTitleLabel.text = NSLocalizedString("primer-vault-payment-method-available-payment-methods",
@@ -41,7 +41,7 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                                                                    bundle: Bundle.primerResources,
                                                                    value: "Available payment methods",
                                                                    comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
-            otherPaymentMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
+            otherPaymentMethodsTitleLabel.textColor = theme.text.subtitle.color
             otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
             otherPaymentMethodsTitleLabel.textAlignment = .left
             verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
@@ -62,10 +62,11 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                 
                 switch paymentMethod.type {
                 case .paymentCard:
-                    paymentMethodButton.setTitleColor(theme.colorTheme.text1, for: .normal)
-                    paymentMethodButton.tintColor = theme.colorTheme.text1 // We want the card icon colot to be the same color as the text
+                    paymentMethodButton.setTitleColor(theme.text.default.color, for: .normal)
+                    // We want the card icon color to be the same color as the text
+                    paymentMethodButton.tintColor = theme.text.default.color
                     paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = theme.colorTheme.text1.cgColor
+                    paymentMethodButton.layer.borderColor = theme.text.default.color.cgColor
                     paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)
                     
@@ -80,11 +81,10 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                     }
                     
                 case .goCardlessMandate:
-                    paymentMethodButton.setTitleColor(theme.colorTheme.text1, for: .normal)
-                    paymentMethodButton.tintColor = theme.colorTheme.tint1
+                    paymentMethodButton.setTitleColor(theme.text.default.color, for: .normal)
+                    paymentMethodButton.tintColor = theme.text.default.color
                     paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = theme.colorTheme.text1.cgColor
-//                    verticalStackView.addArrangedSubview(paymentMethodButton)
+                    paymentMethodButton.layer.borderColor = theme.text.default.color.cgColor
                     
                 case .klarna:
                     paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
@@ -99,16 +99,15 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                 }
             }
         }
-        
     }
-    
+
     @objc
     func klarnaButtonTapped() {
         let lvc = PrimerLoadingViewController(withHeight: 300)
         Primer.shared.primerRootVC?.show(viewController: lvc)
         Primer.shared.primerRootVC?.presentKlarna()
     }
-    
+
     @objc
     func payPalButtonTapped() {
         if #available(iOS 11.0, *) {
@@ -117,11 +116,10 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
             Primer.shared.primerRootVC?.presentPayPal()
         }
     }
-    
+
     @objc
     func cardButtonTapped() {
         let cfvc = PrimerCardFormViewController(flow: .vault)
         Primer.shared.primerRootVC?.show(viewController: cfvc)
     }
-    
 }
