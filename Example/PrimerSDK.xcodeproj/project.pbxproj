@@ -47,6 +47,7 @@
 		15F9E67D2678C88000F6B6C1 /* UniversalCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F9E67C2678C88000F6B6C1 /* UniversalCheckout.swift */; };
 		1DC7EE0C261FA39200BCBFFC /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC7EE0B261FA39200BCBFFC /* SpinnerViewController.swift */; };
 		1DC7EE14261FA3D400BCBFFC /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC7EE13261FA3D400BCBFFC /* CreateClientToken.swift */; };
+		1DE0355C2716E4D1007BADAB /* CheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE0355B2716E4D1007BADAB /* CheckoutTheme.swift */; };
 		1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */; };
 		1DEBE0E126B75EBF004E3064 /* ApayaServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */; };
 		1DEBE0EF26BACE77004E3064 /* ApayaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0EE26BACE76004E3064 /* ApayaService.swift */; };
@@ -132,6 +133,7 @@
 		15F9E67C2678C88000F6B6C1 /* UniversalCheckout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalCheckout.swift; sourceTree = "<group>"; };
 		1DC7EE0B261FA39200BCBFFC /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		1DC7EE13261FA3D400BCBFFC /* CreateClientToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateClientToken.swift; sourceTree = "<group>"; };
+		1DE0355B2716E4D1007BADAB /* CheckoutTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutTheme.swift; sourceTree = "<group>"; };
 		1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApayaTests.swift; sourceTree = "<group>"; };
 		1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaServiceTests.swift; sourceTree = "<group>"; };
 		1DEBE0EE26BACE76004E3064 /* ApayaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaService.swift; sourceTree = "<group>"; };
@@ -338,6 +340,7 @@
 			children = (
 				1DC7EE13261FA3D400BCBFFC /* CreateClientToken.swift */,
 				15B2E64726F8A9EE005B8343 /* Apaya.swift */,
+				1DE0355B2716E4D1007BADAB /* CheckoutTheme.swift */,
 			);
 			name = "Data Models";
 			sourceTree = "<group>";
@@ -691,6 +694,7 @@
 				15F97C7D2624730800DCB3BA /* UIViewController+API.swift in Sources */,
 				15F97C772624718800DCB3BA /* PaymentMethodCell.swift in Sources */,
 				15B2E64826F8A9EE005B8343 /* Apaya.swift in Sources */,
+				1DE0355C2716E4D1007BADAB /* CheckoutTheme.swift in Sources */,
 				15F97C6D26246FD300DCB3BA /* MerchantCheckoutViewController+Primer.swift in Sources */,
 				1DC7EE0C261FA39200BCBFFC /* SpinnerViewController.swift in Sources */,
 				15F97C72262470CB00DCB3BA /* MerchantCheckoutViewController+Helpers.swift in Sources */,

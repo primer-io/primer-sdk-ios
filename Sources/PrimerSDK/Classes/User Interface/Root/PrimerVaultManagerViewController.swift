@@ -62,11 +62,10 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                 
                 switch paymentMethod.type {
                 case .paymentCard:
-                    paymentMethodButton.setTitleColor(theme.text.default.color, for: .normal)
-                    // We want the card icon color to be the same color as the text
-                    paymentMethodButton.tintColor = theme.text.default.color
-                    paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = theme.text.default.color.cgColor
+                    paymentMethodButton.setTitleColor(theme.paymentMethodButton.text.color, for: .normal)
+                    paymentMethodButton.tintColor = theme.paymentMethodButton.text.color // icon color
+                    paymentMethodButton.layer.borderWidth = theme.paymentMethodButton.border.width
+                    paymentMethodButton.layer.borderColor = theme.paymentMethodButton.border.color(for: .enabled).cgColor
                     paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)
                     
@@ -81,15 +80,15 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                     }
                     
                 case .goCardlessMandate:
-                    paymentMethodButton.setTitleColor(theme.text.default.color, for: .normal)
-                    paymentMethodButton.tintColor = theme.text.default.color
-                    paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = theme.text.default.color.cgColor
+                    paymentMethodButton.setTitleColor(theme.paymentMethodButton.text.color, for: .normal)
+                    paymentMethodButton.tintColor = theme.paymentMethodButton.text.color
+                    paymentMethodButton.layer.borderWidth = theme.paymentMethodButton.border.width
+                    paymentMethodButton.layer.borderColor = theme.paymentMethodButton.border.color(for: .enabled).cgColor
                     
                 case .klarna:
-                    paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
-                    paymentMethodButton.setTitleColor(.black, for: .normal)
-                    paymentMethodButton.tintColor = .white
+                    paymentMethodButton.backgroundColor = Colors.Buttons.KlarnaDefault
+                    paymentMethodButton.setTitleColor(Colors.Buttons.KlarnaTextDefault, for: .normal)
+                    paymentMethodButton.tintColor = Colors.Buttons.KlarnaTextDefault
                     paymentMethodButton.setImage(nil, for: .normal)
                     paymentMethodButton.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)

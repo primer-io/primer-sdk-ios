@@ -102,8 +102,10 @@ internal class CardButton: PrimerButton {
     }
 
     private func addDDMandateLabel(value: String) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let label = UILabel()
         label.text = value
+        label.textColor = theme.paymentMethodButton.text.color
         addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 17)
@@ -112,21 +114,31 @@ internal class CardButton: PrimerButton {
     }
 
     private func addNetworkName(value: String) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         networkLabel = UILabel()
         networkLabel.text = value
+        networkLabel.textColor = theme.paymentMethodButton.text.color
         addSubview(networkLabel)
         networkLabel.translatesAutoresizingMaskIntoConstraints = false
         if iconView.image == ImageName.bank.image?.withRenderingMode(.alwaysTemplate) {
-            networkLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 17).isActive = true
+            networkLabel.leadingAnchor.constraint(
+                equalTo: iconView.trailingAnchor,
+                constant: 17
+            ).isActive = true
         } else {
-            networkLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 10).isActive = true
+            networkLabel.leadingAnchor.constraint(
+                equalTo: iconView.trailingAnchor,
+                constant: 10
+            ).isActive = true
         }
         networkLabel.bottomAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
 
     private func addCardholderName(value: String) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         cardholderLabel = UILabel()
         cardholderLabel.text = value
+        cardholderLabel.textColor = theme.paymentMethodButton.text.color
         cardholderLabel.font = .systemFont(ofSize: 12)
         addSubview(cardholderLabel)
         cardholderLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -136,8 +148,10 @@ internal class CardButton: PrimerButton {
     }
 
     private func addLast4Digits(value: String) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         last4Label = UILabel()
         last4Label.text = value
+        last4Label.textColor = theme.paymentMethodButton.text.color
         addSubview(last4Label)
         last4Label.translatesAutoresizingMaskIntoConstraints = false
         checkmarkViewLeadingConstraint = last4Label.trailingAnchor
@@ -147,8 +161,10 @@ internal class CardButton: PrimerButton {
     }
 
     private func addExpiryDetails(value: String) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         expiryLabel = UILabel()
         expiryLabel.text = value
+        expiryLabel.textColor = theme.paymentMethodButton.text.color
         expiryLabel.font = .systemFont(ofSize: 12)
         addSubview(expiryLabel)
         expiryLabel.translatesAutoresizingMaskIntoConstraints = false

@@ -75,7 +75,8 @@ class PrimerNavigationBar: PrimerView {
         
         backButton.translatesAutoresizingMaskIntoConstraints = false
         let image = UIImage(named: "back", in: Bundle.primerResources, compatibleWith: nil)
-        backButton.setImage(image, for: .normal)
+        let customColorImage = image?.withRenderingMode(.alwaysTemplate)
+        backButton.setImage(customColorImage, for: .normal)
         backButton.tintColor = theme.text.system.color
         backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
         leftView.addSubview(backButton)

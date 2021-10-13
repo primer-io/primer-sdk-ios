@@ -4,12 +4,33 @@ public class PrimerThemeData {
     public var text: TextStyleData?
     public var buttons: ButtonStyleData?
     public var input: InputThemeData?
+    
+    public init(
+        colors: ColorSwatchData? = nil,
+        view: ViewThemeData? = nil,
+        text: TextStyleData? = nil,
+        buttons: ButtonStyleData? = nil,
+        input: InputThemeData? = nil
+    ) {
+        self.colors = colors
+        self.view = view
+        self.text = text
+        self.buttons = buttons
+        self.input = input
+    }
 }
 
 public class ButtonStyleData {
     public var main: ButtonThemeData?
     public var paymentMethod: ButtonThemeData?
-    // TODO: add more
+    
+    public init(
+        main: ButtonThemeData? = nil,
+        paymentMethod: ButtonThemeData? = nil
+    ) {
+        self.main = main
+        self.paymentMethod = paymentMethod
+    }
 }
 
 public class ButtonThemeData {
@@ -19,12 +40,38 @@ public class ButtonThemeData {
     public var text: TextThemeData?
     public var border: BorderThemeData?
     public var cornerRadius: CGFloat?
+
+    public init(
+        defaultColor: UIColor? = nil,
+        disabledColor: UIColor? = nil,
+        errorColor: UIColor? = nil,
+        text: TextThemeData? = nil,
+        border: BorderThemeData? = nil,
+        cornerRadius: CGFloat? = nil
+    ) {
+        self.defaultColor = defaultColor
+        self.disabledColor = disabledColor
+        self.errorColor = errorColor
+        self.text = text
+        self.border = border
+        self.cornerRadius = cornerRadius
+    }
 }
 
 public class ViewThemeData {
     public var backgroundColor: UIColor?
     public var cornerRadius: CGFloat?
     public var safeMargin: CGFloat?
+    
+    public init(
+        backgroundColor: UIColor? = nil,
+        cornerRadius: CGFloat? = nil,
+        safeMargin: CGFloat? = nil
+    ) {
+        self.backgroundColor = backgroundColor
+        self.cornerRadius = cornerRadius
+        self.safeMargin = safeMargin
+    }
 }
 
 public class TextStyleData {
@@ -34,11 +81,32 @@ public class TextStyleData {
     public var amountLabel: TextThemeData?
     public var system: TextThemeData?
     public var error: TextThemeData?
+
+    public init(
+        default: TextThemeData? = nil,
+        title: TextThemeData? = nil,
+        subtitle: TextThemeData? = nil,
+        amountLabel: TextThemeData? = nil,
+        system: TextThemeData? = nil,
+        error: TextThemeData? = nil
+    ) {
+        self.default = `default`
+        self.title = title
+        self.subtitle = subtitle
+        self.amountLabel = amountLabel
+        self.system = system
+        self.error = error
+    }
 }
 
 public class TextThemeData {
     public var defaultColor: UIColor?
     public var fontsize: Int?
+
+    public init(defaultColor: UIColor? = nil, fontsize: Int? = nil) {
+        self.defaultColor = defaultColor
+        self.fontsize = fontsize
+    }
 }
 
 public class BorderThemeData {
@@ -46,6 +114,18 @@ public class BorderThemeData {
     public var selectedColor: UIColor?
     public var errorColor: UIColor?
     public var width: CGFloat?
+
+    public init(
+        defaultColor: UIColor? = nil,
+        selectedColor: UIColor? = nil,
+        errorColor: UIColor? = nil,
+        width: CGFloat? = nil
+    ) {
+        self.defaultColor = defaultColor
+        self.selectedColor = selectedColor
+        self.errorColor = errorColor
+        self.width = width
+    }
 }
 
 public class InputThemeData {
@@ -53,6 +133,18 @@ public class InputThemeData {
     public var text: TextThemeData?
     public var border: BorderThemeData?
     public var cornerRadius: CGFloat?
+
+    public init(
+        backgroundColor: UIColor? = nil,
+        text: TextThemeData? = nil,
+        border: BorderThemeData? = nil,
+        cornerRadius: CGFloat? = nil
+    ) {
+        self.backgroundColor = backgroundColor
+        self.text = text
+        self.border = border
+        self.cornerRadius = cornerRadius
+    }
 }
 
 public class ColorSwatchData {

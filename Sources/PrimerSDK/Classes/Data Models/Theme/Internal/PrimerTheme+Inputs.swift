@@ -17,8 +17,8 @@ internal struct InputTheme {
             cornerRadius: data?.cornerRadius ?? 0.0,
             border: BorderTheme(
                 colorStates: StatefulColor(
-                    data?.border?.defaultColor ?? Colors.Input.Border.Default,
-                    disabled: data?.border?.defaultColor ?? Colors.Input.Border.Disabled
+                    data?.border?.defaultColor ?? Colors.Input.BorderDefault,
+                    disabled: data?.border?.defaultColor ?? Colors.Input.BorderDisabled
                 ),
                 width: data?.border?.width ?? 1.0
             ),

@@ -56,10 +56,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
         cardComponentsManager.delegate = self        
     }
 
-    @objc func payButtonTapped(_ sender: UIButton) {
-        cardComponentsManager.tokenize()
-    }
-
     private func configureCardNumberField() {
         cardNumberField.placeholder = "4242 4242 4242 4242"
         cardNumberField.heightAnchor.constraint(equalToConstant: 36).isActive = true
