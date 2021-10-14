@@ -122,15 +122,35 @@ class ApplePayViewModel: NSObject, ApplePayViewModelProtocol {
         )
         
         
+    
         let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
         if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
+            var sum: Int = 0
+            for item in orderItems {
+                if let unitAmount = item.unitAmount {
+                    let unitSum = unitAmount * item.quantity
+                    sum += unitSum
+                }
+            }
+            
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            if let applePaySurcharge = state.paymentMethodConfig?.paymentMethods?.filter({ $0.type == .applePay }).first?.surcharge {
+                sum += applePaySurcharge
+            }
+            
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            let lastItemName = settings.businessDetails?.name ?? "Order"
+            let lastItem = PKPaymentSummaryItem(label: lastItemName, amount: NSDecimalNumber(value: sum).dividing(by: 100), type: .final)
+            var applePayItems = applePayRequest.items.compactMap({ $0.applePayItem })
+            applePayItems.append(lastItem)
+            
             request = PKPaymentRequest()
             request.currencyCode = applePayRequest.currency.rawValue
             request.countryCode = applePayRequest.countryCode.rawValue
             request.merchantIdentifier = merchantIdentifier
             request.merchantCapabilities = [.capability3DS]
             request.supportedNetworks = supportedNetworks
-            request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
+            request.paymentSummaryItems = applePayItems
             
             guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
                 let err = AppleException.unableToPresentApplePay
