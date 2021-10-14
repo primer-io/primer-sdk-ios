@@ -29,6 +29,7 @@
 		12FC1299AF6DE42BED1CB995DB17FECC /* ClientTokenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F228F3E39DBEE1EB779C819E6771CB77 /* ClientTokenService.swift */; };
 		13E82B085D100D967EEF1B1C8EC3AC88 /* VaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9B0EDEB2959E62CF03A114D00A42A68 /* VaultCheckoutViewModel.swift */; };
 		15EB791501BFBDC1108922C29E83EEE9 /* PrimerSDK-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D2E0829A9CF5AACE43592141857A21A /* PrimerSDK-dummy.m */; };
+		15FD4C202716D471009DDE63 /* ClientSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FD4C1F2716D470009DDE63 /* ClientSession.swift */; };
 		199E04B53209DDDA3D6B4610DB12AEC3 /* ConcurrencyLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10CA3A0F0666C3E33DA156FB6C67BBAE /* ConcurrencyLimitedDispatcher.swift */; };
 		1B2BDEDEA52E9F00CF03F595934944A4 /* OAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D252EE611EB652A87CDB610AD10995D7 /* OAuthViewModel.swift */; };
 		1B7E3D217D8993F3A3D858F5601621B3 /* PresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15088FAB30F073EE32A3B9D8662CDE0 /* PresentationController.swift */; };
@@ -231,6 +232,7 @@
 		10CA3A0F0666C3E33DA156FB6C67BBAE /* ConcurrencyLimitedDispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConcurrencyLimitedDispatcher.swift; sourceTree = "<group>"; };
 		139CF92E023D7DEA5B72EA5E8911A772 /* Endpoint.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		13CD63FFA85F67781D08434555A21F3E /* Apaya.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Apaya.swift; sourceTree = "<group>"; };
+		15FD4C1F2716D470009DDE63 /* ClientSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientSession.swift; sourceTree = "<group>"; };
 		160AF74FC0554FF4BEFF0A7699603D82 /* EnsureWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EnsureWrappers.swift; sourceTree = "<group>"; };
 		1832AA01DBB040C95254440F18A4CE37 /* ThenableWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThenableWrappers.swift; sourceTree = "<group>"; };
 		1884D8364DCBDB337E361DB3EDA85DB4 /* ClientToken.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClientToken.swift; sourceTree = "<group>"; };
@@ -914,6 +916,7 @@
 				13CD63FFA85F67781D08434555A21F3E /* Apaya.swift */,
 				E9277754D2104857789457742AB763D1 /* ApplePay.swift */,
 				FCB66E9D95506EDFE2DB3069FFDC8617 /* CardNetwork.swift */,
+				15FD4C1F2716D470009DDE63 /* ClientSession.swift */,
 				1884D8364DCBDB337E361DB3EDA85DB4 /* ClientToken.swift */,
 				AC74BD3DEC502560DE04E578846343D1 /* Consolable.swift */,
 				E2926AB4CFA4BE28A9E0252FD2F57F1D /* CountryCode.swift */,
@@ -1363,6 +1366,7 @@
 				9D5DA4C287CAEEEB0DC893EB3021BC65 /* AnyEncodable.swift in Sources */,
 				EF179FF65475CA9A6E9140FC1BA86099 /* Apaya.swift in Sources */,
 				CD0F3D9162B4DD4865CC871DAA08AF34 /* ApayaService.swift in Sources */,
+				15FD4C202716D471009DDE63 /* ClientSession.swift in Sources */,
 				BA770303291056FD7FAADF7F129DAC27 /* ApplePay.swift in Sources */,
 				AC64270ACC7B875A9159CD88C45756A3 /* ApplePayService.swift in Sources */,
 				7796188E90ED8F825836AF9C66CFB29A /* ApplePayViewModel.swift in Sources */,
