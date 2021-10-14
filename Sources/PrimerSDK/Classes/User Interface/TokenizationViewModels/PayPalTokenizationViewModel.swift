@@ -4,14 +4,52 @@ import UIKit
 import AuthenticationServices
 import SafariServices
 
-class PayPalViewModel: NSObject, PrimerOAuthViewModel {
+class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaymentMethodTokenizationViewModelProtocol {
     
-    var host: OAuthHost = .paypal
+    var willPresentPaymentMethod: (() -> Void)?
     var didPresentPaymentMethod: (() -> Void)?
+    var willDismissPaymentMethod: (() -> Void)?
+    var didDismissPaymentMethod: (() -> Void)?
     private var session: Any!
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
+    @objc
+    override func startTokenizationFlow() {
+        switch config.type {
+        case .payPal:
+            super.startTokenizationFlow()
+            
+            firstly {
+                self.tokenize()
+            }
+            .done { paymentMethod in
+                self.paymentMethod = paymentMethod
+                
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
+                }
+    
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
+                    if let err = err {
+                        self.handleFailedTokenizationFlow(error: err)
+                    } else {
+                        self.handleSuccess()
+                    }
+                })
+            }
+            .catch { err in
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+                self.handleFailedTokenizationFlow(error: err)
+            }
+            
+        default:
+            break
+        }
     }
     
     func tokenize() -> Promise <PaymentMethodToken> {
@@ -20,6 +58,7 @@ class PayPalViewModel: NSObject, PrimerOAuthViewModel {
                 self.fetchOAuthURL()
             }
             .then { url -> Promise<URL> in
+                self.willPresentPaymentMethod?()
                 return self.createOAuthSession(url)
             }
             .then { url -> Promise<PaymentInstrument> in
@@ -40,7 +79,7 @@ class PayPalViewModel: NSObject, PrimerOAuthViewModel {
     private func fetchOAuthURL() -> Promise<URL> {
         return Promise { seal in
             let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-            viewModel.generateOAuthURL(host, with: { result in
+            viewModel.generateOAuthURL(.paypal, with: { result in
                 switch result {
                 case .success(let urlStr):
                     guard let url = URL(string: urlStr) else {
@@ -97,8 +136,9 @@ class PayPalViewModel: NSObject, PrimerOAuthViewModel {
                 )
 
                 (session as! SFAuthenticationSession).start()
-                didPresentPaymentMethod?()
             }
+            
+            didPresentPaymentMethod?()
         }
     }
     
@@ -182,20 +222,31 @@ class PayPalViewModel: NSObject, PrimerOAuthViewModel {
     
 }
 
+extension PayPalTokenizationViewModel {
+    
+    override func handle(error: Error) {
+        self.completion?(nil, error)
+        self.completion = nil
+    }
+    
+    override func handle(newClientToken clientToken: String) {
+        try? ClientTokenService.storeClientToken(clientToken)
+    }
+    
+    override func handleSuccess() {
+        self.completion?(self.paymentMethod, nil)
+        self.completion = nil
+    }
+    
+}
+
 @available(iOS 11.0, *)
-extension PayPalViewModel: ASWebAuthenticationPresentationContextProviding {
+extension PayPalTokenizationViewModel: ASWebAuthenticationPresentationContextProviding {
     @available(iOS 12.0, *)
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
     }
     
-}
-
-extension SFSafariViewController {
-    override open var modalPresentationStyle: UIModalPresentationStyle {
-        get { return .fullScreen}
-        set { super.modalPresentationStyle = newValue }
-    }
 }
 
 #endif

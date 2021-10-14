@@ -11,7 +11,7 @@ typealias TokenizationCompletion = ((PaymentMethodToken?, Error?) -> Void)
 
 internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHandlerProtocol {
     init(config: PaymentMethodConfig)
-    func startTokenizationFlow()
+    
     var config: PaymentMethodConfig { get set }
     var title: String { get }
     var position: Int { get set }
@@ -19,6 +19,10 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     var didStartTokenization: (() -> Void)? { get set }
     var completion: TokenizationCompletion? { get set }
     var paymentMethod: PaymentMethodToken? { get set }
+    
+    func startTokenizationFlow()
+    func handleSuccessfulTokenizationFlow()
+    func handleFailedTokenizationFlow(error: Error)
 }
 
 internal protocol AsyncPaymentMethodTokenizationViewModelProtocol {
@@ -269,18 +273,26 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         return paymentMethodButton
     }()
     
+    func handleSuccessfulTokenizationFlow() {
+        Primer.shared.primerRootVC?.handleSuccess()
+    }
+    
+    func handleFailedTokenizationFlow(error: Error) {
+        Primer.shared.primerRootVC?.handle(error: error)
+    }
+    
 }
 
 extension PaymentMethodTokenizationViewModel {
     func handle(error: Error) {
-        
+        assert(true, "\(self.self).\(#function) should be overriden")
     }
     
     func handle(newClientToken clientToken: String) {
-        
+        assert(true, "\(self.self).\(#function) should be overriden")
     }
     
     func handleSuccess() {
-        
+        assert(true, "\(self.self).\(#function) should be overriden")
     }
 }
