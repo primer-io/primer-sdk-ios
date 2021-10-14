@@ -57,6 +57,7 @@ public protocol PrimerDelegate {
     @available(*, deprecated, renamed: "onTokenizeSuccess")
     @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
+    @objc optional func onClientSessionActionsCreated(_ actions: [ClientSession.Action], completion: @escaping (_ clientToken: String?, _ err: Error?) -> Void)
 }
 
 internal class MockPrimerDelegate: PrimerDelegate {
