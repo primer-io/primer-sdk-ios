@@ -2,7 +2,7 @@
 
 struct PrimerConfiguration: Codable {
     
-    static var paymentMethodConfigViewModels: [AsyncPaymentMethodTokenizationViewModel] {
+    static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
         let state: AppStateProtocol = DependencyContainer.resolve()
         var viewModels = state
             .paymentMethodConfig?
