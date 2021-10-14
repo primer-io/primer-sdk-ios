@@ -88,7 +88,6 @@ public class Primer {
         DependencyContainer.register(PaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
         DependencyContainer.register(PayPalService() as PayPalServiceProtocol)
         DependencyContainer.register(TokenizationService() as TokenizationServiceProtocol)
-        DependencyContainer.register(CardScannerViewModel() as CardScannerViewModelProtocol)
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
