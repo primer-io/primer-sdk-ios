@@ -1,27 +1,27 @@
+////
+////  KlarnaService.swift
+////  PrimerSDKTests
+////
+////  Created by Carl Eriksson on 22/02/2021.
+////
 //
-//  KlarnaService.swift
-//  PrimerSDKTests
+//#if canImport(UIKit)
 //
-//  Created by Carl Eriksson on 22/02/2021.
+//@testable import PrimerSDK
 //
-
-#if canImport(UIKit)
-
-@testable import PrimerSDK
-
-class MockKlarnaService: KlarnaServiceProtocol {
-    func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
-
-    }
-
-    func createKlarnaCustomerToken(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
-
-    }
-
-    func finalizePaymentSession(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
-
-    }
-
-}
-
-#endif
+//class MockKlarnaService: KlarnaServiceProtocol {
+//    func createPaymentSession(_ completion: @escaping (Result<String, Error>) -> Void) {
+//
+//    }
+//
+//    func createKlarnaCustomerToken(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+//
+//    }
+//
+//    func finalizePaymentSession(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+//
+//    }
+//
+//}
+//
+//#endif
