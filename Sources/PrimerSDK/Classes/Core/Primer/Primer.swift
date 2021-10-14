@@ -92,7 +92,6 @@ public class Primer {
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
-        DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
     }
 
     // MARK: - CONFIGURATION
