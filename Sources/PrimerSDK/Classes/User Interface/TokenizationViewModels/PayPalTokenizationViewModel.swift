@@ -78,21 +78,40 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
     
     private func fetchOAuthURL() -> Promise<URL> {
         return Promise { seal in
-            let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-            viewModel.generateOAuthURL(.paypal, with: { result in
-                switch result {
-                case .success(let urlStr):
-                    guard let url = URL(string: urlStr) else {
-                        seal.reject(PrimerError.failedToLoadSession)
-                        return
-                    }
-                    
-                    seal.fulfill(url)
-                case .failure(let err):
-                    seal.reject(err)
-                }
-            })
+            let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
             
+            switch Primer.shared.flow.internalSessionFlow.uxMode {
+            case .CHECKOUT:
+                paypalService.startOrderSession { result in
+                    switch result {
+                    case .success(let urlStr):
+                        guard let url = URL(string: urlStr) else {
+                            seal.reject(PrimerError.failedToLoadSession)
+                            return
+                        }
+                        
+                        seal.fulfill(url)
+                        
+                    case .failure(let err):
+                        seal.reject(err)
+                    }
+                }
+            case .VAULT:
+                paypalService.startBillingAgreementSession { result in
+                    switch result {
+                    case .success(let urlStr):
+                        guard let url = URL(string: urlStr) else {
+                            seal.reject(PrimerError.failedToLoadSession)
+                            return
+                        }
+                        
+                        seal.fulfill(url)
+                        
+                    case .failure(let err):
+                        seal.reject(err)
+                    }
+                }
+            }
         }
     }
     
