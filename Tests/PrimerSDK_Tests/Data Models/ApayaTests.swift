@@ -51,17 +51,6 @@ class ApayaDataModelTests: XCTestCase {
         }
     }
     
-    func test_apaya_web_view_result_fails_on_invalid_url() throws {
-        let url = URL(string: "")
-        do {
-            try Apaya.WebViewResponse(url: url!)
-            XCTFail()
-        }
-        catch {
-            XCTAssertNotNil(error)
-        }
-    }
-    
     func test_apaya_web_view_result_fails_on_error_url() throws {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ERROR")
         do {

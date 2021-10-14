@@ -26,6 +26,7 @@ class PaymentMethodConfigServiceTests: XCTestCase {
         let state = MockAppState()
 
         MockLocator.registerDependencies()
+        Primer.shared.showUniversalCheckout(on: UIViewController(), clientToken: nil)
         DependencyContainer.register(MockPrimerAPIClient(with: data, throwsError: false) as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
 
