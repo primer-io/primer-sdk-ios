@@ -1,16 +1,16 @@
 public class PrimerThemeData {
-    public var colors: ColorSwatchData?
-    public var view: ViewThemeData?
-    public var text: TextStyleData?
-    public var buttons: ButtonStyleData?
-    public var input: InputThemeData?
+    public var colors: ColorSwatchData
+    public var view: ViewThemeData
+    public var text: TextStyleData
+    public var buttons: ButtonStyleData
+    public var input: InputThemeData
     
     public init(
-        colors: ColorSwatchData? = nil,
-        view: ViewThemeData? = nil,
-        text: TextStyleData? = nil,
-        buttons: ButtonStyleData? = nil,
-        input: InputThemeData? = nil
+        colors: ColorSwatchData = ColorSwatchData(),
+        view: ViewThemeData = ViewThemeData(),
+        text: TextStyleData = TextStyleData(),
+        buttons: ButtonStyleData = ButtonStyleData(),
+        input: InputThemeData = InputThemeData()
     ) {
         self.colors = colors
         self.view = view
@@ -21,12 +21,12 @@ public class PrimerThemeData {
 }
 
 public class ButtonStyleData {
-    public var main: ButtonThemeData?
-    public var paymentMethod: ButtonThemeData?
+    public var main: ButtonThemeData
+    public var paymentMethod: ButtonThemeData
     
     public init(
-        main: ButtonThemeData? = nil,
-        paymentMethod: ButtonThemeData? = nil
+        main: ButtonThemeData = ButtonThemeData(),
+        paymentMethod: ButtonThemeData = ButtonThemeData()
     ) {
         self.main = main
         self.paymentMethod = paymentMethod
@@ -37,17 +37,17 @@ public class ButtonThemeData {
     public var defaultColor: UIColor?
     public var disabledColor: UIColor?
     public var errorColor: UIColor?
-    public var text: TextThemeData?
-    public var border: BorderThemeData?
     public var cornerRadius: CGFloat?
+    public var text: TextThemeData
+    public var border: BorderThemeData
 
     public init(
         defaultColor: UIColor? = nil,
         disabledColor: UIColor? = nil,
         errorColor: UIColor? = nil,
-        text: TextThemeData? = nil,
-        border: BorderThemeData? = nil,
-        cornerRadius: CGFloat? = nil
+        cornerRadius: CGFloat? = nil,
+        text: TextThemeData = TextThemeData(),
+        border: BorderThemeData = BorderThemeData()
     ) {
         self.defaultColor = defaultColor
         self.disabledColor = disabledColor
@@ -75,20 +75,20 @@ public class ViewThemeData {
 }
 
 public class TextStyleData {
-    public var `default`: TextThemeData?
-    public var title: TextThemeData?
-    public var subtitle: TextThemeData?
-    public var amountLabel: TextThemeData?
-    public var system: TextThemeData?
-    public var error: TextThemeData?
+    public var `default`: TextThemeData
+    public var title: TextThemeData
+    public var subtitle: TextThemeData
+    public var amountLabel: TextThemeData
+    public var system: TextThemeData
+    public var error: TextThemeData
 
     public init(
-        default: TextThemeData? = nil,
-        title: TextThemeData? = nil,
-        subtitle: TextThemeData? = nil,
-        amountLabel: TextThemeData? = nil,
-        system: TextThemeData? = nil,
-        error: TextThemeData? = nil
+        default: TextThemeData = TextThemeData(),
+        title: TextThemeData = TextThemeData(),
+        subtitle: TextThemeData = TextThemeData(),
+        amountLabel: TextThemeData = TextThemeData(),
+        system: TextThemeData = TextThemeData(),
+        error: TextThemeData = TextThemeData()
     ) {
         self.default = `default`
         self.title = title
@@ -130,14 +130,14 @@ public class BorderThemeData {
 
 public class InputThemeData {
     public var backgroundColor: UIColor?
-    public var text: TextThemeData?
-    public var border: BorderThemeData?
+    public var text: TextThemeData
+    public var border: BorderThemeData
     public var cornerRadius: CGFloat?
 
     public init(
         backgroundColor: UIColor? = nil,
-        text: TextThemeData? = nil,
-        border: BorderThemeData? = nil,
+        text: TextThemeData = TextThemeData(),
+        border: BorderThemeData = BorderThemeData(),
         cornerRadius: CGFloat? = nil
     ) {
         self.backgroundColor = backgroundColor
@@ -150,4 +150,9 @@ public class InputThemeData {
 public class ColorSwatchData {
     public var primary: UIColor?
     public var error: UIColor?
+    
+    public init(primary: UIColor? = nil, error: UIColor? = nil) {
+        self.primary = primary
+        self.error = error
+    }
 }

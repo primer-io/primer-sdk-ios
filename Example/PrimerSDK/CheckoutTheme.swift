@@ -24,8 +24,8 @@ struct CheckoutTheme {
     
     static var tropical: PrimerTheme {
         
-        let viewTheme = ViewThemeData()
-        viewTheme.backgroundColor = tropical1
+        let view = ViewThemeData()
+        view.backgroundColor = tropical1
         
         let text = TextStyleData()
         text.title = TextThemeData(defaultColor: tropical10)
@@ -35,28 +35,20 @@ struct CheckoutTheme {
         text.system = TextThemeData(defaultColor: tropical4)
         
         let buttons = ButtonStyleData()
-        let buttonBorder = BorderThemeData(defaultColor: .white, selectedColor: .white)
-        let buttonText = TextThemeData(defaultColor: .white)
-        buttons.paymentMethod = ButtonThemeData(text: buttonText, border: buttonBorder)
-        
-        let mainButtonBorder = BorderThemeData(defaultColor: tropical2, selectedColor: tropical2)
-        let mainButtonText = TextThemeData(defaultColor: tropical4)
-        buttons.main = ButtonThemeData()
-        buttons.main?.defaultColor = tropical2
-        buttons.main?.disabledColor = tropical2
-        buttons.main?.text = mainButtonText
-        buttons.main?.border = mainButtonBorder
+        buttons.paymentMethod.border.defaultColor = .white
+        buttons.paymentMethod.border.selectedColor = .white
+        buttons.paymentMethod.text.defaultColor = .white
+        buttons.main.defaultColor = tropical2
+        buttons.main.disabledColor = tropical2
+        buttons.main.text.defaultColor = tropical4
+        buttons.main.border.defaultColor = tropical2
+        buttons.main.border.selectedColor = tropical2
         
         let input = InputThemeData()
         input.border = BorderThemeData(defaultColor: .white, selectedColor: .white)
         input.text = TextThemeData(defaultColor: .white)
         
-        let data = PrimerThemeData.init(
-            view: viewTheme,
-            text: text,
-            buttons: buttons,
-            input: input
-        )
+        let data = PrimerThemeData(view: view, text: text, buttons: buttons, input: input)
         
         return PrimerTheme.init(with: data)
     }

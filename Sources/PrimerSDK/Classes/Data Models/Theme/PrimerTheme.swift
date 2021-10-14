@@ -52,13 +52,13 @@ public class PrimerTheme: PrimerThemeProtocol {
     internal var mainButton: ButtonTheme
     internal var input: InputTheme
 
-    public init(with data: PrimerThemeData? = nil) {
-        colors = ColorSwatch.default(with: data?.colors)
-        view = ViewTheme.default(with: data?.view)
-        text = TextStyle.default(with: data?.text)
-        input = InputTheme.default(with: data?.input)
-        paymentMethodButton = ButtonTheme.paymentMethod(with: data?.buttons?.paymentMethod)
-        mainButton = ButtonTheme.main(with: data?.buttons?.main)
+    public init(with data: PrimerThemeData = PrimerThemeData()) {
+        colors = ColorSwatch.default(with: data.colors)
+        view = ViewTheme.default(with: data.view)
+        text = TextStyle.default(with: data.text)
+        input = InputTheme.default(with: data.input)
+        paymentMethodButton = ButtonTheme.paymentMethod(with: data.buttons.paymentMethod)
+        mainButton = ButtonTheme.main(with: data.buttons.main)
     }
 
     // MARK: deprecated methods
