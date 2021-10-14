@@ -94,7 +94,6 @@ public class Primer {
         DependencyContainer.register(ApplePayService() as ApplePayServiceProtocol)
         DependencyContainer.register(ApplePayViewModel() as ApplePayViewModelProtocol)
         DependencyContainer.register(CardScannerViewModel() as CardScannerViewModelProtocol)
-        DependencyContainer.register(DirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
         DependencyContainer.register(OAuthViewModel() as OAuthViewModelProtocol)
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)

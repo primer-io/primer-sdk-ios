@@ -155,7 +155,6 @@
 		D225A9BB9008DB54F15ACCCABA81B64C /* ApayaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B44D75767B53BB2AF7A8135D2594AEB /* ApayaService.swift */; };
 		D2D120CC52D7D9C21D855D46911C9766 /* after.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE3F4EF53B648F7C45D2BB595625862 /* after.swift */; };
 		D30102D1D7881E5DCAA0F2FCF5E64327 /* PrimerVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1961B693968C4699A05F99B9C34E18 /* PrimerVaultManagerViewController.swift */; };
-		D46C6EF393FE52C92BA66C84F4968C9D /* DirerctCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E080BBA6846D44F9D42C3675D5222EE9 /* DirerctCheckoutViewModel.swift */; };
 		D57B67D028D82E34F65D3BB558A342C7 /* RateLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E09429D5C36A34A129FF373FFB0D45F /* RateLimitedDispatcher.swift */; };
 		D596E2B41C673AD5018AEA0A0321E51C /* Pods-PrimerSDK_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = EE9674DAD0C961C92687877090E1E047 /* Pods-PrimerSDK_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE1B2D92CE3B14350DCF2FE1A944BE9D /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 782EA51CED17661F67E3D54C40731129 /* ScannerView.swift */; };
@@ -367,7 +366,6 @@
 		BE86DE433E48470B74F4EC04C94F30C0 /* CardButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardButton.swift; sourceTree = "<group>"; };
 		BF0D2777667E26BB8795B6911C8264AF /* ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReloadDelegate.swift; sourceTree = "<group>"; };
 		C02733724AC9E90CD6A53F736E6046A4 /* PrimerUniversalCheckoutViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerUniversalCheckoutViewController.swift; sourceTree = "<group>"; };
-		C0CC4DB60B1A1581E684CAC1A7021C2D /* AsyncPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AsyncPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		C0CC4DB60B1A1581E684CAC1A7021C2D /* PaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		C1C216B34934B8F586C68707318953BF /* PrimerSDK-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerSDK-umbrella.h"; sourceTree = "<group>"; };
 		C4F297F792A35A1B38FBA48F5AFC19AC /* CoreDataDispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CoreDataDispatcher.swift; sourceTree = "<group>"; };
@@ -388,7 +386,6 @@
 		DD756922AE9CBBC2A0833ACDF2B600E6 /* PrimerContainerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerContainerViewController.swift; sourceTree = "<group>"; };
 		DF6E4F8E7C26A7BBEC17AAD4042A317D /* Pods-PrimerSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		DF81364A8AD5FCC85005C0597F4854CE /* SuccessMessage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SuccessMessage.swift; sourceTree = "<group>"; };
-		E080BBA6846D44F9D42C3675D5222EE9 /* DirerctCheckoutViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DirerctCheckoutViewModel.swift; sourceTree = "<group>"; };
 		E0A97F654D2723356B6E5E3C4CA3D2F3 /* Logger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		E0E2AA7A20320D97E2DEDD7E2A0CF5FF /* TokenizationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
 		E1B945985145643C12B1E91600B680DE /* Pods-PrimerSDK_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrimerSDK_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
@@ -687,7 +684,6 @@
 				A4587F53207A128C4D39B5C5A66577E0 /* Currency.swift */,
 				738CF109585E07670665119D45BC8DEC /* Customer.swift */,
 				3C7ACD5F728C84DD56C7E9DA44463321 /* DirectDebitMandate.swift */,
-				E080BBA6846D44F9D42C3675D5222EE9 /* DirerctCheckoutViewModel.swift */,
 				9E19D2E95311351CE7F25EA29573DFF9 /* ImageName.swift */,
 				5BFD0F261D2B5B720A9C2CF4F945CDA8 /* Klarna.swift */,
 				8554880FFDEE679E571F1194DCBD5BB6 /* OrderItem.swift */,
@@ -1415,7 +1411,6 @@
 				244468560A76A3C04A194F0EB2EFD881 /* DependencyInjection.swift in Sources */,
 				75CAF72CE3CB35D923E9F7BB0BA291C8 /* DirectDebitMandate.swift in Sources */,
 				C6A6657786F3070D51C3A2FCDE0CAB43 /* DirectDebitService.swift in Sources */,
-				D46C6EF393FE52C92BA66C84F4968C9D /* DirerctCheckoutViewModel.swift in Sources */,
 				B344366BB7DC470E6819A6F959B096B4 /* Dispatcher.swift in Sources */,
 				BFBCEAB2E9C807E6E80039E4B8358BBE /* Endpoint.swift in Sources */,
 				FDF5EBAE42FEF0D6992128643D808FA8 /* EnsureWrappers.swift in Sources */,
