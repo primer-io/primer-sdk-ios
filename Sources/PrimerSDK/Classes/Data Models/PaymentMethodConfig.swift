@@ -13,6 +13,14 @@ struct PaymentMethodConfig: Codable {
         case coreUrl, pciUrl, clientSession, paymentMethods, keys
     }
     
+    init(data: Data) {
+        self.coreUrl = nil
+        self.pciUrl = nil
+        self.clientSession = nil
+        self.paymentMethods = nil
+        self.keys = nil
+    }
+    
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
@@ -20,6 +28,16 @@ struct PaymentMethodConfig: Codable {
         self.clientSession = (try? container.decode(ClientSession?.self, forKey: .clientSession)) ?? nil
         self.paymentMethods = (try? container.decode([ConfigPaymentMethod]?.self, forKey: .paymentMethods)) ?? nil
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
+        
+        if let paymentMethodOptions = clientSession?.paymentMethod?.paymentMethodOptions, !paymentMethodOptions.isEmpty {
+            for paymentMethodOption in paymentMethodOptions {
+                if let type = paymentMethodOption["type"] as? String,
+                   let surcharge = paymentMethodOption["surcharge"] as? Int,
+                   let paymentMethod = self.paymentMethods?.filter({ $0.type?.rawValue == type }).first {
+                    paymentMethod.surcharge = surcharge
+                }
+            }
+        }
     }
     
     init(
@@ -53,12 +71,13 @@ struct PaymentMethodConfig: Codable {
     }
 }
 
-struct ConfigPaymentMethod: Codable {
+class ConfigPaymentMethod: Codable {
     
     let id: String?
     let processorConfigId: String?
     let type: ConfigPaymentMethodType?
     let options: PaymentMethodOptions?
+    var surcharge: Int?
     
     private enum CodingKeys : String, CodingKey {
         case id, options, processorConfigId, type
@@ -71,7 +90,7 @@ struct ConfigPaymentMethod: Codable {
         self.type = type
     }
     
-    init(from decoder: Decoder) throws {
+    required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String?.self, forKey: .id)
         processorConfigId = try container.decode(String?.self, forKey: .processorConfigId)
@@ -137,7 +156,7 @@ public enum ConfigPaymentMethodType: String, Codable {
     
     var isEnabled: Bool {
         switch self {
-        case .applePay, .payPal, .paymentCard, .goCardlessMandate, .klarna, .apaya:
+        case .applePay, .payPal, .paymentCard, .klarna, .apaya:
             return true
         default:
             return false
