@@ -178,6 +178,33 @@ public enum PaymentInstrumentType: String, Codable {
     public init(from decoder: Decoder) throws {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
     }
+    
+    var paymentMethodType: ConfigPaymentMethodType {
+        switch self {
+        case .paymentCard:
+            return .paymentCard
+        case .payPalOrder:
+            return .payPal
+        case .payPalBillingAgreement:
+            return .payPal
+        case .applePay:
+            return .applePay
+        case .googlePay:
+            return .googlePay
+        case .goCardlessMandate:
+            return .goCardlessMandate
+        case .klarna:
+            return .klarna
+        case .klarnaPaymentSession:
+            return .klarna
+        case .klarnaCustomerToken:
+            return .klarna
+        case .apayaToken:
+            return .apaya
+        case .unknown:
+            return .unknown
+        }
+    }
 }
 
 /**
