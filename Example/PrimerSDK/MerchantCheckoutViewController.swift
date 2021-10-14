@@ -38,13 +38,15 @@ class MerchantCheckoutViewController: UIViewController {
             self.tableView.reloadData()
         }
     }
-    var endpoint: String {
+    lazy var endpoint: String = {
         if environment == .local {
             return "http://localhost:8080"
         } else {
             return "https://us-central1-primerdemo-8741b.cloudfunctions.net"
         }
-    }
+    }()
+    
+    var clientToken: String?
     
     var vaultApayaSettings: PrimerSettings!
     var vaultPayPalSettings: PrimerSettings!
