@@ -38,7 +38,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
                     if let err = err {
                         self.handleFailedTokenizationFlow(error: err)
                     } else {
-                        self.handleSuccess()
+                        self.handleSuccessfulTokenizationFlow()
                     }
                 })
             }

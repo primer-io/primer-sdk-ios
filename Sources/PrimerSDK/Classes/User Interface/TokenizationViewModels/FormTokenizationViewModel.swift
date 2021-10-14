@@ -158,7 +158,7 @@ extension FormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate 
                 if let err = err {
                     self.handleFailedTokenizationFlow(error: err)
                 } else {
-                    self.handleSuccess()
+                    self.handleSuccessfulTokenizationFlow()
                 }
             })
         }

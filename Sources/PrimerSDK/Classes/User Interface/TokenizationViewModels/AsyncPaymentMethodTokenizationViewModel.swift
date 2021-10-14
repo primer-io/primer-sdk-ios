@@ -72,14 +72,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
                         Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                     }
                     
-                    Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                    Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
-                        if let err = err {
-                            self.handleFailedTokenizationFlow(error: err)
-                        } else {
-                            self.handleSuccess()
-                        }
-                    })
+                    self.handleSuccessfulTokenizationFlow()
                 }
             }
             .catch { err in

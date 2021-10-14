@@ -42,7 +42,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPayme
                     if let err = err {
                         self.handleFailedTokenizationFlow(error: err)
                     } else {
-                        self.handleSuccess()
+                        self.handleSuccessfulTokenizationFlow()
                     }
                 })
             }
