@@ -7,8 +7,8 @@ struct PrimerConfiguration: Codable {
         var viewModels = state
             .paymentMethodConfig?
             .paymentMethods?
-            .compactMap({ AsyncPaymentMethodTokenizationViewModel(config: $0) })
-            .filter({ $0.config.type.isEnabled == true })
+            .filter({ $0.type.isEnabled })
+            .compactMap({ $0.tokenizationViewModel })
         ?? []
         
         for (index, viewModel) in viewModels.enumerated() {
@@ -52,6 +52,25 @@ struct PaymentMethodConfig: Codable {
     let processorConfigId: String?
     let type: PaymentMethodConfigType
     let options: PaymentMethodOptions?
+    var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
+        if type == .paymentCard {
+            return FormPaymentMethodTokenizationViewModel(config: self)
+        } else if type == .applePay {
+            if #available(iOS 11.0, *) {
+                return ApplePayTokenizationViewModel(config: self)
+            }
+        } else if type == .klarna {
+            return KlarnaTokenizationViewModel(config: self)
+        } else if type == .hoolah || type == .payNLIdeal {
+            return AsyncPaymentMethodTokenizationViewModel(config: self)
+        } else if type == .payPal {
+            return PayPalTokenizationViewModel(config: self)
+        } else if type == .apaya {
+            return ApayaTokenizationViewModel(config: self)
+        }
+        
+        return nil
+    }
     
     private enum CodingKeys : String, CodingKey {
         case id, options, processorConfigId, type
