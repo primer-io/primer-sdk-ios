@@ -112,7 +112,6 @@ class PaymentMethodsGroupView: PrimerView {
                 stackView.addArrangedSubview(paymentMethodButtonView)
                 
             case .klarna:
-
                 paymentMethodButtonView.buttonColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
                 paymentMethodButtonView.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
                 stackView.addArrangedSubview(paymentMethodButtonView)
