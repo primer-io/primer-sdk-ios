@@ -80,7 +80,7 @@ class MerchantCheckoutViewController: UIViewController {
             ],
             isInitialLoadingHidden: false,
             is3DSOnVaultingEnabled: true,
-            billingAddress: Address(
+            billingAddress: PrimerSDK.Address(
                 addressLine1: "Line 1",
                 addressLine2: "Line 2",
                 city: "City",
@@ -89,14 +89,14 @@ class MerchantCheckoutViewController: UIViewController {
                 postalCode: "15236"),
             orderId: "order id",
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
-            customer: Customer(
+            customer: PrimerSDK.Customer(
                 firstName: "John",
                 lastName: "Smith",
                 email: "john.smith@primer.io",
                 homePhoneNumber: nil,
                 mobilePhoneNumber: nil,
                 workPhoneNumber: nil,
-                billingAddress: Address(
+                billingAddress: PrimerSDK.Address(
                     addressLine1: "1 Rue",
                     addressLine2: "",
                     city: "Paris",
@@ -123,7 +123,7 @@ class MerchantCheckoutViewController: UIViewController {
             lastName: "Doe",
             email: "test@mail.com",
             iban: "FR1420041010050500013M02606",
-            address: Address(
+            address: PrimerSDK.Address(
                 addressLine1: "1 Rue",
                 addressLine2: "",
                 city: "Paris",
@@ -141,7 +141,7 @@ class MerchantCheckoutViewController: UIViewController {
             currency: currency,
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true,
-            customer: Customer(mobilePhoneNumber: self.phoneNumber)
+            customer: PrimerSDK.Customer(mobilePhoneNumber: self.phoneNumber)
         )
         
         Primer.shared.configure(settings: vaultApayaSettings)
@@ -188,7 +188,7 @@ class MerchantCheckoutViewController: UIViewController {
             hasDisabledSuccessScreen: true,
             businessDetails: BusinessDetails(
                 name: "My Business",
-                address: Address(
+                address: PrimerSDK.Address(
                     addressLine1: "107 Rue",
                     addressLine2: nil,
                     city: "Paris",
