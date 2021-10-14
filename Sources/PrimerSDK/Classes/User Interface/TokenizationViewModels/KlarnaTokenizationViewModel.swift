@@ -11,7 +11,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
     var didDismissPaymentMethod: (() -> Void)?
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private var authorizationToken: String?
     
     deinit {

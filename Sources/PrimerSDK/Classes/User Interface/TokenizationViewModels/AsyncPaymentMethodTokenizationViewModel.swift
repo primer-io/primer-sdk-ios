@@ -16,7 +16,6 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
     var didDismissPaymentMethod: (() -> Void)?
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     private var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
     

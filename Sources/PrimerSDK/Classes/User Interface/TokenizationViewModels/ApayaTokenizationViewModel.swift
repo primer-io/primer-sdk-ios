@@ -17,7 +17,6 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPayme
     
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ res: Apaya.WebViewResponse?, _ error: Error?) -> Void)?
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

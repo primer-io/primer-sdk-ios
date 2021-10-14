@@ -11,7 +11,6 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
     var willDismissPaymentMethod: (() -> Void)?
     var didDismissPaymentMethod: (() -> Void)?
     private var session: Any!
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
