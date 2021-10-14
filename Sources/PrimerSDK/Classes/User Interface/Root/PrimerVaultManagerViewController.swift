@@ -9,7 +9,8 @@ import UIKit
 
 internal class PrimerVaultManagerViewController: PrimerFormViewController {
     
-    let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
     
     override var title: String? {
         didSet {
@@ -17,7 +18,6 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
         }
     }
     
-    // swiftlint:disable function_body_length
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -47,80 +47,36 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
             otherPaymentMethodsTitleLabel.textAlignment = .left
             verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
             
-            for paymentMethod in availablePaymentMethods {
-                let paymentMethodButton = UIButton()
-                paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
-                paymentMethodButton.backgroundColor = paymentMethod.buttonColor
-                paymentMethodButton.setTitle(paymentMethod.buttonTitle, for: .normal)
-                paymentMethodButton.setTitleColor(paymentMethod.buttonTitleColor, for: .normal)
-                paymentMethodButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
-                paymentMethodButton.setImage(paymentMethod.buttonImage, for: .normal)
-                paymentMethodButton.tintColor = paymentMethod.buttonTintColor
-                paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
-                if let buttonCornerRadius = paymentMethod.buttonCornerRadius {
-                    paymentMethodButton.layer.cornerRadius = buttonCornerRadius
+            for paymentMethodTokenizationViewModel in paymentMethodConfigViewModels {
+                paymentMethodTokenizationViewModel.didStartTokenization = {
+                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
                 }
-                paymentMethodButton.layer.borderWidth = paymentMethod.buttonBorderWidth
-                paymentMethodButton.layer.borderColor = paymentMethod.buttonBorderColor?.cgColor
-                paymentMethodButton.clipsToBounds = true
                 
-                switch paymentMethod.config.type {
-                case .apaya:
-                    paymentMethodButton.addTarget(self, action: #selector(apayaButtonTapped(_:)), for: .touchUpInside)
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
-                    
-                case .paymentCard:
-                    paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
-                    
-                case .payPal:
-                    if #available(iOS 11.0, *) {
-                        paymentMethodButton.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
-                        verticalStackView.addArrangedSubview(paymentMethodButton)
+                if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? AsyncPaymentMethodTokenizationViewModelProtocol {
+                    asyncPaymentMethodViewModel.willPresentPaymentMethod = {
+                        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
                     }
                     
-                case .klarna:
-                    paymentMethodButton.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
+                    asyncPaymentMethodViewModel.didPresentPaymentMethod = {
+                        
+                    }
                     
-                case .applePay,
-                        .hoolah,
-                        .goCardlessMandate,
-                        .googlePay,
-                        .payNLIdeal,
-                        .unknown:
-                    break
-                    
+                    asyncPaymentMethodViewModel.willDismissPaymentMethod = {
+                        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+                    }
                 }
+                
+                paymentMethodTokenizationViewModel.completion = { (tok, err) in
+                    if let err = err {
+                        Primer.shared.primerRootVC?.handle(error: err)
+                    } else {
+                        Primer.shared.primerRootVC?.handleSuccess()
+                    }
+                }
+                
+                verticalStackView.addArrangedSubview(paymentMethodTokenizationViewModel.paymentMethodButton)
             }
         }
-        
-    }
-    
-    @objc
-    func apayaButtonTapped(_ sender: UIButton) {
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
-        Primer.shared.primerRootVC?.presentApaya()
-    }
-    
-    @objc
-    func klarnaButtonTapped() {
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
-        Primer.shared.primerRootVC?.presentKlarna()
-    }
-    
-    @objc
-    func payPalButtonTapped() {
-        if #available(iOS 11.0, *) {
-            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
-            Primer.shared.primerRootVC?.presentPayPal()
-        }
-    }
-    
-    @objc
-    func cardButtonTapped() {
-        let cfvc = PrimerCardFormViewController(flow: .vault)
-        Primer.shared.primerRootVC?.show(viewController: cfvc)
     }
     
 }

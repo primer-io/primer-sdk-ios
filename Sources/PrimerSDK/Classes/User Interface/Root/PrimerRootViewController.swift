@@ -122,7 +122,7 @@ internal class PrimerRootViewController: PrimerViewController {
         viewModel.loadConfig({ [weak self] _ in
             DispatchQueue.main.async {
                 switch self?.flow {
-                case .default:
+                case .`default`:
                     self?.blurBackground()
                     let pucvc = PrimerUniversalCheckoutViewController()
                     self?.show(viewController: pucvc)
@@ -139,60 +139,43 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .addPayPalToVault,
                         .checkoutWithPayPal:
                     if #available(iOS 11.0, *) {
-                        self?.presentPayPal()
+                        self?.presentPaymentMethod(type: .payPal)
                     } else {
                         print("WARNING: PayPal is not available prior to iOS 11.")
                     }
 
                 case .addCardToVault:
-                    self?.blurBackground()
-                    let cfvc = PrimerCardFormViewController(flow: .vault)
-                    self?.show(viewController: cfvc)
+                    self?.presentPaymentMethod(type: .paymentCard)
                     
                 case .addDirectDebitToVault:
                     break
                     
                 case .addKlarnaToVault:
-                    self?.presentKlarna()
+                    self?.presentPaymentMethod(type: .klarna)
                     
                 case .addDirectDebit:
                     break
                     
                 case .checkoutWithKlarna:
                     if #available(iOS 11.0, *) {
-                        self?.presentKlarna()
+                        self?.presentPaymentMethod(type: .klarna)
                     } else {
                         print("WARNING: Klarna is not available prior to iOS 11.")
                     }
                     
                 case .checkoutWithApplePay:
-                    self?.presentApplePay()
+                    if #available(iOS 11.0, *) {
+                        self?.presentPaymentMethod(type: .applePay)
+                    }
                     
                 case .addApayaToVault:
-                    self?.presentApaya()
+                    self?.presentPaymentMethod(type: .apaya)
                     
                 case .checkoutWithHoolah:
-                    guard let viewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == .hoolah }).first else { return }
-                    viewModel.tokenizationCompletion = { [unowned self] (tok, err) in
-                        if let err = err {
-                            self?.handle(error: err)
-                        } else {
-                            self?.handleSuccess()
-                        }
-                    }
-                    viewModel.tokenize()
+                    self?.presentPaymentMethod(type: .hoolah)
                     
                 case .checkoutWithPayNL:
-                    guard let viewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == .payNLIdeal }).first else { return }
-                    viewModel.tokenizationCompletion = { [unowned self] (tok, err) in
-                        if let err = err {
-                            self?.handle(error: err)
-                        } else {
-                            self?.handleSuccess()
-                        }
-                    }
-                    
-                    viewModel.tokenize()
+                    self?.presentPaymentMethod(type: .payNLIdeal)
                     
                 case .none:
                     break
@@ -260,19 +243,19 @@ internal class PrimerRootViewController: PrimerViewController {
     
     internal func show(viewController: UIViewController) {
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
-        viewController.view.widthAnchor.constraint(equalToConstant: childView.frame.width).isActive = true
+        viewController.view.widthAnchor.constraint(equalToConstant: self.childView.frame.width).isActive = true
         viewController.view.layoutIfNeeded()
         
-        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc.navigationBar.bounds.height)
-    
+        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height) > self.availableScreenHeight ? self.availableScreenHeight : (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height)
+        
         // We can now set the childView's height and bottom constraint
-        let isPresented: Bool = nc.viewControllers.isEmpty
-                
+        let isPresented: Bool = self.nc.viewControllers.isEmpty
+        
         let cvc = PrimerContainerViewController(childViewController: viewController)
-        cvc.view.backgroundColor = theme.colorTheme.main1
+        cvc.view.backgroundColor = self.theme.colorTheme.main1
         
         // Hide back button on some cases
-        if let lastViewController = nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
+        if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is PrimerLoadingViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
@@ -283,45 +266,45 @@ internal class PrimerRootViewController: PrimerViewController {
         }
         
         if isPresented {
-            nc.setViewControllers([cvc], animated: false)
+            self.nc.setViewControllers([cvc], animated: false)
             
             let container = PrimerViewController()
-            container.addChild(nc)
-            container.view.addSubview(nc.view)
+            container.addChild(self.nc)
+            container.view.addSubview(self.nc.view)
             
-            nc.didMove(toParent: container)
+            self.nc.didMove(toParent: container)
             
-            addChild(container)
-            childView.addSubview(container.view)
+            self.addChild(container)
+            self.childView.addSubview(container.view)
             
             container.view.translatesAutoresizingMaskIntoConstraints = false
-            container.view.topAnchor.constraint(equalTo: childView.topAnchor).isActive = true
-            container.view.leadingAnchor.constraint(equalTo: childView.leadingAnchor).isActive = true
-            container.view.trailingAnchor.constraint(equalTo: childView.trailingAnchor).isActive = true
-            container.view.bottomAnchor.constraint(equalTo: childView.bottomAnchor, constant: 0).isActive = true
+            container.view.topAnchor.constraint(equalTo: self.childView.topAnchor).isActive = true
+            container.view.leadingAnchor.constraint(equalTo: self.childView.leadingAnchor).isActive = true
+            container.view.trailingAnchor.constraint(equalTo: self.childView.trailingAnchor).isActive = true
+            container.view.bottomAnchor.constraint(equalTo: self.childView.bottomAnchor, constant: 0).isActive = true
             container.didMove(toParent: self)
         } else {
-            nc.pushViewController(cvc, animated: false)
+            self.nc.pushViewController(cvc, animated: false)
         }
         
-        if nc.viewControllers.count <= 1 {
+        if self.nc.viewControllers.count <= 1 {
             cvc.mockedNavigationBar.hidesBackButton = true
         }
         
-        childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
+        self.childViewHeightConstraint.constant = navigationControllerHeight + self.bottomPadding
         
         if isPresented {
             // Hide the childView before animating it on screen
-            childViewBottomConstraint.constant = childViewHeightConstraint.constant
-            view.layoutIfNeeded()
+            self.childViewBottomConstraint.constant = self.childViewHeightConstraint.constant
+            self.view.layoutIfNeeded()
         }
         
-        childViewBottomConstraint.constant = 0
-
-        UIView.animate(withDuration: presentationDuration, delay: 0, options: .curveEaseInOut) {
+        self.childViewBottomConstraint.constant = 0
+        
+        UIView.animate(withDuration: self.presentationDuration, delay: 0, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
         } completion: { _ in
-
+            
         }
     }
     
@@ -340,152 +323,68 @@ internal class PrimerRootViewController: PrimerViewController {
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
         } completion: { _ in
-
+            
         }
     }
     
     internal func showLoadingScreenIfNeeded() {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        var show = true
-        
-        if nc.viewControllers.isEmpty {
-            show = !settings.isInitialLoadingHidden
-        } else if settings.hasDisabledSuccessScreen {
-            show = false
-        }
-        
-        if show {
-            DispatchQueue.main.async { [weak self] in
-                let lvc = PrimerLoadingViewController(withHeight: 300)
-                self?.show(viewController: lvc)
+        if let lastViewController = (nc.viewControllers.last as? PrimerContainerViewController)?.childViewController {
+            if lastViewController is PrimerLoadingViewController ||
+                lastViewController is SuccessViewController ||
+                lastViewController is ErrorViewController {
+                return
             }
         }
         
+        DispatchQueue.main.async {
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            var show = true
+            
+            if self.nc.viewControllers.isEmpty {
+                show = !settings.isInitialLoadingHidden
+            } else if settings.hasDisabledSuccessScreen {
+                show = false
+            }
+            
+            if show {
+                let lvc = PrimerLoadingViewController(withHeight: 300)
+                self.show(viewController: lvc)
+            }
+        }
     }
     
 }
 
 extension PrimerRootViewController {
     
-    func presentKlarna() {
-        showLoadingScreenIfNeeded()
-        
-        let klarnaViewModel = KlarnaViewModel()
-        klarnaViewModel.didPresentPaymentMethod = { [weak self] in
-            self?.blurBackground()
+    func presentPaymentMethod(type: PaymentMethodConfigType) {
+        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else { return }
+        paymentMethodTokenizationViewModel.didStartTokenization = {
+            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         }
         
-        firstly {
-            klarnaViewModel.tokenize()
-        }
-        .done { [weak self] token in
-            self?.handleSuccessfulTokenization(paymentMethod: token)
-        }
-        .ensure {
-            DispatchQueue.main.async {
-                // Dismiss any oauth view controller that has been presented.
-                self.dismiss(animated: true, completion: nil)
+        if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? AsyncPaymentMethodTokenizationViewModelProtocol {
+            asyncPaymentMethodViewModel.willPresentPaymentMethod = {
+                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
             }
-        }
-        .catch { err in
-            DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: err)
+            
+            asyncPaymentMethodViewModel.didPresentPaymentMethod = {
+                
             }
-            self.handle(error: err)
-        }
-    }
-    
-    func presentApplePay() {
-        let appleViewModel = ApplePayViewModel()
-        appleViewModel.didPresentPaymentMethod = { [weak self] in
-            self?.blurBackground()
-        }
-        
-        firstly {
-            appleViewModel.tokenize()
-        }
-        .done { [weak self] token in
-            self?.handleSuccessfulTokenization(paymentMethod: token)
-        }
-        .ensure {
-            DispatchQueue.main.async {
-                // Dismiss any oauth view controller that has been presented.
-                self.dismiss(animated: true, completion: nil)
-            }
-        }
-        .catch { err in
-            DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: err)
-            }
-            self.handle(error: err)
-        }
-    }
-    
-    func presentApaya() {
-        showLoadingScreenIfNeeded()
-        
-        let apayaWebViewModel = ApayaWebViewModel()
-        apayaWebViewModel.generateWebViewUrl { [weak self] result in
-            DispatchQueue.main.async { [weak self] in
-                switch result {
-                case .failure(let err):
-                    DispatchQueue.main.async {
-                        Primer.shared.delegate?.checkoutFailed?(with: err)
-                    }
-                    self?.handle(error: err)
-                    
-                case .success(let urlString):
-                    let webViewController = PrimerWebViewController(with: apayaWebViewModel)
-                    Primer.shared.primerRootVC?.blurBackground()
-                    webViewController.url = URL(string: urlString)
-                    webViewController.modalPresentationStyle = .fullScreen
-                    self?.present(webViewController, animated: true, completion: nil)
-                }
+            
+            asyncPaymentMethodViewModel.willDismissPaymentMethod = {
+                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
             }
         }
         
-        apayaWebViewModel.onCompletion = { [weak self] result in
-            DispatchQueue.main.async { [weak self] in
-                switch result {
-                case .failure(let err):
-                    DispatchQueue.main.async {
-                        Primer.shared.delegate?.checkoutFailed?(with: err)
-                    }
-                    self?.handle(error: err)
-                    
-                case .success(let paymentMethod):
-                    self?.handleSuccessfulTokenization(paymentMethod: paymentMethod)
-                }
+        paymentMethodTokenizationViewModel.completion = { (tok, err) in
+            if let err = err {
+                Primer.shared.primerRootVC?.handle(error: err)
+            } else {
+                Primer.shared.primerRootVC?.handleSuccess()
             }
         }
-    }
-    
-    @available(iOS 11.0, *)
-    func presentPayPal() {
-        let payPalViewModel = PayPalViewModel()
-        payPalViewModel.didPresentPaymentMethod = { [weak self] in
-            self?.blurBackground()
-        }
-        
-        firstly {
-            payPalViewModel.tokenize()
-        }
-        .done { [weak self] paymentMethod in
-            self?.handleSuccessfulTokenization(paymentMethod: paymentMethod)
-        }
-        .ensure {
-            DispatchQueue.main.async {
-                // Dismiss any oauth view controller that has been presented.
-                self.dismiss(animated: true, completion: nil)
-            }
-        }
-        .catch { err in
-            DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: err)
-            }
-            self.handle(error: err)
-        }
-        
+        paymentMethodTokenizationViewModel.startTokenizationFlow()
     }
     
     func handleSuccessfulTokenization(paymentMethod: PaymentMethodToken) {
