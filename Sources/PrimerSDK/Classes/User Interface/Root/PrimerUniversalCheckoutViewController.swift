@@ -69,11 +69,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         if let selectedPaymentInstrument = checkoutViewModel.paymentMethods.first(where: { paymentInstrument in
             return paymentInstrument.token == checkoutViewModel.selectedPaymentMethodId
-        }), var cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
-            
-            if cardButtonViewModel.paymentMethodType == .klarnaCustomerToken {
-                cardButtonViewModel.surCharge = 536
-            }
+        }), let cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
             
             self.selectedPaymentInstrument = selectedPaymentInstrument
             
@@ -205,10 +201,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         availablePaymentMethodsContainerStackView.distribution = .fill
         availablePaymentMethodsContainerStackView.spacing = 5.0
 
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-        var availablePaymentMethods = checkoutViewModel.availablePaymentOptions.filter({ $0.type != .apaya && $0.type != .goCardlessMandate })
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let availablePaymentMethods = state.paymentMethodConfig?.paymentMethods?.filter({ $0.type?.isEnabled == true }).compactMap({ PaymentMethodViewModel(type: $0.type!) }) ?? []
         
-        if !availablePaymentMethods.filter({ $0.type != .googlePay }).isEmpty {
+        if !availablePaymentMethods.isEmpty {
             let otherPaymentMethodsTitleLabel = UILabel()
             otherPaymentMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
             otherPaymentMethodsTitleLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
@@ -222,21 +218,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             otherPaymentMethodsTitleLabel.textAlignment = .left
             
             availablePaymentMethodsContainerStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            for (index, paymentMethod) in availablePaymentMethods.enumerated() {
-                switch paymentMethod.type {
-                case .klarna:
-                    availablePaymentMethods[index].surCharge = "+£5.36"
-                case .payPal:
-                    availablePaymentMethods[index].surCharge = "+£5.36"
-                case .paymentCard:
-                    availablePaymentMethods[index].surCharge = "Additional fee may apply"
-                default:
-                    break
-                }
-            }
             
             let availablePaymentMethodsStackView = UIStackView()
             availablePaymentMethodsStackView.axis = .vertical
@@ -263,9 +244,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     additionalFeesContainerView.delegate = self
                     availablePaymentMethodsStackView.addArrangedSubview(additionalFeesContainerView)
                 }
-                
-                availablePaymentMethodsContainerStackView.addArrangedSubview(availablePaymentMethodsStackView)
             }
+            
+            availablePaymentMethodsContainerStackView.addArrangedSubview(availablePaymentMethodsStackView)
         }
         
         verticalStackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
@@ -282,31 +263,103 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
     @objc
     func applePayButtonTapped() {
+        let action = ClientSession.Action(
+            type: "SELECT_PAYMENT_METHOD",
+            params: [
+                "type": "APPLE_PAY"
+            ])
+        
+        Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
+            if let clientToken = clientToken {
+                try! ClientTokenService.storeClientToken(clientToken)
+                let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                config.fetchConfig { err in
+                    let state: AppStateProtocol = DependencyContainer.resolve()
+                    Primer.shared.primerRootVC?.presentApplePay()
+                }
+            }
+        })
+        
         let lvc = PrimerLoadingViewController(withHeight: 300)
         Primer.shared.primerRootVC?.show(viewController: lvc)
-        Primer.shared.primerRootVC?.presentApplePay()
     }
     
     @objc
     func klarnaButtonTapped() {
+        let action = ClientSession.Action(
+            type: "SELECT_PAYMENT_METHOD",
+            params: [
+                "type": "KLARNA"
+            ])
+        
+        Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
+            if let clientToken = clientToken {
+                try! ClientTokenService.storeClientToken(clientToken)
+                let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                config.fetchConfig { err in
+                    let state: AppStateProtocol = DependencyContainer.resolve()
+                    print(state.paymentMethodConfig)
+                    Primer.shared.primerRootVC?.presentKlarna()
+                }
+            }
+        })
+        
         let lvc = PrimerLoadingViewController(withHeight: 300)
         Primer.shared.primerRootVC?.show(viewController: lvc)
-        Primer.shared.primerRootVC?.presentKlarna()
     }
     
     @objc
     func payPalButtonTapped() {
         if #available(iOS 11.0, *) {
+            let action = ClientSession.Action(
+                type: "SELECT_PAYMENT_METHOD",
+                params: [
+                    "type": "PAYPAL"
+                ])
+            
+            Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
+                if let clientToken = clientToken {
+                    try! ClientTokenService.storeClientToken(clientToken)
+                    let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    config.fetchConfig { err in
+                        let state: AppStateProtocol = DependencyContainer.resolve()
+                        print(state.paymentMethodConfig)
+                        Primer.shared.primerRootVC?.presentPayPal()
+                    }
+                }
+            })
+            
             let lvc = PrimerLoadingViewController(withHeight: 300)
             Primer.shared.primerRootVC?.show(viewController: lvc)
-            Primer.shared.primerRootVC?.presentPayPal()
         }
     }
     
     @objc
     func cardButtonTapped() {
-        let cfvc = PrimerCardFormViewController(flow: .checkout)
-        Primer.shared.primerRootVC?.show(viewController: cfvc)
+        if #available(iOS 11.0, *) {
+            let action = ClientSession.Action(
+                type: "SELECT_PAYMENT_METHOD",
+                params: [
+                    "type": "PAYMENT_CARD"
+                ])
+            
+            Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
+                if let clientToken = clientToken {
+                    try! ClientTokenService.storeClientToken(clientToken)
+                    let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    config.fetchConfig { err in
+                        let state: AppStateProtocol = DependencyContainer.resolve()
+                        print(state.paymentMethodConfig)
+                        
+                        let cfvc = PrimerCardFormViewController(flow: .checkout)
+                        Primer.shared.primerRootVC?.show(viewController: cfvc)
+                    }
+                }
+            })
+            
+            let lvc = PrimerLoadingViewController(withHeight: 300)
+            Primer.shared.primerRootVC?.show(viewController: lvc)
+        }
     }
     
     @objc
