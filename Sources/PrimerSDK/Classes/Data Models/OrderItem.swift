@@ -15,7 +15,7 @@ public struct OrderItem: Codable {
     public var isPending: Bool = false
     
     public var applePayItem: PKPaymentSummaryItem {
-        let item = PKPaymentSummaryItem(label: name, amount: NSDecimalNumber(value: Double(unitAmount ?? 0)/100))
+        let item = PKPaymentSummaryItem(label: name, amount: NSDecimalNumber(value: (unitAmount ?? 0)*quantity).dividing(by: 100))
         item.type = isPending ? .pending : .final
         return item
     }
