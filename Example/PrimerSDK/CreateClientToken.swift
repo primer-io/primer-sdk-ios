@@ -153,6 +153,180 @@ public struct PaymentMethod: Codable {
     }
 }
 
+struct ClientSessionRequestBody {
+    let customerId: String?
+    let orderId: String?
+    let currencyCode: Currency?
+    let amount: Int
+    let metadata: [String: Any]?
+    let customer: ClientSessionRequestBody.Customer?
+    let order: ClientSessionRequestBody.Order?
+    let paymentMethod: ClientSessionRequestBody.PaymentMethod?
+    
+    var dictionaryValue: [String: Any]? {
+        var dic: [String: Any] = [:]
+        
+        if let customerId = customerId {
+            dic["customerId"] = customerId
+        }
+        
+        if let orderId = orderId {
+            dic["orderId"] = orderId
+        }
+        
+        if let currencyCode = currencyCode {
+            dic["currencyCode"] = currencyCode.rawValue
+        }
+        
+        dic["amount"] = amount
+        
+        if let metadata = metadata {
+            dic["metadata"] = metadata
+        }
+        
+        if let customer = customer {
+            dic["customer"] = customer.dictionaryValue
+        }
+        
+        if let order = order {
+            dic["order"] = order.dictionaryValue
+        }
+        
+        if let paymentMethod = paymentMethod {
+            dic["paymentMethod"] = paymentMethod.dictionaryValue
+        }
+
+        return dic.keys.count == 0 ? nil : dic
+    }
+    
+    struct Customer: Encodable {
+        let emailAddress: String?
+        
+        var dictionaryValue: [String: Any]? {
+            var dic: [String: Any] = [:]
+            
+            if let emailAddress = emailAddress {
+                dic["emailAddress"] = emailAddress
+            }
+
+            return dic.keys.count == 0 ? nil : dic
+        }
+    }
+    
+    struct Order: Encodable {
+        let countryCode: CountryCode?
+        let lineItems: [LineItem]?
+        
+        var dictionaryValue: [String: Any]? {
+            var dic: [String: Any] = [:]
+            
+            if let countryCode = countryCode {
+                dic["countryCode"] = countryCode.rawValue
+            }
+            
+            if let lineItems = lineItems {
+                dic["lineItems"] = lineItems.compactMap({ $0.dictionaryValue })
+            }
+
+            return dic.keys.count == 0 ? nil : dic
+        }
+        
+        struct LineItem: Encodable {
+            let itemId: String?
+            let description: String?
+            let amount: Int?
+            let quantity: Int?
+            
+            var dictionaryValue: [String: Any]? {
+                var dic: [String: Any] = [:]
+                
+                if let itemId = itemId {
+                    dic["itemId"] = itemId
+                }
+                
+                if let description = description {
+                    dic["description"] = description
+                }
+                
+                if let amount = amount {
+                    dic["amount"] = amount
+                }
+                
+                if let quantity = quantity {
+                    dic["quantity"] = quantity
+                }
+                
+                return dic.keys.count == 0 ? nil : dic
+            }
+        }
+    }
+    
+    struct PaymentMethod {
+        let vaultOnSuccess: Bool?
+        let options: [String: Any]?
+        
+        var dictionaryValue: [String: Any]? {
+            var dic: [String: Any] = [:]
+            
+            if let vaultOnSuccess = vaultOnSuccess {
+                dic["vaultOnSuccess"] = vaultOnSuccess
+            }
+            
+            if let options = options {
+                dic["options"] = options
+            }
+            
+            return dic.keys.count == 0 ? nil : dic
+        }
+    }
+
+}
+
+extension Encodable {
+    func asDictionary() throws -> [String: Any] {
+        let data = try JSONEncoder().encode(self)
+        guard let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
+            throw NSError()
+        }
+        return dictionary
+    }
+}
+
+extension String {
+    var jwtTokenPayload: JWTToken? {
+        let components = self.split(separator: ".")
+//        if components.count < 2 { return nil }
+        let segment = String(components[0]).padding(toLength: ((String(components[0]).count+3)/4)*4,
+                                                    withPad: "=",
+                                                    startingAt: 0)
+        guard !segment.isEmpty, let data = Data(base64Encoded: segment) else { return nil }
+        
+        return try? JSONDecoder().decode(JWTToken.self, from: data)
+    }
+}
+
+struct JWTToken: Decodable {
+    var accessToken: String?
+    var exp: Int?
+    var expDate: Date? {
+        guard let exp = exp else { return nil }
+        return Date(timeIntervalSince1970: TimeInterval(exp))
+    }
+    var configurationUrl: String?
+    var paymentFlow: String?
+    var threeDSecureInitUrl: String?
+    var threeDSecureToken: String?
+    var coreUrl: String?
+    var pciUrl: String?
+    var env: String?
+    var intent: String?
+}
+
+
+
+
+
+
 struct TransactionResponse {
     var id: String
     var date: String
