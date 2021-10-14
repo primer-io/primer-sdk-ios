@@ -18,7 +18,7 @@ class MockKlarnaService: KlarnaServiceProtocol {
 
     }
 
-    func finalizePaymentSession(_ completion: @escaping (Result<KlarnaFinalizePaymentSessionresponse, Error>) -> Void) {
+    func finalizePaymentSession(_ completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
 
     }
 
