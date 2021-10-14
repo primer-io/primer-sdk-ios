@@ -28,6 +28,7 @@
 		117D15AC73A918F0B009EDE411F33701 /* hang.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5EF4ABB75D7FE44FC17396CE34188C7 /* hang.swift */; };
 		12FC1299AF6DE42BED1CB995DB17FECC /* ClientTokenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F228F3E39DBEE1EB779C819E6771CB77 /* ClientTokenService.swift */; };
 		13E82B085D100D967EEF1B1C8EC3AC88 /* VaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9B0EDEB2959E62CF03A114D00A42A68 /* VaultCheckoutViewModel.swift */; };
+		15ACAFA02718454B00913D10 /* PaymentMethodViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACAF9F2718454B00913D10 /* PaymentMethodViewModel.swift */; };
 		15EB791501BFBDC1108922C29E83EEE9 /* PrimerSDK-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D2E0829A9CF5AACE43592141857A21A /* PrimerSDK-dummy.m */; };
 		15FD4C202716D471009DDE63 /* ClientSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FD4C1F2716D470009DDE63 /* ClientSession.swift */; };
 		199E04B53209DDDA3D6B4610DB12AEC3 /* ConcurrencyLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10CA3A0F0666C3E33DA156FB6C67BBAE /* ConcurrencyLimitedDispatcher.swift */; };
@@ -232,6 +233,7 @@
 		10CA3A0F0666C3E33DA156FB6C67BBAE /* ConcurrencyLimitedDispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConcurrencyLimitedDispatcher.swift; sourceTree = "<group>"; };
 		139CF92E023D7DEA5B72EA5E8911A772 /* Endpoint.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		13CD63FFA85F67781D08434555A21F3E /* Apaya.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Apaya.swift; sourceTree = "<group>"; };
+		15ACAF9F2718454B00913D10 /* PaymentMethodViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodViewModel.swift; sourceTree = "<group>"; };
 		15FD4C1F2716D470009DDE63 /* ClientSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientSession.swift; sourceTree = "<group>"; };
 		160AF74FC0554FF4BEFF0A7699603D82 /* EnsureWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EnsureWrappers.swift; sourceTree = "<group>"; };
 		1832AA01DBB040C95254440F18A4CE37 /* ThenableWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThenableWrappers.swift; sourceTree = "<group>"; };
@@ -939,6 +941,7 @@
 				DD532AAACC4D424980C3AD272DC6B3CB /* UXMode.swift */,
 				E9B0EDEB2959E62CF03A114D00A42A68 /* VaultCheckoutViewModel.swift */,
 				595AA470E0C6EE31D1760AF0B40C920F /* PCI */,
+				15ACAF9F2718454B00913D10 /* PaymentMethodViewModel.swift */,
 			);
 			name = "Data Models";
 			path = "Sources/PrimerSDK/Classes/Data Models";
@@ -1414,6 +1417,7 @@
 				0E12434D46C6204ABE3A4F2FE1C473F7 /* Guarantee.swift in Sources */,
 				1FCD8D5BD951EDBE658F90A6C3172A3C /* GuaranteeWrappers.swift in Sources */,
 				117D15AC73A918F0B009EDE411F33701 /* hang.swift in Sources */,
+				15ACAFA02718454B00913D10 /* PaymentMethodViewModel.swift in Sources */,
 				83905ABE6F4466DA48B9B7D715996C89 /* ImageName.swift in Sources */,
 				D4D32F40C1CC3123C20CF7EF31E6D037 /* IntExtension.swift in Sources */,
 				51505DF67CC0F57646E35D1952471F2E /* JSONParser.swift in Sources */,

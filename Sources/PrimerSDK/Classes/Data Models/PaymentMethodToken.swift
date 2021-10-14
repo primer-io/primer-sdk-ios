@@ -91,14 +91,12 @@ internal extension PaymentMethodToken {
                                           comment: "Expires - Saved card")
                     + " \(expMonth) / \(expYear.suffix(2))",
                 imageName: self.icon,
-                paymentMethodType: self.paymentInstrumentType,
-                surCharge: nil
-            )
+                paymentMethodType: self.paymentInstrumentType)
         case .payPalBillingAgreement:
             guard let cardholder = self.paymentInstrumentData?.externalPayerInfo?.email else { return nil }
-            return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType, surCharge: nil)
+            return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
         case .goCardlessMandate:
-            return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType, surCharge: nil)
+            return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
         case .klarnaCustomerToken:
             return CardButtonViewModel(
                 network: paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token",
@@ -106,9 +104,7 @@ internal extension PaymentMethodToken {
                 last4: "",
                 expiry: "",
                 imageName: self.icon,
-                paymentMethodType: self.paymentInstrumentType,
-                surCharge: nil
-            )
+                paymentMethodType: self.paymentInstrumentType)
         case .apayaToken:
             if let apayaViewModel = Apaya.ViewModel(paymentMethod: self) {
                 return CardButtonViewModel(
@@ -117,9 +113,7 @@ internal extension PaymentMethodToken {
                     last4: "",
                     expiry: "",
                     imageName: self.icon,
-                    paymentMethodType: self.paymentInstrumentType,
-                    surCharge: nil
-                )
+                    paymentMethodType: self.paymentInstrumentType)
             } else {
                 return nil
             }

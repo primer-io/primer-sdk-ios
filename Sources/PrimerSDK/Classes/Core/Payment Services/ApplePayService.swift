@@ -44,7 +44,7 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
                 config.paymentMethods?.forEach({ method in
                     guard let type = method.type else { return }
                     if !type.isEnabled { return }
-                    state.viewModels.append(PaymentMethodViewModel(type: type, surCharge: nil))
+                    state.viewModels.append(PaymentMethodViewModel(type: type))
                 })
 
                 // Ensure Apple Pay is always first if present.
@@ -52,7 +52,7 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
                 let viewModels = state.viewModels
                 if (viewModels.contains(where: { model in model.type == .applePay})) {
                     var arr = viewModels.filter({ model in model.type != .applePay})
-                    arr.insert(PaymentMethodViewModel(type: .applePay, surCharge: nil), at: 0)
+                    arr.insert(PaymentMethodViewModel(type: .applePay), at: 0)
                     state.viewModels = arr
                 }
 
