@@ -4,7 +4,7 @@ import Foundation
 
 internal protocol ClientTokenServiceProtocol {
     static func storeClientToken(_ clientToken: String) throws
-    func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void)
+    func fetchClientToken(_ completion: @escaping (Error?) -> Void)
 }
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
@@ -39,7 +39,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
     /**
     performs asynchronous call passed in by app developer, decodes the returned Base64 Primer client token string and adds it to shared state.
      */
-    func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
+    func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         settings.clientTokenRequestCallback({ [weak self] (token, err) in

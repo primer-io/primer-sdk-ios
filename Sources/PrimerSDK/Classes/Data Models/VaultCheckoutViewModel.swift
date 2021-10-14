@@ -84,7 +84,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
             })
         } else {
             let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.loadCheckoutConfig({ err in
+            clientTokenService.fetchClientToken({ err in
                 if let err = err {
                     completion(err)
                 } else {

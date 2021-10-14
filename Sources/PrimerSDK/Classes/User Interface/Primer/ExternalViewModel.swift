@@ -34,7 +34,7 @@ internal class ExternalViewModel: ExternalViewModelProtocol {
             })
         } else {
             let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.loadCheckoutConfig({ err in
+            clientTokenService.fetchClientToken({ err in
                 if let err = err {
                     completion(.failure(err))
                 } else {

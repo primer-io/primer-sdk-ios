@@ -34,7 +34,7 @@ class ClientTokenServiceTests: XCTestCase {
         
         let service = ClientTokenService()
 
-        service.loadCheckoutConfig { (err) in
+        service.fetchClientToken { (err) in
             if let err = err {
                 if case PrimerError.clientTokenExpired = err {
                     XCTAssert(true, err.localizedDescription)

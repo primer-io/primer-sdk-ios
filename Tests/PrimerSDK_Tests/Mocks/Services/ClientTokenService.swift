@@ -39,7 +39,7 @@ class MockClientTokenService: ClientTokenServiceProtocol {
         
     }
     
-    func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
+    func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
         loadCheckoutConfigCalled = true
         if (throwError) { return completion(PrimerError.generic) }
         return completion(nil)
