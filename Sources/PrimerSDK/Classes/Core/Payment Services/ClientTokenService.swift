@@ -40,9 +40,13 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
     performs asynchronous call passed in by app developer, decodes the returned Base64 Primer client token string and adds it to shared state.
      */
     func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-        settings.clientTokenRequestCallback({ [weak self] (token, err) in
+        guard let clientTokenCallback = Primer.shared.delegate?.clientTokenCallback else {
+            let err = PrimerError.invalidValue(key: "clientTokenCallback delegate function.")
+            completion(err)
+            return
+        }
+        
+        clientTokenCallback({ (token, err) in
             if let err = err {
                 completion(err)
             } else if let token = token {

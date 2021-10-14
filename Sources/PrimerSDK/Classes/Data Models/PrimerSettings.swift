@@ -13,7 +13,6 @@ internal protocol PrimerSettingsProtocol {
     var klarnaSessionType: KlarnaSessionType? { get }
     var klarnaPaymentDescription: String? { get }
     var customerId: String? { get }
-    var clientTokenRequestCallback: ClientTokenCallBack { get }
     var authorizePayment: PaymentMethodTokenCallBack { get }
     var onTokenizeSuccess: TokenizationSuccessCallBack { get }
     var onCheckoutDismiss: CheckoutDismissalCallback { get }
