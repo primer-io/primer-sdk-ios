@@ -128,7 +128,10 @@ struct CardButtonViewModel {
     let network, cardholder, last4, expiry: String
     let imageName: ImageName
     let paymentMethodType: PaymentInstrumentType
-    var surCharge: UInt?
+    var surCharge: Int? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.paymentMethodConfig?.paymentMethods?.filter({ $0.type == paymentMethodType.paymentMethodType }).first?.surcharge
+    }
 }
 
 /**
