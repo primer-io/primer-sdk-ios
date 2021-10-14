@@ -100,12 +100,22 @@ class MerchantCheckoutViewController: UIViewController {
             urlSchemeIdentifier: "primer",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
-            businessDetails: nil,
+            businessDetails: BusinessDetails(
+                name: "Primer",
+                address: PrimerSDK.Address(
+                    firstName: "John",
+                    lastName: "Smith",
+                    addressLine1: "107 Rue",
+                    addressLine2: nil,
+                    city: "Paris",
+                    postalCode: "75001",
+                    state: nil,
+                    countryCode: CountryCode.fr)),
             directDebitHasNoAmount: false,
             orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
+                try! OrderItem(name: "Fish", unitAmount: 100, quantity: 1, isPending: false),
+                try! OrderItem(name: "Beef", unitAmount: 200, quantity: 2, isPending: false),
+                try! OrderItem(name: "Chicken", unitAmount: nil, quantity: 3, isPending: true)
             ],
             isInitialLoadingHidden: false,
             is3DSOnVaultingEnabled: true,
