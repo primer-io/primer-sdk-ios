@@ -31,6 +31,7 @@
 		1582B9AD260A402E00C80BD7 /* Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B9AC260A402E00C80BD7 /* Base.swift */; };
 		15ACE9652614B186004C3EAA /* chocolate_bar_demo.otf in Resources */ = {isa = PBXBuildFile; fileRef = 15ACE9642614B186004C3EAA /* chocolate_bar_demo.otf */; };
 		15B2E64826F8A9EE005B8343 /* Apaya.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B2E64726F8A9EE005B8343 /* Apaya.swift */; };
+		15ED91782718975500581CD7 /* MockAsyncPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ED91772718975500581CD7 /* MockAsyncPaymentMethodTokenizationViewModel.swift */; };
 		15F32E1D26FDA8E4004B3903 /* PrimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F32E1C26FDA8E4004B3903 /* PrimerTests.swift */; };
 		15F5E2FF26982B21003AFF8A /* CardComponentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F5E2FE26982B21003AFF8A /* CardComponentManagerTests.swift */; };
 		15F97C632624480500DCB3BA /* AppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F97C622624480500DCB3BA /* AppViewController.swift */; };
@@ -111,6 +112,7 @@
 		15ACEA762615C791004C3EAA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		15ACEA772615C791004C3EAA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Main.strings; sourceTree = "<group>"; };
 		15B2E64726F8A9EE005B8343 /* Apaya.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Apaya.swift; sourceTree = "<group>"; };
+		15ED91772718975500581CD7 /* MockAsyncPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAsyncPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		15F32E1C26FDA8E4004B3903 /* PrimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerTests.swift; sourceTree = "<group>"; };
 		15F5BFFE25FBAFDB00426B1C /* PrimerSDK_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrimerSDK_Example.entitlements; sourceTree = "<group>"; };
 		15F5E2FE26982B21003AFF8A /* CardComponentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardComponentManagerTests.swift; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				1582B95F260A3F2900C80BD7 /* VaultCheckoutViewModel.swift */,
+				15ED91772718975500581CD7 /* MockAsyncPaymentMethodTokenizationViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -702,6 +705,7 @@
 				1582B988260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift in Sources */,
 				1582B97F260A3F2900C80BD7 /* Mocks.swift in Sources */,
 				1582B985260A3F2900C80BD7 /* KlarnaService.swift in Sources */,
+				15ED91782718975500581CD7 /* MockAsyncPaymentMethodTokenizationViewModel.swift in Sources */,
 				1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */,
 				1582B984260A3F2900C80BD7 /* TokenizationService.swift in Sources */,
 				1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */,

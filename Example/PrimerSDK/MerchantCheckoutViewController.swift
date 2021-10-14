@@ -346,8 +346,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             if let err = err {
                 resumeHandler.handle(error: err)
             } else if let res = res {
-                
-                
                 if let requiredActionDic = res["requiredAction"] as? [String: Any] {
                     
                     if let amount = res["amount"] as? Int,

@@ -14,17 +14,22 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
     var didPresentPaymentMethod: (() -> Void)?
     var willDismissPaymentMethod: (() -> Void)?
     var didDismissPaymentMethod: (() -> Void)?
-    private var webViewController: PrimerWebViewController?
-    private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+    fileprivate var webViewController: PrimerWebViewController?
+    fileprivate var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+    fileprivate var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
     
-    private var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
+    fileprivate var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     override func validate() throws {
-
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
+        if state.decodedClientToken?.isValid != true {
+            throw PrimerError.clientTokenNull
+        }
     }
     
     @objc
@@ -37,6 +42,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
             DispatchQueue.main.async {
                 Primer.shared.delegate?.checkoutFailed?(with: error)
                 self.handleFailedTokenizationFlow(error: error)
+                self.completion?(nil, error)
             }
             return
         }
@@ -68,7 +74,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         }
         .then { resumeToken -> Promise<PaymentMethodToken> in
             self.willDismissPaymentMethod?()
-            self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
+            self.webViewController?.dismiss(animated: true, completion: {
                 self.didDismissPaymentMethod?()
             })
             return self.passResumeToken(resumeToken)
@@ -81,6 +87,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
                     Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                 }
                 
+                self.completion?(self.paymentMethod, nil)
                 self.handleSuccessfulTokenizationFlow()
             }
         }
@@ -92,7 +99,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         }
     }
     
-    private func tokenize() -> Promise<PaymentMethodToken> {
+    fileprivate func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             guard let configId = config.id else {
                 seal.reject(PrimerError.configFetchFailed)
@@ -116,7 +123,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         }
     }
     
-    private func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<PollingURLs> {
+    fileprivate func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<PollingURLs> {
         return Promise { seal in
             self.onClientToken = { (clientToken, err) in
                 if let err = err {
@@ -147,7 +154,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         }
     }
     
-    private func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
+    fileprivate func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async { [unowned self] in
                 self.webViewController = PrimerWebViewController(with: url)
@@ -163,7 +170,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         }
     }
     
-    private func startPolling(on url: URL) -> Promise<String> {
+    fileprivate func startPolling(on url: URL) -> Promise<String> {
         return Promise { seal in
             self.startPolling(on: url) { (id, err) in
                 if let err = err {
@@ -177,7 +184,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         }
     }
     
-    private func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
+    fileprivate func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
         client.poll(clientToken: state.decodedClientToken, url: url.absoluteString) { result in
@@ -203,9 +210,9 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         }
     }
     
-    private func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
+    fileprivate func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
         return Promise { seal in
-            self.completion = { (paymentMethod, err) in
+            self.onResumeTokenCompletion = { (paymentMethod, err) in
                 if let err = err {
                     seal.reject(err)
                 } else if let paymentMethod = paymentMethod {
@@ -260,9 +267,9 @@ extension AsyncPaymentMethodTokenizationViewModel {
         // onClientToken will be created when we're awaiting a new client token from the developer
         onClientToken?(nil, error)
         onClientToken = nil
-        // completion will be created when we're awaiting the payment response
-        completion?(nil, error)
-        completion = nil
+        // onResumeTokenCompletion will be created when we're awaiting the payment response
+        onResumeTokenCompletion?(nil, error)
+        onResumeTokenCompletion = nil
     }
     
     override func handle(newClientToken clientToken: String) {
@@ -278,8 +285,8 @@ extension AsyncPaymentMethodTokenizationViewModel {
     
     override func handleSuccess() {
         // completion will be created when we're awaiting the payment response
-        completion?(self.paymentMethod, nil)
-        completion = nil
+        onResumeTokenCompletion?(self.paymentMethod, nil)
+        onResumeTokenCompletion = nil
     }
     
 }
@@ -308,3 +315,61 @@ struct PollingURLs: Decodable {
     let complete: String?
 }
 
+class MockAsyncPaymentMethodTokenizationViewModel: AsyncPaymentMethodTokenizationViewModel {
+    
+    var failValidation: Bool = false {
+        didSet {
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            state.decodedClientToken = nil
+        }
+    }
+    var returnedPaymentMethodJson: String?
+    
+    fileprivate override func tokenize() -> Promise<PaymentMethodToken> {
+        return Promise { seal in
+            guard let _ = config.id else {
+                seal.reject(PrimerError.configFetchFailed)
+                return
+            }
+
+            if let returnedPaymentMethodJson = returnedPaymentMethodJson,
+               let returnedPaymentMethodData = returnedPaymentMethodJson.data(using: .utf8),
+                let paymentMethod = try? JSONDecoder().decode(PaymentMethodToken.self, from: returnedPaymentMethodData) {
+                seal.fulfill(paymentMethod)
+            } else {
+                seal.reject(PrimerError.tokenizationRequestFailed)
+            }
+        }
+    }
+    
+    fileprivate override func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async { [unowned self] in
+                self.webViewController = PrimerWebViewController(with: url)
+                self.webViewController?.navigationDelegate = self
+                self.webViewController!.modalPresentationStyle = .fullScreen
+                
+                self.willPresentPaymentMethod?()
+                Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+                    self.didPresentPaymentMethod?()
+                    seal.fulfill(())
+                }
+            }
+        }
+    }
+    
+    fileprivate override func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
+//        {
+//          "status" : "COMPLETE",
+//          "id" : "4474848f-721d-4c35-9325-e287196f7016",
+//          "source" : "WEBHOOK",
+//          "urls" : {
+//            "status" : "https:\/\/api.staging.primer.io\/resume-tokens\/4474848f-721d-4c35-9325-e287196f7016",
+//            "redirect" : "https:\/\/api.staging.primer.io\/resume-tokens\/4474848f-721d-4c35-9325-e287196f7016\/complete?api_key=9e66ba99-e154-4e34-9d96-91777859b85b",
+//            "complete" : "https:\/\/api.staging.primer.io\/resume-tokens\/4474848f-721d-4c35-9325-e287196f7016\/complete"
+//          }
+//        }
+        completion("4474848f-721d-4c35-9325-e287196f7016", nil)
+    }
+    
+}
