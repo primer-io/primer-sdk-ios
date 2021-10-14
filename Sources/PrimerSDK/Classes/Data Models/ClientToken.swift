@@ -40,30 +40,6 @@ struct DecodedClientToken: Decodable {
     }
 }
 
-public struct ClientSession: Codable {
-    
-    public struct PaymentMethod: Codable {
-        let vaultOnSuccess: Bool
-    }
-    
-    let metadata: [String: AnyCodable]?
-    let paymentMethod: ClientSession.PaymentMethod?
-    let order: Order?
-    let customer: Customer?
-    
-    enum CodingKeys: String, CodingKey {
-        case metadata, paymentMethod, order, customer
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.metadata = (try? container.decode([String: AnyCodable]?.self, forKey: .metadata)) ?? nil
-        self.paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
-        self.order = (try? container.decode(Order?.self, forKey: .order)) ?? nil
-        self.customer = (try? container.decode(Customer?.self, forKey: .customer)) ?? nil
-    }
-}
-
 public struct Customer: Codable {
     let id: String?
     let firstName: String?
