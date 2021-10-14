@@ -69,44 +69,53 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPa
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
+    override func validate() throws {
+
+    }
+    
     @objc
     override func startTokenizationFlow() {
-        switch config.type {
-        case .applePay:
-            super.startTokenizationFlow()
-            
-            firstly {
-                tokenize()
+        super.startTokenizationFlow()
+        
+        do {
+            try validate()
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                self.handleFailedTokenizationFlow(error: error)
             }
-            .done { [unowned self] paymentMethod in
-                DispatchQueue.main.async {
-                    self.paymentMethod = paymentMethod
-                    
-                    if Primer.shared.flow.internalSessionFlow.vaulted {
-                        Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                    }
-                    
-                    Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                    Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
-                        if let err = err {
-                            self.handleFailedTokenizationFlow(error: err)
-                        } else {
-                            self.handleSuccessfulTokenizationFlow()
-                        }
-                    })
-                }
-            }
-            .ensure {
+            return
+        }
+        
+        firstly {
+            tokenize()
+        }
+        .done { [unowned self] paymentMethod in
+            DispatchQueue.main.async {
+                self.paymentMethod = paymentMethod
                 
-            }
-            .catch { err in
-                DispatchQueue.main.async {
-                    Primer.shared.delegate?.checkoutFailed?(with: err)
-                    self.handleFailedTokenizationFlow(error: err)
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                 }
+                
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
+                    if let err = err {
+                        self.handleFailedTokenizationFlow(error: err)
+                    } else {
+                        self.handleSuccessfulTokenizationFlow()
+                    }
+                })
             }
-        default:
-            break
+        }
+        .ensure {
+            
+        }
+        .catch { err in
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+                self.handleFailedTokenizationFlow(error: err)
+            }
         }
     }
     

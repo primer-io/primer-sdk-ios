@@ -213,9 +213,6 @@ public class Primer {
         case (.applePay, .checkout):
             flow = .checkoutWithApplePay
             
-        case (.payPal, .vault):
-            flow = .addPayPalToVault
-            
         case (.paymentCard, .checkout):
             flow = .completeDirectCheckout
             
@@ -239,6 +236,9 @@ public class Primer {
             
         case (.payPal, .checkout):
             flow = .checkoutWithPayPal
+            
+        case (.payPal, .vault):
+            flow = .addPayPalToVault
             
         case (.apaya, .checkout),
             (.applePay, .vault),

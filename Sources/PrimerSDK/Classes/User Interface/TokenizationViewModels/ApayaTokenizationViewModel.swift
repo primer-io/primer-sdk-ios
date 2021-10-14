@@ -23,36 +23,46 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPayme
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
+    override func validate() throws {
+
+    }
+    
     @objc
     override func startTokenizationFlow() {
-        switch config.type {
-        case .apaya:
-            firstly {
-                generateWebViewUrl()
+        super.startTokenizationFlow()
+        
+        do {
+            try validate()
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                self.handleFailedTokenizationFlow(error: error)
             }
-            .then { url -> Promise<Apaya.WebViewResponse> in
-                self.presentApayaController(with: url)
-            }
-            .then { apayaWebViewResponse -> Promise<PaymentMethodToken> in
-                self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
-            }
-            .done { paymentMethod in
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
-                    if let err = err {
-                        self.handleFailedTokenizationFlow(error: err)
-                    } else {
-                        self.handleSuccessfulTokenizationFlow()
-                    }
-                })
-            }
-            .catch { err in
-                Primer.shared.delegate?.checkoutFailed?(with: err)
-                self.handleFailedTokenizationFlow(error: err)
-            }
-            
-        default:
-            break
+            return
+        }
+        
+        firstly {
+            generateWebViewUrl()
+        }
+        .then { url -> Promise<Apaya.WebViewResponse> in
+            self.presentApayaController(with: url)
+        }
+        .then { apayaWebViewResponse -> Promise<PaymentMethodToken> in
+            self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
+        }
+        .done { paymentMethod in
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
+                if let err = err {
+                    self.handleFailedTokenizationFlow(error: err)
+                } else {
+                    self.handleSuccessfulTokenizationFlow()
+                }
+            })
+        }
+        .catch { err in
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            self.handleFailedTokenizationFlow(error: err)
         }
     }
     

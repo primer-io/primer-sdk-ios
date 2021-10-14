@@ -24,66 +24,72 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
+    override func validate() throws {
+
+    }
+    
     @objc
     override func startTokenizationFlow() {
-        switch config.type {
-        case .payNLIdeal,
-                .hoolah:
-            
-            super.startTokenizationFlow()
-            
-            var pollingURLs: PollingURLs!
-            
-            firstly {
-                self.tokenize()
+        super.startTokenizationFlow()
+        
+        do {
+            try validate()
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                self.handleFailedTokenizationFlow(error: error)
             }
-            .then { paymentMethod -> Promise<PollingURLs> in
+            return
+        }
+        
+        var pollingURLs: PollingURLs!
+        
+        firstly {
+            self.tokenize()
+        }
+        .then { paymentMethod -> Promise<PollingURLs> in
+            self.paymentMethod = paymentMethod
+            return self.fetchPollingURLs(for: paymentMethod)
+        }
+        .then { pollingURLsResponse -> Promise<Void> in
+            pollingURLs = pollingURLsResponse
+            
+            guard let redirectUrl = pollingURLs.redirectUrl else {
+                throw PrimerError.invalidValue(key: "redirectUrl")
+            }
+            
+            return self.presentAsyncPaymentMethod(with: redirectUrl)
+        }
+        .then { () -> Promise<String> in
+            guard let statusUrl = pollingURLs.statusUrl else {
+                throw PrimerError.invalidValue(key: "statusUrl")
+            }
+            
+            return self.startPolling(on: statusUrl)
+        }
+        .then { resumeToken -> Promise<PaymentMethodToken> in
+            self.willDismissPaymentMethod?()
+            self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
+                self.didDismissPaymentMethod?()
+            })
+            return self.passResumeToken(resumeToken)
+        }
+        .done { paymentMethod in
+            DispatchQueue.main.async {
                 self.paymentMethod = paymentMethod
-                return self.fetchPollingURLs(for: paymentMethod)
-            }
-            .then { pollingURLsResponse -> Promise<Void> in
-                pollingURLs = pollingURLsResponse
                 
-                guard let redirectUrl = pollingURLs.redirectUrl else {
-                    throw PrimerError.invalidValue(key: "redirectUrl")
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                 }
                 
-                return self.presentAsyncPaymentMethod(with: redirectUrl)
+                self.handleSuccessfulTokenizationFlow()
             }
-            .then { () -> Promise<String> in
-                guard let statusUrl = pollingURLs.statusUrl else {
-                    throw PrimerError.invalidValue(key: "statusUrl")
-                }
-                
-                return self.startPolling(on: statusUrl)
+        }
+        .catch { err in
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+                self.handleFailedTokenizationFlow(error: err)
             }
-            .then { resumeToken -> Promise<PaymentMethodToken> in
-                self.willDismissPaymentMethod?()
-                self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
-                    self.didDismissPaymentMethod?()
-                })
-                return self.passResumeToken(resumeToken)
-            }
-            .done { paymentMethod in
-                DispatchQueue.main.async {
-                    self.paymentMethod = paymentMethod
-                    
-                    if Primer.shared.flow.internalSessionFlow.vaulted {
-                        Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                    }
-                    
-                    self.handleSuccessfulTokenizationFlow()
-                }
-            }
-            .catch { err in
-                DispatchQueue.main.async {
-                    Primer.shared.delegate?.checkoutFailed?(with: err)
-                    self.handleFailedTokenizationFlow(error: err)
-                }
-            }
-            
-        default:
-            break
         }
     }
     

@@ -20,6 +20,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     var completion: TokenizationCompletion? { get set }
     var paymentMethod: PaymentMethodToken? { get set }
     
+    func validate() throws
     func startTokenizationFlow()
     func handleSuccessfulTokenizationFlow()
     func handleFailedTokenizationFlow(error: Error)
@@ -43,6 +44,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     required init(config: PaymentMethodConfig) {
         self.config = config
         super.init()
+    }
+    
+    func validate() throws {
+        assert(true, "\(#function) needs to be overriden")
     }
     
     @objc

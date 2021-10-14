@@ -384,6 +384,7 @@ extension PrimerRootViewController {
                 Primer.shared.primerRootVC?.handleSuccess()
             }
         }
+        
         paymentMethodTokenizationViewModel.startTokenizationFlow()
     }
     

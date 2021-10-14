@@ -128,8 +128,24 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         cardComponentsManager.delegate = self
     }
     
+    override func validate() throws {
+
+    }
+    
     @objc
     override func startTokenizationFlow() {
+        super.startTokenizationFlow()
+        
+        do {
+            try validate()
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                self.handleFailedTokenizationFlow(error: error)
+            }
+            return
+        }
+        
         let pcfvc = PrimerCardFormViewController(viewModel: self)
         Primer.shared.primerRootVC?.show(viewController: pcfvc)
     }
