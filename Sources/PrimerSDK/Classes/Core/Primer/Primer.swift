@@ -92,7 +92,6 @@ public class Primer {
         DependencyContainer.register(KlarnaService() as KlarnaServiceProtocol)
         DependencyContainer.register(ApayaService() as ApayaServiceProtocol)
         DependencyContainer.register(ApplePayService() as ApplePayServiceProtocol)
-        DependencyContainer.register(ApplePayViewModel() as ApplePayViewModelProtocol)
         DependencyContainer.register(CardScannerViewModel() as CardScannerViewModelProtocol)
         DependencyContainer.register(OAuthViewModel() as OAuthViewModelProtocol)
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
