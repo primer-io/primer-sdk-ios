@@ -258,15 +258,111 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if primerTextFieldView is PrimerCardNumberFieldView, isValid == false {
-            cardNumberContainerView.errorText = "Invalid card number"
-        } else if primerTextFieldView is PrimerExpiryDateFieldView, isValid == false {
-            expiryDateContainerView.errorText = "Invalid date"
-        } else if primerTextFieldView is PrimerCVVFieldView, isValid == false {
-            cvvContainerView.errorText = "Invalid CVV"
-        } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
-            cardholderNameContainerView.errorText = "Invalid name"
+        if isValid == false {
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = "Invalid card number"
+                cardNumberContainerView.rightImage1 = UIImage(
+                    named: "error",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cardNumberContainerView.rightImage1TintColor = theme.colorTheme.error1
+                
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = "Invalid date"
+                expiryDateContainerView.rightImage1 = UIImage(
+                    named: "error",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                expiryDateContainerView.rightImage1TintColor = theme.colorTheme.error1
+                
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = "Invalid CVV"
+                cvvContainerView.rightImage1 = UIImage(
+                    named: "error",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cvvContainerView.rightImage1TintColor = theme.colorTheme.error1
+                
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                cardholderNameContainerView.errorText = "Invalid name"
+                cardholderNameContainerView.rightImage1 = UIImage(
+                    named: "error",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cardholderNameContainerView.rightImage1TintColor = theme.colorTheme.error1
+            }
+        } else if isValid == true {
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = nil
+                cardNumberContainerView.rightImage1 = UIImage(
+                    named: "check2",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cardNumberContainerView.rightImage1TintColor = theme.colorTheme.success1
+                
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = nil
+                expiryDateContainerView.rightImage1 = UIImage(
+                    named: "check2",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                expiryDateContainerView.rightImage1TintColor = theme.colorTheme.success1
+                
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = nil
+                cvvContainerView.rightImage1 = UIImage(
+                    named: "check2",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cvvContainerView.rightImage1TintColor = theme.colorTheme.success1
+                
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                cardholderNameContainerView.errorText = nil
+                cardholderNameContainerView.rightImage1 = UIImage(
+                    named: "check2",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cardholderNameContainerView.rightImage1TintColor = theme.colorTheme.success1
+            }
+        } else {
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = nil
+                cardNumberContainerView.rightImage1 = nil
+                cardNumberContainerView.rightImage1TintColor = nil
+                
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = nil
+                expiryDateContainerView.rightImage1 = nil
+                expiryDateContainerView.rightImage1TintColor = nil
+                
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = nil
+                cvvContainerView.rightImage1 = nil
+                cvvContainerView.rightImage1TintColor = nil
+                
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                cardholderNameContainerView.errorText = nil
+                cardholderNameContainerView.rightImage1 = nil
+                cardholderNameContainerView.rightImage1TintColor = nil
+            }
         }
+        
 
         if cardNumberField.isTextValid,
            expiryDateField.isTextValid,
@@ -285,8 +381,8 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
 
     }
     
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork) {
-        
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
+        cardNumberContainerView.rightImage2 = cardNetwork?.icon
     }
     
 }
