@@ -18,7 +18,58 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
     }
     
     override func validate() throws {
-
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+            let err = PaymentException.missingClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard config.id != nil else {
+            let err = PaymentException.missingConfigurationId
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard let klarnaSessionType = settings.klarnaSessionType else {
+            let err = KlarnaException.undefinedSessionType
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        if Primer.shared.flow == .checkoutWithKlarna && settings.amount == nil  {
+            let err = KlarnaException.noAmount
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        if case .hostedPaymentPage = klarnaSessionType {
+            if settings.amount == nil {
+                let err = KlarnaException.noAmount
+                _ = ErrorHandler.shared.handle(error: err)
+                throw err
+            }
+            
+            if settings.currency == nil {
+                let err = KlarnaException.noCurrency
+                _ = ErrorHandler.shared.handle(error: err)
+                throw err
+            }
+            
+            if settings.orderItems.isEmpty {
+                let err = KlarnaException.missingOrderItems
+                _ = ErrorHandler.shared.handle(error: err)
+                throw err
+            }
+            
+            if !settings.orderItems.filter({ $0.unitAmount == nil }).isEmpty {
+                let err = KlarnaException.orderItemMissesAmount
+                _ = ErrorHandler.shared.handle(error: err)
+                throw err
+            }
+        }
     }
     
     @objc
@@ -129,7 +180,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna) else {
+        guard let configId = config.id else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
