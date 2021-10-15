@@ -48,6 +48,12 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPa
             throw err
         }
         
+        guard decodedClientToken.pciUrl != nil else {
+            let err = PrimerError.tokenizationPreRequestFailed
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
         guard config.id != nil else {
             let err = PaymentException.missingConfigurationId
             _ = ErrorHandler.shared.handle(error: err)

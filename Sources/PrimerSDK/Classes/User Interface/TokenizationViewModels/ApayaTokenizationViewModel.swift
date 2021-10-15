@@ -23,7 +23,32 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPayme
     }
     
     override func validate() throws {
-
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+            let err = PaymentException.missingClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard decodedClientToken.pciUrl != nil else {
+            let err = PrimerError.tokenizationPreRequestFailed
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard state.paymentMethodConfig?.getProductId(for: .apaya) != nil else {
+            let err = ApayaException.noToken
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard settings.currency != nil else {
+            let err = PaymentException.missingCurrency
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
     }
     
     @objc

@@ -129,7 +129,34 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     override func validate() throws {
-
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+            let err = PaymentException.missingClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard decodedClientToken.pciUrl != nil else {
+            let err = PrimerError.tokenizationPreRequestFailed
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        if !Primer.shared.flow.internalSessionFlow.vaulted {
+            if settings.amount == nil {
+                let err = PaymentException.missingAmount
+                _ = ErrorHandler.shared.handle(error: err)
+                throw err
+            }
+            
+            if settings.currency == nil {
+                let err = PaymentException.missingCurrency
+                _ = ErrorHandler.shared.handle(error: err)
+                throw err
+            }
+        }
     }
     
     @objc
