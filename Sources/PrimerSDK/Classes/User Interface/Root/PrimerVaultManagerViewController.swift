@@ -35,48 +35,12 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
         verticalStackView.spacing = 14.0
         
         if !availablePaymentMethods.isEmpty {
-            let otherPaymentMethodsTitleLabel = UILabel()
-            otherPaymentMethodsTitleLabel.text = NSLocalizedString("primer-vault-payment-method-available-payment-methods",
-                                                                   tableName: nil,
-                                                                   bundle: Bundle.primerResources,
-                                                                   value: "Available payment methods",
-                                                                   comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
-            
-            otherPaymentMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
-            otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
-            otherPaymentMethodsTitleLabel.textAlignment = .left
-            verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
-            
-            for paymentMethodTokenizationViewModel in paymentMethodConfigViewModels {
-                paymentMethodTokenizationViewModel.didStartTokenization = {
-                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
-                }
-                
-                if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? AsyncPaymentMethodTokenizationViewModelProtocol {
-                    asyncPaymentMethodViewModel.willPresentPaymentMethod = {
-                        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
-                    }
-                    
-                    asyncPaymentMethodViewModel.didPresentPaymentMethod = {
-                        
-                    }
-                    
-                    asyncPaymentMethodViewModel.willDismissPaymentMethod = {
-                        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
-                    }
-                }
-                
-                paymentMethodTokenizationViewModel.completion = { (tok, err) in
-                    if let err = err {
-                        Primer.shared.primerRootVC?.handle(error: err)
-                    } else {
-                        Primer.shared.primerRootVC?.handleSuccess()
-                    }
-                }
-                
-                verticalStackView.addArrangedSubview(paymentMethodTokenizationViewModel.paymentMethodButton)
-            }
+            renderAvailablePaymentMethods()
         }
+    }
+    
+    private func renderAvailablePaymentMethods() {
+        PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
     }
     
 }
