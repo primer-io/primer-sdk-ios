@@ -34,7 +34,11 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         if !newText.withoutWhiteSpace.isNumeric && !string.isEmpty { return false }
         primerTextField._text = newText
         cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
-        delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)
+        if newText.isEmpty {
+            delegate?.primerTextFieldView(self, didDetectCardNetwork: nil)
+        } else {
+            delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)
+        }
         validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? PrimerTextField.Validation.valid : PrimerTextField.Validation.invalid(PrimerError.invalidCardnumber)
         
         switch validation {
