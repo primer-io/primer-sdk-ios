@@ -232,7 +232,18 @@ public enum CardNetwork: String, CaseIterable {
     }
     
     public var icon: UIImage? {
-        return nil
+        switch self {
+        case .amex:
+            return UIImage(named: "amex", in: Bundle.primerResources, compatibleWith: nil)
+        case .discover:
+            return UIImage(named: "discover", in: Bundle.primerResources, compatibleWith: nil)
+        case .masterCard:
+            return UIImage(named: "masterCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .visa:
+            return UIImage(named: "visa", in: Bundle.primerResources, compatibleWith: nil)
+        default:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        }
     }
     
     var directoryServerId: String? {
