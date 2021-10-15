@@ -22,37 +22,6 @@ internal extension PKPaymentMethodType {
 
 class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaymentMethodTokenizationViewModelProtocol {
     
-    var countryCode: CountryCode? {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        return settings.countryCode
-    }
-    var currency: Currency? {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        return settings.currency
-    }
-    var merchantIdentifier: String? {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        return settings.merchantIdentifier
-    }
-    var orderItems: [OrderItem] {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        return settings.orderItems
-    }
-    var applePayConfigId: String? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.paymentMethodConfig?.getConfigId(for: .applePay)
-    }
-    var clientToken: DecodedClientToken? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.decodedClientToken
-    }
-    var isVaulted: Bool {
-        return Primer.shared.flow.internalSessionFlow.vaulted
-    }
-    var uxMode: UXMode {
-        return Primer.shared.flow.internalSessionFlow.uxMode
-    }
-    
     var willPresentPaymentMethod: (() -> Void)?
     var didPresentPaymentMethod: (() -> Void)?
     var willDismissPaymentMethod: (() -> Void)?
@@ -70,7 +39,44 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPa
     }
     
     override func validate() throws {
-
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+            let err = PaymentException.missingClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard config.id != nil else {
+            let err = PaymentException.missingConfigurationId
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard settings.countryCode != nil else {
+            let err = PaymentException.missingCountryCode
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard settings.currency != nil else {
+            let err = PaymentException.missingCurrency
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard settings.merchantIdentifier != nil else {
+            let err = AppleException.missingMerchantIdentifier
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard !settings.orderItems.isEmpty else {
+            let err = PaymentException.missingOrderItems
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
     }
     
     @objc
@@ -139,33 +145,14 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPa
     }
     
     private func payWithApple(completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
-        guard let countryCode = countryCode else {
-            let err = PaymentException.missingCountryCode
-            _ = ErrorHandler.shared.handle(error: err)
-            Primer.shared.delegate?.checkoutFailed?(with: err)
-            return completion(nil, err)
-        }
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let currency = currency else {
-            let err = PaymentException.missingCurrency
-            _ = ErrorHandler.shared.handle(error: err)
-            Primer.shared.delegate?.checkoutFailed?(with: err)
-            return completion(nil, err)
-        }
-        
-        guard let merchantIdentifier = merchantIdentifier else {
-            let err = AppleException.missingMerchantIdentifier
-            _ = ErrorHandler.shared.handle(error: err)
-            Primer.shared.delegate?.checkoutFailed?(with: err)
-            return completion(nil, err)
-        }
-        
-        guard !orderItems.isEmpty else {
-            let err = PaymentException.missingOrderItems
-            _ = ErrorHandler.shared.handle(error: err)
-            Primer.shared.delegate?.checkoutFailed?(with: err)
-            return completion(nil, err)
-        }
+        let decodedClientToken = state.decodedClientToken!
+        let countryCode = settings.countryCode!
+        let currency = settings.currency!
+        let merchantIdentifier = settings.merchantIdentifier!
+        let orderItems = settings.orderItems
         
         let applePayRequest = ApplePayRequest(
             currency: currency,
@@ -200,10 +187,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPa
                 switch result {
                 case .success(let applePayPaymentResponse):
                     let state: AppStateProtocol = DependencyContainer.resolve()
-                    
-                    guard let clientToken = state.decodedClientToken else { return }
-                    
-                    guard let applePayConfigId = self.applePayConfigId else {
+                                        
+                    guard let applePayConfigId = self.config.id else {
                         return completion(nil, PaymentException.missingConfigurationId)
                     }
 
@@ -216,7 +201,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPa
                     
                     let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                     apiClient.tokenizePaymentMethod(
-                        clientToken: clientToken,
+                        clientToken: decodedClientToken,
                         paymentMethodTokenizationRequest: request) { result in
                             switch result {
                             case .success(let paymentMethod):
