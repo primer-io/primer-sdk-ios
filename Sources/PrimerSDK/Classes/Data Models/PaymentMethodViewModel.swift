@@ -123,15 +123,24 @@ struct PaymentMethodViewModel {
         
         return nil
     }
-
-    var surCharge: String? {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        guard let currency = settings.currency else { return nil }
-        
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let availablePaymentMethods = state.paymentMethodConfig?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
     
-        return availablePaymentMethods.filter({ $0.type == type }).first?.surcharge?.toCurrencyString(currency: currency)
+    var surCharge: String? {
+        switch type {
+        case .paymentCard:
+            return NSLocalizedString("surcharge-additional-fee",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Additional fee may apply",
+                                     comment: "Additional fee may apply - Surcharge (Label)")
+        default:
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            guard let currency = settings.currency else { return nil }
+            
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            guard let availablePaymentMethods = state.paymentMethodConfig?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
+            
+            return availablePaymentMethods.filter({ $0.type == type }).first?.surcharge?.toCurrencyString(currency: currency)
+        }
     }
 }
 

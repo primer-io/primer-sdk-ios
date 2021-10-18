@@ -34,28 +34,14 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
     }
     
     private func renderAvailablePaymentMethods() {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-        var availablePaymentMethods = checkoutViewModel.availablePaymentOptions.filter({ $0.type != .applePay })
-        
-        for (index, paymentMethod) in availablePaymentMethods.enumerated() {
-            switch paymentMethod.type {
-            case .klarna:
-                availablePaymentMethods[index].surCharge = "+£5.36"
-            case .paymentCard:
-                availablePaymentMethods[index].surCharge = "Additional fee may apply"
-            default:
-                break
-            }
-            
-        }
+        let availablePaymentMethods = checkoutViewModel.availablePaymentOptions.filter({ $0.type != .applePay })
         
         let noAdditionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge == nil })
         let additionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge != nil })
         
         if !noAdditionalFeePaymentMethodsViewModels.isEmpty {
-            let noAdditionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: "No additional fee", paymentMethodsViewModels: noAdditionalFeePaymentMethodsViewModels)
+            let noAdditionalFeesContainerView = PaymentMethodsGroupView(title: "No additional fee", paymentMethodsViewModels: noAdditionalFeePaymentMethodsViewModels)
             noAdditionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .regular)
             noAdditionalFeesContainerView.delegate = self
             verticalStackView.addArrangedSubview(noAdditionalFeesContainerView)
@@ -64,8 +50,14 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
         if !additionalFeePaymentMethodsViewModels.isEmpty {
             for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
                 let title = additionalFeePaymentMethodsViewModel.surCharge
-                let additionalFeesContainerView = PaymentMethodsGroupView(frame: .zero, title: title, paymentMethodsViewModels: [additionalFeePaymentMethodsViewModel])
-                additionalFeesContainerView.titleLabel?.font = title == "Additional fee may apply" ? UIFont.systemFont(ofSize: 12, weight: .regular) : UIFont.systemFont(ofSize: 16, weight: .bold)
+                let additionalFeesContainerView = PaymentMethodsGroupView(title: title, paymentMethodsViewModels: [additionalFeePaymentMethodsViewModel])
+                additionalFeesContainerView.titleLabel?.font = (title == NSLocalizedString("surcharge-additional-fee",
+                                                                                           tableName: nil,
+                                                                                           bundle: Bundle.primerResources,
+                                                                                           value: "Additional fee may apply",
+                                                                                           comment: "Additional fee may apply - Surcharge (Label)"))
+                ? UIFont.systemFont(ofSize: 12, weight: .regular)
+                : UIFont.systemFont(ofSize: 16, weight: .bold)
                 additionalFeesContainerView.delegate = self
                 verticalStackView.addArrangedSubview(additionalFeesContainerView)
             }
