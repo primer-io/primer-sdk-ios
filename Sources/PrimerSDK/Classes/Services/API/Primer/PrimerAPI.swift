@@ -51,18 +51,18 @@ internal extension PrimerAPI {
              .klarnaCreateCustomerToken(let clientToken, _),
              .klarnaFinalizePaymentSession(let clientToken, _),
              .apayaCreateSession(let clientToken, _):
-            guard let urlStr = clientToken.coreUrl else { return nil }
-            return urlStr
+            guard let coreUrl = clientToken.coreUrl else { return nil }
+            return coreUrl.absoluteString
         case .vaultDeletePaymentMethod(let clientToken, _),
              .vaultFetchPaymentMethods(let clientToken),
              .tokenizePaymentMethod(let clientToken, _),
              .threeDSBeginRemoteAuth(let clientToken, _, _),
              .threeDSContinueRemoteAuth(let clientToken, _):
-            guard let urlStr = clientToken.pciUrl else { return nil }
-            return urlStr
+            guard let pciUrl = clientToken.pciUrl else { return nil }
+            return pciUrl.absoluteString
         case .fetchConfiguration(let clientToken):
-            guard let urlStr = clientToken.configurationUrl else { return nil }
-            return urlStr
+            guard let configurationUrl = clientToken.configurationUrl else { return nil }
+            return configurationUrl.absoluteString
         case .poll(_, let url):
             return url
         }
@@ -132,7 +132,7 @@ internal extension PrimerAPI {
              .threeDSContinueRemoteAuth,
              .apayaCreateSession:
             return .post
-        case .poll(_, let url):
+        case .poll:
             return .get
         }
     }
@@ -157,9 +157,7 @@ internal extension PrimerAPI {
              .threeDSBeginRemoteAuth(let clientToken, _, _),
              .threeDSContinueRemoteAuth(let clientToken, _),
              .apayaCreateSession(let clientToken, _):
-            if let token = clientToken.accessToken {
-                tmpHeaders["Primer-Client-Token"] = token
-            }
+            tmpHeaders["Primer-Client-Token"] = clientToken.accessToken
         case .poll(let clientToken, _):
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token

@@ -56,19 +56,10 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         }
         .then { pollingURLsResponse -> Promise<Void> in
             pollingURLs = pollingURLsResponse
-            
-            guard let redirectUrl = pollingURLs.redirectUrl else {
-                throw PrimerError.invalidValue(key: "redirectUrl")
-            }
-            
-            return self.presentAsyncPaymentMethod(with: redirectUrl)
+            return self.presentAsyncPaymentMethod(with: pollingURLs.redirectUrl)
         }
         .then { () -> Promise<String> in
-            guard let statusUrl = pollingURLs.statusUrl else {
-                throw PrimerError.invalidValue(key: "statusUrl")
-            }
-            
-            return self.startPolling(on: statusUrl)
+            return self.startPolling(on: pollingURLs.statusUrl)
         }
         .then { resumeToken -> Promise<PaymentMethod> in
             self.willDismissPaymentMethod?()
@@ -138,7 +129,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
                         if let intent = decodedClientToken.intent {
                             if let redirectUrl = decodedClientToken.redirectUrl,
                                let statusUrl = decodedClientToken.statusUrl {
-                                seal.fulfill(PollingURLs(status: statusUrl, redirect: redirectUrl, complete: nil))
+                                seal.fulfill(PollingURLs(statusUrl: statusUrl, redirectUrl: redirectUrl, complete: nil))
                                 return
                             }
                         }
@@ -307,14 +298,8 @@ struct PollingResponse: Decodable {
 }
 
 struct PollingURLs: Decodable {
-    let status: String
-    lazy var statusUrl: URL? = {
-        return URL(string: status)
-    }()
-    let redirect: String
-    lazy var redirectUrl: URL? = {
-        return URL(string: redirect)
-    }()
+    let statusUrl: URL
+    let redirectUrl: URL
     let complete: String?
 }
 
