@@ -233,8 +233,8 @@ class MockLocator {
 }
 
 class MockDirectDebitService: DirectDebitServiceProtocol {
-    func createMandate(_ completion: @escaping (Error?) -> Void) {
-
+    func createMandate(_ completion: @escaping (String?, Error?) -> Void) {
+        
     }
 }
 

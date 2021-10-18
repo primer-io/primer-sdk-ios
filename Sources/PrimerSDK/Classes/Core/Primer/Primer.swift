@@ -149,30 +149,14 @@ public class Primer {
         }
     }
 
-    /**
-     Pre-fill direct debit details of user in form
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
+    @available(swift, obsoleted: 5.0, message: "This method has been removed and it won't have any impact. Use settings to set any required Direct Debit configuration.")
     public func setDirectDebitDetails(
         firstName: String,
         lastName: String,
         email: String,
         iban: String,
         address: Address
-    ) {
-        DispatchQueue.main.async {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            state.directDebitMandate.firstName = firstName
-            state.directDebitMandate.lastName = lastName
-            state.directDebitMandate.email = email
-            state.directDebitMandate.iban = iban
-            state.directDebitMandate.address = address
-        }
-    }
+    ) { }
 
     /**
      Presents a bottom sheet view for Primer checkout. To determine the user journey specify the PrimerSessionFlow of the method. Additionally a parent view controller needs to be passed in to display the sheet view.
