@@ -28,16 +28,17 @@ struct DecodedClientToken: Decodable {
     }
     
     func validate() throws {
-        if accessToken == nil {
+        guard !(accessToken ?? "").isEmpty else {
             throw PrimerError.clientTokenNull
         }
         
         guard let expDate = expDate else {
-            throw PrimerError.clientTokenExpirationMissing
+            throw PrimerError.invalidExpiryDate
         }
         
         if expDate < Date() {
             throw PrimerError.clientTokenExpired
         }
+        
     }
 }

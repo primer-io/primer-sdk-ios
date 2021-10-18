@@ -39,10 +39,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPa
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -151,10 +150,15 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPa
     }
     
     private func payWithApple(completion: @escaping (PaymentMethod?, Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        let decodedClientToken = state.decodedClientToken!
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            let err = PaymentException.missingClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(nil, err)
+            return
+        }
+        
         let countryCode = settings.countryCode!
         let currency = settings.currency!
         let merchantIdentifier = settings.merchantIdentifier!

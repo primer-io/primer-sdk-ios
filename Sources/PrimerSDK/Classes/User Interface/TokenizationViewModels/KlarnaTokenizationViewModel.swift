@@ -18,10 +18,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -180,7 +179,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
     
     private func generateWebViewUrl(completion: @escaping (Result<URL, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let clientToken = state.decodedClientToken else {
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(ApayaException.noToken))
         }
         
@@ -317,7 +316,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
     private func createKlarnaCustomerToken(authorizationToken: String, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
         
@@ -364,7 +363,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
     private func finalizePaymentSession(completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
 

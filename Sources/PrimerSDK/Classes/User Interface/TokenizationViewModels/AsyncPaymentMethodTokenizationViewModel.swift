@@ -25,9 +25,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        if state.decodedClientToken?.isValid != true {
+        if ClientTokenService.decodedClientToken != nil {
             throw PrimerError.clientTokenNull
         }
     }
@@ -129,8 +127,14 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
                 if let err = err {
                     seal.reject(err)
                 } else if let clientToken = clientToken {
-                    let state: AppStateProtocol = DependencyContainer.resolve()
-                    if let decodedClientToken = state.decodedClientToken {
+                    do {
+                        try ClientTokenService.storeClientToken(clientToken)
+                    } catch {
+                        seal.reject(error)
+                        return
+                    }
+                    
+                    if let decodedClientToken = ClientTokenService.decodedClientToken {
                         if let intent = decodedClientToken.intent {
                             if let redirectUrl = decodedClientToken.redirectUrl,
                                let statusUrl = decodedClientToken.statusUrl {
@@ -185,9 +189,8 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
     }
     
     fileprivate func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        client.poll(clientToken: state.decodedClientToken, url: url.absoluteString) { result in
+        client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
             switch result {
             case .success(let res):
                 if res.status == .pending {
@@ -319,8 +322,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: AsyncPaymentMethodTokenizatio
     
     var failValidation: Bool = false {
         didSet {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            state.decodedClientToken = nil
+            ClientTokenService.resetClientToken()
         }
     }
     var returnedPaymentMethodJson: String?

@@ -10,16 +10,9 @@
 @testable import PrimerSDK
 import XCTest
 
-var mockClientToken = DecodedClientToken(
-    accessToken: "bla",
-    configurationUrl: "bla",
-    paymentFlow: "bla",
-    threeDSecureInitUrl: "bla",
-    threeDSecureToken: "bla",
-    coreUrl: "https://primer.io",
-    pciUrl: "https://primer.io",
-    env: "bla"
-)
+var mockClientToken = """
+    eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjI2MzQ2Mjc3MDcsImFjY2Vzc1Rva2VuIjoiYmxhIiwiYW5hbHl0aWNzVXJsIjoiaHR0cHM6Ly9wcmltZXIuaW8iLCJpbnRlbnQiOiJibGEiLCJjb25maWd1cmF0aW9uVXJsIjoiYmxhIiwiY29yZVVybCI6Imh0dHBzOi8vcHJpbWVyLmlvIiwicGNpVXJsIjoiaHR0cHM6Ly9wcmltZXIuaW8iLCJlbnYiOiJibGEiLCJwYXltZW50RmxvdyI6ImJsYSJ9._GH4xNFOhlfY3CmyH8JcUEdqDIxZF8qYILcGY4YF7Vc
+    """
 
 var mockSettings = PrimerSettings(
     merchantIdentifier: "mid",
@@ -169,6 +162,7 @@ let mockPaymentMethodConfig = PrimerConfiguration(
 )
 
 class MockAppState: AppStateProtocol {
+    var clientToken: String? = "access_token"
     
     var customerToken: String? = "customerToken"
 
@@ -188,11 +182,7 @@ class MockAppState: AppStateProtocol {
 
     var selectedPaymentMethod: String = ""
 
-    var decodedClientToken: DecodedClientToken? = mockClientToken
-
     var paymentMethodConfig: PrimerConfiguration?
-
-    var accessToken: String? = "accessToken"
 
     var billingAgreementToken: String? = "token"
 
@@ -203,7 +193,7 @@ class MockAppState: AppStateProtocol {
     var approveURL: String? = "approveUrl"
 
     init(
-        decodedClientToken: DecodedClientToken? = mockClientToken,
+        clientToken: String? = mockClientToken,
         paymentMethodConfig: PrimerConfiguration? = PrimerConfiguration(
             coreUrl: "url",
             pciUrl: "url",
@@ -215,7 +205,7 @@ class MockAppState: AppStateProtocol {
             keys: nil
         )
     ) {
-        self.decodedClientToken = decodedClientToken
+        self.clientToken = clientToken
         self.paymentMethodConfig = paymentMethodConfig
     }
 }

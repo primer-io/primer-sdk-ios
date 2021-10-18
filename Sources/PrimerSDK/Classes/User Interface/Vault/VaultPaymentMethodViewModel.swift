@@ -24,8 +24,7 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
         }
     }
     private var clientToken: DecodedClientToken? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.decodedClientToken
+        return ClientTokenService.decodedClientToken
     }
 
     deinit {

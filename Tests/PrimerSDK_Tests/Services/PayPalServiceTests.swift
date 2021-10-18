@@ -51,7 +51,7 @@ class PayPalServiceTests: XCTestCase {
         let response = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: "primer.io")
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: true)
-        let state = MockAppState(decodedClientToken: nil)
+        let state = MockAppState(clientToken: nil, paymentMethodConfig: nil)
 
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
@@ -141,7 +141,7 @@ class PayPalServiceTests: XCTestCase {
         let response = PayPalCreateBillingAgreementResponse(tokenId: "tid", approvalUrl: "https://primer.io")
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
-        let state = MockAppState(decodedClientToken: nil)
+        let state = MockAppState(clientToken: nil)
 
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
@@ -230,7 +230,7 @@ class PayPalServiceTests: XCTestCase {
         let response = mockPayPalBillingAgreement
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
-        let state = MockAppState(decodedClientToken: nil)
+        let state = MockAppState(clientToken: nil)
 
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)

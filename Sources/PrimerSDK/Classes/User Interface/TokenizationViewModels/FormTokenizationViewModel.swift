@@ -129,10 +129,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -207,11 +206,9 @@ extension FormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate 
         }
     }
     
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        if let clientToken = state.accessToken {
-            completion(clientToken, nil)
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {        
+        if let decodedClientToken = ClientTokenService.decodedClientToken {
+            completion(decodedClientToken.accessToken, nil)
         } else {
             completion(nil, PrimerError.clientTokenNull)
         }
@@ -289,7 +286,7 @@ extension FormPaymentMethodTokenizationViewModel {
     
     override func handle(newClientToken clientToken: String) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        if state.accessToken == clientToken {
+        if state.clientToken == clientToken {
             let err = PrimerError.invalidValue(key: "clientToken")
             Primer.shared.delegate?.onResumeError?(err)
             handle(error: err)
@@ -298,12 +295,16 @@ extension FormPaymentMethodTokenizationViewModel {
         
         do {
             try ClientTokenService.storeClientToken(clientToken)
-           
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            let decodedClientToken = state.decodedClientToken!
-            
+                       
             guard let paymentMethod = paymentMethod else {
                 let err = PrimerError.invalidValue(key: "paymentMethod")
+                Primer.shared.delegate?.onResumeError?(err)
+                handle(error: err)
+                return
+            }
+            
+            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                let err = PrimerError.clientTokenNull
                 Primer.shared.delegate?.onResumeError?(err)
                 handle(error: err)
                 return
@@ -312,7 +313,7 @@ extension FormPaymentMethodTokenizationViewModel {
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)
                 let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethod: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                threeDSService.perform3DS(paymentMethod: paymentMethod, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
                     case .success(let res):
                         guard let threeDSPostAuthResponse = res.1,
