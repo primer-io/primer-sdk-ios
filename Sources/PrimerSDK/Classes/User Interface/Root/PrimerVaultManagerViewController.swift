@@ -44,7 +44,11 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
             case .klarna:
                 availablePaymentMethods[index].surCharge = "+£5.36"
             case .paymentCard:
-                availablePaymentMethods[index].surCharge = "Additional fee may apply"
+                availablePaymentMethods[index].surCharge = NSLocalizedString("surcharge-additional-fee",
+                                                                             tableName: nil,
+                                                                             bundle: Bundle.primerResources,
+                                                                             value: "Additional fee may apply",
+                                                                             comment: "Additional fee may apply - Surcharge (Label)")
             default:
                 break
             }
@@ -65,7 +69,13 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
             for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
                 let title = additionalFeePaymentMethodsViewModel.surCharge
                 let additionalFeesContainerView = PaymentMethodsGroupView(title: title, paymentMethodsViewModels: [additionalFeePaymentMethodsViewModel])
-                additionalFeesContainerView.titleLabel?.font = title == "Additional fee may apply" ? UIFont.systemFont(ofSize: 12, weight: .regular) : UIFont.systemFont(ofSize: 16, weight: .bold)
+                additionalFeesContainerView.titleLabel?.font = (title == NSLocalizedString("surcharge-additional-fee",
+                                                                                           tableName: nil,
+                                                                                           bundle: Bundle.primerResources,
+                                                                                           value: "Additional fee may apply",
+                                                                                           comment: "Additional fee may apply - Surcharge (Label)"))
+                ? UIFont.systemFont(ofSize: 12, weight: .regular)
+                : UIFont.systemFont(ofSize: 16, weight: .bold)
                 additionalFeesContainerView.delegate = self
                 verticalStackView.addArrangedSubview(additionalFeesContainerView)
             }
