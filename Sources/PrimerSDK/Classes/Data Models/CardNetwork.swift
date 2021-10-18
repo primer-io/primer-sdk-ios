@@ -235,13 +235,31 @@ public enum CardNetwork: String, CaseIterable {
         switch self {
         case .amex:
             return UIImage(named: "amex", in: Bundle.primerResources, compatibleWith: nil)
+        case .bancontact:
+            return UIImage(named: "bancontact-icon", in: Bundle.primerResources, compatibleWith: nil)
+        case .diners:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         case .discover:
             return UIImage(named: "discover", in: Bundle.primerResources, compatibleWith: nil)
+        case .elo:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .hiper:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .hipercard:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .jcb:
+            return UIImage(named: "jcb-icon", in: Bundle.primerResources, compatibleWith: nil)
+        case .maestro:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .mir:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         case .masterCard:
             return UIImage(named: "masterCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .unionpay:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         case .visa:
             return UIImage(named: "visa", in: Bundle.primerResources, compatibleWith: nil)
-        default:
+        case .unknown:
             return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         }
     }
