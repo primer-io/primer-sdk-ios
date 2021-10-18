@@ -124,7 +124,7 @@ class AsyncPaymentMethodTokenizationViewModelTests: XCTestCase, PrimerDelegate {
         }
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol) {
+    func onTokenizeSuccess(_ paymentMethod: PaymentMethod, resumeHandler: ResumeHandlerProtocol) {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
             resumeHandler.handle(newClientToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjI2MzQzMTc4MjgsImFjY2Vzc1Rva2VuIjoiNjhiYmEzNzEtNjk3Yy00NjZkLTg4NTAtNDE4ODIxZTc0MTc0IiwiYW5hbHl0aWNzVXJsIjoiaHR0cHM6Ly9hbmFseXRpY3MuYXBpLnN0YWdpbmcuY29yZS5wcmltZXIuaW8vbWl4cGFuZWwiLCJpbnRlbnQiOiJIT09MQUhfUkVESVJFQ1RJT04iLCJzdGF0dXNVcmwiOiJodHRwczovL2FwaS5zdGFnaW5nLnByaW1lci5pby9yZXN1bWUtdG9rZW5zL2YxYjJiZjFiLThkYzYtNGQxZS1iYTc3LTY5MDE3NDJkNTU0ZiIsInJlZGlyZWN0VXJsIjoiaHR0cHM6Ly9kZW1vLWpzLmRlbW8taG9vbGFoLmNvP09SREVSX0NPTlRFWFRfVE9LRU49ODM2N2VkNDYtMDQ4MS00OGEwLThlNzItYmI5N2VmYTJmZDBlJnBsYXRmb3JtPWJlc3Bva2UmdmVyc2lvbj0xLjAuMSJ9.Nm-RoYC8jNfHscHw1XiWzzAleoV_-ZEu5GJXidTjXg8")
         }

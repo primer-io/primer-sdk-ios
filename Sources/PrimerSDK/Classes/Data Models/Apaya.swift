@@ -91,7 +91,7 @@ public struct Apaya {
         var carrier: Apaya.Carrier
         var hashedIdentifier: String?
         
-        init?(paymentMethod: PaymentMethodToken) {
+        init?(paymentMethod: PaymentMethod) {
             guard paymentMethod.paymentInstrumentType == .apayaToken else { return nil }
             guard let mcc = paymentMethod.paymentInstrumentData?.mcc,
                   let mnc = paymentMethod.paymentInstrumentData?.mnc,

@@ -25,7 +25,7 @@ enum PrimerAPI: Endpoint {
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest)
     
     // 3DS
-    case threeDSBeginRemoteAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
+    case threeDSBeginRemoteAuth(clientToken: DecodedClientToken, paymentMethod: PaymentMethod, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
     case threeDSContinueRemoteAuth(clientToken: DecodedClientToken, threeDSTokenId: String)
     
     // Generic
@@ -93,8 +93,8 @@ internal extension PrimerAPI {
             return "/gocardless/mandates"
         case .tokenizePaymentMethod:
             return "/payment-instruments"
-        case .threeDSBeginRemoteAuth(_, let paymentMethodToken, _):
-            return "/3ds/\(paymentMethodToken.token)/auth"
+        case .threeDSBeginRemoteAuth(_, let paymentMethod, _):
+            return "/3ds/\(paymentMethod.token)/auth"
         case .threeDSContinueRemoteAuth(_, let threeDSTokenId):
             return "/3ds/\(threeDSTokenId)/continue"
         case .apayaCreateSession:

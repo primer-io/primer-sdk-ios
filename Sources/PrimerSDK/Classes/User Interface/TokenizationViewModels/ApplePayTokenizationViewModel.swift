@@ -131,7 +131,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPa
         }
     }
     
-    func tokenize() -> Promise<PaymentMethodToken> {
+    func tokenize() -> Promise<PaymentMethod> {
         return Promise { seal in
             if Primer.shared.flow.internalSessionFlow.vaulted {
                 seal.reject(PrimerError.vaultNotSupported)
@@ -150,7 +150,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPa
         }
     }
     
-    private func payWithApple(completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
+    private func payWithApple(completion: @escaping (PaymentMethod?, Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         

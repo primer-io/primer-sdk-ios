@@ -388,7 +388,7 @@ extension PrimerRootViewController {
         paymentMethodTokenizationViewModel.startTokenizationFlow()
     }
     
-    func handleSuccessfulTokenization(paymentMethod: PaymentMethodToken) {
+    func handleSuccessfulTokenization(paymentMethod: PaymentMethod) {
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else {
                 Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)

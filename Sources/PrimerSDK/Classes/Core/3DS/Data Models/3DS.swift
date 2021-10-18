@@ -219,7 +219,7 @@ public struct ThreeDS {
     internal struct BeginAuthResponse: Decodable {
         
         let authentication: ThreeDSAuthenticationProtocol
-        let token: PaymentMethodToken
+        let token: PaymentMethod
         let resumeToken: String?
         
         enum CodingKeys: String, CodingKey {
@@ -250,7 +250,7 @@ public struct ThreeDS {
                 throw err
             }
             
-            token = try container.decode(PaymentMethodToken.self, forKey: .token)
+            token = try container.decode(PaymentMethod.self, forKey: .token)
             if let token = try? container.decode(String?.self, forKey: .resumeToken) {
                 resumeToken = token
             } else {
@@ -260,7 +260,7 @@ public struct ThreeDS {
     }
     
     internal struct PostAuthResponse: Codable {
-        let token: PaymentMethodToken
+        let token: PaymentMethod
         let resumeToken: String?
         let authentication: Authentication?
     }

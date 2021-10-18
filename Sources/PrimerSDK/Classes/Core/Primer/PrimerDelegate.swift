@@ -29,16 +29,16 @@ public protocol PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
     
-    @objc optional func tokenAddedToVault(_ token: PaymentMethodToken)
+    @objc optional func tokenAddedToVault(_ token: PaymentMethod)
     
     /// This function will be called when the user tries to make a payment. You should make the pay API call to your backend, and
     /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
     ///
     /// - Parameters:
-    ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
+    ///   - paymentMethod: The PaymentMethod object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
-    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
-    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
+    @objc optional func onTokenizeSuccess(_ paymentMethod: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
+    @objc optional func onTokenizeSuccess(_ paymentMethod: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
 
     @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
     @objc optional func onResumeError(_ error: Error)
@@ -64,15 +64,15 @@ internal class MockPrimerDelegate: PrimerDelegate {
         
     }
     
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
+    func tokenAddedToVault(_ token: PaymentMethod) {
         
     }
 
-    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func authorizePayment(_ result: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
 
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(_ paymentMethod: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
         
     }
 

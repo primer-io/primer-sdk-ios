@@ -143,7 +143,7 @@
 		C6A6657786F3070D51C3A2FCDE0CAB43 /* DirectDebitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F655416E796626145A3DD659FF120BE9 /* DirectDebitService.swift */; };
 		C865128482CB7A883BDCB7174BC3E444 /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2924C9C348AE5BFF0957B4A2CE73AF02 /* IntExtension.swift */; };
 		C97B07F90BFFCA2EB4F55A9D6B31A782 /* URLSessionStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884ACE5ED9AEBEF41C745C941015D67A /* URLSessionStack.swift */; };
-		CA239A0365E3FCDA3B9975BDF3E9124C /* PaymentMethodToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805136E22AAE330AE3D9B033255966BB /* PaymentMethodToken.swift */; };
+		CA239A0365E3FCDA3B9975BDF3E9124C /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805136E22AAE330AE3D9B033255966BB /* PaymentMethod.swift */; };
 		CAAB7B18B50D5A32747D5FE4162E001D /* CancellableThenable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6847E326956BFB3C00FC726E15D644 /* CancellableThenable.swift */; };
 		CB75AE20B551C4C62736920140293898 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA937AB71510E82D890E228FAB7FCEBF /* URLExtension.swift */; };
 		D1A0DCCF98565D4F8617CD965B0FBC27 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44B1C0D9F617D91DBEFBE4084E590D87 /* NetworkService.swift */; };
@@ -304,7 +304,7 @@
 		795410B71D06CF6BAED8DDD52F1E6F1E /* LogEvent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LogEvent.swift; sourceTree = "<group>"; };
 		7DCAFD9E4520C367F381EEBD239C7CD2 /* PrimerCardholderNameFieldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerCardholderNameFieldView.swift; sourceTree = "<group>"; };
 		7F40359B37ED746E9200F8CE6023A22D /* PrimerRootViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerRootViewController.swift; sourceTree = "<group>"; };
-		805136E22AAE330AE3D9B033255966BB /* PaymentMethodToken.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodToken.swift; sourceTree = "<group>"; };
+		805136E22AAE330AE3D9B033255966BB /* PaymentMethod.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethod.swift; sourceTree = "<group>"; };
 		8513B5360A36FE90418789F0BF2C93DC /* Primer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Primer.swift; sourceTree = "<group>"; };
 		8554880FFDEE679E571F1194DCBD5BB6 /* OrderItem.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OrderItem.swift; sourceTree = "<group>"; };
 		859BCF1554C42CBC6E75383A937B2296 /* ThenableWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThenableWrappers.swift; sourceTree = "<group>"; };
@@ -678,7 +678,7 @@
 				5BFD0F261D2B5B720A9C2CF4F945CDA8 /* Klarna.swift */,
 				8554880FFDEE679E571F1194DCBD5BB6 /* OrderItem.swift */,
 				70D6D3310A190C54568C52063AC8649F /* PaymentMethodConfig.swift */,
-				805136E22AAE330AE3D9B033255966BB /* PaymentMethodToken.swift */,
+				805136E22AAE330AE3D9B033255966BB /* PaymentMethod.swift */,
 				FAF8D72A2DC8057F689D0A7EE52BF41A /* PaymentMethodTokenizationRequest.swift */,
 				9D7146C0D21CB162ABF04F7FCE1E0D45 /* PaymentResponse.swift */,
 				9E269730C181337DD81BDA49ADB17C74 /* PayPal.swift */,
@@ -1399,7 +1399,7 @@
 				15C1AA132714D007005B4AEB /* FormTokenizationViewModel.swift in Sources */,
 				B0AB1E054752D090C8FB1AB723AB4A6D /* PaymentMethodConfigService.swift in Sources */,
 				6BF3291D055F730DDB88FF4CF0443D40 /* PaymentMethodTokenizationViewModel.swift in Sources */,
-				CA239A0365E3FCDA3B9975BDF3E9124C /* PaymentMethodToken.swift in Sources */,
+				CA239A0365E3FCDA3B9975BDF3E9124C /* PaymentMethod.swift in Sources */,
 				9ADF8662B36E682E38E93D2FE68D14B6 /* PaymentMethodTokenizationRequest.swift in Sources */,
 				9E47E89029FA272FCCC263D370EE8E2F /* PaymentResponse.swift in Sources */,
 				7C1F9F6687672C1131A784D434A92A31 /* PayPal.swift in Sources */,

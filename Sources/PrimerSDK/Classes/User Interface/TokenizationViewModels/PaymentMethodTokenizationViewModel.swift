@@ -7,7 +7,7 @@
 
 import Foundation
 
-typealias TokenizationCompletion = ((PaymentMethodToken?, Error?) -> Void)
+typealias TokenizationCompletion = ((PaymentMethod?, Error?) -> Void)
 
 internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHandlerProtocol {
     init(config: PaymentMethodConfig)
@@ -18,7 +18,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     var paymentMethodButton: PrimerButton { get }
     var didStartTokenization: (() -> Void)? { get set }
     var completion: TokenizationCompletion? { get set }
-    var paymentMethod: PaymentMethodToken? { get set }
+    var paymentMethod: PaymentMethod? { get set }
     
     func validate() throws
     func startTokenizationFlow()
@@ -37,7 +37,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     var config: PaymentMethodConfig
     var completion: TokenizationCompletion?
-    var paymentMethod: PaymentMethodToken?
+    var paymentMethod: PaymentMethod?
     var didStartTokenization: (() -> Void)?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     

@@ -21,8 +21,8 @@ protocol PrimerAPIClientProtocol {
     func klarnaCreatePaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (_ result: Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void)
     func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
     func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
-    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
-    func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
+    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (_ result: Result<PaymentMethod, Error>) -> Void)
+    func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethod: PaymentMethod, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
     func threeDSContinueAuth(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
     func apayaCreateSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest, completion: @escaping (_ result: Result<Apaya.CreateSessionAPIResponse, Error>) -> Void)
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
@@ -172,12 +172,12 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void) {
+    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (_ result: Result<PaymentMethod, Error>) -> Void) {
         let endpoint = PrimerAPI.tokenizePaymentMethod(clientToken: clientToken, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest)
-        networkService.request(endpoint) { (result: Result<PaymentMethodToken, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethod, NetworkServiceError>) in
             switch result {
-            case .success(let paymentMethodToken):
-                completion(.success(paymentMethodToken))
+            case .success(let paymentMethod):
+                completion(.success(paymentMethod))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.tokenizationRequestFailed))
@@ -378,12 +378,12 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (Result<PaymentMethod, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(PaymentMethodToken.self, from: response)
+            let value = try JSONDecoder().decode(PaymentMethod.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))

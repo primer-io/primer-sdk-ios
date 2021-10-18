@@ -16,7 +16,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
     var didDismissPaymentMethod: (() -> Void)?
     fileprivate var webViewController: PrimerWebViewController?
     fileprivate var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    fileprivate var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
+    fileprivate var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethod?, _ error: Error?) -> Void)?
     
     fileprivate var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
     
@@ -72,7 +72,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
             
             return self.startPolling(on: statusUrl)
         }
-        .then { resumeToken -> Promise<PaymentMethodToken> in
+        .then { resumeToken -> Promise<PaymentMethod> in
             self.willDismissPaymentMethod?()
             self.webViewController?.dismiss(animated: true, completion: {
                 self.didDismissPaymentMethod?()
@@ -99,7 +99,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         }
     }
     
-    fileprivate func tokenize() -> Promise<PaymentMethodToken> {
+    fileprivate func tokenize() -> Promise<PaymentMethod> {
         return Promise { seal in
             guard let configId = config.id else {
                 seal.reject(PrimerError.configFetchFailed)
@@ -123,7 +123,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         }
     }
     
-    fileprivate func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<PollingURLs> {
+    fileprivate func fetchPollingURLs(for paymentMethod: PaymentMethod) -> Promise<PollingURLs> {
         return Promise { seal in
             self.onClientToken = { (clientToken, err) in
                 if let err = err {
@@ -210,7 +210,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
         }
     }
     
-    fileprivate func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
+    fileprivate func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethod> {
         return Promise { seal in
             self.onResumeTokenCompletion = { (paymentMethod, err) in
                 if let err = err {
@@ -325,7 +325,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: AsyncPaymentMethodTokenizatio
     }
     var returnedPaymentMethodJson: String?
     
-    fileprivate override func tokenize() -> Promise<PaymentMethodToken> {
+    fileprivate override func tokenize() -> Promise<PaymentMethod> {
         return Promise { seal in
             guard let _ = config.id else {
                 seal.reject(PrimerError.configFetchFailed)
@@ -334,7 +334,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: AsyncPaymentMethodTokenizatio
 
             if let returnedPaymentMethodJson = returnedPaymentMethodJson,
                let returnedPaymentMethodData = returnedPaymentMethodJson.data(using: .utf8),
-                let paymentMethod = try? JSONDecoder().decode(PaymentMethodToken.self, from: returnedPaymentMethodData) {
+                let paymentMethod = try? JSONDecoder().decode(PaymentMethod.self, from: returnedPaymentMethodData) {
                 seal.fulfill(paymentMethod)
             } else {
                 seal.reject(PrimerError.tokenizationRequestFailed)

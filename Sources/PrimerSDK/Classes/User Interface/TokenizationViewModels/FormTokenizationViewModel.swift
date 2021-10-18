@@ -173,8 +173,10 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             return
         }
         
-        let pcfvc = PrimerCardFormViewController(viewModel: self)
-        Primer.shared.primerRootVC?.show(viewController: pcfvc)
+        DispatchQueue.main.async {
+            let pcfvc = PrimerCardFormViewController(viewModel: self)
+            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+        }
     }
     
     @objc
@@ -184,18 +186,16 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 }
 
 extension FormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
-        self.paymentMethod = paymentMethodToken
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethod: PaymentMethod) {
+        self.paymentMethod = paymentMethod
         
         DispatchQueue.main.async {
-            self.paymentMethod = paymentMethodToken
-            
             if Primer.shared.flow.internalSessionFlow.vaulted {
-                Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+                Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
             }
             
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
                 self.cardComponentsManager.setIsLoading(false)
                 
                 if let err = err {
@@ -312,10 +312,10 @@ extension FormPaymentMethodTokenizationViewModel {
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)
                 let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                threeDSService.perform3DS(paymentMethod: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
-                    case .success(let paymentMethodToken):
-                        guard let threeDSPostAuthResponse = paymentMethodToken.1,
+                    case .success(let res):
+                        guard let threeDSPostAuthResponse = res.1,
                               let resumeToken = threeDSPostAuthResponse.resumeToken else {
                             let err = PrimerError.threeDSFailed
                             Primer.shared.delegate?.onResumeError?(err)

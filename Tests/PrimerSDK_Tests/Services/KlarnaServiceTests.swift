@@ -54,15 +54,15 @@ extension KlarnaServiceTests: PrimerDelegate {
         })
     }
     
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
+    func tokenAddedToVault(_ token: PaymentMethod) {
         
     }
     
-    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func authorizePayment(_ result: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
         
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(_ paymentMethod: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
         
     }
     

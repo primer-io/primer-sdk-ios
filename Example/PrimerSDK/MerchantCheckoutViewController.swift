@@ -33,7 +33,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     
-    var paymentMethodsDataSource: [PaymentMethodToken] = [] {
+    var paymentMethodsDataSource: [PaymentMethod] = [] {
         didSet {
             self.tableView.reloadData()
         }
@@ -261,7 +261,7 @@ class MerchantCheckoutViewController: UIViewController {
         })
     }
     
-    func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
+    func createPayment(with paymentMethod: PaymentMethod, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
         guard let url = URL(string: "\(endpoint)/payments") else {
             completion(nil, NetworkError.missingParams)
             return
@@ -315,7 +315,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         requestClientToken(completion)
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol) {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod, resumeHandler: ResumeHandlerProtocol) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Method: \(paymentMethodToken)\n")
 
         if paymentMethodToken.paymentInstrumentType == .paymentCard,
@@ -378,7 +378,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
     }
     
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
+    func tokenAddedToVault(_ token: PaymentMethod) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nToken added to vault\nToken: \(token)\n")
     }
     

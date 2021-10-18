@@ -1,8 +1,8 @@
 #if canImport(UIKit)
 
 public typealias ClientTokenCallBack = (_ completionHandler: @escaping (_ token: String?, _ error: Error?) -> Void) -> Void
-public typealias PaymentMethodTokenCallBack = (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
-public typealias TokenizationSuccessCallBack = (_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
+public typealias PaymentMethodCallBack = (_ result: PaymentMethod, _ completion:  @escaping (Error?) -> Void) -> Void
+public typealias TokenizationSuccessCallBack = (_ paymentMethod: PaymentMethod, _ completion:  @escaping (Error?) -> Void) -> Void
 public typealias CheckoutDismissalCallback = () -> Void
 
 internal protocol PrimerSettingsProtocol {
@@ -13,7 +13,7 @@ internal protocol PrimerSettingsProtocol {
     var klarnaSessionType: KlarnaSessionType? { get }
     var klarnaPaymentDescription: String? { get }
     var customerId: String? { get }
-    var authorizePayment: PaymentMethodTokenCallBack { get }
+    var authorizePayment: PaymentMethodCallBack { get }
     var onTokenizeSuccess: TokenizationSuccessCallBack { get }
     var onCheckoutDismiss: CheckoutDismissalCallback { get }
     var urlScheme: String? { get }
@@ -94,7 +94,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
     }
 
-    internal var authorizePayment: PaymentMethodTokenCallBack {
+    internal var authorizePayment: PaymentMethodCallBack {
         return Primer.shared.delegate?.authorizePayment ?? { _, _ in }
     }
     
@@ -182,15 +182,15 @@ internal class MockDelegate: PrimerDelegate {
         
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
         
     }
     
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
+    func tokenAddedToVault(_ token: PaymentMethod) {
             
     }
 
-    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func authorizePayment(_ result: PaymentMethod, _ completion: @escaping (Error?) -> Void) {
 
     }
 

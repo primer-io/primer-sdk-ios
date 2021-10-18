@@ -15,7 +15,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var savedPaymentInstrumentStackView: UIStackView!
     private var payButton: PrimerOldButton!
     private var coveringView: PrimerView!
-    private var selectedPaymentInstrument: PaymentMethodToken?
+    private var selectedPaymentInstrument: PaymentMethod?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
     
@@ -215,10 +215,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     @objc
     func payButtonTapped() {
-        guard let paymentMethodToken = selectedPaymentInstrument else { return }
+        guard let paymentMethod = selectedPaymentInstrument else { return }
         
         payButton.showSpinner(true, color: theme.colorTheme.text2)
-        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
+        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
             DispatchQueue.main.async { [weak self] in
                 self?.payButton.showSpinner(false)
                 
@@ -241,7 +241,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 }
             }
         })
-        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
+        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
     }
 
 }

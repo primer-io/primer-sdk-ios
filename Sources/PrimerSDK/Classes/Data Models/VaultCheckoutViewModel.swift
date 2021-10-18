@@ -10,7 +10,7 @@ import Foundation
 #if canImport(UIKit)
 
 internal protocol VaultCheckoutViewModelProtocol {
-    var paymentMethods: [PaymentMethodToken] { get }
+    var paymentMethods: [PaymentMethod] { get }
     var mandate: DirectDebitMandate { get }
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] { get }
     var selectedPaymentMethodId: String { get }
@@ -41,7 +41,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return amount.toCurrencyString(currency: currency)
     }
 
-    var paymentMethods: [PaymentMethodToken] {
+    var paymentMethods: [PaymentMethod] {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         if #available(iOS 11.0, *) {

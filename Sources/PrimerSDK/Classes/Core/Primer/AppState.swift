@@ -8,7 +8,7 @@
 #if canImport(UIKit)
 
 internal protocol AppStateProtocol: AnyObject {
-    var paymentMethods: [PaymentMethodToken] { get set }
+    var paymentMethods: [PaymentMethod] { get set }
     var selectedPaymentMethod: String { get set }
     var decodedClientToken: DecodedClientToken? { get set }
     var paymentMethodConfig: PrimerConfiguration? { get set }
@@ -27,7 +27,7 @@ internal protocol AppStateProtocol: AnyObject {
 }
 
 internal class AppState: AppStateProtocol {
-    var paymentMethods: [PaymentMethodToken] = []
+    var paymentMethods: [PaymentMethod] = []
     var selectedPaymentMethod: String = ""
     var decodedClientToken: DecodedClientToken?
     var paymentMethodConfig: PrimerConfiguration?

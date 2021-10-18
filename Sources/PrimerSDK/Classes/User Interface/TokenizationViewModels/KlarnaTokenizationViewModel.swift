@@ -107,7 +107,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
                 return self.finalizePaymentSession()
             }
         }
-        .then { res -> Promise<PaymentMethodToken> in
+        .then { res -> Promise<PaymentMethod> in
             DispatchQueue.main.async {
                 self.willDismissPaymentMethod?()
             }

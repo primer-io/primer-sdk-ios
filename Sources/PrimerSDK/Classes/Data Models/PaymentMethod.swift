@@ -3,11 +3,11 @@
 import Foundation
 
 struct GetVaultedPaymentMethodsResponse: Decodable {
-    var data: [PaymentMethodToken]
+    var data: [PaymentMethod]
 }
 
 /**
- Each **PaymentMethodToken** represents a payment method added on Primer and carries the necessary information
+ Each **PaymentMethod** represents a payment method added on Primer and carries the necessary information
  for identification (e.g. type), as well as further information to be used if needed.
  
  - Author:
@@ -15,6 +15,8 @@ struct GetVaultedPaymentMethodsResponse: Decodable {
  - Version:
  1.2.2
  */
+
+public typealias PaymentMethod = PaymentMethodToken
 
 public class PaymentMethodToken: NSObject, Codable {
     
@@ -71,7 +73,7 @@ public class PaymentMethodToken: NSObject, Codable {
 //    }
 }
 
-internal extension PaymentMethodToken {
+internal extension PaymentMethod {
     var cardButtonViewModel: CardButtonViewModel? {
         switch self.paymentInstrumentType {
         case .paymentCard:

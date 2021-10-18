@@ -9,8 +9,8 @@ import Foundation
 
 extension PrimerAPIClient {
     
-    func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
-        let endpoint = PrimerAPI.threeDSBeginRemoteAuth(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
+    func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethod: PaymentMethod, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
+        let endpoint = PrimerAPI.threeDSBeginRemoteAuth(clientToken: clientToken, paymentMethod: paymentMethod, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
         networkService.request(endpoint) { (result: Result<ThreeDS.BeginAuthResponse, NetworkServiceError>) in
             switch result {
             case .success(let threeDSecureBeginAuthResponse):
@@ -41,7 +41,7 @@ extension PrimerAPIClient {
 
 extension MockPrimerAPIClient {
     
-    func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
+    func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethod: PaymentMethod, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
