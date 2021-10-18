@@ -37,5 +37,9 @@ internal class PrimerTextField: UITextField {
             _text = super.text
         }
     }
+    
+    internal var isEmpty: Bool {
+        return (_text ?? "").isEmpty
+    }
         
 }

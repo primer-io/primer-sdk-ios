@@ -50,6 +50,9 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
             }
         }
     }
+    public var isEmpty: Bool {
+        return textField.isEmpty
+    }
     
     // MARK: - PROXY
     

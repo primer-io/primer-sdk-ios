@@ -258,7 +258,7 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if isValid == false {
+        if isValid == false && !primerTextFieldView.isEmpty {
             if primerTextFieldView is PrimerCardNumberFieldView {
                 cardNumberContainerView.errorText = "Invalid card number"
                 cardNumberContainerView.rightImage1 = UIImage(
