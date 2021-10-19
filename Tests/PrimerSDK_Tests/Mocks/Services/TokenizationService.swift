@@ -10,12 +10,13 @@
 @testable import PrimerSDK
 
 class MockTokenizationService: TokenizationServiceProtocol {
-    var tokenizedPaymentMethodToken: PaymentMethodToken?
+    
+    var paymentMethod: PaymentMethod?
     
     var paymentInstrumentType: String
     var tokenType: String
     var tokenizeCalled = false
-    lazy var paymentMethodTokenJSON: [String: Any] = [
+    lazy var paymentMethodJSON: [String: Any] = [
         "token": "payment_method_token",
         "analyticsId": "analytics_id",
         "tokenType":  tokenType,
@@ -27,12 +28,25 @@ class MockTokenizationService: TokenizationServiceProtocol {
         self.tokenType = tokenType
     }
 
-    func tokenize(request: PaymentMethodTokenizationRequest, onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void) {
+    func tokenize(request: TokenizationRequest, onTokenizeSuccess: @escaping (Result<PaymentMethod, PrimerError>) -> Void) {
         tokenizeCalled = true
         
-        let paymentMethodTokenData = try! JSONSerialization.data(withJSONObject: paymentMethodTokenJSON, options: .fragmentsAllowed)
-        let token = try! JSONParser().parse(PaymentMethodToken.self, from: paymentMethodTokenData) //PaymentMethodToken(token: "tokenID", paymentInstrumentType: .paymentCard, vaultData: VaultData())
-        return onTokenizeSuccess(.success(token))
+        let paymentMethodData = try! JSONSerialization.data(withJSONObject: paymentMethodJSON, options: .fragmentsAllowed)
+        self.paymentMethod = try! JSONParser().parse(PaymentMethod.self, from: paymentMethodData) //PaymentMethodToken(token: "tokenID", paymentInstrumentType: .paymentCard, vaultData: VaultData())
+        return onTokenizeSuccess(.success(self.paymentMethod!))
+    }
+    
+    func tokenize(request: TokenizationRequest) -> Promise<PaymentMethod> {
+        return Promise { seal in
+            self.tokenize(request: request) { result in
+                switch result {
+                case .failure(let err):
+                    seal.reject(err)
+                case .success(let res):
+                    seal.fulfill(res)
+                }
+            }
+        }
     }
 }
 

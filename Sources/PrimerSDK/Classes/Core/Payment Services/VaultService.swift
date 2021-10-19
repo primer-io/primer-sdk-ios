@@ -17,14 +17,14 @@ internal class VaultService: VaultServiceProtocol {
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(PrimerError.vaultFetchFailed)
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         
         firstly {
-            api.vaultFetchPaymentMethods(clientToken: clientToken)
+            api.vaultFetchPaymentMethods(clientToken: decodedClientToken)
         }
         .done { paymentMethods in
             state.paymentMethods = paymentMethods.data
@@ -43,16 +43,14 @@ internal class VaultService: VaultServiceProtocol {
         }
     }
 
-    func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+    func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(PrimerError.vaultDeleteFailed)
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.vaultDeletePaymentMethod(clientToken: clientToken, id: id) { (result) in
+        api.vaultDeletePaymentMethod(clientToken: decodedClientToken, id: id) { (result) in
             switch result {
             case .failure:
                 completion(PrimerError.vaultDeleteFailed)

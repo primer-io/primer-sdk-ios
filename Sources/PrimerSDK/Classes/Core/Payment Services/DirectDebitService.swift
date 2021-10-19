@@ -8,7 +8,7 @@
 #if canImport(UIKit)
 
 internal protocol DirectDebitServiceProtocol {
-    func createMandate(_ completion: @escaping (Error?) -> Void)
+    func createMandate(_ completion: @escaping (String?, Error?) -> Void)
 }
 
 internal class DirectDebitService: DirectDebitServiceProtocol {
@@ -17,23 +17,23 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
-    func createMandate(_ completion: @escaping (Error?) -> Void) {
+    func createMandate(_ completion: @escaping (String?, Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
-            return completion(PrimerError.directDebitSessionFailed)
+        guard let clientToken = ClientTokenService.decodedClientToken else {
+            return completion(nil, PrimerError.directDebitSessionFailed)
         }
 
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .goCardlessMandate) else {
-            return completion(PrimerError.directDebitSessionFailed)
+            return completion(nil, PrimerError.directDebitSessionFailed)
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         guard let customer = settings.customer else {
-            return completion(PrimerError.userDetailsMissing)
+            return completion(nil, PrimerError.userDetailsMissing)
         }
 
-        let mandate = state.directDebitMandate
+        let mandate = DirectDebitMandate()
         
         let bankDetails = BankDetails(
             iban: mandate.iban,
@@ -50,10 +50,9 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { [weak self] result in
             switch result {
             case .failure:
-                completion(PrimerError.directDebitSessionFailed)
+                completion(nil, PrimerError.directDebitSessionFailed)
             case .success(let response):
-                state.mandateId = response.mandateId
-                completion(nil)
+                completion(response.mandateId, nil)
             }
         }
     }

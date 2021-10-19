@@ -16,7 +16,8 @@ struct PaymentRequest: Encodable {
     let paymentMethod: String
     let amount: Int
     let type: String?
-    let currencyCode: String
+    let currencyCode: Currency
+    let countryCode: CountryCode
 }
 
 enum NetworkError: Error {
@@ -95,8 +96,8 @@ extension UIViewController {
                 print("Error: \(error)")
             }
             
-            let str = String(data: data, encoding: .utf8)
-            print("Response str: \(str)")
+//            let str = String(data: data, encoding: .utf8)
+//            print("Response str: \(str)")
 
             completion(.success(data))
 

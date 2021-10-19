@@ -69,7 +69,7 @@ extension MerchantCheckoutViewController {
         present(alert, animated: true)
     }
     
-    internal func generateRequest(_ token: PaymentMethodToken, capture: Bool) -> URLRequest? {
+    internal func generateRequest(_ token: PaymentMethod, capture: Bool) -> URLRequest? {
         guard let url = URL(string: "\(endpoint)/transaction") else { return nil }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -80,7 +80,8 @@ extension MerchantCheckoutViewController {
             paymentMethod: token.token,
             amount: amount,
             type: token.paymentInstrumentType.rawValue,
-            currencyCode: "EUR")
+            currencyCode: currency,
+            countryCode: countryCode)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

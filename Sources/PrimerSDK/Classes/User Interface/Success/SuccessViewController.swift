@@ -11,6 +11,7 @@ import UIKit
 
 internal class SuccessViewController: PrimerViewController {
 
+    private let viewModel: SuccessScreenViewModelProtocol = SuccessScreenViewModel()
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     var screenType: SuccessScreenType?
     
@@ -76,8 +77,6 @@ internal extension SuccessViewController {
     }
 
     func configureMessage() {
-        let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
-        
         message.accessibilityIdentifier = "success_screen_message_label"
         message.text = viewModel.getTitle(screenType)
         message.numberOfLines = 0
@@ -87,7 +86,6 @@ internal extension SuccessViewController {
     }
 
     func configureConfirmationMessage() {
-        let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         confirmationMessage.text = viewModel.getConfirmationMessage(screenType)
         confirmationMessage.numberOfLines = 0
         confirmationMessage.font = .systemFont(ofSize: 13)
@@ -104,7 +102,6 @@ internal extension SuccessViewController {
     }
 
     func configureReference() {
-        let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         reference.text = viewModel.getReference(screenType)
         reference.font = .systemFont(ofSize: 17)
     }
@@ -155,27 +152,15 @@ enum SuccessScreenType {
 }
 
 protocol SuccessScreenViewModelProtocol: AnyObject {
-    var mandate: DirectDebitMandate { get }
-    func getMandateId(_ screenType: SuccessScreenType?) -> String
     func getTitle(_ screenType: SuccessScreenType?) -> String
     func getConfirmationMessage(_ screenType: SuccessScreenType?) -> String
     func getReference(_ screenType: SuccessScreenType?) -> String
 }
 
 internal class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
-
-    var mandate: DirectDebitMandate {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.directDebitMandate
-    }
-        
+   
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-
-    func getMandateId(_ screenType: SuccessScreenType?) -> String {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.mandateId ?? ""
     }
 
     func getTitle(_ screenType: SuccessScreenType?) -> String {
@@ -221,7 +206,7 @@ internal class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
     }
 
     func getReference(_ screenType: SuccessScreenType?) -> String {
-        return getMandateId(screenType).uppercased()
+        return ""
     }
 }
 

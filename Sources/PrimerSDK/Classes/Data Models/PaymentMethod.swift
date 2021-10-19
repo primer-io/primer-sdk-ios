@@ -3,11 +3,11 @@
 import Foundation
 
 struct GetVaultedPaymentMethodsResponse: Decodable {
-    var data: [PaymentMethodToken]
+    var data: [PaymentMethod]
 }
 
 /**
- Each **PaymentMethodToken** represents a payment method added on Primer and carries the necessary information
+ Each **PaymentMethod** represents a payment method added on Primer and carries the necessary information
  for identification (e.g. type), as well as further information to be used if needed.
  
  - Author:
@@ -15,6 +15,8 @@ struct GetVaultedPaymentMethodsResponse: Decodable {
  - Version:
  1.2.2
  */
+
+public typealias PaymentMethod = PaymentMethodToken
 
 public class PaymentMethodToken: NSObject, Codable {
     
@@ -71,7 +73,7 @@ public class PaymentMethodToken: NSObject, Codable {
 //    }
 }
 
-internal extension PaymentMethodToken {
+internal extension PaymentMethod {
     var cardButtonViewModel: CardButtonViewModel? {
         switch self.paymentInstrumentType {
         case .paymentCard:
@@ -175,10 +177,40 @@ public enum PaymentInstrumentType: String, Codable {
     case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
     case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"
     case apayaToken = "APAYA"
+    case hoolah = "HOOLAH"
     case unknown = "UNKNOWN"
 
     public init(from decoder: Decoder) throws {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
+    }
+    
+    var paymentMethodType: PaymentMethodConfigType {
+        switch self {
+        case .apayaToken:
+            return .apaya
+        case .paymentCard:
+            return .paymentCard
+        case .payPalOrder:
+            return .payPal
+        case .payPalBillingAgreement:
+            return .payPal
+        case .applePay:
+            return .applePay
+        case .googlePay:
+            return .googlePay
+        case .goCardlessMandate:
+            return .goCardlessMandate
+        case .klarna:
+            return .klarna
+        case .klarnaPaymentSession:
+            return .klarna
+        case .klarnaCustomerToken:
+            return .klarna
+        case .hoolah:
+            return .hoolah
+        case .unknown:
+            return .unknown
+        }
     }
 }
 

@@ -3,34 +3,33 @@ import Foundation
 #if canImport(UIKit)
 
 internal protocol TokenizationServiceProtocol {
-    var tokenizedPaymentMethodToken: PaymentMethodToken? { get set }
+    var paymentMethod: PaymentMethod? { get set }
     func tokenize(
-        request: PaymentMethodTokenizationRequest,
-        onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void
+        request: TokenizationRequest,
+        onTokenizeSuccess: @escaping (Result<PaymentMethod, PrimerError>) -> Void
     )
+    func tokenize(request: TokenizationRequest) -> Promise<PaymentMethod>
 }
 
 internal class TokenizationService: TokenizationServiceProtocol {
     
-    var tokenizedPaymentMethodToken: PaymentMethodToken?
+    var paymentMethod: PaymentMethod?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     func tokenize(
-        request: PaymentMethodTokenizationRequest,
-        onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void
-    ) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+        request: TokenizationRequest,
+        onTokenizeSuccess: @escaping (Result<PaymentMethod, PrimerError>) -> Void
+    ) {        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return onTokenizeSuccess(.failure(PrimerError.tokenizationPreRequestFailed))
         }
 
-        log(logLevel: .verbose, title: nil, message: "Client Token: \(clientToken)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+        log(logLevel: .verbose, title: nil, message: "Client Token: \(decodedClientToken)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
-        guard let pciURL = clientToken.pciUrl else {
+        guard let pciURL = decodedClientToken.pciUrl else {
             return onTokenizeSuccess(.failure(PrimerError.tokenizationPreRequestFailed))
         }
 
@@ -44,18 +43,18 @@ internal class TokenizationService: TokenizationServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         
-        api.tokenizePaymentMethod(clientToken: clientToken, paymentMethodTokenizationRequest: request) { (result) in
+        api.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: request) { (result) in
             switch result {
             case .failure:
                 DispatchQueue.main.async {
                     onTokenizeSuccess(.failure( PrimerError.tokenizationRequestFailed ))
                 }
                 
-            case .success(let paymentMethodToken):
+            case .success(let paymentMethod):
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 let state: AppStateProtocol = DependencyContainer.resolve()
                 
-                self.tokenizedPaymentMethodToken = paymentMethodToken
+                self.paymentMethod = paymentMethod
                 
                 var isThreeDSEnabled: Bool = false
                 if state.paymentMethodConfig?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
@@ -67,10 +66,10 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 ///     - It has to be a vault flow
                 ///     - is3DSOnVaultingEnabled has to be enabled by the developer
                 ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
-                if paymentMethodToken.paymentInstrumentType == .paymentCard,
+                if paymentMethod.paymentInstrumentType == .paymentCard,
                    Primer.shared.flow.internalSessionFlow.vaulted,
                    settings.is3DSOnVaultingEnabled,
-                   paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
+                   paymentMethod.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                    isThreeDSEnabled {
                     #if canImport(Primer3DS)
                     let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
@@ -80,30 +79,30 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     do {
                         threeDSBeginAuthExtraData = try ThreeDSService.buildBeginAuthExtraData()
                     } catch {
-                        onTokenizeSuccess(.success(paymentMethodToken))
+                        onTokenizeSuccess(.success(paymentMethod))
                         return
                     }
 
                     threeDSService.perform3DS(
-                            paymentMethodToken: paymentMethodToken,
-                        protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
+                        paymentMethod: paymentMethod,
+                        protocolVersion: ClientTokenService.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
                         beginAuthExtraData: threeDSBeginAuthExtraData,
                             sdkDismissed: { () in
 
                             }, completion: { result in
                                 DispatchQueue.main.async {
                                     switch result {
-                                    case .success(let paymentMethodToken):
+                                    case .success(let res):
                                         if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-                                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken.0)
+                                            Primer.shared.delegate?.tokenAddedToVault?(res.0)
                                         }
 
-                                        onTokenizeSuccess(.success(paymentMethodToken.0))
+                                        onTokenizeSuccess(.success(res.0))
                                         
                                     case .failure(let err):
                                         // Even if 3DS fails, continue...
                                         log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
-                                        onTokenizeSuccess(.success(paymentMethodToken))
+                                        onTokenizeSuccess(.success(paymentMethod))
                                         
                                     }
                                 }
@@ -112,24 +111,24 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     
                     #else
                     print("\nWARNING!\nCannot perform 3DS, Primer3DS SDK is missing. Continue without 3DS\n")
-                    DispatchQueue.main.async {
-                        if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
-                        }
-
-                        onTokenizeSuccess(.success(paymentMethodToken))
-                    }
-                    
+                    onTokenizeSuccess(.success(paymentMethod))
                     #endif
                     
                 } else {
-                    DispatchQueue.main.async {
-                        if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
-                        }
-
-                        onTokenizeSuccess(.success(paymentMethodToken))
-                    }
+                    onTokenizeSuccess(.success(paymentMethod))
+                }
+            }
+        }
+    }
+    
+    func tokenize(request: TokenizationRequest) -> Promise<PaymentMethod> {
+        return Promise { seal in
+            self.tokenize(request: request) { result in
+                switch result {
+                case .failure(let err):
+                    seal.reject(err)
+                case .success(let res):
+                    seal.fulfill(res)
                 }
             }
         }

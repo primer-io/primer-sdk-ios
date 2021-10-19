@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import PrimerSDK
 
 enum Environment: String, Codable {
     case dev, sandbox, staging, production
@@ -14,7 +15,7 @@ enum Environment: String, Codable {
 
 struct CreateClientTokenRequest: Codable {
     let customerId: String?
-    let customerCountryCode: String?
+    let customerCountryCode: CountryCode?
     var environment: Environment = .sandbox
 }
 

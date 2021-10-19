@@ -46,8 +46,11 @@ public enum PrimerSessionFlow {
     case addKlarnaToVault
     case addDirectDebit
     case checkoutWithKlarna
+    case checkoutWithPayPal
     case checkoutWithApplePay
     case addApayaToVault
+    case checkoutWithHoolah
+    case checkoutWithPayNL
 
     internal var internalSessionFlow: PrimerInternalSessionFlow {
         switch self {
@@ -73,6 +76,12 @@ public enum PrimerSessionFlow {
             return .checkoutWithApplePay
         case .addApayaToVault:
             return .vaultApaya
+        case .checkoutWithPayPal:
+            return .checkoutWithPayPal
+        case .checkoutWithHoolah:
+            return .checkoutWithHoolah
+        case .checkoutWithPayNL:
+            return .checkoutWithPayNL
         }
     }
 }
@@ -81,15 +90,18 @@ internal enum PrimerInternalSessionFlow {
 
     case vault
     case checkout
-    case vaultCard
-    case checkoutWithCard
-    case vaultPayPal
-    case checkoutWithPayPal
-    case vaultDirectDebit
-    case vaultKlarna
-    case checkoutWithKlarna
-    case checkoutWithApplePay
     case vaultApaya
+    case vaultCard
+    case vaultDirectDebit
+    case vaultPayPal
+    case vaultKlarna
+    case checkoutWithApplePay
+    case checkoutWithCard
+    case checkoutWithHoolah
+    case checkoutWithKlarna
+    case checkoutWithPayNL
+    case checkoutWithPayPal
+    
     
     var vaulted: Bool {
         switch self {
@@ -102,11 +114,12 @@ internal enum PrimerInternalSessionFlow {
             return true
         case .checkout,
              .checkoutWithCard,
+             .checkoutWithHoolah,
+             .checkoutWithPayNL,
              .checkoutWithPayPal,
              .checkoutWithKlarna,
              .checkoutWithApplePay:
             return false
-        
         }
     }
 
@@ -121,6 +134,8 @@ internal enum PrimerInternalSessionFlow {
             return .VAULT
         case .checkout,
              .checkoutWithCard,
+             .checkoutWithHoolah,
+             .checkoutWithPayNL,
              .checkoutWithPayPal,
              .checkoutWithKlarna,
              .checkoutWithApplePay:

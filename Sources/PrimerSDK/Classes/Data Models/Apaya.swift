@@ -10,6 +10,7 @@
 import Foundation
 
 public struct Apaya {
+    
     public struct CreateSessionAPIRequest: Encodable {
         let merchantAccountId: String
         let reference: String = "recurring"
@@ -25,36 +26,37 @@ public struct Apaya {
             case phoneNumber = "phone_number"
         }
     }
+    
     public struct CreateSessionAPIResponse: Decodable {
         let url: String
         let token: String?
         let passthroughVariable: String?
     }
     
-    public struct WebViewResult {
+    public struct WebViewResponse {
         
-        let mxNumber: String
         let hashedIdentifier: String
         let mcc: String
         let mnc: String
-        let success: String
-        let status: String
+        let mxNumber: String
         let productId: String
+        let status: String
+        let success: String
         
-        static func create(from url: URL?) -> Result<Apaya.WebViewResult, Error> {
+        
+        init(url: URL) throws {
             guard
-                let url = url,
                 url.queryParameterValue(for: "success") != nil,
                 let status = url.queryParameterValue(for: "status")
             else {
-                return .failure(ApayaException.invalidWebViewResult)
+                throw ApayaException.invalidWebViewResult
             }
             
             if (status == "SETUP_ERROR") {
-                return .failure(ApayaException.webViewFlowError)
+                throw ApayaException.webViewFlowError
             }
             if (status == "SETUP_ABANDONED") {
-                return .failure(ApayaException.webViewFlowCancelled)
+                throw ApayaException.webViewFlowCancelled
             }
             
             guard
@@ -64,26 +66,23 @@ public struct Apaya {
                 let mnc = url.queryParameterValue(for: "MNC"),
                 let success = url.queryParameterValue(for: "success")
             else {
-                return .failure(ApayaException.invalidWebViewResult)
+                throw ApayaException.invalidWebViewResult
             }
             
             let state: AppStateProtocol = DependencyContainer.resolve()
-            guard state.decodedClientToken != nil,
+            guard ClientTokenService.decodedClientToken != nil,
                   let merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
             else {
-                return .failure(ApayaException.invalidWebViewResult)
+                throw ApayaException.invalidWebViewResult
             }
     
-            return .success(
-                Apaya.WebViewResult(
-                    mxNumber: mxNumber,
-                    hashedIdentifier: hashedIdentifier,
-                    mcc: mcc,
-                    mnc: mnc,
-                    success: success,
-                    status: status,
-                    productId: merchantAccountId)
-            )
+            self.hashedIdentifier = hashedIdentifier
+            self.mcc = mcc
+            self.mnc = mnc
+            self.mxNumber = mxNumber
+            self.productId = merchantAccountId
+            self.status = status
+            self.success = success
         }
     }
     
@@ -92,7 +91,7 @@ public struct Apaya {
         var carrier: Apaya.Carrier
         var hashedIdentifier: String?
         
-        init?(paymentMethod: PaymentMethodToken) {
+        init?(paymentMethod: PaymentMethod) {
             guard paymentMethod.paymentInstrumentType == .apayaToken else { return nil }
             guard let mcc = paymentMethod.paymentInstrumentData?.mcc,
                   let mnc = paymentMethod.paymentInstrumentData?.mnc,

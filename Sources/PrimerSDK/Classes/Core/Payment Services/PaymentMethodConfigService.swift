@@ -15,7 +15,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             return completion(PrimerError.configFetchFailed)
         }
         
@@ -27,24 +27,6 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                 completion(error)
             case .success(let config):
                 state.paymentMethodConfig = config
-
-                state.viewModels = []
-
-                state.paymentMethodConfig?.paymentMethods?.forEach({ method in
-                    guard let type = method.type else { return }
-                    if !type.isEnabled { return }
-                    state.viewModels.append(PaymentMethodViewModel(type: type))
-                })
-                
-                // Ensure Apple Pay is always first if present.
-                // This is because of Apple's guidelines.
-                let viewModels = state.viewModels
-                if (viewModels.contains(where: { model in model.type == .applePay})) {
-                    var arr = viewModels.filter({ model in model.type != .applePay})
-                    arr.insert(PaymentMethodViewModel(type: .applePay), at: 0)
-                    state.viewModels = arr
-                }
-                
                 completion(nil)
             }
         }

@@ -14,36 +14,35 @@ class MockClientTokenService: ClientTokenServiceProtocol {
     let tokenIsNil: Bool
     var throwError: Bool
 
-    init (tokenIsNil: Bool = false, throwError: Bool = false) {
-        self.tokenIsNil = tokenIsNil
+    init (clientToken: String? = nil, throwError: Bool = false) {
+        self.tokenIsNil = (clientToken == nil)
         self.throwError = throwError
+        
+        if let clientToken = clientToken {
+            try? ClientTokenService.storeClientToken(clientToken)
+        }
     }
 
-    var decodedClientToken: DecodedClientToken? {
-        if tokenIsNil { return nil }
-        return DecodedClientToken(
-            accessToken: "bla",
-            configurationUrl: "bla",
-            paymentFlow: "bla",
-            threeDSecureInitUrl: "bla",
-            threeDSecureToken: "bla",
-            coreUrl: "bla",
-            pciUrl: "bla",
-            env: "bla"
-        )
+    static var decodedClientToken: DecodedClientToken? {
+        return ClientTokenService.decodedClientToken
     }
 
     var loadCheckoutConfigCalled = false
     
     static func storeClientToken(_ clientToken: String) throws {
-        
+        try ClientTokenService.storeClientToken(clientToken)
     }
     
-    func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
+    func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
         loadCheckoutConfigCalled = true
         if (throwError) { return completion(PrimerError.generic) }
         return completion(nil)
     }
+    
+    static func resetClientToken() {
+        
+    }
+    
 }
 
 #endif

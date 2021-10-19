@@ -10,16 +10,26 @@
 import UIKit
 import WebKit
 
-internal class PrimerWebViewController: PrimerViewController, WKNavigationDelegate {
-
-    var viewModel: PrimerWebViewModelProtocol?
+internal class PrimerWebViewController: PrimerViewController {
+    
+    private let webView: WKWebView! = WKWebView()
+    internal private(set) var url: URL
+    var navigationDelegate: WKNavigationDelegate? {
+        didSet {
+            webView?.navigationDelegate = navigationDelegate
+        }
+    }
+    private let allowedHosts: [String] = [
+        "primer.io",
+        "livedemostore.primer.io"
+    ]
 
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        log(logLevel: .debug, message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(with viewModel: PrimerWebViewModelProtocol) {
-        self.viewModel = viewModel
+    init(with url: URL) {
+        self.url = url
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -27,58 +37,21 @@ internal class PrimerWebViewController: PrimerViewController, WKNavigationDelega
         fatalError("init(coder:) has not been implemented")
     }
 
-    let allowedHosts: [String] = [
-        "primer.io",
-        "livedemostore.primer.io"
-    ]
-
-    var url: URL?
-
     override func viewDidLoad() {
         super.viewDidLoad()
         renderWebView()
     }
 
     private func renderWebView() {
-        let webView = WKWebView()
         webView.isAccessibilityElement = false
         webView.accessibilityIdentifier = "primer_webview"
         webView.scrollView.bounces = false
-        webView.navigationDelegate = self // Control which sites can be visited
+        webView.navigationDelegate = navigationDelegate
         view = webView
-        if let url = url {            
-            var request = URLRequest(url: url)
-            request.timeoutInterval = 60
-            request.allHTTPHeaderFields = PrimerAPI.headers
-            webView.load(request)
-        }
-    }
-
-    func webView(
-        _ webView: WKWebView,
-        decidePolicyFor navigationAction: WKNavigationAction,
-        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
-    ) {
-        if
-            let url = navigationAction.request.url,
-            let host = url.host, allowedHosts.contains(host)
-        {
-            viewModel?.onRedirect(with: url)
-            decisionHandler(.cancel)
-        } else {
-            decisionHandler(.allow)
-        }
-    }
-    
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        let nsError = error as NSError
-        if nsError.domain == NSURLErrorDomain && webView.url == nil {
-            viewModel?.onError(error)
-        }
-    }
-    
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 60
+        request.allHTTPHeaderFields = PrimerAPI.headers
+        webView.load(request)
     }
     
 }

@@ -4,28 +4,99 @@ import UIKit
 import AuthenticationServices
 import SafariServices
 
-class PayPalViewModel: NSObject, PrimerOAuthViewModel {
+class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaymentMethodTokenizationViewModelProtocol {
     
-    var host: OAuthHost = .paypal
+    var willPresentPaymentMethod: (() -> Void)?
     var didPresentPaymentMethod: (() -> Void)?
+    var willDismissPaymentMethod: (() -> Void)?
+    var didDismissPaymentMethod: (() -> Void)?
     private var session: Any!
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    func tokenize() -> Promise <PaymentMethodToken> {
+    override func validate() throws {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+//        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            let err = PaymentException.missingClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard decodedClientToken.pciUrl != nil else {
+            let err = PrimerError.tokenizationPreRequestFailed
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard config.id != nil else {
+            let err = PaymentException.missingConfigurationId
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+        
+        guard decodedClientToken.coreUrl != nil else {
+            let err = PrimerError.invalidValue(key: "coreUrl")
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
+        }
+    }
+    
+    @objc
+    override func startTokenizationFlow() {
+        super.startTokenizationFlow()
+        
+        do {
+            try validate()
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                self.handleFailedTokenizationFlow(error: error)
+            }
+            return
+        }
+        
+        firstly {
+            self.tokenize()
+        }
+        .done { paymentMethod in
+            self.paymentMethod = paymentMethod
+            
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
+            }
+
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
+                if let err = err {
+                    self.handleFailedTokenizationFlow(error: err)
+                } else {
+                    self.handleSuccessfulTokenizationFlow()
+                }
+            })
+        }
+        .catch { err in
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            self.handleFailedTokenizationFlow(error: err)
+        }
+    }
+    
+    func tokenize() -> Promise <PaymentMethod> {
         return Promise { seal in
             firstly {
                 self.fetchOAuthURL()
             }
             .then { url -> Promise<URL> in
+                self.willPresentPaymentMethod?()
                 return self.createOAuthSession(url)
             }
             .then { url -> Promise<PaymentInstrument> in
                 return self.generatePaypalPaymentInstrument()
             }
-            .then { instrument -> Promise<PaymentMethodToken> in
+            .then { instrument -> Promise<PaymentMethod> in
                 return self.tokenize(instrument: instrument)
             }
             .done { token in
@@ -39,21 +110,40 @@ class PayPalViewModel: NSObject, PrimerOAuthViewModel {
     
     private func fetchOAuthURL() -> Promise<URL> {
         return Promise { seal in
-            let viewModel: OAuthViewModelProtocol = DependencyContainer.resolve()
-            viewModel.generateOAuthURL(host, with: { result in
-                switch result {
-                case .success(let urlStr):
-                    guard let url = URL(string: urlStr) else {
-                        seal.reject(PrimerError.failedToLoadSession)
-                        return
-                    }
-                    
-                    seal.fulfill(url)
-                case .failure(let err):
-                    seal.reject(err)
-                }
-            })
+            let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
             
+            switch Primer.shared.flow.internalSessionFlow.uxMode {
+            case .CHECKOUT:
+                paypalService.startOrderSession { result in
+                    switch result {
+                    case .success(let urlStr):
+                        guard let url = URL(string: urlStr) else {
+                            seal.reject(PrimerError.failedToLoadSession)
+                            return
+                        }
+                        
+                        seal.fulfill(url)
+                        
+                    case .failure(let err):
+                        seal.reject(err)
+                    }
+                }
+            case .VAULT:
+                paypalService.startBillingAgreementSession { result in
+                    switch result {
+                    case .success(let urlStr):
+                        guard let url = URL(string: urlStr) else {
+                            seal.reject(PrimerError.failedToLoadSession)
+                            return
+                        }
+                        
+                        seal.fulfill(url)
+                        
+                    case .failure(let err):
+                        seal.reject(err)
+                    }
+                }
+            }
         }
     }
     
@@ -97,8 +187,9 @@ class PayPalViewModel: NSObject, PrimerOAuthViewModel {
                 )
 
                 (session as! SFAuthenticationSession).start()
-                didPresentPaymentMethod?()
             }
+            
+            didPresentPaymentMethod?()
         }
     }
     
@@ -162,7 +253,7 @@ class PayPalViewModel: NSObject, PrimerOAuthViewModel {
         })
     }
     
-    private func tokenize(instrument: PaymentInstrument) -> Promise<PaymentMethodToken> {
+    private func tokenize(instrument: PaymentInstrument) -> Promise<PaymentMethod> {
         return Promise { seal in
             let state: AppStateProtocol = DependencyContainer.resolve()
             let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
@@ -182,20 +273,31 @@ class PayPalViewModel: NSObject, PrimerOAuthViewModel {
     
 }
 
+extension PayPalTokenizationViewModel {
+    
+    override func handle(error: Error) {
+        self.completion?(nil, error)
+        self.completion = nil
+    }
+    
+    override func handle(newClientToken clientToken: String) {
+        try? ClientTokenService.storeClientToken(clientToken)
+    }
+    
+    override func handleSuccess() {
+        self.completion?(self.paymentMethod, nil)
+        self.completion = nil
+    }
+    
+}
+
 @available(iOS 11.0, *)
-extension PayPalViewModel: ASWebAuthenticationPresentationContextProviding {
+extension PayPalTokenizationViewModel: ASWebAuthenticationPresentationContextProviding {
     @available(iOS 12.0, *)
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
     }
     
-}
-
-extension SFSafariViewController {
-    override open var modalPresentationStyle: UIModalPresentationStyle {
-        get { return .fullScreen}
-        set { super.modalPresentationStyle = newValue }
-    }
 }
 
 #endif
