@@ -25,8 +25,8 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         let previousEnv = state.decodedClientToken?.env
         
         jwtTokenPayload.configurationUrl = jwtTokenPayload.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
-        jwtTokenPayload.coreUrl = jwtTokenPayload.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
-        jwtTokenPayload.pciUrl = "http://localhost:8080"
+        jwtTokenPayload.coreUrl = jwtTokenPayload.coreUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        jwtTokenPayload.pciUrl = jwtTokenPayload.pciUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
         
         if jwtTokenPayload.env == nil {
             // That's because the clientToken returned for dynamic 3DS doesn't contain an env.
