@@ -21,7 +21,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        environmentControl.selectedSegmentIndex = 1
+        environmentControl.selectedSegmentIndex = 0
         environmentControl.accessibilityIdentifier = "env_control"
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
