@@ -6,6 +6,7 @@
 //  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
+
 import XCTest
 @testable import PrimerSDK
 
@@ -53,5 +54,5 @@ class StringTests: XCTestCase {
         
         XCTAssert(base64Str.jwtTokenPayload != nil, "Should be able to decode base64 with _ chars")
     }
-    
+
 }

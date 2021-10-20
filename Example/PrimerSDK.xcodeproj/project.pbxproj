@@ -10,7 +10,6 @@
 		151B098C267A276100FB49B8 /* Vault.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15300DB8267A1211009A1B9C /* Vault.swift */; };
 		152A42CE26A2B0BD0036D3D6 /* ThreeDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152A42CD26A2B0BD0036D3D6 /* ThreeDS.swift */; };
 		15300DBB267A1646009A1B9C /* VaultKlarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15300DBA267A1646009A1B9C /* VaultKlarna.swift */; };
-		1582521E272025A80090F563 /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582521D272025A80090F563 /* StringTests.swift */; };
 		1582B979260A3F2900C80BD7 /* OAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95B260A3F2900C80BD7 /* OAuthViewModel.swift */; };
 		1582B97C260A3F2900C80BD7 /* DirectCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95E260A3F2900C80BD7 /* DirectCheckoutViewModel.swift */; };
 		1582B97D260A3F2900C80BD7 /* VaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95F260A3F2900C80BD7 /* VaultCheckoutViewModel.swift */; };
@@ -36,6 +35,7 @@
 		1582B9AD260A402E00C80BD7 /* Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B9AC260A402E00C80BD7 /* Base.swift */; };
 		15ACE9652614B186004C3EAA /* chocolate_bar_demo.otf in Resources */ = {isa = PBXBuildFile; fileRef = 15ACE9642614B186004C3EAA /* chocolate_bar_demo.otf */; };
 		15B2E64826F8A9EE005B8343 /* Apaya.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B2E64726F8A9EE005B8343 /* Apaya.swift */; };
+		15E82E5B2720645B001EE133 /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E82E5A2720645B001EE133 /* StringTests.swift */; };
 		15F32E1D26FDA8E4004B3903 /* PrimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F32E1C26FDA8E4004B3903 /* PrimerTests.swift */; };
 		15F5E2FF26982B21003AFF8A /* CardComponentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F5E2FE26982B21003AFF8A /* CardComponentManagerTests.swift */; };
 		15F97C632624480500DCB3BA /* AppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F97C622624480500DCB3BA /* AppViewController.swift */; };
@@ -87,7 +87,6 @@
 		152A42CD26A2B0BD0036D3D6 /* ThreeDS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDS.swift; sourceTree = "<group>"; };
 		15300DB8267A1211009A1B9C /* Vault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vault.swift; sourceTree = "<group>"; };
 		15300DBA267A1646009A1B9C /* VaultKlarna.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultKlarna.swift; sourceTree = "<group>"; };
-		1582521D272025A80090F563 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
 		1582B95B260A3F2900C80BD7 /* OAuthViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OAuthViewModel.swift; sourceTree = "<group>"; };
 		1582B95E260A3F2900C80BD7 /* DirectCheckoutViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectCheckoutViewModel.swift; sourceTree = "<group>"; };
 		1582B95F260A3F2900C80BD7 /* VaultCheckoutViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultCheckoutViewModel.swift; sourceTree = "<group>"; };
@@ -126,6 +125,7 @@
 		15ACEA762615C791004C3EAA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		15ACEA772615C791004C3EAA /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Main.strings; sourceTree = "<group>"; };
 		15B2E64726F8A9EE005B8343 /* Apaya.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Apaya.swift; sourceTree = "<group>"; };
+		15E82E5A2720645B001EE133 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
 		15F32E1C26FDA8E4004B3903 /* PrimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerTests.swift; sourceTree = "<group>"; };
 		15F5BFFE25FBAFDB00426B1C /* PrimerSDK_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrimerSDK_Example.entitlements; sourceTree = "<group>"; };
 		15F5E2FE26982B21003AFF8A /* CardComponentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardComponentManagerTests.swift; sourceTree = "<group>"; };
@@ -260,6 +260,7 @@
 			children = (
 				1582B970260A3F2900C80BD7 /* MaskTests.swift */,
 				1D3922C9270DEC2F001BDCCA /* WebViewUtilTests.swift */,
+				15E82E5A2720645B001EE133 /* StringTests.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -718,7 +719,6 @@
 				1DEBE0E126B75EBF004E3064 /* ApayaServiceTests.swift in Sources */,
 				1582B98A260A3F2900C80BD7 /* OAuthViewModelTests.swift in Sources */,
 				1582B98B260A3F2900C80BD7 /* MaskTests.swift in Sources */,
-				1582521E272025A80090F563 /* StringTests.swift in Sources */,
 				1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */,
 				1582B980260A3F2900C80BD7 /* PaymentMethodConfigService.swift in Sources */,
 				1582B979260A3F2900C80BD7 /* OAuthViewModel.swift in Sources */,
@@ -737,6 +737,7 @@
 				1582B987260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift in Sources */,
 				1DEBE0F326BC4097004E3064 /* ApayaWebViewModelTests.swift in Sources */,
 				1582B990260A3F2900C80BD7 /* TokenizationServiceTests.swift in Sources */,
+				15E82E5B2720645B001EE133 /* StringTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
