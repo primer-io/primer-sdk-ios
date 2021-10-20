@@ -37,10 +37,10 @@ platform :ios do
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
     sdk_version_name = ENV['SOURCE_BRANCH']
 
-    cocoapods(
-      clean_install: true,
-      podfile: "./Example/Podfile"
-    )
+    # cocoapods(
+    #   clean_install: true,
+    #   podfile: "./Example/Podfile"
+    # )
 
     # Set version number
     increment_version_number(
@@ -138,10 +138,10 @@ platform :ios do
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
     sdk_version_name = ENV['SOURCE_TAG']
 
-    cocoapods(
-      clean_install: true,
-      podfile: "./Example/Podfile"
-    )
+    # cocoapods(
+    #   clean_install: true,
+    #   podfile: "./Example/Podfile"
+    # )
 
     # Set version number
     increment_version_number(
@@ -169,7 +169,7 @@ platform :ios do
       keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
-  end
+  
 
 
     # Build for appetize
@@ -242,10 +242,10 @@ platform :ios do
     puts "PR_NUMBER: " + pr_number
     version_name = "preview-" + pr_number
 
-    cocoapods(
-      clean_install: true,
-      podfile: "./Example/Podfile"
-    )
+    # cocoapods(
+    #   clean_install: true,
+    #   podfile: "./Example/Podfile"
+    # )
 
     # Set version number
     increment_version_number(
@@ -259,13 +259,13 @@ platform :ios do
     )
 
     create_keychain(
-        name: ENV["MATCH_KEYCHAIN_NAME"],
-        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-        default_keychain: true,
-        unlock: true,
-        timeout: 3600,
-        lock_when_sleeps: true
-      )
+      name: ENV["MATCH_KEYCHAIN_NAME"],
+      password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      lock_when_sleeps: true
+    )
 
     match(
       type: "development",
