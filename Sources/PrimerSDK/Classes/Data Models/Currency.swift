@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 public enum Currency: String, Codable {
     case USD
     case GBP
@@ -63,3 +65,5 @@ extension Currency: CaseIterable {
     }
         
 }
+
+#endif

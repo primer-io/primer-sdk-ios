@@ -5,8 +5,9 @@
 //  Created by Evangelos Pittas on 16/4/21.
 //
 
-import Foundation
+#if canImport(UIKit)
 
+import Foundation
 
 protocol ApplePayServiceProtocol {
     func tokenize(instrument: PaymentInstrument, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void)
@@ -77,3 +78,5 @@ class ApplePayService: NSObject, ApplePayServiceProtocol {
     }
     
 }
+
+#endif

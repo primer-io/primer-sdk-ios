@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 public class PrimerNibView: UIView {
@@ -61,3 +63,5 @@ internal extension PrimerNibView {
         return nib.instantiate(withOwner: self, options: nil).first as! UIView
     }
 }
+
+#endif

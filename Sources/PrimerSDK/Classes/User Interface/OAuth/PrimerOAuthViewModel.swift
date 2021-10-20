@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 6/8/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 enum OAuthHost {
@@ -19,3 +21,5 @@ protocol PrimerOAuthViewModel {
     var didPresentPaymentMethod: (() -> Void)? { get set }
     func tokenize() -> Promise <PaymentMethodToken>
 }
+
+#endif

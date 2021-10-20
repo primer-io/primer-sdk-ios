@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 6/7/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 @objc
@@ -392,3 +394,5 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     }
 
 }
+
+#endif

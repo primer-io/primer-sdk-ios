@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 30/7/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 /// PrimerLoadingViewController is a loading view controller, with variable height.
@@ -40,3 +42,5 @@ class PrimerLoadingViewController: PrimerViewController {
     }
     
 }
+
+#endif
