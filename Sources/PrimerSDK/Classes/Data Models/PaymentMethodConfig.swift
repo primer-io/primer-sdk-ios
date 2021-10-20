@@ -24,10 +24,69 @@ struct PrimerConfiguration: Codable {
         return viewModels
     }
     
+    static var selectedPaymentMethod: PaymentMethod? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        guard !state.selectedPaymentMethod.isEmpty else { return nil }
+        
+        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        let selectedPaymentMethod = checkoutViewModel.paymentMethods.filter({ $0.token == state.selectedPaymentMethod }).first
+        return selectedPaymentMethod
+    }
+    
     let coreUrl: String?
     let pciUrl: String?
     let paymentMethods: [PaymentMethodConfig]?
+    let clientSession: ClientSession?
     let keys: ThreeDS.Keys?
+
+    var isSetByClientSession: Bool {
+        return clientSession != nil
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case coreUrl, pciUrl, clientSession, paymentMethods, keys
+    }
+    
+    init(data: Data) {
+        self.coreUrl = nil
+        self.pciUrl = nil
+        self.clientSession = nil
+        self.paymentMethods = nil
+        self.keys = nil
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
+        self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
+        self.clientSession = (try? container.decode(ClientSession?.self, forKey: .clientSession)) ?? nil
+        self.paymentMethods = (try? container.decode([PaymentMethodConfig]?.self, forKey: .paymentMethods)) ?? nil
+        self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
+        
+        if let paymentMethodOptions = clientSession?.paymentMethod?.paymentMethodOptions, !paymentMethodOptions.isEmpty {
+            for paymentMethodOption in paymentMethodOptions {
+                if let type = paymentMethodOption["type"] as? String,
+                   let surcharge = paymentMethodOption["surcharge"] as? Int,
+                   let paymentMethod = self.paymentMethods?.filter({ $0.type.rawValue == type }).first {
+                    paymentMethod.surcharge = surcharge
+                }
+            }
+        }
+    }
+    
+    init(
+        coreUrl: String?,
+        pciUrl: String?,
+        clientSession: ClientSession?,
+        paymentMethods: [PaymentMethodConfig]?,
+        keys: ThreeDS.Keys?
+    ) {
+        self.coreUrl = coreUrl
+        self.pciUrl = pciUrl
+        self.clientSession = clientSession
+        self.paymentMethods = paymentMethods
+        self.keys = keys
+    }
     
     func getConfigId(for type: PaymentMethodConfigType) -> String? {
         guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
@@ -46,7 +105,7 @@ struct PrimerConfiguration: Codable {
     }
 }
 
-struct PaymentMethodConfig: Codable {
+class PaymentMethodConfig: Codable {
     
     let id: String? // Will be nil for cards
     let processorConfigId: String?
@@ -71,6 +130,7 @@ struct PaymentMethodConfig: Codable {
         
         return nil
     }
+    var surcharge: Int?
     
     private enum CodingKeys : String, CodingKey {
         case id, options, processorConfigId, type
@@ -83,7 +143,7 @@ struct PaymentMethodConfig: Codable {
         self.type = type
     }
     
-    init(from decoder: Decoder) throws {
+    required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String?.self, forKey: .id)
         processorConfigId = try container.decode(String?.self, forKey: .processorConfigId)

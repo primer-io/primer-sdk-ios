@@ -64,34 +64,6 @@ struct DirectDebitCreateMandateRequest: Codable {
     let bankDetails: BankDetails
 }
 
-public struct Customer: Codable {
-    let firstName: String?
-    let lastName: String?
-    let email: String?
-    let homePhoneNumber: String?
-    let mobilePhoneNumber: String?
-    let workPhoneNumber: String?
-    let billingAddress: Address?
-    
-    public init(
-        firstName: String? = nil,
-        lastName: String? = nil,
-        email: String? = nil,
-        homePhoneNumber: String? = nil,
-        mobilePhoneNumber: String? = nil,
-        workPhoneNumber: String? = nil,
-        billingAddress: Address? = nil
-    ) {
-        self.firstName = firstName
-        self.lastName = lastName
-        self.email = email
-        self.homePhoneNumber = homePhoneNumber
-        self.mobilePhoneNumber = mobilePhoneNumber
-        self.workPhoneNumber = workPhoneNumber
-        self.billingAddress = billingAddress
-    }
-}
-
 struct BankDetails: Codable {
     let iban: String?
     let bankCode: String?

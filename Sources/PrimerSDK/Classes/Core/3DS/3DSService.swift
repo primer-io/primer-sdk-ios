@@ -93,7 +93,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         if settings.customer?.billingAddress?.countryCode == nil {
             errors.append(PrimerError.userDetailsCountryCodeMissing)
-        } else if CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!) == nil {
+        } else if CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!.rawValue) == nil {
             errors.append(PrimerError.userDetailsCountryCodeMissing)
         }
         
@@ -129,21 +129,21 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
                                         email: settings.customer!.email!,
-                                        homePhone: settings.customer!.homePhoneNumber,
-                                        mobilePhone: settings.customer!.mobilePhoneNumber,
-                                        workPhone: settings.customer!.workPhoneNumber)
+                                        homePhone: nil,
+                                        mobilePhone: settings.customer!.mobileNumber,
+                                        workPhone: nil)
         
         let threeDSAddress = ThreeDS.Address(title: nil,
                                              firstName: settings.customer!.firstName,
                                              lastName: settings.customer!.lastName,
                                              email: settings.customer!.email,
-                                             phoneNumber: settings.customer!.mobilePhoneNumber ?? settings.customer!.homePhoneNumber ?? settings.customer!.workPhoneNumber,
+                                             phoneNumber: settings.customer!.mobileNumber,
                                              addressLine1: settings.customer!.billingAddress!.addressLine1!,
                                              addressLine2: settings.customer!.billingAddress!.addressLine2,
                                              addressLine3: nil,
                                              city: settings.customer!.billingAddress!.city!,
                                              state: nil,
-                                             countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!)!,
+                                             countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!.rawValue)!,
                                              postalCode: settings.customer!.billingAddress!.postalCode!)
         
         return ThreeDS.BeginAuthExtraData(
@@ -249,21 +249,21 @@ class ThreeDSService: ThreeDSServiceProtocol {
             
             let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
                                             email: settings.customer!.email!,
-                                            homePhone: settings.customer!.homePhoneNumber,
-                                            mobilePhone: settings.customer!.mobilePhoneNumber,
-                                            workPhone: settings.customer!.workPhoneNumber)
+                                            homePhone: nil,
+                                            mobilePhone: settings.customer!.mobileNumber,
+                                            workPhone: nil)
             
             let threeDSAddress = ThreeDS.Address(title: nil,
                                                  firstName: settings.customer!.firstName,
                                                  lastName: settings.customer!.lastName,
                                                  email: settings.customer!.email,
-                                                 phoneNumber: settings.customer!.mobilePhoneNumber ?? settings.customer!.homePhoneNumber ?? settings.customer!.workPhoneNumber,
+                                                 phoneNumber: settings.customer!.mobileNumber,
                                                  addressLine1: settings.customer!.billingAddress!.addressLine1!,
                                                  addressLine2: settings.customer!.billingAddress!.addressLine2,
                                                  addressLine3: nil,
                                                  city: settings.customer!.billingAddress!.city!,
                                                  state: nil,
-                                                 countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!)!,
+                                                 countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!.rawValue)!,
                                                  postalCode: settings.customer!.billingAddress!.postalCode!)
             
             threeDSecureBeginAuthRequest.amount = beginAuthExtraData.amount

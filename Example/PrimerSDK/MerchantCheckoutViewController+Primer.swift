@@ -14,16 +14,7 @@ extension MerchantCheckoutViewController {
     // MARK: - PRIMER HELPERS
     
     internal func fetchPaymentMethods() {
-        Primer.shared.fetchVaultedPaymentMethods { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .failure(let err):
-                    print("Error: \(err)")
-                case .success(let tokens):
-                    self?.paymentMethodsDataSource = tokens
-                }
-            }
-        }
+
     }
     
     internal func presentPrimerOptions(_ index: Int) {
@@ -69,7 +60,7 @@ extension MerchantCheckoutViewController {
         present(alert, animated: true)
     }
     
-    internal func generateRequest(_ token: PaymentMethod, capture: Bool) -> URLRequest? {
+    internal func generateRequest(_ token: PrimerSDK.PaymentMethod, capture: Bool) -> URLRequest? {
         guard let url = URL(string: "\(endpoint)/transaction") else { return nil }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -122,13 +113,13 @@ extension MerchantCheckoutViewController {
     internal func generateBusinessDetails() -> BusinessDetails {
         return BusinessDetails(
             name: "My Business",
-            address: Address(
+            address: PrimerSDK.Address(
                 addressLine1: "107 Rue",
                 addressLine2: nil,
                 city: "Paris",
+                postalCode: "75001",
                 state: nil,
-                countryCode: "FR",
-                postalCode: "75001"
+                countryCode: .fr
             )
         )
     }

@@ -16,6 +16,7 @@ class PaymentMethodConfigServiceTests: XCTestCase {
         let config = PrimerConfiguration(
             coreUrl: "coreUrl",
             pciUrl: "pciUrl",
+            clientSession: nil,
             paymentMethods: [
                 PaymentMethodConfig(id: "id123", options: nil, processorConfigId: "config_id", type: .paymentCard)
             ],

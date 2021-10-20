@@ -11,26 +11,22 @@ internal protocol ClientTokenServiceProtocol {
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
     
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
     static var decodedClientToken: DecodedClientToken? {
         let state: AppStateProtocol = DependencyContainer.resolve()
+        guard let clientToken = state.clientToken else { return nil }
         
-        guard let clientToken = state.clientToken,
-              let decodedClientToken = clientToken.jwtTokenPayload
-        else {
-            return nil
-        }
+        guard var decodedClientToken = clientToken.jwtTokenPayload else { return nil }
+        
+        decodedClientToken.configurationUrlStr = decodedClientToken.configurationUrlStr?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        decodedClientToken.coreUrlStr = decodedClientToken.coreUrlStr?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        decodedClientToken.pciUrlStr = decodedClientToken.pciUrlStr?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
         
         do {
             try decodedClientToken.validate()
+            return decodedClientToken
         } catch {
             return nil
         }
-        
-        return decodedClientToken
     }
     
     static func storeClientToken(_ clientToken: String) throws {
@@ -42,6 +38,10 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         
         let state: AppStateProtocol = DependencyContainer.resolve()
         let previousEnv = ClientTokenService.decodedClientToken?.env
+        
+        decodedClientToken.configurationUrlStr = decodedClientToken.configurationUrlStr?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        decodedClientToken.coreUrlStr = decodedClientToken.coreUrlStr?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        decodedClientToken.pciUrlStr = decodedClientToken.pciUrlStr?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
         
         if decodedClientToken.env == nil {
             // That's because the clientToken returned for dynamic 3DS doesn't contain an env.

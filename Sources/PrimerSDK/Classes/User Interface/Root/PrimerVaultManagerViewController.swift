@@ -29,18 +29,18 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
         
         view.backgroundColor = theme.colorTheme.main1
         
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-        let availablePaymentMethods = checkoutViewModel.availablePaymentOptions
-        
         verticalStackView.spacing = 14.0
-        
-        if !availablePaymentMethods.isEmpty {
-            renderAvailablePaymentMethods()
-        }
+        renderAvailablePaymentMethods()
     }
     
     private func renderAvailablePaymentMethods() {
-        PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
+        PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView, delegate: self)
     }
     
+}
+
+extension PrimerVaultManagerViewController: PaymentMethodsGroupViewDelegate {
+    func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol) {
+        
+    }
 }

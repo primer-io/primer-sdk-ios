@@ -9,23 +9,23 @@
 import Foundation
 import PrimerSDK
 
-class ApayaViewModel {
-    
-    var carrier: ApayaCarrier
-    var hashedIdentifier: String?
-    
-    init?(paymentMethod: PaymentMethod) {
-        guard paymentMethod.paymentInstrumentType == .apayaToken else { return nil }
-        guard let mcc = paymentMethod.paymentInstrumentData?.mcc,
-              let mnc = paymentMethod.paymentInstrumentData?.mnc,
-              let carrier = ApayaCarrier(mcc: mcc, mnc: mnc)
-        else { return nil }
-        
-        self.carrier = carrier
-        self.hashedIdentifier = paymentMethod.paymentInstrumentData?.hashedIdentifier
-    }
-    
-}
+//class ApayaViewModel {
+//    
+//    var carrier: ApayaCarrier
+//    var hashedIdentifier: String?
+//    
+//    init?(paymentMethod: PaymentMethod) {
+//        guard paymentMethod.paymentInstrumentType == .apayaToken else { return nil }
+//        guard let mcc = paymentMethod.paymentInstrumentData?.mcc,
+//              let mnc = paymentMethod.paymentInstrumentData?.mnc,
+//              let carrier = ApayaCarrier(mcc: mcc, mnc: mnc)
+//        else { return nil }
+//        
+//        self.carrier = carrier
+//        self.hashedIdentifier = paymentMethod.paymentInstrumentData?.hashedIdentifier
+//    }
+//    
+//}
 
 enum ApayaCarrier: String, Codable {
     case EE_UK, O2_UK, Vodafone_UK, Three_UK, Strex_Norway

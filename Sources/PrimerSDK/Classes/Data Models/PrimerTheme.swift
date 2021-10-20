@@ -232,7 +232,7 @@ public struct PrimerDefaultTheme: ColorTheme {
         text3: UIColor = .systemBlue,
         secondaryText1: UIColor = .lightGray,
         main1: UIColor = .white,
-        main2: UIColor = .black,
+        main2: UIColor = UIColor(red: 0, green: 56.0/255, blue: 255.0/255, alpha: 1.0),
         tint1: UIColor = .systemBlue,
         neutral1: UIColor = .lightGray,
         disabled1: UIColor = .lightGray,

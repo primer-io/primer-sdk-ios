@@ -21,15 +21,15 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        environmentControl.selectedSegmentIndex = 2
+        environmentControl.selectedSegmentIndex = 0
         environmentControl.accessibilityIdentifier = "env_control"
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        phoneNumberTextField.text = "07538121305"
+        phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.sg.rawValue
+        countryCodeTextField.text = CountryCode.gb.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
-        currencyTextField.text = Currency.SGD.rawValue
+        currencyTextField.text = Currency.GBP.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.text = "10.00"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
@@ -55,12 +55,14 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         var env: Environment!
         switch environmentControl.selectedSegmentIndex {
         case 0:
-            env = .dev
+            env = .local
         case 1:
-            env = .sandbox
+            env = .dev
         case 2:
-            env = .staging
+            env = .sandbox
         case 3:
+            env = .staging
+        case 4:
             env = .production
         default:
             break

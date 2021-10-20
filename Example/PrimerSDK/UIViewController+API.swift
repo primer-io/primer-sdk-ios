@@ -41,29 +41,41 @@ extension UIViewController {
     }
 
     func callApi(_ req: URLRequest, completion: @escaping (_ result: Result<Data, Error>) -> Void) {
-        print("URL: \(req.url?.absoluteString)")
-        print("Headers:\n\(req.allHTTPHeaderFields)")
+        var msg = "REQUEST\n"
+        msg += "URL: \(req.url?.absoluteString ?? "Invalid")\n"
+        msg += "Headers:\n\(req.allHTTPHeaderFields ?? [:])\n"
         
-        if let body = req.httpBody, let json = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
-            print("Body:\n\(json)")
+        if let body = req.httpBody, let reqJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
+            msg += "Body:\n\(reqJson)\n"
         }
         
+        print(msg)
+        msg = ""
+        
         URLSession.shared.dataTask(with: req, completionHandler: { (data, response, err) in
-
+            msg += "RESPONSE\n"
+            msg += "URL: \(req.url?.absoluteString ?? "Invalid")\n"
+            
             if err != nil {
-                print("Error: \(err)")
-                completion(.failure(NetworkError.serverError))
+                msg += "Error: \(err!)\n"
+                print(msg)
+                completion(.failure(err!))
                 return
             }
 
             guard let httpResponse = response as? HTTPURLResponse else {
-                print("No response")
+                msg += "Error: Invalid response\n"
+                print(msg)
                 completion(.failure(NetworkError.invalidResponse))
                 return
             }
 
             if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
-                print("Status code: \(httpResponse.statusCode)")
+                msg += "Status code: \(httpResponse.statusCode)\n"
+                if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                    msg += "Body:\n\(resJson)\n"
+                }
+                print(msg)
                 completion(.failure(NetworkError.invalidResponse))
                 
                 guard let data = data else {
@@ -84,16 +96,18 @@ extension UIViewController {
             print("Status code: \(httpResponse.statusCode)")
 
             guard let data = data else {
-                print("No data")
+                msg += "Status code: \(httpResponse.statusCode)\n"
+                msg += "Body:\nNo data\n"
+                print(msg)
                 completion(.failure(NetworkError.invalidResponse))
                 return
             }
             
-            do {
-                let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                print("Response body: \(json)")
-            } catch {
-                print("Error: \(error)")
+            msg += "Status code: \(httpResponse.statusCode)\n"
+            if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                msg += "Body:\n\(resJson)\n"
+            } else {
+                msg += "Body (String): \(String(data: data, encoding: .utf8))"
             }
             
 //            let str = String(data: data, encoding: .utf8)

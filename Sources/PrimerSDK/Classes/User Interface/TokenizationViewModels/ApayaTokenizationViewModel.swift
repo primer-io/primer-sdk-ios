@@ -119,7 +119,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPayme
         let body = Apaya.CreateSessionAPIRequest(merchantAccountId: merchantAccountId,
                                                  language: settings.localeData.languageCode ?? "en",
                                                  currencyCode: currency.rawValue,
-                                                 phoneNumber: settings.customer?.mobilePhoneNumber)
+                                                 phoneNumber: settings.customer?.mobileNumber)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.apayaCreateSession(clientToken: clientToken, request: body) { [weak self] result in

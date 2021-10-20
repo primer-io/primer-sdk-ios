@@ -19,6 +19,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     var didStartTokenization: (() -> Void)? { get set }
     var completion: TokenizationCompletion? { get set }
     var paymentMethod: PaymentMethod? { get set }
+    var surCharge: String? { get }
     
     func validate() throws
     func startTokenizationFlow()
@@ -277,6 +278,25 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         paymentMethodButton.addTarget(self, action: #selector(startTokenizationFlow), for: .touchUpInside)
         return paymentMethodButton
     }()
+    
+    var surCharge: String? {
+        switch config.type {
+        case .paymentCard:
+            return NSLocalizedString("surcharge-additional-fee",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Additional fee may apply",
+                                     comment: "Additional fee may apply - Surcharge (Label)")
+        default:
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            guard let currency = settings.currency else { return nil }
+
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            guard let surcharge = state.paymentMethodConfig?.paymentMethods?.filter({ $0.type == config.type }).first?.surcharge else { return nil }
+            
+            return surcharge.toCurrencyString(currency: currency)
+        }
+    }
     
     func handleSuccessfulTokenizationFlow() {
         Primer.shared.primerRootVC?.handleSuccess()

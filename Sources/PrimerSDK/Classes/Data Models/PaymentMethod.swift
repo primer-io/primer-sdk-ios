@@ -93,8 +93,7 @@ internal extension PaymentMethod {
                                           comment: "Expires - Saved card")
                     + " \(expMonth) / \(expYear.suffix(2))",
                 imageName: self.icon,
-                paymentMethodType: self.paymentInstrumentType
-            )
+                paymentMethodType: self.paymentInstrumentType)
         case .payPalBillingAgreement:
             guard let cardholder = self.paymentInstrumentData?.externalPayerInfo?.email else { return nil }
             return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
@@ -107,8 +106,7 @@ internal extension PaymentMethod {
                 last4: "",
                 expiry: "",
                 imageName: self.icon,
-                paymentMethodType: self.paymentInstrumentType
-            )
+                paymentMethodType: self.paymentInstrumentType)
         case .apayaToken:
             if let apayaViewModel = Apaya.ViewModel(paymentMethod: self) {
                 return CardButtonViewModel(
@@ -117,8 +115,7 @@ internal extension PaymentMethod {
                     last4: "",
                     expiry: "",
                     imageName: self.icon,
-                    paymentMethodType: self.paymentInstrumentType
-                )
+                    paymentMethodType: self.paymentInstrumentType)
             } else {
                 return nil
             }
@@ -133,6 +130,12 @@ struct CardButtonViewModel {
     let network, cardholder, last4, expiry: String
     let imageName: ImageName
     let paymentMethodType: PaymentInstrumentType
+    var surCharge: Int? {
+//        let state: AppStateProtocol = DependencyContainer.resolve()
+//        let surcharge = state.paymentMethodConfig?.paymentMethods?.filter({ $0.type == paymentMethodType.paymentMethodType }).first?.surcharge
+        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == paymentMethodType.paymentMethodType }).first else { return nil }
+        return paymentMethodTokenizationViewModel.config.surcharge
+    }
 }
 
 /**
