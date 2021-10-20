@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 1/4/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 protocol ThreeDSAuthenticationProtocol: Codable {
@@ -433,3 +435,5 @@ public struct ThreeDS {
         case requestedProgramNotSupported = "REQUESTED_PROGRAM_NOT_SUPPORTED"
     }
 }
+
+#endif

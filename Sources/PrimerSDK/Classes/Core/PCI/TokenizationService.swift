@@ -1,6 +1,6 @@
-import Foundation
-
 #if canImport(UIKit)
+
+import Foundation
 
 internal protocol TokenizationServiceProtocol {
     var tokenizedPaymentMethodToken: PaymentMethodToken? { get set }

@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 struct PaymentMethodConfig: Codable {
     let coreUrl: String?
     let pciUrl: String?
@@ -116,3 +118,5 @@ public enum ConfigPaymentMethodType: String, Codable {
         self = ((try? ConfigPaymentMethodType(rawValue: decoder.singleValueContainer().decode(RawValue.self))) ?? nil) ?? .unknown
     }
 }
+
+#endif

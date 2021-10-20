@@ -127,7 +127,6 @@
 		A9C31D4484CF8EC8F5F4D319C8E3D58C /* PrimerCardNumberFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37354B66D8EEDC41BF70C92358FEC770 /* PrimerCardNumberFieldView.swift */; };
 		A9D242477D7BFDC2164889091E448920 /* ReloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 132FFF522AD8CFC125246CCB6C8ABFFE /* ReloadDelegate.swift */; };
 		AB14BCC5825A59F66CFC431FF7885289 /* 3DS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D9F8B0C14A28EFCCF8E7C48517E574 /* 3DS.swift */; };
-		AC87E40E870C5039AC3427A76EF7CF35 /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5D4597118608D3FCB3BED3445D6ACF /* Customer.swift */; };
 		ACE7B9FD25B6D1A82FF2BAB07A7F7A8B /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E024D9E48AEC50678BD74B5E285925 /* UIColorExtension.swift */; };
 		AD2C5573C0844AFDA53B9B21D7456196 /* Primer3DS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 77393D72E4B2EFF88AF10EE9F64BB174 /* Primer3DS-dummy.m */; };
 		AD8D1F968EA1FFB2EE48DCB62EB7AC14 /* 3DSService+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DD1CE8022DEE896EBC4E2D6B354494 /* 3DSService+Promises.swift */; };
@@ -319,7 +318,6 @@
 		77D5B477F719114CAC4457D3E84F43D3 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		78C174C01D3C3F1249BF0B42E70BCC6E /* PrimerTextField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerTextField.swift; sourceTree = "<group>"; };
 		79991D238BFCA75910416B4DADE5C803 /* PrimerFlowEnums.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerFlowEnums.swift; sourceTree = "<group>"; };
-		7B5D4597118608D3FCB3BED3445D6ACF /* Customer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		7F26F7E2FD3133DAB22297838A152B03 /* PrimerTableViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerTableViewCell.swift; sourceTree = "<group>"; };
 		7FDB6047E825F040376F7986FCE53DCB /* PresentationController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PresentationController.swift; sourceTree = "<group>"; };
 		81014FAE3AB94CEA5ACA39BF0F3E6E07 /* VaultPaymentMethodViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewModel.swift; sourceTree = "<group>"; };
@@ -892,7 +890,6 @@
 				8318C993CBC628157303DBB4C5AF2DF7 /* Consolable.swift */,
 				75EE244891FE8B430637BA2EED9E0505 /* CountryCode.swift */,
 				6FF7059D6D3CE5C0FCB92940CC3464C4 /* Currency.swift */,
-				7B5D4597118608D3FCB3BED3445D6ACF /* Customer.swift */,
 				542CD49441C0FF5379071CDD3EE0B105 /* DirectDebitMandate.swift */,
 				75F45874E9F78F48B1BCC110861D462D /* DirerctCheckoutViewModel.swift */,
 				AC267E18AFBEE2C6510BF2A097B857B8 /* ImageName.swift */,
@@ -1370,7 +1367,6 @@
 				A044F0EAE7194D7271A8585937836081 /* CoreDataDispatcher.swift in Sources */,
 				14BC91BF818B17BEA6E2619B135845FF /* CountryCode.swift in Sources */,
 				AFB6D3E7BE5C4B1C538C15FEA90D2566 /* Currency.swift in Sources */,
-				AC87E40E870C5039AC3427A76EF7CF35 /* Customer.swift in Sources */,
 				C64A00D93E6FB6A8D2D68143C8EDF014 /* CustomStringConvertible.swift in Sources */,
 				E24FE70934648D541B27D7B4FCB3DDDF /* DateExtension.swift in Sources */,
 				76F7F6B4687A8A034A0AEA9098AE4B62 /* DependencyInjection.swift in Sources */,

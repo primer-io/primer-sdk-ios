@@ -5,9 +5,9 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
-import Foundation
-
 #if canImport(UIKit)
+
+import Foundation
 
 internal protocol ExternalViewModelProtocol {
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void)

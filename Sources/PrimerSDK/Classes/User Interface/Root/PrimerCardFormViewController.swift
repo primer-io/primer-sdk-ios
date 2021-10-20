@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 30/7/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 /// Subclass of the PrimerFormViewController that uses the checkout components and the card components manager
@@ -484,3 +486,5 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
         }
     }
 }
+
+#endif

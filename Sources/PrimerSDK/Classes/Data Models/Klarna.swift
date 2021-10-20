@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 24/3/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 public enum KlarnaSessionType: String, Codable {
@@ -152,3 +154,5 @@ public struct KlarnaBillingAddress: Codable {
 struct KlarnaFinalizePaymentSessionresponse: Codable {
     let sessionData: KlarnaSessionData
 }
+
+#endif

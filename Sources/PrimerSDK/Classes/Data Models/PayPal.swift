@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 struct PayPalPurchaseUnit: Encodable {
     let amount: PayPalAmount
 }
@@ -101,3 +103,5 @@ struct PayPalExternalPayerInfo: Codable {
 public struct ShippingAddress: Codable {
     let firstName, lastName, addressLine1, addressLine2, city, state, countryCode, postalCode: String?
 }
+
+#endif

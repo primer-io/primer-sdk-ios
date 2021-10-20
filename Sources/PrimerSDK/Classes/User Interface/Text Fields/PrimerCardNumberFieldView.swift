@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 public final class PrimerCardNumberFieldView: PrimerTextFieldView {
@@ -53,3 +55,5 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
     }
     
 }
+
+#endif

@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 /// The PrimerTextFieldViewDelegate protocol can be used to retrieve information about the text input.
@@ -346,3 +348,5 @@ internal class PaddedImageView: PrimerImageView {
     }
     
 }
+
+#endif
