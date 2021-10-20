@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 3/9/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 @objc
@@ -59,3 +61,5 @@ internal protocol RequiredActionProtocol {
     var description: String { get }
     var clientToken: String? { get }
 }
+
+#endif

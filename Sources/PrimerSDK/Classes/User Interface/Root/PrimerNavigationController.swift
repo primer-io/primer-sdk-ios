@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 30/7/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 /// UINavigationController subclass that intercepts pop, and handles it through the PrimerRootViewController
@@ -79,3 +81,5 @@ internal final class DissolveAnimator: NSObject, UIViewControllerAnimatedTransit
     }
     
 }
+
+#endif

@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 27/7/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 class PrimerFormViewController: PrimerViewController {
@@ -26,3 +28,5 @@ class PrimerFormViewController: PrimerViewController {
     }
     
 }
+
+#endif

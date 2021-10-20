@@ -1,4 +1,6 @@
+#if canImport(UIKit)
 #if canImport(CardScan)
+
 import UIKit
 import CardScan
 
@@ -72,4 +74,6 @@ internal extension CardScannerViewController: ScannerViewDelegate {
         router.pop()
     }
 }
+
+#endif
 #endif

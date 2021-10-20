@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 31/7/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
@@ -390,3 +392,5 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
         renderSelectedPaymentInstrument(insertAt: 1)
     }
 }
+
+#endif

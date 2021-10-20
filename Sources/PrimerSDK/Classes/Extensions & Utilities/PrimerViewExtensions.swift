@@ -5,10 +5,9 @@
 //  Created by Carl Eriksson on 29/11/2020.
 //
 
-import Foundation
-
 #if canImport(UIKit)
 
+import Foundation
 import UIKit
 
 internal class PrimerView: UIView {

@@ -1,6 +1,6 @@
-import Foundation
-
 #if canImport(UIKit)
+
+import Foundation
 
 internal protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void)

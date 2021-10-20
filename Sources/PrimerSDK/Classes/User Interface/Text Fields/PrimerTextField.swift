@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 internal class PrimerTextField: UITextField {
@@ -37,5 +39,11 @@ internal class PrimerTextField: UITextField {
             _text = super.text
         }
     }
+    
+    internal var isEmpty: Bool {
+        return (_text ?? "").isEmpty
+    }
         
 }
+
+#endif

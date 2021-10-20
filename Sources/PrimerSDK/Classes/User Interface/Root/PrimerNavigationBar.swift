@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 31/8/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 class PrimerNavigationBar: PrimerView {
@@ -110,3 +112,5 @@ class PrimerNavigationBar: PrimerView {
     }
     
 }
+
+#endif

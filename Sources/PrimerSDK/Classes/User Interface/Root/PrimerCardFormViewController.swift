@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 30/7/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 /// Subclass of the PrimerFormViewController that uses the checkout components and the card components manager
@@ -258,15 +260,111 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if primerTextFieldView is PrimerCardNumberFieldView, isValid == false {
-            cardNumberContainerView.errorText = "Invalid card number"
-        } else if primerTextFieldView is PrimerExpiryDateFieldView, isValid == false {
-            expiryDateContainerView.errorText = "Invalid date"
-        } else if primerTextFieldView is PrimerCVVFieldView, isValid == false {
-            cvvContainerView.errorText = "Invalid CVV"
-        } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
-            cardholderNameContainerView.errorText = "Invalid name"
+        if isValid == false && !primerTextFieldView.isEmpty {
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = "Invalid card number"
+                cardNumberContainerView.rightImage1 = UIImage(
+                    named: "error",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cardNumberContainerView.rightImage1TintColor = theme.colorTheme.error1
+                
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = "Invalid date"
+                expiryDateContainerView.rightImage1 = UIImage(
+                    named: "error",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                expiryDateContainerView.rightImage1TintColor = theme.colorTheme.error1
+                
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = "Invalid CVV"
+                cvvContainerView.rightImage1 = UIImage(
+                    named: "error",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cvvContainerView.rightImage1TintColor = theme.colorTheme.error1
+                
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                cardholderNameContainerView.errorText = "Invalid name"
+                cardholderNameContainerView.rightImage1 = UIImage(
+                    named: "error",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cardholderNameContainerView.rightImage1TintColor = theme.colorTheme.error1
+            }
+        } else if isValid == true {
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = nil
+                cardNumberContainerView.rightImage1 = UIImage(
+                    named: "check2",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cardNumberContainerView.rightImage1TintColor = theme.colorTheme.success1
+                
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = nil
+                expiryDateContainerView.rightImage1 = UIImage(
+                    named: "check2",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                expiryDateContainerView.rightImage1TintColor = theme.colorTheme.success1
+                
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = nil
+                cvvContainerView.rightImage1 = UIImage(
+                    named: "check2",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cvvContainerView.rightImage1TintColor = theme.colorTheme.success1
+                
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                cardholderNameContainerView.errorText = nil
+                cardholderNameContainerView.rightImage1 = UIImage(
+                    named: "check2",
+                    in: Bundle.primerResources,
+                    compatibleWith: nil)?
+                    .withRenderingMode(.alwaysTemplate)
+
+                cardholderNameContainerView.rightImage1TintColor = theme.colorTheme.success1
+            }
+        } else {
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = nil
+                cardNumberContainerView.rightImage1 = nil
+                cardNumberContainerView.rightImage1TintColor = nil
+                
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = nil
+                expiryDateContainerView.rightImage1 = nil
+                expiryDateContainerView.rightImage1TintColor = nil
+                
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = nil
+                cvvContainerView.rightImage1 = nil
+                cvvContainerView.rightImage1TintColor = nil
+                
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                cardholderNameContainerView.errorText = nil
+                cardholderNameContainerView.rightImage1 = nil
+                cardholderNameContainerView.rightImage1TintColor = nil
+            }
         }
+        
 
         if cardNumberField.isTextValid,
            expiryDateField.isTextValid,
@@ -285,8 +383,8 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
 
     }
     
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork) {
-        
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
+        cardNumberContainerView.rightImage2 = cardNetwork?.icon
     }
     
 }
@@ -389,64 +487,4 @@ extension PrimerCardFormViewController: ResumeHandlerProtocol {
     }
 }
 
-class PrimerCustomFieldView: UIView {
-    
-    override var tintColor: UIColor! {
-        didSet {
-            topPlaceholderLabel.textColor = tintColor
-            bottomLine.backgroundColor = tintColor
-        }
-    }
-
-    var stackView: UIStackView = UIStackView()
-    var placeholderText: String?
-    var errorText: String? {
-        didSet {
-            errorLabel.text = errorText ?? ""
-        }
-    }
-    var fieldView: PrimerTextFieldView!
-    private let errorLabel = UILabel()
-    private let topPlaceholderLabel = UILabel()
-    private let bottomLine = UIView()
-    private var theme: PrimerThemeProtocol = DependencyContainer.resolve()
-
-    func setup() {
-        addSubview(stackView)
-        stackView.alignment = .fill
-        stackView.axis = .vertical
-
-        
-        topPlaceholderLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
-        topPlaceholderLabel.text = placeholderText
-        topPlaceholderLabel.textColor = theme.colorTheme.text3
-        topPlaceholderLabel.textAlignment = .left
-        stackView.addArrangedSubview(topPlaceholderLabel)
-
-        let textFieldStackView = UIStackView()
-        textFieldStackView.alignment = .fill
-        textFieldStackView.axis = .vertical
-        textFieldStackView.addArrangedSubview(fieldView)
-        textFieldStackView.spacing = 0
-        bottomLine.backgroundColor = theme.colorTheme.text3
-        bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        stackView.addArrangedSubview(textFieldStackView)
-        stackView.addArrangedSubview(bottomLine)
-
-        
-        errorLabel.textColor = theme.colorTheme.error1
-        errorLabel.heightAnchor.constraint(equalToConstant: 12.0).isActive = true
-        errorLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
-        errorLabel.text = nil
-        errorLabel.textAlignment = .right
-        
-        stackView.addArrangedSubview(errorLabel)
-
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
-        stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0).isActive = true
-        stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0).isActive = true
-    }
-
-}
+#endif
