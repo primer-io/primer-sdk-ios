@@ -266,7 +266,7 @@ public class Primer {
             (.sofort, .vault),
             (.trustly, .vault),
             (.twint, .vault),
-            (.unknown, _):
+            (.other, _):
             let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return

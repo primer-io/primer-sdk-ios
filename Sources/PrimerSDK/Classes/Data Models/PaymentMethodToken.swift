@@ -207,7 +207,7 @@ public enum PaymentInstrumentType: String, Codable {
         case .hoolah:
             return .hoolah
         case .unknown:
-            return .unknown
+            return .other(rawValue: PaymentInstrumentType.unknown.rawValue)
         }
     }
 }

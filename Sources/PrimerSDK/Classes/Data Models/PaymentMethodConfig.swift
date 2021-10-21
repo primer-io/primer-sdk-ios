@@ -186,23 +186,92 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     let paymentMethodConfigId: String
 }
 
-public enum PaymentMethodConfigType: String, Codable {
-    case applePay = "APPLE_PAY"
-    case payPal = "PAYPAL"
-    case paymentCard = "PAYMENT_CARD"
-    case googlePay = "GOOGLE_PAY"
-    case goCardlessMandate = "GOCARDLESS"
-    case klarna = "KLARNA"
-    case payNLIdeal = "PAY_NL_IDEAL"
-    case apaya = "APAYA"
-    case aliPay = "ADYEN_ALIPAY"
-    case hoolah = "HOOLAH"
-    case twint = "ADYEN_TWINT"
-    case sofort = "ADYEN_SOFORT_BANKING"
-    case giropay = "ADYEN_GIROPAY"
-    case trustly = "ADYEN_TRUSTLY"
+public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
+    case aliPay
+    case apaya
+    case applePay
+    case giropay
+    case googlePay
+    case goCardlessMandate
+    case hoolah
+    case klarna
+    case payNLIdeal
+    case paymentCard
+    case payPal
+    case sofort
+    case trustly
+    case twint
+    case other(rawValue: String)
     
-    case unknown
+    init(rawValue: String) {
+        switch rawValue {
+        case "ADYEN_ALIPAY":
+            self = .aliPay
+        case "APAYA":
+            self = .apaya
+        case "APPLE_PAY":
+            self = .applePay
+        case "ADYEN_GIROPAY":
+            self = .giropay
+        case "GOCARDLESS":
+            self = .goCardlessMandate
+        case "GOOGLE_PAY":
+            self = .googlePay
+        case "HOOLAH":
+            self = .hoolah
+        case "KLARNA":
+            self = .klarna
+        case "PAY_NL_IDEAL":
+            self = .payNLIdeal
+        case "PAYMENT_CARD":
+            self = .paymentCard
+        case "PAYPAL":
+            self = .payPal
+        case "ADYEN_SOFORT_BANKING":
+            self = .sofort
+        case "ADYEN_TRUSTLY":
+            self = .trustly
+        case "ADYEN_TWINT":
+            self = .twint
+        default:
+            self = .other(rawValue: rawValue)
+        }
+    }
+    
+    var rawValue: String {
+        switch self {
+        case .aliPay:
+            return "ADYEN_ALIPAY"
+        case .apaya:
+            return "APAYA"
+        case .applePay:
+            return "APPLE_PAY"
+        case .giropay:
+            return "ADYEN_GIROPAY"
+        case .goCardlessMandate:
+            return "GOCARDLESS"
+        case .googlePay:
+            return "GOOGLE_PAY"
+        case .hoolah:
+            return "HOOLAH"
+        case .klarna:
+            return "KLARNA"
+        case .payNLIdeal:
+            return "PAY_NL_IDEAL"
+        case .paymentCard:
+            return "PAYMENT_CARD"
+        case .payPal:
+            return "PAYPAL"
+        case .sofort:
+            return "ADYEN_SOFORT_BANKING"
+        case .trustly:
+            return "ADYEN_TRUSTLY"
+        case .twint:
+            return "ADYEN_TWINT"
+        case .other(let rawValue):
+            return rawValue
+        }
+    }
     
     var isEnabled: Bool {
         switch self {
@@ -224,13 +293,14 @@ public enum PaymentMethodConfigType: String, Codable {
                 .trustly,
                 .twint:
             return !Primer.shared.flow.internalSessionFlow.vaulted
-        case .unknown:
+        case .other:
             return false
         }
     }
     
     public init(from decoder: Decoder) throws {
-        self = ((try? PaymentMethodConfigType(rawValue: decoder.singleValueContainer().decode(RawValue.self))) ?? nil) ?? .unknown
+        let rawValue: String = try decoder.singleValueContainer().decode(String.self)
+        self = PaymentMethodConfigType(rawValue: rawValue)
     }
 }
 

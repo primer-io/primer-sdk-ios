@@ -61,8 +61,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "Google Pay"
         case .goCardlessMandate:
             return "Go Cardless"
-        case .unknown:
-            return "Unknown"
+        case .other:
+            return "Other"
         default:
             assert(true, "Shouldn't end up in here")
             return ""
@@ -81,7 +81,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                                      comment: "Bank account - Payment Method Type (Go Cardless)")
         case .googlePay:
             return nil
-        case .unknown:
+        case .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -95,7 +95,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return nil
         case .goCardlessMandate:
             return UIImage(named: "rightArrow", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .unknown:
+        case .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -109,7 +109,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return nil
         case .goCardlessMandate:
             return .white
-        case .unknown:
+        case .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -122,7 +122,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .goCardlessMandate:
             return theme.colorTheme.text1
         case .googlePay,
-                .unknown:
+                .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -135,7 +135,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .goCardlessMandate:
             return 1.0
         case .googlePay,
-                .unknown:
+                .other:
             return 0.0
         default:
             assert(true, "Shouldn't end up in here")
@@ -148,7 +148,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .goCardlessMandate:
             return theme.colorTheme.text1
         case .googlePay,
-                .unknown:
+                .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -161,7 +161,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .goCardlessMandate:
             return theme.colorTheme.text1
         case .googlePay,
-                .unknown:
+                .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
