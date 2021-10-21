@@ -39,6 +39,15 @@ struct PrimerConfiguration: Codable {
         
         viewModels.append(sofortViewModel)
         
+        let giropayViewModel: PaymentMethodTokenizationViewModelProtocol = ExternalPaymentMethodTokenizationViewModel(
+            config: PaymentMethodConfig(
+                id: "giropay",
+                options: nil,
+                processorConfigId: "processor",
+                type: .giropay))
+        
+        viewModels.append(giropayViewModel)
+        
         return viewModels
     }
     
@@ -171,6 +180,7 @@ public enum PaymentMethodConfigType: String, Codable {
     case hoolah = "HOOLAH"
     case twint = "TWINT"
     case sofort = "SOFORT"
+    case giropay = "GIROPAY"
     
     case unknown
     
@@ -186,6 +196,7 @@ public enum PaymentMethodConfigType: String, Codable {
                 .klarna:
             return Primer.shared.flow.internalSessionFlow.vaulted
         case .applePay,
+                .giropay,
                 .hoolah,
                 .payNLIdeal,
                 .twint,
