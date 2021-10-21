@@ -21,7 +21,7 @@
 		11EB5F8ECE5CDACE467792D3E8259399 /* KlarnaTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF60E5688498BB7E44D6713EC22F0C0 /* KlarnaTokenizationViewModel.swift */; };
 		12265DFA972841FAC57F39D1997423BB /* PrimerFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E850BC132C1C71D3A5A39B0C3EB6F30 /* PrimerFormViewController.swift */; };
 		15ACAFA2271865BF00913D10 /* AmountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ACAFA1271865BF00913D10 /* AmountViewModel.swift */; };
-		15C1AA112714CF11005B4AEB /* AsyncPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C1AA102714CF11005B4AEB /* AsyncPaymentMethodTokenizationViewModel.swift */; };
+		15C1AA112714CF11005B4AEB /* ExternalPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C1AA102714CF11005B4AEB /* ExternalPaymentMethodTokenizationViewModel.swift */; };
 		15C1AA132714D007005B4AEB /* FormTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C1AA122714D007005B4AEB /* FormTokenizationViewModel.swift */; };
 		15C1AA1527159862005B4AEB /* ApayaTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C1AA1427159862005B4AEB /* ApayaTokenizationViewModel.swift */; };
 		178443E9C88007877F57C1552C9AE76E /* Primer3DSProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DF772EBD0552229B3F76D49A0EF5F2 /* Primer3DSProtocols.swift */; };
@@ -225,7 +225,7 @@
 		13ACE31D9E24B693C07BF8A67D4D9846 /* 3DSService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = 3DSService.swift; sourceTree = "<group>"; };
 		1529B672B719EF4704FBAD8AF9EF5C81 /* RateLimitedDispatcherBase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RateLimitedDispatcherBase.swift; sourceTree = "<group>"; };
 		15ACAFA1271865BF00913D10 /* AmountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountViewModel.swift; sourceTree = "<group>"; };
-		15C1AA102714CF11005B4AEB /* AsyncPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
+		15C1AA102714CF11005B4AEB /* ExternalPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		15C1AA122714D007005B4AEB /* FormTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormTokenizationViewModel.swift; sourceTree = "<group>"; };
 		15C1AA1427159862005B4AEB /* ApayaTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaTokenizationViewModel.swift; sourceTree = "<group>"; };
 		171C788DF3AB640DB12B567997E4BBD2 /* PrimerLoadingViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerLoadingViewController.swift; sourceTree = "<group>"; };
@@ -495,7 +495,7 @@
 			isa = PBXGroup;
 			children = (
 				C0CC4DB60B1A1581E684CAC1A7021C2D /* PaymentMethodTokenizationViewModel.swift */,
-				15C1AA102714CF11005B4AEB /* AsyncPaymentMethodTokenizationViewModel.swift */,
+				15C1AA102714CF11005B4AEB /* ExternalPaymentMethodTokenizationViewModel.swift */,
 				38407DF9DBEAB2DB2E6F86566F0FDE5D /* ApplePayTokenizationViewModel.swift */,
 				EFF60E5688498BB7E44D6713EC22F0C0 /* KlarnaTokenizationViewModel.swift */,
 				BBC488914CC5D83AA9FF7DA65020CBBC /* PayPalTokenizationViewModel.swift */,
@@ -1415,7 +1415,7 @@
 				AC767C1CD707A20006AC45187624C9C5 /* PrimerAPIClient+Promises.swift in Sources */,
 				5A7672B77288EC0309D767DE956AF7BC /* PrimerButton.swift in Sources */,
 				FCF5D8EC69818F5BDDE6F422A2E259B9 /* PrimerCardFormViewController.swift in Sources */,
-				15C1AA112714CF11005B4AEB /* AsyncPaymentMethodTokenizationViewModel.swift in Sources */,
+				15C1AA112714CF11005B4AEB /* ExternalPaymentMethodTokenizationViewModel.swift in Sources */,
 				5AC00F3F5353F98B77ED3F75FC40FCCF /* PrimerCardholderNameFieldView.swift in Sources */,
 				A3C24C4D74A172ABA0AF424D393C10C9 /* PrimerCardNumberFieldView.swift in Sources */,
 				A6E577963D2230FF700FA351DCC4A2DE /* PrimerContainerViewController.swift in Sources */,

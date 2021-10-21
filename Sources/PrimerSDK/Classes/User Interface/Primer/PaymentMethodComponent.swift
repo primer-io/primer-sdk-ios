@@ -14,7 +14,7 @@ internal class PaymentMethodComponent: PrimerView {
     let label = UILabel()
     let iconView = UIImageView()
 
-    init(frame: CGRect, method: AsyncPaymentMethodTokenizationViewModel) {
+    init(frame: CGRect, method: ExternalPaymentMethodTokenizationViewModel) {
         super.init(frame: frame)
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()

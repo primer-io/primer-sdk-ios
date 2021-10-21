@@ -8,12 +8,12 @@
 import Foundation
 import WebKit
 
-class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaymentMethodTokenizationViewModelProtocol {
+class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
-    var willPresentPaymentMethod: (() -> Void)?
-    var didPresentPaymentMethod: (() -> Void)?
-    var willDismissPaymentMethod: (() -> Void)?
-    var didDismissPaymentMethod: (() -> Void)?
+    var willPresentExternalView: (() -> Void)?
+    var didPresentExternalView: (() -> Void)?
+    var willDismissExternalView: (() -> Void)?
+    var didDismissExternalView: (() -> Void)?
     fileprivate var webViewController: PrimerWebViewController?
     fileprivate var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     fileprivate var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
@@ -73,9 +73,9 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
             return self.startPolling(on: statusUrl)
         }
         .then { resumeToken -> Promise<PaymentMethodToken> in
-            self.willDismissPaymentMethod?()
+            self.willDismissExternalView?()
             self.webViewController?.dismiss(animated: true, completion: {
-                self.didDismissPaymentMethod?()
+                self.didDismissExternalView?()
             })
             return self.passResumeToken(resumeToken)
         }
@@ -161,9 +161,9 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
                 self.webViewController?.navigationDelegate = self
                 self.webViewController!.modalPresentationStyle = .fullScreen
                 
-                self.willPresentPaymentMethod?()
+                self.willPresentExternalView?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
-                    self.didPresentPaymentMethod?()
+                    self.didPresentExternalView?()
                     seal.fulfill(())
                 })
             }
@@ -230,7 +230,7 @@ class AsyncPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewMode
     
 }
 
-extension AsyncPaymentMethodTokenizationViewModel: WKNavigationDelegate {
+extension ExternalPaymentMethodTokenizationViewModel: WKNavigationDelegate {
     
     func webView(
         _ webView: WKWebView,
@@ -261,7 +261,7 @@ extension AsyncPaymentMethodTokenizationViewModel: WKNavigationDelegate {
 
 }
 
-extension AsyncPaymentMethodTokenizationViewModel {
+extension ExternalPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
         // onClientToken will be created when we're awaiting a new client token from the developer
@@ -315,7 +315,7 @@ struct PollingURLs: Decodable {
     let complete: String?
 }
 
-class MockAsyncPaymentMethodTokenizationViewModel: AsyncPaymentMethodTokenizationViewModel {
+class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     
     var failValidation: Bool = false {
         didSet {
@@ -349,9 +349,9 @@ class MockAsyncPaymentMethodTokenizationViewModel: AsyncPaymentMethodTokenizatio
                 self.webViewController?.navigationDelegate = self
                 self.webViewController!.modalPresentationStyle = .fullScreen
                 
-                self.willPresentPaymentMethod?()
+                self.willPresentExternalView?()
                 Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
-                    self.didPresentPaymentMethod?()
+                    self.didPresentExternalView?()
                     seal.fulfill(())
                 }
             }

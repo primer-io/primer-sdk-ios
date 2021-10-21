@@ -363,16 +363,16 @@ extension PrimerRootViewController {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         }
         
-        if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? AsyncPaymentMethodTokenizationViewModelProtocol {
-            asyncPaymentMethodViewModel.willPresentPaymentMethod = {
+        if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? ExternalPaymentMethodTokenizationViewModelProtocol {
+            asyncPaymentMethodViewModel.willPresentExternalView = {
                 Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
             }
             
-            asyncPaymentMethodViewModel.didPresentPaymentMethod = {
+            asyncPaymentMethodViewModel.didPresentExternalView = {
                 
             }
             
-            asyncPaymentMethodViewModel.willDismissPaymentMethod = {
+            asyncPaymentMethodViewModel.willDismissExternalView = {
                 Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
             }
         }

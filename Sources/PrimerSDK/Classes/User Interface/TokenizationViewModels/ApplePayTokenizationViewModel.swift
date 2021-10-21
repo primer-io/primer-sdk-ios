@@ -20,12 +20,12 @@ internal extension PKPaymentMethodType {
     
 }
 
-class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaymentMethodTokenizationViewModelProtocol {
+class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
-    var willPresentPaymentMethod: (() -> Void)?
-    var didPresentPaymentMethod: (() -> Void)?
-    var willDismissPaymentMethod: (() -> Void)?
-    var didDismissPaymentMethod: (() -> Void)?
+    var willPresentExternalView: (() -> Void)?
+    var didPresentExternalView: (() -> Void)?
+    var willDismissExternalView: (() -> Void)?
+    var didDismissExternalView: (() -> Void)?
 
     private var applePayWindow: UIWindow?
     private var request: PKPaymentRequest!
@@ -222,9 +222,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPa
                 }
             }
             
-            self.willPresentPaymentMethod?()
+            self.willPresentExternalView?()
             Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
-                self.didPresentPaymentMethod?()
+                self.didPresentExternalView?()
             })
             
         } else {

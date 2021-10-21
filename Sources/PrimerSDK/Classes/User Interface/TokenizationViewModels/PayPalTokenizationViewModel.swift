@@ -4,12 +4,12 @@ import UIKit
 import AuthenticationServices
 import SafariServices
 
-class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaymentMethodTokenizationViewModelProtocol {
+class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
-    var willPresentPaymentMethod: (() -> Void)?
-    var didPresentPaymentMethod: (() -> Void)?
-    var willDismissPaymentMethod: (() -> Void)?
-    var didDismissPaymentMethod: (() -> Void)?
+    var willPresentExternalView: (() -> Void)?
+    var didPresentExternalView: (() -> Void)?
+    var willDismissExternalView: (() -> Void)?
+    var didDismissExternalView: (() -> Void)?
     private var session: Any!
     
     deinit {
@@ -90,7 +90,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
                 self.fetchOAuthURL()
             }
             .then { url -> Promise<URL> in
-                self.willPresentPaymentMethod?()
+                self.willPresentExternalView?()
                 return self.createOAuthSession(url)
             }
             .then { url -> Promise<PaymentInstrument> in
@@ -189,7 +189,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
                 (session as! SFAuthenticationSession).start()
             }
             
-            didPresentPaymentMethod?()
+            didPresentExternalView?()
         }
     }
     

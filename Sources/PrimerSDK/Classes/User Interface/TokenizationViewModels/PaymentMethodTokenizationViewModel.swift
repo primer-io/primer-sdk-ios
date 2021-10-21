@@ -26,11 +26,11 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     func handleFailedTokenizationFlow(error: Error)
 }
 
-internal protocol AsyncPaymentMethodTokenizationViewModelProtocol {
-    var willPresentPaymentMethod: (() -> Void)? { get set }
-    var didPresentPaymentMethod: (() -> Void)? { get set }
-    var willDismissPaymentMethod: (() -> Void)? { get set }
-    var didDismissPaymentMethod: (() -> Void)? { get set }
+internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
+    var willPresentExternalView: (() -> Void)? { get set }
+    var didPresentExternalView: (() -> Void)? { get set }
+    var willDismissExternalView: (() -> Void)? { get set }
+    var didDismissExternalView: (() -> Void)? { get set }
 }
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {

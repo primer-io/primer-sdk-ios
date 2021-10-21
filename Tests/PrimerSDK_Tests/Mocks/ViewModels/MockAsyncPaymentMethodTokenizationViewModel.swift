@@ -56,22 +56,22 @@ class AsyncPaymentMethodTokenizationViewModelTests: XCTestCase, PrimerDelegate {
         }
         
         let exp1 = XCTestExpectation(description: "Start presenting payment method")
-        viewModel!.willPresentPaymentMethod = {
+        viewModel!.willPresentExternalView = {
             exp1.fulfill()
         }
         
         let exp2 = XCTestExpectation(description: "Did present payment method")
-        viewModel!.didPresentPaymentMethod = {
+        viewModel!.didPresentExternalView = {
             exp2.fulfill()
         }
         
         let exp3 = XCTestExpectation(description: "Start dismissing payment method")
-        viewModel!.willDismissPaymentMethod = {
+        viewModel!.willDismissExternalView = {
             exp3.fulfill()
         }
         
         let exp4 = XCTestExpectation(description: "Did dismiss payment method")
-        viewModel!.didDismissPaymentMethod = {
+        viewModel!.didDismissExternalView = {
             exp4.fulfill()
         }
         

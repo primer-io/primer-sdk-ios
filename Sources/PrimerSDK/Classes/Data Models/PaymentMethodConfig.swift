@@ -62,7 +62,7 @@ struct PaymentMethodConfig: Codable {
         } else if type == .klarna {
             return KlarnaTokenizationViewModel(config: self)
         } else if type == .hoolah || type == .payNLIdeal {
-            return AsyncPaymentMethodTokenizationViewModel(config: self)
+            return ExternalPaymentMethodTokenizationViewModel(config: self)
         } else if type == .payPal {
             return PayPalTokenizationViewModel(config: self)
         } else if type == .apaya {

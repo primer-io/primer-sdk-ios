@@ -3,12 +3,12 @@
 import Foundation
 import WebKit
 
-class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaymentMethodTokenizationViewModelProtocol {
+class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
-    var willPresentPaymentMethod: (() -> Void)?
-    var didPresentPaymentMethod: (() -> Void)?
-    var willDismissPaymentMethod: (() -> Void)?
-    var didDismissPaymentMethod: (() -> Void)?
+    var willPresentExternalView: (() -> Void)?
+    var didPresentExternalView: (() -> Void)?
+    var willDismissExternalView: (() -> Void)?
+    var didDismissExternalView: (() -> Void)?
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
@@ -109,11 +109,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
         }
         .then { res -> Promise<PaymentMethodToken> in
             DispatchQueue.main.async {
-                self.willDismissPaymentMethod?()
+                self.willDismissExternalView?()
             }
             self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
                 DispatchQueue.main.async {
-                    self.didDismissPaymentMethod?()
+                    self.didDismissExternalView?()
                 }
             })
             
@@ -295,9 +295,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaym
         
         webViewCompletion = completion
         
-        self.willPresentPaymentMethod?()
+        self.willPresentExternalView?()
         Primer.shared.primerRootVC?.present(webViewController!, animated: true, completion: {
-            self.didPresentPaymentMethod?()
+            self.didPresentExternalView?()
         })
     }
     

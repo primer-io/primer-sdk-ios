@@ -8,12 +8,12 @@
 import Foundation
 import WebKit
 
-class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPaymentMethodTokenizationViewModelProtocol {
+class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
-    var willPresentPaymentMethod: (() -> Void)?
-    var didPresentPaymentMethod: (() -> Void)?
-    var willDismissPaymentMethod: (() -> Void)?
-    var didDismissPaymentMethod: (() -> Void)?
+    var willPresentExternalView: (() -> Void)?
+    var didPresentExternalView: (() -> Void)?
+    var willDismissExternalView: (() -> Void)?
+    var didDismissExternalView: (() -> Void)?
     
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ res: Apaya.WebViewResponse?, _ error: Error?) -> Void)?
@@ -176,18 +176,18 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, AsyncPayme
 //            completion(nil, err)
 //        }
         
-        self.willPresentPaymentMethod?()
+        self.willPresentExternalView?()
         Primer.shared.primerRootVC?.present(webViewController!, animated: true, completion: {
-            self.didPresentPaymentMethod?()
+            self.didPresentExternalView?()
         })
     }
     
     private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse) -> Promise<PaymentMethodToken> {
         return Promise { seal in
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse) { paymentMethod, err in
-                self.willDismissPaymentMethod?()
+                self.willDismissExternalView?()
                 self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
-                    self.didDismissPaymentMethod?()
+                    self.didDismissExternalView?()
                 })
                 
                 if let err = err {
