@@ -43,33 +43,36 @@ class PrimerFormViewController: PrimerViewController {
         stackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
         
         for paymentMethodTokenizationViewModel in paymentMethodTokenizationViewModels {
-            paymentMethodTokenizationViewModel.didStartTokenization = {
+            PrimerFormViewController.handleCallbacks(for: paymentMethodTokenizationViewModel)
+            stackView.addArrangedSubview(paymentMethodTokenizationViewModel.paymentMethodButton)
+        }
+    }
+    
+    static func handleCallbacks(for paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol) {
+        paymentMethodTokenizationViewModel.didStartTokenization = {
+            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        }
+        
+        if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? ExternalPaymentMethodTokenizationViewModelProtocol {
+            asyncPaymentMethodViewModel.willPresentExternalView = {
                 Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
             }
             
-            if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? ExternalPaymentMethodTokenizationViewModelProtocol {
-                asyncPaymentMethodViewModel.willPresentExternalView = {
-                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
-                }
+            asyncPaymentMethodViewModel.didPresentExternalView = {
                 
-                asyncPaymentMethodViewModel.didPresentExternalView = {
-                    
-                }
-                
-                asyncPaymentMethodViewModel.willDismissExternalView = {
-                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
-                }
             }
             
-            paymentMethodTokenizationViewModel.completion = { (tok, err) in
-                if let err = err {
-                    Primer.shared.primerRootVC?.handle(error: err)
-                } else {
-                    Primer.shared.primerRootVC?.handleSuccess()
-                }
+            asyncPaymentMethodViewModel.willDismissExternalView = {
+                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
             }
-            
-            stackView.addArrangedSubview(paymentMethodTokenizationViewModel.paymentMethodButton)
+        }
+        
+        paymentMethodTokenizationViewModel.completion = { (tok, err) in
+            if let err = err {
+                Primer.shared.primerRootVC?.handle(error: err)
+            } else {
+                Primer.shared.primerRootVC?.handleSuccess()
+            }
         }
     }
     
