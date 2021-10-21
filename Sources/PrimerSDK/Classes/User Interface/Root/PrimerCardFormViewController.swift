@@ -15,9 +15,9 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let cardholderNameContainerView = PrimerCustomFieldView()
     private let submitButton = PrimerOldButton()
     
-    private let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
+    private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
     
-    init(viewModel: FormPaymentMethodTokenizationViewModel) {
+    init(viewModel: CardFormPaymentMethodTokenizationViewModel) {
         self.formPaymentMethodTokenizationViewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }

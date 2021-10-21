@@ -7,7 +7,7 @@
 
 import Foundation
 
-class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private var flow: PaymentFlow
     private var cardComponentsManager: CardComponentsManager!
@@ -183,7 +183,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
 }
 
-extension FormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {
+extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
         self.paymentMethod = paymentMethodToken
         
@@ -229,7 +229,7 @@ extension FormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate 
     
 }
 
-extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
+extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
     
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
         if primerTextFieldView is PrimerCardNumberFieldView {
@@ -277,7 +277,7 @@ extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
     
 }
 
-extension FormPaymentMethodTokenizationViewModel {
+extension CardFormPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
         DispatchQueue.main.async {

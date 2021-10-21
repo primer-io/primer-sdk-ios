@@ -54,7 +54,7 @@ struct PaymentMethodConfig: Codable {
     let options: PaymentMethodOptions?
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
         if type == .paymentCard {
-            return FormPaymentMethodTokenizationViewModel(config: self)
+            return CardFormPaymentMethodTokenizationViewModel(config: self)
         } else if type == .applePay {
             if #available(iOS 11.0, *) {
                 return ApplePayTokenizationViewModel(config: self)
