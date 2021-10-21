@@ -13,26 +13,26 @@ internal struct InputTheme {
 
     static func `default`(with data: InputThemeData) -> InputTheme {
         return  InputTheme(
-            color: data.backgroundColor ?? Colors.Input.Background,
+            color: data.backgroundColor ?? Colors.White,
             cornerRadius: data.cornerRadius ?? 0.0,
             border: BorderTheme(
                 colorStates: StatefulColor(
-                    data.border.defaultColor ?? Colors.Input.BorderDefault,
-                    disabled: data.border.defaultColor ?? Colors.Input.BorderDisabled
+                    data.border.defaultColor ?? Colors.Blue,
+                    disabled: data.border.defaultColor ?? Colors.LightGray
                 ),
                 width: data.border.width ?? 1.0
             ),
             text: TextTheme(
-                color: data.text.defaultColor ?? Colors.Input.Text,
-                fontsize: data.text.fontsize ?? 14
+                color: data.text.defaultColor ?? Colors.Black,
+                fontSize: data.text.fontSize ?? 14
             ),
             hintText: TextTheme(
-                color: data.text.defaultColor ?? Colors.Input.HintText,
-                fontsize: data.text.fontsize ?? 14
+                color: data.text.defaultColor ?? Colors.Gray,
+                fontSize: data.text.fontSize ?? 14
             ),
             errortext: TextTheme(
-                color: data.text.defaultColor ?? Colors.Input.ErrorText,
-                fontsize: data.text.fontsize ?? 14
+                color: data.text.defaultColor ?? Colors.Red,
+                fontSize: data.text.fontSize ?? 14
             ),
             inputType: InputType.underlined
         )

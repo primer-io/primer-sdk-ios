@@ -84,12 +84,12 @@ public class PrimerTheme: PrimerThemeProtocol {
         )
         
         text = TextStyle.init(
-            default: TextTheme.init(color: theme.text1, fontsize: 14),
-            title: TextTheme.init(color: theme.text1, fontsize: 20),
-            subtitle: TextTheme.init(color: theme.neutral1, fontsize: 12),
-            amountLabel: TextTheme.init(color: theme.text1, fontsize: 24),
-            system: TextTheme.init(color: theme.tint1, fontsize: 14),
-            error: TextTheme.init(color: theme.error1, fontsize: 10)
+            default: TextTheme.init(color: theme.text1, fontSize: 14),
+            title: TextTheme.init(color: theme.text1, fontSize: 20),
+            subtitle: TextTheme.init(color: theme.neutral1, fontSize: 12),
+            amountLabel: TextTheme.init(color: theme.text1, fontSize: 24),
+            system: TextTheme.init(color: theme.tint1, fontSize: 14),
+            error: TextTheme.init(color: theme.error1, fontSize: 10)
         )
 
         input = InputTheme(
@@ -103,9 +103,9 @@ public class PrimerTheme: PrimerThemeProtocol {
                 ),
                 width: CGFloat(1.0)
             ),
-            text: TextTheme(color: theme.text1, fontsize: 14),
-            hintText: TextTheme(color: theme.neutral1, fontsize: 14),
-            errortext: TextTheme(color: theme.error1, fontsize: 10),
+            text: TextTheme(color: theme.text1, fontSize: 14),
+            hintText: TextTheme(color: theme.neutral1, fontSize: 14),
+            errortext: TextTheme(color: theme.error1, fontSize: 10),
             inputType: .underlined
         )
 
@@ -124,7 +124,7 @@ public class PrimerTheme: PrimerThemeProtocol {
             ),
             text: TextTheme(
                 color: theme.main1,
-                fontsize: 14
+                fontSize: 14
             )
         )
         
@@ -143,7 +143,7 @@ public class PrimerTheme: PrimerThemeProtocol {
             ),
             text: TextTheme(
                 color: theme.main1,
-                fontsize: 14
+                fontSize: 14
             )
         )
     }
@@ -169,12 +169,12 @@ public class PrimerTheme: PrimerThemeProtocol {
         )
 
         text = TextStyle.init(
-            default: TextTheme.init(color: theme.text1, fontsize: 14),
-            title: TextTheme.init(color: theme.text1, fontsize: 20),
-            subtitle: TextTheme.init(color: theme.neutral1, fontsize: 12),
-            amountLabel: TextTheme.init(color: theme.text1, fontsize: 24),
-            system: TextTheme.init(color: theme.tint1, fontsize: 14),
-            error: TextTheme.init(color: theme.error1, fontsize: 10)
+            default: TextTheme.init(color: theme.text1, fontSize: 14),
+            title: TextTheme.init(color: theme.text1, fontSize: 20),
+            subtitle: TextTheme.init(color: theme.neutral1, fontSize: 12),
+            amountLabel: TextTheme.init(color: theme.text1, fontSize: 24),
+            system: TextTheme.init(color: theme.tint1, fontSize: 14),
+            error: TextTheme.init(color: theme.error1, fontSize: 10)
         )
 
         input = InputTheme(
@@ -188,9 +188,9 @@ public class PrimerTheme: PrimerThemeProtocol {
                 ),
                 width: CGFloat(1.0)
             ),
-            text: TextTheme(color: theme.text1, fontsize: 14),
-            hintText: TextTheme(color: theme.neutral1, fontsize: 14),
-            errortext: TextTheme(color: theme.error1, fontsize: 10),
+            text: TextTheme(color: theme.text1, fontSize: 14),
+            hintText: TextTheme(color: theme.neutral1, fontSize: 14),
+            errortext: TextTheme(color: theme.error1, fontSize: 10),
             inputType: .underlined
         )
 
@@ -209,7 +209,7 @@ public class PrimerTheme: PrimerThemeProtocol {
             ),
             text: TextTheme(
                 color: theme.main1,
-                fontsize: 14
+                fontSize: 14
             )
         )
         
@@ -228,7 +228,7 @@ public class PrimerTheme: PrimerThemeProtocol {
             ),
             text: TextTheme(
                 color: theme.main1,
-                fontsize: 14
+                fontSize: 14
             )
         )
     }

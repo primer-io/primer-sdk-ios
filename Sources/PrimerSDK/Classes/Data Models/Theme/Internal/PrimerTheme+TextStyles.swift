@@ -15,47 +15,47 @@ internal struct TextStyle {
 
 internal struct TextTheme {
     let color: UIColor
-    let fontsize: Int
+    let fontSize: Int
 
     static func `default`(with data: TextThemeData) -> TextTheme {
         return TextTheme(
-            color: data.defaultColor ?? Colors.Text.Default,
-            fontsize: data.fontsize ?? Fontsize.Default
+            color: data.defaultColor ?? Colors.Black,
+            fontSize: data.fontSize ?? Fontsize.Default
         )
     }
 
     static func title(with data: TextThemeData) -> TextTheme {
         return TextTheme(
-            color: data.defaultColor ?? Colors.Text.Title,
-            fontsize: data.fontsize ?? Fontsize.Title
+            color: data.defaultColor ?? Colors.Black,
+            fontSize: data.fontSize ?? Fontsize.Title
         )
     }
 
     static func subtitle(with data: TextThemeData) -> TextTheme {
         return TextTheme(
-            color: data.defaultColor ?? Colors.Text.Subtitle,
-            fontsize: data.fontsize ?? Fontsize.Subtitle
+            color: data.defaultColor ?? Colors.Gray,
+            fontSize: data.fontSize ?? Fontsize.Subtitle
         )
     }
 
     static func amountLabel(with data: TextThemeData) -> TextTheme {
         return TextTheme(
-            color: data.defaultColor ?? Colors.Text.AmountLabel,
-            fontsize: data.fontsize ?? Fontsize.AmountLabel
+            color: data.defaultColor ?? Colors.Black,
+            fontSize: data.fontSize ?? Fontsize.AmountLabel
         )
     }
 
     static func system(with data: TextThemeData) -> TextTheme {
         return TextTheme(
-            color: data.defaultColor ?? Colors.Text.System,
-            fontsize: data.fontsize ?? Fontsize.System
+            color: data.defaultColor ?? Colors.Blue,
+            fontSize: data.fontSize ?? Fontsize.System
         )
     }
 
     static func error(with data: TextThemeData) -> TextTheme {
         return TextTheme(
-            color: data.defaultColor ?? Colors.Text.Error,
-            fontsize: data.fontsize ?? Fontsize.Error
+            color: data.defaultColor ?? Colors.Red,
+            fontSize: data.fontSize ?? Fontsize.Error
         )
     }
 }

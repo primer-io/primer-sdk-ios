@@ -101,11 +101,11 @@ public class TextStyleData {
 
 public class TextThemeData {
     public var defaultColor: UIColor?
-    public var fontsize: Int?
+    public var fontSize: Int?
 
     public init(defaultColor: UIColor? = nil, fontsize: Int? = nil) {
         self.defaultColor = defaultColor
-        self.fontsize = fontsize
+        self.fontSize = fontsize
     }
 }
 

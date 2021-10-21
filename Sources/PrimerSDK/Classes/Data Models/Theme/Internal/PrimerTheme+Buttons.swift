@@ -7,22 +7,22 @@ internal struct ButtonTheme {
     static func main(with data: ButtonThemeData) -> ButtonTheme {
         return ButtonTheme(
             colorStates: StatefulColor(
-                data.defaultColor ?? Colors.Buttons.MainDefault,
-                disabled: data.disabledColor ?? Colors.Buttons.MainDisabled,
-                selected: Colors.Buttons.MainSelected
+                data.defaultColor ?? Colors.Blue,
+                disabled: data.disabledColor ?? Colors.LightGray,
+                selected: Colors.Blue
             ),
             cornerRadius: data.cornerRadius ?? Layout.MainButton.CornerRadius,
             border: BorderTheme(
                 colorStates: StatefulColor(
-                    data.border.defaultColor ?? Colors.Buttons.MainBorderDefault,
-                    disabled: data.border.defaultColor ?? Colors.Buttons.MainBorderDisabled,
-                    selected: data.border.selectedColor ?? Colors.Buttons.MainBorderSelected
+                    data.border.defaultColor ?? Colors.Blue,
+                    disabled: data.border.defaultColor ?? Colors.LightGray,
+                    selected: data.border.selectedColor ?? Colors.Blue
                 ),
                 width: data.border.width ?? Layout.MainButton.BorderWidth
             ),
             text: TextTheme(
-                color: data.text.defaultColor ?? Colors.Buttons.MainTextEnabled,
-                fontsize: data.text.fontsize ?? Fontsize.MainButtonTitle
+                color: data.text.defaultColor ?? Colors.White,
+                fontSize: data.text.fontSize ?? Fontsize.MainButtonTitle
             )
         )
     }
@@ -30,22 +30,22 @@ internal struct ButtonTheme {
     static func paymentMethod(with data: ButtonThemeData) -> ButtonTheme {
         return ButtonTheme(
             colorStates: StatefulColor(
-                data.defaultColor ?? Colors.Buttons.PaymentMethodDefault,
-                disabled: data.disabledColor ?? Colors.Buttons.PaymentMethodDisabled,
-                selected: Colors.Buttons.PaymentMethodSelected
+                data.defaultColor ?? Colors.White,
+                disabled: data.disabledColor ?? Colors.LightGray,
+                selected: Colors.White
             ),
             cornerRadius: data.cornerRadius ?? Layout.PaymentMethodButton.CornerRadius,
             border: BorderTheme(
                 colorStates: StatefulColor(
-                    data.border.defaultColor ?? Colors.Buttons.PaymentMethodBorderDefault,
-                    disabled: data.border.defaultColor ?? Colors.Buttons.PaymentMethodBorderDisabled,
-                    selected: data.border.selectedColor ?? Colors.Buttons.PaymentMethodBorderSelected
+                    data.border.defaultColor ?? Colors.Black,
+                    disabled: data.border.defaultColor ?? Colors.LightGray,
+                    selected: data.border.selectedColor ?? Colors.Blue
                 ),
                 width: data.border.width ?? Layout.PaymentMethodButton.BorderWidth
             ),
             text: TextTheme(
-                color: data.text.defaultColor ?? Colors.Buttons.PaymentMethodTextEnabled,
-                fontsize: data.text.fontsize ?? Fontsize.PaymentMethodButtonTitle
+                color: data.text.defaultColor ?? Colors.Black,
+                fontSize: data.text.fontSize ?? Fontsize.PaymentMethodButtonTitle
             )
         )
     }
