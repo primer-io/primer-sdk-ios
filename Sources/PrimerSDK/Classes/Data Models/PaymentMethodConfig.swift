@@ -30,6 +30,15 @@ struct PrimerConfiguration: Codable {
         
         viewModels.append(twintViewModel)
         
+        let sofortViewModel: PaymentMethodTokenizationViewModelProtocol = ExternalPaymentMethodTokenizationViewModel(
+            config: PaymentMethodConfig(
+                id: "sofort",
+                options: nil,
+                processorConfigId: "processor",
+                type: .sofort))
+        
+        viewModels.append(sofortViewModel)
+        
         return viewModels
     }
     
@@ -161,6 +170,7 @@ public enum PaymentMethodConfigType: String, Codable {
     case apaya = "APAYA"
     case hoolah = "HOOLAH"
     case twint = "TWINT"
+    case sofort = "SOFORT"
     
     case unknown
     
@@ -178,7 +188,8 @@ public enum PaymentMethodConfigType: String, Codable {
         case .applePay,
                 .hoolah,
                 .payNLIdeal,
-                .twint:
+                .twint,
+                .sofort:
             return !Primer.shared.flow.internalSessionFlow.vaulted
         case .unknown:
             return false
