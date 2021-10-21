@@ -10,6 +10,106 @@ import WebKit
 
 class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
+    override lazy var title: String = {
+        switch config.type {
+        case .payNLIdeal:
+            return "Pay NL Ideal"
+        case .hoolah:
+            return "Hoolah"
+        default:
+            assert(true, "Shouldn't end up in here")
+            return ""
+        }
+    }()
+    
+    override lazy var buttonTitle: String? = {
+        switch config.type {
+        case .payNLIdeal:
+            return nil
+        case .hoolah:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonImage: UIImage? = {
+        switch config.type {
+        case .payNLIdeal:
+            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .hoolah:
+            return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonColor: UIColor? = {
+        switch config.type {
+        case .payNLIdeal:
+            return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
+        case .hoolah:
+            return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonTitleColor: UIColor? = {
+        switch config.type {
+        case .hoolah,
+                .payNLIdeal:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonBorderWidth: CGFloat = {
+        switch config.type {
+        case .hoolah,
+                .payNLIdeal:
+            return 0.0
+        default:
+            assert(true, "Shouldn't end up in here")
+            return 0.0
+        }
+    }()
+    
+    override lazy var buttonBorderColor: UIColor? = {
+        switch config.type {
+        case .hoolah,
+                .payNLIdeal:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonTintColor: UIColor? = {
+        switch config.type {
+        case .hoolah,
+                .payNLIdeal:
+            return .white
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonFont: UIFont? = {
+        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
+    }()
+    
+    override lazy var buttonCornerRadius: CGFloat? = {
+        return 4.0
+    }()
+    
     var willPresentExternalView: (() -> Void)?
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?

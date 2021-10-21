@@ -13,6 +13,88 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
     
+    override lazy var title: String = {
+        return "Klarna"
+    }()
+    
+    override lazy var buttonTitle: String? = {
+        switch config.type {
+        case .klarna:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonImage: UIImage? = {
+        switch config.type {
+        case .klarna:
+            return UIImage(named: "klarna-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonColor: UIColor? = {
+        switch config.type {
+        case .klarna:
+            return UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1.0)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonTitleColor: UIColor? = {
+        switch config.type {
+        case .klarna:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonBorderWidth: CGFloat = {
+        switch config.type {
+        case .klarna:
+            return 0.0
+        default:
+            assert(true, "Shouldn't end up in here")
+            return 0.0
+        }
+    }()
+    
+    override lazy var buttonBorderColor: UIColor? = {
+        switch config.type {
+        case .klarna:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonTintColor: UIColor? = {
+        switch config.type {
+        case .klarna:
+            return .black
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonFont: UIFont? = {
+        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
+    }()
+    
+    override lazy var buttonCornerRadius: CGFloat? = {
+        return 4.0
+    }()
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
     }

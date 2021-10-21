@@ -33,6 +33,88 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     private var applePayReceiveDataCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((NSObject) -> Void)?
+    
+    override lazy var title: String = {
+        return "Apple Pay"
+    }()
+    
+    override lazy var buttonTitle: String? = {
+        switch config.type {
+        case .applePay:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonImage: UIImage? = {
+        switch config.type {
+        case .applePay:
+            return UIImage(named: "apple-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonColor: UIColor? = {
+        switch config.type {
+        case .applePay:
+            return .black
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonTitleColor: UIColor? = {
+        switch config.type {
+        case .applePay:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonBorderWidth: CGFloat = {
+        switch config.type {
+        case .applePay:
+            return 0.0
+        default:
+            assert(true, "Shouldn't end up in here")
+            return 0.0
+        }
+    }()
+    
+    override lazy var buttonBorderColor: UIColor? = {
+        switch config.type {
+        case .applePay:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonTintColor: UIColor? = {
+        switch config.type {
+        case .applePay:
+            return .white
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonFont: UIFont? = {
+        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
+    }()
+    
+    override lazy var buttonCornerRadius: CGFloat? = {
+        return 4.0
+    }()
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

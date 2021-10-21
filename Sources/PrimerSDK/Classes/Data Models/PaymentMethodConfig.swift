@@ -179,4 +179,25 @@ public enum PaymentMethodConfigType: String, Codable {
     }
 }
 
+public enum PayType {
+    case applePay, payPal, paymentCard, googlePay, goCardless, klarna,
+         payNLIdeal, apaya, hoolah
+    case other(value: String)
+    
+    init(rawValue: String) {
+        switch rawValue {
+        case "APAYA":
+            self = .apaya
+        case "APPLE_PAY":
+            self = .applePay
+        case "GOCARDLESS":
+            self = .goCardless
+        case "GOOGLE_PAY":
+            self = .googlePay
+        default:
+            self = .other(value: rawValue)
+        }
+    }
+}
+
 #endif

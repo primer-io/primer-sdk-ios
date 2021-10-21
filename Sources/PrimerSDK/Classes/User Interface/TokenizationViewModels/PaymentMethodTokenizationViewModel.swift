@@ -39,7 +39,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var completion: TokenizationCompletion?
     var paymentMethod: PaymentMethodToken?
     var didStartTokenization: (() -> Void)?
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    internal let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     required init(config: PaymentMethodConfig) {
         self.config = config
@@ -57,26 +57,15 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     lazy var title: String = {
         switch config.type {
-        case .applePay:
-            return "Apple Pay"
-        case .payPal:
-            return "PayPal"
-        case .paymentCard:
-            return "Payment Card"
         case .googlePay:
             return "Google Pay"
         case .goCardlessMandate:
             return "Go Cardless"
-        case .klarna:
-            return "Klarna"
-        case .payNLIdeal:
-            return "Pay NL Ideal"
-        case .apaya:
-            return "Apaya"
-        case .hoolah:
-            return "Hoolah"
         case .unknown:
             return "Unknown"
+        default:
+            assert(true, "Shouldn't end up in here")
+            return ""
         }
     }()
     
@@ -84,168 +73,98 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     lazy var buttonTitle: String? = {
         switch config.type {
-        case .paymentCard:
-            return Primer.shared.flow.internalSessionFlow.vaulted
-                ? NSLocalizedString("payment-method-type-card-vaulted",
-                                    tableName: nil,
-                                    bundle: Bundle.primerResources,
-                                    value: "Add new card",
-                                    comment: "Add new card - Payment Method Type (Card Vaulted)")
-
-                : NSLocalizedString("payment-method-type-card-not-vaulted",
-                                    tableName: nil,
-                                    bundle: Bundle.primerResources,
-                                    value: "Pay with card",
-                                    comment: "Pay with card - Payment Method Type (Card Not vaulted)")
-        
         case .goCardlessMandate:
             return NSLocalizedString("payment-method-type-go-cardless",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "Bank account",
                                      comment: "Bank account - Payment Method Type (Go Cardless)")
-        
-        case .payNLIdeal:
-            return nil
-            
-        case .apaya:
-            return NSLocalizedString("payment-method-type-pay-by-mobile",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Pay by mobile",
-                                     comment: "Pay by mobile - Payment By Mobile (Apaya)")
-        case .hoolah:
-            return nil
-        
-        case .applePay:
-            return nil
         case .googlePay:
             return nil
-        case .klarna:
-            return nil
-        case .payPal:
-            return nil
         case .unknown:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
             return nil
         }
     }()
     
     lazy var buttonImage: UIImage? = {
         switch config.type {
-        case .applePay:
-            return UIImage(named: "apple-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .payPal:
-            return UIImage(named: "paypal3", in: Bundle.primerResources, compatibleWith: nil)
-        case .paymentCard:
-            return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .googlePay:
             return nil
         case .goCardlessMandate:
             return UIImage(named: "rightArrow", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .klarna:
-            return UIImage(named: "klarna-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .payNLIdeal:
-            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .apaya:
-            return UIImage(named: "mobile", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .hoolah:
-            return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .unknown:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
             return nil
         }
     }()
     
     lazy var buttonColor: UIColor? = {
         switch config.type {
-        case .applePay:
-            return .black
-        case .payPal:
-            return UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
-        case .paymentCard:
-            return .white
         case .googlePay:
             return nil
         case .goCardlessMandate:
             return .white
-        case .klarna:
-            return UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1.0)
-        case .payNLIdeal:
-            return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
-        case .apaya:
-            return .white
-        case .hoolah:
-            return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
         case .unknown:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
             return nil
         }
     }()
     
     lazy var buttonTitleColor: UIColor? = {
         switch config.type {
-        case .paymentCard,
-                .goCardlessMandate,
-                .apaya,
-                .unknown:
+        case .goCardlessMandate:
             return theme.colorTheme.text1
-        case .applePay,
-                .googlePay,
-                .hoolah,
-                .payNLIdeal,
-                .payPal,
-                .klarna:
+        case .googlePay,
+                .unknown:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
             return nil
         }
     }()
     
     lazy var buttonBorderWidth: CGFloat = {
         switch config.type {
-        case .paymentCard,
-                .goCardlessMandate,
-                .apaya,
-                .unknown:
+        case .goCardlessMandate:
             return 1.0
-        case .applePay,
-                .googlePay,
-                .hoolah,
-                .payNLIdeal,
-                .payPal,
-                .klarna:
+        case .googlePay,
+                .unknown:
+            return 0.0
+        default:
+            assert(true, "Shouldn't end up in here")
             return 0.0
         }
     }()
     
     lazy var buttonBorderColor: UIColor? = {
         switch config.type {
-        case .paymentCard,
-                .goCardlessMandate,
-                .apaya,
-                .unknown:
+        case .goCardlessMandate:
             return theme.colorTheme.text1
-        case .applePay,
-                .googlePay,
-                .hoolah,
-                .payNLIdeal,
-                .payPal,
-                .klarna:
+        case .googlePay,
+                .unknown:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
             return nil
         }
     }()
     
     lazy var buttonTintColor: UIColor? = {
         switch config.type {
-        case .applePay,
-                .hoolah,
-                .payNLIdeal:
-            return .white
-        case .klarna:
-            return .black
-        case .paymentCard,
-                .goCardlessMandate,
-                .apaya:
+        case .goCardlessMandate:
             return theme.colorTheme.text1
-        case .payPal,
-                .googlePay,
+        case .googlePay,
                 .unknown:
+            return nil
+        default:
+            assert(true, "Shouldn't end up in here")
             return nil
         }
     }()

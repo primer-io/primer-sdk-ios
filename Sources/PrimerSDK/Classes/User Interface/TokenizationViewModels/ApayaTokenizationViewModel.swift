@@ -15,6 +15,92 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     
+    override lazy var title: String = {
+        return "Apaya"
+    }()
+    
+    override lazy var buttonTitle: String? = {
+        switch config.type {
+        case .apaya:
+            return NSLocalizedString("payment-method-type-pay-by-mobile",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Pay by mobile",
+                                     comment: "Pay by mobile - Payment By Mobile (Apaya)")
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonImage: UIImage? = {
+        switch config.type {
+        case .apaya:
+            return UIImage(named: "mobile", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonColor: UIColor? = {
+        switch config.type {
+        case .apaya:
+            return .white
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonTitleColor: UIColor? = {
+        switch config.type {
+        case .apaya:
+            return theme.colorTheme.text1
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonBorderWidth: CGFloat = {
+        switch config.type {
+        case .apaya:
+            return 1.0
+        default:
+            assert(true, "Shouldn't end up in here")
+            return 0.0
+        }
+    }()
+    
+    override lazy var buttonBorderColor: UIColor? = {
+        switch config.type {
+        case .apaya:
+            return theme.colorTheme.text1
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonTintColor: UIColor? = {
+        switch config.type {
+        case .apaya:
+            return theme.colorTheme.text1
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonFont: UIFont? = {
+        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
+    }()
+    
+    override lazy var buttonCornerRadius: CGFloat? = {
+        return 4.0
+    }()
+    
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ res: Apaya.WebViewResponse?, _ error: Error?) -> Void)?
     

@@ -11,7 +11,99 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     private var flow: PaymentFlow
     private var cardComponentsManager: CardComponentsManager!
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    
+    override lazy var title: String = {
+        return "Payment Card"
+    }()
+    
+    override lazy var buttonTitle: String? = {
+        switch config.type {
+        case .paymentCard:
+            return Primer.shared.flow.internalSessionFlow.vaulted
+                ? NSLocalizedString("payment-method-type-card-vaulted",
+                                    tableName: nil,
+                                    bundle: Bundle.primerResources,
+                                    value: "Add new card",
+                                    comment: "Add new card - Payment Method Type (Card Vaulted)")
+
+                : NSLocalizedString("payment-method-type-card-not-vaulted",
+                                    tableName: nil,
+                                    bundle: Bundle.primerResources,
+                                    value: "Pay with card",
+                                    comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonImage: UIImage? = {
+        switch config.type {
+        case .paymentCard:
+            return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonColor: UIColor? = {
+        switch config.type {
+        case .paymentCard:
+            return .white
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonTitleColor: UIColor? = {
+        switch config.type {
+        case .paymentCard:
+            return theme.colorTheme.text1
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonBorderWidth: CGFloat = {
+        switch config.type {
+        case .paymentCard:
+            return 1.0
+        default:
+            assert(true, "Shouldn't end up in here")
+            return 0.0
+        }
+    }()
+    
+    override lazy var buttonBorderColor: UIColor? = {
+        switch config.type {
+        case .paymentCard:
+            return theme.colorTheme.text1
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonTintColor: UIColor? = {
+        switch config.type {
+        case .paymentCard:
+            return theme.colorTheme.text1
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    override lazy var buttonFont: UIFont? = {
+        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
+    }()
+    
+    override lazy var buttonCornerRadius: CGFloat? = {
+        return 4.0
+    }()
     
     lazy var cardNumberField: PrimerCardNumberFieldView = {
         let cardNumberField = PrimerCardNumberFieldView()
