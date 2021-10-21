@@ -231,6 +231,9 @@ public class Primer {
         case (.payNLIdeal, .checkout):
             flow = .checkoutWithPayNL
             
+        case (.aliPay, .checkout):
+            flow = .checkoutWithHoolah
+            
         case (.giropay, .checkout):
             flow = .checkoutWithHoolah
             
@@ -253,6 +256,7 @@ public class Primer {
             (.applePay, .vault),
             (.goCardlessMandate, _),
             (.googlePay, _),
+            (.aliPay, .vault),
             (.giropay, .vault),
             (.hoolah, .vault),
             (.payNLIdeal, .vault),

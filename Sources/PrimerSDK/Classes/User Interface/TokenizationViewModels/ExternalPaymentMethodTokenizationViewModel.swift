@@ -12,6 +12,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var title: String = {
         switch config.type {
+        case .aliPay:
+            return "Ali Pay"
         case .giropay:
             return "Giropay"
         case .hoolah:
@@ -30,7 +32,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTitle: String? = {
         switch config.type {
-        case .giropay,
+        case .aliPay,
+                .giropay,
                 .hoolah,
                 .payNLIdeal,
                 .sofort,
@@ -44,6 +47,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonImage: UIImage? = {
         switch config.type {
+        case .aliPay:
+            return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .giropay:
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .hoolah:
@@ -62,6 +67,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonColor: UIColor? = {
         switch config.type {
+        case .aliPay:
+            return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
         case .giropay:
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
         case .hoolah:
@@ -80,7 +87,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTitleColor: UIColor? = {
         switch config.type {
-        case .giropay,
+        case .aliPay,
+                .giropay,
                 .hoolah,
                 .payNLIdeal,
                 .twint:
@@ -93,7 +101,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonBorderWidth: CGFloat = {
         switch config.type {
-        case .giropay,
+        case .aliPay,
+                .giropay,
                 .hoolah,
                 .payNLIdeal,
                 .twint:
@@ -106,7 +115,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
-        case .giropay,
+        case .aliPay,
+                .giropay,
                 .hoolah,
                 .payNLIdeal,
                 .twint:
@@ -119,7 +129,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
-        case .hoolah,
+        case .aliPay,
+                .hoolah,
                 .payNLIdeal,
                 .sofort:
             return .white
