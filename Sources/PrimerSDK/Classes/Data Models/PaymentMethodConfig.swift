@@ -195,12 +195,12 @@ public enum PaymentMethodConfigType: String, Codable {
     case klarna = "KLARNA"
     case payNLIdeal = "PAY_NL_IDEAL"
     case apaya = "APAYA"
-    case aliPay = "ALIPAY"
+    case aliPay = "ADYEN_ALIPAY"
     case hoolah = "HOOLAH"
-    case twint = "TWINT"
-    case sofort = "SOFORT"
-    case giropay = "GIROPAY"
-    case trustly = "TRUSTLY"
+    case twint = "ADYEN_TWINT"
+    case sofort = "ADYEN_SOFORT_BANKING"
+    case giropay = "ADYEN_GIROPAY"
+    case trustly = "ADYEN_TRUSTLY"
     
     case unknown
     
