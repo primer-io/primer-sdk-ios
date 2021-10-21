@@ -158,24 +158,6 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         webViewController!.navigationDelegate = self
         webViewController!.modalPresentationStyle = .fullScreen
         
-        
-        
-        
-        
-        
-//        webViewController.onRedirect = { url in
-//            do {
-//                let apayaWebViewResponse = try Apaya.WebViewResponse(url: url)
-//                completion(apayaWebViewResponse, nil)
-//
-//            } catch {
-//                completion(nil, error)
-//            }
-//        }
-//        webViewController.onError = { err in
-//            completion(nil, err)
-//        }
-        
         self.willPresentExternalView?()
         Primer.shared.primerRootVC?.present(webViewController!, animated: true, completion: {
             self.didPresentExternalView?()
