@@ -234,6 +234,9 @@ public class Primer {
         case (.hoolah, .checkout):
             flow = .checkoutWithHoolah
             
+        case (.twint, .checkout):
+            flow = .checkoutWithHoolah
+            
         case (.payPal, .checkout):
             flow = .checkoutWithPayPal
             
@@ -246,6 +249,7 @@ public class Primer {
             (.googlePay, _),
             (.hoolah, .vault),
             (.payNLIdeal, .vault),
+            (.twint, .vault),
             (.unknown, _):
             let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
             Primer.shared.delegate?.checkoutFailed?(with: err)

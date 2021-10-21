@@ -21,6 +21,15 @@ struct PrimerConfiguration: Codable {
             viewModel.position = index
         }
         
+        let twintViewModel: PaymentMethodTokenizationViewModelProtocol = ExternalPaymentMethodTokenizationViewModel(
+            config: PaymentMethodConfig(
+                id: "twint",
+                options: nil,
+                processorConfigId: "processor",
+                type: .twint))
+        
+        viewModels.append(twintViewModel)
+        
         return viewModels
     }
     
@@ -151,6 +160,7 @@ public enum PaymentMethodConfigType: String, Codable {
     case payNLIdeal = "PAY_NL_IDEAL"
     case apaya = "APAYA"
     case hoolah = "HOOLAH"
+    case twint = "TWINT"
     
     case unknown
     
@@ -167,7 +177,8 @@ public enum PaymentMethodConfigType: String, Codable {
             return Primer.shared.flow.internalSessionFlow.vaulted
         case .applePay,
                 .hoolah,
-                .payNLIdeal:
+                .payNLIdeal,
+                .twint:
             return !Primer.shared.flow.internalSessionFlow.vaulted
         case .unknown:
             return false

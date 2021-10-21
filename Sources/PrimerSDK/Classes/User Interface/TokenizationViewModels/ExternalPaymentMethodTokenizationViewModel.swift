@@ -16,6 +16,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Pay NL Ideal"
         case .hoolah:
             return "Hoolah"
+        case .twint:
+            return "Twint"
         default:
             assert(true, "Shouldn't end up in here")
             return ""
@@ -27,6 +29,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .payNLIdeal:
             return nil
         case .hoolah:
+            return nil
+        case .twint:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -40,6 +44,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .twint:
+            return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -52,6 +58,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
+        case .twint:
+            return .black
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -61,7 +69,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonTitleColor: UIColor? = {
         switch config.type {
         case .hoolah,
-                .payNLIdeal:
+                .payNLIdeal,
+                .twint:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -72,7 +81,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonBorderWidth: CGFloat = {
         switch config.type {
         case .hoolah,
-                .payNLIdeal:
+                .payNLIdeal,
+                .twint:
             return 0.0
         default:
             assert(true, "Shouldn't end up in here")
@@ -83,7 +93,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
         case .hoolah,
-                .payNLIdeal:
+                .payNLIdeal,
+                .twint:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -96,6 +107,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .hoolah,
                 .payNLIdeal:
             return .white
+        case .twint:
+            return nil
         default:
             assert(true, "Shouldn't end up in here")
             return nil
