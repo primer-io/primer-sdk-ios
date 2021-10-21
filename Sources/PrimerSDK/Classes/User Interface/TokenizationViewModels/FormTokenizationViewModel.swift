@@ -265,8 +265,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return
         }
         
-        let pcfvc = PrimerCardFormViewController(viewModel: self)
-        Primer.shared.primerRootVC?.show(viewController: pcfvc)
+        DispatchQueue.main.async {
+            let pcfvc = PrimerCardFormViewController(viewModel: self)
+            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+        }
     }
     
     @objc

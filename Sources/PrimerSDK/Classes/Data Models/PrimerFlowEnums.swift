@@ -36,6 +36,8 @@
  1.2.2
  */
 
+#if canImport(UIKit)
+
 public enum PrimerSessionFlow {
     case `default`
     case defaultWithVault
@@ -148,3 +150,5 @@ public enum PrimerSessionIntent: String {
     case checkout
     case vault
 }
+
+#endif

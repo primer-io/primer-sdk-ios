@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 30/7/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 /// PrimerContainerViewController gets a view controller as input. The input view controller must use autolayout.
@@ -81,3 +83,5 @@ extension UIView {
     }
     
 }
+
+#endif

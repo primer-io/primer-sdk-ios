@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 27/7/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 internal class PrimerRootViewController: PrimerViewController {
@@ -470,3 +472,5 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
         }
     }
 }
+
+#endif

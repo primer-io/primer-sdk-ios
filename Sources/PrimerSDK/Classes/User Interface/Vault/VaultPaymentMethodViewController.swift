@@ -193,7 +193,7 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
     func editButtonTapped(_ sender: UIButton) {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         isDeleting = !isDeleting
-        rightBarButton.setTitle(isDeleting ? "Done" : theme.content.vaultPaymentMethodView.editButtonText, for: .normal)
+        rightBarButton.setTitle(isDeleting ? "Cancel" : theme.content.vaultPaymentMethodView.editButtonText, for: .normal)
     }
     
     private func deletePaymentMethod(_ paymentMethodToken: String) {
