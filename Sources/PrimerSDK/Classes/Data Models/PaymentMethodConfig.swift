@@ -57,6 +57,15 @@ struct PrimerConfiguration: Codable {
         
         viewModels.append(alipayViewModel)
         
+        let trustlyViewModel: PaymentMethodTokenizationViewModelProtocol = ExternalPaymentMethodTokenizationViewModel(
+            config: PaymentMethodConfig(
+                id: "trustly",
+                options: nil,
+                processorConfigId: "processor",
+                type: .trustly))
+        
+        viewModels.append(trustlyViewModel)
+        
         return viewModels
     }
     
@@ -191,6 +200,7 @@ public enum PaymentMethodConfigType: String, Codable {
     case twint = "TWINT"
     case sofort = "SOFORT"
     case giropay = "GIROPAY"
+    case trustly = "TRUSTLY"
     
     case unknown
     
@@ -210,8 +220,9 @@ public enum PaymentMethodConfigType: String, Codable {
                 .giropay,
                 .hoolah,
                 .payNLIdeal,
-                .twint,
-                .sofort:
+                .sofort,
+                .trustly,
+                .twint:
             return !Primer.shared.flow.internalSessionFlow.vaulted
         case .unknown:
             return false

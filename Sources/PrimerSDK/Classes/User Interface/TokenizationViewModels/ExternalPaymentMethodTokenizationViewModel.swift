@@ -24,6 +24,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Sofort"
         case .twint:
             return "Twint"
+        case .trustly:
+            return "Trustly"
         default:
             assert(true, "Shouldn't end up in here")
             return ""
@@ -37,7 +39,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .hoolah,
                 .payNLIdeal,
                 .sofort,
-                .twint:
+                .twint,
+                .trustly:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -59,6 +62,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .twint:
             return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .trustly:
+            return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -79,6 +84,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
         case .twint:
             return .black
+        case .trustly:
+            return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -91,7 +98,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .giropay,
                 .hoolah,
                 .payNLIdeal,
-                .twint:
+                .twint,
+                .trustly:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -105,7 +113,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .giropay,
                 .hoolah,
                 .payNLIdeal,
-                .twint:
+                .twint,
+                .trustly:
             return 0.0
         default:
             assert(true, "Shouldn't end up in here")
@@ -119,7 +128,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .giropay,
                 .hoolah,
                 .payNLIdeal,
-                .twint:
+                .twint,
+                .trustly:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -134,6 +144,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLIdeal,
                 .sofort:
             return .white
+        case .trustly:
+            return .black
         case .giropay,
                 .twint:
             return nil
