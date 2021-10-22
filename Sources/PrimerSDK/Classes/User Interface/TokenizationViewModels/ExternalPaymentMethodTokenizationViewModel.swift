@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import WebKit
+import SafariServices
 
 class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
@@ -114,10 +114,11 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
-    fileprivate var webViewController: PrimerWebViewController?
+    fileprivate var webViewController: SFSafariViewController?
+    /// I n this case the **webViewCompletion** won't return an authorzation token, a **resumeToken** will be return
+    /// from polling.
     fileprivate var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     fileprivate var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
-    
     fileprivate var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
     
     deinit {
@@ -191,6 +192,16 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.handleSuccessfulTokenizationFlow()
             }
         }
+        .ensure { [unowned self] in
+            self.willPresentExternalView = nil
+            self.didPresentExternalView = nil
+            self.willDismissExternalView = nil
+            self.didDismissExternalView = nil
+            self.webViewController = nil
+            self.webViewCompletion = nil
+            self.onResumeTokenCompletion = nil
+            self.onClientToken = nil
+        }
         .catch { err in
             DispatchQueue.main.async {
                 Primer.shared.delegate?.checkoutFailed?(with: err)
@@ -257,9 +268,16 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     fileprivate func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async { [unowned self] in
-                self.webViewController = PrimerWebViewController(with: url)
-                self.webViewController?.navigationDelegate = self
-                self.webViewController!.modalPresentationStyle = .fullScreen
+                self.willPresentExternalView?()
+                
+                self.webViewCompletion = { (id, err) in
+                    if let err = err {
+                        seal.reject(err)
+                    }
+                }
+                
+                self.webViewController = SFSafariViewController(url: url)
+                self.webViewController?.delegate = self
                 
                 self.willPresentExternalView?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
@@ -288,6 +306,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         let state: AppStateProtocol = DependencyContainer.resolve()
         let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
         client.poll(clientToken: state.decodedClientToken, url: url.absoluteString) { result in
+            if self.webViewCompletion == nil {
+                completion(nil, PrimerError.userCancelled)
+                return
+            }
             switch result {
             case .success(let res):
                 if res.status == .pending {
@@ -330,32 +352,20 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
 }
 
-extension ExternalPaymentMethodTokenizationViewModel: WKNavigationDelegate {
+extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
     
-    func webView(
-        _ webView: WKWebView,
-        decidePolicyFor navigationAction: WKNavigationAction,
-        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
-    ) {
-        let allowedHosts: [String] = [
-            "primer.io",
-            "livedemostore.primer.io"
-        ]
-
-        if let url = navigationAction.request.url, let host = url.host, allowedHosts.contains(host) {
-            decisionHandler(.allow)
-        } else {
-            decisionHandler(.allow)
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        if let webViewCompletion = webViewCompletion {
+            // Cancelled
+            webViewCompletion(nil, PrimerError.userCancelled)
         }
+        
+        webViewCompletion = nil
     }
     
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        let nsError = error as NSError
-        if !(nsError.domain == "NSURLErrorDomain" && nsError.code == -1002) {
-            // Code -1002 means bad URL redirect. Klarna is redirecting to bankid:// which is considered a bad URL
-            // Not sure yet if we have to do that only for bankid://
-            webViewCompletion?(nil, error)
-            webViewCompletion = nil
+    func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
+        if didLoadSuccessfully {
+            self.didPresentExternalView?()
         }
     }
 
@@ -445,9 +455,9 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
     fileprivate override func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async { [unowned self] in
-                self.webViewController = PrimerWebViewController(with: url)
-                self.webViewController?.navigationDelegate = self
-                self.webViewController!.modalPresentationStyle = .fullScreen
+                self.webViewController = SFSafariViewController(url: url)
+                self.webViewController?.delegate = self
+//                self.webViewController!.modalPresentationStyle = .fullScreen
                 
                 self.willPresentExternalView?()
                 Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
