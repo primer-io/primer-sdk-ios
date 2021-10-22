@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		151B098C267A276100FB49B8 /* Vault.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15300DB8267A1211009A1B9C /* Vault.swift */; };
-		152A42CE26A2B0BD0036D3D6 /* ThreeDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 152A42CD26A2B0BD0036D3D6 /* ThreeDS.swift */; };
 		15300DBB267A1646009A1B9C /* VaultKlarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15300DBA267A1646009A1B9C /* VaultKlarna.swift */; };
 		1582B97D260A3F2900C80BD7 /* VaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95F260A3F2900C80BD7 /* VaultCheckoutViewModel.swift */; };
 		1582B97F260A3F2900C80BD7 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B961260A3F2900C80BD7 /* Mocks.swift */; };
@@ -17,12 +16,10 @@
 		1582B982260A3F2900C80BD7 /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B965260A3F2900C80BD7 /* VaultService.swift */; };
 		1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B966260A3F2900C80BD7 /* ClientTokenService.swift */; };
 		1582B984260A3F2900C80BD7 /* TokenizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B967260A3F2900C80BD7 /* TokenizationService.swift */; };
-		1582B985260A3F2900C80BD7 /* KlarnaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B968260A3F2900C80BD7 /* KlarnaService.swift */; };
 		1582B987260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */; };
 		1582B988260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */; };
 		1582B98B260A3F2900C80BD7 /* MaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B970260A3F2900C80BD7 /* MaskTests.swift */; };
 		1582B98E260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */; };
-		1582B98F260A3F2900C80BD7 /* KlarnaServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B975260A3F2900C80BD7 /* KlarnaServiceTests.swift */; };
 		1582B990260A3F2900C80BD7 /* TokenizationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */; };
 		1582B991260A3F2900C80BD7 /* ClientTokenServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B977260A3F2900C80BD7 /* ClientTokenServiceTests.swift */; };
 		1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */; };
@@ -43,9 +40,6 @@
 		1DC7EE0C261FA39200BCBFFC /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC7EE0B261FA39200BCBFFC /* SpinnerViewController.swift */; };
 		1DC7EE14261FA3D400BCBFFC /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC7EE13261FA3D400BCBFFC /* CreateClientToken.swift */; };
 		1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */; };
-		1DEBE0E126B75EBF004E3064 /* ApayaServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */; };
-		1DEBE0EF26BACE77004E3064 /* ApayaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0EE26BACE76004E3064 /* ApayaService.swift */; };
-		1DEBE0F326BC4097004E3064 /* ApayaWebViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0F226BC4097004E3064 /* ApayaWebViewModelTests.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -76,7 +70,6 @@
 		110495F57F9C7386BF6573B2 /* Pods-PrimerSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		151B09F4267B7F9400FB49B8 /* 3DSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3DSTests.swift; sourceTree = "<group>"; };
 		151B0A1B267CE24B00FB49B8 /* 3DSConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3DSConstants.swift; sourceTree = "<group>"; };
-		152A42CD26A2B0BD0036D3D6 /* ThreeDS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDS.swift; sourceTree = "<group>"; };
 		15300DB8267A1211009A1B9C /* Vault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vault.swift; sourceTree = "<group>"; };
 		15300DBA267A1646009A1B9C /* VaultKlarna.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultKlarna.swift; sourceTree = "<group>"; };
 		1582B95F260A3F2900C80BD7 /* VaultCheckoutViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultCheckoutViewModel.swift; sourceTree = "<group>"; };
@@ -86,13 +79,11 @@
 		1582B965260A3F2900C80BD7 /* VaultService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultService.swift; sourceTree = "<group>"; };
 		1582B966260A3F2900C80BD7 /* ClientTokenService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientTokenService.swift; sourceTree = "<group>"; };
 		1582B967260A3F2900C80BD7 /* TokenizationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
-		1582B968260A3F2900C80BD7 /* KlarnaService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KlarnaService.swift; sourceTree = "<group>"; };
 		1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewModelTests.swift; sourceTree = "<group>"; };
 		1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultCheckoutViewModelTests.swift; sourceTree = "<group>"; };
 		1582B970260A3F2900C80BD7 /* MaskTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MaskTests.swift; sourceTree = "<group>"; };
 		1582B972260A3F2900C80BD7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigServiceTests.swift; sourceTree = "<group>"; };
-		1582B975260A3F2900C80BD7 /* KlarnaServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KlarnaServiceTests.swift; sourceTree = "<group>"; };
 		1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenizationServiceTests.swift; sourceTree = "<group>"; };
 		1582B977260A3F2900C80BD7 /* ClientTokenServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientTokenServiceTests.swift; sourceTree = "<group>"; };
 		1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PayPalServiceTests.swift; sourceTree = "<group>"; };
@@ -127,9 +118,6 @@
 		1DC7EE0B261FA39200BCBFFC /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		1DC7EE13261FA3D400BCBFFC /* CreateClientToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateClientToken.swift; sourceTree = "<group>"; };
 		1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApayaTests.swift; sourceTree = "<group>"; };
-		1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaServiceTests.swift; sourceTree = "<group>"; };
-		1DEBE0EE26BACE76004E3064 /* ApayaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaService.swift; sourceTree = "<group>"; };
-		1DEBE0F226BC4097004E3064 /* ApayaWebViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaWebViewModelTests.swift; sourceTree = "<group>"; };
 		2E8AAE40233DF782FAA249A8 /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		3B55FBF1D40BE6B25F29A5D9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		3BF480EBB4AC8FD04D0BACAD /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -224,8 +212,6 @@
 				1582B965260A3F2900C80BD7 /* VaultService.swift */,
 				1582B966260A3F2900C80BD7 /* ClientTokenService.swift */,
 				1582B967260A3F2900C80BD7 /* TokenizationService.swift */,
-				1582B968260A3F2900C80BD7 /* KlarnaService.swift */,
-				1DEBE0EE26BACE76004E3064 /* ApayaService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -235,7 +221,6 @@
 			children = (
 				1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */,
 				1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */,
-				1DEBE0F226BC4097004E3064 /* ApayaWebViewModelTests.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -252,9 +237,7 @@
 		1582B973260A3F2900C80BD7 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */,
 				1582B977260A3F2900C80BD7 /* ClientTokenServiceTests.swift */,
-				1582B975260A3F2900C80BD7 /* KlarnaServiceTests.swift */,
 				1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */,
 				1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */,
 				1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */,
@@ -270,7 +253,6 @@
 				1582B9AC260A402E00C80BD7 /* Base.swift */,
 				1582B9A3260A3FD300C80BD7 /* Info.plist */,
 				15F9E67C2678C88000F6B6C1 /* UniversalCheckout.swift */,
-				152A42CD26A2B0BD0036D3D6 /* ThreeDS.swift */,
 				15300DB8267A1211009A1B9C /* Vault.swift */,
 				15300DBA267A1646009A1B9C /* VaultKlarna.swift */,
 			);
@@ -670,7 +652,6 @@
 				15F9E67D2678C88000F6B6C1 /* UniversalCheckout.swift in Sources */,
 				1582B9AD260A402E00C80BD7 /* Base.swift in Sources */,
 				1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */,
-				152A42CE26A2B0BD0036D3D6 /* ThreeDS.swift in Sources */,
 				15300DBB267A1646009A1B9C /* VaultKlarna.swift in Sources */,
 				151B098C267A276100FB49B8 /* Vault.swift in Sources */,
 			);
@@ -701,16 +682,12 @@
 				1582B991260A3F2900C80BD7 /* ClientTokenServiceTests.swift in Sources */,
 				1582B98E260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift in Sources */,
 				15F5E2FF26982B21003AFF8A /* CardComponentManagerTests.swift in Sources */,
-				1DEBE0EF26BACE77004E3064 /* ApayaService.swift in Sources */,
-				1582B98F260A3F2900C80BD7 /* KlarnaServiceTests.swift in Sources */,
-				1DEBE0E126B75EBF004E3064 /* ApayaServiceTests.swift in Sources */,
 				1582B98B260A3F2900C80BD7 /* MaskTests.swift in Sources */,
 				1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */,
 				1582B980260A3F2900C80BD7 /* PaymentMethodConfigService.swift in Sources */,
 				15F32E1D26FDA8E4004B3903 /* PrimerTests.swift in Sources */,
 				1582B988260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift in Sources */,
 				1582B97F260A3F2900C80BD7 /* Mocks.swift in Sources */,
-				1582B985260A3F2900C80BD7 /* KlarnaService.swift in Sources */,
 				15ED91782718975500581CD7 /* MockAsyncPaymentMethodTokenizationViewModel.swift in Sources */,
 				1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */,
 				1582B984260A3F2900C80BD7 /* TokenizationService.swift in Sources */,
@@ -718,7 +695,6 @@
 				1582B982260A3F2900C80BD7 /* VaultService.swift in Sources */,
 				1582B97D260A3F2900C80BD7 /* VaultCheckoutViewModel.swift in Sources */,
 				1582B987260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift in Sources */,
-				1DEBE0F326BC4097004E3064 /* ApayaWebViewModelTests.swift in Sources */,
 				1582B990260A3F2900C80BD7 /* TokenizationServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
