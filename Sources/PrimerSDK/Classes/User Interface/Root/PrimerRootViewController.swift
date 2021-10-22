@@ -285,6 +285,20 @@ internal class PrimerRootViewController: PrimerViewController {
                     }
                 }
                 self.nc.viewControllers = viewControllers
+                
+                if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
+                    cvc.mockedNavigationBar.hidesBackButton = true
+                } else if viewController is PrimerLoadingViewController {
+                    cvc.mockedNavigationBar.hidesBackButton = true
+                } else if viewController is SuccessViewController {
+                    cvc.mockedNavigationBar.hidesBackButton = true
+                } else if viewController is ErrorViewController {
+                    cvc.mockedNavigationBar.hidesBackButton = true
+                } else if viewControllers.count == 1 {
+                    cvc.mockedNavigationBar.hidesBackButton = true
+                } else {
+                    cvc.mockedNavigationBar.hidesBackButton = false
+                }
             }
         }
         
@@ -313,6 +327,10 @@ internal class PrimerRootViewController: PrimerViewController {
         guard nc.viewControllers.count > 1,
               let viewController = (nc.viewControllers[nc.viewControllers.count-2] as? PrimerContainerViewController)?.childViewController else {
             return
+        }
+        
+        if self.nc.viewControllers.count == 2 {
+            (self.nc.viewControllers.last as? PrimerContainerViewController)?.mockedNavigationBar.hidesBackButton = true
         }
         
         let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc.navigationBar.bounds.height)
