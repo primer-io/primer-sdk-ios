@@ -140,21 +140,3 @@ internal extension String {
         return ", " + self
     }
 }
-
-public struct Order: Codable {
-    let totalAmount: UInt?
-    let totalTaxAmount: UInt?
-    let countryCode: CountryCode?
-    let currencyCode: Currency?
-
-    let items: [LineItem]
-    let shippingAmount: UInt?
-    
-    public struct LineItem: Codable {
-        let quantity: Int?
-        let unitAmount: UInt?
-        let discountAmount: UInt?
-        let reference: String?
-        let name: String?
-    }
-}
