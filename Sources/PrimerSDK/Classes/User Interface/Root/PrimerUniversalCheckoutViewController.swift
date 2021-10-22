@@ -349,30 +349,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     @objc
     func cardButtonTapped() {
-        if #available(iOS 11.0, *) {
-            let action = ClientSession.Action(
-                type: "SELECT_PAYMENT_METHOD",
-                params: [
-                    "type": "PAYMENT_CARD"
-                ])
-            
-            Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
-                if let clientToken = clientToken {
-                    try! ClientTokenService.storeClientToken(clientToken)
-                    let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                    config.fetchConfig { err in
-                        let state: AppStateProtocol = DependencyContainer.resolve()
-                        print(state.paymentMethodConfig)
-                        
-                        let cfvc = PrimerCardFormViewController(flow: .checkout)
-                        Primer.shared.primerRootVC?.show(viewController: cfvc)
-                    }
-                }
-            })
-            
-            let lvc = PrimerLoadingViewController(withHeight: 300)
-            Primer.shared.primerRootVC?.show(viewController: lvc)
-        }
+        let cfvc = PrimerCardFormViewController(flow: .checkout)
+        Primer.shared.primerRootVC?.show(viewController: cfvc)
     }
     
     @objc
