@@ -270,7 +270,40 @@ extension PrimerCardFormViewController: CardComponentsManagerDelegate, PrimerTex
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork) {
-        
+        if cardNetwork != .unknown {
+            let action = ClientSession.Action(type: "SET_SURCHARGE_FEE")
+            
+            Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
+                if let clientToken = clientToken {
+                    try! ClientTokenService.storeClientToken(clientToken)
+                    let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    config.fetchConfig { err in
+                        let state: AppStateProtocol = DependencyContainer.resolve()
+                        let config = state.paymentMethodConfig
+                        
+                        if let surcharge = config?.clientSession?.order?.fees?.filter({ $0.id == "SURCHARGE" }).first?.amount {
+                            var buttonTitle: String = ""
+                            if self.flow == .checkout {
+                                let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+                                buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                                                tableName: nil,
+                                                                bundle: Bundle.primerResources,
+                                                                value: "Pay",
+                                                                comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "") + " + \(surcharge)"
+                            } else if self.flow == .vault {
+                                buttonTitle = NSLocalizedString("primer-card-form-add-card",
+                                                                tableName: nil,
+                                                                bundle: Bundle.primerResources,
+                                                                value: "Add card",
+                                                                comment: "Add card - Card Form (Vault title text)")
+                            }
+                            
+                            self.submitButton.setTitle(buttonTitle, for: .normal)
+                        }
+                    }
+                }
+            })
+        }
     }
     
 }
