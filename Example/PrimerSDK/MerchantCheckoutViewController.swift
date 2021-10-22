@@ -251,7 +251,7 @@ class MerchantCheckoutViewController: UIViewController {
         })
     }
     
-    func requestClientSessionWithActions(_ actions: [ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
+    func requestClientSessionWithActions(_ actions: [PrimerSDK.ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
         guard let clientToken = clientToken else {
             completion(nil, NetworkError.missingParams)
             return
@@ -270,9 +270,23 @@ class MerchantCheckoutViewController: UIViewController {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        var merchantActions: [ClientSession.Action] = []
+        for action in actions {
+            if action.type == "SET_SURCHARGE_FEE" {
+                let newAction = ClientSession.Action(
+                    type: "SET_SURCHARGE_FEE",
+                    params: [
+                        "amount": 342
+                    ])
+                merchantActions.append(newAction)
+            } else {
+                merchantActions.append(action)
+            }
+        }
                 
         do {
-            let bodyJson = ["actions": actions]
+            let bodyJson = ["actions": merchantActions]
             request.httpBody = try JSONEncoder().encode(bodyJson)
 //            let bodyJson = ["actions": actions.compactMap({ $0.toDictionary() })]
 //            request.httpBody = try JSONSerialization.data(withJSONObject: bodyJson, options: .fragmentsAllowed)
