@@ -277,7 +277,15 @@ internal class PrimerRootViewController: PrimerViewController {
             container.view.bottomAnchor.constraint(equalTo: childView.bottomAnchor, constant: 0).isActive = true
             container.didMove(toParent: self)
         } else {
-            nc.pushViewController(cvc, animated: false)
+            self.nc.pushViewController(viewController: cvc, animated: false) {
+                var viewControllers = self.nc.viewControllers
+                for (index, vc) in viewControllers.enumerated() {
+                    if vc.children.first is PrimerLoadingViewController {
+                        viewControllers.remove(at: index)
+                    }
+                }
+                self.nc.viewControllers = viewControllers
+            }
         }
         
         if nc.viewControllers.count ?? 0 <= 1 {
