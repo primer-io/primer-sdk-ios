@@ -26,6 +26,11 @@ fastlane ios tests
 fastlane ios ui_tests
 ```
 
+### ios qa_release
+```
+fastlane ios qa_release
+```
+
 ### ios release
 ```
 fastlane ios release

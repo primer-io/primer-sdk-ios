@@ -62,7 +62,7 @@ internal class PrimerRootViewController: PrimerViewController {
         }
         
         view.addSubview(backgroundView)
-        backgroundView.backgroundColor = .black.withAlphaComponent(0.0)
+        backgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.0)
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         backgroundView.pin(view: view)
         
