@@ -19,6 +19,7 @@
 		12A6EE98D1C260765BD36BF86D6C4EB7 /* CardScannerViewController+SimpleScanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A8FA171D7805B5C36B74E6FD6186C5 /* CardScannerViewController+SimpleScanDelegate.swift */; };
 		12C7FBE0A201078705CEE8B6A9CAA57D /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF91C4EB0A23CBE32B20FFC93EB5AF33 /* WebViewController.swift */; };
 		136DBBE1ED861E058E3C962D4F94F27C /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 1075A7933583DB3FCE89876F8D3C98AA /* fr.lproj */; };
+		15CC94AA272689C2006C7F3B /* BankSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CC94A9272689C2006C7F3B /* BankSelectorViewController.swift */; };
 		15CC94AC2726EEFC006C7F3B /* Bank.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CC94AB2726EEFC006C7F3B /* Bank.swift */; };
 		182ECCA7FE88FEA43483FBD3EB044DEE /* UXMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9EC79DF0E55C2073B206EBCAD3EFC6D /* UXMode.swift */; };
 		18F51C41F952B3DCE777CCA0AB2D4E62 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F97C34087923B62639FD8BD1F21D93 /* URLExtension.swift */; };
@@ -217,6 +218,7 @@
 		132FFF522AD8CFC125246CCB6C8ABFFE /* ReloadDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReloadDelegate.swift; sourceTree = "<group>"; };
 		133997060D85B9B9881B45167B057E56 /* hang.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = hang.swift; sourceTree = "<group>"; };
 		137C27D833ACC688E11FFC8D812E270A /* ClientToken.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClientToken.swift; sourceTree = "<group>"; };
+		15CC94A9272689C2006C7F3B /* BankSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankSelectorViewController.swift; sourceTree = "<group>"; };
 		15CC94AB2726EEFC006C7F3B /* Bank.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bank.swift; sourceTree = "<group>"; };
 		187A700DC2F3AC4D980496686F6CC1F2 /* GuaranteeWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuaranteeWrappers.swift; sourceTree = "<group>"; };
 		18CC2AD4B97339E63DAFE007F8F4A6E1 /* PrimerNibView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerNibView.swift; sourceTree = "<group>"; };
@@ -455,6 +457,14 @@
 				569194E5F8DEDE1F1154EFE7113C1AF5 /* CardScanner */,
 			);
 			path = PCI;
+			sourceTree = "<group>";
+		};
+		15CC94A8272689A7006C7F3B /* Banks */ = {
+			isa = PBXGroup;
+			children = (
+				15CC94A9272689C2006C7F3B /* BankSelectorViewController.swift */,
+			);
+			path = Banks;
 			sourceTree = "<group>";
 		};
 		1628BF05B4CAFDCC3549A101F5A10A17 /* Frameworks */ = {
@@ -893,6 +903,7 @@
 		AF457A16C543BB1450F5059F8143C442 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
+				15CC94A8272689A7006C7F3B /* Banks */,
 				A449899408F84896A2C4D778321044FC /* Apple Pay */,
 				F7CB05E0A5E4C44EC1023E4008C6181C /* Error */,
 				9B022F468ED565EC3F44F8D3AF2A9533 /* OAuth */,
@@ -1200,6 +1211,7 @@
 				AD56BC1B0BA635D2924617BF161E7E8F /* 3DSService.swift in Sources */,
 				19A7C890397FC85BBB20F676A2880992 /* 3DSService+Promises.swift in Sources */,
 				EDEBA7C2A25A91C84F57EF1386BC0185 /* after.swift in Sources */,
+				15CC94AA272689C2006C7F3B /* BankSelectorViewController.swift in Sources */,
 				D00105F2AC6DB1F007F7E1F7B36F5CA4 /* AlertController.swift in Sources */,
 				318C946987250F5AD748827E42C5412A /* Apaya.swift in Sources */,
 				3DAE24F6DCB3CDDABFBA969B0EE8F20C /* ApayaService.swift in Sources */,
