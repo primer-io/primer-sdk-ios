@@ -386,7 +386,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         do {
             let data = banksResponseStr.data(using: .utf8)
             let banks: [Bank] = try JSONParser().parse([Bank].self, from: data!)
-            let bsvc = BankSelectorViewController(banks: banks)
+            let bsvc = BankSelectorViewController(banks: banks, title: "iDeal", subtitle: nil)
             Primer.shared.primerRootVC?.show(viewController: bsvc)
         } catch {
             print(error)

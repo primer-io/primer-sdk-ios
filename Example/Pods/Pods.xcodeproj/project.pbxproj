@@ -21,6 +21,8 @@
 		136DBBE1ED861E058E3C962D4F94F27C /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 1075A7933583DB3FCE89876F8D3C98AA /* fr.lproj */; };
 		15CC94AA272689C2006C7F3B /* BankSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CC94A9272689C2006C7F3B /* BankSelectorViewController.swift */; };
 		15CC94AC2726EEFC006C7F3B /* Bank.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CC94AB2726EEFC006C7F3B /* Bank.swift */; };
+		15CC94AE2726F112006C7F3B /* BankSelectorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CC94AD2726F112006C7F3B /* BankSelectorViewModel.swift */; };
+		15CC94B02726F14B006C7F3B /* BankTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CC94AF2726F14B006C7F3B /* BankTableViewCell.swift */; };
 		182ECCA7FE88FEA43483FBD3EB044DEE /* UXMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9EC79DF0E55C2073B206EBCAD3EFC6D /* UXMode.swift */; };
 		18F51C41F952B3DCE777CCA0AB2D4E62 /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F97C34087923B62639FD8BD1F21D93 /* URLExtension.swift */; };
 		19123F32D85D6B3A0070B8DFEAF52219 /* CardNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66B66BE146E368176B51B48A7143719 /* CardNetwork.swift */; };
@@ -220,6 +222,8 @@
 		137C27D833ACC688E11FFC8D812E270A /* ClientToken.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClientToken.swift; sourceTree = "<group>"; };
 		15CC94A9272689C2006C7F3B /* BankSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankSelectorViewController.swift; sourceTree = "<group>"; };
 		15CC94AB2726EEFC006C7F3B /* Bank.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bank.swift; sourceTree = "<group>"; };
+		15CC94AD2726F112006C7F3B /* BankSelectorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankSelectorViewModel.swift; sourceTree = "<group>"; };
+		15CC94AF2726F14B006C7F3B /* BankTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankTableViewCell.swift; sourceTree = "<group>"; };
 		187A700DC2F3AC4D980496686F6CC1F2 /* GuaranteeWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuaranteeWrappers.swift; sourceTree = "<group>"; };
 		18CC2AD4B97339E63DAFE007F8F4A6E1 /* PrimerNibView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerNibView.swift; sourceTree = "<group>"; };
 		196B6FBD6722F8CC352130A4C5CF458D /* AlertController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
@@ -463,6 +467,8 @@
 			isa = PBXGroup;
 			children = (
 				15CC94A9272689C2006C7F3B /* BankSelectorViewController.swift */,
+				15CC94AD2726F112006C7F3B /* BankSelectorViewModel.swift */,
+				15CC94AF2726F14B006C7F3B /* BankTableViewCell.swift */,
 			);
 			path = Banks;
 			sourceTree = "<group>";
@@ -1269,6 +1275,7 @@
 				7150F8CD4CD6E600BB11A72274A02BD7 /* Klarna.swift in Sources */,
 				D478F67C6122D205E54D3160FC3A7EC4 /* KlarnaService.swift in Sources */,
 				87C74CE3432B41B87BC14ED8D1581F12 /* KlarnaViewModel.swift in Sources */,
+				15CC94B02726F14B006C7F3B /* BankTableViewCell.swift in Sources */,
 				5CEC3F2BDEBC2B45CB6EA17C2B835F1B /* LogEvent.swift in Sources */,
 				ACD88CCD8F8339490FB1FC29B9B9216F /* Logger.swift in Sources */,
 				BA2F5504C1DB6BD9DB6471D874C42AD3 /* Mask.swift in Sources */,
@@ -1302,6 +1309,7 @@
 				4491F59E0E2F21F2A93FB729C23266C7 /* PrimerCVVFieldView.swift in Sources */,
 				667A217DB6A05429275D67DC29C6F7FA /* PrimerDelegate.swift in Sources */,
 				45BA6425BF5B1E0B849557055A4CF09D /* PrimerError.swift in Sources */,
+				15CC94AE2726F112006C7F3B /* BankSelectorViewModel.swift in Sources */,
 				ACF47200A69F3D23D6C0B998277910C3 /* PrimerExpiryDateFieldView.swift in Sources */,
 				80BBFEB930A501A8658A531D06B77F42 /* PrimerFlowEnums.swift in Sources */,
 				C70C1F9365125374E4E88F0C0FAB87F8 /* PrimerFormViewController.swift in Sources */,
