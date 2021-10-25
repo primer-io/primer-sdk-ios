@@ -5,6 +5,7 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
+#if canImport(UIKit)
 #if canImport(Primer3DS)
 import Foundation
 
@@ -38,4 +39,5 @@ extension ThreeDSService {
     
 }
 
+#endif
 #endif

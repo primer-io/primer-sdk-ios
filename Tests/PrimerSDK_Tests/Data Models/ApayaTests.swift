@@ -24,11 +24,11 @@ class ApayaDataModelTests: XCTestCase {
         let settings = PrimerSettings(currency: .GBP)
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         
-        let result = Apaya.WebViewResult.create(from: url)
-        switch result {
-        case .success(let value):
-            XCTAssertEqual(value.success, "1")
-        case .failure:
+        do {
+            let apayaWebViewResponse = try Apaya.WebViewResponse(url: url!)
+            XCTAssertEqual(apayaWebViewResponse.success, "1")
+        }
+        catch {
             XCTFail()
         }
     }
@@ -42,46 +42,35 @@ class ApayaDataModelTests: XCTestCase {
         let settings = PrimerSettings(currency: .GBP)
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         
-        let result = Apaya.WebViewResult.create(from: url)
-        switch result {
-        case .success:
+        do {
+            try Apaya.WebViewResponse(url: url!)
             XCTFail()
-        case .failure(let error):
-            XCTAssertNotNil(error)
         }
-    }
-    
-    func test_apaya_web_view_result_fails_on_invalid_url() throws {
-        let url = URL(string: "")
-        let result = Apaya.WebViewResult.create(from: url)
-        switch result {
-        case .success:
-            XCTFail()
-        case .failure(let error):
+        catch {
             XCTAssertNotNil(error)
         }
     }
     
     func test_apaya_web_view_result_fails_on_error_url() throws {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ERROR")
-        let result = Apaya.WebViewResult.create(from: url)
-        switch result {
-        case .success:
+        do {
+            let apayaWebViewResponse = try Apaya.WebViewResponse(url: url!)
             XCTFail()
-        case .failure(let error):
+        }
+        catch {
             XCTAssertNotNil(error)
         }
     }
     
     func test_apaya_web_view_result_nil_on_cancel_url() throws {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ABANDONED")
-        let result = Apaya.WebViewResult.create(from: url)
-        switch result {
-        case .success:
+        do {
+            try Apaya.WebViewResponse(url: url!)
             XCTFail()
-        case .failure(let err):
-            if let apayaErr = err as? ApayaException, apayaErr == .webViewFlowCancelled {
-                
+        }
+        catch {
+            if let apayaErr = error as? ApayaException, apayaErr == .webViewFlowCancelled {
+                XCTAssertNotNil(apayaErr)
             } else {
                 XCTFail("Error should be .webViewFlowCancelled")
             }

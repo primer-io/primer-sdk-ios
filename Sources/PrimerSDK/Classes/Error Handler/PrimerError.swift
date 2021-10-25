@@ -396,7 +396,7 @@ enum PrimerError: PrimerErrorProtocol {
     case vaultDeleteFailed
     case payPalSessionFailed
     case directDebitSessionFailed
-    case intentNotSupported(intent: PrimerSessionIntent, paymentMethodType: ConfigPaymentMethodType)
+    case intentNotSupported(intent: PrimerSessionIntent, paymentMethodType: PaymentMethodConfigType)
     
     case invalidCardnumber, invalidExpiryDate, invalidCVV, invalidCardholderName
 

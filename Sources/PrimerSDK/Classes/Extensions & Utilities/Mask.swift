@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import Foundation
 
 internal class Mask {
@@ -68,3 +70,5 @@ internal class Mask {
         return (output + result.masked, pureInput + result.unmasked)
     }
 }
+
+#endif

@@ -5,9 +5,9 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
-import Foundation
-
 #if canImport(UIKit)
+
+import Foundation
 
 internal protocol ExternalViewModelProtocol {
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void)
@@ -34,7 +34,7 @@ internal class ExternalViewModel: ExternalViewModelProtocol {
             })
         } else {
             let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.loadCheckoutConfig({ err in
+            clientTokenService.fetchClientToken({ err in
                 if let err = err {
                     completion(.failure(err))
                 } else {

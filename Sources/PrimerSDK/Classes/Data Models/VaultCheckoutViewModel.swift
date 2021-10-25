@@ -5,14 +5,14 @@
 //  Created by Evangelos Pittas on 6/8/21.
 //
 
-import Foundation
-
 #if canImport(UIKit)
+
+import Foundation
 
 internal protocol VaultCheckoutViewModelProtocol {
     var paymentMethods: [PaymentMethodToken] { get }
     var mandate: DirectDebitMandate { get }
-    var availablePaymentOptions: [PaymentMethodViewModel] { get }
+    var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] { get }
     var selectedPaymentMethodId: String { get }
     var amountStringed: String? { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
@@ -28,14 +28,8 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return state.directDebitMandate
     }
 
-    var availablePaymentOptions: [PaymentMethodViewModel] {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        if !Primer.shared.flow.internalSessionFlow.vaulted {
-            return state.viewModels.filter({ $0.type != .apaya })
-        }
-        
-        return state.viewModels
+    var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] {
+        return PrimerConfiguration.paymentMethodConfigViewModels
     }
 
     var amountStringed: String? {
@@ -90,7 +84,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
             })
         } else {
             let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.loadCheckoutConfig({ err in
+            clientTokenService.fetchClientToken({ err in
                 if let err = err {
                     completion(err)
                 } else {

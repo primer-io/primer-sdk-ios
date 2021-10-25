@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 31/7/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
@@ -13,12 +15,12 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var titleLabel: UILabel!
     private var seeAllButton: UIButton!
     private var savedPaymentInstrumentStackView: UIStackView!
-    private var payButton: PrimerButton!
+    private var payButton: PrimerOldButton!
     private var coveringView: PrimerView!
     private var selectedPaymentInstrument: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
     
-    // swiftlint:disable function_body_length
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -150,85 +152,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         Primer.shared.primerRootVC?.layoutIfNeeded()
     }
-    
+
     private func renderAvailablePaymentMethods() {
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-        let availablePaymentMethods = checkoutViewModel.availablePaymentOptions
-        
-        if !availablePaymentMethods.filter({ $0.type != .googlePay }).isEmpty {
-            let otherPaymentMethodsTitleLabel = UILabel()
-            otherPaymentMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-            otherPaymentMethodsTitleLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
-            otherPaymentMethodsTitleLabel.text = NSLocalizedString("primer-vault-payment-method-available-payment-methods",
-                                                                   tableName: nil,
-                                                                   bundle: Bundle.primerResources,
-                                                                   value: "Available payment methods",
-                                                                   comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
-            otherPaymentMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
-            otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
-            otherPaymentMethodsTitleLabel.textAlignment = .left
-            
-            verticalStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
-            
-            for paymentMethod in availablePaymentMethods {
-                let paymentMethodButton = UIButton()
-                paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
-                paymentMethodButton.setTitle(paymentMethod.toString(), for: .normal)
-                paymentMethodButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
-                paymentMethodButton.setImage(paymentMethod.toIconName()?.image?.withRenderingMode(.alwaysTemplate), for: .normal)
-                paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
-                paymentMethodButton.layer.cornerRadius = 4.0
-                paymentMethodButton.clipsToBounds = true
-                
-                switch paymentMethod.type {
-                case .paymentCard:
-                    paymentMethodButton.setTitleColor(theme.colorTheme.text1, for: .normal)
-                    paymentMethodButton.tintColor = theme.colorTheme.text1
-                    paymentMethodButton.layer.borderWidth = 1.0
-                    paymentMethodButton.layer.borderColor = theme.colorTheme.text1.cgColor
-                    paymentMethodButton.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
-                    
-                case .applePay:
-                    paymentMethodButton.backgroundColor = .black
-                    paymentMethodButton.setTitleColor(.white, for: .normal)
-                    paymentMethodButton.tintColor = .white
-                    paymentMethodButton.addTarget(self, action: #selector(applePayButtonTapped(_:)), for: .touchUpInside)
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
-                    
-                case .payPal:
-                    if #available(iOS 11.0, *) {
-                        paymentMethodButton.backgroundColor = UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
-                        paymentMethodButton.setImage(paymentMethod.toIconName()?.image, for: .normal)
-                        paymentMethodButton.setTitleColor(.white, for: .normal)
-                        paymentMethodButton.tintColor = .white
-                        paymentMethodButton.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
-                        verticalStackView.addArrangedSubview(paymentMethodButton)
-                    }
-                    
-                case .goCardlessMandate:
-                    // Doesn't work for checkout
-                    break
-                    
-                case .apaya:
-                    // Doesn't work for checkout
-                    break
-                    
-                case .klarna:
-                    paymentMethodButton.backgroundColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
-                    paymentMethodButton.setTitleColor(.black, for: .normal)
-                    paymentMethodButton.tintColor = .white
-                    paymentMethodButton.setImage(nil, for: .normal)
-                    paymentMethodButton.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
-                    verticalStackView.addArrangedSubview(paymentMethodButton)
-                    
-                default:
-                    break
-                }
-            }
-        }
+        PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
     }
-    
+
     private func renderPayButton() {
         if coveringView == nil {
             coveringView = PrimerView()
@@ -243,7 +171,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         coveringView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
         
         if payButton == nil {
-            payButton = PrimerButton()
+            payButton = PrimerOldButton()
         }
         
         payButton.layer.cornerRadius = 12
@@ -285,112 +213,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         vpivc.view.translatesAutoresizingMaskIntoConstraints = false
         vpivc.view.heightAnchor.constraint(equalToConstant: view.bounds.size.height).isActive = true
         Primer.shared.primerRootVC?.show(viewController: vpivc)
-    }
-        
-    @objc
-    func applePayButtonTapped(_ sender: UIButton) {
-        let lvc = PrimerLoadingViewController(withHeight: 300)
-        Primer.shared.primerRootVC?.show(viewController: lvc)
-        Primer.shared.primerRootVC?.presentApplePay()
-    }
-    
-    @objc
-    func klarnaButtonTapped() {
-        let lvc = PrimerLoadingViewController(withHeight: 300)
-        Primer.shared.primerRootVC?.show(viewController: lvc)
-        Primer.shared.primerRootVC?.presentKlarna()
-    }
-    
-    @objc
-    func payPalButtonTapped() {
-        if #available(iOS 11.0, *) {
-            let lvc = PrimerLoadingViewController(withHeight: 300)
-            Primer.shared.primerRootVC?.show(viewController: lvc)
-            Primer.shared.primerRootVC?.presentPayPal()
-        }
-    }
-    
-    @objc
-    func cardButtonTapped() {
-//        let cfvc = PrimerCardFormViewController(flow: .checkout)
-//        Primer.shared.primerRootVC?.show(viewController: cfvc)
-        
-        let pmType = "ideal"
-        
-        let banksResponseStr: String =
-        """
-        [
-            {
-                "name": "ABN AMRO",
-                "issuer": "0031",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0031@3x.png"
-            },
-            {
-                "name": "ASN Bank",
-                "issuer": "0761",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0761@3x.png"
-            },
-            {
-                "name": "bunq",
-                "issuer": "0802",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0802@3x.png"
-            },
-            {
-                "name": "Handelsbanken",
-                "issuer": "0804",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0804@3x.png"
-            },
-            {
-                "name": "ING Bank",
-                "issuer": "0721",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0721@3x.png"
-            },
-            {
-                "name": "Knab",
-                "issuer": "0801",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0801@3x.png"
-            },
-            {
-                "name": "Rabobank",
-                "issuer": "0021",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0021@3x.png"
-            },
-            {
-                "name": "Regiobank",
-                "issuer": "0771",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0771@3x.png"
-            },
-            {
-                "name": "Revolut",
-                "issuer": "0805",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0805@3x.png"
-            },
-            {
-                "name": "SNS Bank",
-                "issuer": "0751",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0751@3x.png"
-            },
-            {
-                "name": "Triodos Bank",
-                "issuer": "0511",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0511@3x.png"
-            },
-            {
-                "name": "Van Lanschot Bankiers",
-                "issuer": "0161",
-                "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0161@3x.png"
-            }
-        ]
-        """
-        
-        do {
-            let data = banksResponseStr.data(using: .utf8)
-            let banks: [Bank] = try JSONParser().parse([Bank].self, from: data!)
-            let bsvc = BankSelectorViewController(banks: banks, title: "iDeal", subtitle: nil)
-            Primer.shared.primerRootVC?.show(viewController: bsvc)
-        } catch {
-            print(error)
-        }
     }
     
     @objc
@@ -467,3 +289,5 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
         renderSelectedPaymentInstrument(insertAt: 1)
     }
 }
+
+#endif

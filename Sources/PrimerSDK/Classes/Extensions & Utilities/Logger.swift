@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 public enum PrimerLogLevel: Int {
@@ -123,3 +125,5 @@ internal func logJSON(obj: Any) {
         print("[PRINT FAILED]: Failed to convert object to data.")
     }
 }
+
+#endif
