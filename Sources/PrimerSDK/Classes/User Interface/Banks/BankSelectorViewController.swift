@@ -13,8 +13,8 @@ internal class BankSelectorViewController: PrimerFormViewController {
     
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private var banks: [Bank]
-    private var tableView: UITableView = UITableView()
-    private var viewModel: BankSelectorViewModel
+    
+    private let viewModel: BankSelectorViewModel
     internal private(set) var subtitle: String?
     
     init(banks: [Bank], title: String?, subtitle: String?) {
@@ -36,16 +36,6 @@ internal class BankSelectorViewController: PrimerFormViewController {
                 
         verticalStackView.spacing = 5
         
-        tableView.showsVerticalScrollIndicator = false
-        tableView.showsHorizontalScrollIndicator = false
-        if #available(iOS 11.0, *) {
-            tableView.contentInsetAdjustmentBehavior = .never
-        }
-
-        tableView.rowHeight = 41
-        tableView.register(BankTableViewCell.self, forCellReuseIdentifier: BankTableViewCell.identifier)
-        tableView.dataSource = viewModel
-        
         let bankTitleLabel = UILabel()
         bankTitleLabel.text = NSLocalizedString("choose-your-bank-title-label",
                                                 tableName: nil,
@@ -64,10 +54,10 @@ internal class BankSelectorViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(bankSubtitleLabel)
         }
         
-        let separator = UIView()
-        separator.translatesAutoresizingMaskIntoConstraints = false
-        separator.heightAnchor.constraint(equalToConstant: 5).isActive = true
-        verticalStackView.addArrangedSubview(separator)
+        let separator2 = UIView()
+        separator2.translatesAutoresizingMaskIntoConstraints = false
+        separator2.heightAnchor.constraint(equalToConstant: 5).isActive = true
+        verticalStackView.addArrangedSubview(separator2)
         
         let tableViewMockView = UIView()
         tableViewMockView.translatesAutoresizingMaskIntoConstraints = false
@@ -78,11 +68,11 @@ internal class BankSelectorViewController: PrimerFormViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if tableView.superview == nil {
+        if viewModel.tableView.superview == nil {
             let lastView = verticalStackView.arrangedSubviews.last!
             verticalStackView.removeArrangedSubview(lastView)
-            verticalStackView.addArrangedSubview(tableView)
-            tableView.heightAnchor.constraint(equalToConstant: 400).isActive = true
+            verticalStackView.addArrangedSubview(viewModel.tableView)
+            viewModel.tableView.heightAnchor.constraint(equalToConstant: 400).isActive = true
         }
     }
     
