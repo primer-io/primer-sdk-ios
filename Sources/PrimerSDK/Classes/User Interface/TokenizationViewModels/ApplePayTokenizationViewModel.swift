@@ -2,6 +2,7 @@
 
 import Foundation
 import PassKit
+import UIKit
 
 internal extension PKPaymentMethodType {
     
