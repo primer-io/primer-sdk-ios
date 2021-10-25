@@ -13,8 +13,6 @@ internal class PrimerViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        let tmpTitle = title
-        title = tmpTitle
     }
     
     override func viewDidAppear(_ animated: Bool) {
