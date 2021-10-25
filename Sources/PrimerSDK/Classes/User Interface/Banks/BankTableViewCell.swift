@@ -16,6 +16,7 @@ class BankTableViewCell: UITableViewCell {
     var stackView = UIStackView()
     var logoImageView = UIImageView()
     var nameLabel = UILabel()
+    var arrowImageView = UIImageView()
     
     internal private(set) var bank: Bank!
     
@@ -31,13 +32,18 @@ class BankTableViewCell: UITableViewCell {
         stackView.distribution = .fill
         stackView.spacing = 10
         logoImageView.contentMode = .scaleAspectFit
+        arrowImageView.contentMode = .center
+        
+        arrowImageView.image = UIImage(named: "right-arrow-icon", in: Bundle.primerResources, compatibleWith: nil)
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        arrowImageView.translatesAutoresizingMaskIntoConstraints = false
         
         stackView.addArrangedSubview(logoImageView)
         stackView.addArrangedSubview(nameLabel)
+        stackView.addArrangedSubview(arrowImageView)
         
         stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0).isActive = true
         stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
@@ -45,6 +51,7 @@ class BankTableViewCell: UITableViewCell {
         stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
 
         logoImageView.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        arrowImageView.widthAnchor.constraint(equalToConstant: 11).isActive = true
         
         nameLabel.numberOfLines = 1
     }
