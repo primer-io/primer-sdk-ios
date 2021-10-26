@@ -32,6 +32,9 @@ internal class BankSelectorViewController: PrimerFormViewController {
         super.viewDidLoad()
 
         view.backgroundColor = theme.colorTheme.main1
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.heightAnchor.constraint(equalToConstant: 120+(CGFloat(banks.count)*viewModel.tableView.rowHeight)).isActive = true
+        viewModel.tableView.isScrollEnabled = false
                 
         verticalStackView.spacing = 5
         
