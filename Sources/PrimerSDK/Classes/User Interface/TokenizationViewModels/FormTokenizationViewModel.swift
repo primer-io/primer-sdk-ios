@@ -338,7 +338,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             do {
                 let data = banksResponseStr.data(using: .utf8)
                 let banks: [Bank] = try JSONParser().parse([Bank].self, from: data!)
-                let bsvc = BankSelectorViewController(banks: banks, title: "iDeal", subtitle: nil)
+                let bsvc = BankSelectorViewController(banks: banks, logo: UIImage(named: "dot-pay-logo", in: Bundle.primerResources, compatibleWith: nil))
                 Primer.shared.primerRootVC?.show(viewController: bsvc)
             } catch {
                 print(error)
