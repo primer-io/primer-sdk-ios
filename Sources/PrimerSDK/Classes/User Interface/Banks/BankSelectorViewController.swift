@@ -69,11 +69,14 @@ internal class BankSelectorViewController: PrimerFormViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if viewModel.tableView.superview == nil {
-            let lastView = verticalStackView.arrangedSubviews.last!
-            verticalStackView.removeArrangedSubview(lastView)
-            verticalStackView.addArrangedSubview(viewModel.tableView)
-            viewModel.tableView.heightAnchor.constraint(equalToConstant: 400).isActive = true
+        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+            if self.viewModel.tableView.superview == nil {
+                let lastView = self.verticalStackView.arrangedSubviews.last!
+                self.verticalStackView.removeArrangedSubview(lastView)
+                self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
+                self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
+                self.viewModel.tableView.heightAnchor.constraint(equalToConstant: 400).isActive = true
+            }
         }
     }
     
