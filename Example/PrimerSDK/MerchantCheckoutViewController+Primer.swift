@@ -92,11 +92,7 @@ extension MerchantCheckoutViewController {
     }
     
     internal func generatePrimerTheme() -> PrimerTheme {
-        if #available(iOS 13.0, *) {
-            return PrimerTheme()
-        } else {
-            return PrimerTheme()
-        }
+        return PrimerTheme()
     }
     
     internal func generateAmountAndOrderItems() -> (Int, [OrderItem]) {

@@ -33,7 +33,7 @@ internal struct ColorSwatch {
     let primary: UIColor
     let error: UIColor
 
-    static func `default`(with data: ColorSwatchData) -> ColorSwatch {
+    static func build(with data: ColorSwatchData) -> ColorSwatch {
         return ColorSwatch(
             primary: data.primary ?? UIColor.systemBlue,
             error: data.error ?? UIColor.systemRed

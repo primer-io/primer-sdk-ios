@@ -3,11 +3,11 @@ internal struct ViewTheme {
     let cornerRadius: CGFloat
     let safeMargin: CGFloat
 
-    static func `default`(with data: ViewThemeData) -> ViewTheme {
+    static func build(with data: ViewThemeData) -> ViewTheme {
         return ViewTheme(
-            backgroundColor: data.backgroundColor ?? Colors.White,
-            cornerRadius: data.cornerRadius ?? Layout.View.CornerRadius,
-            safeMargin: data.safeMargin ?? Layout.View.SafeArea
+            backgroundColor: data.backgroundColor ?? Colors.white,
+            cornerRadius: data.cornerRadius ?? Layout.View.cornerRadius,
+            safeMargin: data.safeMargin ?? Layout.View.safeArea
         )
     }
 }

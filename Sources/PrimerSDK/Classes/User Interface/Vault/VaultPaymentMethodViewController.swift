@@ -161,7 +161,7 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         rightBarButton = UIButton()
-        rightBarButton.setTitle(Content.VaultView.EditLabel, for: .normal)
+        rightBarButton.setTitle(Content.VaultView.editLabel, for: .normal)
         rightBarButton.setTitleColor(theme.text.title.color, for: .normal)
         rightBarButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
         view.addSubview(tableView)
@@ -186,7 +186,7 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
     @objc
     func editButtonTapped(_ sender: UIButton) {
         isDeleting = !isDeleting
-        let title = isDeleting ? "Done" : Content.VaultView.EditLabel
+        let title = isDeleting ? "Done" : Content.VaultView.editLabel
         rightBarButton.setTitle(title, for: .normal)
     }
 

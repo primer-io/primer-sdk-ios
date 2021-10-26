@@ -37,7 +37,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = Content.PrimerCardFormView.Title
+        title = Content.PrimerCardFormView.title
         view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
         configureCardNumberField()
@@ -126,7 +126,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         saveCardSwitchContainerStackView.addArrangedSubview(saveCardSwitch)
         let saveCardLabel = UILabel()
         saveCardLabel.text = "Save this card"
-        saveCardLabel.textColor = theme.text.default.color
+        saveCardLabel.textColor = theme.text.body.color
         saveCardLabel.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
         saveCardSwitchContainerStackView.addArrangedSubview(saveCardLabel)
         verticalStackView.addArrangedSubview(saveCardSwitchContainerStackView)
@@ -144,9 +144,9 @@ class PrimerCardFormViewController: PrimerFormViewController {
         if flow == .checkout {
             let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
             let amount = viewModel.amountStringed ?? ""
-            return Content.PrimerCardFormView.PayButtonTitle + " \(amount)"
+            return Content.PrimerCardFormView.payButtonTitle + " \(amount)"
         } else if flow == .vault {
-            return Content.PrimerCardFormView.AddCardButtonTitle
+            return Content.PrimerCardFormView.addCardButtonTitle
         } else {
             return ""
         }

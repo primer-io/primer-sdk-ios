@@ -79,7 +79,7 @@ internal extension SuccessViewController {
         message.text = viewModel.getTitle(screenType)
         message.numberOfLines = 0
         message.textAlignment = .center
-        message.textColor = theme.text.default.color
+        message.textColor = theme.text.body.color
         message.font = UIFont.systemFont(ofSize: 20)
     }
 

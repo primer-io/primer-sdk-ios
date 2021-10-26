@@ -23,15 +23,15 @@ internal struct Colors {
     private static let darkModeGreen = PrimerColor.rgb(red: 50, green: 215, blue: 75)
     
     // MARK: defaults
-    static let Black = PrimerColor.dynamic(lightMode: lightModeBlack, darkMode: darkModeBlack)
-    static let White = PrimerColor.dynamic(lightMode: lightModeWhite, darkMode: darkModeWhite)
-    static let Gray = PrimerColor.dynamic(lightMode: lightModeGray, darkMode: darkModeGray)
-    static let LightGray = PrimerColor.dynamic(lightMode: lightModeLightGray, darkMode: darkModeLightGray)
-    static let Red = PrimerColor.dynamic(lightMode: lightModeRed, darkMode: darkModeRed)
-    static let Blue = PrimerColor.dynamic(lightMode: lightModeBlue, darkMode: darkModeBlue)
-    static let Yellow = PrimerColor.dynamic(lightMode: lightModeYellow, darkMode: darkModeYellow)
-    static let Green = PrimerColor.dynamic(lightMode: lightModeGreen, darkMode: darkModeGreen)
+    static let black = PrimerColor.dynamic(lightMode: lightModeBlack, darkMode: darkModeBlack)
+    static let white = PrimerColor.dynamic(lightMode: lightModeWhite, darkMode: darkModeWhite)
+    static let gray = PrimerColor.dynamic(lightMode: lightModeGray, darkMode: darkModeGray)
+    static let lightGray = PrimerColor.dynamic(lightMode: lightModeLightGray, darkMode: darkModeLightGray)
+    static let red = PrimerColor.dynamic(lightMode: lightModeRed, darkMode: darkModeRed)
+    static let blue = PrimerColor.dynamic(lightMode: lightModeBlue, darkMode: darkModeBlue)
+    static let yellow = PrimerColor.dynamic(lightMode: lightModeYellow, darkMode: darkModeYellow)
+    static let green = PrimerColor.dynamic(lightMode: lightModeGreen, darkMode: darkModeGreen)
     
     // MARK: special cases
-    static let KlarnaPink = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
+    static let klarnaPink = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
 }

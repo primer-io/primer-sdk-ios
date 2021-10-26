@@ -245,7 +245,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         }
 
         payButton.layer.cornerRadius = 12
-        payButton.setTitle(Content.CheckoutView.PayButtonTitle, for: .normal)
+        payButton.setTitle(Content.CheckoutView.payButtonTitle, for: .normal)
         payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
         payButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
         payButton.backgroundColor = theme.mainButton.color(for: .enabled)

@@ -53,10 +53,10 @@ public class PrimerTheme: PrimerThemeProtocol {
     internal var input: InputTheme
 
     public init(with data: PrimerThemeData = PrimerThemeData()) {
-        colors = ColorSwatch.default(with: data.colors)
-        view = ViewTheme.default(with: data.view)
-        text = TextStyle.default(with: data.text)
-        input = InputTheme.default(with: data.input)
+        colors = ColorSwatch.build(with: data.colors)
+        view = ViewTheme.build(with: data.view)
+        text = TextStyle.build(with: data.text)
+        input = InputTheme.build(with: data.input)
         paymentMethodButton = ButtonTheme.paymentMethod(with: data.buttons.paymentMethod)
         mainButton = ButtonTheme.main(with: data.buttons.main)
     }
@@ -83,8 +83,8 @@ public class PrimerTheme: PrimerThemeProtocol {
             safeMargin: layout.safeMargin
         )
         
-        text = TextStyle.init(
-            default: TextTheme.init(color: theme.text1, fontSize: 14),
+        text = TextStyle(
+            body: TextTheme.init(color: theme.text1, fontSize: 14),
             title: TextTheme.init(color: theme.text1, fontSize: 20),
             subtitle: TextTheme.init(color: theme.neutral1, fontSize: 12),
             amountLabel: TextTheme.init(color: theme.text1, fontSize: 24),
@@ -168,8 +168,8 @@ public class PrimerTheme: PrimerThemeProtocol {
             safeMargin: layout.safeMargin
         )
 
-        text = TextStyle.init(
-            default: TextTheme.init(color: theme.text1, fontSize: 14),
+        text = TextStyle(
+            body: TextTheme.init(color: theme.text1, fontSize: 14),
             title: TextTheme.init(color: theme.text1, fontSize: 20),
             subtitle: TextTheme.init(color: theme.neutral1, fontSize: 12),
             amountLabel: TextTheme.init(color: theme.text1, fontSize: 24),

@@ -11,27 +11,27 @@ internal struct InputTheme {
     let errortext: TextTheme
     let inputType: InputType
 
-    static func `default`(with data: InputThemeData) -> InputTheme {
+    static func build(with data: InputThemeData) -> InputTheme {
         return  InputTheme(
-            color: data.backgroundColor ?? Colors.White,
+            color: data.backgroundColor ?? Colors.white,
             cornerRadius: data.cornerRadius ?? 0.0,
             border: BorderTheme(
                 colorStates: StatefulColor(
-                    data.border.defaultColor ?? Colors.Blue,
-                    disabled: data.border.defaultColor ?? Colors.LightGray
+                    data.border.defaultColor ?? Colors.blue,
+                    disabled: data.border.defaultColor ?? Colors.lightGray
                 ),
                 width: data.border.width ?? 1.0
             ),
             text: TextTheme(
-                color: data.text.defaultColor ?? Colors.Black,
+                color: data.text.defaultColor ?? Colors.black,
                 fontSize: data.text.fontSize ?? 14
             ),
             hintText: TextTheme(
-                color: data.text.defaultColor ?? Colors.Gray,
+                color: data.text.defaultColor ?? Colors.gray,
                 fontSize: data.text.fontSize ?? 14
             ),
             errortext: TextTheme(
-                color: data.text.defaultColor ?? Colors.Red,
+                color: data.text.defaultColor ?? Colors.red,
                 fontSize: data.text.fontSize ?? 14
             ),
             inputType: InputType.underlined

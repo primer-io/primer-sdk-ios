@@ -8,7 +8,7 @@
 internal struct Content {
     
     struct VaultCheckoutView {
-        static let PayButtonTitle = NSLocalizedString(
+        static let payButtonTitle = NSLocalizedString(
             "primer-vault-checkout-pay",
             tableName: nil,
             bundle: Bundle.primerResources,
@@ -18,7 +18,7 @@ internal struct Content {
     }
     
     struct ScannerView {
-        static let Title = NSLocalizedString(
+        static let title = NSLocalizedString(
             "primer-scanner-view-scan-card",
             tableName: nil,
             bundle: Bundle.primerResources,
@@ -26,7 +26,7 @@ internal struct Content {
             comment: "Scan card - Scanner view (Title text)"
         )
         
-        static let DescriptionLabel = NSLocalizedString(
+        static let descriptionLabel = NSLocalizedString(
             "primer-scanner-view-scan-front-card",
             tableName: nil,
             bundle: Bundle.primerResources,
@@ -34,7 +34,7 @@ internal struct Content {
             comment: "Scan the front of your card - Scanner view (Description text)"
         )
         
-        static let SkipButtonTitle = NSLocalizedString(
+        static let skipButtonTitle = NSLocalizedString(
             "primer-scanner-view-manual-input",
             tableName: nil,
             bundle: Bundle.primerResources,
@@ -44,7 +44,7 @@ internal struct Content {
     }
     
     struct VaultView {
-        static let EditLabel = NSLocalizedString(
+        static let editLabel = NSLocalizedString(
             "primer-vault-payment-method-edit",
             tableName: nil,
             bundle: Bundle.primerResources,
@@ -52,11 +52,11 @@ internal struct Content {
             comment: "Edit - Vault Payment Method (Button text)"
         )
         
-        static let Title = ""
+        static let title = ""
     }
     
     struct CheckoutView {
-        static let PayButtonTitle = NSLocalizedString(
+        static let payButtonTitle = NSLocalizedString(
             "primer-vault-checkout-pay",
             tableName: nil,
             bundle: Bundle.primerResources,
@@ -66,7 +66,7 @@ internal struct Content {
     }
     
     struct ConfirmMandateView {
-        static let NavTitle = NSLocalizedString(
+        static let navTitle = NSLocalizedString(
             "primer-confirm-mandate-add-bank-account",
             tableName: nil,
             bundle: Bundle.primerResources,
@@ -74,7 +74,7 @@ internal struct Content {
             comment: "Add Bank Account - Confirm Mandate (Top title text_"
         )
         
-        static let Title = NSLocalizedString(
+        static let title = NSLocalizedString(
             "primer-confirm-mandate-confirm-sepa-direct-debit",
             tableName: nil,
             bundle: Bundle.primerResources,
@@ -82,7 +82,7 @@ internal struct Content {
             comment: "Confirm SEPA Direct Debit - Confirm Mandate (Main title text)"
         )
         
-        static let SubmitButtonTitle = NSLocalizedString(
+        static let submitButtonTitle = NSLocalizedString(
             "primer-confirm-mandate-confirm",
             tableName: nil,
             bundle: Bundle.primerResources,
@@ -92,7 +92,7 @@ internal struct Content {
     }
     
     struct PrimerCardFormView {
-        static let Title = NSLocalizedString(
+        static let title = NSLocalizedString(
             "primer-form-type-main-title-card-form",
             tableName: nil,
             bundle: Bundle.primerResources,
@@ -100,7 +100,7 @@ internal struct Content {
             comment: "Enter your card details - Form Type Main Title (Card)"
         )
         
-        static let PayButtonTitle = NSLocalizedString(
+        static let payButtonTitle = NSLocalizedString(
             "primer-form-view-card-submit-button-text-checkout",
             tableName: nil,
             bundle: Bundle.primerResources,
@@ -108,7 +108,7 @@ internal struct Content {
             comment: "Pay - Card Form View (Sumbit button text)"
         )
         
-        static let AddCardButtonTitle = NSLocalizedString(
+        static let addCardButtonTitle = NSLocalizedString(
             "primer-card-form-add-card",
             tableName: nil,
             bundle: Bundle.primerResources,

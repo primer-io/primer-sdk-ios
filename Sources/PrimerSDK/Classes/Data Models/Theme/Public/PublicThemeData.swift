@@ -75,7 +75,7 @@ public class ViewThemeData {
 }
 
 public class TextStyleData {
-    public var `default`: TextThemeData
+    public var body: TextThemeData
     public var title: TextThemeData
     public var subtitle: TextThemeData
     public var amountLabel: TextThemeData
@@ -83,14 +83,14 @@ public class TextStyleData {
     public var error: TextThemeData
 
     public init(
-        default: TextThemeData = TextThemeData(),
+        body: TextThemeData = TextThemeData(),
         title: TextThemeData = TextThemeData(),
         subtitle: TextThemeData = TextThemeData(),
         amountLabel: TextThemeData = TextThemeData(),
         system: TextThemeData = TextThemeData(),
         error: TextThemeData = TextThemeData()
     ) {
-        self.default = `default`
+        self.body = body
         self.title = title
         self.subtitle = subtitle
         self.amountLabel = amountLabel

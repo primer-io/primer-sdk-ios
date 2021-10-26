@@ -86,9 +86,9 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                     paymentMethodButton.layer.borderColor = theme.paymentMethodButton.border.color(for: .enabled).cgColor
                     
                 case .klarna:
-                    paymentMethodButton.backgroundColor = Colors.KlarnaPink
-                    paymentMethodButton.setTitleColor(Colors.Black, for: .normal)
-                    paymentMethodButton.tintColor = Colors.Black
+                    paymentMethodButton.backgroundColor = Colors.klarnaPink
+                    paymentMethodButton.setTitleColor(Colors.black, for: .normal)
+                    paymentMethodButton.tintColor = Colors.black
                     paymentMethodButton.setImage(nil, for: .normal)
                     paymentMethodButton.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
                     verticalStackView.addArrangedSubview(paymentMethodButton)

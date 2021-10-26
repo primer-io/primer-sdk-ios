@@ -55,15 +55,15 @@ internal extension ScannerView {
         navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navBar.shadowImage = UIImage()
         navBar.setItems([navItem], animated: false)
-        navBar.topItem?.title = Content.ScannerView.Title
+        navBar.topItem?.title = Content.ScannerView.title
     }
 
     @objc private func cancel() { delegate?.cancel() }
 
     private func configureDescriptionLabel() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        descriptionLabel.text = Content.ScannerView.DescriptionLabel
-        descriptionLabel.textColor = theme.text.default.color
+        descriptionLabel.text = Content.ScannerView.descriptionLabel
+        descriptionLabel.textColor = theme.text.body.color
     }
 
     private func configureScannerView() {
@@ -74,7 +74,7 @@ internal extension ScannerView {
 
     private func configureSkipButton() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        skipButton.setTitle(Content.ScannerView.SkipButtonTitle, for: .normal)
+        skipButton.setTitle(Content.ScannerView.skipButtonTitle, for: .normal)
         skipButton.setTitleColor(theme.text.system.color, for: .normal)
         skipButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
     }

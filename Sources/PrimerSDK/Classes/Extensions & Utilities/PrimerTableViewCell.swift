@@ -24,7 +24,7 @@ internal class PrimerTableViewCell: UITableViewCell {
     func addContent(_ text: String?, theme: PrimerThemeProtocol) {
         let contentView = UILabel()
         contentView.text = text
-        contentView.textColor = theme.text.default.color
+        contentView.textColor = theme.text.body.color
         contentView.font = .systemFont(ofSize: 17)
         contentView.adjustsFontSizeToFitWidth = true
         contentView.translatesAutoresizingMaskIntoConstraints = false

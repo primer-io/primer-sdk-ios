@@ -28,7 +28,7 @@ struct CheckoutTheme {
         data.text.title = TextThemeData(defaultColor: tropical10)
         data.text.amountLabel = TextThemeData(defaultColor: tropical10)
         data.text.subtitle = TextThemeData(defaultColor: tropical3)
-        data.text.default = TextThemeData(defaultColor: .white)
+        data.text.body = TextThemeData(defaultColor: .white)
         data.text.system = TextThemeData(defaultColor: tropical4)
         data.buttons.paymentMethod.border.defaultColor = .white
         data.buttons.paymentMethod.border.selectedColor = .white
