@@ -17,6 +17,7 @@ class BankSelectorViewModel: NSObject {
             tableView.reloadData()
         }
     }
+    internal var didSelectBank: ((_ bank: Bank?) -> Void)?
     
     internal lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -29,6 +30,7 @@ class BankSelectorViewModel: NSObject {
         tableView.rowHeight = 41
         tableView.register(BankTableViewCell.self, forCellReuseIdentifier: BankTableViewCell.identifier)
         tableView.dataSource = self
+        tableView.delegate = self
         return tableView
     }()
     
@@ -57,7 +59,7 @@ class BankSelectorViewModel: NSObject {
     }
 }
 
-extension BankSelectorViewModel: UITableViewDataSource {
+extension BankSelectorViewModel: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -67,10 +69,15 @@ extension BankSelectorViewModel: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let viewModel = dataSource[indexPath.row]
+        let bank = dataSource[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "BankTableViewCell", for: indexPath) as! BankTableViewCell
-        cell.configure(viewModel: viewModel)
+        cell.configure(viewModel: bank)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let bank = dataSource[indexPath.row]
+        didSelectBank?(bank)
     }
 }
 

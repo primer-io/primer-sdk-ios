@@ -67,6 +67,10 @@ internal class BankSelectorViewController: PrimerFormViewController {
         tableViewMockView.translatesAutoresizingMaskIntoConstraints = false
         tableViewMockView.heightAnchor.constraint(equalToConstant: 400).isActive = true
         verticalStackView.addArrangedSubview(tableViewMockView)
+        
+        viewModel.didSelectBank = { bank in
+            self.view.endEditing(true)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
