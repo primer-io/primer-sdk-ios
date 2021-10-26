@@ -125,7 +125,8 @@ public class PrimerTheme: PrimerThemeProtocol {
             text: TextTheme(
                 color: theme.main1,
                 fontSize: 14
-            )
+            ),
+            iconColor: theme.main1
         )
         
         mainButton = ButtonTheme(
@@ -144,7 +145,8 @@ public class PrimerTheme: PrimerThemeProtocol {
             text: TextTheme(
                 color: theme.main1,
                 fontSize: 14
-            )
+            ),
+            iconColor: theme.main1
         )
     }
 
@@ -210,7 +212,8 @@ public class PrimerTheme: PrimerThemeProtocol {
             text: TextTheme(
                 color: theme.main1,
                 fontSize: 14
-            )
+            ),
+            iconColor: theme.main1
         )
         
         mainButton = ButtonTheme(
@@ -229,7 +232,8 @@ public class PrimerTheme: PrimerThemeProtocol {
             text: TextTheme(
                 color: theme.main1,
                 fontSize: 14
-            )
+            ),
+            iconColor: theme.main1
         )
     }
 }

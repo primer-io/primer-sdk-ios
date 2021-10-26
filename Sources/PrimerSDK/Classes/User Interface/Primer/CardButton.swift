@@ -89,7 +89,7 @@ internal class CardButton: PrimerButton {
         if iconView.image == ImageName.bank.image {
             let theme: PrimerThemeProtocol = DependencyContainer.resolve()
             let tintedIcon = image?.withRenderingMode(.alwaysTemplate)
-            iconView.tintColor = theme.paymentMethodButton.text.color
+            iconView.tintColor = theme.paymentMethodButton.iconColor
             iconView.image = tintedIcon
             iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17).isActive = true
             iconView.heightAnchor.constraint(equalToConstant: 24).isActive = true

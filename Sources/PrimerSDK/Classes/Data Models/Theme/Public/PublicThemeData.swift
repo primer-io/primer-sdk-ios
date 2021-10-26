@@ -1,3 +1,4 @@
+import UIKit
 public class PrimerThemeData {
     public var colors: ColorSwatchData
     public var view: ViewThemeData
@@ -40,6 +41,7 @@ public class ButtonThemeData {
     public var cornerRadius: CGFloat?
     public var text: TextThemeData
     public var border: BorderThemeData
+    public var iconColor: UIColor?
 
     public init(
         defaultColor: UIColor? = nil,
@@ -47,7 +49,8 @@ public class ButtonThemeData {
         errorColor: UIColor? = nil,
         cornerRadius: CGFloat? = nil,
         text: TextThemeData = TextThemeData(),
-        border: BorderThemeData = BorderThemeData()
+        border: BorderThemeData = BorderThemeData(),
+        iconColor: UIColor? = nil
     ) {
         self.defaultColor = defaultColor
         self.disabledColor = disabledColor
@@ -55,6 +58,7 @@ public class ButtonThemeData {
         self.text = text
         self.border = border
         self.cornerRadius = cornerRadius
+        self.iconColor = iconColor ?? text.defaultColor
     }
 }
 

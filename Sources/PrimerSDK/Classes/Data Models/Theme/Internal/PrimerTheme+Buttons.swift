@@ -3,6 +3,7 @@ internal struct ButtonTheme {
     let cornerRadius: CGFloat
     let border: BorderTheme
     let text: TextTheme
+    let iconColor: UIColor
 
     static func main(with data: ButtonThemeData) -> ButtonTheme {
         return ButtonTheme(
@@ -23,7 +24,8 @@ internal struct ButtonTheme {
             text: TextTheme(
                 color: data.text.defaultColor ?? Colors.white,
                 fontSize: data.text.fontSize ?? Fontsize.mainButtonTitle
-            )
+            ),
+            iconColor: data.iconColor ?? Colors.white
         )
     }
 
@@ -46,7 +48,8 @@ internal struct ButtonTheme {
             text: TextTheme(
                 color: data.text.defaultColor ?? Colors.black,
                 fontSize: data.text.fontSize ?? Fontsize.paymentMethodButtonTitle
-            )
+            ),
+            iconColor: data.iconColor ?? Colors.black
         )
     }
 
