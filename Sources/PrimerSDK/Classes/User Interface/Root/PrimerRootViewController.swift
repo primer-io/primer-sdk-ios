@@ -45,7 +45,11 @@ internal class PrimerRootViewController: PrimerViewController {
         
         NotificationCenter.default.addObserver(self,
                selector: #selector(self.keyboardNotification(notification:)),
-               name: UIResponder.keyboardWillChangeFrameNotification,
+               name: UIResponder.keyboardWillShowNotification,
+               object: nil)
+        NotificationCenter.default.addObserver(self,
+               selector: #selector(self.keyboardNotification(notification:)),
+               name: UIResponder.keyboardWillHideNotification,
                object: nil)
         
         if #available(iOS 13.0, *) {
@@ -201,20 +205,44 @@ internal class PrimerRootViewController: PrimerViewController {
         view.layoutIfNeeded()
     }
     
+    var originalChildViewHeight: CGFloat?
+    
     @objc func keyboardNotification(notification: NSNotification) {
         guard let userInfo = notification.userInfo else { return }
         
         let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
         let endFrameY = endFrame?.origin.y ?? 0
-        let duration:TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
+        let duration: TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
         let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
         let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
         let animationCurve:UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
         
-        if endFrameY >= UIScreen.main.bounds.size.height {
+        let childViewHeight = childView.frame.size.height
+        
+        
+        switch notification.name {
+        case UIResponder.keyboardWillHideNotification:
             childViewBottomConstraint.constant = 0.0
-        } else {
-            childViewBottomConstraint.constant = -(endFrame?.size.height ?? 0.0)
+            
+            if let originalChildViewHeight = originalChildViewHeight {
+                childViewHeightConstraint.constant = originalChildViewHeight
+            }
+            
+        case UIResponder.keyboardWillShowNotification:
+            if endFrameY >= availableScreenHeight {
+                childViewBottomConstraint.constant = 0.0
+            } else {
+                childViewBottomConstraint.constant = -(endFrame?.size.height ?? 0.0)
+            }
+            
+            if childViewHeight > (availableScreenHeight - (endFrame?.height ?? 0)) {
+                originalChildViewHeight = childViewHeight
+                childViewHeightConstraint.constant = (availableScreenHeight - (endFrame?.height ?? 0))
+                
+            }
+            
+        default:
+            return
         }
         
         UIView.animate(
@@ -222,7 +250,9 @@ internal class PrimerRootViewController: PrimerViewController {
             delay: TimeInterval(0),
             options: animationCurve,
             animations: { self.view.layoutIfNeeded() },
-            completion: nil)
+            completion: { finished in
+                
+            })
     }
     
     @objc
