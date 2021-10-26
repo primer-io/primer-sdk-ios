@@ -25,6 +25,7 @@ class BankTableViewCell: UITableViewCell {
         
         self.preservesSuperviewLayoutMargins = false
         self.contentView.preservesSuperviewLayoutMargins = false
+        self.selectionStyle = .none
         
         contentView.addSubview(stackView)
         stackView.axis = .horizontal
