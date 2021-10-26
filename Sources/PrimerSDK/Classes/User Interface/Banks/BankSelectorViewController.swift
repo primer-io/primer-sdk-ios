@@ -78,7 +78,6 @@ internal class BankSelectorViewController: PrimerFormViewController {
                 self.verticalStackView.removeArrangedSubview(lastView)
                 self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
                 self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
-                self.viewModel.tableView.heightAnchor.constraint(equalToConstant: 400).isActive = true
             }
         }
     }
