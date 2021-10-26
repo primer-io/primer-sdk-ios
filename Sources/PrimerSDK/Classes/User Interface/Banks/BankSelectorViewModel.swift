@@ -32,10 +32,12 @@ class BankSelectorViewModel: NSObject {
         return tableView
     }()
     
-    internal lazy var searchBankTextField: UITextField? = {
-        let textField = UITextField()
+    internal lazy var searchBankTextField: PrimerSearchTextField? = {
+        let textField = PrimerSearchTextField(frame: .zero)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
         textField.delegate = self
-        textField.backgroundColor = .clear
+        textField.backgroundColor = UIColor(red: 36.0/255, green: 42.0/255, blue: 47.0/255, alpha: 0.03)
         textField.borderStyle = .none
         textField.layer.cornerRadius = 3.0
         textField.font = UIFont.systemFont(ofSize: 16.0)
@@ -44,24 +46,8 @@ class BankSelectorViewModel: NSObject {
                                                         bundle: Bundle.primerResources,
                                                         value: "Search bank",
                                                         comment: "Search bank - Search bank textfield placeholder")
+        textField.rightViewMode = .always
         return textField
-    }()
-    
-    internal lazy var searchBankView: UIStackView? = {
-        let searchStackView = UIStackView()
-        searchStackView.axis = .horizontal
-        searchStackView.alignment = .fill
-        searchStackView.distribution = .fill
-        searchStackView.backgroundColor = UIColor(red: 36.0/255, green: 42.0/255, blue: 47.0/255, alpha: 0.03)
-
-        if let searchBankTextField = searchBankTextField {            searchStackView.addArrangedSubview(searchBankTextField)
-            searchBankTextField.translatesAutoresizingMaskIntoConstraints = false
-            searchBankTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-            searchBankTextField.leadingAnchor.constraint(equalTo: searchStackView.leadingAnchor, constant: 10).isActive = true
-            searchBankTextField.trailingAnchor.constraint(equalTo: searchStackView.trailingAnchor, constant: -10).isActive = true
-        }
-        
-        return searchStackView
     }()
     
     init(banks: [Bank]) {
