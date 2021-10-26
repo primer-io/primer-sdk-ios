@@ -54,15 +54,14 @@ class BankSelectorViewModel: NSObject {
         searchStackView.distribution = .fill
         searchStackView.backgroundColor = UIColor(red: 36.0/255, green: 42.0/255, blue: 47.0/255, alpha: 0.03)
 
-        if let searchBankTextField = searchBankTextField {
-            searchStackView.addArrangedSubview(searchBankTextField)
+        if let searchBankTextField = searchBankTextField {            searchStackView.addArrangedSubview(searchBankTextField)
             searchBankTextField.translatesAutoresizingMaskIntoConstraints = false
             searchBankTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
             searchBankTextField.leadingAnchor.constraint(equalTo: searchStackView.leadingAnchor, constant: 10).isActive = true
             searchBankTextField.trailingAnchor.constraint(equalTo: searchStackView.trailingAnchor, constant: -10).isActive = true
         }
         
-        return searchBankView
+        return searchStackView
     }()
     
     init(banks: [Bank]) {
@@ -91,6 +90,29 @@ extension BankSelectorViewModel: UITableViewDataSource {
 
 extension BankSelectorViewModel: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        var query: String
+        
+        if string.isEmpty {
+            query = String((textField.text ?? "").dropLast())
+        } else {
+            query = (textField.text ?? "") + string
+        }
+        
+        if query.isEmpty {
+            dataSource = banks
+            return true
+        }
+        
+        var bankResults: [Bank] = []
+        
+        for bank in banks {
+            if bank.name?.lowercased().contains(query.lowercased()) == true {
+                bankResults.append(bank)
+            }
+        }
+        
+        dataSource = bankResults
+        
         return true
     }
 }

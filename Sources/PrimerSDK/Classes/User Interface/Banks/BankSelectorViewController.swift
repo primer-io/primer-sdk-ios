@@ -54,6 +54,8 @@ internal class BankSelectorViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(bankSubtitleLabel)
         }
         
+        verticalStackView.addArrangedSubview(viewModel.searchBankView!)
+        
         let separator2 = UIView()
         separator2.translatesAutoresizingMaskIntoConstraints = false
         separator2.heightAnchor.constraint(equalToConstant: 5).isActive = true
