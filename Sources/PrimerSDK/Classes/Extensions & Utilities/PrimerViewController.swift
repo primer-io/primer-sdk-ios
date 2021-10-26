@@ -4,21 +4,10 @@ import UIKit
 
 internal class PrimerViewController: UIViewController {
     
-    override var title: String? {
-        didSet {
-            (parent as? PrimerContainerViewController)?.title = title
-            (parent as? PrimerContainerViewController)?.mockedNavigationBar.title = title
-        }
-    }
+    var titleImage: UIImage?
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        let tmpTitle = title
-        title = tmpTitle
     }
     
     func hideKeyboardWhenTappedAround() {
