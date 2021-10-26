@@ -17,12 +17,11 @@ internal class BankSelectorViewController: PrimerFormViewController {
     private let viewModel: BankSelectorViewModel
     internal private(set) var subtitle: String?
     
-    init(banks: [Bank], title: String?, subtitle: String?) {
+    init(banks: [Bank], logo: UIImage?) {
         self.banks = banks
         viewModel = BankSelectorViewModel(banks: banks)
         super.init(nibName: nil, bundle: nil)
-        self.title = title
-        self.subtitle = subtitle
+        self.titleImage = logo
     }
     
     required init?(coder: NSCoder) {
