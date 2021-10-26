@@ -3,11 +3,10 @@ internal struct Fontsize {
     static let title = 20
     static let subtitle = 10
     static let amountLabel = 24
-    static let `default` = 14
+    static let body = 14
     static let system = 12
     static let error = 10
-    static let mainButtonTitle = 14
-    static let paymentMethodButtonTitle = 14
+    static let buttonLabel = 14
 }
 
 internal struct Layout {

@@ -23,7 +23,7 @@ internal struct ButtonTheme {
             ),
             text: TextTheme(
                 color: data.text.defaultColor ?? Colors.white,
-                fontSize: data.text.fontSize ?? Fontsize.mainButtonTitle
+                fontSize: data.text.fontSize ?? Fontsize.buttonLabel
             ),
             iconColor: data.iconColor ?? Colors.white
         )
@@ -47,7 +47,7 @@ internal struct ButtonTheme {
             ),
             text: TextTheme(
                 color: data.text.defaultColor ?? Colors.black,
-                fontSize: data.text.fontSize ?? Fontsize.paymentMethodButtonTitle
+                fontSize: data.text.fontSize ?? Fontsize.buttonLabel
             ),
             iconColor: data.iconColor ?? Colors.black
         )

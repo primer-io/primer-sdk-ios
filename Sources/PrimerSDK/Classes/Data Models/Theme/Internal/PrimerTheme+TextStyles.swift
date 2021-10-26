@@ -20,7 +20,7 @@ internal struct TextTheme {
     static func body(with data: TextThemeData) -> TextTheme {
         return TextTheme(
             color: data.defaultColor ?? Colors.black,
-            fontSize: data.fontSize ?? Fontsize.default
+            fontSize: data.fontSize ?? Fontsize.body
         )
     }
 
