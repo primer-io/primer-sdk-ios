@@ -422,59 +422,58 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
         
-        let clientSessionRequestBody = ClientSessionRequestBody(
-            customerId: customerId,
-            orderId: "orderId",
-            currencyCode: currency,
-            amount: amount,
-            metadata: nil,
-            customer: ClientSessionRequestBody.Customer(
-                emailAddress: "john@primer.io"),
-            order: ClientSessionRequestBody.Order(
-                countryCode: countryCode,
-                lineItems: [
-                    ClientSessionRequestBody.Order.LineItem(
-                        itemId: "itemId0",
-                        description: "I'm an item",
-                        amount: 123,
-                        quantity: 4)
-                ]),
-            paymentMethod: ClientSessionRequestBody.PaymentMethod(
-                vaultOnSuccess: true,
-                options: [
-                    "APPLE_PAY": [
-                        "surcharge": [
-                            "amount": 123
-                        ]
-                    ],
-                    "KLARNA": [
-                        "surcharge": [
-                            "amount": 321
-                        ]
-                    ],
-//                    "PAYMENT_CARD": [
-//                        "surcharge": [
-//                            "amount": 987
-//                        ]
-//                    ],
-                    "PAYPAL": [
-                        "surcharge": [
-                            "amount": 789
-                        ]
-                    ],
-                    "HOOLAH": [
-                        "surcharge": [
-                            "amount": 0
-                        ]
-                    ],
-                    "VISA": [
-                        "surcharge": [
-                            "amount": 800
-                        ]
-                    ],
-                ]))
-        
-        requestClientSession(requestBody: clientSessionRequestBody, completion: completion)
+        if environment == .local {
+            let clientSessionRequestBody = ClientSessionRequestBody(
+                customerId: customerId,
+                orderId: "orderId",
+                currencyCode: currency,
+                amount: amount,
+                metadata: nil,
+                customer: ClientSessionRequestBody.Customer(
+                    emailAddress: "john@primer.io"),
+                order: ClientSessionRequestBody.Order(
+                    countryCode: countryCode,
+                    lineItems: [
+                        ClientSessionRequestBody.Order.LineItem(
+                            itemId: "itemId0",
+                            description: "I'm an item",
+                            amount: 123,
+                            quantity: 4)
+                    ]),
+                paymentMethod: ClientSessionRequestBody.PaymentMethod(
+                    vaultOnSuccess: true,
+                    options: [
+                        "APPLE_PAY": [
+                            "surcharge": [
+                                "amount": 123
+                            ]
+                        ],
+                        "KLARNA": [
+                            "surcharge": [
+                                "amount": 321
+                            ]
+                        ],
+                        "PAYPAL": [
+                            "surcharge": [
+                                "amount": 789
+                            ]
+                        ],
+                        "HOOLAH": [
+                            "surcharge": [
+                                "amount": 0
+                            ]
+                        ],
+                        "VISA": [
+                            "surcharge": [
+                                "amount": 800
+                            ]
+                        ],
+                    ]))
+            
+            requestClientSession(requestBody: clientSessionRequestBody, completion: completion)
+        } else {
+            requestClientToken(completion)
+        }
     }
     
     func onClientSessionActionsCreated(_ actions: [ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
