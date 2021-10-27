@@ -5,18 +5,27 @@
 //  Created by Evangelos Pittas on 31/7/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     var savedCardView: CardButton!
     private var titleLabel: UILabel!
+//<<<<<<< HEAD
     private var savedPaymentMethodStackView: UIStackView!
-    private var payButton: PrimerButton!
+    private var payButton: PrimerOldButton!
+//=======
+//    private var seeAllButton: UIButton!
+//    private var savedPaymentInstrumentStackView: UIStackView!
+//    private var payButton: PrimerOldButton!
+//    private var coveringView: PrimerView!
+//>>>>>>> master
     private var selectedPaymentInstrument: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
     
-    // swiftlint:disable function_body_length
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -111,7 +120,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             seeAllButton.setTitle("See all", for: .normal)
             seeAllButton.contentHorizontalAlignment = .right
             seeAllButton.setTitleColor(theme.colorTheme.text3, for: .normal)
-            seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
+//            seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
             titleHorizontalStackView.addArrangedSubview(seeAllButton)
             
             savedPaymentMethodStackView.addArrangedSubview(titleHorizontalStackView)
@@ -149,7 +158,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             }
             
             if payButton == nil {
-                payButton = PrimerButton()
+                payButton = PrimerOldButton()
             }
             
             var buttonTitle = theme.content.vaultCheckout.payButtonText
@@ -200,158 +209,144 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         Primer.shared.primerRootVC?.layoutIfNeeded()
     }
-    
-    private func renderAvailablePaymentMethods() {
-        let availablePaymentMethodsContainerStackView = UIStackView()
-        availablePaymentMethodsContainerStackView.axis = .vertical
-        availablePaymentMethodsContainerStackView.alignment = .fill
-        availablePaymentMethodsContainerStackView.distribution = .fill
-        availablePaymentMethodsContainerStackView.spacing = 5.0
 
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        let availablePaymentMethods = state.paymentMethodConfig?.paymentMethods?.filter({ $0.type?.isEnabled == true }).compactMap({ PaymentMethodViewModel(type: $0.type!) }) ?? []
-        
-        if !availablePaymentMethods.isEmpty {
-            let otherPaymentMethodsTitleLabel = UILabel()
-            otherPaymentMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-            otherPaymentMethodsTitleLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
-            otherPaymentMethodsTitleLabel.text = NSLocalizedString("primer-vault-payment-method-available-payment-methods",
-                                                                   tableName: nil,
-                                                                   bundle: Bundle.primerResources,
-                                                                   value: "Available payment methods",
-                                                                   comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
-            otherPaymentMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
-            otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-            otherPaymentMethodsTitleLabel.textAlignment = .left
-            
-            availablePaymentMethodsContainerStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
-            
-            let availablePaymentMethodsStackView = UIStackView()
-            availablePaymentMethodsStackView.axis = .vertical
-            availablePaymentMethodsStackView.alignment = .fill
-            availablePaymentMethodsStackView.distribution = .fill
-            availablePaymentMethodsStackView.spacing = 10.0
-            
-            let noAdditionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge == nil })
-            
-            if !noAdditionalFeePaymentMethodsViewModels.isEmpty {
-                let noAdditionalFeesContainerView = PaymentMethodsGroupView(title: "No additional fee", paymentMethodsViewModels: noAdditionalFeePaymentMethodsViewModels)
-                noAdditionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-                noAdditionalFeesContainerView.delegate = self
-                availablePaymentMethodsStackView.addArrangedSubview(noAdditionalFeesContainerView)
-            }
-            
-            let additionalFeePaymentMethodsViewModels = availablePaymentMethods.filter({ $0.surCharge != nil })
-            
-            if !additionalFeePaymentMethodsViewModels.isEmpty {
-                for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
-                    let title = additionalFeePaymentMethodsViewModel.surCharge
-                    let additionalFeesContainerView = PaymentMethodsGroupView(title: title, paymentMethodsViewModels: [additionalFeePaymentMethodsViewModel])
-                    additionalFeesContainerView.titleLabel?.font = (title == NSLocalizedString("surcharge-additional-fee",
-                                                                                               tableName: nil,
-                                                                                               bundle: Bundle.primerResources,
-                                                                                               value: "Additional fee may apply",
-                                                                                               comment: "Additional fee may apply - Surcharge (Label)"))
-                    ? UIFont.systemFont(ofSize: 12.0, weight: .regular)
-                    : UIFont.systemFont(ofSize: 16.0, weight: .bold)
-                    additionalFeesContainerView.delegate = self
-                    availablePaymentMethodsStackView.addArrangedSubview(additionalFeesContainerView)
-                }
-            }
-            
-            availablePaymentMethodsContainerStackView.addArrangedSubview(availablePaymentMethodsStackView)
-        }
-        
-        verticalStackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
+    private func renderAvailablePaymentMethods() {
+//<<<<<<< HEAD
+//
+//=======
+        PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
     }
+
+//    private func renderPayButton() {
+////        if coveringView == nil {
+////            coveringView = PrimerView()
+////        }
+////
+////        coveringView.backgroundColor = theme.colorTheme.main1.withAlphaComponent(0.5)
+////        view.addSubview(coveringView)
+////        coveringView.translatesAutoresizingMaskIntoConstraints = false
+////        coveringView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+////        coveringView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+////        coveringView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+////        coveringView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
+//
+//        if payButton == nil {
+//            payButton = PrimerOldButton()
+//        }
+//
+//        payButton.layer.cornerRadius = 12
+//        payButton.setTitle(theme.content.vaultCheckout.payButtonText, for: .normal)
+//        payButton.setTitleColor(theme.colorTheme.text2, for: .normal)
+//        payButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
+//        payButton.backgroundColor = theme.colorTheme.main2
+//        payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
+//        let imageView = UIImageView(image: ImageName.lock.image)
+//        payButton.addSubview(imageView)
+//        imageView.translatesAutoresizingMaskIntoConstraints = false
+//        imageView.centerYAnchor.constraint(equalTo: payButton.centerYAnchor).isActive = true
+//        imageView.trailingAnchor.constraint(equalTo: payButton.trailingAnchor, constant: -16).isActive = true
+//
+//        coveringView.addSubview(payButton)
+//        payButton.translatesAutoresizingMaskIntoConstraints = false
+//        payButton.leadingAnchor.constraint(equalTo: coveringView.leadingAnchor, constant: 20).isActive = true
+//        payButton.trailingAnchor.constraint(equalTo: coveringView.trailingAnchor, constant: -20).isActive = true
+//        payButton.bottomAnchor.constraint(equalTo: coveringView.bottomAnchor, constant: -10).isActive = true
+//        payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+//>>>>>>> master
+//
+//        verticalStackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
+//    }
     
-    @objc
-    func seeAllButtonTapped() {
-        let vpivc = VaultedPaymentInstrumentsViewController()
-        vpivc.delegate = self
-        vpivc.view.translatesAutoresizingMaskIntoConstraints = false
-        vpivc.view.heightAnchor.constraint(equalToConstant: view.bounds.size.height).isActive = true
-        Primer.shared.primerRootVC?.show(viewController: vpivc)
-    }
-        
-    @objc
-    func applePayButtonTapped() {
-        let action = ClientSession.Action(
-            type: "SELECT_PAYMENT_METHOD",
-            params: [
-                "type": "APPLE_PAY"
-            ])
-        
-        Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
-            if let clientToken = clientToken {
-                try! ClientTokenService.storeClientToken(clientToken)
-                let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                config.fetchConfig { err in
-                    let state: AppStateProtocol = DependencyContainer.resolve()
-                    Primer.shared.primerRootVC?.presentApplePay()
-                }
-            }
-        })
-        
-        let lvc = PrimerLoadingViewController(withHeight: 300)
-        Primer.shared.primerRootVC?.show(viewController: lvc)
-    }
-    
-    @objc
-    func klarnaButtonTapped() {
-        let action = ClientSession.Action(
-            type: "SELECT_PAYMENT_METHOD",
-            params: [
-                "type": "KLARNA"
-            ])
-        
-        Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
-            if let clientToken = clientToken {
-                try! ClientTokenService.storeClientToken(clientToken)
-                let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                config.fetchConfig { err in
-                    let state: AppStateProtocol = DependencyContainer.resolve()
-                    print(state.paymentMethodConfig)
-                    Primer.shared.primerRootVC?.presentKlarna()
-                }
-            }
-        })
-        
-        let lvc = PrimerLoadingViewController(withHeight: 300)
-        Primer.shared.primerRootVC?.show(viewController: lvc)
-    }
-    
-    @objc
-    func payPalButtonTapped() {
-        if #available(iOS 11.0, *) {
-            let action = ClientSession.Action(
-                type: "SELECT_PAYMENT_METHOD",
-                params: [
-                    "type": "PAYPAL"
-                ])
-            
-            Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
-                if let clientToken = clientToken {
-                    try! ClientTokenService.storeClientToken(clientToken)
-                    let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                    config.fetchConfig { err in
-                        let state: AppStateProtocol = DependencyContainer.resolve()
-                        print(state.paymentMethodConfig)
-                        Primer.shared.primerRootVC?.presentPayPal()
-                    }
-                }
-            })
-            
-            let lvc = PrimerLoadingViewController(withHeight: 300)
-            Primer.shared.primerRootVC?.show(viewController: lvc)
-        }
-    }
-    
-    @objc
-    func cardButtonTapped() {
-        let cfvc = PrimerCardFormViewController(flow: .checkout)
-        Primer.shared.primerRootVC?.show(viewController: cfvc)
-    }
+//    @objc
+//    func seeAllButtonTapped() {
+//        let vpivc = VaultedPaymentInstrumentsViewController()
+//        vpivc.delegate = self
+//        vpivc.view.translatesAutoresizingMaskIntoConstraints = false
+//        vpivc.view.heightAnchor.constraint(equalToConstant: view.bounds.size.height).isActive = true
+//        Primer.shared.primerRootVC?.show(viewController: vpivc)
+//    }
+//<<<<<<< HEAD
+//
+//    @objc
+//    func applePayButtonTapped() {
+//        let action = ClientSession.Action(
+//            type: "SELECT_PAYMENT_METHOD",
+//            params: [
+//                "type": "APPLE_PAY"
+//            ])
+//
+//        Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
+//            if let clientToken = clientToken {
+//                try! ClientTokenService.storeClientToken(clientToken)
+//                let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+//                config.fetchConfig { err in
+//                    let state: AppStateProtocol = DependencyContainer.resolve()
+//                    Primer.shared.primerRootVC?.presentApplePay()
+//                }
+//            }
+//        })
+//
+//        let lvc = PrimerLoadingViewController(withHeight: 300)
+//        Primer.shared.primerRootVC?.show(viewController: lvc)
+//    }
+//
+//    @objc
+//    func klarnaButtonTapped() {
+//        let action = ClientSession.Action(
+//            type: "SELECT_PAYMENT_METHOD",
+//            params: [
+//                "type": "KLARNA"
+//            ])
+//
+//        Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
+//            if let clientToken = clientToken {
+//                try! ClientTokenService.storeClientToken(clientToken)
+//                let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+//                config.fetchConfig { err in
+//                    let state: AppStateProtocol = DependencyContainer.resolve()
+//                    print(state.paymentMethodConfig)
+//                    Primer.shared.primerRootVC?.presentKlarna()
+//                }
+//            }
+//        })
+//
+//        let lvc = PrimerLoadingViewController(withHeight: 300)
+//        Primer.shared.primerRootVC?.show(viewController: lvc)
+//    }
+//
+//    @objc
+//    func payPalButtonTapped() {
+//        if #available(iOS 11.0, *) {
+//            let action = ClientSession.Action(
+//                type: "SELECT_PAYMENT_METHOD",
+//                params: [
+//                    "type": "PAYPAL"
+//                ])
+//
+//            Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
+//                if let clientToken = clientToken {
+//                    try! ClientTokenService.storeClientToken(clientToken)
+//                    let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+//                    config.fetchConfig { err in
+//                        let state: AppStateProtocol = DependencyContainer.resolve()
+//                        print(state.paymentMethodConfig)
+//                        Primer.shared.primerRootVC?.presentPayPal()
+//                    }
+//                }
+//            })
+//
+//            let lvc = PrimerLoadingViewController(withHeight: 300)
+//            Primer.shared.primerRootVC?.show(viewController: lvc)
+//        }
+//    }
+//
+//    @objc
+//    func cardButtonTapped() {
+//        let cfvc = PrimerCardFormViewController(flow: .checkout)
+//        Primer.shared.primerRootVC?.show(viewController: cfvc)
+//    }
+//=======
+//>>>>>>> master
     
     @objc
     func payButtonTapped() {
@@ -457,27 +452,31 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
     }
 }
 
-extension PrimerUniversalCheckoutViewController: PaymentMethodsGroupViewDelegate {
-    func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped paymentMethod: PaymentMethodViewModel) {
-        switch  paymentMethod.type {
-        case .applePay:
-            applePayButtonTapped()
-        case .apaya:
-            break
-        case .payPal:
-            payPalButtonTapped()
-        case .paymentCard:
-            cardButtonTapped()
-        case .googlePay:
-            break
-        case .goCardlessMandate:
-            break
-        case .klarna:
-            klarnaButtonTapped()
-        case .payNlIdeal:
-            break
-        case .unknown:
-            break
-        }
-    }
-}
+//<<<<<<< HEAD
+//extension PrimerUniversalCheckoutViewController: PaymentMethodsGroupViewDelegate {
+//    func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped paymentMethod: PaymentMethodViewModel) {
+//        switch  paymentMethod.type {
+//        case .applePay:
+//            applePayButtonTapped()
+//        case .apaya:
+//            break
+//        case .payPal:
+//            payPalButtonTapped()
+//        case .paymentCard:
+//            cardButtonTapped()
+//        case .googlePay:
+//            break
+//        case .goCardlessMandate:
+//            break
+//        case .klarna:
+//            klarnaButtonTapped()
+//        case .payNlIdeal:
+//            break
+//        case .unknown:
+//            break
+//        }
+//    }
+//}
+//=======
+#endif
+//>>>>>>> master

@@ -232,7 +232,36 @@ public enum CardNetwork: String, CaseIterable {
     }
     
     public var icon: UIImage? {
-        return nil
+        switch self {
+        case .amex:
+            return UIImage(named: "amex", in: Bundle.primerResources, compatibleWith: nil)
+        case .bancontact:
+            return UIImage(named: "bancontact-icon", in: Bundle.primerResources, compatibleWith: nil)
+        case .diners:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .discover:
+            return UIImage(named: "discover", in: Bundle.primerResources, compatibleWith: nil)
+        case .elo:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .hiper:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .hipercard:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .jcb:
+            return UIImage(named: "jcb-icon", in: Bundle.primerResources, compatibleWith: nil)
+        case .maestro:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .mir:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .masterCard:
+            return UIImage(named: "masterCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .unionpay:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .visa:
+            return UIImage(named: "visa", in: Bundle.primerResources, compatibleWith: nil)
+        case .unknown:
+            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        }
     }
     
     var directoryServerId: String? {
@@ -263,6 +292,20 @@ public enum CardNetwork: String, CaseIterable {
                 return nil
             }
         }
+    }
+    
+    var surcharge: Int? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        guard let paymentMethodOptions = state.paymentMethodConfig?.clientSession?.paymentMethod?.paymentMethodOptions, !paymentMethodOptions.isEmpty else { return nil }
+        
+        for paymentMethodOption in paymentMethodOptions {
+            guard let type = paymentMethodOption["type"] as? String else { return nil }
+            guard type.lowercased() == self.rawValue.lowercased() else { continue }
+            guard let surcharge = paymentMethodOption["surcharge"] as? Int else { return nil }
+            return surcharge
+        }
+        
+        return nil
     }
     
     static func cardNumber(_ cardnumber: String, matchesPatterns patterns: [[Int]]) -> Bool {

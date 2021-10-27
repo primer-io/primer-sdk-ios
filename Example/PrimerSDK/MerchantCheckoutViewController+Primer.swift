@@ -71,7 +71,8 @@ extension MerchantCheckoutViewController {
             paymentMethod: token.token,
             amount: amount,
             type: token.paymentInstrumentType.rawValue,
-            currencyCode: "EUR")
+            currencyCode: currency,
+            countryCode: countryCode)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

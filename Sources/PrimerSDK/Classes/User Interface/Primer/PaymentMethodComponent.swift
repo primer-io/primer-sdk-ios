@@ -14,20 +14,20 @@ internal class PaymentMethodComponent: PrimerView {
     let label = UILabel()
     let iconView = UIImageView()
 
-    init(frame: CGRect, method: PaymentMethodViewModel) {
+    init(frame: CGRect, method: ExternalPaymentMethodTokenizationViewModel) {
         super.init(frame: frame)
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         layer.cornerRadius = theme.cornerRadiusTheme.buttons
 
-        switch method.type {
+        switch method.config.type {
         case .applePay:
             backgroundColor = .black
             label.textColor = .white
             addSubview(label)
             addSubview(iconView)
-            configureLabel(with: method.buttonTitle ?? "", isBold: true)
+            configureLabel(with: method.buttonTitle, isBold: true)
             configureIconView(icon: method.buttonImage, color: .white, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
@@ -38,7 +38,7 @@ internal class PaymentMethodComponent: PrimerView {
             label.textColor = theme.colorTheme.text1
             addSubview(label)
             addSubview(iconView)
-            configureLabel(with: method.buttonTitle ?? "")
+            configureLabel(with: method.buttonTitle)
             configureIconView(icon: method.buttonImage, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
@@ -56,7 +56,7 @@ internal class PaymentMethodComponent: PrimerView {
             label.textColor = theme.colorTheme.text1
             addSubview(label)
             addSubview(iconView)
-            configureLabel(with: method.buttonTitle ?? "")
+            configureLabel(with: method.buttonTitle)
             configureIconView(icon: method.buttonImage, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
@@ -72,7 +72,7 @@ internal class PaymentMethodComponent: PrimerView {
             label.textColor = theme.colorTheme.text1
             addSubview(label)
             addSubview(iconView)
-            configureLabel(with: method.buttonTitle ?? "")
+            configureLabel(with: method.buttonTitle)
             configureIconView(icon: method.buttonImage, color: theme.colorTheme.text1, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
@@ -87,7 +87,7 @@ internal class PaymentMethodComponent: PrimerView {
 // MARK: Configuration
 internal extension PaymentMethodComponent {
     func configureLabel(
-        with title: String,
+        with title: String?,
         isBold: Bool = false
     ) {
         label.text = title

@@ -176,14 +176,17 @@ public enum PaymentInstrumentType: String, Codable {
     case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
     case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"
     case apayaToken = "APAYA"
+    case hoolah = "HOOLAH"
     case unknown = "UNKNOWN"
 
     public init(from decoder: Decoder) throws {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
     }
     
-    var paymentMethodType: ConfigPaymentMethodType {
+    var paymentMethodType: PaymentMethodConfigType {
         switch self {
+        case .apayaToken:
+            return .apaya
         case .paymentCard:
             return .paymentCard
         case .payPalOrder:
@@ -202,8 +205,8 @@ public enum PaymentInstrumentType: String, Codable {
             return .klarna
         case .klarnaCustomerToken:
             return .klarna
-        case .apayaToken:
-            return .apaya
+        case .hoolah:
+            return .hoolah
         case .unknown:
             return .unknown
         }

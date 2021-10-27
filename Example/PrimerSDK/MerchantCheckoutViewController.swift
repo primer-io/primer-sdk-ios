@@ -321,6 +321,50 @@ class MerchantCheckoutViewController: UIViewController {
             }
         })
     }
+    
+    func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
+        guard let url = URL(string: "\(endpoint)/payments") else {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        let type = paymentMethod.paymentInstrumentType
+        
+        var request = URLRequest(url: url)
+        
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body = PaymentRequest(
+            environment: environment,
+            paymentMethod: paymentMethod.token,
+            amount: amount,
+            type: type.rawValue,
+            currencyCode: currency,
+            countryCode: countryCode)
+        
+        do {
+            request.httpBody = try JSONEncoder().encode(body)
+        } catch {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        callApi(request) { (result) in
+            switch result {
+            case .success(let data):
+                if let dic = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                    completion(dic, nil)
+                } else {
+                    let err = NetworkError.invalidResponse
+                    completion(nil, err)
+                }
+                
+            case .failure(let err):
+                completion(nil, err)
+            }
+        }
+    }
 
 }
 
@@ -370,7 +414,17 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                         "surcharge": [
                             "amount": 789
                         ]
-                    ]
+                    ],
+                    "HOOLAH": [
+                        "surcharge": [
+                            "amount": 0
+                        ]
+                    ],
+                    "VISA": [
+                        "surcharge": [
+                            "amount": 800
+                        ]
+                    ],
                 ]))
         
         requestClientSession(requestBody: clientSessionRequestBody, completion: completion)
@@ -406,56 +460,39 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             resumeHandler.handleSuccess()
             return
         }
-
-        guard let url = URL(string: "\(endpoint)/payments") else {
-            resumeHandler.handle(error: NetworkError.missingParams)
-            return
-        }
-
-        let type = paymentMethodToken.paymentInstrumentType
-
-        var request = URLRequest(url: url)
-
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let body = PaymentRequest(environment: environment, paymentMethod: paymentMethodToken.token, amount: amount, type: type.rawValue, currencyCode: currency.rawValue)
-
-        do {
-            request.httpBody = try JSONEncoder().encode(body)
-        } catch {
-            resumeHandler.handle(error: NetworkError.missingParams)
-            return
-        }
-
-        callApi(request) { (result) in
-            switch result {
-            case .success(let data):
-                if let dic = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
-                    if let amount = dic?["amount"] as? Int,
-                       let id = dic?["id"] as? String,
-                       let date = dic?["date"] as? String,
-                       let status = dic?["status"] as? String {
-
-                        if let requiredActionDic = dic?["requiredAction"] as? [String: Any] {
-                            self.transactionResponse = TransactionResponse(id: id, date: date, status: status, requiredAction: requiredActionDic)
+        
+        createPayment(with: paymentMethodToken) { (res, err) in
+            if let err = err {
+                resumeHandler.handle(error: err)
+            } else if let res = res {
+                if let requiredActionDic = res["requiredAction"] as? [String: Any] {
+                    
+                    if let amount = res["amount"] as? Int,
+                       let id = res["id"] as? String,
+                       let date = res["date"] as? String,
+                       let status = res["status"] as? String {
+                        
+                        self.transactionResponse = TransactionResponse(id: id, date: date, status: status, requiredAction: requiredActionDic)
+                        
+                        if let requiredActionName = requiredActionDic["name"] as? String,
+                           let clientToken = requiredActionDic["clientToken"] as? String {
                             
-                            if let requiredActionName = requiredActionDic["name"] as? String,
-                               let clientToken = requiredActionDic["clientToken"] as? String {
-
-                                if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
-                                    resumeHandler.handle(newClientToken: clientToken)
-                                    return
-                                }
+                            if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
+                                resumeHandler.handle(newClientToken: clientToken)
+                                return
+                            } else if requiredActionName == "USE_PRIMER_SDK", status == "PENDING" {
+                                resumeHandler.handle(newClientToken: clientToken)
+                                return
                             }
                         }
                     }
+
                 }
-
+                
                 resumeHandler.handleSuccess()
-
-            case .failure(let err):
-                resumeHandler.handle(error: err)
+                
+            } else {
+                fatalError()
             }
         }
     }
@@ -483,9 +520,9 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         
         guard let url = URL(string: "\(endpoint)/resume"),
               let transactionResponse = transactionResponse else {
-            resumeHandler.handle(error: NetworkError.missingParams)
-            return
-        }
+                  resumeHandler.handle(error: NetworkError.missingParams)
+                  return
+              }
         
         var request = URLRequest(url: url)
 

@@ -8,13 +8,13 @@
 import UIKit
 
 protocol PaymentMethodsGroupViewDelegate {
-    func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped paymentMethod: PaymentMethodViewModel)
+    func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped paymentMethodTokenizationViewModels: PaymentMethodTokenizationViewModelProtocol)
 }
 
 class PaymentMethodsGroupView: PrimerView {
     
     internal private(set) var title: String?
-    internal private(set) var paymentMethodsViewModels: [PaymentMethodViewModel]!
+    internal private(set) var paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]!
     private var stackView: UIStackView = UIStackView()
     internal var delegate: PaymentMethodsGroupViewDelegate?
     internal var titleLabel: UILabel?
@@ -28,10 +28,10 @@ class PaymentMethodsGroupView: PrimerView {
         render()
     }
     
-    convenience init(frame: CGRect = .zero, title: String?, paymentMethodsViewModels: [PaymentMethodViewModel]) {
+    convenience init(frame: CGRect = .zero, title: String?, paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]) {
         self.init(frame: frame)
         self.title = title
-        self.paymentMethodsViewModels = paymentMethodsViewModels
+        self.paymentMethodTokenizationViewModels = paymentMethodTokenizationViewModels
         render()
     }
     
@@ -59,103 +59,9 @@ class PaymentMethodsGroupView: PrimerView {
             stackView.addArrangedSubview(titleLabel!)
         }
         
-        for paymentMethodViewModel in paymentMethodsViewModels {
-            let paymentMethodButtonView = PaymentMethodButtonView(frame: .zero, viewModel: paymentMethodViewModel)
-            paymentMethodButtonView.backgroundColor = .clear
-            paymentMethodButtonView.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .medium)
-            paymentMethodButtonView.cornerRadius = 4.0
-            paymentMethodButtonView.borderWidth = 1.0
-            paymentMethodButtonView.borderColor = .clear
-            paymentMethodButtonView.clipsToBounds = true
-            
-            switch paymentMethodViewModel.type {
-            case .paymentCard:
-                paymentMethodButtonView.setTitleColor(theme.colorTheme.text1, for: .normal)
-                paymentMethodButtonView.tintColor = theme.colorTheme.text1
-                paymentMethodButtonView.buttonColor = .white
-                paymentMethodButtonView.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
-                paymentMethodButtonView.borderColor = theme.colorTheme.text1
-                paymentMethodButtonView.addTarget(self, action: #selector(cardButtonTapped), for: .touchUpInside)
-                stackView.addArrangedSubview(paymentMethodButtonView)
-                
-            case .applePay:
-                paymentMethodButtonView.buttonColor = .black
-                paymentMethodButtonView.setTitleColor(.white, for: .normal)
-                paymentMethodButtonView.tintColor = .white
-                paymentMethodButtonView.addTarget(self, action: #selector(applePayButtonTapped(_:)), for: .touchUpInside)
-                stackView.addArrangedSubview(paymentMethodButtonView)
-                
-            case .payPal:
-                if #available(iOS 11.0, *) {
-                    paymentMethodButtonView.buttonColor = UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
-                    paymentMethodButtonView.tintColor = .white
-                    paymentMethodButtonView.addTarget(self, action: #selector(payPalButtonTapped), for: .touchUpInside)
-                    stackView.addArrangedSubview(paymentMethodButtonView)
-                }
-                
-            case .goCardlessMandate:
-                paymentMethodButtonView.setTitleColor(theme.colorTheme.text1, for: .normal)
-                paymentMethodButtonView.tintColor = theme.colorTheme.text1
-                paymentMethodButtonView.buttonColor = .white
-                paymentMethodButtonView.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
-                paymentMethodButtonView.borderColor = theme.colorTheme.text1
-                paymentMethodButtonView.addTarget(self, action: #selector(goCardlessButtonTapped), for: .touchUpInside)
-                stackView.addArrangedSubview(paymentMethodButtonView)
-                
-            case .apaya:
-                paymentMethodButtonView.setTitleColor(theme.colorTheme.text1, for: .normal)
-                paymentMethodButtonView.tintColor = theme.colorTheme.text1
-                paymentMethodButtonView.buttonColor = .white
-                paymentMethodButtonView.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
-                paymentMethodButtonView.borderColor = theme.colorTheme.text1
-                paymentMethodButtonView.addTarget(self, action: #selector(apayaButtonTapped), for: .touchUpInside)
-                stackView.addArrangedSubview(paymentMethodButtonView)
-                
-            case .klarna:
-                paymentMethodButtonView.buttonColor = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
-                paymentMethodButtonView.addTarget(self, action: #selector(klarnaButtonTapped), for: .touchUpInside)
-                stackView.addArrangedSubview(paymentMethodButtonView)
-                
-            default:
-                break
-            }
+        for viewModel in paymentMethodTokenizationViewModels {
+            stackView.addArrangedSubview(viewModel.paymentMethodButton)
         }
-    }
-    
-    @objc
-    func applePayButtonTapped(_ sender: UIButton) {
-        guard let applePayViewModel = paymentMethodsViewModels.filter({ $0.type == .applePay }).first else { return }
-        delegate?.paymentMethodsGroupView(self, paymentMethodTapped: applePayViewModel)
-    }
-    
-    @objc
-    func klarnaButtonTapped() {
-        guard let klarnaViewModel = paymentMethodsViewModels.filter({ $0.type == .klarna }).first else { return }
-        delegate?.paymentMethodsGroupView(self, paymentMethodTapped: klarnaViewModel)
-    }
-    
-    @objc
-    func payPalButtonTapped() {
-        guard let payPalViewModel = paymentMethodsViewModels.filter({ $0.type == .payPal }).first else { return }
-        delegate?.paymentMethodsGroupView(self, paymentMethodTapped: payPalViewModel)
-    }
-    
-    @objc
-    func cardButtonTapped() {
-        guard let paymentCardViewModel = paymentMethodsViewModels.filter({ $0.type == .paymentCard }).first else { return }
-        delegate?.paymentMethodsGroupView(self, paymentMethodTapped: paymentCardViewModel)
-    }
-    
-    @objc
-    func apayaButtonTapped() {
-        guard let apayaViewModel = paymentMethodsViewModels.filter({ $0.type == .apaya }).first else { return }
-        delegate?.paymentMethodsGroupView(self, paymentMethodTapped: apayaViewModel)
-    }
-    
-    @objc
-    func goCardlessButtonTapped() {
-        guard let goCardlessViewModel = paymentMethodsViewModels.filter({ $0.type == .goCardlessMandate }).first else { return }
-        delegate?.paymentMethodsGroupView(self, paymentMethodTapped: goCardlessViewModel)
     }
     
 }

@@ -4,7 +4,7 @@ import Foundation
 
 internal protocol ClientTokenServiceProtocol {
     static func storeClientToken(_ clientToken: String) throws
-    func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void)
+    func fetchClientToken(_ completion: @escaping (Error?) -> Void)
 }
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
@@ -37,6 +37,12 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         state.accessToken = clientToken
     }
     
+    static func resetClientToken() {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        state.decodedClientToken = nil
+        state.accessToken = nil
+    }
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
@@ -44,10 +50,14 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
     /**
     performs asynchronous call passed in by app developer, decodes the returned Base64 Primer client token string and adds it to shared state.
      */
-    func loadCheckoutConfig(_ completion: @escaping (Error?) -> Void) {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-        settings.clientTokenRequestCallback({ [weak self] (token, err) in
+    func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
+        guard let clientTokenCallback = Primer.shared.delegate?.clientTokenCallback else {
+            let err = PrimerError.invalidValue(key: "clientTokenCallback delegate function.")
+            completion(err)
+            return
+        }
+        
+        clientTokenCallback({ (token, err) in
             if let err = err {
                 completion(err)
             } else if let token = token {

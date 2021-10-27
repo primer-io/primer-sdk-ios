@@ -157,14 +157,14 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     }
 }
 
-let mockPaymentMethodConfig = PaymentMethodConfig(
+let mockPaymentMethodConfig = PrimerConfiguration(
     coreUrl: "url",
     pciUrl: "url",
     clientSession: nil,
     paymentMethods: [
-        ConfigPaymentMethod(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
-        ConfigPaymentMethod(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
-        ConfigPaymentMethod(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+        PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
+        PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
+        PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
     ],
     keys: nil
 )
@@ -185,15 +185,13 @@ class MockAppState: AppStateProtocol {
 
     var mandateId: String?
 
-    var viewModels: [PaymentMethodViewModel] = []
-
     var paymentMethods: [PaymentMethodToken] = []
 
     var selectedPaymentMethod: String = ""
 
     var decodedClientToken: DecodedClientToken? = mockClientToken
 
-    var paymentMethodConfig: PaymentMethodConfig?
+    var paymentMethodConfig: PrimerConfiguration?
 
     var accessToken: String? = "accessToken"
 
@@ -207,14 +205,14 @@ class MockAppState: AppStateProtocol {
 
     init(
         decodedClientToken: DecodedClientToken? = mockClientToken,
-        paymentMethodConfig: PaymentMethodConfig? = PaymentMethodConfig(
+        paymentMethodConfig: PrimerConfiguration? = PrimerConfiguration(
             coreUrl: "url",
             pciUrl: "url",
             clientSession: nil,
             paymentMethods: [
-                ConfigPaymentMethod(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
-                ConfigPaymentMethod(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
-                ConfigPaymentMethod(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+                PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
+                PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
+                PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
             ],
             keys: nil
         )
@@ -239,13 +237,8 @@ class MockLocator {
         DependencyContainer.register(MockClientTokenService() as ClientTokenServiceProtocol)
         DependencyContainer.register(MockPaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
         DependencyContainer.register(MockPayPalService() as PayPalServiceProtocol)
-        DependencyContainer.register(MockTokenizationService(paymentInstrumentType: ConfigPaymentMethodType.paymentCard.rawValue, tokenType: TokenType.singleUse.rawValue) as TokenizationServiceProtocol)
+        DependencyContainer.register(MockTokenizationService(paymentInstrumentType: PaymentMethodConfigType.paymentCard.rawValue, tokenType: TokenType.singleUse.rawValue) as TokenizationServiceProtocol)
         DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
-        DependencyContainer.register(MockKlarnaService() as KlarnaServiceProtocol)
-        DependencyContainer.register(MockApplePayViewModel() as ApplePayViewModelProtocol)
-        DependencyContainer.register(MockCardScannerViewModel() as CardScannerViewModelProtocol)
-        DependencyContainer.register(MockDirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
-        DependencyContainer.register(MockOAuthViewModel() as OAuthViewModelProtocol)
         DependencyContainer.register(MockVaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(MockVaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(MockExternalViewModel() as ExternalViewModelProtocol)

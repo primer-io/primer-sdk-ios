@@ -1,11 +1,13 @@
+#if canImport(UIKit)
+
 import Foundation
 
 struct DecodedClientToken: Decodable {
     var accessToken: String?
-    var exp: Int?
+    var exp: String?
     var expDate: Date? {
         guard let exp = exp else { return nil }
-        return Date(timeIntervalSince1970: TimeInterval(exp))
+        return Date(timeIntervalSince1970: TimeInterval(Int(exp)!))
     }
     var configurationUrl: String?
     var paymentFlow: String?
@@ -15,6 +17,8 @@ struct DecodedClientToken: Decodable {
     var pciUrl: String?
     var env: String?
     var intent: String?
+    var statusUrl: String?
+    var redirectUrl: String?
     
     var isValid: Bool {
         do {
@@ -140,3 +144,5 @@ internal extension String {
         return ", " + self
     }
 }
+
+#endif

@@ -295,22 +295,27 @@ extension Encodable {
 extension String {
     var jwtTokenPayload: JWTToken? {
         let components = self.split(separator: ".")
-//        if components.count < 2 { return nil }
-        let segment = String(components[0]).padding(toLength: ((String(components[0]).count+3)/4)*4,
-                                                    withPad: "=",
-                                                    startingAt: 0)
-        guard !segment.isEmpty, let data = Data(base64Encoded: segment) else { return nil }
-        
-        return try? JSONDecoder().decode(JWTToken.self, from: data)
+        if components.count < 2 { return nil }
+        let segment = String(components[1]).fixedBase64Format
+        guard !segment.isEmpty, let data = Data(base64Encoded: segment, options: .ignoreUnknownCharacters) else { return nil }
+        return (try? JSONDecoder().decode(JWTToken.self, from: data))
     }
+    
+    var fixedBase64Format: Self {
+        let str = self.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+        let offset = str.count % 4
+        guard offset != 0 else { return str }
+        return str.padding(toLength: str.count + 4 - offset, withPad: "=", startingAt: 0)
+    }
+
 }
 
 struct JWTToken: Decodable {
     var accessToken: String?
-    var exp: Int?
+    var exp: String?
     var expDate: Date? {
         guard let exp = exp else { return nil }
-        return Date(timeIntervalSince1970: TimeInterval(exp))
+        return Date(timeIntervalSince1970: TimeInterval(Int(exp)!))
     }
     var configurationUrl: String?
     var paymentFlow: String?

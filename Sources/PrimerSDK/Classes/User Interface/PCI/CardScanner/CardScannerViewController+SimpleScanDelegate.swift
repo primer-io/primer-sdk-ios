@@ -1,23 +1,27 @@
-#if canImport(CardScan)
-import CardScan
+// #if canImport(UIKit)
+// #if canImport(CardScan)
 
-@available(iOS 12, *)
-internal extension CardScannerViewController: SimpleScanDelegate {
+// import CardScan
 
-    func userDidCancelSimple(_ scanViewController: SimpleScanViewController) {}
+// @available(iOS 12, *)
+// internal extension CardScannerViewController: SimpleScanDelegate {
 
-    public func userDidScanCardSimple(_ scanViewController: SimpleScanViewController, creditCard: CreditCard) {
-        scanViewController.cancelScan()
+//     func userDidCancelSimple(_ scanViewController: SimpleScanViewController) {}
 
-        let details = PrimerCreditCardDetails(
-            name: creditCard.name,
-            number: creditCard.number,
-            expiryMonth: creditCard.expiryMonth,
-            expiryYear: creditCard.expiryYear
-        )
+//     public func userDidScanCardSimple(_ scanViewController: SimpleScanViewController, creditCard: CreditCard) {
+//         scanViewController.cancelScan()
 
-        delegate?.setScannedCardDetails(with: details)
-        router.pop()
-    }
-}
-#endif
+//         let details = PrimerCreditCardDetails(
+//             name: creditCard.name,
+//             number: creditCard.number,
+//             expiryMonth: creditCard.expiryMonth,
+//             expiryYear: creditCard.expiryYear
+//         )
+
+//         delegate?.setScannedCardDetails(with: details)
+//         router.pop()
+//     }
+// }
+
+// #endif
+// #endif

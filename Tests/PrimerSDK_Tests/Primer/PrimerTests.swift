@@ -59,7 +59,7 @@ class PrimerTests: XCTestCase {
         Primer.shared.dismiss()
         
         Primer.shared.showPaymentMethod(.payPal, withIntent: .checkout, on: UIViewController())
-        XCTAssert(Primer.shared.flow == nil)
+        XCTAssert(Primer.shared.flow == .checkoutWithPayPal)
         Primer.shared.dismiss()
     }
     

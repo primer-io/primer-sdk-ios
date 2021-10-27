@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 24/3/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 import PassKit
 
@@ -41,3 +43,5 @@ public struct OrderItem: Codable {
     }
     
 }
+
+#endif

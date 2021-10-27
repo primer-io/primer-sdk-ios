@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 10/3/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 internal extension Date {
@@ -34,3 +36,5 @@ internal extension Date {
     // swiftlint:enable identifier_name
     
 }
+
+#endif
