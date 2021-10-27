@@ -40,7 +40,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     lazy var endpoint: String = {
         if environment == .local {
-            return "http://localhost:8080"
+            return "https://primer-mock-back-end.herokuapp.com"
         } else {
             return "https://us-central1-primerdemo-8741b.cloudfunctions.net"
         }
