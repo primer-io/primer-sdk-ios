@@ -214,6 +214,53 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showUniversalCheckout(on: self)
     }
     
+    func requestClientToken(_ completion: @escaping (String?, Error?) -> Void) {
+        guard let url = URL(string: "\(endpoint)/clientToken") else {
+            return completion(nil, NetworkError.missingParams)
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body = CreateClientTokenRequest(
+            environment: environment,
+            orderId: "order_id",
+            amount: amount,
+            currencyCode: currency.rawValue,
+            customerId: "customer_id",
+            customerCountryCode: countryCode,
+            metadata: nil,
+            customer: nil,
+            order: nil,
+            paymentMethod: nil)
+        
+        do {
+            request.httpBody = try JSONEncoder().encode(body)
+        } catch {
+            return completion(nil, NetworkError.missingParams)
+        }
+        
+        callApi(request, completion: { result in
+            switch result {
+            case .success(let data):
+                do {
+                    if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                        completion(token, nil)
+                        print("🔥 token: \(token)")
+                    } else {
+                        let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                        completion(nil, err)
+                    }
+                    
+                } catch {
+                    completion(nil, error)
+                }
+            case .failure(let err):
+                completion(nil, err)
+            }
+        })
+    }
+    
     func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
         guard let url = URL(string: "\(endpoint)/client-session") else {
             return completion(nil, NetworkError.missingParams)
