@@ -4,10 +4,10 @@ import Foundation
 
 struct DecodedClientToken: Decodable {
     var accessToken: String?
-    var exp: String?
+    var exp: Int?
     var expDate: Date? {
         guard let exp = exp else { return nil }
-        return Date(timeIntervalSince1970: TimeInterval(Int(exp)!))
+        return Date(timeIntervalSince1970: TimeInterval(exp))
     }
     var configurationUrl: String?
     var paymentFlow: String?
@@ -27,6 +27,61 @@ struct DecodedClientToken: Decodable {
         } catch {
             return false
         }
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case accessToken, exp, configurationUrl, paymentFlow, threeDSecureInitUrl, threeDSecureToken, coreUrl, pciUrl,
+             env, intent, statusUrl, redirectUrl
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        accessToken = (try? container.decode(String.self, forKey: .accessToken)) ?? nil
+        configurationUrl = (try? container.decode(String.self, forKey: .configurationUrl)) ?? nil
+        paymentFlow = (try? container.decode(String.self, forKey: .paymentFlow)) ?? nil
+        threeDSecureInitUrl = (try? container.decode(String.self, forKey: .threeDSecureInitUrl)) ?? nil
+        threeDSecureToken = (try? container.decode(String.self, forKey: .threeDSecureToken)) ?? nil
+        coreUrl = (try? container.decode(String.self, forKey: .coreUrl)) ?? nil
+        pciUrl = (try? container.decode(String.self, forKey: .pciUrl)) ?? nil
+        env = (try? container.decode(String.self, forKey: .env)) ?? nil
+        intent = (try? container.decode(String.self, forKey: .intent)) ?? nil
+        statusUrl = (try? container.decode(String.self, forKey: .statusUrl)) ?? nil
+        redirectUrl = (try? container.decode(String.self, forKey: .redirectUrl)) ?? nil
+        
+        if let expStr = (try? container.decode(String.self, forKey: .accessToken)), let expInt = Int(expStr) {
+            exp = expInt
+        } else if let expInt = (try? container.decode(Int.self, forKey: .accessToken)) {
+            exp = expInt
+        }
+    }
+    
+    init(
+        accessToken: String?,
+        exp: Int?,
+        configurationUrl: String?,
+        paymentFlow: String?,
+        threeDSecureInitUrl: String?,
+        threeDSecureToken: String?,
+        coreUrl: String?,
+        pciUrl: String?,
+        env: String?,
+        intent: String?,
+        statusUrl: String?,
+        redirectUrl: String?
+    ) {
+        self.accessToken = accessToken
+        self.exp = exp
+        self.configurationUrl = configurationUrl
+        self.paymentFlow = paymentFlow
+        self.threeDSecureInitUrl = threeDSecureInitUrl
+        self.threeDSecureToken = threeDSecureToken
+        self.coreUrl = coreUrl
+        self.pciUrl = pciUrl
+        self.env = env
+        self.intent = intent
+        self.statusUrl = statusUrl
+        self.redirectUrl = redirectUrl
     }
     
     func validate() throws {
