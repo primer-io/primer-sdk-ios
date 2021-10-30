@@ -285,8 +285,6 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         self.paymentMethod = paymentMethodToken
         
         DispatchQueue.main.async {
-            self.paymentMethod = paymentMethodToken
-            
             if Primer.shared.flow.internalSessionFlow.vaulted {
                 Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
             }
