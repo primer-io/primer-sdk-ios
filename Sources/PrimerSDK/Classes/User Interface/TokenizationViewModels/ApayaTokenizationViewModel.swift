@@ -164,18 +164,24 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
         }
         .done { paymentMethod in
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
-                if let err = err {
-                    self.handleFailedTokenizationFlow(error: err)
-                } else {
-                    self.handleSuccessfulTokenizationFlow()
-                }
-            })
+            self.paymentMethod = paymentMethod
+            
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
+                    if let err = err {
+                        self.handleFailedTokenizationFlow(error: err)
+                    } else {
+                        self.handleSuccessfulTokenizationFlow()
+                    }
+                })
+            }
         }
         .catch { err in
-            Primer.shared.delegate?.checkoutFailed?(with: err)
-            self.handleFailedTokenizationFlow(error: err)
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+                self.handleFailedTokenizationFlow(error: err)
+            }
         }
     }
     
