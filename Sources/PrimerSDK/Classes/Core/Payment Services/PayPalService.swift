@@ -10,6 +10,8 @@ internal protocol PayPalServiceProtocol {
 
 internal class PayPalService: PayPalServiceProtocol {
     
+    private var billingAgreementToken: String?
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
@@ -120,7 +122,7 @@ internal class PayPalService: PayPalServiceProtocol {
             case .failure:
                 completion(.failure(PrimerError.payPalSessionFailed))
             case .success(let config):
-                state.billingAgreementToken = config.tokenId
+                self.billingAgreementToken = config.tokenId
                 completion(.success(config.approvalUrl))
             }
         }
@@ -137,11 +139,11 @@ internal class PayPalService: PayPalServiceProtocol {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        guard let tokenId = state.billingAgreementToken else {
+        guard let billingAgreementToken = self.billingAgreementToken else {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
-        let body = PayPalConfirmBillingAgreementRequest(paymentMethodConfigId: configId, tokenId: tokenId)
+        let body = PayPalConfirmBillingAgreementRequest(paymentMethodConfigId: configId, tokenId: billingAgreementToken)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 

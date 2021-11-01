@@ -13,7 +13,6 @@ internal protocol AppStateProtocol: AnyObject {
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethodId: String? { get set }
     
-    var billingAgreementToken: String? { get set }
     var orderId: String? { get set }
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? { get set }
     var approveURL: String? { get set }
@@ -33,7 +32,6 @@ internal class AppState: AppStateProtocol {
     var selectedPaymentMethodId: String?
     var paymentMethodConfig: PrimerConfiguration?
     
-    var billingAgreementToken: String?
     var orderId: String?
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
     var approveURL: String?
