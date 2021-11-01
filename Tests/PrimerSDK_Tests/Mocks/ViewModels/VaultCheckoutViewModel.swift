@@ -26,7 +26,7 @@ class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return []
     }
 
-    var selectedPaymentMethodId: String {
+    var selectedPaymentMethodId: String? {
         return "id"
     }
 

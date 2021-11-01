@@ -13,7 +13,7 @@ internal protocol VaultCheckoutViewModelProtocol {
     var paymentMethods: [PaymentMethodToken] { get }
     var mandate: DirectDebitMandate { get }
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] { get }
-    var selectedPaymentMethodId: String { get }
+    var selectedPaymentMethodId: String? { get }
     var amountStringed: String? { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
     func authorizePayment(_ completion: @escaping (Error?) -> Void)
@@ -57,7 +57,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         }
     }
 
-    var selectedPaymentMethodId: String {
+    var selectedPaymentMethodId: String? {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.selectedPaymentMethodId
     }

@@ -2,7 +2,7 @@
 
 internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     var paymentMethods: [PaymentMethodToken] { get }
-    var selectedId: String { get set }
+    var selectedId: String? { get set }
     func reloadVault(with completion: @escaping (Error?) -> Void)
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void)
 }
@@ -13,7 +13,7 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.paymentMethods
     }
-    var selectedId: String {
+    var selectedId: String? {
         get {
             let state: AppStateProtocol = DependencyContainer.resolve()
             return state.selectedPaymentMethodId
@@ -56,7 +56,7 @@ internal class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProto
     
     var theme: PrimerTheme { return PrimerTheme() }
     var paymentMethods: [PaymentMethodToken] { return [] }
-    var selectedId: String = "id"
+    var selectedId: String? = "id"
 
     func reloadVault(with completion: @escaping (Error?) -> Void) {
 
