@@ -22,7 +22,7 @@
 //    func createMandate(_ completion: @escaping (Error?) -> Void) {
 //        let state: AppStateProtocol = DependencyContainer.resolve()
 //
-//        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+//        guard let decodedClientToken = ClientTokenService2.decodedClientToken else {
 //            return completion(PrimerError.directDebitSessionFailed)
 //        }
 //

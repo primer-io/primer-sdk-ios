@@ -83,7 +83,6 @@ public class Primer {
         DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
-        DependencyContainer.register(ClientTokenService() as ClientTokenServiceProtocol)
         DependencyContainer.register(PaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)

@@ -17,7 +17,7 @@ class VaultCheckoutViewModelTests: XCTestCase {
         let state = MockAppState(decodedClientToken: nil)
 
         MockLocator.registerDependencies()
-        DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)
+
         DependencyContainer.register(state as AppStateProtocol)
 
         let viewModel = VaultCheckoutViewModel()

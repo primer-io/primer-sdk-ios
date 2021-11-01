@@ -10,6 +10,12 @@
 @testable import PrimerSDK
 
 class MockClientTokenService: ClientTokenServiceProtocol {
+    static var clientToken: String?
+    
+    static func resetClientToken() {
+        
+    }
+    
     
     let tokenIsNil: Bool
     var throwError: Bool
@@ -19,8 +25,7 @@ class MockClientTokenService: ClientTokenServiceProtocol {
         self.throwError = throwError
     }
 
-    var decodedClientToken: DecodedClientToken? {
-        if tokenIsNil { return nil }
+    static var decodedClientToken: DecodedClientToken? {
         return DecodedClientToken(
             accessToken: "bla",
             configurationUrl: "bla",

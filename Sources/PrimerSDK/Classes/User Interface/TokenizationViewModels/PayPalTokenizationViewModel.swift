@@ -102,7 +102,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     }
     
     override func validate() throws {        
-        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err

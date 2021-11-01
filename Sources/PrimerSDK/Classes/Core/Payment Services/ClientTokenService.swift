@@ -3,7 +3,10 @@
 import Foundation
 
 internal protocol ClientTokenServiceProtocol {
+    static var clientToken: String? { get }
+    static var decodedClientToken: DecodedClientToken? { get }
     static func storeClientToken(_ clientToken: String) throws
+    static func resetClientToken()
     func fetchClientToken(_ completion: @escaping (Error?) -> Void)
 }
 

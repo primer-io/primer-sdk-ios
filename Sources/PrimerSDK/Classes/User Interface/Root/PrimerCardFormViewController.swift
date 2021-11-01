@@ -394,7 +394,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
 //         }
         
 //         do {
-//             try ClientTokenService.storeClientToken(clientToken)
+//             try ClientTokenService2.storeClientToken(clientToken)
            
 //             let state: AppStateProtocol = DependencyContainer.resolve()
 //             let decodedClientToken = state.decodedClientToken!
