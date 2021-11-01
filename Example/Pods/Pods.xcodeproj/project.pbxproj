@@ -39,7 +39,6 @@
 		32D4F85BE1557ED62536344CFAB75F88 /* Primer3DS-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A163D166B27F20FF6EEF83F5121C4CEA /* Primer3DS-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3393CC61DE271809ACEEF30821105F61 /* PrimerUniversalCheckoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E573ECFB9D436C355D45E89EBC0BF8 /* PrimerUniversalCheckoutViewController.swift */; };
 		340E53945CD6656DA45AE3B1CC407E5E /* RateLimitedDispatcherBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AD9572D22B58F541CF3EAB6B7111199 /* RateLimitedDispatcherBase.swift */; };
-		361B8F7D744B6E1480FBEAF28CC3B02C /* PayPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8D8432605E51A972648963BB15E5988 /* PayPalService.swift */; };
 		38C31A88368EAE1F28812550AA7328FC /* 3DSService+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79BE4638B091E333D49A68A8D1DDB80 /* 3DSService+Promises.swift */; };
 		39050F7B3028B05D9580F65AA55D74E3 /* PrimerImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17F33954C3229984C6E59CA477CA113E /* PrimerImage.swift */; };
 		3C38F52B1658DFEABAA8C3B313E5EFD5 /* after.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53904E59E6310C44C20630FA7F63B7B0 /* after.swift */; };
@@ -398,7 +397,6 @@
 		F79BE4638B091E333D49A68A8D1DDB80 /* 3DSService+Promises.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "3DSService+Promises.swift"; sourceTree = "<group>"; };
 		F7B48CC82297D62E27EA98AE7A13D3DA /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		F7E573ECFB9D436C355D45E89EBC0BF8 /* PrimerUniversalCheckoutViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerUniversalCheckoutViewController.swift; sourceTree = "<group>"; };
-		F8D8432605E51A972648963BB15E5988 /* PayPalService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayPalService.swift; sourceTree = "<group>"; };
 		FBEEFE9EB50F8CAD524A6E65F4D122A7 /* Error.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		FD5B971629C190AA99DD8A07215CDBCB /* PrimerAPI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerAPI.swift; sourceTree = "<group>"; };
 		FDBCB279A450E9E9AEE57778EBA2B2D0 /* PrimerWebViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerWebViewController.swift; sourceTree = "<group>"; };
@@ -616,7 +614,6 @@
 				A6A91B4D286E310BF641E19B0E62515C /* ClientTokenService.swift */,
 				0F9C462442D0A85006E00450B0D9F5C5 /* DirectDebitService.swift */,
 				B4B738ECFA4EBBE51E59A9235C78EBD5 /* PaymentMethodConfigService.swift */,
-				F8D8432605E51A972648963BB15E5988 /* PayPalService.swift */,
 				67304CA81173866B8E0241C78E629C44 /* VaultService.swift */,
 			);
 			path = "Payment Services";
@@ -1408,7 +1405,6 @@
 				3FE62F51A123AC674D164498D6AD6403 /* PaymentMethodTokenizationViewModel.swift in Sources */,
 				A62A2FCC932C89F6AC5380AFF1C9B9F0 /* PaymentResponse.swift in Sources */,
 				D559DF8A31AF4BFCC010A4FAE7CA55F5 /* PayPal.swift in Sources */,
-				361B8F7D744B6E1480FBEAF28CC3B02C /* PayPalService.swift in Sources */,
 				25AACFA41FF6C2ABE59C0D03477ADB4F /* PayPalTokenizationViewModel.swift in Sources */,
 				595EB66995B778441CF1C1518780F3E4 /* PresentationController.swift in Sources */,
 				3C7643DB046921499BC4D8D7D5A3855A /* Primer.swift in Sources */,

@@ -11,6 +11,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     private var session: Any!
+    private var billingAgreementToken: String?
+    private var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
     
     override lazy var title: String = {
         return "PayPal"
@@ -189,11 +191,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     
     private func fetchOAuthURL() -> Promise<URL> {
         return Promise { seal in
-            let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
-            
             switch Primer.shared.flow.internalSessionFlow.uxMode {
             case .CHECKOUT:
-                paypalService.startOrderSession { result in
+                self.startOrderSession { result in
                     switch result {
                     case .success(let urlStr):
                         guard let url = URL(string: urlStr) else {
@@ -208,7 +208,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                     }
                 }
             case .VAULT:
-                paypalService.startBillingAgreementSession { result in
+                self.startBillingAgreementSession { result in
                     switch result {
                     case .success(let urlStr):
                         guard let url = URL(string: urlStr) else {
@@ -298,8 +298,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             completion(.success(paymentInstrument))
             
         case .VAULT:
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let confirmedBillingAgreement = state.confirmedBillingAgreement else {
+            guard let confirmedBillingAgreement = self.confirmedBillingAgreement else {
                 generateBillingAgreementConfirmation { [weak self] err in
                     if let err = err {
                         completion(.failure(err))
@@ -320,8 +319,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     }
     
     private func generateBillingAgreementConfirmation(_ completion: @escaping (Error?) -> Void) {
-        let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
-        paypalService.confirmBillingAgreement({ result in
+        self.confirmBillingAgreement({ result in
             switch result {
             case .failure(let error):
                 log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
@@ -338,7 +336,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
             
             let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
-            tokenizationService.tokenize(request: request) { [weak self] result in
+            tokenizationService.tokenize(request: request) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -350,6 +348,125 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
+    private func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            return completion(.failure(PrimerError.clientTokenNull))
+        }
+
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
+            return completion(.failure(PrimerError.configFetchFailed))
+        }
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+        guard let amount = settings.amount else {
+            return completion(.failure(PrimerError.amountMissing))
+        }
+
+        guard let currency = settings.currency else {
+            return completion(.failure(PrimerError.currencyMissing))
+        }
+
+        guard var urlScheme = settings.urlScheme else {
+            return completion(.failure(PrimerError.missingURLScheme))
+        }
+        
+        if urlScheme.suffix(3) == "://" {
+            urlScheme = urlScheme.replacingOccurrences(of: "://", with: "")
+        }
+
+        let body = PayPalCreateOrderRequest(
+            paymentMethodConfigId: configId,
+            amount: amount,
+            currencyCode: currency,
+            returnUrl: "\(urlScheme)://paypal-success",
+            cancelUrl: "\(urlScheme)://paypal-cancel"
+        )
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+
+        api.payPalStartOrderSession(clientToken: decodedClientToken, payPalCreateOrderRequest: body) { (result) in
+            switch result {
+            case .failure:
+                completion(.failure(PrimerError.payPalSessionFailed))
+            case .success(let response):
+                state.orderId = response.orderId
+                completion(.success(response.approvalUrl))
+            }
+        }
+    }
+    
+    private func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            return completion(.failure(PrimerError.payPalSessionFailed))
+        }
+
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
+            return completion(.failure(PrimerError.payPalSessionFailed))
+        }
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+
+        guard var urlScheme = settings.urlScheme else {
+            return completion(.failure(PrimerError.missingURLScheme))
+        }
+        
+        if urlScheme.suffix(3) == "://" {
+            urlScheme = urlScheme.replacingOccurrences(of: "://", with: "")
+        }
+
+        let body = PayPalCreateBillingAgreementRequest(
+            paymentMethodConfigId: configId,
+            returnUrl: "\(urlScheme)://paypal-success",
+            cancelUrl: "\(urlScheme)://paypal-cancel"
+        )
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+
+        api.payPalStartBillingAgreementSession(clientToken: decodedClientToken, payPalCreateBillingAgreementRequest: body) { (result) in
+            switch result {
+            case .failure:
+                completion(.failure(PrimerError.payPalSessionFailed))
+            case .success(let config):
+                self.billingAgreementToken = config.tokenId
+                completion(.success(config.approvalUrl))
+            }
+        }
+    }
+    
+    func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            return completion(.failure(PrimerError.payPalSessionFailed))
+        }
+
+        guard let configId = state.paymentMethodConfig?.getConfigId(for: .payPal) else {
+            return completion(.failure(PrimerError.payPalSessionFailed))
+        }
+
+        guard let billingAgreementToken = self.billingAgreementToken else {
+            return completion(.failure(PrimerError.payPalSessionFailed))
+        }
+
+        let body = PayPalConfirmBillingAgreementRequest(paymentMethodConfigId: configId, tokenId: billingAgreementToken)
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+
+        api.payPalConfirmBillingAgreement(clientToken: decodedClientToken, payPalConfirmBillingAgreementRequest: body) { (result) in
+            switch result {
+            case .failure:
+                completion(.failure(PrimerError.payPalSessionFailed))
+            case .success(let response):
+                self.confirmedBillingAgreement = response
+                completion(.success(response))
+            }
+        }
+    }
 }
 
 extension PayPalTokenizationViewModel {

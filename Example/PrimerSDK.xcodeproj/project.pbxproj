@@ -12,7 +12,6 @@
 		1582B97D260A3F2900C80BD7 /* VaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95F260A3F2900C80BD7 /* VaultCheckoutViewModel.swift */; };
 		1582B97F260A3F2900C80BD7 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B961260A3F2900C80BD7 /* Mocks.swift */; };
 		1582B980260A3F2900C80BD7 /* PaymentMethodConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B963260A3F2900C80BD7 /* PaymentMethodConfigService.swift */; };
-		1582B981260A3F2900C80BD7 /* PayPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B964260A3F2900C80BD7 /* PayPalService.swift */; };
 		1582B982260A3F2900C80BD7 /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B965260A3F2900C80BD7 /* VaultService.swift */; };
 		1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B966260A3F2900C80BD7 /* ClientTokenService.swift */; };
 		1582B984260A3F2900C80BD7 /* TokenizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B967260A3F2900C80BD7 /* TokenizationService.swift */; };
@@ -22,7 +21,6 @@
 		1582B98E260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */; };
 		1582B990260A3F2900C80BD7 /* TokenizationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */; };
 		1582B991260A3F2900C80BD7 /* ClientTokenServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B977260A3F2900C80BD7 /* ClientTokenServiceTests.swift */; };
-		1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */; };
 		1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B9A1260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift */; };
 		1582B9AD260A402E00C80BD7 /* Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B9AC260A402E00C80BD7 /* Base.swift */; };
 		15ACE9652614B186004C3EAA /* chocolate_bar_demo.otf in Resources */ = {isa = PBXBuildFile; fileRef = 15ACE9642614B186004C3EAA /* chocolate_bar_demo.otf */; };
@@ -75,7 +73,6 @@
 		1582B95F260A3F2900C80BD7 /* VaultCheckoutViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultCheckoutViewModel.swift; sourceTree = "<group>"; };
 		1582B961260A3F2900C80BD7 /* Mocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		1582B963260A3F2900C80BD7 /* PaymentMethodConfigService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigService.swift; sourceTree = "<group>"; };
-		1582B964260A3F2900C80BD7 /* PayPalService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PayPalService.swift; sourceTree = "<group>"; };
 		1582B965260A3F2900C80BD7 /* VaultService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultService.swift; sourceTree = "<group>"; };
 		1582B966260A3F2900C80BD7 /* ClientTokenService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientTokenService.swift; sourceTree = "<group>"; };
 		1582B967260A3F2900C80BD7 /* TokenizationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
@@ -86,7 +83,6 @@
 		1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigServiceTests.swift; sourceTree = "<group>"; };
 		1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenizationServiceTests.swift; sourceTree = "<group>"; };
 		1582B977260A3F2900C80BD7 /* ClientTokenServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientTokenServiceTests.swift; sourceTree = "<group>"; };
-		1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PayPalServiceTests.swift; sourceTree = "<group>"; };
 		1582B99F260A3FD300C80BD7 /* PrimerSDKExample_UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimerSDKExample_UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1582B9A1260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerSDKExample_UITests.swift; sourceTree = "<group>"; };
 		1582B9A3260A3FD300C80BD7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -208,7 +204,6 @@
 			isa = PBXGroup;
 			children = (
 				1582B963260A3F2900C80BD7 /* PaymentMethodConfigService.swift */,
-				1582B964260A3F2900C80BD7 /* PayPalService.swift */,
 				1582B965260A3F2900C80BD7 /* VaultService.swift */,
 				1582B966260A3F2900C80BD7 /* ClientTokenService.swift */,
 				1582B967260A3F2900C80BD7 /* TokenizationService.swift */,
@@ -239,7 +234,6 @@
 			children = (
 				1582B977260A3F2900C80BD7 /* ClientTokenServiceTests.swift */,
 				1582B974260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift */,
-				1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */,
 				1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */,
 				15F5E2FE26982B21003AFF8A /* CardComponentManagerTests.swift */,
 			);
@@ -678,7 +672,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1582B981260A3F2900C80BD7 /* PayPalService.swift in Sources */,
 				1582B991260A3F2900C80BD7 /* ClientTokenServiceTests.swift in Sources */,
 				1582B98E260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift in Sources */,
 				15F5E2FF26982B21003AFF8A /* CardComponentManagerTests.swift in Sources */,
@@ -689,7 +682,6 @@
 				1582B988260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift in Sources */,
 				1582B97F260A3F2900C80BD7 /* Mocks.swift in Sources */,
 				15ED91782718975500581CD7 /* MockAsyncPaymentMethodTokenizationViewModel.swift in Sources */,
-				1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */,
 				1582B984260A3F2900C80BD7 /* TokenizationService.swift in Sources */,
 				1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */,
 				1582B982260A3F2900C80BD7 /* VaultService.swift in Sources */,

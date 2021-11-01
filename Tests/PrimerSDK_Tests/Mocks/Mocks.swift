@@ -236,7 +236,6 @@ class MockLocator {
         DependencyContainer.register(MockVaultService() as VaultServiceProtocol)
         DependencyContainer.register(MockClientTokenService() as ClientTokenServiceProtocol)
         DependencyContainer.register(MockPaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
-        DependencyContainer.register(MockPayPalService() as PayPalServiceProtocol)
         DependencyContainer.register(MockTokenizationService(paymentInstrumentType: PaymentMethodConfigType.paymentCard.rawValue, tokenType: TokenType.singleUse.rawValue) as TokenizationServiceProtocol)
         DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(MockVaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)

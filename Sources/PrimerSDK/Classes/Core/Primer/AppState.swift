@@ -14,7 +14,6 @@ internal protocol AppStateProtocol: AnyObject {
     var selectedPaymentMethodId: String? { get set }
     
     var orderId: String? { get set }
-    var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? { get set }
     var approveURL: String? { get set }
     var directDebitMandate: DirectDebitMandate { get set }
     var directDebitFormCompleted: Bool { get set }
@@ -33,7 +32,6 @@ internal class AppState: AppStateProtocol {
     var paymentMethodConfig: PrimerConfiguration?
     
     var orderId: String?
-    var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
     var approveURL: String?
     var directDebitMandate: DirectDebitMandate = DirectDebitMandate(address: Address())
     var directDebitFormCompleted: Bool = false
