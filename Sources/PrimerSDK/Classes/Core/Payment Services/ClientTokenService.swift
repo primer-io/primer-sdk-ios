@@ -84,6 +84,26 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
             }
         })
     }
+    
+    func fetchClientTokenIfNeeded(enforce: Bool, completion: @escaping (Error?) -> Void) {
+        if enforce == false, ClientTokenService.decodedClientToken != nil {
+            completion(nil)
+        } else {
+            fetchClientToken(completion)
+        }
+    }
+    
+    func fetchClientTokenIfNeeded(enforce: Bool) -> Promise<Void> {
+        return Promise { seal in
+            self.fetchClientTokenIfNeeded(enforce: enforce) { err in
+                if let err = err {
+                    seal.reject(err)
+                } else {
+                    seal.fulfill(())
+                }
+            }
+        }
+    }
 
 }
 
