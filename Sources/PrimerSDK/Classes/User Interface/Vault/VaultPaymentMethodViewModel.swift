@@ -32,12 +32,12 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
     }
 
     func reloadVault(with completion: @escaping (Error?) -> Void) {
-        let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+        let vaultService: VaultServiceProtocol = VaultService()
         vaultService.loadVaultedPaymentMethods(completion)
     }
 
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void) {
-        let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+        let vaultService: VaultServiceProtocol = VaultService()
         vaultService.deleteVaultedPaymentMethod(with: id) { _ in
             let state: AppStateProtocol = DependencyContainer.resolve()
             

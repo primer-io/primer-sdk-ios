@@ -60,7 +60,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
                 if let err = err {
                     completion(err)
                 } else {
-                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                    let vaultService: VaultServiceProtocol = VaultService()
                     vaultService.loadVaultedPaymentMethods(completion)
                 }
             })
@@ -75,7 +75,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
                         if let err = err {
                             completion(err)
                         } else {
-                            let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                            let vaultService: VaultServiceProtocol = VaultService()
                             vaultService.loadVaultedPaymentMethods(completion)
                         }
                     })
