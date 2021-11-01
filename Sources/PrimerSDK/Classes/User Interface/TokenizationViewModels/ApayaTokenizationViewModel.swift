@@ -210,8 +210,8 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
                                                  currencyCode: currency.rawValue,
                                                  phoneNumber: settings.customer?.mobilePhoneNumber)
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        api.apayaCreateSession(clientToken: clientToken, request: body) { [weak self] result in
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
+        api.apayaCreateSession(clientToken: clientToken, request: body) { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -298,7 +298,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             return
         }
         
-        let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let apiClient: PrimerAPIClientProtocol = PrimerAPIClient()
         apiClient.tokenizePaymentMethod(
             clientToken: clientToken,
             paymentMethodTokenizationRequest: request) { result in

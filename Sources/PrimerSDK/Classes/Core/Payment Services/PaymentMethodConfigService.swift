@@ -19,8 +19,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
             return completion(PrimerError.configFetchFailed)
         }
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.fetchConfiguration(clientToken: decodedClientToken) { (result) in
             switch result {
             case .failure(let error):

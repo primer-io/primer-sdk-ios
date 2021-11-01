@@ -386,8 +386,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             cancelUrl: "\(urlScheme)://paypal-cancel"
         )
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.payPalStartOrderSession(clientToken: decodedClientToken, payPalCreateOrderRequest: body) { (result) in
             switch result {
             case .failure:
@@ -426,8 +425,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             cancelUrl: "\(urlScheme)://paypal-cancel"
         )
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.payPalStartBillingAgreementSession(clientToken: decodedClientToken, payPalCreateBillingAgreementRequest: body) { (result) in
             switch result {
             case .failure:
@@ -456,7 +454,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
 
         let body = PayPalConfirmBillingAgreementRequest(paymentMethodConfigId: configId, tokenId: billingAgreementToken)
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
 
         api.payPalConfirmBillingAgreement(clientToken: decodedClientToken, payPalConfirmBillingAgreementRequest: body) { (result) in
             switch result {

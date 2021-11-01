@@ -286,7 +286,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                     )
                     let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
                     
-                    let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
+                    let apiClient: PrimerAPIClientProtocol = PrimerAPIClient()
                     apiClient.tokenizePaymentMethod(
                         clientToken: decodedClientToken,
                         paymentMethodTokenizationRequest: request) { result in

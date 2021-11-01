@@ -232,7 +232,6 @@ class MockLocator {
         // register dependencies
         DependencyContainer.register(mockSettings as PrimerSettingsProtocol)
         DependencyContainer.register(state as AppStateProtocol)
-        DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         DependencyContainer.register(MockPaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
         DependencyContainer.register(MockVaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(MockVaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)

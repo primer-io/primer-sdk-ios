@@ -41,7 +41,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
 
         log(logLevel: .verbose, title: nil, message: "URL: \(url)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         
         api.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: request) { (result) in
             switch result {

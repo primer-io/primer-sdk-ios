@@ -282,7 +282,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     fileprivate func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
-        let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let client: PrimerAPIClientProtocol = PrimerAPIClient()
         client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
             switch result {
             case .success(let res):

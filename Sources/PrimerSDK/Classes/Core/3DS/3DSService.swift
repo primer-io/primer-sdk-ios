@@ -373,7 +373,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         
         api.threeDSBeginAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
@@ -390,7 +390,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.threeDSContinueAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId) { result in
             switch result {
             case .failure(let err):

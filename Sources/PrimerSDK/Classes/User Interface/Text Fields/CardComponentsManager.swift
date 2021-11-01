@@ -75,7 +75,6 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         self.cvvField = cvvField
         
         super.init()
-        DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         
         self.cardholderField = cardholderNameField
         
@@ -177,7 +176,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     return
                 }
                 
-                let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
+                let apiClient: PrimerAPIClientProtocol = PrimerAPIClient()
                 apiClient.fetchConfiguration(clientToken: decodedClientToken) { result in
                     switch result {
                     case .success(let paymentMethodsConfig):
@@ -250,7 +249,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 
                 let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: PaymentFlow.vault, customerId: self.customerId)
                 
-                let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
+                let apiClient: PrimerAPIClientProtocol = PrimerAPIClient()
                 apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in
                     switch result {
                     case .success(let paymentMethodToken):
@@ -363,7 +362,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     var paymentMethodsConfig: PrimerConfiguration?
     
     public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderNameField: PrimerCardholderNameFieldView?) {
-        DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
+
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
