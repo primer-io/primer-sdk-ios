@@ -80,7 +80,6 @@ public class Primer {
     internal func setDependencies(settings: PrimerSettings, theme: PrimerTheme) {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         DependencyContainer.register(theme as PrimerThemeProtocol)
-        DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
@@ -105,7 +104,6 @@ public class Primer {
 
             if let theme = theme {
                 DependencyContainer.register(theme as PrimerThemeProtocol)
-                DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
             }
         }
     }
@@ -119,11 +117,7 @@ public class Primer {
      1.4.0
      */
     public func setFormTopTitle(_ text: String, for formType: PrimerFormType) {
-        DispatchQueue.main.async {
-            let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-            let theme = themeProtocol as! PrimerTheme
-            theme.content.formTopTitles.setTopTitle(text, for: formType)
-        }
+
     }
 
     /**
@@ -134,6 +128,7 @@ public class Primer {
      - Version:
      1.4.0
      */
+    @available(iOS, obsoleted: 10.0, message: "Use Primer settings.")
     public func setFormMainTitle(_ text: String, for formType: PrimerFormType) {
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()

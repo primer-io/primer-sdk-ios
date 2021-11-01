@@ -258,17 +258,17 @@ public struct FormTopTitles: FormProtocol {
     var bankAccount = ""
 }
 
-internal extension FormTopTitles {
-    mutating func setTopTitle(_ text: String, for formType: PrimerFormType) {
-        switch formType {
-        case .address: address = text
-        case .cardForm: cardForm = text
-        case .name: name = text
-        case .email: email = text
-        case .iban: iban = text
-        case .bankAccount: bankAccount = text
-        }
-    }
-}
+//internal extension FormTopTitles {
+//    mutating func setTopTitle(_ text: String, for formType: PrimerFormType) {
+//        switch formType {
+//        case .address: address = text
+//        case .cardForm: cardForm = text
+//        case .name: name = text
+//        case .email: email = text
+//        case .iban: iban = text
+//        case .bankAccount: bankAccount = text
+//        }
+//    }
+//}
 
 #endif
