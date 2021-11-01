@@ -170,6 +170,8 @@ let mockPaymentMethodConfig = PrimerConfiguration(
 
 class MockAppState: AppStateProtocol {
     
+    var clientToken: String? = "accessToken"
+    
     var customerToken: String? = "customerToken"
 
     var authorizationToken: String? = "authToken"
@@ -192,7 +194,7 @@ class MockAppState: AppStateProtocol {
 
     var paymentMethodConfig: PrimerConfiguration?
 
-    var accessToken: String? = "accessToken"
+    
 
     var billingAgreementToken: String? = "token"
 

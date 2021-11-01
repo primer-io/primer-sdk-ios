@@ -11,7 +11,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
     
     static var clientToken: String? {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.accessToken
+        return state.clientToken
     }
     
     static var decodedClientToken: DecodedClientToken? {
@@ -46,12 +46,12 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
             decodedClientToken.env = previousEnv
         }
 
-        state.accessToken = clientToken
+        state.clientToken = clientToken
     }
     
     static func resetClientToken() {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        state.accessToken = nil
+        state.clientToken = nil
     }
     
     deinit {

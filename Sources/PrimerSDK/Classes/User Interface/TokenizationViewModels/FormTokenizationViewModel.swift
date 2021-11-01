@@ -304,9 +304,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        if let clientToken = state.accessToken {
+        if let clientToken = ClientTokenService.clientToken {
             completion(clientToken, nil)
         } else {
             completion(nil, PrimerError.clientTokenNull)
@@ -385,7 +383,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
     
     override func handle(newClientToken clientToken: String) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        if state.accessToken == clientToken {
+        if state.clientToken == clientToken {
             let err = PrimerError.invalidValue(key: "clientToken")
             Primer.shared.delegate?.onResumeError?(err)
             handle(error: err)
