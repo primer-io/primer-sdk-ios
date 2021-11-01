@@ -13,6 +13,8 @@ internal protocol DirectDebitServiceProtocol {
 
 internal class DirectDebitService: DirectDebitServiceProtocol {
     
+    private var mandateId: String?
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
@@ -52,7 +54,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
             case .failure:
                 completion(PrimerError.directDebitSessionFailed)
             case .success(let response):
-                state.mandateId = response.mandateId
+                self.mandateId = response.mandateId
                 completion(nil)
             }
         }

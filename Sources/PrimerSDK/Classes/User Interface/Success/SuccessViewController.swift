@@ -171,8 +171,7 @@ internal class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
     }
 
     func getMandateId(_ screenType: SuccessScreenType?) -> String {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.mandateId ?? ""
+        return ""
     }
 
     func getTitle(_ screenType: SuccessScreenType?) -> String {
