@@ -78,9 +78,10 @@ public class Primer {
      - Version: 1.2.2
      */
     internal func setDependencies(settings: PrimerSettings, theme: PrimerTheme) {
+        DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         DependencyContainer.register(theme as PrimerThemeProtocol)
-        DependencyContainer.register(AppState() as AppStateProtocol)
+        
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
     }
@@ -95,7 +96,6 @@ public class Primer {
      - Version:
      1.4.0
      */
-
     public func configure(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
         DispatchQueue.main.async {
             if let settings = settings {
