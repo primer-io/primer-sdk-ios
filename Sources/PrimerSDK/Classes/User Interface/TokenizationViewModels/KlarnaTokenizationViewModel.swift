@@ -13,6 +13,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
+    private var sessionId: String?
     
     override lazy var title: String = {
         return "Klarna"
@@ -346,7 +347,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                     function: #function
                 )
                 
-                state.sessionId = res.sessionId
+                self?.sessionId = res.sessionId
                 
                 guard let url = URL(string: res.hppRedirectUrl) else {
                     completion(.failure(PrimerError.generic))
@@ -406,7 +407,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
-              let sessionId = state.sessionId else {
+              let sessionId = self.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
@@ -451,7 +452,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
 
         guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
-              let sessionId = state.sessionId else {
+              let sessionId = self.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 

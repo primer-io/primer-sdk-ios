@@ -11,9 +11,7 @@ internal protocol AppStateProtocol: AnyObject {
     var clientToken: String? { get set }
     var paymentMethodConfig: PrimerConfiguration? { get set }
     var paymentMethods: [PaymentMethodToken] { get set }
-    var selectedPaymentMethodId: String? { get set }
-    
-    var sessionId: String? { get set }
+    var selectedPaymentMethodId: String? { get set }    
 }
 
 internal class AppState: AppStateProtocol {
@@ -22,8 +20,6 @@ internal class AppState: AppStateProtocol {
     var selectedPaymentMethodId: String?
     var paymentMethodConfig: PrimerConfiguration?
     
-    var sessionId: String?
-
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
