@@ -181,7 +181,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     lazy var submitButton: PrimerOldButton = {
         var buttonTitle: String = ""
         if flow == .checkout {
-            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+            let viewModel: VaultCheckoutViewModelProtocol = VaultCheckoutViewModel()
             buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
                                             tableName: nil,
                                             bundle: Bundle.primerResources,

@@ -83,7 +83,6 @@ public class Primer {
         DependencyContainer.register(theme as PrimerThemeProtocol)
         
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
-        DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
     }
 
     // MARK: - CONFIGURATION

@@ -31,7 +31,7 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
         
         view.backgroundColor = theme.colorTheme.main1
         
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        let checkoutViewModel: VaultCheckoutViewModelProtocol = VaultCheckoutViewModel()
         let availablePaymentMethods = checkoutViewModel.availablePaymentOptions
         
         verticalStackView.spacing = 14.0

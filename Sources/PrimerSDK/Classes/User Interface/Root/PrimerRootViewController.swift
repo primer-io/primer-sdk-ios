@@ -119,7 +119,7 @@ internal class PrimerRootViewController: PrimerViewController {
             showLoadingScreenIfNeeded()
         }
         
-        let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        let viewModel: VaultCheckoutViewModelProtocol = VaultCheckoutViewModel()
         
         viewModel.loadConfig({ [weak self] _ in
             DispatchQueue.main.async {

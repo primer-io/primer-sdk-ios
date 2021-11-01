@@ -41,7 +41,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     }
     
     private func renderAmount() {
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        let checkoutViewModel: VaultCheckoutViewModelProtocol = VaultCheckoutViewModel()
         
         if let amountStr = checkoutViewModel.amountStringed {
             titleLabel = UILabel()
@@ -74,7 +74,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             savedPaymentInstrumentStackView = nil
         }
         
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        let checkoutViewModel: VaultCheckoutViewModelProtocol = VaultCheckoutViewModel()
         
         self.selectedPaymentInstrument = nil
         if let selectedPaymentInstrument = checkoutViewModel.paymentMethods?.first(where: { paymentInstrument in
