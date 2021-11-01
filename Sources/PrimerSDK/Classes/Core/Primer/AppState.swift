@@ -13,7 +13,6 @@ internal protocol AppStateProtocol: AnyObject {
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethodId: String? { get set }
     
-    var customerToken: String? { get set }
     var sessionId: String? { get set }
 }
 
@@ -23,7 +22,6 @@ internal class AppState: AppStateProtocol {
     var selectedPaymentMethodId: String?
     var paymentMethodConfig: PrimerConfiguration?
     
-    var customerToken: String?
     var sessionId: String?
 
     deinit {
