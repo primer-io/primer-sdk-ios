@@ -55,7 +55,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
         if ClientTokenService.decodedClientToken != nil {
-            let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+            let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = PaymentMethodConfigService()
             paymentMethodConfigService.fetchConfig({ err in
                 if let err = err {
                     completion(err)
@@ -70,7 +70,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
                 if let err = err {
                     completion(err)
                 } else {
-                    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = PaymentMethodConfigService()
                     paymentMethodConfigService.fetchConfig({ err in
                         if let err = err {
                             completion(err)
