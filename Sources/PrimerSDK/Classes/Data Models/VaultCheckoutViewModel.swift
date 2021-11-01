@@ -66,21 +66,23 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
             })
         } else {
             let clientTokenService: ClientTokenServiceProtocol = ClientTokenService()
-            clientTokenService.fetchClientToken({ err in
-                if let err = err {
-                    completion(err)
-                } else {
-                    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = PaymentMethodConfigService()
-                    paymentMethodConfigService.fetchConfig({ err in
-                        if let err = err {
-                            completion(err)
-                        } else {
-                            let vaultService: VaultServiceProtocol = VaultService()
-                            vaultService.loadVaultedPaymentMethods(completion)
-                        }
-                    })
-                }
-            })
+            firstly {
+                clientTokenService.fetchClientTokenIfNeeded(enforce: true)
+            }
+            .done {
+                let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = PaymentMethodConfigService()
+                paymentMethodConfigService.fetchConfig({ err in
+                    if let err = err {
+                        completion(err)
+                    } else {
+                        let vaultService: VaultServiceProtocol = VaultService()
+                        vaultService.loadVaultedPaymentMethods(completion)
+                    }
+                })
+            }
+            .catch { err in
+                completion(err)
+            }
         }
     }
 
