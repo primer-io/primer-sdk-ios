@@ -274,6 +274,7 @@ public class Primer {
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
         flow = nil
+        ClientTokenService.resetClientToken()
         
         DispatchQueue.main.async { [weak self] in
             self?.primerRootVC?.dismissPrimerRootViewController(animated: true, completion: {

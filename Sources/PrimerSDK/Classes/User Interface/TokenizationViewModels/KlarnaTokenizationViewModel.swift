@@ -2,6 +2,7 @@
 
 import Foundation
 import WebKit
+import UIKit
 
 class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     

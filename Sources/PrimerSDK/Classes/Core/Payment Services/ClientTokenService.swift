@@ -32,6 +32,12 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         state.accessToken = clientToken
     }
     
+    static func resetClientToken() {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        state.decodedClientToken = nil
+        state.accessToken = nil
+    }
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }

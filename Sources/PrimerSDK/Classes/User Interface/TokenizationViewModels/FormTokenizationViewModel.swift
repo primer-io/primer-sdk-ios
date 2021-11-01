@@ -5,7 +5,10 @@
 //  Created by Evangelos Pittas on 11/10/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
+import UIKit
 
 class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
@@ -449,3 +452,5 @@ extension CardFormPaymentMethodTokenizationViewModel {
         completion?(paymentMethod, nil)
     }
 }
+
+#endif

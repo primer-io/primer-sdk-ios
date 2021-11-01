@@ -5,7 +5,10 @@
 //  Created by Evangelos Pittas on 7/10/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
+import UIKit
 
 typealias TokenizationCompletion = ((PaymentMethodToken?, Error?) -> Void)
 
@@ -220,3 +223,5 @@ extension PaymentMethodTokenizationViewModel {
         assert(true, "\(self.self).\(#function) should be overriden")
     }
 }
+
+#endif
