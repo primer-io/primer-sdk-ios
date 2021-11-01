@@ -90,7 +90,6 @@ public class Primer {
         DependencyContainer.register(TokenizationService() as TokenizationServiceProtocol)
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
-        DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
     }
 
     // MARK: - CONFIGURATION
@@ -264,11 +263,9 @@ public class Primer {
      - Version:
      1.4.0
      */
+    @available(iOS, obsoleted: 10.0, message: "Use your backend to fetch vaulted payment methods.")
     public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
-        DispatchQueue.main.async {
-            let externalViewModel: ExternalViewModelProtocol = DependencyContainer.resolve()
-            externalViewModel.fetchVaultedPaymentMethods(completion)
-        }
+
     }
 
     /** Dismisses any opened checkout sheet view. */

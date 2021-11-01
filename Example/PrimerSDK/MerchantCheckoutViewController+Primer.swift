@@ -14,16 +14,7 @@ extension MerchantCheckoutViewController {
     // MARK: - PRIMER HELPERS
     
     internal func fetchPaymentMethods() {
-        Primer.shared.fetchVaultedPaymentMethods { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .failure(let err):
-                    print("Error: \(err)")
-                case .success(let tokens):
-                    self?.paymentMethodsDataSource = tokens
-                }
-            }
-        }
+
     }
     
     internal func presentPrimerOptions(_ index: Int) {
