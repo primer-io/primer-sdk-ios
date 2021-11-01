@@ -80,9 +80,7 @@ public class Primer {
     internal func setDependencies(settings: PrimerSettings, theme: PrimerTheme) {
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(settings as PrimerSettingsProtocol)
-        DependencyContainer.register(theme as PrimerThemeProtocol)
-        
-        DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
+        DependencyContainer.register(theme as PrimerThemeProtocol)        
     }
 
     // MARK: - CONFIGURATION

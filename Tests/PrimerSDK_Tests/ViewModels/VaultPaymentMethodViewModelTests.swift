@@ -13,7 +13,6 @@ import XCTest
 class VaultPaymentMethodViewModelTests: XCTestCase {
 
     func test_reloadVault_calls_vaultService_loadVaultedPaymentMethods() throws {
-        let clientTokenService = MockClientTokenService()
         let vaultService = MockVaultService()
 
         MockLocator.registerDependencies()
@@ -26,7 +25,6 @@ class VaultPaymentMethodViewModelTests: XCTestCase {
     }
 
     func test_deletePaymentMethod_calls_vaultService_deleteVaultedPaymentMethod() throws {
-        let clientTokenService = MockClientTokenService()
         let vaultService = MockVaultService()
 
         MockLocator.registerDependencies()
