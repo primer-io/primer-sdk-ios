@@ -11,6 +11,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     private var session: Any!
+    private var paypalOrderId: String?
     private var billingAgreementToken: String?
     private var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
     
@@ -288,13 +289,13 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private func generatePaypalPaymentInstrument(_ completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
-            let orderId: AppStateProtocol = DependencyContainer.resolve()
-            guard let orderId = orderId.orderId else {
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            guard let paypalOrderId = self.paypalOrderId else {
                 completion(.failure(PrimerError.orderIdMissing))
                 return
             }
             
-            let paymentInstrument = PaymentInstrument(paypalOrderId: orderId)
+            let paymentInstrument = PaymentInstrument(paypalOrderId: paypalOrderId)
             completion(.success(paymentInstrument))
             
         case .VAULT:
@@ -392,7 +393,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             case .failure:
                 completion(.failure(PrimerError.payPalSessionFailed))
             case .success(let response):
-                state.orderId = response.orderId
+                self.paypalOrderId = response.orderId
                 completion(.success(response.approvalUrl))
             }
         }

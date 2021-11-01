@@ -13,7 +13,6 @@ internal protocol AppStateProtocol: AnyObject {
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethodId: String? { get set }
     
-    var orderId: String? { get set }
     var approveURL: String? { get set }
     var directDebitFormCompleted: Bool { get set }
     var authorizationToken: String? { get set }
@@ -23,12 +22,10 @@ internal protocol AppStateProtocol: AnyObject {
 
 internal class AppState: AppStateProtocol {
     var clientToken: String?
-    
     var paymentMethods: [PaymentMethodToken] = []
     var selectedPaymentMethodId: String?
     var paymentMethodConfig: PrimerConfiguration?
     
-    var orderId: String?
     var approveURL: String?
     var directDebitFormCompleted: Bool = false
     var authorizationToken: String?
