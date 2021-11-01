@@ -336,7 +336,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             let state: AppStateProtocol = DependencyContainer.resolve()
             let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
             
-            let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
+            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             tokenizationService.tokenize(request: request) { result in
                 switch result {
                 case .failure(let err):

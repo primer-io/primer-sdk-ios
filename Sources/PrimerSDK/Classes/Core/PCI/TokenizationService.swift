@@ -22,9 +22,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
     func tokenize(
         request: TokenizationRequest,
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void
-    ) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
+    ) {        
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return onTokenizeSuccess(.failure(PrimerError.tokenizationPreRequestFailed))
         }
