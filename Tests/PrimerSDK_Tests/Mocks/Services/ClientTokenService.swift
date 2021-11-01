@@ -10,6 +10,10 @@
 @testable import PrimerSDK
 
 class MockClientTokenService: ClientTokenServiceProtocol {
+    func fetchClientTokenIfNeeded(enforce: Bool) -> Promise<Void> {
+        return Promise()
+    }
+    
     static var clientToken: String?
     
     static func resetClientToken() {

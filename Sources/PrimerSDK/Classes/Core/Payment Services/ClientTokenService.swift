@@ -8,6 +8,7 @@ internal protocol ClientTokenServiceProtocol {
     static func storeClientToken(_ clientToken: String) throws
     static func resetClientToken()
     func fetchClientToken(_ completion: @escaping (Error?) -> Void)
+    func fetchClientTokenIfNeeded(enforce: Bool) -> Promise<Void>
 }
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
@@ -85,7 +86,13 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         })
     }
     
-    func fetchClientTokenIfNeeded(enforce: Bool, completion: @escaping (Error?) -> Void) {
+    private func fetchClientTokenIfNeeded(enforce: Bool, completion: @escaping (Error?) -> Void) {
+        guard let _ = Primer.shared.delegate?.clientTokenCallback else {
+            print("Warning: Delegate has not been set")
+            completion(PrimerError.delegateNotSet)
+            return
+        }
+        
         if enforce == false, ClientTokenService.decodedClientToken != nil {
             completion(nil)
         } else {
