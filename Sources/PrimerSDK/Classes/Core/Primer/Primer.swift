@@ -229,25 +229,25 @@ public class Primer {
             flow = .checkoutWithKlarna
 
         case (.payNLIdeal, .checkout):
-            flow = .checkoutWithPayNL
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLIdeal)
             
         case (.aliPay, .checkout):
-            flow = .checkoutWithHoolah
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .aliPay)
             
         case (.giropay, .checkout):
-            flow = .checkoutWithHoolah
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .giropay)
             
         case (.hoolah, .checkout):
-            flow = .checkoutWithHoolah
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
             
         case (.twint, .checkout):
-            flow = .checkoutWithHoolah
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .twint)
             
         case (.sofort, .checkout):
-            flow = .checkoutWithHoolah
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .sofort)
             
         case (.trustly, .checkout):
-            flow = .checkoutWithHoolah
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .trustly)
             
         case (.payPal, .checkout):
             flow = .checkoutWithPayPal

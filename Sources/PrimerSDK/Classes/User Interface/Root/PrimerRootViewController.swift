@@ -171,11 +171,8 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .addApayaToVault:
                     self?.presentPaymentMethod(type: .apaya)
                     
-                case .checkoutWithHoolah:
-                    self?.presentPaymentMethod(type: .hoolah)
-                    
-                case .checkoutWithPayNL:
-                    self?.presentPaymentMethod(type: .payNLIdeal)
+                case .checkoutWithAsyncPaymentMethod(let paymentMethodType):
+                    self?.presentPaymentMethod(type: paymentMethodType)
                     
                 case .none:
                     break
