@@ -31,9 +31,9 @@ internal class VaultService: VaultServiceProtocol {
 
             let paymentMethods = state.paymentMethods
 
-            if state.selectedPaymentMethod.isEmpty == true && paymentMethods.isEmpty == false {
+            if state.selectedPaymentMethodId.isEmpty == true && paymentMethods.isEmpty == false {
                 guard let id = paymentMethods.first?.token else { return }
-                state.selectedPaymentMethod = id
+                state.selectedPaymentMethodId = id
             }
 
             completion(nil)
@@ -43,7 +43,7 @@ internal class VaultService: VaultServiceProtocol {
         }
     }
 
-    func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {        
+    func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(PrimerError.vaultDeleteFailed)
         }
