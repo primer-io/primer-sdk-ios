@@ -15,7 +15,6 @@ internal protocol AppStateProtocol: AnyObject {
     
     var orderId: String? { get set }
     var approveURL: String? { get set }
-    var directDebitMandate: DirectDebitMandate { get set }
     var directDebitFormCompleted: Bool { get set }
     var authorizationToken: String? { get set }
     var customerToken: String? { get set }
@@ -31,7 +30,6 @@ internal class AppState: AppStateProtocol {
     
     var orderId: String?
     var approveURL: String?
-    var directDebitMandate: DirectDebitMandate = DirectDebitMandate(address: Address())
     var directDebitFormCompleted: Bool = false
     var authorizationToken: String?
     var customerToken: String?

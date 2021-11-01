@@ -11,7 +11,6 @@ import Foundation
 
 internal protocol VaultCheckoutViewModelProtocol {
     var paymentMethods: [PaymentMethodToken] { get }
-    var mandate: DirectDebitMandate { get }
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] { get }
     var selectedPaymentMethodId: String? { get }
     var amountStringed: String? { get }
@@ -23,11 +22,6 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     
     private var resumeHandler: ResumeHandlerProtocol!
     
-    var mandate: DirectDebitMandate {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.directDebitMandate
-    }
-
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] {
         return PrimerConfiguration.paymentMethodConfigViewModels
     }
