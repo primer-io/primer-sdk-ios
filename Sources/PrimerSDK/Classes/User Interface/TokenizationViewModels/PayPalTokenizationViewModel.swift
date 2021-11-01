@@ -98,11 +98,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-//        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+    override func validate() throws {        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err

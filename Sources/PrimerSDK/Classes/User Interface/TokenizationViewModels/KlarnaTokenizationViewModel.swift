@@ -101,10 +101,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -263,7 +262,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     
     private func generateWebViewUrl(completion: @escaping (Result<URL, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(ApayaException.noToken))
         }
         
@@ -334,7 +333,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
 
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.klarnaCreatePaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
+        api.klarnaCreatePaymentSession(clientToken: decodedClientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -400,7 +399,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private func createKlarnaCustomerToken(authorizationToken: String, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
         
@@ -421,7 +420,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.klarnaCreateCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
+        api.klarnaCreateCustomerToken(clientToken: decodedClientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -447,7 +446,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private func finalizePaymentSession(completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
 
@@ -462,7 +461,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.klarnaFinalizePaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
+        api.klarnaFinalizePaymentSession(clientToken: decodedClientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))

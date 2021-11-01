@@ -15,13 +15,13 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(PrimerError.configFetchFailed)
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.fetchConfiguration(clientToken: clientToken) { (result) in
+        api.fetchConfiguration(clientToken: decodedClientToken) { (result) in
             switch result {
             case .failure(let error):
                 completion(error)

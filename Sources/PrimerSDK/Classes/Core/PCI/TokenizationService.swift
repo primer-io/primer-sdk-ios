@@ -25,13 +25,13 @@ internal class TokenizationService: TokenizationServiceProtocol {
     ) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return onTokenizeSuccess(.failure(PrimerError.tokenizationPreRequestFailed))
         }
 
-        log(logLevel: .verbose, title: nil, message: "Client Token: \(clientToken)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+        log(logLevel: .verbose, title: nil, message: "Client Token: \(decodedClientToken)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
-        guard let pciURL = clientToken.pciUrl else {
+        guard let pciURL = decodedClientToken.pciUrl else {
             return onTokenizeSuccess(.failure(PrimerError.tokenizationPreRequestFailed))
         }
 
@@ -45,7 +45,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         
-        api.tokenizePaymentMethod(clientToken: clientToken, paymentMethodTokenizationRequest: request) { (result) in
+        api.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: request) { (result) in
             switch result {
             case .failure:
                 DispatchQueue.main.async {
@@ -87,7 +87,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
 
                     threeDSService.perform3DS(
                             paymentMethodToken: paymentMethodToken,
-                        protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
+                        protocolVersion: ClientTokenService.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
                         beginAuthExtraData: threeDSBeginAuthExtraData,
                             sdkDismissed: { () in
 

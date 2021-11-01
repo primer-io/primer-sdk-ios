@@ -224,10 +224,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -396,8 +395,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
         do {
             try ClientTokenService.storeClientToken(clientToken)
            
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            let decodedClientToken = state.decodedClientToken!
+            let decodedClientToken = ClientTokenService.decodedClientToken!
             
             guard let paymentMethod = paymentMethod else {
                 let err = PrimerError.invalidValue(key: "paymentMethod")
@@ -409,7 +407,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)
                 let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
                     case .success(let paymentMethodToken):
                         guard let threeDSPostAuthResponse = paymentMethodToken.1,

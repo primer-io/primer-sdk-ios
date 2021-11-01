@@ -115,7 +115,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -194,7 +194,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     
     private func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let clientToken = state.decodedClientToken,
+        guard let clientToken = ClientTokenService.decodedClientToken,
               let merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
         else {
             return completion(.failure(ApayaException.noToken))
@@ -293,7 +293,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             state: state
         )
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             completion(nil, PrimerError.clientTokenNull)
             return
         }
