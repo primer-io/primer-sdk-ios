@@ -204,7 +204,7 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
                 self?.tableView.reloadData()
                 
                 // Going back if no payment method remains
-                if viewModel.paymentMethods.isEmpty {
+                if (viewModel.paymentMethods ?? []).isEmpty {
                     Primer.shared.primerRootVC?.popViewController()
                 }
             }
@@ -226,12 +226,12 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         // That's actually payment instruments
-        return viewModel.paymentMethods.count
+        return (viewModel.paymentMethods ?? []).count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        let paymentMethod = viewModel.paymentMethods[indexPath.row]
+        let paymentMethod = (viewModel.paymentMethods ?? [])[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "VaultedPaymentInstrumentCell", for: indexPath) as! VaultedPaymentInstrumentCell
         cell.configure(paymentMethodToken: paymentMethod, isDeleting: isDeleting)
         return cell
@@ -239,10 +239,10 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        let paymentMethod = viewModel.paymentMethods[indexPath.row]
+        let paymentMethod = (viewModel.paymentMethods ?? [])[indexPath.row]
         
         if !isDeleting {
-            viewModel.selectedId = paymentMethod.token ?? ""
+            viewModel.selectedId = paymentMethod.token
             tableView.reloadData()
             // It will reload the payment instrument on the Universal Checkout view.
             delegate?.reload()
@@ -274,7 +274,7 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
                                                          comment: "Delete - Alert button delete"),
                                 style: .destructive,
                                 handler: { [weak self] _ in
-                                    self?.deletePaymentMethod(paymentMethod.token ?? "")
+                                    self?.deletePaymentMethod(paymentMethod.token)
                                 }))
 
             alert.show()

@@ -77,7 +77,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
         self.selectedPaymentInstrument = nil
-        if let selectedPaymentInstrument = checkoutViewModel.paymentMethods.first(where: { paymentInstrument in
+        if let selectedPaymentInstrument = checkoutViewModel.paymentMethods?.first(where: { paymentInstrument in
             return paymentInstrument.token == checkoutViewModel.selectedPaymentMethodId
         }), let cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
             self.selectedPaymentInstrument = selectedPaymentInstrument

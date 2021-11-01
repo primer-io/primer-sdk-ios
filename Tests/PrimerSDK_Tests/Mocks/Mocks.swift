@@ -186,7 +186,7 @@ class MockAppState: AppStateProtocol {
 
     var mandateId: String?
 
-    var paymentMethods: [PaymentMethodToken] = []
+    var paymentMethods: [PaymentMethodToken]? = []
 
     var selectedPaymentMethodId: String?
 

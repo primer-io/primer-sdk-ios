@@ -10,13 +10,13 @@
 internal protocol AppStateProtocol: AnyObject {
     var clientToken: String? { get set }
     var paymentMethodConfig: PrimerConfiguration? { get set }
-    var paymentMethods: [PaymentMethodToken] { get set }
+    var paymentMethods: [PaymentMethodToken]? { get set }
     var selectedPaymentMethodId: String? { get set }    
 }
 
 internal class AppState: AppStateProtocol {
     var clientToken: String?
-    var paymentMethods: [PaymentMethodToken] = []
+    var paymentMethods: [PaymentMethodToken]? = []
     var selectedPaymentMethodId: String?
     var paymentMethodConfig: PrimerConfiguration?
     

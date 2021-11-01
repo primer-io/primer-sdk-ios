@@ -10,7 +10,7 @@
 import Foundation
 
 internal protocol VaultCheckoutViewModelProtocol {
-    var paymentMethods: [PaymentMethodToken] { get }
+    var paymentMethods: [PaymentMethodToken]? { get }
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] { get }
     var selectedPaymentMethodId: String? { get }
     var amountStringed: String? { get }
@@ -35,20 +35,9 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return amount.toCurrencyString(currency: currency)
     }
 
-    var paymentMethods: [PaymentMethodToken] {
+    var paymentMethods: [PaymentMethodToken]? {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        if #available(iOS 11.0, *) {
-            return state.paymentMethods
-        } else {
-            return state.paymentMethods.filter {
-                switch $0.paymentInstrumentType {
-                case .goCardlessMandate: return true
-                case .paymentCard: return true
-                default: return false
-                }
-            }
-        }
+        return state.paymentMethods
     }
 
     var selectedPaymentMethodId: String? {
@@ -97,7 +86,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     func authorizePayment(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let selectedPaymentMethod = state.paymentMethods.first(where: { paymentMethod in
+        guard let selectedPaymentMethod = state.paymentMethods?.first(where: { paymentMethod in
             return paymentMethod.token == state.selectedPaymentMethodId
         }) else { return }
         
