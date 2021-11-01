@@ -253,6 +253,10 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         webViewController!.navigationDelegate = self
         webViewController!.modalPresentationStyle = .fullScreen
         
+        webViewCompletion = { (res, err) in
+            completion(res, err)
+        }
+        
         self.willPresentExternalView?()
         Primer.shared.primerRootVC?.present(webViewController!, animated: true, completion: {
             self.didPresentExternalView?()
@@ -263,7 +267,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         return Promise { seal in
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse) { paymentMethod, err in
                 self.willDismissExternalView?()
-                self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
+                self.webViewController?.dismiss(animated: true, completion: {
                     self.didDismissExternalView?()
                 })
                 
