@@ -73,7 +73,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonTitleColor: UIColor? = {
         switch config.type {
         case .paymentCard:
-            return theme.colorTheme.text1
+            return .black
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -93,7 +93,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
         case .paymentCard:
-            return theme.colorTheme.text1
+            return .black
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -103,7 +103,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
         case .paymentCard:
-            return theme.colorTheme.text1
+            return .black
         default:
             assert(true, "Shouldn't end up in here")
             return nil
