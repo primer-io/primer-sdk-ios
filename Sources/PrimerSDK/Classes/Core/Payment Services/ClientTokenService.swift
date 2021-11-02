@@ -22,7 +22,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         guard let clientToken = ClientTokenService.clientToken,
               let decodedClientToken = clientToken.jwtTokenPayload,
               let expDate = decodedClientToken.expDate,
-              expDate < Date()
+              expDate > Date()
         else {
             ClientTokenService.resetClientToken()
             return nil
