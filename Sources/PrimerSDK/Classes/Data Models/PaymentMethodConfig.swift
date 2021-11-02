@@ -48,11 +48,17 @@ struct PrimerConfiguration: Codable {
                    let surcharge = paymentMethodOption["surcharge"] as? Int {
                     
                     if let paymentMethod = self.paymentMethods?.filter({ $0.type.rawValue == type }).first {
+                        paymentMethod.hasUnknownSurcharge = false
                         paymentMethod.surcharge = surcharge
                     }
                     
                 }
             }
+        }
+        
+        if let paymentMethod = self.paymentMethods?.filter({ $0.type == PaymentMethodConfigType.paymentCard }).first {
+            paymentMethod.hasUnknownSurcharge = true
+            paymentMethod.surcharge = nil
         }
     }
     
@@ -94,6 +100,7 @@ class PaymentMethodConfig: Codable {
     let type: PaymentMethodConfigType
     let options: PaymentMethodOptions?
     var surcharge: Int?
+    var hasUnknownSurcharge: Bool = false
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
         if type == .paymentCard {
             return CardFormPaymentMethodTokenizationViewModel(config: self)

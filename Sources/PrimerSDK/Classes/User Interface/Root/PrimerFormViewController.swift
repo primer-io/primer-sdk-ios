@@ -58,7 +58,7 @@ class PrimerFormViewController: PrimerViewController {
             availablePaymentMethodsStackView.distribution = .fill
             availablePaymentMethodsStackView.spacing = 10.0
 
-            let noAdditionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.surcharge == 0 })
+            let noAdditionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.hasUnknownSurcharge == false && ($0.config.surcharge ?? 0) == 0 })
             if !noAdditionalFeePaymentMethodsViewModels.isEmpty {
                 let noAdditionalFeesContainerView = PaymentMethodsGroupView(title: "No additional fee", paymentMethodTokenizationViewModels: noAdditionalFeePaymentMethodsViewModels)
                 noAdditionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
@@ -67,27 +67,28 @@ class PrimerFormViewController: PrimerViewController {
             
             // With surcharge fee
             
-            let additionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.surcharge != nil && $0.config.surcharge != 0 })
+            let additionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.hasUnknownSurcharge == false && ($0.config.surcharge ?? 0) != 0 })
             if !additionalFeePaymentMethodsViewModels.isEmpty {
                 for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
                     let title = additionalFeePaymentMethodsViewModel.surcharge
                     let additionalFeesContainerView = PaymentMethodsGroupView(title: title, paymentMethodTokenizationViewModels: [additionalFeePaymentMethodsViewModel])
-                    additionalFeesContainerView.titleLabel?.font = (title == NSLocalizedString("surcharge-additional-fee",
-                                                                                               tableName: nil,
-                                                                                               bundle: Bundle.primerResources,
-                                                                                               value: "Additional fee may apply",
-                                                                                               comment: "Additional fee may apply - Surcharge (Label)"))
-                    ? UIFont.systemFont(ofSize: 12.0, weight: .regular)
-                    : UIFont.systemFont(ofSize: 16.0, weight: .bold)
+                    additionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                     availablePaymentMethodsStackView.addArrangedSubview(additionalFeesContainerView)
                 }
             }
             
             // Unknown surcharge fee
             
-            let unknownFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.surcharge == nil })
+            let unknownFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.hasUnknownSurcharge == true })
             if !unknownFeePaymentMethodsViewModels.isEmpty {
-                let unknownFeesContainerView = PaymentMethodsGroupView(title: "No additional fee", paymentMethodTokenizationViewModels: unknownFeePaymentMethodsViewModels)
+                let unknownFeesContainerView = PaymentMethodsGroupView(
+                    title: NSLocalizedString("surcharge-additional-fee",
+                                             tableName: nil,
+                                             bundle: Bundle.primerResources,
+                                             value: "Additional fee may apply",
+                                             comment: "Additional fee may apply - Surcharge (Label)"),
+                    paymentMethodTokenizationViewModels: unknownFeePaymentMethodsViewModels)
+                
                 unknownFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
                 availablePaymentMethodsStackView.addArrangedSubview(unknownFeesContainerView)
             }
