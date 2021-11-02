@@ -211,142 +211,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     }
 
     private func renderAvailablePaymentMethods() {
-//<<<<<<< HEAD
-//
-//=======
         PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
     }
-
-//    private func renderPayButton() {
-////        if coveringView == nil {
-////            coveringView = PrimerView()
-////        }
-////
-////        coveringView.backgroundColor = theme.colorTheme.main1.withAlphaComponent(0.5)
-////        view.addSubview(coveringView)
-////        coveringView.translatesAutoresizingMaskIntoConstraints = false
-////        coveringView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-////        coveringView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-////        coveringView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-////        coveringView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
-//
-//        if payButton == nil {
-//            payButton = PrimerOldButton()
-//        }
-//
-//        payButton.layer.cornerRadius = 12
-//        payButton.setTitle(theme.content.vaultCheckout.payButtonText, for: .normal)
-//        payButton.setTitleColor(theme.colorTheme.text2, for: .normal)
-//        payButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
-//        payButton.backgroundColor = theme.colorTheme.main2
-//        payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
-//        let imageView = UIImageView(image: ImageName.lock.image)
-//        payButton.addSubview(imageView)
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
-//        imageView.centerYAnchor.constraint(equalTo: payButton.centerYAnchor).isActive = true
-//        imageView.trailingAnchor.constraint(equalTo: payButton.trailingAnchor, constant: -16).isActive = true
-//
-//        coveringView.addSubview(payButton)
-//        payButton.translatesAutoresizingMaskIntoConstraints = false
-//        payButton.leadingAnchor.constraint(equalTo: coveringView.leadingAnchor, constant: 20).isActive = true
-//        payButton.trailingAnchor.constraint(equalTo: coveringView.trailingAnchor, constant: -20).isActive = true
-//        payButton.bottomAnchor.constraint(equalTo: coveringView.bottomAnchor, constant: -10).isActive = true
-//        payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-//>>>>>>> master
-//
-//        verticalStackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
-//    }
-    
-//    @objc
-//    func seeAllButtonTapped() {
-//        let vpivc = VaultedPaymentInstrumentsViewController()
-//        vpivc.delegate = self
-//        vpivc.view.translatesAutoresizingMaskIntoConstraints = false
-//        vpivc.view.heightAnchor.constraint(equalToConstant: view.bounds.size.height).isActive = true
-//        Primer.shared.primerRootVC?.show(viewController: vpivc)
-//    }
-//<<<<<<< HEAD
-//
-//    @objc
-//    func applePayButtonTapped() {
-//        let action = ClientSession.Action(
-//            type: "SELECT_PAYMENT_METHOD",
-//            params: [
-//                "type": "APPLE_PAY"
-//            ])
-//
-//        Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
-//            if let clientToken = clientToken {
-//                try! ClientTokenService.storeClientToken(clientToken)
-//                let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-//                config.fetchConfig { err in
-//                    let state: AppStateProtocol = DependencyContainer.resolve()
-//                    Primer.shared.primerRootVC?.presentApplePay()
-//                }
-//            }
-//        })
-//
-//        let lvc = PrimerLoadingViewController(withHeight: 300)
-//        Primer.shared.primerRootVC?.show(viewController: lvc)
-//    }
-//
-//    @objc
-//    func klarnaButtonTapped() {
-//        let action = ClientSession.Action(
-//            type: "SELECT_PAYMENT_METHOD",
-//            params: [
-//                "type": "KLARNA"
-//            ])
-//
-//        Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
-//            if let clientToken = clientToken {
-//                try! ClientTokenService.storeClientToken(clientToken)
-//                let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-//                config.fetchConfig { err in
-//                    let state: AppStateProtocol = DependencyContainer.resolve()
-//                    print(state.paymentMethodConfig)
-//                    Primer.shared.primerRootVC?.presentKlarna()
-//                }
-//            }
-//        })
-//
-//        let lvc = PrimerLoadingViewController(withHeight: 300)
-//        Primer.shared.primerRootVC?.show(viewController: lvc)
-//    }
-//
-//    @objc
-//    func payPalButtonTapped() {
-//        if #available(iOS 11.0, *) {
-//            let action = ClientSession.Action(
-//                type: "SELECT_PAYMENT_METHOD",
-//                params: [
-//                    "type": "PAYPAL"
-//                ])
-//
-//            Primer.shared.delegate?.onClientSessionActionsCreated?([action], completion: { clientToken, err in
-//                if let clientToken = clientToken {
-//                    try! ClientTokenService.storeClientToken(clientToken)
-//                    let config: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-//                    config.fetchConfig { err in
-//                        let state: AppStateProtocol = DependencyContainer.resolve()
-//                        print(state.paymentMethodConfig)
-//                        Primer.shared.primerRootVC?.presentPayPal()
-//                    }
-//                }
-//            })
-//
-//            let lvc = PrimerLoadingViewController(withHeight: 300)
-//            Primer.shared.primerRootVC?.show(viewController: lvc)
-//        }
-//    }
-//
-//    @objc
-//    func cardButtonTapped() {
-//        let cfvc = PrimerCardFormViewController(flow: .checkout)
-//        Primer.shared.primerRootVC?.show(viewController: cfvc)
-//    }
-//=======
-//>>>>>>> master
     
     @objc
     func payButtonTapped() {
@@ -379,6 +245,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 }
             }
         })
+        
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
     }
     
@@ -452,31 +319,4 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
     }
 }
 
-//<<<<<<< HEAD
-//extension PrimerUniversalCheckoutViewController: PaymentMethodsGroupViewDelegate {
-//    func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped paymentMethod: PaymentMethodViewModel) {
-//        switch  paymentMethod.type {
-//        case .applePay:
-//            applePayButtonTapped()
-//        case .apaya:
-//            break
-//        case .payPal:
-//            payPalButtonTapped()
-//        case .paymentCard:
-//            cardButtonTapped()
-//        case .googlePay:
-//            break
-//        case .goCardlessMandate:
-//            break
-//        case .klarna:
-//            klarnaButtonTapped()
-//        case .payNlIdeal:
-//            break
-//        case .unknown:
-//            break
-//        }
-//    }
-//}
-//=======
 #endif
-//>>>>>>> master

@@ -33,17 +33,17 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .paymentCard:
             return Primer.shared.flow.internalSessionFlow.vaulted
-                ? NSLocalizedString("payment-method-type-card-vaulted",
-                                    tableName: nil,
-                                    bundle: Bundle.primerResources,
-                                    value: "Add new card",
-                                    comment: "Add new card - Payment Method Type (Card Vaulted)")
-
-                : NSLocalizedString("payment-method-type-card-not-vaulted",
-                                    tableName: nil,
-                                    bundle: Bundle.primerResources,
-                                    value: "Pay with card",
-                                    comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+            ? NSLocalizedString("payment-method-type-card-vaulted",
+                                tableName: nil,
+                                bundle: Bundle.primerResources,
+                                value: "Add new card",
+                                comment: "Add new card - Payment Method Type (Card Vaulted)")
+            
+            : NSLocalizedString("payment-method-type-card-not-vaulted",
+                                tableName: nil,
+                                bundle: Bundle.primerResources,
+                                value: "Pay with card",
+                                comment: "Pay with card - Payment Method Type (Card Not vaulted)")
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -367,7 +367,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
             cardholderNameContainerView.errorText = "Invalid name"
         }
-
+        
         if cardNumberField.isTextValid,
            expiryDateField.isTextValid,
            cvvField.isTextValid,
@@ -382,11 +382,34 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {
-
+        
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
         if cardNumberContainerView.rightImage2 == nil && cardNetwork?.icon != nil {
+            let params: [String: Any] = [
+                "type": "PAYMENT_CARD",
+                "binData": [
+                    "network": cardNetwork!.rawValue.uppercased()
+                ]
+            ]
+            
+            Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
+                if let err = err {
+                    self.handle(error: err)
+                } else if let clientToken = clientToken {
+                    do {
+                        try ClientTokenService.storeClientToken(clientToken)
+                        self.startTokenizationFlow()
+                    } catch {
+                        Primer.shared.delegate?.checkoutFailed?(with: error)
+                        self.handle(error: error)
+                    }
+                } else {
+                    Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
+                }
+            })
+            
             cardNumberContainerView.rightImage2 = cardNetwork?.icon
             
             var surchargeStr: String = ""
@@ -397,10 +420,10 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             
             let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
             let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                            tableName: nil,
-                                            bundle: Bundle.primerResources,
-                                            value: "Pay",
-                                            comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "") + surchargeStr
+                                          tableName: nil,
+                                          bundle: Bundle.primerResources,
+                                          value: "Pay",
+                                          comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "") + surchargeStr
             submitButton.setTitle(title, for: .normal)
             
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
@@ -431,7 +454,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
         
         do {
             try ClientTokenService.storeClientToken(clientToken)
-           
+            
             let state: AppStateProtocol = DependencyContainer.resolve()
             let decodedClientToken = state.decodedClientToken!
             
@@ -441,7 +464,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 handle(error: err)
                 return
             }
-           
+            
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)
                 let threeDSService = ThreeDSService()
@@ -450,13 +473,13 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     case .success(let paymentMethodToken):
                         guard let threeDSPostAuthResponse = paymentMethodToken.1,
                               let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                            let err = PrimerError.threeDSFailed
-                            Primer.shared.delegate?.onResumeError?(err)
-                            return
-                        }
-                       
+                                  let err = PrimerError.threeDSFailed
+                                  Primer.shared.delegate?.onResumeError?(err)
+                                  return
+                              }
+                        
                         Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
-                       
+                        
                     case .failure(let err):
                         log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
                         let err = PrimerError.threeDSFailed
@@ -467,13 +490,13 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 let error = PrimerError.threeDSFailed
                 Primer.shared.delegate?.onResumeError?(error)
                 #endif
-               
+                
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken")
                 Primer.shared.delegate?.onResumeError?(err)
                 handle(error: err)
             }
-           
+            
         } catch {
             Primer.shared.delegate?.onResumeError?(error)
             handle(error: error)
