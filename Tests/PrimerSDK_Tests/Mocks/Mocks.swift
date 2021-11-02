@@ -172,6 +172,8 @@ class MockAppState: AppStateProtocol {
     
     var clientToken: String? = "accessToken"
     
+    var env: String? = "dev"
+    
     var customerToken: String? = "customerToken"
 
     var authorizationToken: String? = "authToken"

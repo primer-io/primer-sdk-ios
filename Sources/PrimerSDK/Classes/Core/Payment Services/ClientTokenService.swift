@@ -43,11 +43,10 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         }
         
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let previousEnv = ClientTokenService.decodedClientToken?.env
         
         if decodedClientToken.env == nil {
             // That's because the clientToken returned for dynamic 3DS doesn't contain an env.
-            decodedClientToken.env = previousEnv
+            decodedClientToken.env = state.env
         }
 
         state.clientToken = clientToken
