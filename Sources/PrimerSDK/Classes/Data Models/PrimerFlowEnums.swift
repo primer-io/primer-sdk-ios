@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 13/01/2021.
 //
 
+#if canImport(UIKit)
+
 /**
  Enum that contains possible values for the drop-in UI flow.
  
@@ -97,7 +99,6 @@ internal enum PrimerInternalSessionFlow {
     case checkoutWithAsyncPaymentMethod
     case checkoutWithKlarna
     case checkoutWithPayPal
-    
     
     var vaulted: Bool {
         switch self {

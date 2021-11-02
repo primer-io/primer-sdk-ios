@@ -4,9 +4,12 @@ struct PrimerConfiguration: Codable {
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        var viewModels = state
+        
+        let paymentMethods = state
             .paymentMethodConfig?
-            .paymentMethods?
+            .paymentMethods
+        
+        var viewModels = paymentMethods?
             .filter({ $0.type.isEnabled })
             .compactMap({ $0.tokenizationViewModel })
         ?? []
@@ -20,51 +23,6 @@ struct PrimerConfiguration: Codable {
         for (index, viewModel) in viewModels.enumerated() {
             viewModel.position = index
         }
-        
-        let twintViewModel: PaymentMethodTokenizationViewModelProtocol = ExternalPaymentMethodTokenizationViewModel(
-            config: PaymentMethodConfig(
-                id: "twint",
-                options: nil,
-                processorConfigId: "processor",
-                type: .twint))
-        
-        viewModels.append(twintViewModel)
-        
-        let sofortViewModel: PaymentMethodTokenizationViewModelProtocol = ExternalPaymentMethodTokenizationViewModel(
-            config: PaymentMethodConfig(
-                id: "sofort",
-                options: nil,
-                processorConfigId: "processor",
-                type: .sofort))
-        
-        viewModels.append(sofortViewModel)
-        
-        let giropayViewModel: PaymentMethodTokenizationViewModelProtocol = ExternalPaymentMethodTokenizationViewModel(
-            config: PaymentMethodConfig(
-                id: "giropay",
-                options: nil,
-                processorConfigId: "processor",
-                type: .giropay))
-        
-        viewModels.append(giropayViewModel)
-        
-        let alipayViewModel: PaymentMethodTokenizationViewModelProtocol = ExternalPaymentMethodTokenizationViewModel(
-            config: PaymentMethodConfig(
-                id: "alipay",
-                options: nil,
-                processorConfigId: "processor",
-                type: .aliPay))
-        
-        viewModels.append(alipayViewModel)
-        
-        let trustlyViewModel: PaymentMethodTokenizationViewModelProtocol = ExternalPaymentMethodTokenizationViewModel(
-            config: PaymentMethodConfig(
-                id: "trustly",
-                options: nil,
-                processorConfigId: "processor",
-                type: .trustly))
-        
-        viewModels.append(trustlyViewModel)
         
         return viewModels
     }
@@ -112,8 +70,15 @@ struct PaymentMethodConfig: Codable {
             return PayPalTokenizationViewModel(config: self)
         } else if type == .apaya {
             return ApayaTokenizationViewModel(config: self)
+        } else if type == .giropay || type == .sofort || type == .twint || type == .aliPay || type == .trustly {
+            return ExternalPaymentMethodTokenizationViewModel(config: self)
         }
         
+//        else if case .other = type {
+//            return ExternalPaymentMethodTokenizationViewModel(config: self)
+//        }
+        
+        print(type)
         return nil
     }
     
@@ -181,9 +146,39 @@ struct CardOptions: PaymentMethodOptions {
 }
 
 struct AsyncPaymentMethodOptions: PaymentMethodOptions {
-    let type: String = "OFF_SESSION_PAYMENT"
+    
     let paymentMethodType: PaymentMethodConfigType
     let paymentMethodConfigId: String
+    let type: String = "OFF_SESSION_PAYMENT"
+    let sessionInfo: SessionInfo?
+    
+    private enum CodingKeys : String, CodingKey {
+        case type, paymentMethodType, paymentMethodConfigId, sessionInfo
+    }
+    
+    init(
+        paymentMethodType: PaymentMethodConfigType,
+        paymentMethodConfigId: String,
+        sessionInfo: SessionInfo?
+    ) {
+        self.paymentMethodType = paymentMethodType
+        self.paymentMethodConfigId = paymentMethodConfigId
+        self.sessionInfo = sessionInfo
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(type, forKey: .type)
+        try container.encode(paymentMethodType.rawValue, forKey: .paymentMethodType)
+        try container.encode(paymentMethodConfigId, forKey: .paymentMethodConfigId)
+        try? container.encode(sessionInfo, forKey: .sessionInfo)
+    }
+    
+    struct SessionInfo: Codable {
+        let locale: String
+        let platform: String = "IOS"
+    }
+    
 }
 
 public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
@@ -294,7 +289,7 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
                 .twint:
             return !Primer.shared.flow.internalSessionFlow.vaulted
         case .other:
-            return false
+            return true
         }
     }
     
