@@ -48,7 +48,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
             let clientTokenService: ClientTokenService = DependencyContainer.resolve()
             
             firstly {
-                clientTokenService.fetchClientTokenIfNeeded(enforce: false)
+                clientTokenService.fetchClientTokenIfNeeded(enforce: enforce)
             }
             .then { () -> Promise<Void> in
                 let state: AppStateProtocol = DependencyContainer.resolve()
