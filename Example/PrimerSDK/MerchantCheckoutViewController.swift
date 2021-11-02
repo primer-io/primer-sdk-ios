@@ -476,7 +476,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
     }
     
-    func onClientSessionActionsCreated(_ actions: [ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
+    func onClientSessionActions(_ actions: [ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
         requestClientSessionWithActions(actions, completion: completion)
     }
     
