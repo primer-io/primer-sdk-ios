@@ -258,10 +258,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 seal.reject(PrimerError.configFetchFailed)
                 return
             }
-
+            
             let request = AsyncPaymentMethodTokenizationRequest(
                 paymentInstrument: AsyncPaymentMethodOptions(
-                    paymentMethodType: config.type, paymentMethodConfigId: configId))
+                    paymentMethodType: config.type,
+                    paymentMethodConfigId: configId,
+                    sessionInfo: AsyncPaymentMethodOptions.SessionInfo(locale: "en-US")))
             
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {
