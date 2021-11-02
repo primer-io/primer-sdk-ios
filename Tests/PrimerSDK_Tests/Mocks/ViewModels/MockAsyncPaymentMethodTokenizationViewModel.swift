@@ -16,76 +16,76 @@ import XCTest
 
 class AsyncPaymentMethodTokenizationViewModelTests: XCTestCase, PrimerDelegate {
 
-    func test_async_payment_method_success_flow() throws {
-        MockLocator.registerDependencies()
-        
-        let vc = UIViewController()
-        
-        Primer.shared.delegate = self
-        Primer.shared.showUniversalCheckout(on: vc, clientToken: nil)
-        
-        let config = PaymentMethodConfig(id: "async_mock", options: nil, processorConfigId: nil, type: .hoolah)
-        let viewModel: MockAsyncPaymentMethodTokenizationViewModel? = MockAsyncPaymentMethodTokenizationViewModel(config: config)
-        viewModel!.returnedPaymentMethodJson = """
-            {
-              "paymentInstrumentData" : {
-                "paymentMethodConfigId" : "8ab7a3f2-2288-40ab-a86b-8303d2c1e3ec",
-                "paymentMethodType" : "HOOLAH",
-                "sessionInfo" : {
-
-                }
-              },
-              "vaultData" : null,
-              "threeDSecureAuthentication" : {
-                "responseCode" : "NOT_PERFORMED",
-                "protocolVersion" : null,
-                "reasonText" : null,
-                "reasonCode" : null,
-                "challengeIssued" : null
-              },
-              "tokenType" : "SINGLE_USE",
-              "token" : "KCZlrAosRRa5GBa6XsB-qHwxNjM0MjMwOTI3",
-              "analyticsId" : "2uLGOtPxWriK98szePJ0Xklt",
-              "paymentInstrumentType" : "OFF_SESSION_PAYMENT"
-            }
-            """
-        
-        let exp0 = XCTestExpectation(description: "Did start tokenization flow")
-        viewModel!.didStartTokenization = {
-            exp0.fulfill()
-        }
-        
-        let exp1 = XCTestExpectation(description: "Start presenting payment method")
-        viewModel!.willPresentExternalView = {
-            exp1.fulfill()
-        }
-        
-        let exp2 = XCTestExpectation(description: "Did present payment method")
-        viewModel!.didPresentExternalView = {
-            exp2.fulfill()
-        }
-        
-        let exp3 = XCTestExpectation(description: "Start dismissing payment method")
-        viewModel!.willDismissExternalView = {
-            exp3.fulfill()
-        }
-        
-        let exp4 = XCTestExpectation(description: "Did dismiss payment method")
-        viewModel!.didDismissExternalView = {
-            exp4.fulfill()
-        }
-        
-        let exp5 = XCTestExpectation(description: "Did return a payment method")
-        viewModel!.completion = { (tok, err) in
-            if let tok = tok {
-                exp5.fulfill()
-            }
-        }
-        
-        viewModel!.startTokenizationFlow()
-
-        wait(for: [exp0, exp1, exp2, exp3, exp4, exp5], timeout: 10.0)
-    }
+//    func test_async_payment_method_success_flow() throws {
+//        MockLocator.registerDependencies()
+//        
+//        let vc = UIViewController()
+//        
+//        Primer.shared.delegate = self
+//        Primer.shared.showUniversalCheckout(on: vc, clientToken: nil)
+//        
+//        let config = PaymentMethodConfig(id: "async_mock", options: nil, processorConfigId: nil, type: .hoolah)
+//        let viewModel: MockAsyncPaymentMethodTokenizationViewModel? = MockAsyncPaymentMethodTokenizationViewModel(config: config)
+//        viewModel!.returnedPaymentMethodJson = """
+//            {
+//              "paymentInstrumentData" : {
+//                "paymentMethodConfigId" : "8ab7a3f2-2288-40ab-a86b-8303d2c1e3ec",
+//                "paymentMethodType" : "HOOLAH",
+//                "sessionInfo" : {
+//
+//                }
+//              },
+//              "vaultData" : null,
+//              "threeDSecureAuthentication" : {
+//                "responseCode" : "NOT_PERFORMED",
+//                "protocolVersion" : null,
+//                "reasonText" : null,
+//                "reasonCode" : null,
+//                "challengeIssued" : null
+//              },
+//              "tokenType" : "SINGLE_USE",
+//              "token" : "KCZlrAosRRa5GBa6XsB-qHwxNjM0MjMwOTI3",
+//              "analyticsId" : "2uLGOtPxWriK98szePJ0Xklt",
+//              "paymentInstrumentType" : "OFF_SESSION_PAYMENT"
+//            }
+//            """
+//        
+//        let exp0 = XCTestExpectation(description: "Did start tokenization flow")
+//        viewModel!.didStartTokenization = {
+//            exp0.fulfill()
+//        }
+//        
+//        let exp1 = XCTestExpectation(description: "Start presenting payment method")
+//        viewModel!.willPresentExternalView = {
+//            exp1.fulfill()
+//        }
+//        
+//        let exp2 = XCTestExpectation(description: "Did present payment method")
+//        viewModel!.didPresentExternalView = {
+//            exp2.fulfill()
+//        }
+//        
+//        let exp3 = XCTestExpectation(description: "Start dismissing payment method")
+//        viewModel!.willDismissExternalView = {
+//            exp3.fulfill()
+//        }
+//        
+//        let exp4 = XCTestExpectation(description: "Did dismiss payment method")
+//        viewModel!.didDismissExternalView = {
+//            exp4.fulfill()
+//        }
+//        
+//        let exp5 = XCTestExpectation(description: "Did return a payment method")
+//        viewModel!.completion = { (tok, err) in
+//            if let tok = tok {
+//                exp5.fulfill()
+//            }
+//        }
+//        
+//        viewModel!.startTokenizationFlow()
+//
+//        wait(for: [exp0, exp1, exp2, exp3, exp4, exp5], timeout: 10.0)
+//    }
     
     func test_async_payment_method_fail_validation() throws {
         MockLocator.registerDependencies()

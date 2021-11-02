@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 2/8/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 internal class PrimerVaultManagerViewController: PrimerFormViewController {
@@ -44,3 +46,5 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
     }
     
 }
+
+#endif

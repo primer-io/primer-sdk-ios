@@ -142,3 +142,5 @@ public enum PrimerSessionIntent: String {
     case checkout
     case vault
 }
+
+#endif

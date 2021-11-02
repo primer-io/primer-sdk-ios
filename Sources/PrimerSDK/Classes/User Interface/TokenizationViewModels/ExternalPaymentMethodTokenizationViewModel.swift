@@ -5,7 +5,10 @@
 //  Created by Evangelos Pittas on 11/10/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
+import UIKit
 import WebKit
 
 class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
@@ -528,3 +531,5 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
     }
     
 }
+
+#endif

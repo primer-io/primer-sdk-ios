@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 27/7/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 internal class PrimerRootViewController: PrimerViewController {
@@ -60,7 +62,7 @@ internal class PrimerRootViewController: PrimerViewController {
         }
         
         view.addSubview(backgroundView)
-        backgroundView.backgroundColor = .black.withAlphaComponent(0.0)
+        backgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.0)
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         backgroundView.pin(view: view)
         
@@ -467,3 +469,5 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
         }
     }
 }
+
+#endif

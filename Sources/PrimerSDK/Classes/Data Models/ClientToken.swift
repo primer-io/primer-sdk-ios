@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import Foundation
 
 struct DecodedClientToken: Decodable {
@@ -41,3 +43,5 @@ struct DecodedClientToken: Decodable {
         }
     }
 }
+
+#endif
