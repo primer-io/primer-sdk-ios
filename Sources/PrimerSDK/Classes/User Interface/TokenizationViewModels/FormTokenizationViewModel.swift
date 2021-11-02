@@ -386,21 +386,26 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
-        cardNumberContainerView.rightImage2 = cardNetwork?.icon
-        
-        var surchargeStr: String = ""
-        if flow == .checkout, let surcharge = cardNetwork?.surcharge {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            surchargeStr = " + " + surcharge.toCurrencyString(currency: settings.currency!)
+        if cardNumberContainerView.rightImage2 == nil && cardNetwork?.icon != nil {
+            cardNumberContainerView.rightImage2 = cardNetwork?.icon
+            
+            var surchargeStr: String = ""
+            if flow == .checkout, let surcharge = cardNetwork?.surcharge {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                surchargeStr = " + " + surcharge.toCurrencyString(currency: settings.currency!)
+            }
+            
+            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+            let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                            tableName: nil,
+                                            bundle: Bundle.primerResources,
+                                            value: "Pay",
+                                            comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "") + surchargeStr
+            submitButton.setTitle(title, for: .normal)
+            
+        } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
+            cardNumberContainerView.rightImage2 = nil
         }
-        
-        let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-        let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                        tableName: nil,
-                                        bundle: Bundle.primerResources,
-                                        value: "Pay",
-                                        comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "") + surchargeStr
-        submitButton.setTitle(title, for: .normal)
     }
     
 }
