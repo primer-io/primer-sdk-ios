@@ -48,12 +48,7 @@ struct DecodedClientToken: Decodable {
         intent = (try? container.decode(String.self, forKey: .intent)) ?? nil
         statusUrl = (try? container.decode(String.self, forKey: .statusUrl)) ?? nil
         redirectUrl = (try? container.decode(String.self, forKey: .redirectUrl)) ?? nil
-        
-        if let expStr = (try? container.decode(String.self, forKey: .accessToken)), let expInt = Int(expStr) {
-            exp = expInt
-        } else if let expInt = (try? container.decode(Int.self, forKey: .accessToken)) {
-            exp = expInt
-        }
+        exp = try? container.decode(Int.self, forKey: .exp)
     }
     
     init(
