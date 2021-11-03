@@ -423,6 +423,13 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 }
             })
             
+            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+            let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                          tableName: nil,
+                                          bundle: Bundle.primerResources,
+                                          value: "Pay",
+                                          comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+            submitButton.setTitle(title, for: .normal)
             cardNumberContainerView.rightImage2 = nil
         }
     }
