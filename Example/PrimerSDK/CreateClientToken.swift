@@ -312,10 +312,10 @@ extension String {
 
 struct JWTToken: Decodable {
     var accessToken: String?
-    var exp: String?
+    var exp: Int?
     var expDate: Date? {
         guard let exp = exp else { return nil }
-        return Date(timeIntervalSince1970: TimeInterval(Int(exp)!))
+        return Date(timeIntervalSince1970: TimeInterval(exp))
     }
     var configurationUrl: String?
     var paymentFlow: String?
