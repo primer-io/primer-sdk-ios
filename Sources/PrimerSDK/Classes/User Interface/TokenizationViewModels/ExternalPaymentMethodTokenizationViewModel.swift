@@ -138,6 +138,15 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
+        switch config.type {
+        case .payNLIdeal:
+            paymentMethodButton.accessibilityIdentifier = "pay_nl_ideal_btn"
+        case .hoolah:
+            paymentMethodButton.accessibilityIdentifier = "hoolah_btn"
+        default:
+            break
+        }
+        
         do {
             try validate()
         } catch {
@@ -274,6 +283,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
                 
                 self.webViewController = SFSafariViewController(url: url)
+                self.webViewController?.view.accessibilityIdentifier = "async_payment_method_view_controller"
                 self.webViewController?.delegate = self
                 
                 self.willPresentExternalView?()
