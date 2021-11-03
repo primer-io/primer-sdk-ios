@@ -243,8 +243,10 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             
         }
         .catch { err in
-            Primer.shared.delegate?.checkoutFailed?(with: err)
-            self.handleFailedTokenizationFlow(error: err)
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+                self.handleFailedTokenizationFlow(error: err)
+            }
         }
     }
     

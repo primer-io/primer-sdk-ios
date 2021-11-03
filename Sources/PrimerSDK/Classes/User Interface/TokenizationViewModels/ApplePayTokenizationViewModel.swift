@@ -185,9 +185,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             tokenize()
         }
         .done { [unowned self] paymentMethod in
+            self.paymentMethod = paymentMethod
+            
             DispatchQueue.main.async {
-                self.paymentMethod = paymentMethod
-                
                 if Primer.shared.flow.internalSessionFlow.vaulted {
                     Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                 }
