@@ -12,29 +12,6 @@ import XCTest
 
 class VaultPaymentMethodViewModelTests: XCTestCase {
 
-    func test_reloadVault_calls_vaultService_loadVaultedPaymentMethods() throws {
-        let vaultService = MockVaultService()
-
-        MockLocator.registerDependencies()
-
-        let viewModel = VaultPaymentMethodViewModel()
-
-        viewModel.reloadVault(with: { _ in })
-
-        XCTAssertEqual(vaultService.loadVaultedPaymentMethodsCalled, true)
-    }
-
-    func test_deletePaymentMethod_calls_vaultService_deleteVaultedPaymentMethod() throws {
-        let vaultService = MockVaultService()
-
-        MockLocator.registerDependencies()
-
-        let viewModel = VaultPaymentMethodViewModel()
-
-        viewModel.deletePaymentMethod(with: "id", and: { _ in })
-
-        XCTAssertEqual(vaultService.deleteVaultedPaymentMethodCalled, true)
-    }
 }
 
 #endif

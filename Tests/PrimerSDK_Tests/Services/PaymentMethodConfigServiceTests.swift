@@ -14,16 +14,16 @@ class PaymentMethodConfigServiceTests: XCTestCase {
 
     func test_fetchConfig_updates_paymentMethodConfig_and_viewModels() throws {
         let config = PrimerConfiguration(
-            coreUrl: "coreUrl",
-            pciUrl: "pciUrl",
+            coreUrl: "https://core_url.io",
+            pciUrl: "https://pci_url.io",
             paymentMethods: [
                 PaymentMethodConfig(id: "id123", options: nil, processorConfigId: "config_id", type: .paymentCard)
             ],
             keys: nil
         )
 
-        let data: Data = try JSONEncoder().encode(config)
         let state = MockAppState()
+        state.paymentMethodConfig = config
 
         MockLocator.registerDependencies()
         Primer.shared.showUniversalCheckout(on: UIViewController(), clientToken: nil)
