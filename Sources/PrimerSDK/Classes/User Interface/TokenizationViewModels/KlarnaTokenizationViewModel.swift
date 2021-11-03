@@ -170,87 +170,105 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
-        do {
-            try validate()
-        } catch {
-            DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: error)
-                self.handleFailedTokenizationFlow(error: error)
-            }
-            return
-        }
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
-        firstly {
-            self.generateWebViewUrl()
-        }
-        .then { url -> Promise<String> in
-            self.presentKlarnaController(with: url)
-        }
-        .then { authorizationToken -> Promise<KlarnaCustomerTokenAPIResponse> in
-            self.authorizationToken = authorizationToken
-            
-            if Primer.shared.flow.internalSessionFlow.vaulted {
-                return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
-            } else {
-                return self.finalizePaymentSession()
-            }
-        }
-        .then { res -> Promise<PaymentMethodToken> in
-            DispatchQueue.main.async {
-                self.willDismissExternalView?()
-            }
-            self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
-                DispatchQueue.main.async {
-                    self.didDismissExternalView?()
-                }
-            })
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            var instrument: PaymentInstrument
-            var request: PaymentMethodTokenizationRequest
-            if Primer.shared.flow.internalSessionFlow.vaulted {
-                instrument = PaymentInstrument(klarnaCustomerToken: res.customerTokenId, sessionData: res.sessionData)
-                request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: instrument,
-                    paymentFlow: .vault,
-                    customerId: settings.customerId)
-                
-            } else {
-                instrument = PaymentInstrument(klarnaAuthorizationToken: self.authorizationToken!, sessionData: res.sessionData)
-                request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: instrument,
-                    paymentFlow: .checkout,
-                    customerId: settings.customerId)
-            }
-
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-            return tokenizationService.tokenize(request: request)
-        }
-        .done { paymentMethod in
-            self.paymentMethod = paymentMethod
-            
-            DispatchQueue.main.async {
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                }
-                
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
-                    if let err = err {
-                        self.handleFailedTokenizationFlow(error: err)
-                    } else {
-                        self.handleSuccessfulTokenizationFlow()
+        let params: [String: Any] = ["type": config.type.rawValue]
+        Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
+            if let err = err {
+                self.handle(error: err)
+            } else if let clientToken = clientToken {
+                do {
+                    try ClientTokenService.storeClientToken(clientToken)
+                    
+                    do {
+                        try self.validate()
+                    } catch {
+                        DispatchQueue.main.async {
+                            Primer.shared.delegate?.checkoutFailed?(with: error)
+                            self.handleFailedTokenizationFlow(error: error)
+                        }
+                        return
                     }
-                })
+                    
+                    firstly {
+                        self.generateWebViewUrl()
+                    }
+                    .then { url -> Promise<String> in
+                        self.presentKlarnaController(with: url)
+                    }
+                    .then { authorizationToken -> Promise<KlarnaCustomerTokenAPIResponse> in
+                        self.authorizationToken = authorizationToken
+                        
+                        if Primer.shared.flow.internalSessionFlow.vaulted {
+                            return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
+                        } else {
+                            return self.finalizePaymentSession()
+                        }
+                    }
+                    .then { res -> Promise<PaymentMethodToken> in
+                        DispatchQueue.main.async {
+                            self.willDismissExternalView?()
+                        }
+                        self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
+                            DispatchQueue.main.async {
+                                self.didDismissExternalView?()
+                            }
+                        })
+                        
+                        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                        var instrument: PaymentInstrument
+                        var request: PaymentMethodTokenizationRequest
+                        if Primer.shared.flow.internalSessionFlow.vaulted {
+                            instrument = PaymentInstrument(klarnaCustomerToken: res.customerTokenId, sessionData: res.sessionData)
+                            request = PaymentMethodTokenizationRequest(
+                                paymentInstrument: instrument,
+                                paymentFlow: .vault,
+                                customerId: settings.customerId)
+                            
+                        } else {
+                            instrument = PaymentInstrument(klarnaAuthorizationToken: self.authorizationToken!, sessionData: res.sessionData)
+                            request = PaymentMethodTokenizationRequest(
+                                paymentInstrument: instrument,
+                                paymentFlow: .checkout,
+                                customerId: settings.customerId)
+                        }
+
+                        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                        return tokenizationService.tokenize(request: request)
+                    }
+                    .done { paymentMethod in
+                        self.paymentMethod = paymentMethod
+                        
+                        DispatchQueue.main.async {
+                            if Primer.shared.flow.internalSessionFlow.vaulted {
+                                Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
+                            }
+                            
+                            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
+                                if let err = err {
+                                    self.handleFailedTokenizationFlow(error: err)
+                                } else {
+                                    self.handleSuccessfulTokenizationFlow()
+                                }
+                            })
+                        }
+                    }
+                    .ensure {
+                        
+                    }
+                    .catch { err in
+                        Primer.shared.delegate?.checkoutFailed?(with: err)
+                        self.handleFailedTokenizationFlow(error: err)
+                    }
+                } catch {
+                    Primer.shared.delegate?.checkoutFailed?(with: error)
+                    self.handle(error: error)
+                }
+            } else {
+                Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
             }
-        }
-        .ensure {
-            
-        }
-        .catch { err in
-            Primer.shared.delegate?.checkoutFailed?(with: err)
-            self.handleFailedTokenizationFlow(error: err)
-        }
+        })
     }
     
     private func generateWebViewUrl() -> Promise<URL> {

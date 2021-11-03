@@ -395,18 +395,8 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             ]
             
             Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
-                if let err = err {
-                    self.handle(error: err)
-                } else if let clientToken = clientToken {
-                    do {
-                        try ClientTokenService.storeClientToken(clientToken)
-                        self.startTokenizationFlow()
-                    } catch {
-                        Primer.shared.delegate?.checkoutFailed?(with: error)
-                        self.handle(error: error)
-                    }
-                } else {
-                    Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
+                if let clientToken = clientToken {
+                    try? ClientTokenService.storeClientToken(clientToken)
                 }
             })
             
@@ -427,6 +417,12 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             submitButton.setTitle(title, for: .normal)
             
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
+            Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: [:])], completion: { (clientToken, err) in
+                if let clientToken = clientToken {
+                    try? ClientTokenService.storeClientToken(clientToken)
+                }
+            })
+            
             cardNumberContainerView.rightImage2 = nil
         }
     }
@@ -436,7 +432,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 extension CardFormPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
-        DispatchQueue.main.async {4
+        DispatchQueue.main.async {
             self.submitButton.showSpinner(false)
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
