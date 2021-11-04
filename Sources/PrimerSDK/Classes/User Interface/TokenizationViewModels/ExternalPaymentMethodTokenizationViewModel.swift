@@ -239,9 +239,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return self.passResumeToken(resumeToken)
         }
         .done { paymentMethod in
+            self.paymentMethod = paymentMethod
+            
             DispatchQueue.main.async {
-                self.paymentMethod = paymentMethod
-                
                 if Primer.shared.flow.internalSessionFlow.vaulted {
                     Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                 }

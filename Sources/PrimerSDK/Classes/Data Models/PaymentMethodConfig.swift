@@ -3,6 +3,8 @@
 struct PrimerConfiguration: Codable {
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
+        if Primer.shared.flow == nil { return [] }
+        
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         let paymentMethods = state
@@ -278,7 +280,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
             return true
         case .apaya,
                 .klarna:
-            return Primer.shared.flow.internalSessionFlow.vaulted
+            guard let flow = Primer.shared.flow else { return false }
+            return flow.internalSessionFlow.vaulted
         case .aliPay,
                 .applePay,
                 .giropay,
@@ -287,7 +290,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
                 .sofort,
                 .trustly,
                 .twint:
-            return !Primer.shared.flow.internalSessionFlow.vaulted
+            guard let flow = Primer.shared.flow else { return false }
+            return !flow.internalSessionFlow.vaulted
         case .other:
             return true
         }
