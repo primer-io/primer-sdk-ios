@@ -3,6 +3,8 @@
 struct PrimerConfiguration: Codable {
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
+        if Primer.shared.flow == nil { return [] }
+        
         let state: AppStateProtocol = DependencyContainer.resolve()
         var viewModels = state
             .paymentMethodConfig?
@@ -164,11 +166,13 @@ public enum PaymentMethodConfigType: String, Codable {
             return true
         case .apaya,
                 .klarna:
-            return Primer.shared.flow.internalSessionFlow.vaulted
+            guard let flow = Primer.shared.flow else { return false }
+            return flow.internalSessionFlow.vaulted
         case .applePay,
                 .hoolah,
                 .payNLIdeal:
-            return !Primer.shared.flow.internalSessionFlow.vaulted
+            guard let flow = Primer.shared.flow else { return false }
+            return !flow.internalSessionFlow.vaulted
         case .unknown:
             return false
         }

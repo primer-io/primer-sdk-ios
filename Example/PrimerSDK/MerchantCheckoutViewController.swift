@@ -138,10 +138,10 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addApayaButtonTapped(_ sender: Any) {
         vaultApayaSettings = PrimerSettings(
-            currency: currency,
+            currency: .GBP,
+            isFullScreenOnly: true,
             hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true,
-            customer: PrimerSDK.Customer(mobilePhoneNumber: self.phoneNumber)
+            isInitialLoadingHidden: true
         )
         
         Primer.shared.configure(settings: vaultApayaSettings)
