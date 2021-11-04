@@ -15,10 +15,20 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var title: String = {
         switch config.type {
-        case .payNLIdeal:
-            return "Pay NL Ideal"
+        case .aliPay:
+            return "Ali Pay"
+        case .giropay:
+            return "Giropay"
         case .hoolah:
             return "Hoolah"
+        case .payNLIdeal:
+            return "Pay NL Ideal"
+        case .sofort:
+            return "Sofort"
+        case .twint:
+            return "Twint"
+        case .trustly:
+            return "Trustly"
         default:
             assert(true, "Shouldn't end up in here")
             return ""
@@ -27,9 +37,13 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTitle: String? = {
         switch config.type {
-        case .payNLIdeal:
-            return nil
-        case .hoolah:
+        case .aliPay,
+                .giropay,
+                .hoolah,
+                .payNLIdeal,
+                .sofort,
+                .twint,
+                .trustly:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -39,10 +53,20 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonImage: UIImage? = {
         switch config.type {
-        case .payNLIdeal:
-            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .aliPay:
+            return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .giropay:
+            return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .payNLIdeal:
+            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .sofort:
+            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .twint:
+            return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .trustly:
+            return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -51,10 +75,20 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonColor: UIColor? = {
         switch config.type {
-        case .payNLIdeal:
-            return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
+        case .aliPay:
+            return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
+        case .giropay:
+            return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
+        case .payNLIdeal:
+            return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
+        case .sofort:
+            return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
+        case .twint:
+            return .black
+        case .trustly:
+            return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -63,8 +97,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTitleColor: UIColor? = {
         switch config.type {
-        case .hoolah,
-                .payNLIdeal:
+        case .aliPay,
+                .giropay,
+                .hoolah,
+                .payNLIdeal,
+                .twint,
+                .trustly:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -74,8 +112,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonBorderWidth: CGFloat = {
         switch config.type {
-        case .hoolah,
-                .payNLIdeal:
+        case .aliPay,
+                .giropay,
+                .hoolah,
+                .payNLIdeal,
+                .twint,
+                .trustly:
             return 0.0
         default:
             assert(true, "Shouldn't end up in here")
@@ -85,8 +127,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
-        case .hoolah,
-                .payNLIdeal:
+        case .aliPay,
+                .giropay,
+                .hoolah,
+                .payNLIdeal,
+                .twint,
+                .trustly:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -96,9 +142,16 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
-        case .hoolah,
-                .payNLIdeal:
+        case .aliPay,
+                .hoolah,
+                .payNLIdeal,
+                .sofort:
             return .white
+        case .trustly:
+            return .black
+        case .giropay,
+                .twint:
+            return nil
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -177,10 +230,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return self.startPolling(on: statusUrl)
         }
         .then { resumeToken -> Promise<PaymentMethodToken> in
-            self.willDismissExternalView?()
-            self.webViewController?.dismiss(animated: true, completion: {
-                self.didDismissExternalView?()
-            })
+            DispatchQueue.main.async {
+                self.willDismissExternalView?()
+                self.webViewController?.dismiss(animated: true, completion: {
+                    self.didDismissExternalView?()
+                })
+            }
             return self.passResumeToken(resumeToken)
         }
         .done { paymentMethod in
@@ -196,6 +251,13 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
         }
         .ensure { [unowned self] in
+            DispatchQueue.main.async {
+                self.willDismissExternalView?()
+                self.webViewController?.dismiss(animated: true, completion: {
+                    self.didDismissExternalView?()
+                })
+            }
+            
             self.willPresentExternalView = nil
             self.didPresentExternalView = nil
             self.willDismissExternalView = nil
@@ -219,10 +281,18 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 seal.reject(PrimerError.configFetchFailed)
                 return
             }
-
+            
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
+            if let localeCode = settings.localeData.localeCode {
+                sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: localeCode)
+            }
+            
             let request = AsyncPaymentMethodTokenizationRequest(
                 paymentInstrument: AsyncPaymentMethodOptions(
-                    paymentMethodType: config.type, paymentMethodConfigId: configId))
+                    paymentMethodType: config.type,
+                    paymentMethodConfigId: configId,
+                    sessionInfo: sessionInfo))
             
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {
