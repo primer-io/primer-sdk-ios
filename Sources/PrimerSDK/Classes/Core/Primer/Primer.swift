@@ -229,10 +229,25 @@ public class Primer {
             flow = .checkoutWithKlarna
 
         case (.payNLIdeal, .checkout):
-            flow = .checkoutWithPayNL
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLIdeal)
+            
+        case (.aliPay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .aliPay)
+            
+        case (.giropay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .giropay)
             
         case (.hoolah, .checkout):
-            flow = .checkoutWithHoolah
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
+            
+        case (.twint, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .twint)
+            
+        case (.sofort, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .sofort)
+            
+        case (.trustly, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .trustly)
             
         case (.payPal, .checkout):
             flow = .checkoutWithPayPal
@@ -244,9 +259,14 @@ public class Primer {
             (.applePay, .vault),
             (.goCardlessMandate, _),
             (.googlePay, _),
+            (.aliPay, .vault),
+            (.giropay, .vault),
             (.hoolah, .vault),
             (.payNLIdeal, .vault),
-            (.unknown, _):
+            (.sofort, .vault),
+            (.trustly, .vault),
+            (.twint, .vault),
+            (.other, _):
             let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return
