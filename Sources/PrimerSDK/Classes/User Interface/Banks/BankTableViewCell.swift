@@ -64,22 +64,31 @@ class BankTableViewCell: UITableViewCell {
     func configure(viewModel: Bank) {
         self.bank = viewModel
         nameLabel.text = viewModel.name
-        logoImageView.load(url: self.bank.logoUrl!)
+        logoImageView.image = nil
+        logoImageView.load(url: self.bank.iconUrl)
     }
 }
 
 fileprivate extension UIImageView {
-    func load(url: URL) {
-        DispatchQueue.global().async { [weak self] in
-            if let data = try? Data(contentsOf: url) {
-                if let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self?.image = image
+    func load(url: URL?, placeholder: UIImage? = nil) {
+        guard let url = url else { return }
+            let request = URLRequest(url: url)
+            if let data = URLCache.shared.cachedResponse(for: request)?.data, let image = UIImage(data: data) {
+                self.image = image
+            } else {
+                self.image = placeholder
+                URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+                    if let data = data, let response = response, ((response as? HTTPURLResponse)?.statusCode ?? 500) < 300, let image = UIImage(data: data) {
+                        let cachedData = CachedURLResponse(response: response, data: data)
+                        URLCache.shared.storeCachedResponse(cachedData, for: request)
+                        
+                        DispatchQueue.main.async {
+                            self.image = image
+                        }
                     }
-                }
+                }).resume()
             }
         }
-    }
 }
 
 #endif
