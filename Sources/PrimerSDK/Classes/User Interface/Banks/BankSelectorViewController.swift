@@ -12,16 +12,14 @@ import UIKit
 internal class BankSelectorViewController: PrimerFormViewController {
     
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private var banks: [Bank]
     
-    private let viewModel: BankSelectorViewModel
+    private let viewModel: DotPayTokenizationViewModel
     internal private(set) var subtitle: String?
     
-    init(banks: [Bank], logo: UIImage?) {
-        self.banks = banks
-        viewModel = BankSelectorViewModel(banks: banks)
+    init(viewModel: DotPayTokenizationViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = logo
+        self.titleImage = viewModel.buttonImage!
     }
     
     required init?(coder: NSCoder) {
@@ -33,7 +31,7 @@ internal class BankSelectorViewController: PrimerFormViewController {
 
         view.backgroundColor = theme.colorTheme.main1
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.heightAnchor.constraint(equalToConstant: 120+(CGFloat(banks.count)*viewModel.tableView.rowHeight)).isActive = true
+        view.heightAnchor.constraint(equalToConstant: 120+(CGFloat(viewModel.banks.count)*viewModel.tableView.rowHeight)).isActive = true
         viewModel.tableView.isScrollEnabled = false
                 
         verticalStackView.spacing = 5
@@ -67,10 +65,6 @@ internal class BankSelectorViewController: PrimerFormViewController {
         tableViewMockView.translatesAutoresizingMaskIntoConstraints = false
         tableViewMockView.heightAnchor.constraint(equalToConstant: 400).isActive = true
         verticalStackView.addArrangedSubview(tableViewMockView)
-        
-        viewModel.didSelectBank = { bank in
-            self.view.endEditing(true)
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
