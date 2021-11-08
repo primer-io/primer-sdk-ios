@@ -178,7 +178,7 @@ internal class CardButton: PrimerOldButton {
         border = PrimerView()
         border.layer.borderColor = theme.paymentMethodButton.border.color(for: .enabled).cgColor
         border.layer.borderWidth = theme.paymentMethodButton.border.width
-        border.layer.cornerRadius = 4
+        border.layer.cornerRadius = theme.paymentMethodButton.cornerRadius
         addSubview(border)
         border.translatesAutoresizingMaskIntoConstraints = false
         border.pin(to: self)

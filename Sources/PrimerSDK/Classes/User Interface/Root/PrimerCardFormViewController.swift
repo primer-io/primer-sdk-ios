@@ -34,6 +34,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
+    }
 
     private func configureExpiryAndCvvRow() {
         let horizontalStackView = UIStackView()
@@ -60,7 +61,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
             
             let saveCardLabel = UILabel()
             saveCardLabel.text = "Save this card"
-            saveCardLabel.textColor = theme.colorTheme.text1
+            saveCardLabel.textColor = theme.text.body.color
             saveCardLabel.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
             saveCardSwitchContainerStackView.addArrangedSubview(saveCardLabel)
             

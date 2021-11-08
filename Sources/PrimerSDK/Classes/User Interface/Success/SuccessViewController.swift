@@ -31,9 +31,9 @@ internal class SuccessViewController: PrimerViewController {
                 
         rightBarButton = UIButton()
         rightBarButton.setTitle("Done", for: .normal)
-        rightBarButton.setTitleColor(theme.view.backgroundColor, for: .normal)
+        rightBarButton.setTitleColor(theme.colors.primary, for: .normal)
         rightBarButton.addTarget(self, action: #selector(close), for: .touchUpInside)
-        icon.tintColor = theme.view.backgroundColor
+        icon.tintColor = theme.colors.primary
 
         configureIcon()
         configureMessage()

@@ -47,7 +47,7 @@ internal class PrimerOldButton: PrimerButton {
                 self.spinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
             }
             
-            self.spinner.color = theme.colorTheme.text2
+            self.spinner.color = theme.colors.primary
             
             flag ? self.spinner.startAnimating() : self.spinner.stopAnimating()
             flag ? self.setTitle(nil, for: .normal) : self.setTitle(self.titleCopy, for: .normal)

@@ -104,6 +104,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
             if savedCardView == nil {
                 savedCardView = CardButton()
+                savedCardView.backgroundColor = theme.paymentMethodButton.color(for: .enabled)
+                savedCardView.layer.cornerRadius = theme.paymentMethodButton.cornerRadius
                 savedPaymentInstrumentStackView.addArrangedSubview(savedCardView)
                 savedCardView.translatesAutoresizingMaskIntoConstraints = false
                 savedCardView.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
