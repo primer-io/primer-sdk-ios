@@ -23,7 +23,7 @@ struct CheckoutTheme {
     
     static var tropical: PrimerTheme {
         let data = PrimerThemeData()
-        data.colors.primary = tropical2
+        data.colors.primary = tropical7
         data.colors.gray = tropical3
         data.colors.light = tropical10
         data.view.backgroundColor = tropical1
@@ -37,6 +37,7 @@ struct CheckoutTheme {
         data.buttons.paymentMethod.text.defaultColor = tropical8
         data.buttons.paymentMethod.iconColor = tropical8
         data.buttons.main.text.defaultColor = tropical4
+        data.buttons.main.disabledColor = tropical9
         data.input.border = PrimerThemeData.Border(defaultColor: tropical4, selectedColor: tropical4)
         data.input.text = PrimerThemeData.Text(defaultColor: tropical4)
         return PrimerTheme.init(with: data)

@@ -34,6 +34,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
         view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
+        configureExpiryAndCvvRow()
+        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
     }
 
     private func configureExpiryAndCvvRow() {
