@@ -69,8 +69,6 @@ public struct PrimerLayout {
     }
 }
 
-
-
 public struct PrimerFontTheme {
     let mainTitle: UIFont
     let successMessageFont: UIFont

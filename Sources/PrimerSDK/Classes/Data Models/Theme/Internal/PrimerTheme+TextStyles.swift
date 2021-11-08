@@ -1,61 +1,33 @@
-internal struct TextStyle {
-    let body, title, subtitle, amountLabel, system, error: TextTheme
+internal enum TextType {
+    case body, title, subtitle, amountLabel, system, error
+}
 
-    static func build(with data: TextStyleData) -> TextStyle {
-        return TextStyle(
-            body: TextTheme.body(with: data.body),
-            title: TextTheme.title(with: data.title),
-            subtitle: TextTheme.subtitle(with: data.subtitle),
-            amountLabel: TextTheme.amountLabel(with: data.amountLabel),
-            system: TextTheme.system(with: data.system),
-            error: TextTheme.error(with: data.error)
-        )
+internal class TextStyle {
+    let body, title, subtitle, amountLabel, system, error: TextTheme
+    
+    internal init(
+        body: TextTheme,
+        title: TextTheme,
+        subtitle: TextTheme,
+        amountLabel: TextTheme,
+        system: TextTheme,
+        error: TextTheme
+    ) {
+        self.body = body
+        self.title = title
+        self.subtitle = subtitle
+        self.amountLabel = amountLabel
+        self.system = system
+        self.error = error
     }
 }
 
-internal struct TextTheme {
+internal class TextTheme {
     let color: UIColor
     let fontSize: Int
-
-    static func body(with data: TextThemeData) -> TextTheme {
-        return TextTheme(
-            color: data.defaultColor ?? Colors.black,
-            fontSize: data.fontSize ?? Fontsize.body
-        )
-    }
-
-    static func title(with data: TextThemeData) -> TextTheme {
-        return TextTheme(
-            color: data.defaultColor ?? Colors.black,
-            fontSize: data.fontSize ?? Fontsize.title
-        )
-    }
-
-    static func subtitle(with data: TextThemeData) -> TextTheme {
-        return TextTheme(
-            color: data.defaultColor ?? Colors.gray,
-            fontSize: data.fontSize ?? Fontsize.subtitle
-        )
-    }
-
-    static func amountLabel(with data: TextThemeData) -> TextTheme {
-        return TextTheme(
-            color: data.defaultColor ?? Colors.black,
-            fontSize: data.fontSize ?? Fontsize.amountLabel
-        )
-    }
-
-    static func system(with data: TextThemeData) -> TextTheme {
-        return TextTheme(
-            color: data.defaultColor ?? Colors.blue,
-            fontSize: data.fontSize ?? Fontsize.system
-        )
-    }
-
-    static func error(with data: TextThemeData) -> TextTheme {
-        return TextTheme(
-            color: data.defaultColor ?? Colors.red,
-            fontSize: data.fontSize ?? Fontsize.error
-        )
+    
+    internal init(color: UIColor, fontSize: Int) {
+        self.color = color
+        self.fontSize = fontSize
     }
 }

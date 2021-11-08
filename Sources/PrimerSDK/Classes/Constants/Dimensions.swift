@@ -1,28 +1,20 @@
-internal struct Fontsize {
-
-    static let title = 20
-    static let subtitle = 10
-    static let amountLabel = 24
-    static let body = 14
-    static let system = 12
-    static let error = 10
-    static let buttonLabel = 14
-}
-
-internal struct Layout {
+public struct PrimerDimensions {
     
-    struct View {
-        static let cornerRadius: CGFloat = 0.0
-        static let safeArea: CGFloat = 10.0
+    public static let cornerRadius: CGFloat = 0.0
+    public static let safeArea: CGFloat = 10.0
+    
+    public struct Component {
+        public static let cornerRadius: CGFloat = 4.0
+        public static let borderWidth: CGFloat = 1.6
     }
 
-    struct PaymentMethodButton {
-        static let cornerRadius: CGFloat = 4.0
-        static let borderWidth: CGFloat = 1.0
-    }
-
-    struct MainButton {
-        static let cornerRadius: CGFloat = 4.0
-        static let borderWidth: CGFloat = 1.0
+    public struct Font {
+        public static let title = 20
+        public static let subtitle = 10
+        public static let amountLabel = 24
+        public static let body = 14
+        public static let system = 12
+        public static let error = 10
+        public static let buttonLabel = 14
     }
 }

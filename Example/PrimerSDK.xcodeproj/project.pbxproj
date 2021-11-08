@@ -52,6 +52,7 @@
 		1DEBE0E126B75EBF004E3064 /* ApayaServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */; };
 		1DEBE0EF26BACE77004E3064 /* ApayaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0EE26BACE76004E3064 /* ApayaService.swift */; };
 		1DEBE0F326BC4097004E3064 /* ApayaWebViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0F226BC4097004E3064 /* ApayaWebViewModelTests.swift */; };
+		1DED53AE27394C7100CD9DE6 /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DED53AD27394C7100CD9DE6 /* ThemeTests.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -138,6 +139,7 @@
 		1DEBE0E026B75EBF004E3064 /* ApayaServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaServiceTests.swift; sourceTree = "<group>"; };
 		1DEBE0EE26BACE76004E3064 /* ApayaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaService.swift; sourceTree = "<group>"; };
 		1DEBE0F226BC4097004E3064 /* ApayaWebViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaWebViewModelTests.swift; sourceTree = "<group>"; };
+		1DED53AD27394C7100CD9DE6 /* ThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeTests.swift; sourceTree = "<group>"; };
 		2509B944E494D6C1B59B822B /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B55FBF1D40BE6B25F29A5D9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		40B83BAAC4A7FCE6340A90CA /* Pods_PrimerSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -369,6 +371,7 @@
 			isa = PBXGroup;
 			children = (
 				1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */,
+				1DED53AD27394C7100CD9DE6 /* ThemeTests.swift */,
 			);
 			path = "Data Models";
 			sourceTree = "<group>";
@@ -732,6 +735,7 @@
 				1582B982260A3F2900C80BD7 /* VaultService.swift in Sources */,
 				1582B97D260A3F2900C80BD7 /* VaultCheckoutViewModel.swift in Sources */,
 				1582B987260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift in Sources */,
+				1DED53AE27394C7100CD9DE6 /* ThemeTests.swift in Sources */,
 				1DEBE0F326BC4097004E3064 /* ApayaWebViewModelTests.swift in Sources */,
 				1582B990260A3F2900C80BD7 /* TokenizationServiceTests.swift in Sources */,
 			);

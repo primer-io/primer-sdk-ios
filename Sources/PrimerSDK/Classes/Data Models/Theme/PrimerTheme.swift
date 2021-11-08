@@ -45,24 +45,39 @@ protocol PrimerThemeProtocol {
  1.2.2
  */
 public class PrimerTheme: PrimerThemeProtocol {
-    internal var colors: ColorSwatch
-    internal var view: ViewTheme
-    internal var text: TextStyle
-    internal var paymentMethodButton: ButtonTheme
-    internal var mainButton: ButtonTheme
-    internal var input: InputTheme
+    
+    private let data: PrimerThemeData
+    
+    internal lazy var colors: ColorSwatch = ColorSwatch(
+        primary: data.colors.primary,
+        error: data.colors.error
+    )
+    
+    internal lazy var view = data.view.theme(with: data)
+    
+    internal lazy var text = TextStyle(
+        body: data.text.theme(for: .body, with: data),
+        title: data.text.theme(for: .title, with: data),
+        subtitle: data.text.theme(for: .subtitle, with: data),
+        amountLabel: data.text.theme(for: .amountLabel, with: data),
+        system: data.text.theme(for: .system, with: data),
+        error: data.text.theme(for: .error, with: data)
+    )
+                      
+    internal lazy var paymentMethodButton = data.buttons.theme(for: .paymentMethod, with: data)
+    
+    internal lazy var mainButton = data.buttons.theme(for: .main, with: data)
+    
+    internal lazy var input = data.input.theme(with: data)
+    
+    internal var types = (amount: 1, label: 2, foo: "hello")
 
     public init(with data: PrimerThemeData = PrimerThemeData()) {
-        colors = ColorSwatch.build(with: data.colors)
-        view = ViewTheme.build(with: data.view)
-        text = TextStyle.build(with: data.text)
-        input = InputTheme.build(with: data.input)
-        paymentMethodButton = ButtonTheme.paymentMethod(with: data.buttons.paymentMethod)
-        mainButton = ButtonTheme.main(with: data.buttons.main)
+        self.data = data
     }
 
     // MARK: deprecated methods
-
+    
     @available(iOS 13.0, *)
     @available(*, deprecated)
     public init(
@@ -74,80 +89,40 @@ public class PrimerTheme: PrimerThemeProtocol {
         fontTheme: PrimerFontTheme = PrimerFontTheme()
     ) {
         let theme = DefaultColorTheme(lightTheme: colorTheme, darkTheme: darkTheme)
-
-        colors = ColorSwatch.init(primary: theme.tint1, error: theme.error1)
-
-        view = ViewTheme.init(
-            backgroundColor: theme.main1,
-            cornerRadius: cornerRadiusTheme.sheetView,
-            safeMargin: layout.safeMargin
-        )
         
-        text = TextStyle(
-            body: TextTheme.init(color: theme.text1, fontSize: 14),
-            title: TextTheme.init(color: theme.text1, fontSize: 20),
-            subtitle: TextTheme.init(color: theme.neutral1, fontSize: 12),
-            amountLabel: TextTheme.init(color: theme.text1, fontSize: 24),
-            system: TextTheme.init(color: theme.tint1, fontSize: 14),
-            error: TextTheme.init(color: theme.error1, fontSize: 10)
-        )
-
-        input = InputTheme(
-            color: theme.main1,
-            cornerRadius: cornerRadiusTheme.textFields,
-            border: BorderTheme(
-                colorStates: StatefulColor(
-                    theme.neutral1,
-                    disabled: theme.disabled1,
-                    selected: theme.tint1
-                ),
-                width: CGFloat(1.0)
-            ),
-            text: TextTheme(color: theme.text1, fontSize: 14),
-            hintText: TextTheme(color: theme.neutral1, fontSize: 14),
-            errortext: TextTheme(color: theme.error1, fontSize: 10),
-            inputType: .underlined
-        )
-
-        paymentMethodButton = ButtonTheme(
-            colorStates: StatefulColor(
-                theme.main1,
-                disabled: theme.disabled1
-            ),
-            cornerRadius: cornerRadiusTheme.buttons,
-            border: BorderTheme(
-                colorStates: StatefulColor(
-                    theme.main1,
-                    disabled: theme.disabled1
-                ),
-                width: CGFloat(1.0)
-            ),
-            text: TextTheme(
-                color: theme.main1,
-                fontSize: 14
-            ),
-            iconColor: theme.main1
-        )
-        
-        mainButton = ButtonTheme(
-            colorStates: StatefulColor(
-                theme.main1,
-                disabled: theme.disabled1
-            ),
-            cornerRadius: cornerRadiusTheme.buttons,
-            border: BorderTheme(
-                colorStates: StatefulColor(
-                    theme.main1,
-                    disabled: theme.disabled1
-                ),
-                width: CGFloat(1.0)
-            ),
-            text: TextTheme(
-                color: theme.main1,
-                fontSize: 14
-            ),
-            iconColor: theme.main1
-        )
+        let data = PrimerThemeData()
+        data.colors.primary = theme.tint1
+        data.colors.error = theme.error1
+        data.view.backgroundColor = theme.main1
+        data.view.cornerRadius = cornerRadiusTheme.sheetView
+        data.view.safeMargin = layout.safeMargin
+        data.text.body.defaultColor = theme.text1
+        data.text.title.defaultColor = theme.text1
+        data.text.subtitle.defaultColor = theme.neutral1
+        data.text.amountLabel.defaultColor = theme.text1
+        data.text.system.defaultColor = theme.tint1
+        data.text.error.defaultColor = theme.error1
+        data.input.backgroundColor = theme.main1
+        data.input.cornerRadius = cornerRadiusTheme.textFields
+        data.input.border.defaultColor = theme.neutral1
+        data.input.border.selectedColor = theme.tint1
+        data.input.border.errorColor = theme.error1
+        data.input.text.defaultColor = theme.text1
+        data.buttons.paymentMethod.defaultColor = theme.main1
+        data.buttons.paymentMethod.disabledColor = theme.disabled1
+        data.buttons.paymentMethod.cornerRadius = cornerRadiusTheme.buttons
+        data.buttons.paymentMethod.border.defaultColor = theme.main1
+        data.buttons.paymentMethod.border.selectedColor = theme.tint1
+        data.buttons.paymentMethod.text.defaultColor = theme.text1
+        data.buttons.paymentMethod.iconColor = theme.text1
+        data.buttons.main.defaultColor = theme.tint1
+        data.buttons.main.disabledColor = theme.disabled1
+        data.buttons.main.cornerRadius = cornerRadiusTheme.buttons
+        data.buttons.main.border.defaultColor = theme.tint1
+        data.buttons.main.border.selectedColor = theme.tint1
+        data.buttons.main.text.defaultColor = theme.text1
+        data.buttons.main.iconColor = theme.text1
+        self.data = data
     }
 
     @available(iOS, obsoleted: 13.0)
@@ -159,82 +134,39 @@ public class PrimerTheme: PrimerThemeProtocol {
         textFieldTheme: PrimerTextFieldTheme = .underlined,
         fontTheme: PrimerFontTheme = PrimerFontTheme()
     ) {
-        colors = ColorSwatch.init(
-            primary: theme.tint1,
-            error: theme.error1
-        )
-
-        view = ViewTheme.init(
-            backgroundColor: theme.main1,
-            cornerRadius: cornerRadiusTheme.sheetView,
-            safeMargin: layout.safeMargin
-        )
-
-        text = TextStyle(
-            body: TextTheme.init(color: theme.text1, fontSize: 14),
-            title: TextTheme.init(color: theme.text1, fontSize: 20),
-            subtitle: TextTheme.init(color: theme.neutral1, fontSize: 12),
-            amountLabel: TextTheme.init(color: theme.text1, fontSize: 24),
-            system: TextTheme.init(color: theme.tint1, fontSize: 14),
-            error: TextTheme.init(color: theme.error1, fontSize: 10)
-        )
-
-        input = InputTheme(
-            color: theme.main1,
-            cornerRadius: cornerRadiusTheme.textFields,
-            border: BorderTheme(
-                colorStates: StatefulColor(
-                    theme.neutral1,
-                    disabled: theme.disabled1,
-                    selected: theme.tint1
-                ),
-                width: CGFloat(1.0)
-            ),
-            text: TextTheme(color: theme.text1, fontSize: 14),
-            hintText: TextTheme(color: theme.neutral1, fontSize: 14),
-            errortext: TextTheme(color: theme.error1, fontSize: 10),
-            inputType: .underlined
-        )
-
-        paymentMethodButton = ButtonTheme(
-            colorStates: StatefulColor(
-                theme.main1,
-                disabled: theme.disabled1
-            ),
-            cornerRadius: cornerRadiusTheme.buttons,
-            border: BorderTheme(
-                colorStates: StatefulColor(
-                    theme.main1,
-                    disabled: theme.disabled1
-                ),
-                width: CGFloat(1.0)
-            ),
-            text: TextTheme(
-                color: theme.main1,
-                fontSize: 14
-            ),
-            iconColor: theme.main1
-        )
-        
-        mainButton = ButtonTheme(
-            colorStates: StatefulColor(
-                theme.main1,
-                disabled: theme.disabled1
-            ),
-            cornerRadius: cornerRadiusTheme.buttons,
-            border: BorderTheme(
-                colorStates: StatefulColor(
-                    theme.main1,
-                    disabled: theme.disabled1
-                ),
-                width: CGFloat(1.0)
-            ),
-            text: TextTheme(
-                color: theme.main1,
-                fontSize: 14
-            ),
-            iconColor: theme.main1
-        )
+        let data = PrimerThemeData()
+        data.colors.primary = theme.tint1
+        data.colors.error = theme.error1
+        data.view.backgroundColor = theme.main1
+        data.view.cornerRadius = cornerRadiusTheme.sheetView
+        data.view.safeMargin = layout.safeMargin
+        data.text.body.defaultColor = theme.text1
+        data.text.title.defaultColor = theme.text1
+        data.text.subtitle.defaultColor = theme.neutral1
+        data.text.amountLabel.defaultColor = theme.text1
+        data.text.system.defaultColor = theme.tint1
+        data.text.error.defaultColor = theme.error1
+        data.input.backgroundColor = theme.main1
+        data.input.cornerRadius = cornerRadiusTheme.textFields
+        data.input.border.defaultColor = theme.neutral1
+        data.input.border.selectedColor = theme.tint1
+        data.input.border.errorColor = theme.error1
+        data.input.text.defaultColor = theme.text1
+        data.buttons.paymentMethod.defaultColor = theme.main1
+        data.buttons.paymentMethod.disabledColor = theme.disabled1
+        data.buttons.paymentMethod.cornerRadius = cornerRadiusTheme.buttons
+        data.buttons.paymentMethod.border.defaultColor = theme.main1
+        data.buttons.paymentMethod.border.selectedColor = theme.tint1
+        data.buttons.paymentMethod.text.defaultColor = theme.text1
+        data.buttons.paymentMethod.iconColor = theme.text1
+        data.buttons.main.defaultColor = theme.tint1
+        data.buttons.main.disabledColor = theme.disabled1
+        data.buttons.main.cornerRadius = cornerRadiusTheme.buttons
+        data.buttons.main.border.defaultColor = theme.tint1
+        data.buttons.main.border.selectedColor = theme.tint1
+        data.buttons.main.text.defaultColor = theme.text1
+        data.buttons.main.iconColor = theme.text1
+        self.data = data
     }
 }
 

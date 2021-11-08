@@ -2,7 +2,7 @@
 
 import UIKit
 
-internal struct Colors {
+public struct PrimerColors {
     
     private static let lightModeBlack = PrimerColor.rgb(red: 0, green: 0, blue: 0)
     private static let lightModeWhite = PrimerColor.rgb(red: 255, green: 255, blue: 255)
@@ -23,14 +23,14 @@ internal struct Colors {
     private static let darkModeGreen = PrimerColor.rgb(red: 50, green: 215, blue: 75)
     
     // MARK: defaults
-    static let black = PrimerColor.dynamic(lightMode: lightModeBlack, darkMode: darkModeBlack)
-    static let white = PrimerColor.dynamic(lightMode: lightModeWhite, darkMode: darkModeWhite)
-    static let gray = PrimerColor.dynamic(lightMode: lightModeGray, darkMode: darkModeGray)
-    static let lightGray = PrimerColor.dynamic(lightMode: lightModeLightGray, darkMode: darkModeLightGray)
-    static let red = PrimerColor.dynamic(lightMode: lightModeRed, darkMode: darkModeRed)
-    static let blue = PrimerColor.dynamic(lightMode: lightModeBlue, darkMode: darkModeBlue)
-    static let yellow = PrimerColor.dynamic(lightMode: lightModeYellow, darkMode: darkModeYellow)
-    static let green = PrimerColor.dynamic(lightMode: lightModeGreen, darkMode: darkModeGreen)
+    public static let black: UIColor = PrimerColor.dynamic(lightMode: lightModeBlack, darkMode: darkModeBlack)
+    public static let white: UIColor = PrimerColor.dynamic(lightMode: lightModeWhite, darkMode: darkModeWhite)
+    public static let gray: UIColor = PrimerColor.dynamic(lightMode: lightModeGray, darkMode: darkModeGray)
+    public static let lightGray: UIColor = PrimerColor.dynamic(lightMode: lightModeLightGray, darkMode: darkModeLightGray)
+    public static let red: UIColor = PrimerColor.dynamic(lightMode: lightModeRed, darkMode: darkModeRed)
+    public static let blue: UIColor = PrimerColor.dynamic(lightMode: lightModeBlue, darkMode: darkModeBlue)
+    public static let yellow: UIColor = PrimerColor.dynamic(lightMode: lightModeYellow, darkMode: darkModeYellow)
+    public static let green: UIColor = PrimerColor.dynamic(lightMode: lightModeGreen, darkMode: darkModeGreen)
     
     // MARK: special cases
     static let klarnaPink = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)

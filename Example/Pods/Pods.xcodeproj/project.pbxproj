@@ -37,10 +37,10 @@
 		271C99EC67752FB81AFE5F6954529208 /* DirectDebitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2186E718A9D58A712A03B2FA0AF33511 /* DirectDebitService.swift */; };
 		290A94ED826FFC4599D5B4162B0AC750 /* ApayaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81A22C75363A2C5F580542AA25A3540 /* ApayaService.swift */; };
 		29BD3501CF9E70FBE446DE626694231A /* hang.swift in Sources */ = {isa = PBXBuildFile; fileRef = 133997060D85B9B9881B45167B057E56 /* hang.swift */; };
-		2AE18DFEF6D39AD2A352367135695B8D /* PublicThemeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F542B408043072E74586AA3038C8682D /* PublicThemeData.swift */; };
+		2AE18DFEF6D39AD2A352367135695B8D /* PrimerThemeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F542B408043072E74586AA3038C8682D /* PrimerThemeData.swift */; };
 		2CA778D3A5FF128C3065627A9D06A167 /* VaultPaymentMethodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 908BA5DF43D15745251466493102C14A /* VaultPaymentMethodView.swift */; };
 		2D0F0751D89AF841C84EB53A16D871B0 /* CardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92863F179FD93E88D8B5A6FD082E6715 /* CardButton.swift */; };
-		2D228C3D49938D29743794232E03B953 /* PublicThemeData+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48A44532A51EFC87EC575F8CD231BF3 /* PublicThemeData+Deprecated.swift */; };
+		2D228C3D49938D29743794232E03B953 /* PrimerThemeData+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48A44532A51EFC87EC575F8CD231BF3 /* PrimerThemeData+Deprecated.swift */; };
 		2D4BEF0F581867781C8FC2E5C65C23E3 /* PrimerAPIClient+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = E73DC0AFF8C9DBA4C95A2A174C2B14A2 /* PrimerAPIClient+Promises.swift */; };
 		2F7DB1624CA7CCF6A65FD0BBC58EB46B /* PrimerOAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6F0505DAF05BAE102A56F36AC18E55 /* PrimerOAuthViewModel.swift */; };
 		2FF2643773582B374F7534C019B170E4 /* PrimerWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4199C97E63385F40B7E46A5965DB82 /* PrimerWebViewController.swift */; };
@@ -409,7 +409,7 @@
 		DF91C4EB0A23CBE32B20FFC93EB5AF33 /* WebViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		E1B945985145643C12B1E91600B680DE /* Pods-PrimerSDK_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrimerSDK_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
 		E1DE0F3FAEB80348BACD55A19C760E14 /* PrimerTextFieldView.xib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.xib; path = PrimerTextFieldView.xib; sourceTree = "<group>"; };
-		E48A44532A51EFC87EC575F8CD231BF3 /* PublicThemeData+Deprecated.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PublicThemeData+Deprecated.swift"; sourceTree = "<group>"; };
+		E48A44532A51EFC87EC575F8CD231BF3 /* PrimerThemeData+Deprecated.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PrimerThemeData+Deprecated.swift"; sourceTree = "<group>"; };
 		E6DF772EBD0552229B3F76D49A0EF5F2 /* Primer3DSProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Primer3DSProtocols.swift; path = Sources/Primer3DS/Classes/Primer3DSProtocols.swift; sourceTree = "<group>"; };
 		E73DC0AFF8C9DBA4C95A2A174C2B14A2 /* PrimerAPIClient+Promises.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PrimerAPIClient+Promises.swift"; sourceTree = "<group>"; };
 		E7B756BB6CFA977A87761BC29DB340D4 /* CardComponentsManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardComponentsManager.swift; sourceTree = "<group>"; };
@@ -425,7 +425,7 @@
 		F0BB6AFACD22C4EA6951FAA7BED8B356 /* ClientToken.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClientToken.swift; sourceTree = "<group>"; };
 		F49FC8639A4713438D4E461D773692C6 /* ErrorViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ErrorViewController.swift; sourceTree = "<group>"; };
 		F50BC3C32023C246A02CEF666A9084F3 /* FinallyWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FinallyWrappers.swift; sourceTree = "<group>"; };
-		F542B408043072E74586AA3038C8682D /* PublicThemeData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PublicThemeData.swift; sourceTree = "<group>"; };
+		F542B408043072E74586AA3038C8682D /* PrimerThemeData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerThemeData.swift; sourceTree = "<group>"; };
 		F545A19D9DCFEEA6F5CE9D32192597B9 /* ConcurrencyLimitedDispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConcurrencyLimitedDispatcher.swift; sourceTree = "<group>"; };
 		F61F8EF58F900B17B2FD05E4F11BDB80 /* PrimerContainerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerContainerViewController.swift; sourceTree = "<group>"; };
 		F6714372225DD7095663DF9D6E91D8BA /* VaultPaymentMethodViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewController.swift; sourceTree = "<group>"; };
@@ -748,8 +748,8 @@
 		4A7BE3C53F1DE48E45EC0AC4F4841F9F /* Public */ = {
 			isa = PBXGroup;
 			children = (
-				F542B408043072E74586AA3038C8682D /* PublicThemeData.swift */,
-				E48A44532A51EFC87EC575F8CD231BF3 /* PublicThemeData+Deprecated.swift */,
+				F542B408043072E74586AA3038C8682D /* PrimerThemeData.swift */,
+				E48A44532A51EFC87EC575F8CD231BF3 /* PrimerThemeData+Deprecated.swift */,
 			);
 			path = Public;
 			sourceTree = "<group>";
@@ -1520,8 +1520,8 @@
 				2FF2643773582B374F7534C019B170E4 /* PrimerWebViewController.swift in Sources */,
 				C4F2D03124BCD04757AE2DC47B629A89 /* PrimerWebViewModel.swift in Sources */,
 				B1C2C6005D1B3E81398100783318DE51 /* Promise.swift in Sources */,
-				2AE18DFEF6D39AD2A352367135695B8D /* PublicThemeData.swift in Sources */,
-				2D228C3D49938D29743794232E03B953 /* PublicThemeData+Deprecated.swift in Sources */,
+				2AE18DFEF6D39AD2A352367135695B8D /* PrimerThemeData.swift in Sources */,
+				2D228C3D49938D29743794232E03B953 /* PrimerThemeData+Deprecated.swift in Sources */,
 				6697169CEF7796253D4B0661818174F6 /* Queue.swift in Sources */,
 				17DFBFA165569463D2E22F88813823D9 /* race.swift in Sources */,
 				84ECB0BEBD77B13B50F3608865DE14FE /* RateLimitedDispatcher.swift in Sources */,

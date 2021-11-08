@@ -8,7 +8,6 @@
 
 import PrimerSDK
 
-
 private let tropical1 = UIColor(red: 0/255, green: 112/255, blue: 67/255, alpha: 1)
 private let tropical2 = UIColor(red: 255/255, green: 170/255, blue: 176/255, alpha: 1)
 private let tropical3 = UIColor(red: 255/255, green: 208/255, blue: 131/255, alpha: 1)
@@ -24,22 +23,20 @@ struct CheckoutTheme {
     
     static var tropical: PrimerTheme {
         let data = PrimerThemeData()
+        data.colors.primary = tropical2
+        data.colors.gray = tropical3
         data.view.backgroundColor = tropical1
-        data.text.title = TextThemeData(defaultColor: tropical10)
-        data.text.amountLabel = TextThemeData(defaultColor: tropical10)
-        data.text.subtitle = TextThemeData(defaultColor: tropical3)
-        data.text.body = TextThemeData(defaultColor: .white)
-        data.text.system = TextThemeData(defaultColor: tropical4)
-        data.buttons.paymentMethod.border.defaultColor = .white
-        data.buttons.paymentMethod.border.selectedColor = .white
-        data.buttons.paymentMethod.text.defaultColor = .white
-        data.buttons.main.defaultColor = tropical2
-        data.buttons.main.disabledColor = tropical2
+        data.text.title = PrimerThemeData.Text(defaultColor: tropical10)
+        data.text.amountLabel = PrimerThemeData.Text(defaultColor: tropical10)
+        data.text.subtitle = PrimerThemeData.Text(defaultColor: tropical3)
+        data.text.body = PrimerThemeData.Text(defaultColor: .white)
+        data.text.system = PrimerThemeData.Text(defaultColor: tropical4)
+        data.buttons.paymentMethod.border.defaultColor = tropical4
+        data.buttons.paymentMethod.border.selectedColor = tropical4
+        data.buttons.paymentMethod.text.defaultColor = tropical4
         data.buttons.main.text.defaultColor = tropical4
-        data.buttons.main.border.defaultColor = tropical2
-        data.buttons.main.border.selectedColor = tropical2
-        data.input.border = BorderThemeData(defaultColor: .white, selectedColor: .white)
-        data.input.text = TextThemeData(defaultColor: .white)
+        data.input.border = PrimerThemeData.Border(defaultColor: tropical4, selectedColor: tropical4)
+        data.input.text = PrimerThemeData.Text(defaultColor: tropical4)
         return PrimerTheme.init(with: data)
     }
 }

@@ -29,14 +29,12 @@ internal struct StatefulColor {
     }
 }
 
-internal struct ColorSwatch {
+internal class ColorSwatch {
     let primary: UIColor
     let error: UIColor
-
-    static func build(with data: ColorSwatchData) -> ColorSwatch {
-        return ColorSwatch(
-            primary: data.primary ?? UIColor.systemBlue,
-            error: data.error ?? UIColor.systemRed
-        )
+    
+    internal init(primary: UIColor, error: UIColor) {
+        self.primary = primary
+        self.error = error
     }
 }
