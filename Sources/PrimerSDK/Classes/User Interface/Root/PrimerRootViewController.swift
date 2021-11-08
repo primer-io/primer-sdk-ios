@@ -318,7 +318,7 @@ internal class PrimerRootViewController: PrimerViewController {
         } else {
             self.nc.pushViewController(viewController: cvc, animated: false) {
                 var viewControllers = self.nc.viewControllers
-                for (index, vc) in viewControllers.enumerated() {
+                for (index, vc) in viewControllers.enumerated().reversed() {
                     if vc.children.first is PrimerLoadingViewController {
                         viewControllers.remove(at: index)
                     }
