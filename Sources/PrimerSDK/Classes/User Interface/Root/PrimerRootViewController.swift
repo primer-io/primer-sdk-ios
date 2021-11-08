@@ -183,6 +183,9 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .checkoutWithPayNL:
                     self?.presentPaymentMethod(type: .payNLIdeal)
                     
+                case .checkoutWithAdyenDotPay:
+                    self?.presentPaymentMethod(type: .dotPay)
+                    
                 case .none:
                     break
 

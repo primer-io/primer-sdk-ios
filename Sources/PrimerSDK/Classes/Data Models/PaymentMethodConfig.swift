@@ -67,6 +67,8 @@ struct PaymentMethodConfig: Codable {
             return PayPalTokenizationViewModel(config: self)
         } else if type == .apaya {
             return ApayaTokenizationViewModel(config: self)
+        } else if type == .dotPay {
+            return DotPayTokenizationViewModel(config: self)
         }
         
         return nil
@@ -151,6 +153,7 @@ public enum PaymentMethodConfigType: String, Codable {
     case payNLIdeal = "PAY_NL_IDEAL"
     case apaya = "APAYA"
     case hoolah = "HOOLAH"
+    case dotPay = "ADYEN_DOTPAY"
     
     case unknown
     
@@ -167,7 +170,8 @@ public enum PaymentMethodConfigType: String, Codable {
             return Primer.shared.flow.internalSessionFlow.vaulted
         case .applePay,
                 .hoolah,
-                .payNLIdeal:
+                .payNLIdeal,
+                .dotPay:
             return !Primer.shared.flow.internalSessionFlow.vaulted
         case .unknown:
             return false
