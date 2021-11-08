@@ -11,6 +11,7 @@ import UIKit
 
 internal class SuccessViewController: PrimerViewController {
 
+    private let viewModel: SuccessScreenViewModelProtocol = SuccessScreenViewModel()
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     var screenType: SuccessScreenType?
     
@@ -74,7 +75,6 @@ internal extension SuccessViewController {
     }
 
     func configureMessage() {
-        let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         message.accessibilityIdentifier = "success_screen_message_label"
         message.text = viewModel.getTitle(screenType)
         message.numberOfLines = 0
@@ -84,7 +84,6 @@ internal extension SuccessViewController {
     }
 
     func configureConfirmationMessage() {
-        let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         confirmationMessage.text = viewModel.getConfirmationMessage(screenType)
         confirmationMessage.numberOfLines = 0
         confirmationMessage.font = UIFont.systemFont(ofSize: 13)
@@ -101,7 +100,6 @@ internal extension SuccessViewController {
     }
 
     func configureReference() {
-        let viewModel: SuccessScreenViewModelProtocol = DependencyContainer.resolve()
         reference.text = viewModel.getReference(screenType)
         reference.font = UIFont.systemFont(ofSize: 17)
     }

@@ -161,7 +161,7 @@ public struct PrimerDefaultTheme: ColorTheme {
         neutral1: UIColor = .lightGray,
         disabled1: UIColor = .lightGray,
         error1: UIColor = .systemRed,
-        success1: UIColor = .systemBlue
+        success1: UIColor = .systemGreen
     ) {
         self.text1 = text1
         self.text2 = text2

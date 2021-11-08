@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 26/2/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 internal class JSONParser: Parser {
@@ -14,3 +16,5 @@ internal class JSONParser: Parser {
         return try jsonDecoder.decode(T.self, from: data)
     }
 }
+
+#endif

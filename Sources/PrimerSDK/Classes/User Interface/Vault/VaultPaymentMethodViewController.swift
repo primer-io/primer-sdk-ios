@@ -186,7 +186,7 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
     @objc
     func editButtonTapped(_ sender: UIButton) {
         isDeleting = !isDeleting
-        let title = isDeleting ? "Done" : Content.VaultView.editLabel
+        let title = isDeleting ? "Cancel" : Content.VaultView.editLabel
         rightBarButton.setTitle(title, for: .normal)
     }
 

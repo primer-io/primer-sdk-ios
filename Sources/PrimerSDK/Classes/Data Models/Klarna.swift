@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 24/3/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 public enum KlarnaSessionType: String, Codable {
@@ -65,7 +67,7 @@ struct CreateKlarnaCustomerTokenAPIRequest: Codable {
 }
 
 struct KlarnaCustomerTokenAPIResponse: Codable {
-    let customerTokenId: String
+    let customerTokenId: String?
     let sessionData: KlarnaSessionData
 }
 
@@ -149,6 +151,4 @@ public struct KlarnaBillingAddress: Codable {
     public let title: String?
 }
 
-struct KlarnaFinalizePaymentSessionresponse: Codable {
-    let sessionData: KlarnaSessionData
-}
+#endif

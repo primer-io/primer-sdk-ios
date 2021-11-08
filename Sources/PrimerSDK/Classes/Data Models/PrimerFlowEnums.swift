@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 13/01/2021.
 //
 
+#if canImport(UIKit)
+
 /**
  Enum that contains possible values for the drop-in UI flow.
  
@@ -36,7 +38,7 @@
  1.2.2
  */
 
-public enum PrimerSessionFlow {
+public enum PrimerSessionFlow: Equatable {
     case `default`
     case defaultWithVault
     case completeDirectCheckout
@@ -46,8 +48,10 @@ public enum PrimerSessionFlow {
     case addKlarnaToVault
     case addDirectDebit
     case checkoutWithKlarna
+    case checkoutWithPayPal
     case checkoutWithApplePay
     case addApayaToVault
+    case checkoutWithAsyncPaymentMethod(paymentMethodType: PaymentMethodConfigType)
 
     internal var internalSessionFlow: PrimerInternalSessionFlow {
         switch self {
@@ -73,6 +77,10 @@ public enum PrimerSessionFlow {
             return .checkoutWithApplePay
         case .addApayaToVault:
             return .vaultApaya
+        case .checkoutWithPayPal:
+            return .checkoutWithPayPal
+        case .checkoutWithAsyncPaymentMethod:
+            return .checkoutWithAsyncPaymentMethod
         }
     }
 }
@@ -81,15 +89,16 @@ internal enum PrimerInternalSessionFlow {
 
     case vault
     case checkout
-    case vaultCard
-    case checkoutWithCard
-    case vaultPayPal
-    case checkoutWithPayPal
-    case vaultDirectDebit
-    case vaultKlarna
-    case checkoutWithKlarna
-    case checkoutWithApplePay
     case vaultApaya
+    case vaultCard
+    case vaultDirectDebit
+    case vaultPayPal
+    case vaultKlarna
+    case checkoutWithApplePay
+    case checkoutWithCard
+    case checkoutWithAsyncPaymentMethod
+    case checkoutWithKlarna
+    case checkoutWithPayPal
     
     var vaulted: Bool {
         switch self {
@@ -102,11 +111,11 @@ internal enum PrimerInternalSessionFlow {
             return true
         case .checkout,
              .checkoutWithCard,
+             .checkoutWithAsyncPaymentMethod,
              .checkoutWithPayPal,
              .checkoutWithKlarna,
              .checkoutWithApplePay:
             return false
-        
         }
     }
 
@@ -121,6 +130,7 @@ internal enum PrimerInternalSessionFlow {
             return .VAULT
         case .checkout,
              .checkoutWithCard,
+             .checkoutWithAsyncPaymentMethod,
              .checkoutWithPayPal,
              .checkoutWithKlarna,
              .checkoutWithApplePay:
@@ -133,3 +143,5 @@ public enum PrimerSessionIntent: String {
     case checkout
     case vault
 }
+
+#endif

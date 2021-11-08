@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 26/2/21.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 internal protocol Endpoint {
@@ -34,3 +36,5 @@ enum HTTPMethod: String {
     case put = "PUT"
     case delete = "DELETE"
 }
+
+#endif

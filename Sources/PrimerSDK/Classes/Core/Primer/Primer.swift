@@ -88,19 +88,9 @@ public class Primer {
         DependencyContainer.register(PaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
         DependencyContainer.register(PayPalService() as PayPalServiceProtocol)
         DependencyContainer.register(TokenizationService() as TokenizationServiceProtocol)
-        DependencyContainer.register(DirectDebitService() as DirectDebitServiceProtocol)
-        DependencyContainer.register(KlarnaService() as KlarnaServiceProtocol)
-        DependencyContainer.register(ApayaService() as ApayaServiceProtocol)
-        DependencyContainer.register(ApplePayService() as ApplePayServiceProtocol)
-        DependencyContainer.register(ApplePayViewModel() as ApplePayViewModelProtocol)
-        DependencyContainer.register(CardScannerViewModel() as CardScannerViewModelProtocol)
-        DependencyContainer.register(DirectCheckoutViewModel() as DirectCheckoutViewModelProtocol)
-        DependencyContainer.register(OAuthViewModel() as OAuthViewModelProtocol)
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
-        DependencyContainer.register(SuccessScreenViewModel() as SuccessScreenViewModelProtocol)
-        DependencyContainer.register(ApayaWebViewModel() as ApayaWebViewModel)
     }
 
     // MARK: - CONFIGURATION
@@ -215,16 +205,13 @@ public class Primer {
         show(flow: .defaultWithVault)
     }
     
-    public func showPaymentMethod(_ paymentMethod: ConfigPaymentMethodType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
+    public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
         switch (paymentMethod, intent) {
         case (.apaya, .vault):
             flow = .addApayaToVault
             
         case (.applePay, .checkout):
             flow = .checkoutWithApplePay
-            
-        case (.payPal, .vault):
-            flow = .addPayPalToVault
             
         case (.paymentCard, .checkout):
             flow = .completeDirectCheckout
@@ -240,8 +227,46 @@ public class Primer {
             
         case (.klarna, .checkout):
             flow = .checkoutWithKlarna
+
+        case (.payNLIdeal, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLIdeal)
             
-        default:
+        case (.aliPay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .aliPay)
+            
+        case (.giropay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .giropay)
+            
+        case (.hoolah, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
+            
+        case (.twint, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .twint)
+            
+        case (.sofort, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .sofort)
+            
+        case (.trustly, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .trustly)
+            
+        case (.payPal, .checkout):
+            flow = .checkoutWithPayPal
+            
+        case (.payPal, .vault):
+            flow = .addPayPalToVault
+            
+        case (.apaya, .checkout),
+            (.applePay, .vault),
+            (.goCardlessMandate, _),
+            (.googlePay, _),
+            (.aliPay, .vault),
+            (.giropay, .vault),
+            (.hoolah, .vault),
+            (.payNLIdeal, .vault),
+            (.sofort, .vault),
+            (.trustly, .vault),
+            (.twint, .vault),
+            (.other, _):
             let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return
@@ -269,6 +294,7 @@ public class Primer {
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
         flow = nil
+        ClientTokenService.resetClientToken()
         
         DispatchQueue.main.async { [weak self] in
             self?.primerRootVC?.dismissPrimerRootViewController(animated: true, completion: {
