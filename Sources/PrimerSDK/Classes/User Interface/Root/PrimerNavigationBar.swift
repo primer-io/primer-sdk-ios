@@ -134,6 +134,7 @@ class PrimerNavigationBar: PrimerView {
             
             titleImageView = UIImageView()
             titleImageView!.image = titleImage
+            titleImageView!.contentMode = .scaleAspectFit
             centerStackView!.addArrangedSubview(titleImageView!)
         }
         
