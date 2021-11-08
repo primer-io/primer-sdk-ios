@@ -25,7 +25,6 @@
 		18F9694409A6D0195215DB76EEE69F65 /* ErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6ADC5B91DD04F4B71DFC08FA17040AA /* ErrorViewController.swift */; };
 		1A932BB746097043D59E15B6F906C4C9 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF9B721AB05698A61B6D972B7F10550 /* UIDeviceExtension.swift */; };
 		1AD1217BBC64D425736E29563409DE7F /* PayPal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F321E219EF79738135A9E9174B3D5 /* PayPal.swift */; };
-		20D0B29F4465B7DE38E57587B9C7B251 /* BankSelectorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ECCE9738EF130CEC95B7080A527274B /* BankSelectorViewModel.swift */; };
 		270CFF0FC749F57C0605262D27016D14 /* Pods-PrimerSDK_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D66C3890C3566F38C935A2FFD9A237B0 /* Pods-PrimerSDK_Tests-dummy.m */; };
 		29A3AB70E0CC4A18B3D64C766B56B489 /* PrimerCustomStyleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9419E3A7F8791D8CAACA2E97D13BF679 /* PrimerCustomStyleTextField.swift */; };
 		2DB6FA8C690B3C27E82EE33F9DF1ACF2 /* when.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BDFD21778CF7E130A61061572D61D1 /* when.swift */; };
@@ -88,6 +87,7 @@
 		7F4D0965F9029452EE7A4567FA409F78 /* en.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 279225C61F0C57E83F9B41BA7E792271 /* en.lproj */; };
 		8224E897218D7191EBF84412D16BA618 /* PaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5081E6F4760417CB2557D48A2968A170 /* PaymentMethodTokenizationViewModel.swift */; };
 		822BCEFE93D608FFCCA43F6B4425A0DB /* 3DS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EEA9318334EE7FCB492E2E301510AC1 /* 3DS.swift */; };
+		8438B6CA2739755A0077BAF3 /* AdyenDotPay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438B6C92739755A0077BAF3 /* AdyenDotPay.swift */; };
 		84AAF948BD40091E5F3EC11119D88C86 /* PrimerVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8353770C4E3B5E68447DE7DBCA0855FC /* PrimerVaultManagerViewController.swift */; };
 		84F6C8BC27393960005F82F9 /* DotPayTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F6C8BB27393960005F82F9 /* DotPayTokenizationViewModel.swift */; };
 		854D9C92C6D645FD1A02ABF7E3BFD59C /* PrimerNibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5EB1B9340509E8C71C5D8D2F653D77 /* PrimerNibView.swift */; };
@@ -291,12 +291,12 @@
 		7CC0B0F16630D96303190CC652BC95A3 /* URLSessionStack.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = URLSessionStack.swift; sourceTree = "<group>"; };
 		7DE91E07EB903B4C8DD36FD227A71188 /* PrimerFlowEnums.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerFlowEnums.swift; sourceTree = "<group>"; };
 		7EBA96D52404473183ED4507DFB58734 /* ApplePay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePay.swift; sourceTree = "<group>"; };
-		7ECCE9738EF130CEC95B7080A527274B /* BankSelectorViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BankSelectorViewModel.swift; sourceTree = "<group>"; };
 		7ED4EC40ABD2C9365A688FEE1CACE017 /* DirectDebitMandate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DirectDebitMandate.swift; sourceTree = "<group>"; };
 		7FC6928631357A33BA250F4ACE379AA6 /* ThenableWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThenableWrappers.swift; sourceTree = "<group>"; };
 		800998BCFC691E93D35E06DC4A501F17 /* URLExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
 		81E34A314AD997669B9F57FD7211A889 /* CardButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardButton.swift; sourceTree = "<group>"; };
 		8353770C4E3B5E68447DE7DBCA0855FC /* PrimerVaultManagerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerVaultManagerViewController.swift; sourceTree = "<group>"; };
+		8438B6C92739755A0077BAF3 /* AdyenDotPay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdyenDotPay.swift; sourceTree = "<group>"; };
 		84F6C8BB27393960005F82F9 /* DotPayTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotPayTokenizationViewModel.swift; sourceTree = "<group>"; };
 		882F525E4B236FBA84FEF5B1CA66D263 /* PrimerFormViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerFormViewController.swift; sourceTree = "<group>"; };
 		8831C25BF25F8B7DC29CECBAFC881CBD /* BankTableViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BankTableViewCell.swift; sourceTree = "<group>"; };
@@ -588,6 +588,7 @@
 				D910F3EDC0DB7F6BEDEC51F9F7F4CA9A /* UXMode.swift */,
 				114201130FBF2789D04CC76B668F3851 /* VaultCheckoutViewModel.swift */,
 				272B387428C1F15AAE1CDBB6C434D9DC /* PCI */,
+				8438B6C92739755A0077BAF3 /* AdyenDotPay.swift */,
 			);
 			name = "Data Models";
 			path = "Sources/PrimerSDK/Classes/Data Models";
@@ -833,7 +834,6 @@
 			isa = PBXGroup;
 			children = (
 				E58F8E55DCF4699B92ACC666FFF6678F /* BankSelectorViewController.swift */,
-				7ECCE9738EF130CEC95B7080A527274B /* BankSelectorViewModel.swift */,
 				8831C25BF25F8B7DC29CECBAFC881CBD /* BankTableViewCell.swift */,
 			);
 			path = Banks;
@@ -1231,7 +1231,6 @@
 				FF3C91AD43E2FBA4468E1DE60D4402AF /* AppState.swift in Sources */,
 				F085A2510E979DF8DF7F75C5B276D6E0 /* Bank.swift in Sources */,
 				67CE17CFF3F3C06426D22EF36BDEC665 /* BankSelectorViewController.swift in Sources */,
-				20D0B29F4465B7DE38E57587B9C7B251 /* BankSelectorViewModel.swift in Sources */,
 				9809DADE43740991439F7E30FDBCD804 /* BankTableViewCell.swift in Sources */,
 				353A75A1DD98C4E9BB3542C726166F9D /* Box.swift in Sources */,
 				181C25F014B1B499E59681F0E86C14B7 /* BundleExtension.swift in Sources */,
@@ -1288,6 +1287,7 @@
 				7BAE9612151B9ECDCDE47EC1AA135AD3 /* NetworkService.swift in Sources */,
 				E5E7BB2F3E6DF448FAB8D2A47CD28314 /* Optional+Extensions.swift in Sources */,
 				56BB932CDF012FCC7A5CF5AFA79F66EB /* OrderItem.swift in Sources */,
+				8438B6CA2739755A0077BAF3 /* AdyenDotPay.swift in Sources */,
 				9D108423665D38FC959682F3569A0AC5 /* Parser.swift in Sources */,
 				9B7F78D3DBB72F90AA9ADE8E30ABA7BF /* PaymentMethodComponent.swift in Sources */,
 				940249E307F8A0DE7544D8FCA391A2C0 /* PaymentMethodConfig.swift in Sources */,
