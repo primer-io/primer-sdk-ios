@@ -147,22 +147,26 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         .done { paymentMethod in
             self.paymentMethod = paymentMethod
             
-            if Primer.shared.flow.internalSessionFlow.vaulted {
-                Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-            }
-
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
-                if let err = err {
-                    self.handleFailedTokenizationFlow(error: err)
-                } else {
-                    self.handleSuccessfulTokenizationFlow()
+            DispatchQueue.main.async {
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                 }
-            })
+
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
+                    if let err = err {
+                        self.handleFailedTokenizationFlow(error: err)
+                    } else {
+                        self.handleSuccessfulTokenizationFlow()
+                    }
+                })
+            }
         }
         .catch { err in
-            Primer.shared.delegate?.checkoutFailed?(with: err)
-            self.handleFailedTokenizationFlow(error: err)
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+                self.handleFailedTokenizationFlow(error: err)
+            }
         }
     }
     

@@ -21,17 +21,17 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        environmentControl.selectedSegmentIndex = 2
+        environmentControl.selectedSegmentIndex = 1
         environmentControl.accessibilityIdentifier = "env_control"
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        phoneNumberTextField.text = "07538121305"
+        phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.sg.rawValue
+        countryCodeTextField.text = CountryCode.gb.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
-        currencyTextField.text = Currency.SGD.rawValue
+        currencyTextField.text = Currency.GBP.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
-        amountTextField.text = "10.00"
+        amountTextField.text = "0.01"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
