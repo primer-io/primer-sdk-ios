@@ -269,83 +269,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
         
         DispatchQueue.main.async {
-            let banksResponseStr: String =
-            """
-            [
-                {
-                    "name": "ABN AMRO",
-                    "issuer": "0031",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0031@3x.png"
-                },
-                {
-                    "name": "ASN Bank",
-                    "issuer": "0761",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0761@3x.png"
-                },
-                {
-                    "name": "bunq",
-                    "issuer": "0802",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0802@3x.png"
-                },
-                {
-                    "name": "Handelsbanken",
-                    "issuer": "0804",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0804@3x.png"
-                },
-                {
-                    "name": "ING Bank",
-                    "issuer": "0721",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0721@3x.png"
-                },
-                {
-                    "name": "Knab",
-                    "issuer": "0801",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0801@3x.png"
-                },
-                {
-                    "name": "Rabobank",
-                    "issuer": "0021",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0021@3x.png"
-                },
-                {
-                    "name": "Regiobank",
-                    "issuer": "0771",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0771@3x.png"
-                },
-                {
-                    "name": "Revolut",
-                    "issuer": "0805",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0805@3x.png"
-                },
-                {
-                    "name": "SNS Bank",
-                    "issuer": "0751",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0751@3x.png"
-                },
-                {
-                    "name": "Triodos Bank",
-                    "issuer": "0511",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0511@3x.png"
-                },
-                {
-                    "name": "Van Lanschot Bankiers",
-                    "issuer": "0161",
-                    "logoUrl": "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/small/ideal/0161@3x.png"
-                }
-            ]
-            """
-            
-            do {
-                let data = banksResponseStr.data(using: .utf8)
-                let banks: [Bank] = try JSONParser().parse([Bank].self, from: data!)
-                let bsvc = BankSelectorViewController(banks: banks, logo: UIImage(named: "dot-pay-logo", in: Bundle.primerResources, compatibleWith: nil))
-                Primer.shared.primerRootVC?.show(viewController: bsvc)
-            } catch {
-                print(error)
-            }
-            
-//            let pcfvc = PrimerCardFormViewController(viewModel: self)
-//            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+            let pcfvc = PrimerCardFormViewController(viewModel: self)
+            Primer.shared.primerRootVC?.show(viewController: pcfvc)
         }
     }
     
