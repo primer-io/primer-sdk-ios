@@ -92,6 +92,7 @@ internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
     func clear() {
         self.text = nil
         rightImageView.image = searchImage
+        _delegate?.textFieldShouldClear?(self)
     }
 }
 
