@@ -58,6 +58,8 @@ struct AsyncPaymentMethodTokenizationRequest: TokenizationRequest {
     let paymentInstrument: PaymentMethod.AsyncPaymentMethod
 }
 
+protocol PaymentMethodConfigurationOptions: Codable { }
+extension PaymentMethodConfigurationOptions { }
 
 protocol PaymentInstrumentProtocol: Encodable {}
 // feels like we could polymorph this with a protocol, or at least restrict construcions with a specific factory method for each payment instrument.

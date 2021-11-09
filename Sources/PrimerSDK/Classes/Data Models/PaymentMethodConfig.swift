@@ -127,10 +127,6 @@ struct PaymentMethodConfig: Codable {
     
 }
 
-protocol PaymentMethodConfigurationOptions: Codable { }
-
-extension PaymentMethodConfigurationOptions { }
-
 public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
     case aliPay
     case apaya
