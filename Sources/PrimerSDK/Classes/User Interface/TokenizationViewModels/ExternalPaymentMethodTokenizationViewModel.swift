@@ -283,13 +283,13 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
+            var sessionInfo: PaymentMethod.AsyncPaymentMethod.SessionInfo?
             if let localeCode = settings.localeData.localeCode {
-                sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: localeCode)
+                sessionInfo = PaymentMethod.AsyncPaymentMethod.SessionInfo(locale: localeCode)
             }
             
             let request = AsyncPaymentMethodTokenizationRequest(
-                paymentInstrument: AsyncPaymentMethodOptions(
+                paymentInstrument: PaymentMethod.AsyncPaymentMethod(
                     paymentMethodType: config.type,
                     paymentMethodConfigId: configId,
                     sessionInfo: sessionInfo))
