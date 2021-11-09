@@ -56,7 +56,7 @@ struct PaymentMethodConfig: Codable {
     let id: String? // Will be nil for cards
     let processorConfigId: String?
     let type: PaymentMethodConfigType
-    let options: PaymentMethodOptions?
+    let options: PaymentMethodConfigurationOptions?
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
         if type == .paymentCard {
             return CardFormPaymentMethodTokenizationViewModel(config: self)
@@ -88,7 +88,7 @@ struct PaymentMethodConfig: Codable {
         case id, options, processorConfigId, type
     }
     
-    init(id: String?, options: PaymentMethodOptions?, processorConfigId: String?, type: PaymentMethodConfigType) {
+    init(id: String?, options: PaymentMethodConfigurationOptions?, processorConfigId: String?, type: PaymentMethodConfigType) {
         self.id = id
         self.options = options
         self.processorConfigId = processorConfigId
@@ -127,19 +127,19 @@ struct PaymentMethodConfig: Codable {
     
 }
 
-protocol PaymentMethodOptions: Codable { }
+protocol PaymentMethodConfigurationOptions: Codable { }
 
-extension PaymentMethodOptions { }
+extension PaymentMethodConfigurationOptions { }
 
-struct ApayaOptions: PaymentMethodOptions {
+struct ApayaOptions: PaymentMethodConfigurationOptions {
     let merchantAccountId: String
 }
 
-struct PayPalOptions: PaymentMethodOptions {
+struct PayPalOptions: PaymentMethodConfigurationOptions {
     let clientId: String
 }
 
-struct CardOptions: PaymentMethodOptions {
+struct CardOptions: PaymentMethodConfigurationOptions {
     let threeDSecureEnabled: Bool
     let threeDSecureToken: String?
     let threeDSecureInitUrl: String?
@@ -147,7 +147,7 @@ struct CardOptions: PaymentMethodOptions {
     let processorConfigId: String?
 }
 
-struct AsyncPaymentMethodOptions: PaymentMethodOptions {
+struct AsyncPaymentMethodOptions: PaymentMethodConfigurationOptions {
     
     let paymentMethodType: PaymentMethodConfigType
     let paymentMethodConfigId: String
