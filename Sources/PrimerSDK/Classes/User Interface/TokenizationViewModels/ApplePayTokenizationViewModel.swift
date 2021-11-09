@@ -275,8 +275,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             applePayReceiveDataCompletion = { result in
                 switch result {
                 case .success(let applePayPaymentResponse):
-                    let state: AppStateProtocol = DependencyContainer.resolve()
-                                        
                     guard let applePayConfigId = self.config.id else {
                         return completion(nil, PaymentException.missingConfigurationId)
                     }
@@ -286,7 +284,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                         token: applePayPaymentResponse.token,
                         sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
                     )
-                    let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+                    let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument)
                     
                     let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                     apiClient.tokenizePaymentMethod(

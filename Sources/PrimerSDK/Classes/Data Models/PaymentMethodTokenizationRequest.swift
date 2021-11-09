@@ -5,7 +5,7 @@ protocol TokenizationRequest: Encodable {}
 struct PaymentMethodTokenizationRequest: TokenizationRequest {
     
     let paymentInstrument: PaymentInstrumentProtocol
-    let tokenType: TokenType
+    let tokenType: TokenType?
     let paymentFlow: PaymentFlow?
     let customerId: String?
     
@@ -13,7 +13,7 @@ struct PaymentMethodTokenizationRequest: TokenizationRequest {
         case paymentInstrument, tokenType, paymentFlow, customerId
     }
 
-    init(paymentInstrument: PaymentInstrumentProtocol, state: AppStateProtocol?) {
+    init(paymentInstrument: PaymentInstrumentProtocol) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         self.paymentInstrument = paymentInstrument
         self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : .singleUse
@@ -43,27 +43,24 @@ struct PaymentMethodTokenizationRequest: TokenizationRequest {
             try container.encode(klarna, forKey: .paymentInstrument)
         } else if let apaya = paymentInstrument as? PaymentMethod.Apaya {
             try container.encode(apaya, forKey: .paymentInstrument)
+        } else if let asyncPaymentMethod = paymentInstrument as? PaymentMethod.AsyncPaymentMethod {
+            try container.encode(asyncPaymentMethod, forKey: .paymentInstrument)
         } else {
             throw PrimerError.generic
         }
-//        try container.encode(paymentInstrument, forKey: .paymentInstrument)
-        try container.encode(tokenType, forKey: .tokenType)
+
+        try? container.encode(tokenType, forKey: .tokenType)
         try? container.encode(paymentFlow, forKey: .paymentFlow)
         try? container.encode(customerId, forKey: .customerId)
     }
 
 }
 
-struct AsyncPaymentMethodTokenizationRequest: TokenizationRequest {
-    let paymentInstrument: PaymentMethod.AsyncPaymentMethod
-}
-
 protocol PaymentMethodConfigurationOptions: Codable { }
 extension PaymentMethodConfigurationOptions { }
 
 protocol PaymentInstrumentProtocol: Encodable {}
-// feels like we could polymorph this with a protocol, or at least restrict construcions with a specific factory method for each payment instrument.
-struct PaymentMethod: Encodable {
+struct PaymentMethod {
 
     struct PaymentCard: PaymentInstrumentProtocol {
         var number: String
@@ -123,8 +120,7 @@ struct PaymentMethod: Encodable {
         }
     }
     
-    struct AsyncPaymentMethod: PaymentMethodConfigurationOptions {
-        
+    struct AsyncPaymentMethod: PaymentInstrumentProtocol {
         let paymentMethodType: PaymentMethodConfigType
         let paymentMethodConfigId: String
         let type: String = "OFF_SESSION_PAYMENT"
@@ -157,6 +153,9 @@ struct PaymentMethod: Encodable {
             let platform: String = "IOS"
         }
         
+        struct ConfigurationOptions: PaymentMethodConfigurationOptions {
+
+        }
     }
     
 }

@@ -299,9 +299,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
                                            currencyCode: currencyStr)
         
         let request = PaymentMethodTokenizationRequest(
-            paymentInstrument: instrument,
-            state: state
-        )
+            paymentInstrument: instrument)
         
         guard let clientToken = state.decodedClientToken else {
             completion(nil, PrimerError.clientTokenNull)

@@ -288,7 +288,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 sessionInfo = PaymentMethod.AsyncPaymentMethod.SessionInfo(locale: localeCode)
             }
             
-            let request = AsyncPaymentMethodTokenizationRequest(
+            let request = PaymentMethodTokenizationRequest(
                 paymentInstrument: PaymentMethod.AsyncPaymentMethod(
                     paymentMethodType: config.type,
                     paymentMethodConfigId: configId,

@@ -76,10 +76,6 @@ struct PaymentMethodConfig: Codable {
             return ExternalPaymentMethodTokenizationViewModel(config: self)
         }
         
-//        else if case .other = type {
-//            return ExternalPaymentMethodTokenizationViewModel(config: self)
-//        }
-        
         print(type)
         return nil
     }

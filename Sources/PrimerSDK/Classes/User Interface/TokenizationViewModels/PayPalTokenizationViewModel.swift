@@ -342,7 +342,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private func tokenize(instrument: PaymentMethod.PayPal) -> Promise<PaymentMethodToken> {
         return Promise { seal in
             let state: AppStateProtocol = DependencyContainer.resolve()
-            let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+            let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument)
             
             let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
             tokenizationService.tokenize(request: request) { [weak self] result in

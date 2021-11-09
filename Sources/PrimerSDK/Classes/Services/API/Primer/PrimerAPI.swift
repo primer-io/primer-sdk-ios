@@ -201,7 +201,7 @@ internal extension PrimerAPI {
         case .tokenizePaymentMethod(_, let paymentMethodTokenizationRequest):
             if let request = paymentMethodTokenizationRequest as? PaymentMethodTokenizationRequest {
                 return try? JSONEncoder().encode(request)
-            } else if let request = paymentMethodTokenizationRequest as? AsyncPaymentMethodTokenizationRequest {
+            } else if let request = paymentMethodTokenizationRequest as? PaymentMethodTokenizationRequest {
                 return try? JSONEncoder().encode(request)
             } else {
                 return nil
