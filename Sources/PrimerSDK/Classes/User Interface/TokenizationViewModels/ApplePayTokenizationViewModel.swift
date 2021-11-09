@@ -281,7 +281,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                         return completion(nil, PaymentException.missingConfigurationId)
                     }
 
-                    let instrument = PaymentInstrument(
+                    let instrument = PaymentMethod.ApplePay(
                         paymentMethodConfigId: applePayConfigId,
                         token: applePayPaymentResponse.token,
                         sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)

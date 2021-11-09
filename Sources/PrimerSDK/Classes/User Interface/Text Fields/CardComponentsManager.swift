@@ -232,23 +232,12 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             .done { paymentMethodsConfig in
                 self.paymentMethodsConfig = paymentMethodsConfig
                 
-                let paymentInstrument = PaymentInstrument(
+                let paymentInstrument = PaymentMethod.PaymentCard(
                     number: self.cardnumberField.cardnumber,
                     cvv: self.cvvField.cvv,
                     expirationMonth: self.expiryDateField.expiryMonth!,
                     expirationYear: "20" + self.expiryDateField.expiryYear!,
-                    cardholderName: self.cardholderField?.cardholderName,
-                    paypalOrderId: nil,
-                    paypalBillingAgreementId: nil,
-                    shippingAddress: nil,
-                    externalPayerInfo: nil,
-                    paymentMethodConfigId: nil,
-                    token: nil,
-                    sourceConfig: nil,
-                    gocardlessMandateId: nil,
-                    klarnaAuthorizationToken: nil,
-                    klarnaCustomerToken: nil,
-                    sessionData: nil)
+                    cardholderName: self.cardholderField?.cardholderName)
                 
                 let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: PaymentFlow.vault, customerId: self.customerId)
                 

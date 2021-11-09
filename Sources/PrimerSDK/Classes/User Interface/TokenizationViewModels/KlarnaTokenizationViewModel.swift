@@ -201,17 +201,17 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             })
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            var instrument: PaymentInstrument
+            var instrument: PaymentMethod.Klarna
             var request: PaymentMethodTokenizationRequest
             if Primer.shared.flow.internalSessionFlow.vaulted {
-                instrument = PaymentInstrument(klarnaCustomerToken: res.customerTokenId, sessionData: res.sessionData)
+                instrument = PaymentMethod.Klarna(klarnaCustomerToken: res.customerTokenId, sessionData: res.sessionData)
                 request = PaymentMethodTokenizationRequest(
                     paymentInstrument: instrument,
                     paymentFlow: .vault,
                     customerId: settings.customerId)
                 
             } else {
-                instrument = PaymentInstrument(klarnaAuthorizationToken: self.authorizationToken!, sessionData: res.sessionData)
+                instrument = PaymentMethod.Klarna(klarnaAuthorizationToken: self.authorizationToken!, sessionData: res.sessionData)
                 request = PaymentMethodTokenizationRequest(
                     paymentInstrument: instrument,
                     paymentFlow: .checkout,

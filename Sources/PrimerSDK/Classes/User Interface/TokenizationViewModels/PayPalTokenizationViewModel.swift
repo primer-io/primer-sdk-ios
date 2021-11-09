@@ -179,7 +179,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 self.willPresentExternalView?()
                 return self.createOAuthSession(url)
             }
-            .then { url -> Promise<PaymentInstrument> in
+            .then { url -> Promise<PaymentMethod.PayPal> in
                 return self.generatePaypalPaymentInstrument()
             }
             .then { instrument -> Promise<PaymentMethodToken> in
@@ -279,7 +279,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    private func generatePaypalPaymentInstrument() -> Promise<PaymentInstrument> {
+    private func generatePaypalPaymentInstrument() -> Promise<PaymentMethod.PayPal> {
         return Promise { seal in
             generatePaypalPaymentInstrument { result in
                 switch result {
@@ -292,7 +292,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    private func generatePaypalPaymentInstrument(_ completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
+    private func generatePaypalPaymentInstrument(_ completion: @escaping (Result<PaymentMethod.PayPal, Error>) -> Void) {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
             let orderId: AppStateProtocol = DependencyContainer.resolve()
@@ -301,7 +301,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 return
             }
             
-            let paymentInstrument = PaymentInstrument(paypalOrderId: orderId)
+            let paymentInstrument = PaymentMethod.PayPal(paypalOrderId: orderId)
             completion(.success(paymentInstrument))
             
         case .VAULT:
@@ -316,7 +316,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 }
                 return
             }
-            let paymentInstrument = PaymentInstrument(
+            let paymentInstrument = PaymentMethod.PayPal(
                 paypalBillingAgreementId: confirmedBillingAgreement.billingAgreementId,
                 shippingAddress: confirmedBillingAgreement.shippingAddress,
                 externalPayerInfo: confirmedBillingAgreement.externalPayerInfo
@@ -339,7 +339,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         })
     }
     
-    private func tokenize(instrument: PaymentInstrument) -> Promise<PaymentMethodToken> {
+    private func tokenize(instrument: PaymentMethod.PayPal) -> Promise<PaymentMethodToken> {
         return Promise { seal in
             let state: AppStateProtocol = DependencyContainer.resolve()
             let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)

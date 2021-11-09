@@ -291,7 +291,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             return
         }
 
-        let instrument = PaymentInstrument(mx: apayaWebViewResponse.mxNumber,
+        let instrument = PaymentMethod.Apaya(mx: apayaWebViewResponse.mxNumber,
                                            mnc: apayaWebViewResponse.mnc,
                                            mcc: apayaWebViewResponse.mcc,
                                            hashedIdentifier: apayaWebViewResponse.hashedIdentifier,
