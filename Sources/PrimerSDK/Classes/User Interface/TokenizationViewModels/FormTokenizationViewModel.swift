@@ -210,7 +210,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return submitButton
     }()
     
-    required init(config: PaymentMethodConfig) {
+    required init(config: PaymentMethod.Configuration) {
         self.flow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout
         super.init(config: config)
         

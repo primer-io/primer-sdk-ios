@@ -13,9 +13,9 @@ import UIKit
 typealias TokenizationCompletion = ((PaymentMethodToken?, Error?) -> Void)
 
 internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHandlerProtocol {
-    init(config: PaymentMethodConfig)
+    init(config: PaymentMethod.Configuration)
     
-    var config: PaymentMethodConfig { get set }
+    var config: PaymentMethod.Configuration { get set }
     var title: String { get }
     var position: Int { get set }
     var paymentMethodButton: PrimerButton { get }
@@ -38,13 +38,13 @@ internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
     
-    var config: PaymentMethodConfig
+    var config: PaymentMethod.Configuration
     var completion: TokenizationCompletion?
     var paymentMethod: PaymentMethodToken?
     var didStartTokenization: (() -> Void)?
     internal let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    required init(config: PaymentMethodConfig) {
+    required init(config: PaymentMethod.Configuration) {
         self.config = config
         super.init()
     }
