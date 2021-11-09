@@ -182,7 +182,7 @@ public enum PaymentInstrumentType: String, Codable {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
     }
     
-    var paymentMethodType: PaymentMethodConfigType {
+    var paymentMethodType: PaymentMethod.ConfigurationType {
         switch self {
         case .apayaToken:
             return .apaya

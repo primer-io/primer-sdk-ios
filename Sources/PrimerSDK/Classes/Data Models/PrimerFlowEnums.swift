@@ -51,7 +51,7 @@ public enum PrimerSessionFlow: Equatable {
     case checkoutWithPayPal
     case checkoutWithApplePay
     case addApayaToVault
-    case checkoutWithAsyncPaymentMethod(paymentMethodType: PaymentMethodConfigType)
+    case checkoutWithAsyncPaymentMethod(paymentMethodType: PaymentMethod.ConfigurationType)
 
     internal var internalSessionFlow: PrimerInternalSessionFlow {
         switch self {

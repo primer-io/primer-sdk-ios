@@ -34,12 +34,12 @@ struct PrimerConfiguration: Codable {
     let paymentMethods: [PaymentMethodConfig]?
     let keys: ThreeDS.Keys?
     
-    func getConfigId(for type: PaymentMethodConfigType) -> String? {
+    func getConfigId(for type: PaymentMethod.ConfigurationType) -> String? {
         guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
         return method.id
     }
     
-    func getProductId(for type: PaymentMethodConfigType) -> String? {
+    func getProductId(for type: PaymentMethod.ConfigurationType) -> String? {
         guard let method = self.paymentMethods?
                 .first(where: { method in return method.type == type }) else { return nil }
         
@@ -55,7 +55,7 @@ struct PaymentMethodConfig: Codable {
     
     let id: String? // Will be nil for cards
     let processorConfigId: String?
-    let type: PaymentMethodConfigType
+    let type: PaymentMethod.ConfigurationType
     let options: PaymentMethodConfigurationOptions?
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
         if type == .paymentCard {
@@ -84,7 +84,7 @@ struct PaymentMethodConfig: Codable {
         case id, options, processorConfigId, type
     }
     
-    init(id: String?, options: PaymentMethodConfigurationOptions?, processorConfigId: String?, type: PaymentMethodConfigType) {
+    init(id: String?, options: PaymentMethodConfigurationOptions?, processorConfigId: String?, type: PaymentMethod.ConfigurationType) {
         self.id = id
         self.options = options
         self.processorConfigId = processorConfigId
@@ -95,7 +95,7 @@ struct PaymentMethodConfig: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String?.self, forKey: .id)
         processorConfigId = try container.decode(String?.self, forKey: .processorConfigId)
-        type = try container.decode(PaymentMethodConfigType.self, forKey: .type)
+        type = try container.decode(PaymentMethod.ConfigurationType.self, forKey: .type)
         
         if let cardOptions = try? container.decode(PaymentMethod.PaymentCard.ConfigurationOptions.self, forKey: .options) {
             options = cardOptions
@@ -123,125 +123,7 @@ struct PaymentMethodConfig: Codable {
     
 }
 
-public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
-    case aliPay
-    case apaya
-    case applePay
-    case giropay
-    case googlePay
-    case goCardlessMandate
-    case hoolah
-    case klarna
-    case payNLIdeal
-    case paymentCard
-    case payPal
-    case sofort
-    case trustly
-    case twint
-    case other(rawValue: String)
-    
-    init(rawValue: String) {
-        switch rawValue {
-        case "ADYEN_ALIPAY":
-            self = .aliPay
-        case "APAYA":
-            self = .apaya
-        case "APPLE_PAY":
-            self = .applePay
-        case "ADYEN_GIROPAY":
-            self = .giropay
-        case "GOCARDLESS":
-            self = .goCardlessMandate
-        case "GOOGLE_PAY":
-            self = .googlePay
-        case "HOOLAH":
-            self = .hoolah
-        case "KLARNA":
-            self = .klarna
-        case "PAY_NL_IDEAL":
-            self = .payNLIdeal
-        case "PAYMENT_CARD":
-            self = .paymentCard
-        case "PAYPAL":
-            self = .payPal
-        case "ADYEN_SOFORT_BANKING":
-            self = .sofort
-        case "ADYEN_TRUSTLY":
-            self = .trustly
-        case "ADYEN_TWINT":
-            self = .twint
-        default:
-            self = .other(rawValue: rawValue)
-        }
-    }
-    
-    var rawValue: String {
-        switch self {
-        case .aliPay:
-            return "ADYEN_ALIPAY"
-        case .apaya:
-            return "APAYA"
-        case .applePay:
-            return "APPLE_PAY"
-        case .giropay:
-            return "ADYEN_GIROPAY"
-        case .goCardlessMandate:
-            return "GOCARDLESS"
-        case .googlePay:
-            return "GOOGLE_PAY"
-        case .hoolah:
-            return "HOOLAH"
-        case .klarna:
-            return "KLARNA"
-        case .payNLIdeal:
-            return "PAY_NL_IDEAL"
-        case .paymentCard:
-            return "PAYMENT_CARD"
-        case .payPal:
-            return "PAYPAL"
-        case .sofort:
-            return "ADYEN_SOFORT_BANKING"
-        case .trustly:
-            return "ADYEN_TRUSTLY"
-        case .twint:
-            return "ADYEN_TWINT"
-        case .other(let rawValue):
-            return rawValue
-        }
-    }
-    
-    var isEnabled: Bool {
-        switch self {
-        case .goCardlessMandate,
-                .googlePay:
-            return false
-        case .paymentCard,
-                .payPal:
-            return true
-        case .apaya,
-                .klarna:
-            guard let flow = Primer.shared.flow else { return false }
-            return flow.internalSessionFlow.vaulted
-        case .aliPay,
-                .applePay,
-                .giropay,
-                .hoolah,
-                .payNLIdeal,
-                .sofort,
-                .trustly,
-                .twint:
-            guard let flow = Primer.shared.flow else { return false }
-            return !flow.internalSessionFlow.vaulted
-        case .other:
-            return true
-        }
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let rawValue: String = try decoder.singleValueContainer().decode(String.self)
-        self = PaymentMethodConfigType(rawValue: rawValue)
-    }
-}
+
 
 public enum PayType {
     case applePay, payPal, paymentCard, googlePay, goCardless, klarna,

@@ -60,7 +60,127 @@ protocol PaymentMethodConfigurationOptions: Codable { }
 extension PaymentMethodConfigurationOptions { }
 
 protocol PaymentInstrumentProtocol: Encodable {}
-struct PaymentMethod {
+public struct PaymentMethod {
+    
+    public enum ConfigurationType: Codable, Equatable /*: String, Codable*/ {
+        case aliPay
+        case apaya
+        case applePay
+        case giropay
+        case googlePay
+        case goCardlessMandate
+        case hoolah
+        case klarna
+        case payNLIdeal
+        case paymentCard
+        case payPal
+        case sofort
+        case trustly
+        case twint
+        case other(rawValue: String)
+        
+        init(rawValue: String) {
+            switch rawValue {
+            case "ADYEN_ALIPAY":
+                self = .aliPay
+            case "APAYA":
+                self = .apaya
+            case "APPLE_PAY":
+                self = .applePay
+            case "ADYEN_GIROPAY":
+                self = .giropay
+            case "GOCARDLESS":
+                self = .goCardlessMandate
+            case "GOOGLE_PAY":
+                self = .googlePay
+            case "HOOLAH":
+                self = .hoolah
+            case "KLARNA":
+                self = .klarna
+            case "PAY_NL_IDEAL":
+                self = .payNLIdeal
+            case "PAYMENT_CARD":
+                self = .paymentCard
+            case "PAYPAL":
+                self = .payPal
+            case "ADYEN_SOFORT_BANKING":
+                self = .sofort
+            case "ADYEN_TRUSTLY":
+                self = .trustly
+            case "ADYEN_TWINT":
+                self = .twint
+            default:
+                self = .other(rawValue: rawValue)
+            }
+        }
+        
+        var rawValue: String {
+            switch self {
+            case .aliPay:
+                return "ADYEN_ALIPAY"
+            case .apaya:
+                return "APAYA"
+            case .applePay:
+                return "APPLE_PAY"
+            case .giropay:
+                return "ADYEN_GIROPAY"
+            case .goCardlessMandate:
+                return "GOCARDLESS"
+            case .googlePay:
+                return "GOOGLE_PAY"
+            case .hoolah:
+                return "HOOLAH"
+            case .klarna:
+                return "KLARNA"
+            case .payNLIdeal:
+                return "PAY_NL_IDEAL"
+            case .paymentCard:
+                return "PAYMENT_CARD"
+            case .payPal:
+                return "PAYPAL"
+            case .sofort:
+                return "ADYEN_SOFORT_BANKING"
+            case .trustly:
+                return "ADYEN_TRUSTLY"
+            case .twint:
+                return "ADYEN_TWINT"
+            case .other(let rawValue):
+                return rawValue
+            }
+        }
+        
+        var isEnabled: Bool {
+            switch self {
+            case .goCardlessMandate,
+                    .googlePay:
+                return false
+            case .paymentCard,
+                    .payPal:
+                return true
+            case .apaya,
+                    .klarna:
+                guard let flow = Primer.shared.flow else { return false }
+                return flow.internalSessionFlow.vaulted
+            case .aliPay,
+                    .applePay,
+                    .giropay,
+                    .hoolah,
+                    .payNLIdeal,
+                    .sofort,
+                    .trustly,
+                    .twint:
+                guard let flow = Primer.shared.flow else { return false }
+                return !flow.internalSessionFlow.vaulted
+            case .other:
+                return true
+            }
+        }
+        
+        public init(from decoder: Decoder) throws {
+            let rawValue: String = try decoder.singleValueContainer().decode(String.self)
+            self = PaymentMethod.ConfigurationType(rawValue: rawValue)
+        }
+    }
 
     struct PaymentCard: PaymentInstrumentProtocol {
         var number: String
@@ -121,7 +241,7 @@ struct PaymentMethod {
     }
     
     struct AsyncPaymentMethod: PaymentInstrumentProtocol {
-        let paymentMethodType: PaymentMethodConfigType
+        let paymentMethodType: PaymentMethod.ConfigurationType
         let paymentMethodConfigId: String
         let type: String = "OFF_SESSION_PAYMENT"
         let sessionInfo: SessionInfo?
@@ -131,7 +251,7 @@ struct PaymentMethod {
         }
         
         init(
-            paymentMethodType: PaymentMethodConfigType,
+            paymentMethodType: PaymentMethod.ConfigurationType,
             paymentMethodConfigId: String,
             sessionInfo: SessionInfo?
         ) {

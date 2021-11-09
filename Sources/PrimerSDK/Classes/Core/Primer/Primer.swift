@@ -205,7 +205,7 @@ public class Primer {
         show(flow: .defaultWithVault)
     }
     
-    public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
+    public func showPaymentMethod(_ paymentMethod: PaymentMethod.ConfigurationType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
         switch (paymentMethod, intent) {
         case (.apaya, .vault):
             flow = .addApayaToVault

@@ -356,7 +356,7 @@ internal class PrimerRootViewController: PrimerViewController {
 
 extension PrimerRootViewController {
     
-    func presentPaymentMethod(type: PaymentMethodConfigType) {
+    func presentPaymentMethod(type: PaymentMethod.ConfigurationType) {
         guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else { return }
         paymentMethodTokenizationViewModel.didStartTokenization = {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
