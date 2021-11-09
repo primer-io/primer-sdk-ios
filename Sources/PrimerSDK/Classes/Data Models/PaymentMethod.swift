@@ -1,6 +1,6 @@
 #if canImport(UIKit)
 
-protocol PaymentMethodConfigurationOptions: Codable { }
+protocol PaymentMethodConfigurationOptions: Decodable { }
 protocol PaymentInstrument: Encodable {}
 
 public class PaymentMethod: NSObject, Codable {
@@ -228,7 +228,7 @@ public class PaymentMethod: NSObject, Codable {
     
     // MARK: - CONFIGURATION
     
-    internal struct Configuration: Codable {
+    internal struct Configuration: Decodable {
         let id: String? // Will be nil for cards
         let processorConfigId: String?
         let type: PaymentMethod.ConfigurationType
@@ -281,19 +281,6 @@ public class PaymentMethod: NSObject, Codable {
                 options = apayaOptions
             } else {
                 options = nil
-            }
-        }
-        
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(id, forKey: .id)
-            try container.encode(processorConfigId, forKey: .processorConfigId)
-            try container.encode(type, forKey: .type)
-            
-            if let cardOptions = options as? PaymentMethod.PaymentCard.ConfigurationOptions {
-                try container.encode(cardOptions, forKey: .options)
-            } else if let payPalOptions = options as? PaymentMethod.PayPal.ConfigurationOptions {
-                try container.encode(payPalOptions, forKey: .options)
             }
         }
     }

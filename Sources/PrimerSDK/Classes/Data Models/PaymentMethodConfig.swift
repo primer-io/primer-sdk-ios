@@ -1,6 +1,6 @@
 #if canImport(UIKit)
 
-internal struct PrimerConfiguration: Codable {
+internal struct PrimerConfiguration: Decodable {
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
         if Primer.shared.flow == nil { return [] }
