@@ -69,6 +69,14 @@ struct PaymentMethod: Encodable {
         var expirationMonth: String
         var expirationYear: String
         var cardholderName: String?
+        
+        struct ConfigurationOptions: PaymentMethodConfigurationOptions {
+            let threeDSecureEnabled: Bool
+            let threeDSecureToken: String?
+            let threeDSecureInitUrl: String?
+            let threeDSecureProvider: String
+            let processorConfigId: String?
+        }
     }
     
     struct PayPal: PaymentInstrumentProtocol {
@@ -76,6 +84,10 @@ struct PaymentMethod: Encodable {
         var paypalBillingAgreementId: String?
         var shippingAddress: ShippingAddress?
         var externalPayerInfo: PayPalExternalPayerInfo?
+        
+        struct ConfigurationOptions: PaymentMethodConfigurationOptions {
+            let clientId: String
+        }
     }
     
     struct ApplePay: PaymentInstrumentProtocol {
@@ -103,7 +115,12 @@ struct PaymentMethod: Encodable {
         var hashedIdentifier: String?
         var productId: String?
         var currencyCode: String?
+        
+        struct ConfigurationOptions: PaymentMethodConfigurationOptions {
+            let merchantAccountId: String
+        }
     }
+    
 }
 
 public enum TokenType: String, Codable {

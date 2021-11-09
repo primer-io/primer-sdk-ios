@@ -163,7 +163,7 @@ let mockPaymentMethodConfig = PrimerConfiguration(
     paymentMethods: [
         PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
         PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
-        PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+        PaymentMethodConfig(id: "Apaya", options: PaymentMethod.Apaya.ConfigurationOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
     ],
     keys: nil
 )
@@ -210,7 +210,7 @@ class MockAppState: AppStateProtocol {
             paymentMethods: [
                 PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
                 PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
-                PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+                PaymentMethodConfig(id: "Apaya", options: PaymentMethod.Apaya.ConfigurationOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
             ],
             keys: nil
         )

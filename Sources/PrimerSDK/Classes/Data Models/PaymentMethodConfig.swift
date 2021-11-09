@@ -43,7 +43,7 @@ struct PrimerConfiguration: Codable {
         guard let method = self.paymentMethods?
                 .first(where: { method in return method.type == type }) else { return nil }
         
-        if let apayaOptions = method.options as? ApayaOptions {
+        if let apayaOptions = method.options as? PaymentMethod.Apaya.ConfigurationOptions {
             return apayaOptions.merchantAccountId
         } else {
             return nil
@@ -101,11 +101,11 @@ struct PaymentMethodConfig: Codable {
         processorConfigId = try container.decode(String?.self, forKey: .processorConfigId)
         type = try container.decode(PaymentMethodConfigType.self, forKey: .type)
         
-        if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {
+        if let cardOptions = try? container.decode(PaymentMethod.PaymentCard.ConfigurationOptions.self, forKey: .options) {
             options = cardOptions
-        } else if let payPalOptions = try? container.decode(PayPalOptions.self, forKey: .options) {
+        } else if let payPalOptions = try? container.decode(PaymentMethod.PayPal.ConfigurationOptions.self, forKey: .options) {
             options = payPalOptions
-        } else if let apayaOptions = try? container.decode(ApayaOptions.self, forKey: .options) {
+        } else if let apayaOptions = try? container.decode(PaymentMethod.Apaya.ConfigurationOptions.self, forKey: .options) {
             options = apayaOptions
         } else {
             options = nil
@@ -118,9 +118,9 @@ struct PaymentMethodConfig: Codable {
         try container.encode(processorConfigId, forKey: .processorConfigId)
         try container.encode(type, forKey: .type)
         
-        if let cardOptions = options as? CardOptions {
+        if let cardOptions = options as? PaymentMethod.PaymentCard.ConfigurationOptions {
             try container.encode(cardOptions, forKey: .options)
-        } else if let payPalOptions = options as? PayPalOptions {
+        } else if let payPalOptions = options as? PaymentMethod.PayPal.ConfigurationOptions {
             try container.encode(payPalOptions, forKey: .options)
         }
     }
@@ -130,22 +130,6 @@ struct PaymentMethodConfig: Codable {
 protocol PaymentMethodConfigurationOptions: Codable { }
 
 extension PaymentMethodConfigurationOptions { }
-
-struct ApayaOptions: PaymentMethodConfigurationOptions {
-    let merchantAccountId: String
-}
-
-struct PayPalOptions: PaymentMethodConfigurationOptions {
-    let clientId: String
-}
-
-struct CardOptions: PaymentMethodConfigurationOptions {
-    let threeDSecureEnabled: Bool
-    let threeDSecureToken: String?
-    let threeDSecureInitUrl: String?
-    let threeDSecureProvider: String
-    let processorConfigId: String?
-}
 
 struct AsyncPaymentMethodOptions: PaymentMethodConfigurationOptions {
     
