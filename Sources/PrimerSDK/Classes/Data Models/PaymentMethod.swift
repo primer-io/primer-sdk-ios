@@ -1,7 +1,7 @@
 #if canImport(UIKit)
 
 protocol PaymentMethodConfigurationOptions: Codable { }
-protocol PaymentInstrumentProtocol: Encodable {}
+protocol PaymentInstrument: Encodable {}
 
 public class PaymentMethod: NSObject, Codable {
     
@@ -130,7 +130,7 @@ public class PaymentMethod: NSObject, Codable {
         }
     }
 
-    internal struct PaymentCard: PaymentInstrumentProtocol {
+    internal struct PaymentCard: PaymentInstrument {
         var number: String
         var cvv: String
         var expirationMonth: String
@@ -146,7 +146,7 @@ public class PaymentMethod: NSObject, Codable {
         }
     }
     
-    internal struct PayPal: PaymentInstrumentProtocol {
+    internal struct PayPal: PaymentInstrument {
         var paypalOrderId: String?
         var paypalBillingAgreementId: String?
         var shippingAddress: ShippingAddress?
@@ -157,17 +157,17 @@ public class PaymentMethod: NSObject, Codable {
         }
     }
     
-    internal struct ApplePay: PaymentInstrumentProtocol {
+    internal struct ApplePay: PaymentInstrument {
         var paymentMethodConfigId: String?
         var token: ApplePayPaymentResponseToken?
         var sourceConfig: ApplePaySourceConfig?
     }
     
-    internal struct GoCardless: PaymentInstrumentProtocol {
+    internal struct GoCardless: PaymentInstrument {
         var gocardlessMandateId: String?
     }
     
-    internal struct Klarna: PaymentInstrumentProtocol {
+    internal struct Klarna: PaymentInstrument {
         // Klarna payment session
         var klarnaAuthorizationToken: String?
         // Klarna customer token
@@ -175,7 +175,7 @@ public class PaymentMethod: NSObject, Codable {
         var sessionData: KlarnaSessionData?
     }
     
-    internal struct Apaya: PaymentInstrumentProtocol {
+    internal struct Apaya: PaymentInstrument {
         var mx: String?
         var mnc: String?
         var mcc: String?
@@ -188,7 +188,7 @@ public class PaymentMethod: NSObject, Codable {
         }
     }
     
-    internal struct AsyncPaymentMethod: PaymentInstrumentProtocol {
+    internal struct AsyncPaymentMethod: PaymentInstrument {
         let paymentMethodType: PaymentMethod.ConfigurationType
         let paymentMethodConfigId: String
         let type: String = "OFF_SESSION_PAYMENT"
