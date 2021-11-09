@@ -252,7 +252,6 @@ public class PaymentMethod: NSObject, Codable {
                 return ExternalPaymentMethodTokenizationViewModel(config: self)
             }
             
-            print(type)
             return nil
         }
         
