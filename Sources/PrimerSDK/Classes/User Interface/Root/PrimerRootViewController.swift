@@ -319,6 +319,8 @@ internal class PrimerRootViewController: PrimerViewController {
             self.nc.pushViewController(viewController: cvc, animated: false) {
                 var viewControllers = self.nc.viewControllers
                 for (index, vc) in viewControllers.enumerated().reversed() {
+                    // If the loading screen is the last one in the stack, do not remove it yet.
+                    if index == self.nc.viewControllers.count-1 { continue }
                     if vc.children.first is PrimerLoadingViewController {
                         viewControllers.remove(at: index)
                     }
