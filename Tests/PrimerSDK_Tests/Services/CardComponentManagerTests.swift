@@ -118,4 +118,11 @@ class CardComponentManagerTests: XCTestCase {
         }
     }
     
+    func test_is_valid_zip_code() throws {
+        XCTAssertTrue("12345".isValidZipCode)
+    }
+    
+    func test_is_invalid_zip_code() throws {
+        XCTAssertFalse("".isValidZipCode)
+    }
 }

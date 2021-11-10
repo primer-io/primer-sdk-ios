@@ -22,6 +22,8 @@ public protocol PrimerTextFieldViewDelegate {
     
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView)
     
+    func primerTextFieldDidEndEditing(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?)
+    
     func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool
     
     func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool
@@ -32,6 +34,7 @@ public extension PrimerTextFieldViewDelegate {
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {}
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {}
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
+    func primerTextFieldDidEndEditing(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {}
     func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true }
     func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true}
 }
@@ -179,16 +182,17 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         switch validation {
         case .valid:
             delegate?.primerTextFieldView(self, isValid: true)
-
+            delegate?.primerTextFieldDidEndEditing(self, isValid: true)
         case .invalid(let err):
             delegate?.primerTextFieldView(self, isValid: false)
-            
+            delegate?.primerTextFieldDidEndEditing(self, isValid: false)
             if let err = err {
                 delegate?.primerTextFieldView(self, validationDidFailWithError: err)
             }
     
         case .notAvailable:
             delegate?.primerTextFieldView(self, isValid: nil)
+            delegate?.primerTextFieldDidEndEditing(self, isValid: nil)
         }
     }
     

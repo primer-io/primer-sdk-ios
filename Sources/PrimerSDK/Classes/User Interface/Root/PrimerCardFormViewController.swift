@@ -55,6 +55,10 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardholderNameContainerView)
         
+        if (formPaymentMethodTokenizationViewModel.requireZipCode) {
+            verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.zipCodeContainerView)
+        }
+        
         if !Primer.shared.flow.internalSessionFlow.vaulted {
             let saveCardSwitchContainerStackView = UIStackView()
             saveCardSwitchContainerStackView.axis = .horizontal

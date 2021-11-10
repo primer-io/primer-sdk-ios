@@ -118,6 +118,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return 4.0
     }()
     
+    lazy var requireZipCode: Bool = {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.paymentMethodConfig?.requireZipCodeForCards ?? false
+    }()
+    
     lazy var cardNumberField: PrimerCardNumberFieldView = {
         let cardNumberField = PrimerCardNumberFieldView()
         cardNumberField.placeholder = "4242 4242 4242 4242"
@@ -155,6 +160,15 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return cardholderNameField
     }()
     
+    lazy var zipCodeField: PrimerZipCodeFieldView = {
+        let zipCodeField = PrimerZipCodeFieldView()
+        zipCodeField.placeholder = "12345"
+        zipCodeField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        zipCodeField.textColor = theme.colorTheme.text1
+        zipCodeField.delegate = self
+        return zipCodeField
+    }()
+    
     internal lazy var cardNumberContainerView: PrimerCustomFieldView = {
         let cardNumberContainerView = PrimerCustomFieldView()
         cardNumberContainerView.fieldView = cardNumberField
@@ -186,6 +200,15 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cardholderNameContainerView.setup()
         cardholderNameContainerView.tintColor = theme.colorTheme.tint1
         return cardholderNameContainerView
+    }()
+    
+    internal lazy var zipCodeContainerView: PrimerCustomFieldView = {
+        let zipCodeContainerView = PrimerCustomFieldView()
+        zipCodeContainerView.fieldView = zipCodeField
+        zipCodeContainerView.placeholderText = "Zip code" // todo: should localise to postal code for UK, etc.
+        zipCodeContainerView.setup()
+        zipCodeContainerView.tintColor = theme.colorTheme.tint1
+        return zipCodeContainerView
     }()
     
     lazy var submitButton: PrimerOldButton = {
@@ -229,7 +252,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             cardnumberField: cardNumberField,
             expiryDateField: expiryDateField,
             cvvField: cvvField,
-            cardholderNameField: cardholderNameField)
+            cardholderNameField: cardholderNameField,
+            zipCodeField: zipCodeField
+        ) // todo: add zip code field
         cardComponentsManager.delegate = self
     }
     
@@ -264,6 +289,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
+    // dispatch action
+    
     @objc
     override func presentNativeUI() {
         let cfvc = PrimerCardFormViewController(viewModel: self)
@@ -293,6 +320,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     @objc
     func payButtonTapped(_ sender: UIButton) {
         startTokenizationFlow()
+    }
+    
+    func dispatchAction() {
+        print("🔥 dispatch action ahora!")
     }
 }
 
@@ -354,6 +385,14 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             cvvContainerView.errorText = nil
         } else if primerTextFieldView is PrimerCardholderNameFieldView {
             cardholderNameContainerView.errorText = nil
+        } else if primerTextFieldView is PrimerZipCodeFieldView {
+            zipCodeContainerView.errorText = nil
+        }
+    }
+    
+    func primerTextFieldDidEndEditing(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
+        if requireZipCode, primerTextFieldView is PrimerZipCodeFieldView, isValid == true  {
+            dispatchAction()
         }
     }
     
@@ -366,13 +405,20 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             cvvContainerView.errorText = "Invalid CVV"
         } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
             cardholderNameContainerView.errorText = "Invalid name"
+        } else if primerTextFieldView is PrimerZipCodeFieldView, isValid == false {
+            zipCodeContainerView.errorText = "Invalid zip code" // todo: localise if UK, etc.
         }
         
-        if cardNumberField.isTextValid,
-           expiryDateField.isTextValid,
-           cvvField.isTextValid,
-           cardholderNameField.isTextValid
-        {
+        var validations = [
+            cardNumberField.isTextValid,
+            expiryDateField.isTextValid,
+            cvvField.isTextValid,
+            cardholderNameField.isTextValid,
+        ]
+        
+        if requireZipCode { validations.append(zipCodeField.isTextValid) }
+        
+        if validations.allSatisfy({ $0 == true }) {
             submitButton.isEnabled = true
             submitButton.backgroundColor = theme.colorTheme.main2
         } else {
