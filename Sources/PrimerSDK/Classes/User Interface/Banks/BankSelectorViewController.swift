@@ -63,7 +63,6 @@ internal class BankSelectorViewController: PrimerFormViewController {
         
         let tableViewMockView = UIView()
         tableViewMockView.translatesAutoresizingMaskIntoConstraints = false
-        tableViewMockView.heightAnchor.constraint(equalToConstant: 400).isActive = true
         verticalStackView.addArrangedSubview(tableViewMockView)
     }
     
