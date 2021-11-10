@@ -264,6 +264,8 @@ extension DotPayTokenizationViewModel: UITableViewDataSource, UITableViewDelegat
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        
         let bank = self.dataSource[indexPath.row]
         self.tokenize(bank: bank) { (paymentMethod, err) in
             if let err = err {
