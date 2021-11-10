@@ -9,7 +9,7 @@
 
 import UIKit
 
-class DotPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private var flow: PaymentFlow
     private var cardComponentsManager: CardComponentsManager!
@@ -21,12 +21,21 @@ class DotPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     override lazy var title: String = {
-        return "Dot Pay"
+        switch config.type {
+        case .adyenDotPay:
+            return "Dot Pay"
+        case .adyenIDeal:
+            return "iDeal"
+        default:
+            assert(true, "Shouldn't end up in here")
+            return ""
+        }
     }()
     
     override lazy var buttonTitle: String? = {
         switch config.type {
-        case .dotPay:
+        case .adyenDotPay,
+                .adyenIDeal:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -36,8 +45,10 @@ class DotPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override lazy var buttonImage: UIImage? = {
         switch config.type {
-        case .dotPay:
+        case .adyenDotPay:
             return UIImage(named: "dot-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenIDeal:
+            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -46,7 +57,8 @@ class DotPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override lazy var buttonColor: UIColor? = {
         switch config.type {
-        case .dotPay:
+        case .adyenDotPay,
+                .adyenIDeal:
             return .white
         default:
             assert(true, "Shouldn't end up in here")
@@ -56,8 +68,10 @@ class DotPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override lazy var buttonTitleColor: UIColor? = {
         switch config.type {
-        case .dotPay:
+        case .adyenDotPay:
             return nil
+        case .adyenIDeal:
+            return .black
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -66,7 +80,8 @@ class DotPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override lazy var buttonBorderWidth: CGFloat = {
         switch config.type {
-        case .dotPay:
+        case .adyenDotPay,
+                .adyenIDeal:
             return 1.0
         default:
             assert(true, "Shouldn't end up in here")
@@ -76,7 +91,8 @@ class DotPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
-        case .dotPay:
+        case .adyenDotPay,
+                .adyenIDeal:
             return .black
         default:
             assert(true, "Shouldn't end up in here")
@@ -86,8 +102,10 @@ class DotPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
-        case .dotPay:
+        case .adyenDotPay:
             return nil
+        case .adyenIDeal:
+            return .black
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -222,12 +240,12 @@ class DotPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private func tokenize(bank: Bank, completion: @escaping (_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
 
-        let req = AdyenDotPayTokenizationRequest(
+        let req = BankSelectorTokenizationRequest(
             paymentInstrument: PaymentInstrument(
                 paymentMethodConfigId: self.config.id!,
-                sessionInfo: AdyenDotPaySessionInfo(issuer: bank.id),
+                sessionInfo: BankSelectorSessionInfo(issuer: bank.id),
                 type: "OFF_SESSION_PAYMENT",
-                paymentMethodType: "ADYEN_DOTPAY"))
+                paymentMethodType: config.type.rawValue))
         
         guard let clientToken = state.decodedClientToken else {
             completion(nil, PrimerError.clientTokenNull)
@@ -250,7 +268,7 @@ class DotPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
 }
 
-extension DotPayTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
+extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataSource.count
     }
@@ -278,7 +296,7 @@ extension DotPayTokenizationViewModel: UITableViewDataSource, UITableViewDelegat
     }
 }
 
-extension DotPayTokenizationViewModel: UITextFieldDelegate {
+extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         var query: String
         

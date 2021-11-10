@@ -48,7 +48,7 @@ class PrimerNavigationBar: PrimerView {
             renderAvailableCenterSpace()
         }
     }
-    private var titleImageView: UIImageView?
+    var titleImageView: UIImageView?
     
     var title: String? {
         didSet {

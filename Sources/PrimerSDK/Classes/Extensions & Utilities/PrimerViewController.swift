@@ -5,6 +5,7 @@ import UIKit
 internal class PrimerViewController: UIViewController {
     
     var titleImage: UIImage?
+    var titleImageTintColor: UIColor?
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

@@ -209,7 +209,7 @@ internal extension PrimerAPI {
                 return try? JSONEncoder().encode(request)
             } else if let request = paymentMethodTokenizationRequest as? AsyncPaymentMethodTokenizationRequest {
                 return try? JSONEncoder().encode(request)
-            } else if let request = paymentMethodTokenizationRequest as? AdyenDotPayTokenizationRequest {
+            } else if let request = paymentMethodTokenizationRequest as? BankSelectorTokenizationRequest {
                 return try? JSONEncoder().encode(request)
             } else {
                 return nil

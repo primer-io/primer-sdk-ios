@@ -89,7 +89,7 @@
 		822BCEFE93D608FFCCA43F6B4425A0DB /* 3DS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EEA9318334EE7FCB492E2E301510AC1 /* 3DS.swift */; };
 		8438B6CA2739755A0077BAF3 /* AdyenDotPay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438B6C92739755A0077BAF3 /* AdyenDotPay.swift */; };
 		84AAF948BD40091E5F3EC11119D88C86 /* PrimerVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8353770C4E3B5E68447DE7DBCA0855FC /* PrimerVaultManagerViewController.swift */; };
-		84F6C8BC27393960005F82F9 /* DotPayTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F6C8BB27393960005F82F9 /* DotPayTokenizationViewModel.swift */; };
+		84F6C8BC27393960005F82F9 /* BankSelectorTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F6C8BB27393960005F82F9 /* BankSelectorTokenizationViewModel.swift */; };
 		854D9C92C6D645FD1A02ABF7E3BFD59C /* PrimerNibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5EB1B9340509E8C71C5D8D2F653D77 /* PrimerNibView.swift */; };
 		855ECE07E5DADCF85A01150DC3D865A3 /* PrimerViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01287FF8F5038414CAAB0BE48B8AB6AE /* PrimerViewExtensions.swift */; };
 		85CA1245375558F9E3BDBA9FD81BD7E9 /* 3DSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8DA06F73791B9763FE27F3A6C36059 /* 3DSService.swift */; };
@@ -297,7 +297,7 @@
 		81E34A314AD997669B9F57FD7211A889 /* CardButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardButton.swift; sourceTree = "<group>"; };
 		8353770C4E3B5E68447DE7DBCA0855FC /* PrimerVaultManagerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerVaultManagerViewController.swift; sourceTree = "<group>"; };
 		8438B6C92739755A0077BAF3 /* AdyenDotPay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdyenDotPay.swift; sourceTree = "<group>"; };
-		84F6C8BB27393960005F82F9 /* DotPayTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotPayTokenizationViewModel.swift; sourceTree = "<group>"; };
+		84F6C8BB27393960005F82F9 /* BankSelectorTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankSelectorTokenizationViewModel.swift; sourceTree = "<group>"; };
 		882F525E4B236FBA84FEF5B1CA66D263 /* PrimerFormViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerFormViewController.swift; sourceTree = "<group>"; };
 		8831C25BF25F8B7DC29CECBAFC881CBD /* BankTableViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BankTableViewCell.swift; sourceTree = "<group>"; };
 		8C71DA022FB257EA52BC7718304965AF /* PrimerSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerSettings.swift; sourceTree = "<group>"; };
@@ -485,7 +485,7 @@
 				499B398E67FAF5C28DA073A6904C5489 /* KlarnaTokenizationViewModel.swift */,
 				5081E6F4760417CB2557D48A2968A170 /* PaymentMethodTokenizationViewModel.swift */,
 				429AAF90428DFBB7D743B1D128CB828E /* PayPalTokenizationViewModel.swift */,
-				84F6C8BB27393960005F82F9 /* DotPayTokenizationViewModel.swift */,
+				84F6C8BB27393960005F82F9 /* BankSelectorTokenizationViewModel.swift */,
 			);
 			path = TokenizationViewModels;
 			sourceTree = "<group>";
@@ -1260,7 +1260,7 @@
 				68075338C752A78830FF0E3DB96A82FF /* DirectDebitMandate.swift in Sources */,
 				4C703C402426884F7168F8ECAE24BEE1 /* DirectDebitService.swift in Sources */,
 				96362AD7A319AF021201E0F9BD346019 /* Dispatcher.swift in Sources */,
-				84F6C8BC27393960005F82F9 /* DotPayTokenizationViewModel.swift in Sources */,
+				84F6C8BC27393960005F82F9 /* BankSelectorTokenizationViewModel.swift in Sources */,
 				66D0E02675E8319613C8BB93112C1700 /* Endpoint.swift in Sources */,
 				7CDCE2A1598FE90B6AD58CC7EC4422A2 /* EnsureWrappers.swift in Sources */,
 				D6DEED4735126438A6441F313C49B5CF /* Error.swift in Sources */,

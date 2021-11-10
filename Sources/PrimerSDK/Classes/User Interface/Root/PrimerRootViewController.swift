@@ -181,7 +181,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     self?.presentPaymentMethod(type: paymentMethodType)
                     
                 case .checkoutWithAdyenDotPay:
-                    self?.presentPaymentMethod(type: .dotPay)
+                    self?.presentPaymentMethod(type: .adyenDotPay)
                     
                 case .none:
                     break
@@ -366,6 +366,7 @@ internal class PrimerRootViewController: PrimerViewController {
             
             if let pvc = viewController as? PrimerViewController {
                 cvc.mockedNavigationBar.titleImage = pvc.titleImage
+                cvc.mockedNavigationBar.titleImageView?.tintColor = pvc.titleImageTintColor
             }
         }
     }

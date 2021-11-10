@@ -30,7 +30,7 @@ struct AsyncPaymentMethodTokenizationRequest: TokenizationRequest {
     let paymentInstrument: AsyncPaymentMethodOptions
 }
 
-struct AdyenDotPayTokenizationRequest: TokenizationRequest {
+struct BankSelectorTokenizationRequest: TokenizationRequest {
     let paymentInstrument: PaymentInstrument
 }
 
@@ -66,12 +66,12 @@ struct PaymentInstrument: Codable {
     var productId: String?
     var currencyCode: String?
     // DotPay
-    var sessionInfo: AdyenDotPaySessionInfo?
+    var sessionInfo: BankSelectorSessionInfo?
     var type: String?
     var paymentMethodType: String?
 }
 
-internal struct AdyenDotPaySessionInfo: Codable {
+internal struct BankSelectorSessionInfo: Codable {
     var issuer: String?
     let locale: String = "en_US"
     let platform: String = "IOS"

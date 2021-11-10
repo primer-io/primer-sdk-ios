@@ -72,8 +72,8 @@ struct PaymentMethodConfig: Codable {
             return PayPalTokenizationViewModel(config: self)
         } else if type == .apaya {
             return ApayaTokenizationViewModel(config: self)
-        } else if type == .dotPay {
-            return DotPayTokenizationViewModel(config: self)
+        } else if type == .adyenDotPay || type == .adyenIDeal {
+            return BankSelectorTokenizationViewModel(config: self)
         } else if type == .giropay || type == .sofort || type == .twint || type == .aliPay || type == .trustly {
             return ExternalPaymentMethodTokenizationViewModel(config: self)
         }
@@ -200,7 +200,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
     case sofort
     case trustly
     case twint
-    case dotPay
+    case adyenDotPay
+    case adyenIDeal
     case other(rawValue: String)
     
     init(rawValue: String) {
@@ -234,7 +235,9 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
         case "ADYEN_TWINT":
             self = .twint
         case "ADYEN_DOTPAY":
-            self = .dotPay
+            self = .adyenDotPay
+        case "ADYEN_IDEAL":
+            self = .adyenIDeal
         default:
             self = .other(rawValue: rawValue)
         }
@@ -270,8 +273,10 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
             return "ADYEN_TRUSTLY"
         case .twint:
             return "ADYEN_TWINT"
-        case .dotPay:
+        case .adyenDotPay:
             return "ADYEN_DOTPAY"
+        case .adyenIDeal:
+            return "ADYEN_IDEAL"
         case .other(let rawValue):
             return rawValue
         }
@@ -297,7 +302,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
                 .sofort,
                 .trustly,
                 .twint,
-                .dotPay:
+                .adyenDotPay,
+                .adyenIDeal:
             guard let flow = Primer.shared.flow else { return false }
             return !flow.internalSessionFlow.vaulted
         case .other:

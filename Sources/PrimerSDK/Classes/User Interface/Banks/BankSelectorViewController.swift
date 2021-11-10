@@ -13,13 +13,14 @@ internal class BankSelectorViewController: PrimerFormViewController {
     
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    private let viewModel: DotPayTokenizationViewModel
+    private let viewModel: BankSelectorTokenizationViewModel
     internal private(set) var subtitle: String?
     
-    init(viewModel: DotPayTokenizationViewModel) {
+    init(viewModel: BankSelectorTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         self.titleImage = viewModel.buttonImage!
+        self.titleImageTintColor = viewModel.buttonTintColor
     }
     
     required init?(coder: NSCoder) {
