@@ -413,8 +413,10 @@ internal class PrimerRootViewController: PrimerViewController {
                 show = false
             }
             
+            let height = self.nc.viewControllers.first?.view.bounds.height ?? 300
+            
             if show {
-                let lvc = PrimerLoadingViewController(withHeight: 300)
+                let lvc = PrimerLoadingViewController(withHeight: height)
                 self.show(viewController: lvc)
             }
         }
