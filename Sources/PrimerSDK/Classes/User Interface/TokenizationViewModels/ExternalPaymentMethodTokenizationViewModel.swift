@@ -31,6 +31,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Trustly"
         case .adyenMobilePay:
             return "Mobile Pay"
+        case .adyenVipps:
+            return "Vipps"
         default:
             assert(true, "Shouldn't end up in here")
             return ""
@@ -46,7 +48,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .sofort,
                 .twint,
                 .trustly,
-                .adyenMobilePay:
+                .adyenMobilePay,
+                .adyenVipps:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -72,6 +75,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenMobilePay:
             return UIImage(named: "mobile-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .adyenVipps:
+            return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -96,6 +101,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
         case .adyenMobilePay:
             return UIColor(red: 90.0/255, green: 120.0/255, blue: 255.0/255, alpha: 1.0)
+        case .adyenVipps:
+            return UIColor(red: 255.0/255, green: 91.0/255, blue: 36.0/255, alpha: 1.0)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -110,7 +117,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLIdeal,
                 .twint,
                 .trustly,
-                .adyenMobilePay:
+                .adyenMobilePay,
+                .adyenVipps:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -126,7 +134,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLIdeal,
                 .twint,
                 .trustly,
-                .adyenMobilePay:
+                .adyenMobilePay,
+                .adyenVipps:
             return 0.0
         default:
             assert(true, "Shouldn't end up in here")
@@ -142,7 +151,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLIdeal,
                 .twint,
                 .trustly,
-                .adyenMobilePay:
+                .adyenMobilePay,
+                .adyenVipps:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -156,7 +166,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .hoolah,
                 .payNLIdeal,
                 .sofort,
-                .adyenMobilePay:
+                .adyenMobilePay,
+                .adyenVipps:
             return .white
         case .trustly:
             return .black

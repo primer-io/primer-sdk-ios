@@ -77,7 +77,8 @@ struct PaymentMethodConfig: Codable {
                     type == .twint ||
                     type == .aliPay ||
                     type == .trustly ||
-                    type == .adyenMobilePay {
+                    type == .adyenMobilePay ||
+                    type == .adyenVipps {
             return ExternalPaymentMethodTokenizationViewModel(config: self)
         }
         
@@ -204,6 +205,7 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
     case trustly
     case twint
     case adyenMobilePay
+    case adyenVipps
     case other(rawValue: String)
     
     init(rawValue: String) {
@@ -238,6 +240,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
             self = .twint
         case "ADYEN_MOBILEPAY":
             self = .adyenMobilePay
+        case "ADYEN_VIPPS":
+            self = .adyenVipps
         default:
             self = .other(rawValue: rawValue)
         }
@@ -275,6 +279,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
             return "ADYEN_TWINT"
         case .adyenMobilePay:
             return "ADYEN_MOBILEPAY"
+        case .adyenVipps:
+            return "ADYEN_VIPPS"
         case .other(let rawValue):
             return rawValue
         }
@@ -300,7 +306,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
                 .sofort,
                 .trustly,
                 .twint,
-                .adyenMobilePay:
+                .adyenMobilePay,
+                .adyenVipps:
             guard let flow = Primer.shared.flow else { return false }
             return !flow.internalSessionFlow.vaulted
         case .other:

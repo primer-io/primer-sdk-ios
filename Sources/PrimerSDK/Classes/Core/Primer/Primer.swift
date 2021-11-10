@@ -252,6 +252,9 @@ public class Primer {
         case (.adyenMobilePay, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenMobilePay)
             
+        case (.adyenVipps, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenVipps)
+            
         case (.payPal, .checkout):
             flow = .checkoutWithPayPal
             
@@ -270,6 +273,7 @@ public class Primer {
             (.trustly, .vault),
             (.twint, .vault),
             (.adyenMobilePay, .vault),
+            (.adyenVipps, .vault),
             (.other, _):
             let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
             Primer.shared.delegate?.checkoutFailed?(with: err)
