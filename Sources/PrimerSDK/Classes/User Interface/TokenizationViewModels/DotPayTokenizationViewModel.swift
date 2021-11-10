@@ -111,7 +111,6 @@ class DotPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func validate() throws {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
