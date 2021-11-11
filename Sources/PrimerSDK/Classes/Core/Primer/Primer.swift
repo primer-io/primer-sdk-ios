@@ -34,6 +34,20 @@ public class Primer {
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
         }
+        
+        let event = Reporting.Event(
+            action: .tap,
+            object: .textField,
+            endUserId: "uid",
+            objectId: "obj_id",
+            objectClass: "Primer",
+            paymentId: "payment_id",
+            place: "universal_checkout",
+            primerAccountId: "primer_account_id",
+            properties: nil,
+            sessionId: "session_id")
+        
+        Reporting.Service.record(event: event)
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
