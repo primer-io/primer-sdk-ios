@@ -136,7 +136,8 @@ internal class PrimerRootViewController: PrimerViewController {
 
                     
                 case .completeDirectCheckout:
-                    break
+                    self?.blurBackground()
+                    self?.presentPaymentMethod(type: .paymentCard)
                     
                 case .addPayPalToVault,
                         .checkoutWithPayPal:
@@ -147,6 +148,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     }
 
                 case .addCardToVault:
+                    self?.blurBackground()
                     self?.presentPaymentMethod(type: .paymentCard)
                     
                 case .addDirectDebitToVault:
