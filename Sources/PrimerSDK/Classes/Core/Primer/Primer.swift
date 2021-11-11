@@ -35,7 +35,7 @@ public class Primer {
             self?.setDependencies(settings: settings, theme: PrimerTheme())
         }
         
-        let event = Reporting.Event(
+        let event = Analytics.Event(
             action: .tap,
             object: .textField,
             endUserId: "uid",
@@ -47,7 +47,7 @@ public class Primer {
             properties: nil,
             sessionId: "session_id")
         
-        Reporting.Service.record(event: event)
+        Analytics.Service.record(event: event)
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {

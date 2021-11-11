@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Reporting {
+class Analytics {
     
     struct Event: Codable {
         
@@ -20,8 +20,8 @@ class Reporting {
             case textField
         }
         
-        var action: Reporting.Event.Action
-        var object: Reporting.Event.Object?
+        var action: Analytics.Event.Action
+        var object: Analytics.Event.Object?
         var endUserId: String?
         var objectId: String?
         var objectClass: String?
@@ -37,8 +37,8 @@ class Reporting {
         var isSynced: Bool = false  // Do not include in JSON
         
         init(
-            action: Reporting.Event.Action,
-            object: Reporting.Event.Object?,
+            action: Analytics.Event.Action,
+            object: Analytics.Event.Object?,
             endUserId: String?,
             objectId: String?,
             objectClass: String?,
@@ -86,31 +86,31 @@ class Reporting {
         
         @objc
         private func onTerminate() {
-            Reporting.Service.sync(enforce: true)
+            Analytics.Service.sync(enforce: true)
         }
         
         private static func loadEvents() -> [Event] {
-            guard let encryptedEventsData = try? Data(contentsOf: Reporting.Service.filepath) else { return [] }
+            guard let encryptedEventsData = try? Data(contentsOf: Analytics.Service.filepath) else { return [] }
             
             let aes = AES256()
             guard let deryptedEventsData = try? aes.decrypt(encryptedEventsData) else {
                 return []
             }
             
-            guard let events = try? JSONDecoder().decode([Reporting.Event].self, from: deryptedEventsData) else {
+            guard let events = try? JSONDecoder().decode([Analytics.Event].self, from: deryptedEventsData) else {
                 return []
             }
 
             return events.unique(map: { $0.clientEventId }).sorted(by: { $0.timestamp > $1.timestamp })
         }
         
-        internal static func record(event: Reporting.Event) {
-            Reporting.Service.record(events: [event])
+        internal static func record(event: Analytics.Event) {
+            Analytics.Service.record(events: [event])
         }
         
-        internal static func record(events: [Reporting.Event]) {
+        internal static func record(events: [Analytics.Event]) {
             // First load events
-            var tmpEvents = Reporting.Service.loadEvents()
+            var tmpEvents = Analytics.Service.loadEvents()
             
             // Merge them
             tmpEvents.append(contentsOf: events)
@@ -124,16 +124,16 @@ class Reporting {
             // Sort them
             let sortedEvents = filteredEvents.sorted(by: { $0.timestamp < $1.timestamp })
             
-            try? Reporting.Service.save(events: sortedEvents)
+            try? Analytics.Service.save(events: sortedEvents)
             
-            Reporting.Service.sync()
+            Analytics.Service.sync()
         }
         
-        private static func save(events: [Reporting.Event]) throws {
+        private static func save(events: [Analytics.Event]) throws {
             let eventsData = try JSONEncoder().encode(events)
             let aes = AES256()
             let encryptedEventsData = try aes.encrypt(eventsData)
-            try encryptedEventsData.write(to: Reporting.Service.filepath)
+            try encryptedEventsData.write(to: Analytics.Service.filepath)
         }
         
         private static func sync(enforce: Bool = false, batchSize: UInt = 50) {
