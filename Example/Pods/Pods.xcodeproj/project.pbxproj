@@ -96,6 +96,7 @@
 		8141F343E7873292EC1659A7A543320F /* CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A896AD30107D27C86FFA9154BC6CC2 /* CustomStringConvertible.swift */; };
 		815D1AA4A88A92E953B384DD278AA94B /* PaymentMethodConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824A215F780AB15221370BE8DAB4BF12 /* PaymentMethodConfig.swift */; };
 		8438B6CC273A98610077BAF3 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438B6CB273A98610077BAF3 /* PaymentMethod.swift */; };
+		8438B6CE273A9D990077BAF3 /* Reporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438B6CD273A9D990077BAF3 /* Reporting.swift */; };
 		86C477C21DA4B7803AE3F50AB1FBC364 /* SequenceWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F431615DA51C923EA2F4D4B3E2F625E2 /* SequenceWrappers.swift */; };
 		87DA583491ADC78185EF67BAD3AB34C3 /* KlarnaTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EBF4A9E76A0211D7F43E6F97754CF4A /* KlarnaTokenizationViewModel.swift */; };
 		891062CF7D8F9CD1E2804D6AF692DD90 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B97E375E7F53C711E7352DF678159C /* DateExtension.swift */; };
@@ -296,6 +297,7 @@
 		824A215F780AB15221370BE8DAB4BF12 /* PaymentMethodConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfig.swift; sourceTree = "<group>"; };
 		833DE310F13EF92660FD1A8FA89AC234 /* PaymentResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentResponse.swift; sourceTree = "<group>"; };
 		8438B6CB273A98610077BAF3 /* PaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethod.swift; sourceTree = "<group>"; };
+		8438B6CD273A9D990077BAF3 /* Reporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reporting.swift; sourceTree = "<group>"; };
 		84CB650C510EED03D6EA7453C7245469 /* VaultPaymentMethodViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewController.swift; sourceTree = "<group>"; };
 		8722282BBB9C10CF76DCADF3D77FAC80 /* PrimerCustomStyleTextField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerCustomStyleTextField.swift; sourceTree = "<group>"; };
 		88F4D60E63043050B12857342FDC15DD /* Logger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
@@ -681,6 +683,7 @@
 				679EF26DFC04B76916ED8D34EC97FF44 /* VaultCheckoutViewModel.swift */,
 				C7A3B9245C95AAC5CC9B118FB9BD7D70 /* PCI */,
 				8438B6CB273A98610077BAF3 /* PaymentMethod.swift */,
+				8438B6CD273A9D990077BAF3 /* Reporting.swift */,
 			);
 			name = "Data Models";
 			path = "Sources/PrimerSDK/Classes/Data Models";
@@ -1325,6 +1328,7 @@
 				55046A2BA965ED6884DEE655FD363BDF /* UIColorExtension.swift in Sources */,
 				4E1072B9B84557911570EDC61EE7C27F /* UIDeviceExtension.swift in Sources */,
 				7C461DCEEB5A81AF9158305DC45381F6 /* URLExtension.swift in Sources */,
+				8438B6CE273A9D990077BAF3 /* Reporting.swift in Sources */,
 				8BF505A493E3761A7221D78F0C49FA48 /* URLSessionStack.swift in Sources */,
 				102BD6B2B85270C16C76E39847EAC628 /* UserDefaultsExtension.swift in Sources */,
 				F022FBC7FC1E95D810FF5A2C205ECEEA /* UXMode.swift in Sources */,
