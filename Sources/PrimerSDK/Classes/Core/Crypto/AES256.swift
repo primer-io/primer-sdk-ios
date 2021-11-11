@@ -39,6 +39,13 @@ internal struct AES256 {
     }
     
     init() {
+        if UserDefaults.primerFramework.string(forKey: "launched") == nil {
+            try? Keychain.deletePassword(service: AES256.reportingService, account: AES256.aes256KeyAcount)
+        }
+        
+        UserDefaults.primerFramework.set("true", forKey: "launched")
+        UserDefaults.primerFramework.synchronize()
+        
         var aesKey = try? Keychain.readPassword(service: AES256.reportingService, account: AES256.aes256KeyAcount)
         if aesKey == nil {
             let password = String.randomString(length: 32)
