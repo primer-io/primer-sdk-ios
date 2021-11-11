@@ -34,8 +34,6 @@ public class Primer {
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
         }
-        
-        
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
