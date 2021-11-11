@@ -49,7 +49,7 @@
 		3A0F07A9B51A2ACDDFCBA1A5EC74979F /* PrimerWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A26FDABF5447B3167AF14951F5BE20F6 /* PrimerWebViewController.swift */; };
 		3D773E705E72D08446C665061A0A28C8 /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7CE942F2D7BC28C5E2AEE14DC5B5DF /* Validation.swift */; };
 		402CCFA850AE8EF6A630A1C64B46C2F8 /* CardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79EF7987E309160EEA2DA0783220BE8A /* CardButton.swift */; };
-		417F5E547794276E78BBFDF53F0C4A67 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80502BA63C8616515BF95B971DFFADF /* Logger.swift */; };
+		417F5E547794276E78BBFDF53F0C4A67 /* PrimerLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80502BA63C8616515BF95B971DFFADF /* PrimerLogger.swift */; };
 		434AE57EB053108D8E3FC6BAFB06528A /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4233B5C13170B5FFE6EEE93265E81E /* Queue.swift */; };
 		45524F7BCB7C6CBB1AE1CCDB62A31CBF /* PrimerLoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF0AFB55CA435B24F7063DFC9E23DD57 /* PrimerLoadingViewController.swift */; };
 		460E61E33C72AE28097E92AE0E5E9EFE /* ConcurrencyLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69BB8DA83B0AECCC3C7AFE259BCE946 /* ConcurrencyLimitedDispatcher.swift */; };
@@ -382,7 +382,7 @@
 		EF5C7B4269DE03E54864EF213AC41E6C /* PrimerFlowEnums.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerFlowEnums.swift; sourceTree = "<group>"; };
 		F2AB58843650725170075BD2B1CE11F6 /* PrimerRootViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerRootViewController.swift; sourceTree = "<group>"; };
 		F7B48CC82297D62E27EA98AE7A13D3DA /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		F80502BA63C8616515BF95B971DFFADF /* Logger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		F80502BA63C8616515BF95B971DFFADF /* PrimerLogger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerLogger.swift; sourceTree = "<group>"; };
 		FAA3AEC0961895F97C260DDE3882A25C /* PaymentResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentResponse.swift; sourceTree = "<group>"; };
 		FC9DA110560CFDCB2FDBFCFE4A5B6D87 /* Error.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		FD36DA9DFDB76835D33FB577D26A5166 /* CountryCode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountryCode.swift; sourceTree = "<group>"; };
@@ -594,6 +594,7 @@
 		54D6131473D90082A6083E79722AF052 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				84717947273D57E6006A82DA /* Helpers */,
 				84717944273D50DC006A82DA /* Analytics */,
 				84717940273D4F24006A82DA /* Extensions */,
 				C736E90C429B832D54F6091FB6ECE4A2 /* 3DS */,
@@ -740,6 +741,8 @@
 			isa = PBXGroup;
 			children = (
 				84717941273D4F31006A82DA /* ArrayExtension.swift */,
+				41015A2B9A16F292A8DB9C6C7E03A9A7 /* BundleExtension.swift */,
+				95414247BC3DFC82A1D12A5B73666451 /* UserDefaultsExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -750,6 +753,14 @@
 				3E9B74F90037715224208A6BF9BF2D34 /* Analytics.swift */,
 			);
 			path = Analytics;
+			sourceTree = "<group>";
+		};
+		84717947273D57E6006A82DA /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				F80502BA63C8616515BF95B971DFFADF /* PrimerLogger.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		855CB9A20CC435C53B137805CBBB7E5C /* Vault */ = {
@@ -862,10 +873,8 @@
 			isa = PBXGroup;
 			children = (
 				4D8F9FBC3FE3FC0C544AC0986447BA22 /* AlertController.swift */,
-				41015A2B9A16F292A8DB9C6C7E03A9A7 /* BundleExtension.swift */,
 				04CAD43071631EE17F42F3E6E3FD4AD2 /* DateExtension.swift */,
 				9621AF769BDC25E0E1BBEB45B8C30628 /* IntExtension.swift */,
-				F80502BA63C8616515BF95B971DFFADF /* Logger.swift */,
 				1163D91B644B3AD848C77A50C385B2B5 /* Mask.swift */,
 				015DCAEB4E0FA357479B832D52506422 /* Optional+Extensions.swift */,
 				E294D68CF8705825AF7BB12BDDD79733 /* PresentationController.swift */,
@@ -880,7 +889,6 @@
 				5688295AB17D3FEDD2FA72A8BC253014 /* UIColorExtension.swift */,
 				48DE0B4532AD7D7EDED69DD599A2EADA /* UIDeviceExtension.swift */,
 				71E6CF212E5996BDBBAF687266B0F4F1 /* URLExtension.swift */,
-				95414247BC3DFC82A1D12A5B73666451 /* UserDefaultsExtension.swift */,
 				3F7CE942F2D7BC28C5E2AEE14DC5B5DF /* Validation.swift */,
 				31B84BBEB6661558F25BC9A7E4AD365A /* WebViewUtil.swift */,
 			);
@@ -1287,7 +1295,7 @@
 				2A0EEDE4420D85B9C40BBC9D731C20FF /* KlarnaTokenizationViewModel.swift in Sources */,
 				B8965930D363E79A8095D5D209E42934 /* LoadingViewController.swift in Sources */,
 				030D117DB9F79B432EE5D15B8C8E98B1 /* LogEvent.swift in Sources */,
-				417F5E547794276E78BBFDF53F0C4A67 /* Logger.swift in Sources */,
+				417F5E547794276E78BBFDF53F0C4A67 /* PrimerLogger.swift in Sources */,
 				F265F0BC4738F6568605C80657EC2BD1 /* Mask.swift in Sources */,
 				0DF863BED9CD9944E52E4408F7703C35 /* NetworkService.swift in Sources */,
 				174C47F3936CBF5938CD75D1066AE5D4 /* Optional+Extensions.swift in Sources */,
