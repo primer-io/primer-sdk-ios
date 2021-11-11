@@ -13,10 +13,10 @@ internal struct AES256 {
     private static var reportingService: String = {
         return "primer.reporting"
     }()
-    private static var aes256KeyAcount: String = {
+    private static var keyAccount: String = {
         return "aes256.key"
     }()
-    private static var aes256IvAcount: String = {
+    private static var ivAccount: String = {
         return "aes256.iv"
     }()
     
@@ -31,8 +31,8 @@ internal struct AES256 {
             throw Error.badInputVectorLength
         }
         
-        try! Keychain.save(password: key, service: AES256.reportingService, account: AES256.aes256KeyAcount)
-        try! Keychain.save(password: iv, service: AES256.reportingService, account: AES256.aes256IvAcount)
+        try! Keychain.save(password: key, service: AES256.reportingService, account: AES256.keyAccount)
+        try! Keychain.save(password: iv, service: AES256.reportingService, account: AES256.ivAccount)
         
         self.key = key
         self.iv = iv
@@ -40,24 +40,24 @@ internal struct AES256 {
     
     init() {
         if UserDefaults.primerFramework.string(forKey: "launched") == nil {
-            try? Keychain.deletePassword(service: AES256.reportingService, account: AES256.aes256KeyAcount)
+            try? Keychain.deletePassword(service: AES256.reportingService, account: AES256.keyAccount)
         }
         
         UserDefaults.primerFramework.set("true", forKey: "launched")
         UserDefaults.primerFramework.synchronize()
         
-        var aesKey = try? Keychain.readPassword(service: AES256.reportingService, account: AES256.aes256KeyAcount)
+        var aesKey = try? Keychain.readPassword(service: AES256.reportingService, account: AES256.keyAccount)
         if aesKey == nil {
             let password = String.randomString(length: 32)
             let salt = String.randomString(length: 16)
             aesKey = try? AES256.createKey(password: password.data(using: .utf8)!, salt: salt.data(using: .utf8)!)
-            try! Keychain.save(password: aesKey!, service: AES256.reportingService, account: AES256.aes256KeyAcount)
+            try! Keychain.save(password: aesKey!, service: AES256.reportingService, account: AES256.keyAccount)
         }
         
-        var aesIv = try? Keychain.readPassword(service: AES256.reportingService, account: AES256.aes256IvAcount)
+        var aesIv = try? Keychain.readPassword(service: AES256.reportingService, account: AES256.ivAccount)
         if aesIv == nil {
             aesIv = AES256.randomIv()
-            try! Keychain.save(password: aesIv!, service: AES256.reportingService, account: AES256.aes256IvAcount)
+            try! Keychain.save(password: aesIv!, service: AES256.reportingService, account: AES256.ivAccount)
         }
         
         
