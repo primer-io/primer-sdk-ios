@@ -44,7 +44,9 @@ public class Primer {
             paymentId: "payment_id",
             place: "universal_checkout",
             primerAccountId: "primer_account_id",
-            properties: nil,
+            properties: [
+                "textFieldBackgroundColor": UIColor.orange.primerColor.hexString
+            ],
             sessionId: "session_id")
         
         Analytics.Service.record(event: event)

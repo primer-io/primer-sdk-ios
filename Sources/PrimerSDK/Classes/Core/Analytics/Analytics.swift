@@ -7,6 +7,32 @@
 
 import Foundation
 
+struct Device: Codable {
+    let model: Model = UIDevice.model
+    let screen: Device.Screen = Device.Screen()
+    let batteryLevel: Float
+    
+    private enum CodingKeys : String, CodingKey {
+        case model, screen, batteryLevel
+    }
+    
+    init() {
+        UIDevice.current.isBatteryMonitoringEnabled = true
+        batteryLevel = UIDevice.current.batteryLevel
+        UIDevice.current.isBatteryMonitoringEnabled = false
+    }
+    
+    struct Screen: Codable {
+        let width: CGFloat
+        let height: CGFloat
+        
+        init() {
+            width = UIScreen.main.bounds.width
+            height = UIScreen.main.bounds.height
+        }
+    }
+}
+
 class Analytics {
     
     struct Event: Codable {
@@ -32,6 +58,13 @@ class Analytics {
         var sessionId: String?
         
         var timestamp: Date
+        let platform: String = "IOS"
+        let platformVersion = UIDevice.current.systemVersion
+        var frameworkIdentifier: String? = Bundle.primerFrameworkIdentifier
+        let sdkVersion: String? = Bundle.primerFramework.releaseVersionNumber
+        let sdkBuild: String? = Bundle.primerFramework.buildVersionNumber
+        let appIdentifier: String? = Bundle.main.bundleIdentifier
+        let device = Device()
         
         let clientEventId: String = String.randomString(length: 16)         // Do not include in JSON
         var isSynced: Bool = false  // Do not include in JSON
@@ -60,6 +93,13 @@ class Analytics {
             self.sessionId = sessionId
             
             self.timestamp = Date()
+        }
+        
+        var json: Any? {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+            guard let data = try? encoder.encode(self) else { return nil }
+            return data.prettyPrintedJSONString
         }
     }
     
