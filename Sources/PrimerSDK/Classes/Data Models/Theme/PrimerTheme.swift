@@ -111,16 +111,16 @@ public class PrimerTheme: PrimerThemeProtocol {
         data.buttons.paymentMethod.defaultColor = theme.main1
         data.buttons.paymentMethod.disabledColor = theme.disabled1
         data.buttons.paymentMethod.cornerRadius = cornerRadiusTheme.buttons
-        data.buttons.paymentMethod.border.defaultColor = theme.main1
+        data.buttons.paymentMethod.border.defaultColor = theme.text1
         data.buttons.paymentMethod.border.selectedColor = theme.tint1
         data.buttons.paymentMethod.text.defaultColor = theme.text1
-        data.buttons.paymentMethod.iconColor = theme.text1
+        data.buttons.paymentMethod.iconColor = theme.tint1
         data.buttons.main.defaultColor = theme.tint1
         data.buttons.main.disabledColor = theme.disabled1
         data.buttons.main.cornerRadius = cornerRadiusTheme.buttons
         data.buttons.main.border.defaultColor = theme.tint1
         data.buttons.main.border.selectedColor = theme.tint1
-        data.buttons.main.text.defaultColor = theme.text1
+        data.buttons.main.text.defaultColor = theme.text2
         data.buttons.main.iconColor = theme.text1
         self.data = data
     }
@@ -155,7 +155,7 @@ public class PrimerTheme: PrimerThemeProtocol {
         data.buttons.paymentMethod.defaultColor = theme.main1
         data.buttons.paymentMethod.disabledColor = theme.disabled1
         data.buttons.paymentMethod.cornerRadius = cornerRadiusTheme.buttons
-        data.buttons.paymentMethod.border.defaultColor = theme.main1
+        data.buttons.paymentMethod.border.defaultColor = theme.neutral1
         data.buttons.paymentMethod.border.selectedColor = theme.tint1
         data.buttons.paymentMethod.text.defaultColor = theme.text1
         data.buttons.paymentMethod.iconColor = theme.text1
@@ -164,7 +164,7 @@ public class PrimerTheme: PrimerThemeProtocol {
         data.buttons.main.cornerRadius = cornerRadiusTheme.buttons
         data.buttons.main.border.defaultColor = theme.tint1
         data.buttons.main.border.selectedColor = theme.tint1
-        data.buttons.main.text.defaultColor = theme.text1
+        data.buttons.main.text.defaultColor = theme.text2
         data.buttons.main.iconColor = theme.text1
         self.data = data
     }

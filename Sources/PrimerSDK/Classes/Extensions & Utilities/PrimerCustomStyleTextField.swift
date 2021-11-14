@@ -129,8 +129,9 @@ internal class PrimerCustomStyleTextField: UITextField {
     }
 
     private func configureErrorMessage() {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         errorMessage.font = .systemFont(ofSize: 12)
-        errorMessage.textColor = .systemRed
+        errorMessage.textColor = theme.text.error.color
         errorMessage.translatesAutoresizingMaskIntoConstraints = false
         errorMessage.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         errorMessage.topAnchor.constraint(equalTo: bottomAnchor, constant: 2).isActive = true

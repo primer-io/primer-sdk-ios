@@ -111,7 +111,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .googlePay:
             return nil
         case .goCardlessMandate:
-            return .white
+            return theme.paymentMethodButton.color(for: .enabled)
         case .other:
             return nil
         default:

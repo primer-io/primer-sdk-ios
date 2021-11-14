@@ -25,7 +25,7 @@ class PrimerNavigationBar: PrimerView {
     
     var rightBarButton: UIButton? {
         didSet {
-            rightBarButton?.tintColor = .systemRed
+            rightBarButton?.tintColor = theme.text.system.color
             rightBarButton?.setTitleColor(theme.text.system.color, for: .normal)
             rightBarButton?.frame = CGRect(
                 x: 0, y: 0, width: rightView.bounds.size.width, height: rightView.bounds.size.height

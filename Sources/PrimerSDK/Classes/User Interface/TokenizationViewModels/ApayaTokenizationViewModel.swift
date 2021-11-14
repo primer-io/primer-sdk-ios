@@ -49,7 +49,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     override lazy var buttonColor: UIColor? = {
         switch config.type {
         case .apaya:
-            return .white
+            return theme.paymentMethodButton.color(for: .enabled)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
