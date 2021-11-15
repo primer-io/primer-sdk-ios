@@ -123,8 +123,6 @@ extension PrimerInputViewController: PrimerTextFieldViewDelegate {
         } else {
             enableConfirmButton(true)
         }
-
-        print("Validations:\n\(isTextsValid)")
     }
     
     func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool {
@@ -143,7 +141,7 @@ extension PrimerInputViewController: PrimerTextFieldViewDelegate {
     }
     
     func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView) {
-        print("primerTextFieldView: \(primerTextFieldView.text)")
+
     }
     
 }
