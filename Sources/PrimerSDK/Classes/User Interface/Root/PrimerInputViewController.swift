@@ -27,9 +27,10 @@ internal class PrimerInputViewController: PrimerFormViewController {
     private(set) var inputs: [Input] = []
     private let confirmButton = PrimerButton()
     
-    init(inputs: [Input]) {
+    init(navigationBarLogo: UIImage?, inputs: [Input]) {
         self.inputs = inputs
         super.init(nibName: nil, bundle: nil)
+        self.titleImage = navigationBarLogo
     }
     
     required init?(coder: NSCoder) {
@@ -38,9 +39,7 @@ internal class PrimerInputViewController: PrimerFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        title = "Blik"
-        
+                
         verticalStackView.spacing = 16
         
         for input in inputs {

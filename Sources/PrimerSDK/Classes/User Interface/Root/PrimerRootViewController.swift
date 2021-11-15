@@ -324,7 +324,14 @@ internal class PrimerRootViewController: PrimerViewController {
         UIView.animate(withDuration: self.presentationDuration, delay: 0, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
         } completion: { _ in
+            if let title = viewController.title {
+                cvc.mockedNavigationBar.title = title
+            }
             
+            if let pvc = viewController as? PrimerViewController {
+                cvc.mockedNavigationBar.titleImage = pvc.titleImage
+                cvc.mockedNavigationBar.titleImageView?.tintColor = pvc.titleImageTintColor
+            }
         }
     }
     

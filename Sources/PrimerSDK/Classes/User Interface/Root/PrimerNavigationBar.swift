@@ -39,13 +39,24 @@ class PrimerNavigationBar: PrimerView {
         }
     }
     
-    var title: String? {
+    private var availableCenterSpaceView = PrimerView()
+    private var centerStackView: UIStackView?
+    
+    var titleImage: UIImage? {
         didSet {
-            titlelabel.text = title
+            titleImageView?.image = titleImage
+            renderAvailableCenterSpace()
         }
     }
+    var titleImageView: UIImageView?
     
-    private var titlelabel = UILabel()
+    var title: String? {
+        didSet {
+            titleLabel?.text = title
+            renderAvailableCenterSpace()
+        }
+    }
+    private var titleLabel: UILabel?
     
     convenience init() {
         self.init(frame: CGRect.zero)
@@ -96,19 +107,71 @@ class PrimerNavigationBar: PrimerView {
         leftView.heightAnchor.constraint(equalToConstant: 44).isActive = true
         leftView.backgroundColor = .clear
         horizontalStackView.addArrangedSubview(leftView)
-        
-        titlelabel.translatesAutoresizingMaskIntoConstraints = false
-        titlelabel.backgroundColor = .clear
-        titlelabel.textAlignment = .center
-        titlelabel.textColor = theme.colorTheme.text1
-        titlelabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
-        horizontalStackView.addArrangedSubview(titlelabel)
+
+        horizontalStackView.addArrangedSubview(availableCenterSpaceView)
+        renderAvailableCenterSpace()
         
         rightView.translatesAutoresizingMaskIntoConstraints = false
         rightView.widthAnchor.constraint(equalToConstant: 44).isActive = true
         rightView.heightAnchor.constraint(equalToConstant: 44).isActive = true
         rightView.backgroundColor = .clear
         horizontalStackView.addArrangedSubview(rightView)
+    }
+    
+    func renderAvailableCenterSpace() {
+        availableCenterSpaceView.removeSubviews()
+        centerStackView = nil
+        
+        if let titleImage = titleImage {
+            if centerStackView == nil {
+                centerStackView = UIStackView()
+                centerStackView!.axis = .horizontal
+                centerStackView!.alignment = .fill
+                centerStackView!.distribution = .fill
+                centerStackView!.spacing = 6.0
+                centerStackView!.alpha = 0.0
+            }
+            
+            titleImageView = UIImageView()
+            titleImageView!.image = titleImage
+            titleImageView!.contentMode = .scaleAspectFit
+            centerStackView!.addArrangedSubview(titleImageView!)
+        }
+        
+        if let title = title {
+            if centerStackView == nil {
+                centerStackView = UIStackView()
+                centerStackView!.axis = .horizontal
+                centerStackView!.alignment = .fill
+                centerStackView!.distribution = .fill
+                centerStackView!.spacing = 6.0
+                centerStackView!.alpha = 0.0
+            }
+            
+            titleLabel = UILabel()
+            titleLabel!.text = title
+            titleLabel!.backgroundColor = .clear
+            titleLabel!.textAlignment = .center
+            titleLabel!.textColor = theme.colorTheme.text1
+            titleLabel!.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+            centerStackView!.addArrangedSubview(titleLabel!)
+        }
+        
+        if centerStackView != nil {
+            availableCenterSpaceView.addSubview(centerStackView!)
+            centerStackView!.translatesAutoresizingMaskIntoConstraints = false
+            centerStackView!.leadingAnchor.constraint(greaterThanOrEqualTo: availableCenterSpaceView.leadingAnchor).isActive = true
+            centerStackView!.topAnchor.constraint(equalTo: availableCenterSpaceView.topAnchor, constant: 4).isActive = true
+            centerStackView!.trailingAnchor.constraint(lessThanOrEqualTo: availableCenterSpaceView.trailingAnchor).isActive = true
+            centerStackView!.bottomAnchor.constraint(greaterThanOrEqualTo: availableCenterSpaceView.bottomAnchor, constant: -4).isActive = true
+            centerStackView!.centerXAnchor.constraint(equalTo: availableCenterSpaceView.centerXAnchor).isActive = true
+            UIView.animate(withDuration: 0.3) {
+                self.centerStackView?.alpha = 1.0
+            } completion: { finished in
+                
+            }
+
+        }
     }
     
 }

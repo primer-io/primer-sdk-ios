@@ -291,7 +291,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 //            }
 //            input2.descriptor = "Get the code from your banking app."
             
-            let pcfvc = PrimerInputViewController(inputs: [input1, input2])
+            let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil), inputs: [input1])
             Primer.shared.primerRootVC?.show(viewController: pcfvc)
         }
     }
