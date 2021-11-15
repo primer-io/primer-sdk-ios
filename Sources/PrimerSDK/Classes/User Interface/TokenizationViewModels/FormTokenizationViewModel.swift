@@ -269,7 +269,29 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
         
         DispatchQueue.main.async {
-            let pcfvc = PrimerCardFormViewController(viewModel: self)
+            let input1 = Input()
+            input1.name = "OTP"
+            input1.topPlaceholder = "6 digit code"
+            input1.textFieldPlaceholder = "Enter your one time password"
+            input1.keyboardType = .numberPad
+            input1.descriptor = "Get the code from your banking app."
+            input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
+            input1.maxCharactersAllowed = 6
+            input1.isValid = { text in
+                return text.isNumeric && text.count >= 6
+            }
+            
+            let input2 = Input()
+            input2.name = "Phonenumber"
+            input2.topPlaceholder = "Phone number"
+            input2.textFieldPlaceholder = "Enter your phonenumber"
+            input2.keyboardType = .phonePad
+//            input2.isValid = { text in
+//                return text.isNumeric && text.count >= 6
+//            }
+//            input2.descriptor = "Get the code from your banking app."
+            
+            let pcfvc = PrimerInputViewController(inputs: [input1, input2])
             Primer.shared.primerRootVC?.show(viewController: pcfvc)
         }
     }
