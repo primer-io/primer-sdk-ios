@@ -68,9 +68,9 @@ internal class PrimerRootViewController: PrimerViewController {
         
         view.addSubview(childView)
         
-        childView.backgroundColor = theme.colorTheme.main1
+        childView.backgroundColor = theme.view.backgroundColor
         childView.isUserInteractionEnabled = true
-        nc.view.backgroundColor = theme.colorTheme.main1
+        nc.view.backgroundColor = theme.view.backgroundColor
         
         childView.translatesAutoresizingMaskIntoConstraints = false
         childView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -82,8 +82,6 @@ internal class PrimerRootViewController: PrimerViewController {
         childViewBottomConstraint.isActive = true
         view.layoutIfNeeded()
         
-        
-
         let tapGesture = UITapGestureRecognizer(
             target: self,
             action: #selector(dismissGestureRecognizerAction))
@@ -134,7 +132,6 @@ internal class PrimerRootViewController: PrimerViewController {
                     let pvmvc = PrimerVaultManagerViewController()
                     self?.show(viewController: pvmvc)
 
-                    
                 case .completeDirectCheckout:
                     break
                     
@@ -151,7 +148,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     
                 case .addDirectDebitToVault:
                     break
-                    
+
                 case .addKlarnaToVault:
                     self?.presentPaymentMethod(type: .klarna)
                     
@@ -181,7 +178,9 @@ internal class PrimerRootViewController: PrimerViewController {
 
                 }
                 
-                if let _ = (self?.nc.viewControllers.first as? PrimerContainerViewController)?.children.first as? PrimerLoadingViewController {
+                if let _ = (self?.nc.viewControllers.first 
+                as? PrimerContainerViewController)?.children.first 
+                as? PrimerLoadingViewController {
                     // Remove the loading view controller from the navigation stack so user can't pop to it.
                     self?.nc.viewControllers.removeFirst()
                 }
@@ -251,7 +250,7 @@ internal class PrimerRootViewController: PrimerViewController {
         let isPresented: Bool = self.nc.viewControllers.isEmpty
         
         let cvc = PrimerContainerViewController(childViewController: viewController)
-        cvc.view.backgroundColor = self.theme.colorTheme.main1
+        cvc.view.backgroundColor = self.theme.view.backgroundColor
         
         // Hide back button on some cases
         if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
@@ -424,7 +423,6 @@ extension PrimerRootViewController {
             })
         }
     }
-    
 }
 
 extension PrimerRootViewController: UIGestureRecognizerDelegate {

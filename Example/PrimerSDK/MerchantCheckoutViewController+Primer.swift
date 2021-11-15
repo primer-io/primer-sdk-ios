@@ -93,19 +93,7 @@ extension MerchantCheckoutViewController {
     }
     
     internal func generatePrimerTheme() -> PrimerTheme {
-        if #available(iOS 13.0, *) {
-            return PrimerTheme(
-                cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
-                colorTheme: PrimerDefaultTheme(),
-                darkTheme: PrimerDarkTheme(),
-                layout: PrimerLayout(showTopTitle: true, textFieldHeight: 40))
-        } else {
-            return PrimerTheme(
-                cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
-                colorTheme: PrimerDefaultTheme(),
-                layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
-                textFieldTheme: .outlined)
-        }
+        return PrimerTheme()
     }
     
     internal func generateAmountAndOrderItems() -> (Int, [OrderItem]) {
