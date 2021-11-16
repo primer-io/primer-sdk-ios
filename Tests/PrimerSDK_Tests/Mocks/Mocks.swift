@@ -82,6 +82,7 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    
     var debugOptions: PrimerDebugOptions
         
     var orderId: String?
@@ -156,6 +157,10 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         self.onTokenizeSuccess = onTokenizeSuccess
         self.is3DSOnVaultingEnabled = true
         self.debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+    }
+    
+    func modify(withClientSession clientSession: ClientSession) {
+        
     }
 }
 
