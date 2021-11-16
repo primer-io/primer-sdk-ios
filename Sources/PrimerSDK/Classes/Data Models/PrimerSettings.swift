@@ -32,6 +32,8 @@ internal protocol PrimerSettingsProtocol {
     var orderId: String? { get }
     var debugOptions: PrimerDebugOptions { get }
     var customer: Customer? { get set }
+    
+    func modify(withClientSession clientSession: ClientSession)
 }
 
 public struct PrimerDebugOptions {
@@ -164,6 +166,56 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.billingAddress = billingAddress
         self.orderId = orderId
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
+    }
+    
+    func modify(withClientSession clientSession: ClientSession) {
+        if let order = clientSession.order {
+            self.orderId = order.id
+            self.amount = order.totalAmount
+            self.currency = order.currencyCode
+            self.countryCode = order.countryCode
+            
+            var orderItems: [OrderItem] = []
+            order.items?.forEach({ item in
+                if let orderItem = try? OrderItem(
+                    name: item.name,
+                    unitAmount: item.unitAmount,
+                    quantity: item.quantity,
+                    isPending: false) {
+                    orderItems.append(orderItem)
+                }
+            })
+            self.orderItems = orderItems
+        }
+        
+        if let customer = clientSession.customer {
+            self.customerId = customer.id
+            
+            self.customer = Customer(
+                id: customer.id,
+                firstName: customer.firstName,
+                lastName: customer.lastName,
+                email: customer.email,
+                mobileNumber: customer.mobileNumber,
+                billingAddress: nil,
+                shippingAddress: nil,
+                taxId:  nil)
+            
+            if let billingAddress = customer.billingAddress {
+                let address = Address(
+                    firstName: billingAddress.firstName,
+                    lastName: billingAddress.lastName,
+                    addressLine1: billingAddress.addressLine1,
+                    addressLine2: billingAddress.addressLine2,
+                    city: billingAddress.city,
+                    postalCode: billingAddress.postalCode,
+                    state: billingAddress.state,
+                    countryCode: billingAddress.countryCode)
+                
+                self.billingAddress = address
+                self.customer?.billingAddress = address
+            }            
+        }
     }
 }
 
