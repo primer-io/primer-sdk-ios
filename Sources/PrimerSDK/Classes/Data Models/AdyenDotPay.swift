@@ -9,17 +9,17 @@
 
 import Foundation
 
-internal struct AdyenDotPaySessionRequest: Encodable {
+internal struct BankTokenizationSessionRequest: Encodable {
     let paymentMethodConfigId: String
     let command: String = "FETCH_BANK_ISSUERS"
-    let parameters: AdyenDotPaySessionRequestParameters
+    let parameters: BankTokenizationSessionRequestParameters
 }
 
-internal struct AdyenDotPaySessionRequestParameters: Encodable {
-    let paymentMethod: String = "dotpay"
+internal struct BankTokenizationSessionRequestParameters: Encodable {
+    let paymentMethod: String
 }
 
-internal struct AdyenDotPaySessionResponse: Decodable {
+internal struct BanksListSessionResponse: Decodable {
     let result: [Bank]
 }
 

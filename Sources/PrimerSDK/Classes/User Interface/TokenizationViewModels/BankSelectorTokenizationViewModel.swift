@@ -124,6 +124,8 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }()
     
     private var tokenizationService: TokenizationServiceProtocol?
+    fileprivate var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
+    fileprivate var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
     
     required init(config: PaymentMethodConfig) {
         self.flow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout
@@ -192,16 +194,26 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
             return
         }
+        
+        var paymentMethodRequestValue: String = ""
+        switch self.config.type {
+        case .adyenDotPay:
+            paymentMethodRequestValue = "dotpay"
+        case .adyenIDeal:
+            paymentMethodRequestValue = "ideal"
+        default:
+            break
+        }
                 
         let client: PrimerAPIClientProtocol = PrimerAPIClient()
-        let request = AdyenDotPaySessionRequest(
+        let request = BankTokenizationSessionRequest(
             paymentMethodConfigId: config.id!,
-            parameters: AdyenDotPaySessionRequestParameters())
+            parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
         
         let state: AppStateProtocol = DependencyContainer.resolve()
         let decodedClientToken = state.decodedClientToken!
         
-        client.adyenDotPayBanksList(clientToken: decodedClientToken, request: request) { result in
+        client.adyenBanksList(clientToken: decodedClientToken, request: request) { result in
             switch result {
             case .failure(let err):
                 print(err)
@@ -219,7 +231,8 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
             if let err = err {
                 self.handleFailedTokenizationFlow(error: err)
             } else if let paymentMethod = paymentMethod {
-                self.handleSuccessfulTokenizationFlow()
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+//                self.handleSuccessfulTokenizationFlow()
             } else {
                 assert(true, "Should never get in here.")
             }
@@ -331,6 +344,36 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
         dataSource = banks
         return true
     }
+}
+
+extension BankSelectorTokenizationViewModel {
+    
+    override func handle(error: Error) {
+        // onClientToken will be created when we're awaiting a new client token from the developer
+        onClientToken?(nil, error)
+        onClientToken = nil
+        // onResumeTokenCompletion will be created when we're awaiting the payment response
+        onResumeTokenCompletion?(nil, error)
+        onResumeTokenCompletion = nil
+    }
+    
+    override func handle(newClientToken clientToken: String) {
+        do {
+            try ClientTokenService.storeClientToken(clientToken)
+            onClientToken?(clientToken, nil)
+            onClientToken = nil
+        } catch {
+            onClientToken?(nil, error)
+            onClientToken = nil
+        }
+    }
+    
+    override func handleSuccess() {
+        // completion will be created when we're awaiting the payment response
+        onResumeTokenCompletion?(self.paymentMethod, nil)
+        onResumeTokenCompletion = nil
+    }
+    
 }
 
 #endif
