@@ -47,7 +47,14 @@ internal class PrimerWebViewController: PrimerViewController {
         webView.accessibilityIdentifier = "primer_webview"
         webView.scrollView.bounces = false
         webView.navigationDelegate = navigationDelegate
-        view = webView
+        
+        view.addSubview(webView)
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        webView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor).isActive = true
+        webView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        webView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor).isActive = true
+        
         var request = URLRequest(url: url)
         request.timeoutInterval = 60
         request.allHTTPHeaderFields = PrimerAPI.headers
