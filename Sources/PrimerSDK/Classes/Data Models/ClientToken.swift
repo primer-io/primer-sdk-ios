@@ -95,14 +95,14 @@ struct DecodedClientToken: Decodable {
 }
 
 public struct Customer: Codable {
-    let id: String?
-    let firstName: String?
-    let lastName: String?
-    let email: String?
-    let mobileNumber: String?
-    let billingAddress: Address?
-    let shippingAddress: Address?
-    let taxId: String?
+    var id: String?
+    var firstName: String?
+    var lastName: String?
+    var email: String?
+    var mobileNumber: String?
+    var billingAddress: Address?
+    var shippingAddress: Address?
+    var taxId: String?
     
     enum CodingKeys: String, CodingKey {
         case id, firstName, lastName, email, mobileNumber, billingAddress, shippingAddress, taxId
