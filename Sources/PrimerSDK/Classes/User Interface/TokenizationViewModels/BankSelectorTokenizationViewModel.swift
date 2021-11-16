@@ -195,35 +195,15 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
         
-        var paymentMethodRequestValue: String = ""
-        switch self.config.type {
-        case .adyenDotPay:
-            paymentMethodRequestValue = "dotpay"
-        case .adyenIDeal:
-            paymentMethodRequestValue = "ideal"
-        default:
-            break
+        firstly {
+            self.adyenBanksList()
         }
-                
-        let client: PrimerAPIClientProtocol = PrimerAPIClient()
-        let request = BankTokenizationSessionRequest(
-            paymentMethodConfigId: config.id!,
-            parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
-        
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        let decodedClientToken = state.decodedClientToken!
-        
-        client.adyenBanksList(clientToken: decodedClientToken, request: request) { result in
-            switch result {
-            case .failure(let err):
-                print(err)
-            case .success(let banks):
-                self.banks = banks
-                self.dataSource = banks
-                let bsvc = BankSelectorViewController(viewModel: self)
-                DispatchQueue.main.async {
-                    Primer.shared.primerRootVC?.show(viewController: bsvc)
-                }
+        .done { banks in
+            self.banks = banks
+            self.dataSource = banks
+            let bsvc = BankSelectorViewController(viewModel: self)
+            DispatchQueue.main.async {
+                Primer.shared.primerRootVC?.show(viewController: bsvc)
             }
         }
         
@@ -235,6 +215,38 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
 //                self.handleSuccessfulTokenizationFlow()
             } else {
                 assert(true, "Should never get in here.")
+            }
+        }
+    }
+    
+    private func adyenBanksList() -> Promise<[Bank]> {
+        return Promise { seal in
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            let decodedClientToken = state.decodedClientToken!
+            
+            var paymentMethodRequestValue: String = ""
+            switch self.config.type {
+            case .adyenDotPay:
+                paymentMethodRequestValue = "dotpay"
+            case .adyenIDeal:
+                paymentMethodRequestValue = "ideal"
+            default:
+                break
+            }
+                    
+            let client: PrimerAPIClientProtocol = PrimerAPIClient()
+            let request = BankTokenizationSessionRequest(
+                paymentMethodConfigId: config.id!,
+                parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
+            
+            client.adyenBanksList(clientToken: decodedClientToken, request: request) { result in
+                switch result {
+                case .failure(let err):
+                    seal.reject(err)
+                    
+                case .success(let banks):
+                    seal.fulfill(banks)
+                }
             }
         }
     }
