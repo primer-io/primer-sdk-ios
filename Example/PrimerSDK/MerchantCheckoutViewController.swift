@@ -215,12 +215,13 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func requestClientToken(_ completion: @escaping (String?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/clientToken") else {
+        guard let url = URL(string: "\(endpoint)/clientSession") else {
             return completion(nil, NetworkError.missingParams)
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("2021-10-19", forHTTPHeaderField: "X-Api-Version")
         
         let body = CreateClientTokenRequest(
             environment: environment,
@@ -228,10 +229,45 @@ class MerchantCheckoutViewController: UIViewController {
             amount: amount,
             currencyCode: currency.rawValue,
             customerId: "customer_id",
-            customerCountryCode: countryCode,
+//            customerCountryCode: .gb,
             metadata: nil,
-            customer: nil,
-            order: nil,
+            customer: Customer(
+                firstName: "Vagz",
+                lastName: "Pie",
+                emailAddress: "vagz@primer.io",
+                billingAddress: Address(
+                    addressLine1: "Line 1",
+                    addressLine2: nil,
+                    city: "Athens",
+                    countryCode: "GR",
+                    postalCode: "15236",
+                    firstName: "Evangelos",
+                    lastName: "Pittas",
+                    state: "Attica"),
+                shippingAddress: Address(
+                    addressLine1: "Line 1",
+                    addressLine2: nil,
+                    city: "Athens",
+                    countryCode: "GR",
+                    postalCode: "15236",
+                    firstName: "Evangelos",
+                    lastName: "Pittas",
+                    state: "Attica"),
+                mobileNumber: "+306945995726",
+                nationalDocumentId: "doc_id"),
+            order: Order(
+                countryCode: "GB",
+                lineItems: [
+                    LineItem(
+                        itemId: "item_id",
+                        description: "Description",
+                        amount: 1000,
+                        discountAmount: nil,
+                        quantity: 2,
+                        taxAmount: nil,
+                        taxCode: nil)
+                ],
+                shipping: Shipping(amount: 100)),
             paymentMethod: nil)
         
         do {

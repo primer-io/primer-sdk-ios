@@ -20,7 +20,7 @@ struct CreateClientTokenRequest: Codable {
     let amount: Int
     let currencyCode: String
     let customerId: String?
-    let customerCountryCode: PrimerSDK.CountryCode?
+//    let customerCountryCode: PrimerSDK.CountryCode?
     let metadata: [String: String]?
     let customer: Customer?
     let order: Order?
@@ -59,22 +59,25 @@ public struct Address: Codable {
 }
 
 public struct Customer: Codable {
-    let email: String?
+    let firstName: String?
+    let lastName: String?
+    let emailAddress: String?
     let billingAddress: Address?
     let shippingAddress: Address?
-//    let mobileNumber: String?
+    let mobileNumber: String?
+    let nationalDocumentId: String?
     
-    public init (
-        email: String?,
-        billingAddress: Address?,
-        shippingAddress: Address?
+//    public init (
+//        emailAddress: String?,
+//        billingAddress: Address?,
+//        shippingAddress: Address?,
 //        mobileNumber: String?
-    ) {
-        self.email = email
-        self.billingAddress = billingAddress
-        self.shippingAddress = shippingAddress
+//    ) {
+//        self.emailAddress = emailAddress
+//        self.billingAddress = billingAddress
+//        self.shippingAddress = shippingAddress
 //        self.mobileNumber = mobileNumber
-    }
+//    }
 }
 
 public struct LineItem: Codable {
