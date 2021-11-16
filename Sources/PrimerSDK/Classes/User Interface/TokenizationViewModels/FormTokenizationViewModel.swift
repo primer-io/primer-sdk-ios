@@ -315,6 +315,10 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
         submitButton.showSpinner(false)
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+        
+        let err = PrimerError.containerError(errors: errors)
+        Primer.shared.delegate?.checkoutFailed?(with: err)
+        self.handleFailedTokenizationFlow(error: err)
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
