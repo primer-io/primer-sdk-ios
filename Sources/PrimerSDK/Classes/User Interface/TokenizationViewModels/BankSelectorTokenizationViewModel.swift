@@ -48,7 +48,7 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
         case .adyenDotPay:
             return UIImage(named: "dot-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenIDeal:
-            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -57,9 +57,10 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override lazy var buttonColor: UIColor? = {
         switch config.type {
-        case .adyenDotPay,
-                .adyenIDeal:
+        case .adyenDotPay:
             return .white
+        case .adyenIDeal:
+            return UIColor(red: 204.0/255, green: 0.0/255, blue: 102.0/255, alpha: 1.0)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -71,7 +72,7 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
         case .adyenDotPay:
             return nil
         case .adyenIDeal:
-            return .black
+            return nil
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -80,9 +81,10 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override lazy var buttonBorderWidth: CGFloat = {
         switch config.type {
-        case .adyenDotPay,
-                .adyenIDeal:
+        case .adyenDotPay:
             return 1.0
+        case .adyenIDeal:
+            return 0.0
         default:
             assert(true, "Shouldn't end up in here")
             return 0.0
@@ -91,9 +93,10 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
-        case .adyenDotPay,
-                .adyenIDeal:
+        case .adyenDotPay:
             return .black
+        case .adyenIDeal:
+            return nil
         default:
             assert(true, "Shouldn't end up in here")
             return nil

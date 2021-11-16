@@ -60,7 +60,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLIdeal:
-            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .sofort:
             return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .twint:
@@ -82,7 +82,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
         case .payNLIdeal:
-            return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
+            return UIColor(red: 204.0/255, green: 0.0/255, blue: 102.0/255, alpha: 1.0)
         case .sofort:
             return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
         case .twint:
