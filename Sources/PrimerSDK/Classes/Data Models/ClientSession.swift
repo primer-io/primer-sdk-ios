@@ -9,29 +9,21 @@ import Foundation
 
 public class ClientSession: Codable {
     
-    let metadata: [String: Any]?
+    let clientSessionId: String?
     let paymentMethod: ClientSession.PaymentMethod?
     let order: ClientSession.Order?
-    let customer: Customer?
+    let customer: ClientSession.Customer?
     
     enum CodingKeys: String, CodingKey {
-        case metadata, paymentMethod, order, customer
+        case clientSessionId, paymentMethod, order, customer // metadata
     }
     
     required public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let tmpMetadata = (try? container.decode([String: AnyCodable]?.self, forKey: .metadata)) ?? nil
-        if let metadataData = try? JSONEncoder().encode(tmpMetadata),
-           let metadataJsonObject = try? JSONSerialization.jsonObject(with: metadataData, options: .allowFragments),
-           let metadataJson = metadataJsonObject as? [String: Any] {
-            self.metadata = metadataJson
-        } else {
-            self.metadata = nil
-        }
-        
+        self.clientSessionId = (try? container.decode(String?.self, forKey: .clientSessionId)) ?? nil
         self.paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
-        self.order = (try? container.decode(Order?.self, forKey: .order)) ?? nil
-        self.customer = (try? container.decode(Customer?.self, forKey: .customer)) ?? nil
+        self.order = (try? container.decode(ClientSession.Order?.self, forKey: .order)) ?? nil
+        self.customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -39,12 +31,6 @@ public class ClientSession: Codable {
         try container.encode(paymentMethod, forKey: .paymentMethod)
         try container.encode(order, forKey: .order)
         try container.encode(customer, forKey: .customer)
-        
-        if let metadata = metadata,
-           let metadataData = try? JSONSerialization.data(withJSONObject: metadata, options: .fragmentsAllowed),
-           let metadataCodable = try? JSONDecoder().decode([String: AnyCodable]?.self, from: metadataData) {
-            try container.encode(metadataCodable, forKey: .metadata)
-        }
     }
     
     // MARK: - ClientSession.Action
@@ -80,6 +66,23 @@ public class ClientSession: Codable {
             } catch {
                 return nil
             }
+        }
+    }
+    
+    // MARK: ClientSession.Address
+    
+    public struct Address: Codable {
+        let firstName: String?
+        let lastName: String?
+        let addressLine1: String?
+        let addressLine2: String?
+        let city: String?
+        let postalCode: String?
+        let state: String?
+        let countryCode: CountryCode?
+        
+        public func toString() -> String {
+            return "\(addressLine1 ?? "")\(addressLine2?.withComma ?? "")\(city?.withComma ?? "")\(postalCode?.withComma ?? "")\(countryCode?.rawValue.withComma ?? "")"
         }
     }
     
@@ -122,6 +125,7 @@ public class ClientSession: Codable {
     // MARK: - ClientSession.Order
     
     public struct Order: Codable {
+        let id: String?
         let totalAmount: Int?
         let totalTaxAmount: Int?
         let countryCode: CountryCode?
@@ -131,11 +135,12 @@ public class ClientSession: Codable {
         let shippingAmount: Int?
         
         enum CodingKeys: String, CodingKey {
-            case totalAmount, totalTaxAmount, countryCode, currencyCode, fees, items, shippingAmount
+            case id = "orderId", totalAmount, totalTaxAmount, countryCode, currencyCode, fees, items, shippingAmount
         }
         
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
+            id = (try? container.decode(String?.self, forKey: .id)) ?? nil
             totalAmount = (try? container.decode(Int?.self, forKey: .totalAmount)) ?? nil
             totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
             countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
@@ -159,11 +164,11 @@ public class ClientSession: Codable {
         // MARK: ClientSession.Order.LineItem
         
         public struct LineItem: Codable {
-            let quantity: Int?
-            let unitAmount: UInt?
-            let discountAmount: UInt?
+            let quantity: Int
+            let unitAmount: Int?
+            let discountAmount: Int?
             let reference: String?
-            let name: String?
+            let name: String
         }
         
         // MARK: ClientSession.Order.Fee
@@ -190,6 +195,55 @@ public class ClientSession: Codable {
         }
     }
     
+    // MARK: ClientSession.Customer
+    
+    public struct Customer: Codable {
+        let id: String?
+        let firstName: String?
+        let lastName: String?
+        let email: String?
+        let mobileNumber: String?
+        let billingAddress: ClientSession.Address?
+        let shippingAddress: ClientSession.Address?
+        let taxId: String?
+        
+        enum CodingKeys: String, CodingKey {
+            case id = "customerId", firstName, lastName, email, mobileNumber, billingAddress, shippingAddress, taxId
+        }
+        
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.id = (try? container.decode(String?.self, forKey: .id)) ?? nil
+            self.firstName = (try? container.decode(String?.self, forKey: .firstName)) ?? nil
+            self.lastName = (try? container.decode(String?.self, forKey: .lastName)) ?? nil
+            self.email = (try? container.decode(String?.self, forKey: .email)) ?? nil
+            self.mobileNumber = (try? container.decode(String?.self, forKey: .mobileNumber)) ?? nil
+            self.billingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .billingAddress)) ?? nil
+            self.shippingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .shippingAddress)) ?? nil
+            self.taxId = (try? container.decode(String?.self, forKey: .taxId)) ?? nil
+        }
+        
+        public init(
+            id: String? = nil,
+            firstName: String? = nil,
+            lastName: String? = nil,
+            email: String? = nil,
+            mobileNumber: String? = nil,
+            billingAddress: Address? = nil,
+            shippingAddress: Address? = nil,
+            taxId: String? = nil
+        ) {
+            self.id = id
+            self.firstName = firstName
+            self.lastName = lastName
+            self.email = email
+            self.mobileNumber = mobileNumber
+            self.billingAddress = billingAddress
+            self.shippingAddress = shippingAddress
+            self.taxId = taxId
+        }
+        
+    }
 }
 
 internal extension Encodable {
