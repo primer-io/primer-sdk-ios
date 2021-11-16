@@ -26,6 +26,13 @@ class PrimerNavigationController: UINavigationController, UINavigationBarDelegat
         return false
     }
     
+    func pushViewController(viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(completion)
+        pushViewController(viewController, animated: animated)
+        CATransaction.commit()
+      }
+    
 }
 
 extension PrimerNavigationController: UINavigationControllerDelegate {

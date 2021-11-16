@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "iDeal-logo.png",
+      "filename" : "dot-pay-logo.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "iDeal-logo@2x.png",
+      "filename" : "dot-pay-logo@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "iDeal-logo@3x.png",
+      "filename" : "dot-pay-logo@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

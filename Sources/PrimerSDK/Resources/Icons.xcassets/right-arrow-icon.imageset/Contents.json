@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "iDeal-logo.png",
+      "filename" : "right-arrow-icon.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "iDeal-logo@2x.png",
+      "filename" : "right-arrow-icon@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "iDeal-logo@3x.png",
+      "filename" : "right-arrow-icon@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

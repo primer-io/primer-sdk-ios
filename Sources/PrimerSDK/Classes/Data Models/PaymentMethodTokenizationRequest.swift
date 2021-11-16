@@ -30,9 +30,12 @@ struct AsyncPaymentMethodTokenizationRequest: TokenizationRequest {
     let paymentInstrument: AsyncPaymentMethodOptions
 }
 
+struct BankSelectorTokenizationRequest: TokenizationRequest {
+    let paymentInstrument: PaymentInstrument
+}
 
 // feels like we could polymorph this with a protocol, or at least restrict construcions with a specific factory method for each payment instrument.
-struct PaymentInstrument: Encodable {
+struct PaymentInstrument: Codable {
     // Card
     var number: String?
     var cvv: String?
@@ -62,6 +65,16 @@ struct PaymentInstrument: Encodable {
     var hashedIdentifier: String?
     var productId: String?
     var currencyCode: String?
+    // DotPay
+    var sessionInfo: BankSelectorSessionInfo?
+    var type: String?
+    var paymentMethodType: String?
+}
+
+internal struct BankSelectorSessionInfo: Codable {
+    var issuer: String?
+    let locale: String = "en_US"
+    let platform: String = "IOS"
 }
 
 public enum TokenType: String, Codable {
