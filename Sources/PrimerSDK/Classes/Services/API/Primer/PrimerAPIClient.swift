@@ -75,6 +75,11 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         networkService.request(endpoint) { (result: Result<PrimerConfiguration, NetworkServiceError>) in
             switch result {
             case .success(let paymentMethodConfig):
+                
+                if let clientSession = paymentMethodConfig.clientSession {
+                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                    settings.modify(withClientSession: clientSession)
+                }
                 completion(.success(paymentMethodConfig))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
