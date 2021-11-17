@@ -170,12 +170,14 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
-    fileprivate var webViewController: SFSafariViewController?
-    /// I n this case the **webViewCompletion** won't return an authorzation token, a **resumeToken** will be return
-    /// from polling.
-    fileprivate var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    fileprivate var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
-    fileprivate var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
+    var webViewController: SFSafariViewController?
+    /**
+     This completion handler will return an authorization token, which must be returned to the merchant to resume the payment. **webViewCompletion**
+     must be set before presenting the webview and nullified once polling returns a result. At the same time the webview should be dismissed.
+     */
+    var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+    var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
+    var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -203,40 +205,13 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             return
         }
-        
-        var pollingURLs: PollingURLs!
-        
+                
         firstly {
             self.tokenize()
         }
-        .then { paymentMethod -> Promise<PollingURLs> in
-            self.paymentMethod = paymentMethod
-            return self.fetchPollingURLs(for: paymentMethod)
-        }
-        .then { pollingURLsResponse -> Promise<Void> in
-            pollingURLs = pollingURLsResponse
-            
-            guard let redirectUrl = pollingURLs.redirectUrl else {
-                throw PrimerError.invalidValue(key: "redirectUrl")
-            }
-            
-            return self.presentAsyncPaymentMethod(with: redirectUrl)
-        }
-        .then { () -> Promise<String> in
-            guard let statusUrl = pollingURLs.statusUrl else {
-                throw PrimerError.invalidValue(key: "statusUrl")
-            }
-            
-            return self.startPolling(on: statusUrl)
-        }
-        .then { resumeToken -> Promise<PaymentMethodToken> in
-            DispatchQueue.main.async {
-                self.willDismissExternalView?()
-                self.webViewController?.dismiss(animated: true, completion: {
-                    self.didDismissExternalView?()
-                })
-            }
-            return self.passResumeToken(resumeToken)
+        .then { tmpPaymentMethod -> Promise<PaymentMethodToken> in
+            self.paymentMethod = tmpPaymentMethod
+            return self.continueTokenizationFlow(for: tmpPaymentMethod)
         }
         .done { paymentMethod in
             self.paymentMethod = paymentMethod
@@ -275,6 +250,49 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
+    internal func continueTokenizationFlow(for tmpPaymentMethod: PaymentMethodToken) -> Promise<PaymentMethodToken> {
+        return Promise { seal in
+            var pollingURLs: PollingURLs!
+            
+            firstly {
+                return self.fetchPollingURLs(for: tmpPaymentMethod)
+            }
+            .then { pollingURLsResponse -> Promise<Void> in
+                pollingURLs = pollingURLsResponse
+                
+                guard let redirectUrl = pollingURLs.redirectUrl else {
+                    throw PrimerError.invalidValue(key: "redirectUrl")
+                }
+                
+                return self.presentAsyncPaymentMethod(with: redirectUrl)
+            }
+            .then { () -> Promise<String> in
+                guard let statusUrl = pollingURLs.statusUrl else {
+                    throw PrimerError.invalidValue(key: "statusUrl")
+                }
+                
+                return self.startPolling(on: statusUrl)
+            }
+            .then { resumeToken -> Promise<PaymentMethodToken> in
+                DispatchQueue.main.async {
+                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+                    
+                    self.willDismissExternalView?()
+                    self.webViewController?.dismiss(animated: true, completion: {
+                        self.didDismissExternalView?()
+                    })
+                }
+                return self.passResumeToken(resumeToken)
+            }
+            .done { paymentMethod in
+                seal.fulfill(paymentMethod)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
     fileprivate func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             guard let configId = config.id else {
@@ -307,7 +325,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    fileprivate func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<PollingURLs> {
+    internal func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<PollingURLs> {
         return Promise { seal in
             self.onClientToken = { (clientToken, err) in
                 if let err = err {
@@ -338,7 +356,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    fileprivate func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
+    internal func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async { [unowned self] in
                 self.willPresentExternalView?()
@@ -361,7 +379,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    fileprivate func startPolling(on url: URL) -> Promise<String> {
+    internal func startPolling(on url: URL) -> Promise<String> {
         return Promise { seal in
             self.startPolling(on: url) { (id, err) in
                 if let err = err {
@@ -405,7 +423,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    fileprivate func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
+    internal func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
         return Promise { seal in
             self.onResumeTokenCompletion = { (paymentMethod, err) in
                 if let err = err {
@@ -525,7 +543,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
         }
     }
     
-    fileprivate override func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
+    internal override func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async { [unowned self] in
                 self.webViewController = SFSafariViewController(url: url)
@@ -541,7 +559,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
         }
     }
     
-    fileprivate override func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
+    internal override func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
 //        {
 //          "status" : "COMPLETE",
 //          "id" : "4474848f-721d-4c35-9325-e287196f7016",
