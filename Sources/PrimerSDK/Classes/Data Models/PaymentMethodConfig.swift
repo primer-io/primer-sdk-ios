@@ -63,6 +63,7 @@ struct PaymentMethodConfig: Codable {
             .adyenVipps,
             .aliPay,
             .giropay,
+            .payNLGiropay,
             .payNLPayconiq,
             .sofort,
             .trustly,
@@ -85,12 +86,7 @@ struct PaymentMethodConfig: Codable {
         } else if asyncPaymentMethodTypes.contains(type) {
             return ExternalPaymentMethodTokenizationViewModel(config: self)
         }
-        
-//        else if case .other = type {
-//            return ExternalPaymentMethodTokenizationViewModel(config: self)
-//        }
-        
-        print(type)
+
         return nil
     }
     
@@ -211,6 +207,7 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
     case adyenMobilePay
     case adyenVipps
     case payNLPayconiq
+    case payNLGiropay
     case other(rawValue: String)
     
     init(rawValue: String) {
@@ -249,6 +246,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
             self = .adyenVipps
         case "PAY_NL_PAYCONIQ":
             self = .payNLPayconiq
+        case "PAY_NL_GIROPAY":
+            self = .payNLGiropay
         default:
             self = .other(rawValue: rawValue)
         }
@@ -290,6 +289,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
             return "ADYEN_VIPPS"
         case .payNLPayconiq:
             return "PAY_NL_PAYCONIQ"
+        case .payNLGiropay:
+            return "PAY_NL_GIROPAY"
         case .other(let rawValue):
             return rawValue
         }
@@ -312,6 +313,7 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
                 .giropay,
                 .hoolah,
                 .payNLIdeal,
+                .payNLGiropay,
                 .sofort,
                 .trustly,
                 .twint,
