@@ -149,8 +149,56 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
-        Primer.shared.configure(settings: generalSettings)
-        Primer.shared.showPaymentMethod(.paymentCard, withIntent: .vault, on: self)
+        let cardSettings = PrimerSettings(
+            merchantIdentifier: "merchant.checkout.team",
+            customerId: customerId,
+            amount: amount,
+            currency: currency,
+            countryCode: .se,
+            klarnaSessionType: .recurringPayment,
+            klarnaPaymentDescription: nil,
+            urlScheme: "primer",
+            urlSchemeIdentifier: "primer",
+            isFullScreenOnly: false,
+            hasDisabledSuccessScreen: false,
+            businessDetails: nil,
+            directDebitHasNoAmount: false,
+            orderItems: [
+                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
+            ],
+            isInitialLoadingHidden: true,
+            is3DSOnVaultingEnabled: true,
+            billingAddress: PrimerSDK.Address(
+                addressLine1: "Line 1",
+                addressLine2: "Line 2",
+                city: "City",
+                state: "State",
+                countryCode: "SE",
+                postalCode: "15236"),
+            orderId: "order id",
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
+            customer: PrimerSDK.Customer(
+                firstName: "John",
+                lastName: "Smith",
+                email: "john.smith@primer.io",
+                homePhoneNumber: nil,
+                mobilePhoneNumber: nil,
+                workPhoneNumber: nil,
+                billingAddress: PrimerSDK.Address(
+                    addressLine1: "1 Rue",
+                    addressLine2: "",
+                    city: "Paris",
+                    state: "",
+                    countryCode: "FR",
+                    postalCode: "75001"
+                )
+            )
+        )
+        
+        Primer.shared.configure(settings: cardSettings)
+        Primer.shared.showPaymentMethod(.paymentCard, withIntent: .checkout, on: self)
     }
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {

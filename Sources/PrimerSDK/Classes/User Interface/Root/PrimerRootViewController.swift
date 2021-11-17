@@ -140,7 +140,8 @@ internal class PrimerRootViewController: PrimerViewController {
 
                     
                 case .completeDirectCheckout:
-                    break
+                    self?.blurBackground()
+                    self?.presentPaymentMethod(type: .paymentCard)
                     
                 case .addPayPalToVault,
                         .checkoutWithPayPal:
@@ -151,6 +152,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     }
 
                 case .addCardToVault:
+                    self?.blurBackground()
                     self?.presentPaymentMethod(type: .paymentCard)
                     
                 case .addDirectDebitToVault:
@@ -186,11 +188,6 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .none:
                     break
 
-                }
-                
-                if let _ = (self?.nc.viewControllers.first as? PrimerContainerViewController)?.children.first as? PrimerLoadingViewController {
-                    // Remove the loading view controller from the navigation stack so user can't pop to it.
-                    self?.nc.viewControllers.removeFirst()
                 }
             }
         })

@@ -306,11 +306,22 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 break
             }
             
-            self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
-            self.threeDSSDKWindow?.rootViewController = ClearViewController()
-            self.threeDSSDKWindow?.backgroundColor = UIColor.clear
-            self.threeDSSDKWindow?.windowLevel = UIWindow.Level.normal
-            self.threeDSSDKWindow?.makeKeyAndVisible()
+            if #available(iOS 13.0, *) {
+                if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                    self.threeDSSDKWindow = UIWindow(windowScene: windowScene)
+                } else {
+                    // Not opted-in in UISceneDelegate
+                    self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
+                }
+            } else {
+                // Fallback on earlier versions
+                self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
+            }
+
+            self.threeDSSDKWindow!.rootViewController = ClearViewController()
+            self.threeDSSDKWindow!.backgroundColor = UIColor.clear
+            self.threeDSSDKWindow!.windowLevel = UIWindow.Level.normal
+            self.threeDSSDKWindow!.makeKeyAndVisible()
             
             let serverAuthData = ThreeDS.ServerAuthData(acsReferenceNumber: beginAuthResponse.authentication.acsReferenceNumber,
                                              acsSignedContent: beginAuthResponse.authentication.acsSignedContent,

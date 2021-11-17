@@ -31,7 +31,7 @@ class PrimerNavigationController: UINavigationController, UINavigationBarDelegat
         CATransaction.setCompletionBlock(completion)
         pushViewController(viewController, animated: animated)
         CATransaction.commit()
-      }
+    }
     
 }
 
