@@ -7,18 +7,10 @@
 
 #if canImport(UIKit)
 
+import SafariServices
 import UIKit
 
-class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
-    
-    private var flow: PaymentFlow
-    private var cardComponentsManager: CardComponentsManager!
-    internal private(set) var banks: [Bank] = []
-    internal private(set) var dataSource: [Bank] = [] {
-        didSet {
-            tableView.reloadData()
-        }
-    }
+class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     
     override lazy var title: String = {
         switch config.type {
@@ -123,15 +115,13 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
         return 4.0
     }()
     
-    private var tokenizationService: TokenizationServiceProtocol?
-    fileprivate var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
-    fileprivate var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
-    
-    required init(config: PaymentMethodConfig) {
-        self.flow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout
-        super.init(config: config)
+    internal private(set) var banks: [Bank] = []
+    internal private(set) var dataSource: [Bank] = [] {
+        didSet {
+            tableView.reloadData()
+        }
     }
-    
+    private var tokenizationService: TokenizationServiceProtocol?
     override func validate() throws {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
@@ -142,7 +132,13 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    internal var tokenizationCallback: ((_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void)?
+    /**
+     This callback is used when the user selects a bank (i.e. taps on a table cell) and a fake tokenization is performed. This payment method token is then
+     used by the merchant to create a payment, and subsequently receive a **requiredAction**.
+     
+     It must be set before the user taps on a cell, and nullified when a **paymentMethod** is returned.
+     */
+    fileprivate var tmpTokenizationCallback: ((_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void)?
     
     internal lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -183,8 +179,8 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     @objc
     override func startTokenizationFlow() {
-        super.startTokenizationFlow()
-        
+        didStartTokenization?()
+                
         do {
             try validate()
         } catch {
@@ -196,30 +192,60 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
         
         firstly {
-            self.adyenBanksList()
+            self.fetchBanks()
         }
-        .done { banks in
+        .then { banks -> Promise<PaymentMethodToken> in
             self.banks = banks
             self.dataSource = banks
             let bsvc = BankSelectorViewController(viewModel: self)
             DispatchQueue.main.async {
                 Primer.shared.primerRootVC?.show(viewController: bsvc)
             }
+            
+            return self.fetchPaymentMethodToken()
         }
-        
-        tokenizationCallback = { (paymentMethod, err) in
-            if let err = err {
+        .then { tmpPaymentMethod -> Promise<PaymentMethodToken> in
+            self.paymentMethod = tmpPaymentMethod
+            return self.continueTokenizationFlow(for: tmpPaymentMethod)
+        }
+        .done { paymentMethod in
+            self.paymentMethod = paymentMethod
+            
+            DispatchQueue.main.async {
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
+                }
+                
+                self.completion?(self.paymentMethod, nil)
+                self.handleSuccessfulTokenizationFlow()
+            }
+        }
+        .ensure { [unowned self] in
+            DispatchQueue.main.async {
+                self.willDismissExternalView?()
+                self.webViewController?.dismiss(animated: true, completion: {
+                    self.didDismissExternalView?()
+                })
+            }
+            
+            self.willPresentExternalView = nil
+            self.didPresentExternalView = nil
+            self.willDismissExternalView = nil
+            self.didDismissExternalView = nil
+            self.webViewController = nil
+            self.webViewCompletion = nil
+            self.onResumeTokenCompletion = nil
+            self.onClientToken = nil
+        }
+        .catch { err in
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: err)
                 self.handleFailedTokenizationFlow(error: err)
-            } else if let paymentMethod = paymentMethod {
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-//                self.handleSuccessfulTokenizationFlow()
-            } else {
-                assert(true, "Should never get in here.")
             }
         }
     }
     
-    private func adyenBanksList() -> Promise<[Bank]> {
+    private func fetchBanks() -> Promise<[Bank]> {
         return Promise { seal in
             let state: AppStateProtocol = DependencyContainer.resolve()
             let decodedClientToken = state.decodedClientToken!
@@ -246,6 +272,23 @@ class BankSelectorTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     
                 case .success(let banks):
                     seal.fulfill(banks)
+                }
+            }
+        }
+    }
+    
+    private func fetchPaymentMethodToken() -> Promise<PaymentMethodToken> {
+        return Promise { seal in
+            self.tmpTokenizationCallback = { (paymentMethod, err) in
+                if let err = err {
+//                    self.handleFailedTokenizationFlow(error: err)
+                    seal.reject(err)
+                } else if let paymentMethod = paymentMethod {
+                    seal.fulfill(paymentMethod)
+//                    Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+    //                self.handleSuccessfulTokenizationFlow()
+                } else {
+                    assert(true, "Should never get in here.")
                 }
             }
         }
@@ -314,9 +357,9 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
         let bank = self.dataSource[indexPath.row]
         self.tokenize(bank: bank) { (paymentMethod, err) in
             if let err = err {
-                self.tokenizationCallback?(nil, err)
+                self.tmpTokenizationCallback?(nil, err)
             } else if let paymentMethod = paymentMethod {
-                self.tokenizationCallback?(paymentMethod, nil)
+                self.tmpTokenizationCallback?(paymentMethod, nil)
             } else {
                 assert(true, "Should never get in here.")
             }
@@ -356,36 +399,6 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
         dataSource = banks
         return true
     }
-}
-
-extension BankSelectorTokenizationViewModel {
-    
-    override func handle(error: Error) {
-        // onClientToken will be created when we're awaiting a new client token from the developer
-        onClientToken?(nil, error)
-        onClientToken = nil
-        // onResumeTokenCompletion will be created when we're awaiting the payment response
-        onResumeTokenCompletion?(nil, error)
-        onResumeTokenCompletion = nil
-    }
-    
-    override func handle(newClientToken clientToken: String) {
-        do {
-            try ClientTokenService.storeClientToken(clientToken)
-            onClientToken?(clientToken, nil)
-            onClientToken = nil
-        } catch {
-            onClientToken?(nil, error)
-            onClientToken = nil
-        }
-    }
-    
-    override func handleSuccess() {
-        // completion will be created when we're awaiting the payment response
-        onResumeTokenCompletion?(self.paymentMethod, nil)
-        onResumeTokenCompletion = nil
-    }
-    
 }
 
 #endif
