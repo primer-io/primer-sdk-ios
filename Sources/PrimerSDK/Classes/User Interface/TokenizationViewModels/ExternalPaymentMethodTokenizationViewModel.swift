@@ -15,9 +15,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var title: String = {
         switch config.type {
-        case .aliPay:
+        case .adyenAlipay:
             return "Ali Pay"
-        case .giropay:
+        case .adyenGiropay:
             return "Giropay"
         case .hoolah:
             return "Hoolah"
@@ -27,11 +27,11 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Pay NL Ideal"
         case .payNLPayconiq:
             return "Pay NL Payconiq"
-        case .sofort:
+        case .adyenSofortBanking:
             return "Sofort"
-        case .twint:
+        case .adyenTwint:
             return "Twint"
-        case .trustly:
+        case .adyenTrustly:
             return "Trustly"
         case .adyenMobilePay:
             return "Mobile Pay"
@@ -45,15 +45,15 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTitle: String? = {
         switch config.type {
-        case .aliPay,
-                .giropay,
+        case .adyenAlipay,
+                .adyenGiropay,
                 .hoolah,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
-                .sofort,
-                .twint,
-                .trustly,
+                .adyenSofortBanking,
+                .adyenTwint,
+                .adyenTrustly,
                 .adyenMobilePay,
                 .adyenVipps:
             return nil
@@ -67,9 +67,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonImage: UIImage? = {
         switch config.type {
-        case .aliPay:
+        case .adyenAlipay:
             return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .giropay:
+        case .adyenGiropay:
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
@@ -79,11 +79,11 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLPayconiq:
             return nil //UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .sofort:
+        case .adyenSofortBanking:
             return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .twint:
+        case .adyenTwint:
             return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .trustly:
+        case .adyenTrustly:
             return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenMobilePay:
             return UIImage(named: "mobile-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
@@ -97,9 +97,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonColor: UIColor? = {
         switch config.type {
-        case .aliPay:
+        case .adyenAlipay:
             return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
-        case .giropay:
+        case .adyenGiropay:
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
@@ -109,11 +109,11 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
         case .payNLPayconiq:
             return .black
-        case .sofort:
+        case .adyenSofortBanking:
             return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
-        case .twint:
+        case .adyenTwint:
             return .black
-        case .trustly:
+        case .adyenTrustly:
             return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
         case .adyenMobilePay:
             return UIColor(red: 90.0/255, green: 120.0/255, blue: 255.0/255, alpha: 1.0)
@@ -127,13 +127,13 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTitleColor: UIColor? = {
         switch config.type {
-        case .aliPay,
-                .giropay,
+        case .adyenAlipay,
+                .adyenGiropay,
                 .hoolah,
                 .payNLGiropay,
                 .payNLIdeal,
-                .twint,
-                .trustly,
+                .adyenTwint,
+                .adyenTrustly,
                 .adyenMobilePay,
                 .adyenVipps:
             return nil
@@ -147,14 +147,14 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonBorderWidth: CGFloat = {
         switch config.type {
-        case .aliPay,
-                .giropay,
+        case .adyenAlipay,
+                .adyenGiropay,
                 .hoolah,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
-                .twint,
-                .trustly,
+                .adyenTwint,
+                .adyenTrustly,
                 .adyenMobilePay,
                 .adyenVipps:
             return 0.0
@@ -166,14 +166,14 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
-        case .aliPay,
-                .giropay,
+        case .adyenAlipay,
+                .adyenGiropay,
                 .hoolah,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
-                .twint,
-                .trustly,
+                .adyenTwint,
+                .adyenTrustly,
                 .adyenMobilePay,
                 .adyenVipps:
             return nil
@@ -185,19 +185,19 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
-        case .aliPay,
+        case .adyenAlipay,
                 .hoolah,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
-                .sofort,
+                .adyenSofortBanking,
                 .adyenMobilePay,
                 .adyenVipps:
             return .white
-        case .trustly:
+        case .adyenTrustly:
             return .black
-        case .giropay,
-                .twint:
+        case .adyenGiropay,
+                .adyenTwint:
             return nil
         default:
             assert(true, "Shouldn't end up in here")

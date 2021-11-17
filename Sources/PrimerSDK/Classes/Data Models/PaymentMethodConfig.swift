@@ -61,13 +61,13 @@ struct PaymentMethodConfig: Codable {
         let asyncPaymentMethodTypes: [PaymentMethodConfigType] = [
             .adyenMobilePay,
             .adyenVipps,
-            .aliPay,
-            .giropay,
+            .adyenAlipay,
+            .adyenGiropay,
             .payNLGiropay,
             .payNLPayconiq,
-            .sofort,
-            .trustly,
-            .twint
+            .adyenSofortBanking,
+            .adyenTrustly,
+            .adyenTwint
         ]
         if type == .paymentCard {
             return CardFormPaymentMethodTokenizationViewModel(config: self)
@@ -192,10 +192,10 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
 }
 
 public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
-    case aliPay
+    case adyenAlipay
     case apaya
     case applePay
-    case giropay
+    case adyenGiropay
     case googlePay
     case goCardlessMandate
     case hoolah
@@ -203,9 +203,9 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
     case payNLIdeal
     case paymentCard
     case payPal
-    case sofort
-    case trustly
-    case twint
+    case adyenSofortBanking
+    case adyenTrustly
+    case adyenTwint
     case adyenMobilePay
     case adyenVipps
     case payNLPayconiq
@@ -215,13 +215,13 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
     init(rawValue: String) {
         switch rawValue {
         case "ADYEN_ALIPAY":
-            self = .aliPay
+            self = .adyenAlipay
         case "APAYA":
             self = .apaya
         case "APPLE_PAY":
             self = .applePay
         case "ADYEN_GIROPAY":
-            self = .giropay
+            self = .adyenGiropay
         case "GOCARDLESS":
             self = .goCardlessMandate
         case "GOOGLE_PAY":
@@ -237,11 +237,11 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
         case "PAYPAL":
             self = .payPal
         case "ADYEN_SOFORT_BANKING":
-            self = .sofort
+            self = .adyenSofortBanking
         case "ADYEN_TRUSTLY":
-            self = .trustly
+            self = .adyenTrustly
         case "ADYEN_TWINT":
-            self = .twint
+            self = .adyenTwint
         case "ADYEN_MOBILEPAY":
             self = .adyenMobilePay
         case "ADYEN_VIPPS":
@@ -257,13 +257,13 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
     
     var rawValue: String {
         switch self {
-        case .aliPay:
+        case .adyenAlipay:
             return "ADYEN_ALIPAY"
         case .apaya:
             return "APAYA"
         case .applePay:
             return "APPLE_PAY"
-        case .giropay:
+        case .adyenGiropay:
             return "ADYEN_GIROPAY"
         case .goCardlessMandate:
             return "GOCARDLESS"
@@ -279,11 +279,11 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
             return "PAYMENT_CARD"
         case .payPal:
             return "PAYPAL"
-        case .sofort:
+        case .adyenSofortBanking:
             return "ADYEN_SOFORT_BANKING"
-        case .trustly:
+        case .adyenTrustly:
             return "ADYEN_TRUSTLY"
-        case .twint:
+        case .adyenTwint:
             return "ADYEN_TWINT"
         case .adyenMobilePay:
             return "ADYEN_MOBILEPAY"
@@ -310,15 +310,15 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
                 .klarna:
             guard let flow = Primer.shared.flow else { return false }
             return flow.internalSessionFlow.vaulted
-        case .aliPay,
+        case .adyenAlipay,
                 .applePay,
-                .giropay,
+                .adyenGiropay,
                 .hoolah,
                 .payNLIdeal,
                 .payNLGiropay,
-                .sofort,
-                .trustly,
-                .twint,
+                .adyenSofortBanking,
+                .adyenTrustly,
+                .adyenTwint,
                 .adyenMobilePay,
                 .adyenVipps,
                 .payNLPayconiq:

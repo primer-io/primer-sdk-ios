@@ -231,23 +231,23 @@ public class Primer {
         case (.payNLIdeal, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLIdeal)
             
-        case (.aliPay, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .aliPay)
+        case (.adyenAlipay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenAlipay)
             
-        case (.giropay, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .giropay)
+        case (.adyenGiropay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenGiropay)
             
         case (.hoolah, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
             
-        case (.twint, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .twint)
+        case (.adyenTwint, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenTwint)
             
-        case (.sofort, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .sofort)
+        case (.adyenSofortBanking, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenSofortBanking)
             
-        case (.trustly, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .trustly)
+        case (.adyenTrustly, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenTrustly)
             
         case (.adyenMobilePay, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenMobilePay)
@@ -271,13 +271,13 @@ public class Primer {
             (.applePay, .vault),
             (.goCardlessMandate, _),
             (.googlePay, _),
-            (.aliPay, .vault),
-            (.giropay, .vault),
+            (.adyenAlipay, .vault),
+            (.adyenGiropay, .vault),
             (.hoolah, .vault),
             (.payNLIdeal, .vault),
-            (.sofort, .vault),
-            (.trustly, .vault),
-            (.twint, .vault),
+            (.adyenSofortBanking, .vault),
+            (.adyenTrustly, .vault),
+            (.adyenTwint, .vault),
             (.adyenMobilePay, .vault),
             (.adyenVipps, .vault),
             (.payNLPayconiq, .vault),
