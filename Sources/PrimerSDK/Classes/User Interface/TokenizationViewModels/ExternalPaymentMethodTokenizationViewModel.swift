@@ -254,6 +254,17 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return Promise { seal in
             var pollingURLs: PollingURLs!
             
+            // Fallback when no **requiredAction** is returned.
+            self.onResumeTokenCompletion = { (paymentMethod, err) in
+                if let err = err {
+                    seal.reject(err)
+                } else if let paymentMethod = paymentMethod {
+                    seal.fulfill(paymentMethod)
+                } else {
+                    assert(true, "Should have received one parameter")
+                }
+            }
+            
             firstly {
                 return self.fetchPollingURLs(for: tmpPaymentMethod)
             }
