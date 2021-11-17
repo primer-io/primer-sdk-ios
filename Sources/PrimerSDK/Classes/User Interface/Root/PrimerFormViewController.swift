@@ -23,6 +23,7 @@ class PrimerFormViewController: PrimerViewController {
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
         verticalStackView.alignment = .fill
         verticalStackView.axis = .vertical
+        verticalStackView.distribution = .fill
         
         verticalStackView.pin(view: view, leading: 20, top: 20, trailing: -20, bottom: -20)
     }
