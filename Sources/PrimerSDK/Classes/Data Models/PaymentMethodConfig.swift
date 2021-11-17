@@ -191,37 +191,48 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     
 }
 
-public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
+public enum PaymentMethodConfigType: Codable, Equatable {
+    
     case adyenAlipay
-    case apaya
-    case applePay
     case adyenGiropay
-    case googlePay
-    case goCardlessMandate
-    case hoolah
-    case klarna
-    case payNLIdeal
-    case paymentCard
-    case payPal
+    case adyenMobilePay
     case adyenSofortBanking
     case adyenTrustly
     case adyenTwint
-    case adyenMobilePay
     case adyenVipps
-    case payNLPayconiq
+    case apaya
+    case applePay
+    case goCardlessMandate
+    case googlePay
+    case hoolah
+    case klarna
     case payNLGiropay
+    case payNLIdeal
+    case payNLPayconiq
+    case paymentCard
+    case payPal
     case other(rawValue: String)
     
     init(rawValue: String) {
         switch rawValue {
         case "ADYEN_ALIPAY":
             self = .adyenAlipay
+        case "ADYEN_GIROPAY":
+            self = .adyenGiropay
+        case "ADYEN_MOBILEPAY":
+            self = .adyenMobilePay
+        case "ADYEN_SOFORT_BANKING":
+            self = .adyenSofortBanking
+        case "ADYEN_TRUSTLY":
+            self = .adyenTrustly
+        case "ADYEN_TWINT":
+            self = .adyenTwint
+        case "ADYEN_VIPPS":
+            self = .adyenVipps
         case "APAYA":
             self = .apaya
         case "APPLE_PAY":
             self = .applePay
-        case "ADYEN_GIROPAY":
-            self = .adyenGiropay
         case "GOCARDLESS":
             self = .goCardlessMandate
         case "GOOGLE_PAY":
@@ -230,26 +241,16 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
             self = .hoolah
         case "KLARNA":
             self = .klarna
+        case "PAY_NL_GIROPAY":
+            self = .payNLGiropay
         case "PAY_NL_IDEAL":
             self = .payNLIdeal
+        case "PAY_NL_PAYCONIQ":
+            self = .payNLPayconiq
         case "PAYMENT_CARD":
             self = .paymentCard
         case "PAYPAL":
             self = .payPal
-        case "ADYEN_SOFORT_BANKING":
-            self = .adyenSofortBanking
-        case "ADYEN_TRUSTLY":
-            self = .adyenTrustly
-        case "ADYEN_TWINT":
-            self = .adyenTwint
-        case "ADYEN_MOBILEPAY":
-            self = .adyenMobilePay
-        case "ADYEN_VIPPS":
-            self = .adyenVipps
-        case "PAY_NL_PAYCONIQ":
-            self = .payNLPayconiq
-        case "PAY_NL_GIROPAY":
-            self = .payNLGiropay
         default:
             self = .other(rawValue: rawValue)
         }
@@ -259,12 +260,22 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
         switch self {
         case .adyenAlipay:
             return "ADYEN_ALIPAY"
+        case .adyenGiropay:
+            return "ADYEN_GIROPAY"
+        case .adyenMobilePay:
+            return "ADYEN_MOBILEPAY"
+        case .adyenSofortBanking:
+            return "ADYEN_SOFORT_BANKING"
+        case .adyenTrustly:
+            return "ADYEN_TRUSTLY"
+        case .adyenTwint:
+            return "ADYEN_TWINT"
+        case .adyenVipps:
+            return "ADYEN_VIPPS"
         case .apaya:
             return "APAYA"
         case .applePay:
             return "APPLE_PAY"
-        case .adyenGiropay:
-            return "ADYEN_GIROPAY"
         case .goCardlessMandate:
             return "GOCARDLESS"
         case .googlePay:
@@ -273,26 +284,16 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
             return "HOOLAH"
         case .klarna:
             return "KLARNA"
+        case .payNLGiropay:
+            return "PAY_NL_GIROPAY"
         case .payNLIdeal:
             return "PAY_NL_IDEAL"
+        case .payNLPayconiq:
+            return "PAY_NL_PAYCONIQ"
         case .paymentCard:
             return "PAYMENT_CARD"
         case .payPal:
             return "PAYPAL"
-        case .adyenSofortBanking:
-            return "ADYEN_SOFORT_BANKING"
-        case .adyenTrustly:
-            return "ADYEN_TRUSTLY"
-        case .adyenTwint:
-            return "ADYEN_TWINT"
-        case .adyenMobilePay:
-            return "ADYEN_MOBILEPAY"
-        case .adyenVipps:
-            return "ADYEN_VIPPS"
-        case .payNLPayconiq:
-            return "PAY_NL_PAYCONIQ"
-        case .payNLGiropay:
-            return "PAY_NL_GIROPAY"
         case .other(let rawValue):
             return rawValue
         }
@@ -300,30 +301,34 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
     
     var isEnabled: Bool {
         switch self {
-        case .goCardlessMandate,
-                .googlePay:
-            return false
-        case .paymentCard,
-                .payPal:
-            return true
+        case .adyenAlipay,
+                .adyenGiropay,
+                .adyenMobilePay,
+                .adyenSofortBanking,
+                .adyenTrustly,
+                .adyenTwint,
+                .adyenVipps,
+                .applePay,
+                .hoolah,
+                .payNLGiropay,
+                .payNLIdeal,
+                .payNLPayconiq:
+            guard let flow = Primer.shared.flow else { return false }
+            return !flow.internalSessionFlow.vaulted
+            
         case .apaya,
                 .klarna:
             guard let flow = Primer.shared.flow else { return false }
             return flow.internalSessionFlow.vaulted
-        case .adyenAlipay,
-                .applePay,
-                .adyenGiropay,
-                .hoolah,
-                .payNLIdeal,
-                .payNLGiropay,
-                .adyenSofortBanking,
-                .adyenTrustly,
-                .adyenTwint,
-                .adyenMobilePay,
-                .adyenVipps,
-                .payNLPayconiq:
-            guard let flow = Primer.shared.flow else { return false }
-            return !flow.internalSessionFlow.vaulted
+            
+        case .goCardlessMandate,
+                .googlePay:
+            return false
+            
+        case .paymentCard,
+                .payPal:
+            return true
+        
         case .other:
             return true
         }

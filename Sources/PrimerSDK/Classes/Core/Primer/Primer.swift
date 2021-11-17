@@ -207,41 +207,14 @@ public class Primer {
     
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
         switch (paymentMethod, intent) {
-        case (.apaya, .vault):
-            flow = .addApayaToVault
-            
-        case (.applePay, .checkout):
-            flow = .checkoutWithApplePay
-            
-        case (.paymentCard, .checkout):
-            flow = .completeDirectCheckout
-            
-        case (.paymentCard, .vault):
-            flow = .addCardToVault
-            
-        case (.goCardlessMandate, .vault):
-            flow = .addDirectDebitToVault
-            
-        case (.klarna, .vault):
-            flow = .addKlarnaToVault
-            
-        case (.klarna, .checkout):
-            flow = .checkoutWithKlarna
-
-        case (.payNLIdeal, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLIdeal)
-            
         case (.adyenAlipay, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenAlipay)
             
         case (.adyenGiropay, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenGiropay)
             
-        case (.hoolah, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
-            
-        case (.adyenTwint, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenTwint)
+        case (.adyenMobilePay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenMobilePay)
             
         case (.adyenSofortBanking, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenSofortBanking)
@@ -249,18 +222,42 @@ public class Primer {
         case (.adyenTrustly, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenTrustly)
             
-        case (.adyenMobilePay, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenMobilePay)
+        case (.adyenTwint, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenTwint)
             
         case (.adyenVipps, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenVipps)
             
-        case (.payNLPayconiq, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLPayconiq)
+        case (.apaya, .vault):
+            flow = .addApayaToVault
+            
+        case (.applePay, .checkout):
+            flow = .checkoutWithApplePay
+            
+        case (.hoolah, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
+            
+        case (.klarna, .vault):
+            flow = .addKlarnaToVault
+            
+        case (.klarna, .checkout):
+            flow = .checkoutWithKlarna
             
         case (.payNLGiropay, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLGiropay)
             
+        case (.payNLIdeal, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLIdeal)
+            
+        case (.payNLPayconiq, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLPayconiq)
+            
+        case (.paymentCard, .checkout):
+            flow = .completeDirectCheckout
+            
+        case (.paymentCard, .vault):
+            flow = .addCardToVault
+
         case (.payPal, .checkout):
             flow = .checkoutWithPayPal
             
