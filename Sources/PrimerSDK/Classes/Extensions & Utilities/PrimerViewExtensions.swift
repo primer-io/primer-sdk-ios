@@ -131,6 +131,10 @@ internal class PrimerView: UIView {
         bottomAnchor.constraint(equalTo: superView.bottomAnchor).isActive = true
     }
     
+    func removeSubviews() {
+        subviews.forEach { $0.removeFromSuperview() }
+    }
+    
 }
 
 #endif

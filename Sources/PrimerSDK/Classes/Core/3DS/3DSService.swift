@@ -63,7 +63,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
     private var threeDSSDKWindow: UIWindow?
     
     deinit {
-        
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     static func validate3DSParameters() throws {
