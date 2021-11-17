@@ -243,6 +243,9 @@ public class Primer {
         case (.klarna, .checkout):
             flow = .checkoutWithKlarna
             
+        case (.mollieIdeal, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .mollieIdeal)
+            
         case (.payNLGiropay, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLGiropay)
             
@@ -277,6 +280,7 @@ public class Primer {
             (.adyenTwint, .vault),
             (.adyenMobilePay, .vault),
             (.adyenVipps, .vault),
+            (.mollieIdeal, .vault),
             (.payNLPayconiq, .vault),
             (.payNLGiropay, .vault),
             (.other, _):

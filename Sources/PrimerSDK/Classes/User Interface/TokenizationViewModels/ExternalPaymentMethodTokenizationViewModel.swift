@@ -21,6 +21,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Giropay"
         case .hoolah:
             return "Hoolah"
+        case .mollieIdeal:
+            return "Mollie iDeal"
         case .payNLGiropay:
             return "Pay NL Giropay"
         case .payNLIdeal:
@@ -48,6 +50,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .hoolah,
+                .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
@@ -73,6 +76,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .mollieIdeal:
+            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLGiropay:
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .payNLIdeal:
@@ -103,6 +108,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
+        case .mollieIdeal:
+            return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
         case .payNLGiropay:
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
         case .payNLIdeal:
@@ -130,6 +137,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .hoolah,
+                .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
                 .adyenTwint,
@@ -150,6 +158,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .hoolah,
+                .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
@@ -169,6 +178,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .hoolah,
+                .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
@@ -187,6 +197,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay,
                 .hoolah,
+                .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
