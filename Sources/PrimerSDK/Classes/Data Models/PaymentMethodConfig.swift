@@ -86,6 +86,8 @@ struct PaymentMethodConfig: Codable {
         } else if asyncPaymentMethodTypes.contains(type) {
             return ExternalPaymentMethodTokenizationViewModel(config: self)
         }
+        
+        log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD TYPE", message: type.rawValue, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
 
         return nil
     }
