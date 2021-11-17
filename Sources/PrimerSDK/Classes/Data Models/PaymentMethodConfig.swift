@@ -63,7 +63,9 @@ struct PaymentMethodConfig: Codable {
             .adyenVipps,
             .adyenAlipay,
             .adyenGiropay,
+            .mollieBankcontact,
             .mollieIdeal,
+            .payNLBancontact,
             .payNLGiropay,
             .payNLPayconiq,
             .adyenSofortBanking,
@@ -207,7 +209,9 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case googlePay
     case hoolah
     case klarna
+    case mollieBankcontact
     case mollieIdeal
+    case payNLBancontact
     case payNLGiropay
     case payNLIdeal
     case payNLPayconiq
@@ -243,8 +247,12 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .hoolah
         case "KLARNA":
             self = .klarna
+        case "MOLLIE_BANCONTACT":
+            self = .mollieBankcontact
         case "MOLLIE_IDEAL":
             self = .mollieIdeal
+        case "PAY_NL_BANCONTACT":
+            self = .payNLBancontact
         case "PAY_NL_GIROPAY":
             self = .payNLGiropay
         case "PAY_NL_IDEAL":
@@ -288,8 +296,12 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "HOOLAH"
         case .klarna:
             return "KLARNA"
+        case .mollieBankcontact:
+            return "MOLLIE_BANCONTACT"
         case .mollieIdeal:
             return "MOLLIE_IDEAL"
+        case .payNLBancontact:
+            return "PAY_NL_BANCONTACT"
         case .payNLGiropay:
             return "PAY_NL_GIROPAY"
         case .payNLIdeal:
@@ -316,7 +328,9 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .adyenVipps,
                 .applePay,
                 .hoolah,
+                .mollieBankcontact,
                 .mollieIdeal,
+                .payNLBancontact,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq:

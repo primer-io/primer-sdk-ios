@@ -16,13 +16,17 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var title: String = {
         switch config.type {
         case .adyenAlipay:
-            return "Ali Pay"
+            return "Adyen Ali Pay"
         case .adyenGiropay:
             return "Giropay"
         case .hoolah:
             return "Hoolah"
+        case .mollieBankcontact:
+            return "Mollie Bancontact"
         case .mollieIdeal:
             return "Mollie iDeal"
+        case .payNLBancontact:
+            return "Pay NL Bancontact"
         case .payNLGiropay:
             return "Pay NL Giropay"
         case .payNLIdeal:
@@ -50,7 +54,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .hoolah,
+                .mollieBankcontact,
                 .mollieIdeal,
+                .payNLBancontact,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
@@ -76,6 +82,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .mollieBankcontact,
+                .payNLBancontact:
+            return UIImage(named: "bancontact-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .mollieIdeal:
             return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLGiropay:
@@ -108,6 +117,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
+        case .mollieBankcontact,
+                .payNLBancontact:
+            return .white
         case .mollieIdeal:
             return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
         case .payNLGiropay:
@@ -136,17 +148,18 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
+                .adyenMobilePay,
+                .adyenTrustly,
+                .adyenTwint,
+                .adyenVipps,
                 .hoolah,
+                .mollieBankcontact,
                 .mollieIdeal,
+                .payNLBancontact,
                 .payNLGiropay,
                 .payNLIdeal,
-                .adyenTwint,
-                .adyenTrustly,
-                .adyenMobilePay,
-                .adyenVipps:
+                .payNLPayconiq:
             return nil
-        case .payNLPayconiq:
-            return .white
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -157,16 +170,19 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
+                .adyenMobilePay,
+                .adyenTrustly,
+                .adyenTwint,
+                .adyenVipps,
                 .hoolah,
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
-                .payNLPayconiq,
-                .adyenTwint,
-                .adyenTrustly,
-                .adyenMobilePay,
-                .adyenVipps:
+                .payNLPayconiq:
             return 0.0
+        case .mollieBankcontact,
+                .payNLBancontact:
+            return 1.0
         default:
             assert(true, "Shouldn't end up in here")
             return 0.0
@@ -177,16 +193,19 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
+                .adyenMobilePay,
+                .adyenTrustly,
+                .adyenTwint,
+                .adyenVipps,
                 .hoolah,
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
-                .payNLPayconiq,
-                .adyenTwint,
-                .adyenTrustly,
-                .adyenMobilePay,
-                .adyenVipps:
+                .payNLPayconiq:
             return nil
+        case .mollieBankcontact,
+                .payNLBancontact:
+            return .black
         default:
             assert(true, "Shouldn't end up in here")
             return nil
