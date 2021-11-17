@@ -118,10 +118,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return 4.0
     }()
     
-    lazy var requireZipCode: Bool = {
+    var requireZipCode: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.paymentMethodConfig?.requireZipCodeForCards ?? false
-    }()
+        return state.paymentMethodConfig?.clientSession?.inputOptions?.captureZip ?? true
+    }
     
     lazy var cardNumberField: PrimerCardNumberFieldView = {
         let cardNumberField = PrimerCardNumberFieldView()
@@ -322,6 +322,25 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         startTokenizationFlow()
     }
     
+    var onConfigurationFetched: ((Bool) -> Void)?
+    
+    func determineZipCodeVisibility() {
+        
+        print("🚌 requireZipCode: \(requireZipCode)")
+        
+        onConfigurationFetched?(requireZipCode)
+    }
+    
+    func fetchConfiguration() {
+        let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+        paymentMethodConfigService.fetchConfig { [weak self] (error) in
+            
+            print("error is null: \(!error.exists)")
+            
+            self?.determineZipCodeVisibility()
+        }
+    }
+    
     func dispatchAction() {
         print("🔥 dispatch action ahora!")
     }
@@ -440,11 +459,14 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 ]
             ]
             
-            Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
+            let actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
+            
+            Primer.shared.delegate?.onClientSessionActions?(actions) { [weak self] (clientToken, err) in
                 if let clientToken = clientToken {
                     try? ClientTokenService.storeClientToken(clientToken)
                 }
-            })
+                self?.fetchConfiguration()
+            }
             
             cardNumberContainerView.rightImage2 = cardNetwork?.icon
             

@@ -162,6 +162,7 @@ struct ClientSessionRequestBody {
     let customer: ClientSessionRequestBody.Customer?
     let order: ClientSessionRequestBody.Order?
     let paymentMethod: ClientSessionRequestBody.PaymentMethod?
+    let inputOptions: InputOptions?
     
     var dictionaryValue: [String: Any]? {
         var dic: [String: Any] = [:]
@@ -194,6 +195,10 @@ struct ClientSessionRequestBody {
         
         if let paymentMethod = paymentMethod {
             dic["paymentMethod"] = paymentMethod.dictionaryValue
+        }
+        
+        if let inputOptions = inputOptions {
+            dic["inputOptions"] = inputOptions.dictionaryValue
         }
 
         return dic.keys.count == 0 ? nil : dic
@@ -277,6 +282,46 @@ struct ClientSessionRequestBody {
             }
             
             return dic.keys.count == 0 ? nil : dic
+        }
+    }
+    
+    struct InputOptions {
+        let cardInformation: CardInformation
+        let billingAddress: BillingAddress
+        
+        var dictionaryValue: [String: Any] {
+            [
+                "cardInformation": cardInformation.dictionaryValue,
+                "billingAddress": billingAddress.dictionaryValue
+            ]
+        }
+        
+        struct CardInformation {
+            let cardholderName: CaptureData
+            
+            var dictionaryValue: [String: Any] {
+                [ "cardholderName": cardholderName.dictionaryValue ]
+            }
+        }
+        
+        struct BillingAddress {
+            let postalCode: CaptureData
+            let addressLine1: CaptureData
+            
+            var dictionaryValue: [String: Any] {
+                [
+                    "postalCode": postalCode.dictionaryValue,
+                    "addressLine1": addressLine1.dictionaryValue
+                ]
+            }
+        }
+        
+        struct CaptureData {
+            let capture, required: Bool
+            
+            var dictionaryValue: [String: Bool] {
+                ["capture": capture, "required": required]
+            }
         }
     }
 

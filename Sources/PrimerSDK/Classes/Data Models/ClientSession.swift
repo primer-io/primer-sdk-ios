@@ -13,9 +13,10 @@ public class ClientSession: Codable {
     let paymentMethod: ClientSession.PaymentMethod?
     let order: ClientSession.Order?
     let customer: Customer?
+    let inputOptions: InputOptions?
     
     enum CodingKeys: String, CodingKey {
-        case metadata, paymentMethod, order, customer
+        case metadata, paymentMethod, order, customer, inputOptions
     }
     
     required public init(from decoder: Decoder) throws {
@@ -32,6 +33,7 @@ public class ClientSession: Codable {
         self.paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
         self.order = (try? container.decode(Order?.self, forKey: .order)) ?? nil
         self.customer = (try? container.decode(Customer?.self, forKey: .customer)) ?? nil
+        self.inputOptions = (try? container.decode(InputOptions?.self, forKey: .inputOptions)) ?? nil
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -190,6 +192,28 @@ public class ClientSession: Codable {
         }
     }
     
+    // MARK: - ClientSession.InputOptions
+    
+    public struct InputOptions: Codable {
+        let cardInformation: CardInformation?
+        let billingAddress: BillingAddress?
+        
+        
+        struct CardInformation: Codable {
+            let cardholderName: CaptureData
+        }
+        
+        struct BillingAddress: Codable {
+            let postalCode: CaptureData
+        }
+        
+        struct CaptureData: Codable {
+            let capture: Bool
+            let required: Bool
+        }
+        
+        var captureZip: Bool { billingAddress?.postalCode.capture ?? false }
+    }
 }
 
 internal extension Encodable {

@@ -369,6 +369,79 @@ class MerchantCheckoutViewController: UIViewController {
         })
     }
     
+    func updateInputOptions(
+        using actions: [PrimerSDK.ClientSession.Action],
+        completion: @escaping (String?, Error?) -> Void
+    ) {
+        guard let clientToken = clientToken else {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        guard let url = URL(string: "\(endpoint)/client-session/\(clientToken)/actions") else {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            let action = SetInputAction(
+                type: "SET_INPUT_OPTIONS",
+                params: [
+                    SetInputAction.Param(
+                        cardInformation: SetInputAction.CardInformation(
+                            cardholderName: CaptureData(capture: false, required: false)
+                        )
+                    ),
+                    SetInputAction.Param(
+                        billingAddress: SetInputAction.BillingAddress(
+                            postalCode: CaptureData(capture: false, required: false)
+                        )
+                    )
+                ]
+            )
+            let bodyJson = [ "actions": [ action ] ]
+            request.httpBody = try JSONEncoder().encode(bodyJson)
+        } catch {
+            return completion(nil, NetworkError.missingParams)
+        }
+        
+        
+        callApi(request, completion: { result in
+            switch result {
+            case .success(let data):
+                do {
+                    guard let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
+                        completion(nil, NetworkError.missingParams)
+                        return
+                    }
+                    
+                    print("Client Token Response:\n\(json)")
+                    
+                    guard let clientToken = json["clientToken"] as? String else {
+                        completion(nil, NetworkError.missingParams)
+                        return
+                    }
+
+                    print("Client Token:\n\(clientToken)")
+                    
+                    
+                    print("successfully updated input settings! 🔥🚀 \n\n\n\n")
+                    
+                    completion(clientToken, nil)
+
+                } catch {
+                    completion(nil, error)
+                }
+            case .failure(let err):
+                completion(nil, err)
+            }
+        })
+    }
+    
     func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
         guard let url = URL(string: "\(endpoint)/payments") else {
             completion(nil, NetworkError.missingParams)
@@ -468,7 +541,26 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                                 "amount": 800
                             ]
                         ],
-                    ]))
+                    ]),
+                inputOptions: ClientSessionRequestBody.InputOptions(
+                    cardInformation: ClientSessionRequestBody.InputOptions.CardInformation(
+                        cardholderName: ClientSessionRequestBody.InputOptions.CaptureData(
+                            capture: true,
+                            required: true
+                        )
+                    ),
+                    billingAddress: ClientSessionRequestBody.InputOptions.BillingAddress(
+                        postalCode: ClientSessionRequestBody.InputOptions.CaptureData(
+                            capture: true,
+                            required: true
+                        ),
+                        addressLine1: ClientSessionRequestBody.InputOptions.CaptureData(
+                            capture: true,
+                            required: true
+                        )
+                    )
+                )
+            )
             
             requestClientSession(requestBody: clientSessionRequestBody, completion: completion)
         } else {
@@ -477,7 +569,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func onClientSessionActions(_ actions: [ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
-        requestClientSessionWithActions(actions, completion: completion)
+//        requestClientSessionWithActions(actions, completion: completion)
+        updateInputOptions(using: actions, completion: completion)
     }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol) {

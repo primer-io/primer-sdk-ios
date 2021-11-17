@@ -30,6 +30,29 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        formPaymentMethodTokenizationViewModel.zipCodeContainerView.tag = 1005
+        
+        formPaymentMethodTokenizationViewModel.onConfigurationFetched = { [weak self] (showZip) in
+            
+            guard
+                let zipView = self?.formPaymentMethodTokenizationViewModel.zipCodeContainerView,
+                let containsZipCode: Bool = self?.verticalStackView.arrangedSubviews.contains(zipView)
+            else {
+                return
+            }
+            
+            if (showZip && !containsZipCode) {
+                self?.verticalStackView.addArrangedSubview(zipView)
+            }
+            
+            if (!showZip && containsZipCode) {
+                zipView.removeFromSuperview();
+            }
+            
+            self?.view.updateConstraints()
+            
+        }
                 
         title = NSLocalizedString("primer-form-type-main-title-card-form",
                                   tableName: nil,
@@ -55,9 +78,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardholderNameContainerView)
         
-        if (formPaymentMethodTokenizationViewModel.requireZipCode) {
-            verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.zipCodeContainerView)
-        }
+        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.zipCodeContainerView)
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
             let saveCardSwitchContainerStackView = UIStackView()
