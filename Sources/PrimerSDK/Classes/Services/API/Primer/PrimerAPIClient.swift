@@ -25,7 +25,7 @@ protocol PrimerAPIClientProtocol {
     func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
     func threeDSContinueAuth(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
     func apayaCreateSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest, completion: @escaping (_ result: Result<Apaya.CreateSessionAPIResponse, Error>) -> Void)
-    func adyenDotPayBanksList(clientToken: DecodedClientToken, request: AdyenDotPaySessionRequest, completion: @escaping (_ result: Result<[Bank], Error>) -> Void)
+    func adyenBanksList(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (_ result: Result<[Bank], Error>) -> Void)
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
 }
 
@@ -203,9 +203,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func adyenDotPayBanksList(clientToken: DecodedClientToken, request: AdyenDotPaySessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
-        let endpoint = PrimerAPI.adyenDotPayBanksList(clientToken: clientToken, request: request)
-        networkService.request(endpoint) { (result: Result<AdyenDotPaySessionResponse, NetworkServiceError>) in
+    func adyenBanksList(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
+        let endpoint = PrimerAPI.adyenBanksList(clientToken: clientToken, request: request)
+        networkService.request(endpoint) { (result: Result<BanksListSessionResponse, NetworkServiceError>) in
             switch result {
             case .success(let res):
                 let banks = res.result
@@ -422,7 +422,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func adyenDotPayBanksList(clientToken: DecodedClientToken, request: AdyenDotPaySessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
+    func adyenBanksList(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
         
     }
     

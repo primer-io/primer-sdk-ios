@@ -346,34 +346,32 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             if let err = err {
                 resumeHandler.handle(error: err)
             } else if let res = res {
-                if let requiredActionDic = res["requiredAction"] as? [String: Any] {
-                    
-                    if let amount = res["amount"] as? Int,
-                       let id = res["id"] as? String,
-                       let date = res["date"] as? String,
-                       let status = res["status"] as? String {
-                        
-                        self.transactionResponse = TransactionResponse(id: id, date: date, status: status, requiredAction: requiredActionDic)
-                        
-                        if let requiredActionName = requiredActionDic["name"] as? String,
-                           let clientToken = requiredActionDic["clientToken"] as? String {
-                            
-                            if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
-                                resumeHandler.handle(newClientToken: clientToken)
-                                return
-                            } else if requiredActionName == "USE_PRIMER_SDK", status == "PENDING" {
-                                resumeHandler.handle(newClientToken: clientToken)
-                                return
-                            }
-                        }
-                    }
-
+                guard let requiredActionDic = res["requiredAction"] as? [String: Any] else {
+                    resumeHandler.handleSuccess()
+                    return
                 }
                 
-                resumeHandler.handleSuccess()
+                guard let id = res["id"] as? String,
+                      let date = res["date"] as? String,
+                      let status = res["status"] as? String,
+                      let requiredActionName = requiredActionDic["name"] as? String,
+                      let clientToken = requiredActionDic["clientToken"] as? String else {
+                          resumeHandler.handleSuccess()
+                          return
+                      }
+                
+                self.transactionResponse = TransactionResponse(id: id, date: date, status: status, requiredAction: requiredActionDic)
+                
+                if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
+                    resumeHandler.handle(newClientToken: clientToken)
+                } else if requiredActionName == "USE_PRIMER_SDK", status == "PENDING" {
+                    resumeHandler.handle(newClientToken: clientToken)
+                } else {
+                    resumeHandler.handleSuccess()
+                }
                 
             } else {
-                fatalError()
+                assert(true)
             }
         }
     }
