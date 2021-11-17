@@ -58,6 +58,16 @@ struct PaymentMethodConfig: Codable {
     let type: PaymentMethodConfigType
     let options: PaymentMethodOptions?
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
+        let asyncPaymentMethodTypes: [PaymentMethodConfigType] = [
+            .adyenMobilePay,
+            .adyenVipps,
+            .aliPay,
+            .giropay,
+            .payNLPayconiq,
+            .sofort,
+            .trustly,
+            .twint
+        ]
         if type == .paymentCard {
             return CardFormPaymentMethodTokenizationViewModel(config: self)
         } else if type == .applePay {
@@ -72,13 +82,7 @@ struct PaymentMethodConfig: Codable {
             return PayPalTokenizationViewModel(config: self)
         } else if type == .apaya {
             return ApayaTokenizationViewModel(config: self)
-        } else if type == .giropay ||
-                    type == .sofort ||
-                    type == .twint ||
-                    type == .aliPay ||
-                    type == .trustly ||
-                    type == .adyenMobilePay ||
-                    type == .adyenVipps {
+        } else if asyncPaymentMethodTypes.contains(type) {
             return ExternalPaymentMethodTokenizationViewModel(config: self)
         }
         
@@ -206,6 +210,7 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
     case twint
     case adyenMobilePay
     case adyenVipps
+    case payNLPayconiq
     case other(rawValue: String)
     
     init(rawValue: String) {
@@ -242,6 +247,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
             self = .adyenMobilePay
         case "ADYEN_VIPPS":
             self = .adyenVipps
+        case "PAY_NL_PAYCONIQ":
+            self = .payNLPayconiq
         default:
             self = .other(rawValue: rawValue)
         }
@@ -281,6 +288,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
             return "ADYEN_MOBILEPAY"
         case .adyenVipps:
             return "ADYEN_VIPPS"
+        case .payNLPayconiq:
+            return "PAY_NL_PAYCONIQ"
         case .other(let rawValue):
             return rawValue
         }
@@ -307,7 +316,8 @@ public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
                 .trustly,
                 .twint,
                 .adyenMobilePay,
-                .adyenVipps:
+                .adyenVipps,
+                .payNLPayconiq:
             guard let flow = Primer.shared.flow else { return false }
             return !flow.internalSessionFlow.vaulted
         case .other:

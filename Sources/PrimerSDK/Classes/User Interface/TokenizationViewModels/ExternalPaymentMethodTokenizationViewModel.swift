@@ -23,6 +23,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Hoolah"
         case .payNLIdeal:
             return "Pay NL Ideal"
+        case .payNLPayconiq:
+            return "Pay NL Payconiq"
         case .sofort:
             return "Sofort"
         case .twint:
@@ -45,12 +47,15 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .giropay,
                 .hoolah,
                 .payNLIdeal,
+                .payNLPayconiq,
                 .sofort,
                 .twint,
                 .trustly,
                 .adyenMobilePay,
                 .adyenVipps:
             return nil
+        case .payNLPayconiq:
+            return "Payconiq"
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -67,6 +72,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLIdeal:
             return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .payNLPayconiq:
+            return nil //UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .sofort:
             return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .twint:
@@ -93,6 +100,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
         case .payNLIdeal:
             return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
+        case .payNLPayconiq:
+            return .black
         case .sofort:
             return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
         case .twint:
@@ -120,6 +129,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenMobilePay,
                 .adyenVipps:
             return nil
+        case .payNLPayconiq:
+            return .white
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -132,6 +143,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .giropay,
                 .hoolah,
                 .payNLIdeal,
+                .payNLPayconiq,
                 .twint,
                 .trustly,
                 .adyenMobilePay,
@@ -149,6 +161,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .giropay,
                 .hoolah,
                 .payNLIdeal,
+                .payNLPayconiq,
                 .twint,
                 .trustly,
                 .adyenMobilePay,
@@ -165,6 +178,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .aliPay,
                 .hoolah,
                 .payNLIdeal,
+                .payNLPayconiq,
                 .sofort,
                 .adyenMobilePay,
                 .adyenVipps:
