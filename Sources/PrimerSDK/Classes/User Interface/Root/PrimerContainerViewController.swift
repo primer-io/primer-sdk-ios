@@ -66,6 +66,23 @@ class PrimerContainerViewController: PrimerViewController {
         childViewController.didMove(toParent: self)
     }
     
+    func layoutContainerViewControllerIfNeeded(block: (() -> Void)?) {
+        // This is very important, we need to disable any height constraints before layout.
+        self.childViewHeightConstraint?.isActive = false
+        self.childViewHeightConstraint = nil
+        
+        // Run the code block
+        block?()
+        
+        // This is very important, the view must layout in order to have correct height before reseting the constraints.
+        self.view.layoutIfNeeded()
+        self.childViewHeightConstraint?.isActive = false
+        self.childViewHeightConstraint = nil
+        childViewHeightConstraint = childView.heightAnchor.constraint(equalToConstant: childViewController.view.bounds.size.height)
+        childViewHeightConstraint?.isActive = true
+        Primer.shared.primerRootVC?.resetConstraint(for: childViewController)
+        view.layoutIfNeeded()
+    }
 }
 
 extension UIView {
