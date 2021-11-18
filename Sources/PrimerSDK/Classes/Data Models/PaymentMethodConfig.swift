@@ -88,6 +88,8 @@ struct PaymentMethodConfig: Codable {
             return ApayaTokenizationViewModel(config: self)
         } else if asyncPaymentMethodTypes.contains(type) {
             return ExternalPaymentMethodTokenizationViewModel(config: self)
+        } else if type == .adyenDotPay || type == .adyenIDeal {
+            return BankSelectorTokenizationViewModel(config: self)
         }
         
         log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD TYPE", message: type.rawValue, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
@@ -197,7 +199,9 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
 public enum PaymentMethodConfigType: Codable, Equatable {
     
     case adyenAlipay
+    case adyenDotPay
     case adyenGiropay
+    case adyenIDeal
     case adyenMobilePay
     case adyenSofortBanking
     case adyenTrustly
@@ -223,8 +227,12 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         switch rawValue {
         case "ADYEN_ALIPAY":
             self = .adyenAlipay
+        case "ADYEN_DOTPAY":
+            self = .adyenDotPay
         case "ADYEN_GIROPAY":
             self = .adyenGiropay
+        case "ADYEN_IDEAL":
+            self = .adyenIDeal
         case "ADYEN_MOBILEPAY":
             self = .adyenMobilePay
         case "ADYEN_SOFORT_BANKING":
@@ -272,8 +280,12 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         switch self {
         case .adyenAlipay:
             return "ADYEN_ALIPAY"
+        case .adyenDotPay:
+            return "ADYEN_DOTPAY"
         case .adyenGiropay:
             return "ADYEN_GIROPAY"
+        case .adyenIDeal:
+            return "ADYEN_IDEAL"
         case .adyenMobilePay:
             return "ADYEN_MOBILEPAY"
         case .adyenSofortBanking:
@@ -320,7 +332,9 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     var isEnabled: Bool {
         switch self {
         case .adyenAlipay,
+                .adyenDotPay,
                 .adyenGiropay,
+                .adyenIDeal,
                 .adyenMobilePay,
                 .adyenSofortBanking,
                 .adyenTrustly,

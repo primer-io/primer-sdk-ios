@@ -149,8 +149,56 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
-        Primer.shared.configure(settings: generalSettings)
-        Primer.shared.showPaymentMethod(.paymentCard, withIntent: .vault, on: self)
+        let cardSettings = PrimerSettings(
+            merchantIdentifier: "merchant.checkout.team",
+            customerId: customerId,
+            amount: amount,
+            currency: currency,
+            countryCode: .se,
+            klarnaSessionType: .recurringPayment,
+            klarnaPaymentDescription: nil,
+            urlScheme: "primer",
+            urlSchemeIdentifier: "primer",
+            isFullScreenOnly: false,
+            hasDisabledSuccessScreen: false,
+            businessDetails: nil,
+            directDebitHasNoAmount: false,
+            orderItems: [
+                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
+                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
+            ],
+            isInitialLoadingHidden: true,
+            is3DSOnVaultingEnabled: true,
+            billingAddress: PrimerSDK.Address(
+                addressLine1: "Line 1",
+                addressLine2: "Line 2",
+                city: "City",
+                state: "State",
+                countryCode: "SE",
+                postalCode: "15236"),
+            orderId: "order id",
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
+            customer: PrimerSDK.Customer(
+                firstName: "John",
+                lastName: "Smith",
+                email: "john.smith@primer.io",
+                homePhoneNumber: nil,
+                mobilePhoneNumber: nil,
+                workPhoneNumber: nil,
+                billingAddress: PrimerSDK.Address(
+                    addressLine1: "1 Rue",
+                    addressLine2: "",
+                    city: "Paris",
+                    state: "",
+                    countryCode: "FR",
+                    postalCode: "75001"
+                )
+            )
+        )
+        
+        Primer.shared.configure(settings: cardSettings)
+        Primer.shared.showPaymentMethod(.paymentCard, withIntent: .checkout, on: self)
     }
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {
@@ -346,34 +394,32 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             if let err = err {
                 resumeHandler.handle(error: err)
             } else if let res = res {
-                if let requiredActionDic = res["requiredAction"] as? [String: Any] {
-                    
-                    if let amount = res["amount"] as? Int,
-                       let id = res["id"] as? String,
-                       let date = res["date"] as? String,
-                       let status = res["status"] as? String {
-                        
-                        self.transactionResponse = TransactionResponse(id: id, date: date, status: status, requiredAction: requiredActionDic)
-                        
-                        if let requiredActionName = requiredActionDic["name"] as? String,
-                           let clientToken = requiredActionDic["clientToken"] as? String {
-                            
-                            if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
-                                resumeHandler.handle(newClientToken: clientToken)
-                                return
-                            } else if requiredActionName == "USE_PRIMER_SDK", status == "PENDING" {
-                                resumeHandler.handle(newClientToken: clientToken)
-                                return
-                            }
-                        }
-                    }
-
+                guard let requiredActionDic = res["requiredAction"] as? [String: Any] else {
+                    resumeHandler.handleSuccess()
+                    return
                 }
                 
-                resumeHandler.handleSuccess()
+                guard let id = res["id"] as? String,
+                      let date = res["date"] as? String,
+                      let status = res["status"] as? String,
+                      let requiredActionName = requiredActionDic["name"] as? String,
+                      let clientToken = requiredActionDic["clientToken"] as? String else {
+                          resumeHandler.handleSuccess()
+                          return
+                      }
+                
+                self.transactionResponse = TransactionResponse(id: id, date: date, status: status, requiredAction: requiredActionDic)
+                
+                if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
+                    resumeHandler.handle(newClientToken: clientToken)
+                } else if requiredActionName == "USE_PRIMER_SDK", status == "PENDING" {
+                    resumeHandler.handle(newClientToken: clientToken)
+                } else {
+                    resumeHandler.handleSuccess()
+                }
                 
             } else {
-                fatalError()
+                assert(true)
             }
         }
     }
