@@ -32,12 +32,7 @@ class PrimerContainerViewController: PrimerViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-//        navigationController?.setNavigationBarHidden(true, animated: false)
-//        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-//        navigationItem.backBarButtonItem?.tintColor = theme.colorTheme.tint1
-        
+
         view.addSubview(mockedNavigationBar)
         mockedNavigationBar.translatesAutoresizingMaskIntoConstraints = false
         mockedNavigationBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
