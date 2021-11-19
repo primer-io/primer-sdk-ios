@@ -282,7 +282,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     @objc
     func payButtonTapped(_ sender: UIButton) {
-        startTokenizationFlow()
+        cardComponentsManager.tokenize()
     }
 }
 
@@ -323,9 +323,11 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         submitButton.showSpinner(false)
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         
-        let err = PrimerError.containerError(errors: errors)
-        Primer.shared.delegate?.checkoutFailed?(with: err)
-        self.handleFailedTokenizationFlow(error: err)
+        DispatchQueue.main.async {
+            let err = PrimerError.containerError(errors: errors)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            self.handleFailedTokenizationFlow(error: err)
+        }
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
