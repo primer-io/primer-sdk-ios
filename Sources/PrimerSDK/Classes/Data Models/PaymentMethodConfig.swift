@@ -157,19 +157,25 @@ class PaymentMethodConfig: Codable {
     }
     
     required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(String?.self, forKey: .id)
-        processorConfigId = try container.decode(String?.self, forKey: .processorConfigId)
-        type = try container.decode(PaymentMethodConfigType.self, forKey: .type)
-        
-        if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {
-            options = cardOptions
-        } else if let payPalOptions = try? container.decode(PayPalOptions.self, forKey: .options) {
-            options = payPalOptions
-        } else if let apayaOptions = try? container.decode(ApayaOptions.self, forKey: .options) {
-            options = apayaOptions
-        } else {
-            options = nil
+        do {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            type = try container.decode(PaymentMethodConfigType.self, forKey: .type)
+            print(type)
+            id = try container.decode(String?.self, forKey: .id)
+            processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
+            
+            if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {
+                options = cardOptions
+            } else if let payPalOptions = try? container.decode(PayPalOptions.self, forKey: .options) {
+                options = payPalOptions
+            } else if let apayaOptions = try? container.decode(ApayaOptions.self, forKey: .options) {
+                options = apayaOptions
+            } else {
+                options = nil
+            }
+        } catch {
+            print(error)
+            throw error
         }
     }
     
