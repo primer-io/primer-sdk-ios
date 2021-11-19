@@ -27,6 +27,10 @@ internal extension PrimerColor {
            blue: rgb & 0xFF
        )
    }
+    
+    static var random: PrimerColor {
+        return PrimerColor(red: Int.random(in: 0...255), green: Int.random(in: 0...255), blue: Int.random(in: 0...255))
+    }
 }
 
 #endif
