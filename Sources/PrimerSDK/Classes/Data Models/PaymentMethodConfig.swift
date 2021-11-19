@@ -1,5 +1,28 @@
 #if canImport(UIKit)
 
+enum Throwable<T: Decodable>: Decodable {
+    case success(T)
+    case failure(Error)
+
+    init(from decoder: Decoder) throws {
+        do {
+            let decoded = try T(from: decoder)
+            self = .success(decoded)
+        } catch let error {
+            self = .failure(error)
+        }
+    }
+    
+    var value: T? {
+            switch self {
+            case .failure(_):
+                return nil
+            case .success(let value):
+                return value
+            }
+        }
+}
+
 struct PrimerConfiguration: Codable {
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
@@ -39,7 +62,8 @@ struct PrimerConfiguration: Codable {
         self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
         self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
         self.clientSession = (try? container.decode(ClientSession?.self, forKey: .clientSession)) ?? nil
-        self.paymentMethods = (try? container.decode([PaymentMethodConfig]?.self, forKey: .paymentMethods)) ?? nil
+        let throwables = try container.decode([Throwable<PaymentMethodConfig>].self, forKey: .paymentMethods)
+        self.paymentMethods = throwables.flatMap({ $0.value })
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
         
         if let paymentMethodOptions = clientSession?.paymentMethod?.paymentMethodOptions, !paymentMethodOptions.isEmpty {
