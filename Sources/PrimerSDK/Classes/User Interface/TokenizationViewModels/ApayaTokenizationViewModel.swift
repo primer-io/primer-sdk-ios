@@ -18,10 +18,6 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     
-    override lazy var hasNativeUI: Bool = {
-        return false
-    }()
-    
     override lazy var title: String = {
         return "Apaya"
     }()
@@ -178,26 +174,34 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
                         self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
                     }
                     .done { paymentMethod in
-                        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
-                            if let err = err {
-                                self.handleFailedTokenizationFlow(error: err)
-                            } else {
-                                self.handleSuccessfulTokenizationFlow()
-                            }
-                        })
+                        DispatchQueue.main.async {
+                            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
+                                if let err = err {
+                                    self.handleFailedTokenizationFlow(error: err)
+                                } else {
+                                    self.handleSuccessfulTokenizationFlow()
+                                }
+                            })
+                        }
                     }
                     .catch { err in
-                        Primer.shared.delegate?.checkoutFailed?(with: err)
-                        self.handleFailedTokenizationFlow(error: err)
+                        DispatchQueue.main.async {
+                            Primer.shared.delegate?.checkoutFailed?(with: err)
+                            self.handleFailedTokenizationFlow(error: err)
+                        }
                     }
                     
                 } catch {
-                    Primer.shared.delegate?.checkoutFailed?(with: error)
-                    self.handle(error: error)
+                    DispatchQueue.main.async {
+                        Primer.shared.delegate?.checkoutFailed?(with: error)
+                        self.handle(error: error)
+                    }
                 }
             } else {
-                Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
+                DispatchQueue.main.async {
+                    Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
+                }
             }
         })
     }
@@ -270,6 +274,10 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         webViewController!.navigationDelegate = self
         webViewController!.modalPresentationStyle = .fullScreen
         
+        webViewCompletion = { (res, err) in
+            completion(res, err)
+        }
+        
         self.willPresentExternalView?()
         Primer.shared.primerRootVC?.present(webViewController!, animated: true, completion: {
             self.didPresentExternalView?()
@@ -280,7 +288,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         return Promise { seal in
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse) { paymentMethod, err in
                 self.willDismissExternalView?()
-                self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
+                self.webViewController?.dismiss(animated: true, completion: {
                     self.didDismissExternalView?()
                 })
                 

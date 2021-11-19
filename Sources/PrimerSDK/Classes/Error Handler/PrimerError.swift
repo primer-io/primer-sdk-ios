@@ -14,7 +14,7 @@ internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var shouldBePresented: Bool { get }
 }
 
-enum ApayaException: PrimerErrorProtocol {
+public enum ApayaException: PrimerErrorProtocol {
     case noToken
     case failedApiCall
     case failedToCreateSession
@@ -31,7 +31,7 @@ enum ApayaException: PrimerErrorProtocol {
     }
 
     /**Error description for the end user.*/
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         default:
             return NSLocalizedString("primer-apaya-error-message-failed-operation",
@@ -327,7 +327,7 @@ enum ThreeDSError: PrimerErrorProtocol {
     
 }
 
-enum PrimerError: PrimerErrorProtocol {
+public enum PrimerError: PrimerErrorProtocol {
 
 //    case generic
 //    case clientTokenNull
@@ -400,10 +400,10 @@ enum PrimerError: PrimerErrorProtocol {
     
     case invalidCardnumber, invalidExpiryDate, invalidCVV, invalidCardholderName
 
-    static var errorDomain: String = "primer"
+    public static var errorDomain: String = "primer"
 
     
-    var errorCode: Int {
+    public var errorCode: Int {
         switch self {
         case .generic:
             return 0
@@ -518,7 +518,7 @@ enum PrimerError: PrimerErrorProtocol {
         }
     }
 
-    var errorUserInfo: [String: Any] {
+    public var errorUserInfo: [String: Any] {
         switch self {
         default:
             // Do we want more information on the errors? E.g. timestamps?
@@ -526,7 +526,7 @@ enum PrimerError: PrimerErrorProtocol {
         }
     }
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .generic:
             return NSLocalizedString("primer-error-message-generic",

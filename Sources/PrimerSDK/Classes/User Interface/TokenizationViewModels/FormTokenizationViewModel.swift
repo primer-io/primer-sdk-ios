@@ -15,16 +15,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private var flow: PaymentFlow
     private var cardComponentsManager: CardComponentsManager!
     
-    override lazy var hasNativeUI: Bool = {
-        switch config.type {
-        case .paymentCard:
-            return true
-        default:
-            assert(true, "Shouldn't end up in here")
-            return false
-        }
-    }()
-    
     override lazy var title: String = {
         return "Payment Card"
     }()
@@ -302,8 +292,6 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         self.paymentMethod = paymentMethodToken
         
         DispatchQueue.main.async {
-            self.paymentMethod = paymentMethodToken
-            
             if Primer.shared.flow.internalSessionFlow.vaulted {
                 Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
             }
@@ -334,6 +322,10 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
         submitButton.showSpinner(false)
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+        
+        let err = PrimerError.containerError(errors: errors)
+        Primer.shared.delegate?.checkoutFailed?(with: err)
+        self.handleFailedTokenizationFlow(error: err)
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
@@ -450,8 +442,10 @@ extension CardFormPaymentMethodTokenizationViewModel {
         let state: AppStateProtocol = DependencyContainer.resolve()
         if state.accessToken == clientToken {
             let err = PrimerError.invalidValue(key: "clientToken")
-            Primer.shared.delegate?.onResumeError?(err)
             handle(error: err)
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(err)
+            }
             return
         }
         
@@ -463,8 +457,12 @@ extension CardFormPaymentMethodTokenizationViewModel {
             
             guard let paymentMethod = paymentMethod else {
                 let err = PrimerError.invalidValue(key: "paymentMethod")
-                Primer.shared.delegate?.onResumeError?(err)
                 handle(error: err)
+                
+                DispatchQueue.main.async {
+                    Primer.shared.delegate?.onResumeError?(err)
+                }
+                
                 return
             }
             
@@ -474,35 +472,46 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
                     case .success(let paymentMethodToken):
-                        guard let threeDSPostAuthResponse = paymentMethodToken.1,
-                              let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                  let err = PrimerError.threeDSFailed
-                                  Primer.shared.delegate?.onResumeError?(err)
-                                  return
-                              }
-                        
-                        Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
+                        DispatchQueue.main.async {
+                            guard let threeDSPostAuthResponse = paymentMethodToken.1,
+                                  let resumeToken = threeDSPostAuthResponse.resumeToken else {
+                                      let err = PrimerError.threeDSFailed
+
+                                      Primer.shared.delegate?.onResumeError?(err)
+                                      return
+                                  }
+                            
+                            Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
+                        }
                         
                     case .failure(let err):
                         log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
                         let err = PrimerError.threeDSFailed
-                        Primer.shared.delegate?.onResumeError?(err)
+                        DispatchQueue.main.async {
+                            Primer.shared.delegate?.onResumeError?(err)
+                        }
                     }
                 }
                 #else
                 let error = PrimerError.threeDSFailed
-                Primer.shared.delegate?.onResumeError?(error)
+                DispatchQueue.main.async {
+                    Primer.shared.delegate?.onResumeError?(error)
+                }
                 #endif
                 
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken")
-                Primer.shared.delegate?.onResumeError?(err)
                 handle(error: err)
+                DispatchQueue.main.async {
+                    Primer.shared.delegate?.onResumeError?(err)
+                }
             }
             
         } catch {
-            Primer.shared.delegate?.onResumeError?(error)
             handle(error: error)
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+            }
         }
     }
     

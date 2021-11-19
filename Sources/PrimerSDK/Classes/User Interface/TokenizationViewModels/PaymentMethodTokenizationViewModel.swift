@@ -16,7 +16,6 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     init(config: PaymentMethodConfig)
     
     var config: PaymentMethodConfig { get set }
-    var hasNativeUI: Bool { get }
     var title: String { get }
     var surcharge: String? { get }
     var position: Int { get set }
@@ -42,23 +41,14 @@ internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
     
     var config: PaymentMethodConfig
-    lazy var hasNativeUI: Bool = {
-        switch config.type {
-        case .googlePay:
-            return false
-        case .goCardlessMandate:
-            return false
-        case .unknown:
-            return false
-        default:
-            assert(true, "Shouldn't end up in here")
-            return false
-        }
-    }()
     var completion: TokenizationCompletion?
     var paymentMethod: PaymentMethodToken?
     var didStartTokenization: (() -> Void)?
     internal let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
     
     required init(config: PaymentMethodConfig) {
         self.config = config
@@ -80,8 +70,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "Google Pay"
         case .goCardlessMandate:
             return "Go Cardless"
-        case .unknown:
-            return "Unknown"
+        case .other:
+            return "Other"
         default:
             assert(true, "Shouldn't end up in here")
             return ""
@@ -119,7 +109,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                                      comment: "Bank account - Payment Method Type (Go Cardless)")
         case .googlePay:
             return nil
-        case .unknown:
+        case .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -133,7 +123,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return nil
         case .goCardlessMandate:
             return UIImage(named: "rightArrow", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .unknown:
+        case .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -147,7 +137,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return nil
         case .goCardlessMandate:
             return .white
-        case .unknown:
+        case .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -160,7 +150,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .goCardlessMandate:
             return theme.colorTheme.text1
         case .googlePay,
-                .unknown:
+                .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -173,7 +163,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .goCardlessMandate:
             return 1.0
         case .googlePay,
-                .unknown:
+                .other:
             return 0.0
         default:
             assert(true, "Shouldn't end up in here")
@@ -186,7 +176,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .goCardlessMandate:
             return theme.colorTheme.text1
         case .googlePay,
-                .unknown:
+                .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -199,7 +189,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .goCardlessMandate:
             return theme.colorTheme.text1
         case .googlePay,
-                .unknown:
+                .other:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -231,11 +221,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         paymentMethodButton.tintColor = buttonTintColor
         paymentMethodButton.layer.borderWidth = buttonBorderWidth
         paymentMethodButton.layer.borderColor = buttonBorderColor?.cgColor
-        if hasNativeUI {
-            paymentMethodButton.addTarget(self, action: #selector(presentNativeUI), for: .touchUpInside)
-        } else {
-            paymentMethodButton.addTarget(self, action: #selector(startTokenizationFlow), for: .touchUpInside)
-        }
+        paymentMethodButton.addTarget(self, action: #selector(startTokenizationFlow), for: .touchUpInside)
         return paymentMethodButton
     }()
     

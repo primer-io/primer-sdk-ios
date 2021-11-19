@@ -11,10 +11,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     
-    override lazy var hasNativeUI: Bool = {
-        return false
-    }()
-    
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
@@ -258,15 +254,21 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                         
                     }
                     .catch { err in
-                        Primer.shared.delegate?.checkoutFailed?(with: err)
-                        self.handleFailedTokenizationFlow(error: err)
+                        DispatchQueue.main.async {
+                            Primer.shared.delegate?.checkoutFailed?(with: err)
+                            self.handleFailedTokenizationFlow(error: err)
+                        }
                     }
                 } catch {
-                    Primer.shared.delegate?.checkoutFailed?(with: error)
-                    self.handle(error: error)
+                    DispatchQueue.main.async {
+                        Primer.shared.delegate?.checkoutFailed?(with: error)
+                        self.handle(error: error)
+                    }
                 }
             } else {
-                Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
+                DispatchQueue.main.async {
+                    Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
+                }
             }
         })
     }

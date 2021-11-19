@@ -168,10 +168,6 @@ class PaymentMethodConfigTests: XCTestCase {
                     if config.paymentMethods?.contains(where: { $0.type == .payPal }) != true {
                         XCTFail("Failed to parse PayPal")
                     }
-                } else if String(paymentMethodStr) == unknownPaymentConfigStr {
-                    if config.paymentMethods?.contains(where: { $0.type == .unknown }) != true {
-                        XCTFail("Failed to parse unknown")
-                    }
                 }
             }
 

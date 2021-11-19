@@ -27,10 +27,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
-    
-    override lazy var hasNativeUI: Bool = {
-        return false
-    }()
 
     private var applePayWindow: UIWindow?
     private var request: PKPaymentRequest!

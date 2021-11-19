@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 13/01/2021.
 //
 
+#if canImport(UIKit)
+
 /**
  Enum that contains possible values for the drop-in UI flow.
  
@@ -36,9 +38,7 @@
  1.2.2
  */
 
-#if canImport(UIKit)
-
-public enum PrimerSessionFlow {
+public enum PrimerSessionFlow: Equatable {
     case `default`
     case defaultWithVault
     case completeDirectCheckout
@@ -51,8 +51,8 @@ public enum PrimerSessionFlow {
     case checkoutWithPayPal
     case checkoutWithApplePay
     case addApayaToVault
-    case checkoutWithHoolah
-    case checkoutWithPayNL
+    case checkoutWithAdyenDotPay
+    case checkoutWithAsyncPaymentMethod(paymentMethodType: PaymentMethodConfigType)
 
     internal var internalSessionFlow: PrimerInternalSessionFlow {
         switch self {
@@ -80,10 +80,10 @@ public enum PrimerSessionFlow {
             return .vaultApaya
         case .checkoutWithPayPal:
             return .checkoutWithPayPal
-        case .checkoutWithHoolah:
-            return .checkoutWithHoolah
-        case .checkoutWithPayNL:
-            return .checkoutWithPayNL
+        case .checkoutWithAdyenDotPay:
+            return .checkoutWithAdyenDotPay
+        case .checkoutWithAsyncPaymentMethod:
+            return .checkoutWithAsyncPaymentMethod
         }
     }
 }
@@ -99,11 +99,10 @@ internal enum PrimerInternalSessionFlow {
     case vaultKlarna
     case checkoutWithApplePay
     case checkoutWithCard
-    case checkoutWithHoolah
+    case checkoutWithAsyncPaymentMethod
     case checkoutWithKlarna
-    case checkoutWithPayNL
     case checkoutWithPayPal
-    
+    case checkoutWithAdyenDotPay
     
     var vaulted: Bool {
         switch self {
@@ -116,11 +115,11 @@ internal enum PrimerInternalSessionFlow {
             return true
         case .checkout,
              .checkoutWithCard,
-             .checkoutWithHoolah,
-             .checkoutWithPayNL,
+             .checkoutWithAsyncPaymentMethod,
              .checkoutWithPayPal,
              .checkoutWithKlarna,
-             .checkoutWithApplePay:
+             .checkoutWithApplePay,
+             .checkoutWithAdyenDotPay:
             return false
         }
     }
@@ -136,11 +135,11 @@ internal enum PrimerInternalSessionFlow {
             return .VAULT
         case .checkout,
              .checkoutWithCard,
-             .checkoutWithHoolah,
-             .checkoutWithPayNL,
+             .checkoutWithAsyncPaymentMethod,
              .checkoutWithPayPal,
              .checkoutWithKlarna,
-             .checkoutWithApplePay:
+             .checkoutWithApplePay,
+             .checkoutWithAdyenDotPay:
             return .CHECKOUT
         }
     }

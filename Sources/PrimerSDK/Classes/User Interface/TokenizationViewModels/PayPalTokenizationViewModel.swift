@@ -11,10 +11,6 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     
-    override lazy var hasNativeUI: Bool = {
-        return false
-    }()
-    
     private var session: Any!
     
     override lazy var title: String = {
@@ -34,7 +30,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     override lazy var buttonImage: UIImage? = {
         switch config.type {
         case .payPal:
-            return UIImage(named: "paypal3", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -44,7 +40,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     override lazy var buttonColor: UIColor? = {
         switch config.type {
         case .payPal:
-            return UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
+            return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
         default:
             assert(true, "Shouldn't end up in here")
             return nil

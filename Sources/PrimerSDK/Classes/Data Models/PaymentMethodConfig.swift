@@ -25,11 +25,16 @@ enum Throwable<T: Decodable>: Decodable {
 
 struct PrimerConfiguration: Codable {
     
-    static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
+    static var paymentMethodConfigs: [PaymentMethodConfig]? {
+        if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
-        var viewModels = state
+        return state
             .paymentMethodConfig?
-            .paymentMethods?
+            .paymentMethods
+    }
+    
+    static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
+        var viewModels = paymentMethodConfigs?
             .filter({ $0.type.isEnabled })
             .compactMap({ $0.tokenizationViewModel })
         ?? []
@@ -140,8 +145,12 @@ class PaymentMethodConfig: Codable {
             return PayPalTokenizationViewModel(config: self)
         } else if type == .apaya {
             return ApayaTokenizationViewModel(config: self)
+        } else if type == .adyenDotPay || type == .adyenIDeal {
+            return BankSelectorTokenizationViewModel(config: self)
+        } else if type == .giropay || type == .sofort || type == .twint || type == .aliPay || type == .trustly {
+            return ExternalPaymentMethodTokenizationViewModel(config: self)
         }
-        
+
         return nil
     }
     
@@ -215,23 +224,137 @@ struct CardOptions: PaymentMethodOptions {
 }
 
 struct AsyncPaymentMethodOptions: PaymentMethodOptions {
-    let type: String = "OFF_SESSION_PAYMENT"
+    
     let paymentMethodType: PaymentMethodConfigType
     let paymentMethodConfigId: String
+    let type: String = "OFF_SESSION_PAYMENT"
+    let sessionInfo: SessionInfo?
+    
+    private enum CodingKeys : String, CodingKey {
+        case type, paymentMethodType, paymentMethodConfigId, sessionInfo
+    }
+    
+    init(
+        paymentMethodType: PaymentMethodConfigType,
+        paymentMethodConfigId: String,
+        sessionInfo: SessionInfo?
+    ) {
+        self.paymentMethodType = paymentMethodType
+        self.paymentMethodConfigId = paymentMethodConfigId
+        self.sessionInfo = sessionInfo
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(type, forKey: .type)
+        try container.encode(paymentMethodType.rawValue, forKey: .paymentMethodType)
+        try container.encode(paymentMethodConfigId, forKey: .paymentMethodConfigId)
+        try? container.encode(sessionInfo, forKey: .sessionInfo)
+    }
+    
+    struct SessionInfo: Codable {
+        let locale: String
+        let platform: String = "IOS"
+    }
+    
 }
 
-public enum PaymentMethodConfigType: String, Codable {
-    case applePay = "APPLE_PAY"
-    case payPal = "PAYPAL"
-    case paymentCard = "PAYMENT_CARD"
-    case googlePay = "GOOGLE_PAY"
-    case goCardlessMandate = "GOCARDLESS"
-    case klarna = "KLARNA"
-    case payNLIdeal = "PAY_NL_IDEAL"
-    case apaya = "APAYA"
-    case hoolah = "HOOLAH"
+public enum PaymentMethodConfigType: Codable, Equatable /*: String, Codable*/ {
+    case aliPay
+    case apaya
+    case applePay
+    case giropay
+    case googlePay
+    case goCardlessMandate
+    case hoolah
+    case klarna
+    case payNLIdeal
+    case paymentCard
+    case payPal
+    case sofort
+    case trustly
+    case twint
+    case adyenDotPay
+    case adyenIDeal
+    case other(rawValue: String)
     
-    case unknown
+    init(rawValue: String) {
+        switch rawValue {
+        case "ADYEN_ALIPAY":
+            self = .aliPay
+        case "APAYA":
+            self = .apaya
+        case "APPLE_PAY":
+            self = .applePay
+        case "ADYEN_GIROPAY":
+            self = .giropay
+        case "GOCARDLESS":
+            self = .goCardlessMandate
+        case "GOOGLE_PAY":
+            self = .googlePay
+        case "HOOLAH":
+            self = .hoolah
+        case "KLARNA":
+            self = .klarna
+        case "PAY_NL_IDEAL":
+            self = .payNLIdeal
+        case "PAYMENT_CARD":
+            self = .paymentCard
+        case "PAYPAL":
+            self = .payPal
+        case "ADYEN_SOFORT_BANKING":
+            self = .sofort
+        case "ADYEN_TRUSTLY":
+            self = .trustly
+        case "ADYEN_TWINT":
+            self = .twint
+        case "ADYEN_DOTPAY":
+            self = .adyenDotPay
+        case "ADYEN_IDEAL":
+            self = .adyenIDeal
+        default:
+            self = .other(rawValue: rawValue)
+        }
+    }
+    
+    var rawValue: String {
+        switch self {
+        case .aliPay:
+            return "ADYEN_ALIPAY"
+        case .apaya:
+            return "APAYA"
+        case .applePay:
+            return "APPLE_PAY"
+        case .giropay:
+            return "ADYEN_GIROPAY"
+        case .goCardlessMandate:
+            return "GOCARDLESS"
+        case .googlePay:
+            return "GOOGLE_PAY"
+        case .hoolah:
+            return "HOOLAH"
+        case .klarna:
+            return "KLARNA"
+        case .payNLIdeal:
+            return "PAY_NL_IDEAL"
+        case .paymentCard:
+            return "PAYMENT_CARD"
+        case .payPal:
+            return "PAYPAL"
+        case .sofort:
+            return "ADYEN_SOFORT_BANKING"
+        case .trustly:
+            return "ADYEN_TRUSTLY"
+        case .twint:
+            return "ADYEN_TWINT"
+        case .adyenDotPay:
+            return "ADYEN_DOTPAY"
+        case .adyenIDeal:
+            return "ADYEN_IDEAL"
+        case .other(let rawValue):
+            return rawValue
+        }
+    }
     
     var isEnabled: Bool {
         switch self {
@@ -243,18 +366,28 @@ public enum PaymentMethodConfigType: String, Codable {
             return true
         case .apaya,
                 .klarna:
-            return Primer.shared.flow.internalSessionFlow.vaulted
-        case .applePay,
+            guard let flow = Primer.shared.flow else { return false }
+            return flow.internalSessionFlow.vaulted
+        case .aliPay,
+                .applePay,
+                .giropay,
                 .hoolah,
-                .payNLIdeal:
-            return !Primer.shared.flow.internalSessionFlow.vaulted
-        case .unknown:
-            return false
+                .payNLIdeal,
+                .sofort,
+                .trustly,
+                .twint,
+                .adyenDotPay,
+                .adyenIDeal:
+            guard let flow = Primer.shared.flow else { return false }
+            return !flow.internalSessionFlow.vaulted
+        case .other:
+            return true
         }
     }
     
     public init(from decoder: Decoder) throws {
-        self = ((try? PaymentMethodConfigType(rawValue: decoder.singleValueContainer().decode(RawValue.self))) ?? nil) ?? .unknown
+        let rawValue: String = try decoder.singleValueContainer().decode(String.self)
+        self = PaymentMethodConfigType(rawValue: rawValue)
     }
 }
 

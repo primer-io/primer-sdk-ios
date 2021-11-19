@@ -8,29 +8,27 @@
 #if canImport(UIKit)
 
 import Foundation
+import SafariServices
 import UIKit
-import WebKit
 
 class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
-    override lazy var hasNativeUI: Bool = {
-        switch config.type {
-        case .payNLIdeal:
-            return false
-        case .hoolah:
-            return false
-        default:
-            assert(true, "Shouldn't end up in here")
-            return false
-        }
-    }()
-    
     override lazy var title: String = {
         switch config.type {
-        case .payNLIdeal:
-            return "Pay NL Ideal"
+        case .aliPay:
+            return "Ali Pay"
+        case .giropay:
+            return "Giropay"
         case .hoolah:
             return "Hoolah"
+        case .payNLIdeal:
+            return "Pay NL Ideal"
+        case .sofort:
+            return "Sofort"
+        case .twint:
+            return "Twint"
+        case .trustly:
+            return "Trustly"
         default:
             assert(true, "Shouldn't end up in here")
             return ""
@@ -39,9 +37,13 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTitle: String? = {
         switch config.type {
-        case .payNLIdeal:
-            return nil
-        case .hoolah:
+        case .aliPay,
+                .giropay,
+                .hoolah,
+                .payNLIdeal,
+                .sofort,
+                .twint,
+                .trustly:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -51,10 +53,20 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonImage: UIImage? = {
         switch config.type {
-        case .payNLIdeal:
-            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .aliPay:
+            return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .giropay:
+            return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .payNLIdeal:
+            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .sofort:
+            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .twint:
+            return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .trustly:
+            return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -63,10 +75,20 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonColor: UIColor? = {
         switch config.type {
-        case .payNLIdeal:
-            return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
+        case .aliPay:
+            return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
+        case .giropay:
+            return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
+        case .payNLIdeal:
+            return UIColor(red: 204.0/255, green: 0.0/255, blue: 102.0/255, alpha: 1.0)
+        case .sofort:
+            return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
+        case .twint:
+            return .black
+        case .trustly:
+            return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -75,8 +97,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTitleColor: UIColor? = {
         switch config.type {
-        case .hoolah,
-                .payNLIdeal:
+        case .aliPay,
+                .giropay,
+                .hoolah,
+                .payNLIdeal,
+                .twint,
+                .trustly:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -86,8 +112,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonBorderWidth: CGFloat = {
         switch config.type {
-        case .hoolah,
-                .payNLIdeal:
+        case .aliPay,
+                .giropay,
+                .hoolah,
+                .payNLIdeal,
+                .twint,
+                .trustly:
             return 0.0
         default:
             assert(true, "Shouldn't end up in here")
@@ -97,8 +127,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
-        case .hoolah,
-                .payNLIdeal:
+        case .aliPay,
+                .giropay,
+                .hoolah,
+                .payNLIdeal,
+                .twint,
+                .trustly:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -108,9 +142,16 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
-        case .hoolah,
-                .payNLIdeal:
+        case .aliPay,
+                .hoolah,
+                .payNLIdeal,
+                .sofort:
             return .white
+        case .trustly:
+            return .black
+        case .giropay,
+                .twint:
+            return nil
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -129,11 +170,14 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
-    fileprivate var webViewController: PrimerWebViewController?
-    fileprivate var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    fileprivate var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
-    
-    fileprivate var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
+    var webViewController: SFSafariViewController?
+    /**
+     This completion handler will return an authorization token, which must be returned to the merchant to resume the payment. **webViewCompletion**
+     must be set before presenting the webview and nullified once polling returns a result. At the same time the webview should be dismissed.
+     */
+    var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+    var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
+    var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -177,37 +221,14 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     firstly {
                         self.tokenize()
                     }
-                    .then { paymentMethod -> Promise<PollingURLs> in
-                        self.paymentMethod = paymentMethod
-                        return self.fetchPollingURLs(for: paymentMethod)
-                    }
-                    .then { pollingURLsResponse -> Promise<Void> in
-                        pollingURLs = pollingURLsResponse
-                        
-                        guard let redirectUrl = pollingURLs.redirectUrl else {
-                            throw PrimerError.invalidValue(key: "redirectUrl")
-                        }
-                        
-                        return self.presentAsyncPaymentMethod(with: redirectUrl)
-                    }
-                    .then { () -> Promise<String> in
-                        guard let statusUrl = pollingURLs.statusUrl else {
-                            throw PrimerError.invalidValue(key: "statusUrl")
-                        }
-                        
-                        return self.startPolling(on: statusUrl)
-                    }
-                    .then { resumeToken -> Promise<PaymentMethodToken> in
-                        self.willDismissExternalView?()
-                        self.webViewController?.dismiss(animated: true, completion: {
-                            self.didDismissExternalView?()
-                        })
-                        return self.passResumeToken(resumeToken)
+                    .then { tmpPaymentMethod -> Promise<PaymentMethodToken> in
+                        self.paymentMethod = tmpPaymentMethod
+                        return self.continueTokenizationFlow(for: tmpPaymentMethod)
                     }
                     .done { paymentMethod in
+                        self.paymentMethod = paymentMethod
+                        
                         DispatchQueue.main.async {
-                            self.paymentMethod = paymentMethod
-                            
                             if Primer.shared.flow.internalSessionFlow.vaulted {
                                 Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                             }
@@ -215,6 +236,23 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                             self.completion?(self.paymentMethod, nil)
                             self.handleSuccessfulTokenizationFlow()
                         }
+                    }
+                    .ensure { [unowned self] in
+                        DispatchQueue.main.async {
+                            self.willDismissExternalView?()
+                            self.webViewController?.dismiss(animated: true, completion: {
+                                self.didDismissExternalView?()
+                            })
+                        }
+                        
+                        self.willPresentExternalView = nil
+                        self.didPresentExternalView = nil
+                        self.willDismissExternalView = nil
+                        self.didDismissExternalView = nil
+                        self.webViewController = nil
+                        self.webViewCompletion = nil
+                        self.onResumeTokenCompletion = nil
+                        self.onClientToken = nil
                     }
                     .catch { err in
                         DispatchQueue.main.async {
@@ -233,16 +271,78 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         })
     }
     
+    internal func continueTokenizationFlow(for tmpPaymentMethod: PaymentMethodToken) -> Promise<PaymentMethodToken> {
+        return Promise { seal in
+            var pollingURLs: PollingURLs!
+            
+            // Fallback when no **requiredAction** is returned.
+            self.onResumeTokenCompletion = { (paymentMethod, err) in
+                if let err = err {
+                    seal.reject(err)
+                } else if let paymentMethod = paymentMethod {
+                    seal.fulfill(paymentMethod)
+                } else {
+                    assert(true, "Should have received one parameter")
+                }
+            }
+            
+            firstly {
+                return self.fetchPollingURLs(for: tmpPaymentMethod)
+            }
+            .then { pollingURLsResponse -> Promise<Void> in
+                pollingURLs = pollingURLsResponse
+                
+                guard let redirectUrl = pollingURLs.redirectUrl else {
+                    throw PrimerError.invalidValue(key: "redirectUrl")
+                }
+                
+                return self.presentAsyncPaymentMethod(with: redirectUrl)
+            }
+            .then { () -> Promise<String> in
+                guard let statusUrl = pollingURLs.statusUrl else {
+                    throw PrimerError.invalidValue(key: "statusUrl")
+                }
+                
+                return self.startPolling(on: statusUrl)
+            }
+            .then { resumeToken -> Promise<PaymentMethodToken> in
+                DispatchQueue.main.async {
+                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+                    
+                    self.willDismissExternalView?()
+                    self.webViewController?.dismiss(animated: true, completion: {
+                        self.didDismissExternalView?()
+                    })
+                }
+                return self.passResumeToken(resumeToken)
+            }
+            .done { paymentMethod in
+                seal.fulfill(paymentMethod)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
     fileprivate func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             guard let configId = config.id else {
                 seal.reject(PrimerError.configFetchFailed)
                 return
             }
-
+            
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
+            if let localeCode = settings.localeData.localeCode {
+                sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: localeCode)
+            }
+            
             let request = AsyncPaymentMethodTokenizationRequest(
                 paymentInstrument: AsyncPaymentMethodOptions(
-                    paymentMethodType: config.type, paymentMethodConfigId: configId))
+                    paymentMethodType: config.type,
+                    paymentMethodConfigId: configId,
+                    sessionInfo: sessionInfo))
             
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {
@@ -257,7 +357,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    fileprivate func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<PollingURLs> {
+    internal func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<PollingURLs> {
         return Promise { seal in
             self.onClientToken = { (clientToken, err) in
                 if let err = err {
@@ -288,12 +388,19 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    fileprivate func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
+    internal func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async { [unowned self] in
-                self.webViewController = PrimerWebViewController(with: url)
-                self.webViewController?.navigationDelegate = self
-                self.webViewController!.modalPresentationStyle = .fullScreen
+                self.willPresentExternalView?()
+                
+                self.webViewCompletion = { (id, err) in
+                    if let err = err {
+                        seal.reject(err)
+                    }
+                }
+                
+                self.webViewController = SFSafariViewController(url: url)
+                self.webViewController?.delegate = self
                 
                 self.willPresentExternalView?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
@@ -304,7 +411,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    fileprivate func startPolling(on url: URL) -> Promise<String> {
+    internal func startPolling(on url: URL) -> Promise<String> {
         return Promise { seal in
             self.startPolling(on: url) { (id, err) in
                 if let err = err {
@@ -322,6 +429,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         let state: AppStateProtocol = DependencyContainer.resolve()
         let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
         client.poll(clientToken: state.decodedClientToken, url: url.absoluteString) { result in
+            if self.webViewCompletion == nil {
+                completion(nil, PrimerError.userCancelled)
+                return
+            }
             switch result {
             case .success(let res):
                 if res.status == .pending {
@@ -344,7 +455,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    fileprivate func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
+    internal func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
         return Promise { seal in
             self.onResumeTokenCompletion = { (paymentMethod, err) in
                 if let err = err {
@@ -364,32 +475,20 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
 }
 
-extension ExternalPaymentMethodTokenizationViewModel: WKNavigationDelegate {
+extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
     
-    func webView(
-        _ webView: WKWebView,
-        decidePolicyFor navigationAction: WKNavigationAction,
-        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
-    ) {
-        let allowedHosts: [String] = [
-            "primer.io",
-            "livedemostore.primer.io"
-        ]
-
-        if let url = navigationAction.request.url, let host = url.host, allowedHosts.contains(host) {
-            decisionHandler(.allow)
-        } else {
-            decisionHandler(.allow)
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        if let webViewCompletion = webViewCompletion {
+            // Cancelled
+            webViewCompletion(nil, PrimerError.userCancelled)
         }
+        
+        webViewCompletion = nil
     }
     
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        let nsError = error as NSError
-        if !(nsError.domain == "NSURLErrorDomain" && nsError.code == -1002) {
-            // Code -1002 means bad URL redirect. Klarna is redirecting to bankid:// which is considered a bad URL
-            // Not sure yet if we have to do that only for bankid://
-            webViewCompletion?(nil, error)
-            webViewCompletion = nil
+    func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
+        if didLoadSuccessfully {
+            self.didPresentExternalView?()
         }
     }
 
@@ -476,12 +575,12 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
         }
     }
     
-    fileprivate override func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
+    internal override func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async { [unowned self] in
-                self.webViewController = PrimerWebViewController(with: url)
-                self.webViewController?.navigationDelegate = self
-                self.webViewController!.modalPresentationStyle = .fullScreen
+                self.webViewController = SFSafariViewController(url: url)
+                self.webViewController?.delegate = self
+//                self.webViewController!.modalPresentationStyle = .fullScreen
                 
                 self.willPresentExternalView?()
                 Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
@@ -492,7 +591,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
         }
     }
     
-    fileprivate override func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
+    internal override func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
 //        {
 //          "status" : "COMPLETE",
 //          "id" : "4474848f-721d-4c35-9325-e287196f7016",
