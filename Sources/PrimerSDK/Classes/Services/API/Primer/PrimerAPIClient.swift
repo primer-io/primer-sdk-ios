@@ -49,7 +49,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let vaultedPaymentMethodsResponse):
                 let state: AppStateProtocol = DependencyContainer.resolve()
-                state.selectedPaymentMethod = vaultedPaymentMethodsResponse.data.filter({ $0.paymentInstrumentType == .payPalBillingAgreement }).first?.token ?? ""
+                state.selectedPaymentMethod = vaultedPaymentMethodsResponse.data.first?.token ?? ""
                 completion(.success(vaultedPaymentMethodsResponse))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
@@ -76,11 +76,6 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         networkService.request(endpoint) { (result: Result<PrimerConfiguration, NetworkServiceError>) in
             switch result {
             case .success(let paymentMethodConfig):
-                
-                if let clientSession = paymentMethodConfig.clientSession {
-                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    settings.modify(withClientSession: clientSession)
-                }
                 completion(.success(paymentMethodConfig))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
