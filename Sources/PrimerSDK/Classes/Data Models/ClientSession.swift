@@ -24,6 +24,8 @@ public class ClientSession: Codable {
         self.paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
         self.order = (try? container.decode(ClientSession.Order?.self, forKey: .order)) ?? nil
         self.customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
+        
+        // Replace settings
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -31,6 +33,8 @@ public class ClientSession: Codable {
         try container.encode(paymentMethod, forKey: .paymentMethod)
         try container.encode(order, forKey: .order)
         try container.encode(customer, forKey: .customer)
+        
+        PrimerSettings.modify(withClientSession: self)
     }
     
     // MARK: - ClientSession.Action

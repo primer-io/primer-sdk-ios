@@ -168,6 +168,11 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
     }
     
+    static func modify(withClientSession clientSession: ClientSession) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        settings.modify(withClientSession: clientSession)
+    }
+    
     func modify(withClientSession clientSession: ClientSession) {
         if let order = clientSession.order {
             self.orderId = order.id
@@ -186,6 +191,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
                 }
             })
             self.orderItems = orderItems
+            
+            self.amount = order.totalAmount
         }
         
         if let customer = clientSession.customer {
