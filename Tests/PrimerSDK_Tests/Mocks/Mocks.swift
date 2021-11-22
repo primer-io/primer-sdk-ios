@@ -101,7 +101,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     
     var klarnaSessionType: KlarnaSessionType?
     
-    var orderItems: [OrderItem] = []
+    var orderItems: [OrderItem]? = []
 
     var isFullScreenOnly: Bool {
         return false

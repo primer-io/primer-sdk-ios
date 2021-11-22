@@ -10,6 +10,7 @@
 import Foundation
 import PassKit
 
+@available(*, deprecated, message: "Set the order items in the client session")
 public struct OrderItem: Codable {
     public let name: String
     public let unitAmount: Int?

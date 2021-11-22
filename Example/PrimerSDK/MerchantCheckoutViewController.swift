@@ -270,17 +270,59 @@ class MerchantCheckoutViewController: UIViewController {
     // MARK: - Helpers
     
     func requestClientToken(_ completion: @escaping (String?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/clientToken") else {
+        guard let url = URL(string: "\(endpoint)/clientSession") else {
             return completion(nil, NetworkError.missingParams)
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue(ClientSessionVersion.v3.rawValue, forHTTPHeaderField: "X-Api-Version")
         
         let body = CreateClientTokenRequest(
-            customerId: (customerId ?? "").isEmpty ? "customer_id" : customerId!,
-            customerCountryCode: countryCode,
-            environment: environment)
+            environment: environment,
+            orderId: "order_id",
+            amount: amount,
+            currencyCode: currency.rawValue,
+            customerId: "customer_id",
+            metadata: nil,
+            customer: Customer(
+                firstName: "Vagz",
+                lastName: "Pie",
+                emailAddress: "vagz@primer.io",
+                billingAddress: Address(
+                    addressLine1: "Line 1",
+                    addressLine2: nil,
+                    city: "Athens",
+                    countryCode: "GR",
+                    postalCode: "15236",
+                    firstName: "Evangelos",
+                    lastName: "Pittas",
+                    state: "Attica"),
+                shippingAddress: Address(
+                    addressLine1: "Line 1",
+                    addressLine2: nil,
+                    city: "Athens",
+                    countryCode: "GR",
+                    postalCode: "15236",
+                    firstName: "Evangelos",
+                    lastName: "Pittas",
+                    state: "Attica"),
+                mobileNumber: "+306945995726",
+                nationalDocumentId: "doc_id"),
+            order: Order(
+                countryCode: "GB",
+                lineItems: [
+                    LineItem(
+                        itemId: "item_id",
+                        description: "Description",
+                        amount: amount,
+                        discountAmount: nil,
+                        quantity: 1,
+                        taxAmount: nil,
+                        taxCode: nil)
+                ],
+                shipping: Shipping(amount: 0)),
+            paymentMethod: nil)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)

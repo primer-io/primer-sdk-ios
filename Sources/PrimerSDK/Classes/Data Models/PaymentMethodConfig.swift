@@ -124,9 +124,9 @@ struct PaymentMethodConfig: Codable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(String?.self, forKey: .id)
-        processorConfigId = try container.decode(String?.self, forKey: .processorConfigId)
         type = try container.decode(PaymentMethodConfigType.self, forKey: .type)
+        id = (try? container.decode(String?.self, forKey: .id)) ?? nil
+        processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
         
         if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {
             options = cardOptions

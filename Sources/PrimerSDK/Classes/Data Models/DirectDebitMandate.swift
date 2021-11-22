@@ -12,6 +12,7 @@ struct DirectDebitMandate {
     var address: Address?
 }
 
+@available(*, deprecated, message: "Set the address in the client session")
 public struct Address: Codable {
     public var addressLine1, addressLine2, city, state, countryCode, postalCode: String?
 

@@ -70,19 +70,19 @@ public struct Customer: Codable {
 public struct LineItem: Codable {
     let itemId: String?
     let description: String?
-    let amount: UInt?
-    let discountAmount: UInt?
+    let amount: Int?
+    let discountAmount: Int?
     let quantity: Int?
-    let taxAmount: UInt?
+    let taxAmount: Int?
     let taxCode: String?
     
     public init (
         itemId: String?,
         description: String?,
-        amount: UInt?,
-        discountAmount: UInt?,
+        amount: Int?,
+        discountAmount: Int?,
         quantity: Int?,
-        taxAmount: UInt?,
+        taxAmount: Int?,
         taxCode: String?
     ) {
         self.itemId = itemId

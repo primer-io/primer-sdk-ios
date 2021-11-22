@@ -9,6 +9,7 @@
 
 import Foundation
 
+@available(*, deprecated, message: "Set the customer in the client session")
 public struct Customer: Codable {
     let firstName: String?
     let lastName: String?

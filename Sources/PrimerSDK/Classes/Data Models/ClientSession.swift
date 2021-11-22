@@ -174,6 +174,14 @@ public class ClientSession: Codable {
             let discountAmount: Int?
             let reference: String?
             let name: String
+            
+            func toOrderItem() throws -> OrderItem {
+                return try OrderItem(
+                    name: self.name,
+                    unitAmount: self.unitAmount,
+                    quantity: self.quantity,
+                    isPending: false)
+            }
         }
         
         // MARK: ClientSession.Order.Fee
