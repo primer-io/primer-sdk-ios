@@ -93,6 +93,7 @@
 		84E324AF274BA7FF0035D3B8 /* AnyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E324AC274BA7FF0035D3B8 /* AnyDecodable.swift */; };
 		84E324B0274BA7FF0035D3B8 /* AnyEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E324AD274BA7FF0035D3B8 /* AnyEncodable.swift */; };
 		84E324B1274BA7FF0035D3B8 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E324AE274BA7FF0035D3B8 /* AnyCodable.swift */; };
+		84E324B3274BCAFD0035D3B8 /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E324B2274BCAFD0035D3B8 /* Customer.swift */; };
 		84F6C8BC27393960005F82F9 /* BankSelectorTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F6C8BB27393960005F82F9 /* BankSelectorTokenizationViewModel.swift */; };
 		854D9C92C6D645FD1A02ABF7E3BFD59C /* PrimerNibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5EB1B9340509E8C71C5D8D2F653D77 /* PrimerNibView.swift */; };
 		855ECE07E5DADCF85A01150DC3D865A3 /* PrimerViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01287FF8F5038414CAAB0BE48B8AB6AE /* PrimerViewExtensions.swift */; };
@@ -305,6 +306,7 @@
 		84E324AC274BA7FF0035D3B8 /* AnyDecodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyDecodable.swift; sourceTree = "<group>"; };
 		84E324AD274BA7FF0035D3B8 /* AnyEncodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyEncodable.swift; sourceTree = "<group>"; };
 		84E324AE274BA7FF0035D3B8 /* AnyCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
+		84E324B2274BCAFD0035D3B8 /* Customer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		84F6C8BB27393960005F82F9 /* BankSelectorTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankSelectorTokenizationViewModel.swift; sourceTree = "<group>"; };
 		882F525E4B236FBA84FEF5B1CA66D263 /* PrimerFormViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerFormViewController.swift; sourceTree = "<group>"; };
 		8831C25BF25F8B7DC29CECBAFC881CBD /* BankTableViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BankTableViewCell.swift; sourceTree = "<group>"; };
@@ -598,6 +600,7 @@
 				272B387428C1F15AAE1CDBB6C434D9DC /* PCI */,
 				8438B6C92739755A0077BAF3 /* AdyenDotPay.swift */,
 				84E324A8274BA6680035D3B8 /* Throwable.swift */,
+				84E324B2274BCAFD0035D3B8 /* Customer.swift */,
 			);
 			name = "Data Models";
 			path = "Sources/PrimerSDK/Classes/Data Models";
@@ -1317,6 +1320,7 @@
 				4CECC22E78A15EFC56454B3794AECA60 /* Primer.swift in Sources */,
 				D28998EFE264122D188F770F499AB747 /* PrimerAPI.swift in Sources */,
 				A16CDECF128B00D1C889F07A0B953AE2 /* PrimerAPIClient.swift in Sources */,
+				84E324B3274BCAFD0035D3B8 /* Customer.swift in Sources */,
 				0983CD9B28BD69220F29AA054EC277DC /* PrimerAPIClient+3DS.swift in Sources */,
 				D209B910CD3E78F8EED0B2E922BEF201 /* PrimerAPIClient+Promises.swift in Sources */,
 				F1D610901E428AACCF0AFC9CA750491B /* PrimerButton.swift in Sources */,
