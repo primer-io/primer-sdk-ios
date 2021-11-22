@@ -45,7 +45,14 @@ extension UIViewController {
         msg += "URL: \(req.url?.absoluteString ?? "Invalid")\n"
         msg += "Headers:\n\(req.allHTTPHeaderFields ?? [:])\n"
         
-        if let body = req.httpBody, let reqJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
+        if let body = req.httpBody,
+           let reqJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments),
+           let jsonData = try? JSONSerialization.data(withJSONObject: reqJson, options: .prettyPrinted)
+        {
+            var jsonStr: String?
+            if jsonData != nil {
+                jsonStr = String(data: jsonData, encoding: .utf8 )
+            }
             msg += "Body:\n\(reqJson)\n"
         }
         
@@ -105,7 +112,12 @@ extension UIViewController {
             
             msg += "Status code: \(httpResponse.statusCode)\n"
             if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                msg += "Body:\n\(resJson)\n"
+                let jsonData = try? JSONSerialization.data(withJSONObject: resJson, options: .prettyPrinted)
+                var jsonStr: String?
+                if jsonData != nil {
+                    jsonStr = String(data: jsonData!, encoding: .utf8 )
+                }
+                msg += "Body:\n\(jsonStr)\n"
             } else {
                 msg += "Body (String): \(String(data: data, encoding: .utf8))"
             }
