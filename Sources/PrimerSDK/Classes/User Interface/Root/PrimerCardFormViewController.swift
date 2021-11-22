@@ -82,6 +82,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
         verticalStackView.addArrangedSubview(separatorView)
         
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
+        
+        formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
     }
     
 }
