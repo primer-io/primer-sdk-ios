@@ -44,6 +44,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var didStartTokenization: (() -> Void)?
     internal let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
     required init(config: PaymentMethodConfig) {
         self.config = config
         super.init()

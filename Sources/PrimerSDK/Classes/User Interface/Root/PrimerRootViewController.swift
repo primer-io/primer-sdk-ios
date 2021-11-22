@@ -45,7 +45,11 @@ internal class PrimerRootViewController: PrimerViewController {
         
         NotificationCenter.default.addObserver(self,
                selector: #selector(self.keyboardNotification(notification:)),
-               name: UIResponder.keyboardWillChangeFrameNotification,
+               name: UIResponder.keyboardWillShowNotification,
+               object: nil)
+        NotificationCenter.default.addObserver(self,
+               selector: #selector(self.keyboardNotification(notification:)),
+               name: UIResponder.keyboardWillHideNotification,
                object: nil)
         
         if #available(iOS 13.0, *) {
@@ -133,7 +137,8 @@ internal class PrimerRootViewController: PrimerViewController {
                     self?.show(viewController: pvmvc)
 
                 case .completeDirectCheckout:
-                    break
+                    self?.blurBackground()
+                    self?.presentPaymentMethod(type: .paymentCard)
                     
                 case .addPayPalToVault,
                         .checkoutWithPayPal:
@@ -144,6 +149,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     }
 
                 case .addCardToVault:
+                    self?.blurBackground()
                     self?.presentPaymentMethod(type: .paymentCard)
                     
                 case .addDirectDebitToVault:
@@ -173,16 +179,12 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .checkoutWithAsyncPaymentMethod(let paymentMethodType):
                     self?.presentPaymentMethod(type: paymentMethodType)
                     
+                case .checkoutWithAdyenDotPay:
+                    self?.presentPaymentMethod(type: .adyenDotPay)
+                    
                 case .none:
                     break
 
-                }
-                
-                if let _ = (self?.nc.viewControllers.first 
-                as? PrimerContainerViewController)?.children.first 
-                as? PrimerLoadingViewController {
-                    // Remove the loading view controller from the navigation stack so user can't pop to it.
-                    self?.nc.viewControllers.removeFirst()
                 }
             }
         })
@@ -197,20 +199,44 @@ internal class PrimerRootViewController: PrimerViewController {
         view.layoutIfNeeded()
     }
     
+    var originalChildViewHeight: CGFloat?
+    
     @objc func keyboardNotification(notification: NSNotification) {
         guard let userInfo = notification.userInfo else { return }
         
         let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
         let endFrameY = endFrame?.origin.y ?? 0
-        let duration:TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
+        let duration: TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
         let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
         let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
         let animationCurve:UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
         
-        if endFrameY >= UIScreen.main.bounds.size.height {
+        let childViewHeight = childView.frame.size.height
+        
+        
+        switch notification.name {
+        case UIResponder.keyboardWillHideNotification:
             childViewBottomConstraint.constant = 0.0
-        } else {
-            childViewBottomConstraint.constant = -(endFrame?.size.height ?? 0.0)
+            
+            if let originalChildViewHeight = originalChildViewHeight {
+                childViewHeightConstraint.constant = originalChildViewHeight
+            }
+            
+        case UIResponder.keyboardWillShowNotification:
+            if endFrameY >= availableScreenHeight {
+                childViewBottomConstraint.constant = 0.0
+            } else {
+                childViewBottomConstraint.constant = -(endFrame?.size.height ?? 0.0)
+            }
+            
+            if childViewHeight > (availableScreenHeight - (endFrame?.height ?? 0)) {
+                originalChildViewHeight = childViewHeight
+                childViewHeightConstraint.constant = (availableScreenHeight - (endFrame?.height ?? 0))
+                
+            }
+            
+        default:
+            return
         }
         
         UIView.animate(
@@ -218,7 +244,9 @@ internal class PrimerRootViewController: PrimerViewController {
             delay: TimeInterval(0),
             options: animationCurve,
             animations: { self.view.layoutIfNeeded() },
-            completion: nil)
+            completion: { finished in
+                
+            })
     }
     
     @objc
@@ -282,7 +310,31 @@ internal class PrimerRootViewController: PrimerViewController {
             container.view.bottomAnchor.constraint(equalTo: self.childView.bottomAnchor, constant: 0).isActive = true
             container.didMove(toParent: self)
         } else {
-            self.nc.pushViewController(cvc, animated: false)
+            self.nc.pushViewController(viewController: cvc, animated: false) {
+                var viewControllers = self.nc.viewControllers
+                for (index, vc) in viewControllers.enumerated().reversed() {
+                    // If the loading screen is the last one in the stack, do not remove it yet.
+                    if index == self.nc.viewControllers.count-1 { continue }
+                    if vc.children.first is PrimerLoadingViewController {
+                        viewControllers.remove(at: index)
+                    }
+                }
+                self.nc.viewControllers = viewControllers
+                
+                if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
+                    cvc.mockedNavigationBar.hidesBackButton = true
+                } else if viewController is PrimerLoadingViewController {
+                    cvc.mockedNavigationBar.hidesBackButton = true
+                } else if viewController is SuccessViewController {
+                    cvc.mockedNavigationBar.hidesBackButton = true
+                } else if viewController is ErrorViewController {
+                    cvc.mockedNavigationBar.hidesBackButton = true
+                } else if viewControllers.count == 1 {
+                    cvc.mockedNavigationBar.hidesBackButton = true
+                } else {
+                    cvc.mockedNavigationBar.hidesBackButton = false
+                }
+            }
         }
         
         if self.nc.viewControllers.count <= 1 {
@@ -302,7 +354,14 @@ internal class PrimerRootViewController: PrimerViewController {
         UIView.animate(withDuration: self.presentationDuration, delay: 0, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
         } completion: { _ in
+            if let title = viewController.title {
+                cvc.mockedNavigationBar.title = title
+            }
             
+            if let pvc = viewController as? PrimerViewController {
+                cvc.mockedNavigationBar.titleImage = pvc.titleImage
+                cvc.mockedNavigationBar.titleImageView?.tintColor = pvc.titleImageTintColor
+            }
         }
     }
     
@@ -310,6 +369,10 @@ internal class PrimerRootViewController: PrimerViewController {
         guard nc.viewControllers.count > 1,
               let viewController = (nc.viewControllers[nc.viewControllers.count-2] as? PrimerContainerViewController)?.childViewController else {
             return
+        }
+        
+        if self.nc.viewControllers.count == 2 {
+            (self.nc.viewControllers.last as? PrimerContainerViewController)?.mockedNavigationBar.hidesBackButton = true
         }
         
         let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc.navigationBar.bounds.height)
@@ -344,8 +407,10 @@ internal class PrimerRootViewController: PrimerViewController {
                 show = false
             }
             
+            let height = self.nc.viewControllers.first?.view.bounds.height ?? 300
+            
             if show {
-                let lvc = PrimerLoadingViewController(withHeight: 300)
+                let lvc = PrimerLoadingViewController(withHeight: height)
                 self.show(viewController: lvc)
             }
         }

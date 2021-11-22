@@ -249,6 +249,10 @@ public class Primer {
         case (.trustly, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .trustly)
             
+        case (.adyenDotPay, .checkout),
+            (.adyenIDeal, .checkout):
+            flow = .checkoutWithAdyenDotPay
+            
         case (.payPal, .checkout):
             flow = .checkoutWithPayPal
             
@@ -263,6 +267,8 @@ public class Primer {
             (.giropay, .vault),
             (.hoolah, .vault),
             (.payNLIdeal, .vault),
+            (.adyenDotPay, .vault),
+            (.adyenIDeal, .vault),
             (.sofort, .vault),
             (.trustly, .vault),
             (.twint, .vault),
