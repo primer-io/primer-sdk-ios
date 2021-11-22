@@ -280,6 +280,24 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
+    func configurePayButton(for cardNetwork: CardNetwork) {
+        DispatchQueue.main.async {
+            var surchargeStr: String = ""
+            if self.flow == .checkout, let surcharge = cardNetwork.surcharge {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                surchargeStr = " + " + surcharge.toCurrencyString(currency: settings.currency!)
+            }
+            
+            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+            let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                          tableName: nil,
+                                          bundle: Bundle.primerResources,
+                                          value: "Pay",
+                                          comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "") + surchargeStr
+            self.submitButton.setTitle(title, for: .normal)
+        }
+    }
+    
     @objc
     func payButtonTapped(_ sender: UIButton) {
         cardComponentsManager.tokenize()
@@ -380,38 +398,36 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
-        if cardNumberContainerView.rightImage2 == nil && cardNetwork?.icon != nil {
+        if let cardNetwork = cardNetwork, cardNumberContainerView.rightImage2 == nil && cardNetwork.icon != nil {
             let params: [String: Any] = [
-                "type": "PAYMENT_CARD",
+                "paymentMethodType": "PAYMENT_CARD",
                 "binData": [
-                    "network": cardNetwork!.rawValue.uppercased()
+                    "network": cardNetwork.rawValue.uppercased()
                 ]
             ]
             
             Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
-                if let clientToken = clientToken {
-                    try? ClientTokenService.storeClientToken(clientToken)
+                do {
+                    if let clientToken = clientToken {
+                        try ClientTokenService.storeClientToken(clientToken)
+                    }
+                    
+                    let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    configService.fetchConfig { err in
+                        self.configurePayButton(for: cardNetwork)
+                    }
+                    
+                } catch {
+                    
                 }
             })
             
-            cardNumberContainerView.rightImage2 = cardNetwork?.icon
+            cardNumberContainerView.rightImage2 = cardNetwork.icon
             
-            var surchargeStr: String = ""
-            if flow == .checkout, let surcharge = cardNetwork?.surcharge {
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                surchargeStr = " + " + surcharge.toCurrencyString(currency: settings.currency!)
-            }
-            
-            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-            let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                          tableName: nil,
-                                          bundle: Bundle.primerResources,
-                                          value: "Pay",
-                                          comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "") + surchargeStr
-            submitButton.setTitle(title, for: .normal)
+            self.configurePayButton(for: cardNetwork)
             
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
-            Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: [:])], completion: { (clientToken, err) in
+            Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)], completion: { (clientToken, err) in
                 if let clientToken = clientToken {
                     try? ClientTokenService.storeClientToken(clientToken)
                 }
