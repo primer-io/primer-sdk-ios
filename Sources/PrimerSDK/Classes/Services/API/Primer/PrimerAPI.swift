@@ -174,7 +174,7 @@ internal extension PrimerAPI {
         
         switch self {
         case .fetchConfiguration:
-            tmpHeaders["X-Api-Version"] = "2021-09-27"
+            tmpHeaders["X-Api-Version"] = "2021-10-19"
         default:
             break
         }
