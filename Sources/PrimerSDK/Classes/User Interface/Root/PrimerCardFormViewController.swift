@@ -16,7 +16,17 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     private let cardholderNameContainerView = PrimerCustomFieldView()
     private let submitButton = PrimerOldButton()
-    private let secondHorizontalStackView = UIStackView()
+    private lazy var firstRow = row
+    private lazy var secondRow = row
+    
+    private var row: UIStackView {
+        let horizontalStackView = UIStackView()
+        horizontalStackView.axis = .horizontal
+        horizontalStackView.alignment = .fill
+        horizontalStackView.distribution = .fillEqually
+        horizontalStackView.spacing = 16
+        return horizontalStackView
+    }
     
     private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
     
@@ -32,38 +42,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.secondHorizontalStackView.axis = .horizontal
-        self.secondHorizontalStackView.alignment = .fill
-        self.secondHorizontalStackView.distribution = .fillEqually
-        
-        formPaymentMethodTokenizationViewModel.zipCodeContainerView.tag = 1005
-        
-        formPaymentMethodTokenizationViewModel.onConfigurationFetched = { [weak self] (showZip) in
-            
-            guard
-                let zipView = self?.formPaymentMethodTokenizationViewModel.zipCodeContainerView,
-                let containsZipCode: Bool = self?.secondHorizontalStackView.arrangedSubviews.contains(zipView)
-            else {
-                return
-            }
-            
-            if (showZip && !containsZipCode) {
-                (self?.parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
-                    
-                    self?.secondHorizontalStackView.insertArrangedSubview(zipView, at: 0)
-                }
-            }
-            
-            if (!showZip && containsZipCode) {
-                zipView.removeFromSuperview();
-                (self?.parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
-                    self?.secondHorizontalStackView.removeArrangedSubview(zipView)
-                }
-            }
-            
-            self?.view.updateConstraints()
-            
-        }
+        formPaymentMethodTokenizationViewModel.onConfigurationFetched = onConfigurationFetched
                 
         title = NSLocalizedString("primer-form-type-main-title-card-form",
                                   tableName: nil,
@@ -75,20 +54,16 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         verticalStackView.spacing = 6
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
-
-        let horizontalStackView = generateRow()
         
-        horizontalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.expiryDateContainerView)
-        
-        horizontalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cvvContainerView)
-        horizontalStackView.spacing = 16
-        verticalStackView.addArrangedSubview(horizontalStackView)
+        firstRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.expiryDateContainerView)
+        firstRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.cvvContainerView)
+        verticalStackView.addArrangedSubview(firstRow)
         
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardholderNameContainerView)
         
-        secondHorizontalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.zipCodeContainerView)
-        secondHorizontalStackView.addArrangedSubview(UIView())
-        verticalStackView.addArrangedSubview(secondHorizontalStackView)
+        secondRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.zipCodeContainerView)
+        secondRow.addArrangedSubview(UIView())
+        verticalStackView.addArrangedSubview(secondRow)
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
             let saveCardSwitchContainerStackView = UIStackView()
@@ -119,14 +94,26 @@ class PrimerCardFormViewController: PrimerFormViewController {
         formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
     }
     
-    private func generateRow() -> UIStackView {
-        let horizontalStackView = UIStackView()
-        horizontalStackView.axis = .horizontal
-        horizontalStackView.alignment = .fill
-        horizontalStackView.distribution = .fillEqually
-        return horizontalStackView
+    private func onConfigurationFetched(_ showZip: Bool) {
+        let zipView = formPaymentMethodTokenizationViewModel.zipCodeContainerView
+        let containsZipCode: Bool = secondRow.arrangedSubviews.contains(zipView)
+        let parentVC = parent as? PrimerContainerViewController
+        
+        if (showZip && !containsZipCode) {
+            parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
+                self?.secondRow.insertArrangedSubview(zipView, at: 0)
+            }
+        }
+        
+        if (!showZip && containsZipCode) {
+            zipView.removeFromSuperview()
+            parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
+                self?.secondRow.removeArrangedSubview(zipView)
+            }
+        }
+        
+        view.updateConstraints()
     }
-    
 }
 
 #endif

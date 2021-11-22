@@ -30,9 +30,6 @@ struct PrimerConfiguration: Codable {
     let paymentMethods: [PaymentMethodConfig]?
     let keys: ThreeDS.Keys?
     
-    // todo: refactor once agreed
-    let requireZipCodeForCards: Bool = true
-    
     var isSetByClientSession: Bool {
         return clientSession != nil
     }

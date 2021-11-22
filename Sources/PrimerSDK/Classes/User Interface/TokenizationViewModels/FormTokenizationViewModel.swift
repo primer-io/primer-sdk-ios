@@ -406,18 +406,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         }
     }
     
-    func primerTextFieldDidEndEditing(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        // if requireZipCode, primerTextFieldView is PrimerZipCodeFieldView, isValid == true  {
-        //     guard let zipCode = primerTextFieldView.text else { return }
-        //     let actions = [ClientSession.Action(type: "SET_ZIP_CODE", params: ["zipCode": zipCode])]
-        //     Primer.shared.delegate?.onClientSessionActions?(actions) { [weak self] (clientToken, err) in
-        //         if let clientToken = clientToken {
-        //             try? ClientTokenService.storeClientToken(clientToken)
-        //         }
-        //         self?.fetchConfiguration()
-        //     }
-        // }
-    }
+    func primerTextFieldDidEndEditing(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) { }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
         if primerTextFieldView is PrimerCardNumberFieldView, isValid == false {
