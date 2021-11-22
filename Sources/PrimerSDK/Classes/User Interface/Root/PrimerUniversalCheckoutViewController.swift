@@ -120,7 +120,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             seeAllButton.setTitle("See all", for: .normal)
             seeAllButton.contentHorizontalAlignment = .right
             seeAllButton.setTitleColor(theme.colorTheme.text3, for: .normal)
-//            seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
+            seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
             titleHorizontalStackView.addArrangedSubview(seeAllButton)
             
             savedPaymentMethodStackView.addArrangedSubview(titleHorizontalStackView)
@@ -214,6 +214,15 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
     private func renderAvailablePaymentMethods() {
         PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
+    }
+    
+    @objc
+    func seeAllButtonTapped(_ sender: Any) {
+        let vpivc = VaultedPaymentInstrumentsViewController()
+        vpivc.delegate = self
+        vpivc.view.translatesAutoresizingMaskIntoConstraints = false
+        vpivc.view.heightAnchor.constraint(equalToConstant: self.parent!.view.bounds.height).isActive = true
+        Primer.shared.primerRootVC?.show(viewController: vpivc)
     }
     
     @objc
