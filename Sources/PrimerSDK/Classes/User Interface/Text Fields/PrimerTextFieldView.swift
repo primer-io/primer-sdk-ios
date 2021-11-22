@@ -17,6 +17,9 @@ public protocol PrimerTextFieldViewDelegate {
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?)
     /// Will return the card network (e.g. Visa) detected, unknown if the network cannot be detected. Only applies on PrimerCardNumberFieldView
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?)
+    
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectZipCode zipCode: String?)
+    
     /// Will return a the validation error on the text input.
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error)
     
@@ -32,6 +35,7 @@ public protocol PrimerTextFieldViewDelegate {
 public extension PrimerTextFieldViewDelegate {
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {}
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {}
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectZipCode zipCode: String?) {}
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {}
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
     func primerTextFieldDidEndEditing(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {}

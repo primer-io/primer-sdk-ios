@@ -373,8 +373,20 @@ class MerchantCheckoutViewController: UIViewController {
         using actions: [PrimerSDK.ClientSession.Action],
         completion: @escaping (String?, Error?) -> Void
     ) {
+        print(actions[0].type)
+        let isNotSetPaymentMethod = actions[0].type != "SELECT_PAYMENT_METHOD"
+        
+        let binData = actions[0].params?["binData"] as? NSDictionary
+        let network = binData?["network"] as? String
+        let isNotVisa = network != "VISA"
+        
         guard let clientToken = clientToken else {
             completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        if (isNotSetPaymentMethod) {
+            completion(clientToken, nil)
             return
         }
         
@@ -398,7 +410,7 @@ class MerchantCheckoutViewController: UIViewController {
                     ),
                     SetInputAction.Param(
                         billingAddress: SetInputAction.BillingAddress(
-                            postalCode: CaptureData(capture: false, required: false)
+                            postalCode: CaptureData(capture: isNotVisa, required: isNotVisa)
                         )
                     )
                 ]

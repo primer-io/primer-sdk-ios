@@ -37,6 +37,12 @@ public final class PrimerZipCodeFieldView: PrimerTextFieldView {
         let currentText = primerTextField._text ?? ""
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         
+        if newText.isEmpty {
+            delegate?.primerTextFieldView(self, didDetectZipCode: nil)
+        } else {
+            delegate?.primerTextFieldView(self, didDetectZipCode: newText)
+        }
+        
         switch self.isValid?(newText) {
         case true:
             validation = .valid

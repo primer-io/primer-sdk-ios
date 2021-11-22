@@ -334,15 +334,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     func fetchConfiguration() {
         let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
         paymentMethodConfigService.fetchConfig { [weak self] (error) in
+            guard let strongSelf = self else { return }
             
-            print("error is null: \(!error.exists)")
+            strongSelf.submitButton.isEnabled = true
             
-            self?.determineZipCodeVisibility()
+            strongSelf.determineZipCodeVisibility()
         }
-    }
-    
-    func dispatchAction() {
-        print("🔥 dispatch action ahora!")
     }
 }
 
@@ -410,9 +407,16 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     }
     
     func primerTextFieldDidEndEditing(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if requireZipCode, primerTextFieldView is PrimerZipCodeFieldView, isValid == true  {
-            dispatchAction()
-        }
+        // if requireZipCode, primerTextFieldView is PrimerZipCodeFieldView, isValid == true  {
+        //     guard let zipCode = primerTextFieldView.text else { return }
+        //     let actions = [ClientSession.Action(type: "SET_ZIP_CODE", params: ["zipCode": zipCode])]
+        //     Primer.shared.delegate?.onClientSessionActions?(actions) { [weak self] (clientToken, err) in
+        //         if let clientToken = clientToken {
+        //             try? ClientTokenService.storeClientToken(clientToken)
+        //         }
+        //         self?.fetchConfiguration()
+        //     }
+        // }
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
@@ -499,6 +503,19 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                                           comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
             submitButton.setTitle(title, for: .normal)
             cardNumberContainerView.rightImage2 = nil
+        }
+    }
+    
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectZipCode zipCode: String?) {
+        guard let zipCode = zipCode else { return }
+        let actions = [ClientSession.Action(type: "SET_ZIP_CODE", params: ["zipCode": zipCode])]
+        submitButton.isEnabled = false
+        submitButton.backgroundColor = theme.colorTheme.disabled1
+        Primer.shared.delegate?.onClientSessionActions?(actions) { [weak self] (clientToken, err) in
+            if let clientToken = clientToken {
+                try? ClientTokenService.storeClientToken(clientToken)
+            }
+            self?.fetchConfiguration()
         }
     }
     

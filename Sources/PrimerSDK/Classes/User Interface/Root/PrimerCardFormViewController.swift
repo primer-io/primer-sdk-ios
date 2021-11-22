@@ -16,6 +16,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     private let cardholderNameContainerView = PrimerCustomFieldView()
     private let submitButton = PrimerOldButton()
+    private let secondHorizontalStackView = UIStackView()
     
     private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
     
@@ -31,23 +32,33 @@ class PrimerCardFormViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.secondHorizontalStackView.axis = .horizontal
+        self.secondHorizontalStackView.alignment = .fill
+        self.secondHorizontalStackView.distribution = .fillEqually
+        
         formPaymentMethodTokenizationViewModel.zipCodeContainerView.tag = 1005
         
         formPaymentMethodTokenizationViewModel.onConfigurationFetched = { [weak self] (showZip) in
             
             guard
                 let zipView = self?.formPaymentMethodTokenizationViewModel.zipCodeContainerView,
-                let containsZipCode: Bool = self?.verticalStackView.arrangedSubviews.contains(zipView)
+                let containsZipCode: Bool = self?.secondHorizontalStackView.arrangedSubviews.contains(zipView)
             else {
                 return
             }
             
             if (showZip && !containsZipCode) {
-                self?.verticalStackView.addArrangedSubview(zipView)
+                (self?.parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
+                    
+                    self?.secondHorizontalStackView.insertArrangedSubview(zipView, at: 0)
+                }
             }
             
             if (!showZip && containsZipCode) {
                 zipView.removeFromSuperview();
+                (self?.parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
+                    self?.secondHorizontalStackView.removeArrangedSubview(zipView)
+                }
             }
             
             self?.view.updateConstraints()
@@ -65,10 +76,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         verticalStackView.spacing = 6
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
 
-        let horizontalStackView = UIStackView()
-        horizontalStackView.axis = .horizontal
-        horizontalStackView.alignment = .fill
-        horizontalStackView.distribution = .fillEqually
+        let horizontalStackView = generateRow()
         
         horizontalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.expiryDateContainerView)
         
@@ -78,7 +86,9 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardholderNameContainerView)
         
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.zipCodeContainerView)
+        secondHorizontalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.zipCodeContainerView)
+        secondHorizontalStackView.addArrangedSubview(UIView())
+        verticalStackView.addArrangedSubview(secondHorizontalStackView)
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
             let saveCardSwitchContainerStackView = UIStackView()
@@ -105,6 +115,16 @@ class PrimerCardFormViewController: PrimerFormViewController {
         verticalStackView.addArrangedSubview(separatorView)
         
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
+        
+        formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
+    }
+    
+    private func generateRow() -> UIStackView {
+        let horizontalStackView = UIStackView()
+        horizontalStackView.axis = .horizontal
+        horizontalStackView.alignment = .fill
+        horizontalStackView.distribution = .fillEqually
+        return horizontalStackView
     }
     
 }
