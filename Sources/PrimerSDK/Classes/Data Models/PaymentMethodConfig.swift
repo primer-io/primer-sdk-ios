@@ -2,16 +2,16 @@
 
 struct PrimerConfiguration: Codable {
     
-    static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
-        if Primer.shared.flow == nil { return [] }
-        
+    static var paymentMethodConfigs: [PaymentMethodConfig]? {
+        if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        let paymentMethods = state
+        return state
             .paymentMethodConfig?
             .paymentMethods
-        
-        var viewModels = paymentMethods?
+    }
+    
+    static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
+        var viewModels = paymentMethodConfigs?
             .filter({ $0.type.isEnabled })
             .compactMap({ $0.tokenizationViewModel })
         ?? []
@@ -31,8 +31,33 @@ struct PrimerConfiguration: Codable {
     
     let coreUrl: String?
     let pciUrl: String?
+    let clientSession: ClientSession?
     let paymentMethods: [PaymentMethodConfig]?
     let keys: ThreeDS.Keys?
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
+        self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
+        self.clientSession = (try? container.decode(ClientSession?.self, forKey: .clientSession)) ?? nil
+        let throwables = try container.decode([Throwable<PaymentMethodConfig>].self, forKey: .paymentMethods)
+        self.paymentMethods = throwables.compactMap({ $0.value })
+        self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
+    }
+    
+    init(
+        coreUrl: String?,
+        pciUrl: String?,
+        clientSession: ClientSession?,
+        paymentMethods: [PaymentMethodConfig]?,
+        keys: ThreeDS.Keys?
+    ) {
+        self.coreUrl = coreUrl
+        self.pciUrl = pciUrl
+        self.clientSession = clientSession
+        self.paymentMethods = paymentMethods
+        self.keys = keys
+    }
     
     func getConfigId(for type: PaymentMethodConfigType) -> String? {
         guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
