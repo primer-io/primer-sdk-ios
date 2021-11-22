@@ -296,12 +296,13 @@ public enum CardNetwork: String, CaseIterable {
     
     var surcharge: Int? {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let paymentMethodOptions = state.paymentMethodConfig?.clientSession?.paymentMethod?.paymentMethodOptions, !paymentMethodOptions.isEmpty else { return nil }
+        guard let options = state.paymentMethodConfig?.clientSession?.paymentMethod?.options, !options.isEmpty else { return nil }
         
-        for paymentMethodOption in paymentMethodOptions {
-            guard let type = paymentMethodOption["type"] as? String else { return nil }
-            guard type.lowercased() == self.rawValue.lowercased() else { continue }
-            guard let surcharge = paymentMethodOption["surcharge"] as? Int else { return nil }
+        for paymentMethodOption in options {
+            guard let type = paymentMethodOption["type"] as? String, type == "PAYMENT_CARD" else { return nil }
+            guard let networks = paymentMethodOption["networks"] as? [[String: Any]] else { continue }
+            guard let tmpNetwork = networks.filter({ $0["type"] as? String == self.rawValue.uppercased() }).first else { return nil }
+            guard let surcharge = tmpNetwork["surcharge"] as? Int else { return nil }
             return surcharge
         }
         
