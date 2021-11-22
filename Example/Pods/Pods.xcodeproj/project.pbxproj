@@ -89,6 +89,10 @@
 		822BCEFE93D608FFCCA43F6B4425A0DB /* 3DS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EEA9318334EE7FCB492E2E301510AC1 /* 3DS.swift */; };
 		8438B6CA2739755A0077BAF3 /* AdyenDotPay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438B6C92739755A0077BAF3 /* AdyenDotPay.swift */; };
 		84AAF948BD40091E5F3EC11119D88C86 /* PrimerVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8353770C4E3B5E68447DE7DBCA0855FC /* PrimerVaultManagerViewController.swift */; };
+		84E324A9274BA6680035D3B8 /* Throwable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E324A8274BA6680035D3B8 /* Throwable.swift */; };
+		84E324AF274BA7FF0035D3B8 /* AnyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E324AC274BA7FF0035D3B8 /* AnyDecodable.swift */; };
+		84E324B0274BA7FF0035D3B8 /* AnyEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E324AD274BA7FF0035D3B8 /* AnyEncodable.swift */; };
+		84E324B1274BA7FF0035D3B8 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E324AE274BA7FF0035D3B8 /* AnyCodable.swift */; };
 		84F6C8BC27393960005F82F9 /* BankSelectorTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F6C8BB27393960005F82F9 /* BankSelectorTokenizationViewModel.swift */; };
 		854D9C92C6D645FD1A02ABF7E3BFD59C /* PrimerNibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5EB1B9340509E8C71C5D8D2F653D77 /* PrimerNibView.swift */; };
 		855ECE07E5DADCF85A01150DC3D865A3 /* PrimerViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01287FF8F5038414CAAB0BE48B8AB6AE /* PrimerViewExtensions.swift */; };
@@ -297,6 +301,10 @@
 		81E34A314AD997669B9F57FD7211A889 /* CardButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardButton.swift; sourceTree = "<group>"; };
 		8353770C4E3B5E68447DE7DBCA0855FC /* PrimerVaultManagerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerVaultManagerViewController.swift; sourceTree = "<group>"; };
 		8438B6C92739755A0077BAF3 /* AdyenDotPay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdyenDotPay.swift; sourceTree = "<group>"; };
+		84E324A8274BA6680035D3B8 /* Throwable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throwable.swift; sourceTree = "<group>"; };
+		84E324AC274BA7FF0035D3B8 /* AnyDecodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyDecodable.swift; sourceTree = "<group>"; };
+		84E324AD274BA7FF0035D3B8 /* AnyEncodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyEncodable.swift; sourceTree = "<group>"; };
+		84E324AE274BA7FF0035D3B8 /* AnyCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
 		84F6C8BB27393960005F82F9 /* BankSelectorTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankSelectorTokenizationViewModel.swift; sourceTree = "<group>"; };
 		882F525E4B236FBA84FEF5B1CA66D263 /* PrimerFormViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerFormViewController.swift; sourceTree = "<group>"; };
 		8831C25BF25F8B7DC29CECBAFC881CBD /* BankTableViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BankTableViewCell.swift; sourceTree = "<group>"; };
@@ -589,6 +597,7 @@
 				114201130FBF2789D04CC76B668F3851 /* VaultCheckoutViewModel.swift */,
 				272B387428C1F15AAE1CDBB6C434D9DC /* PCI */,
 				8438B6C92739755A0077BAF3 /* AdyenDotPay.swift */,
+				84E324A8274BA6680035D3B8 /* Throwable.swift */,
 			);
 			name = "Data Models";
 			path = "Sources/PrimerSDK/Classes/Data Models";
@@ -724,6 +733,9 @@
 		7EE64536BA06615D0E4D6632CA4F154E /* Extensions & Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				84E324AE274BA7FF0035D3B8 /* AnyCodable.swift */,
+				84E324AC274BA7FF0035D3B8 /* AnyDecodable.swift */,
+				84E324AD274BA7FF0035D3B8 /* AnyEncodable.swift */,
 				6C250A79D794C66CF7CA532771C45FB3 /* AlertController.swift */,
 				94E84E3796033996973BE68602DD8DDF /* BundleExtension.swift */,
 				9032918833A3F8B38487A5ED143A1C9E /* DateExtension.swift */,
@@ -1231,6 +1243,7 @@
 				FF3C91AD43E2FBA4468E1DE60D4402AF /* AppState.swift in Sources */,
 				F085A2510E979DF8DF7F75C5B276D6E0 /* Bank.swift in Sources */,
 				67CE17CFF3F3C06426D22EF36BDEC665 /* BankSelectorViewController.swift in Sources */,
+				84E324B1274BA7FF0035D3B8 /* AnyCodable.swift in Sources */,
 				9809DADE43740991439F7E30FDBCD804 /* BankTableViewCell.swift in Sources */,
 				353A75A1DD98C4E9BB3542C726166F9D /* Box.swift in Sources */,
 				181C25F014B1B499E59681F0E86C14B7 /* BundleExtension.swift in Sources */,
@@ -1299,6 +1312,7 @@
 				1AD1217BBC64D425736E29563409DE7F /* PayPal.swift in Sources */,
 				D91713BCF7E937061D7EA21C63B533B1 /* PayPalService.swift in Sources */,
 				FABAD4910ADD38B5F11BC802691AE00F /* PayPalTokenizationViewModel.swift in Sources */,
+				84E324AF274BA7FF0035D3B8 /* AnyDecodable.swift in Sources */,
 				EF6440B76AA3F3D2BFE014736149E7A0 /* PresentationController.swift in Sources */,
 				4CECC22E78A15EFC56454B3794AECA60 /* Primer.swift in Sources */,
 				D28998EFE264122D188F770F499AB747 /* PrimerAPI.swift in Sources */,
@@ -1311,6 +1325,7 @@
 				B7AEFB18C5B1A1B6ADE607A63CC1C9E6 /* PrimerCardNumberFieldView.swift in Sources */,
 				017F127C529690C1E648D4FBEA7166D6 /* PrimerContainerViewController.swift in Sources */,
 				5A4289820E135BC143550E200A1FA5B0 /* PrimerContent.swift in Sources */,
+				84E324B0274BA7FF0035D3B8 /* AnyEncodable.swift in Sources */,
 				29A3AB70E0CC4A18B3D64C766B56B489 /* PrimerCustomStyleTextField.swift in Sources */,
 				D2CE10FD880B2918C802548B0E64F74E /* PrimerCVVFieldView.swift in Sources */,
 				12210686683B7F6A8846FCCD8EA546A6 /* PrimerDelegate.swift in Sources */,
@@ -1321,6 +1336,7 @@
 				F30DF7D4631EDD026DA0EC3688ADEABB /* PrimerImage.swift in Sources */,
 				D9627A7C77DBDEACE6063EE29696CAD4 /* PrimerLoadingViewController.swift in Sources */,
 				56E24D00DAB6C999FBB8D73B3DFB9146 /* PrimerNavigationBar.swift in Sources */,
+				84E324A9274BA6680035D3B8 /* Throwable.swift in Sources */,
 				5165EF17D793855CCE6D917585F09E3A /* PrimerNavigationController.swift in Sources */,
 				854D9C92C6D645FD1A02ABF7E3BFD59C /* PrimerNibView.swift in Sources */,
 				8B4E9AD2BA6914EADA8721C7592D6EAC /* PrimerRootViewController.swift in Sources */,
