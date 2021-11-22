@@ -21,7 +21,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        environmentControl.selectedSegmentIndex = 1
+        environmentControl.selectedSegmentIndex = 2
         environmentControl.accessibilityIdentifier = "env_control"
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
@@ -33,7 +33,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.text = "1.00"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
-        performPaymentSwitch.isOn = false
+        performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
         
         let countryPicker = UIPickerView()
@@ -75,7 +75,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         
         let mcvc = MerchantCheckoutViewController.instantiate(
             environment: env,
-            customerId: customerIdTextField.text,
+            customerId: (customerIdTextField.text ?? "").isEmpty ? "vagz" : customerIdTextField.text!,
             phoneNumber: phoneNumberTextField.text,
             countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
             currency: Currency(rawValue: currencyTextField.text ?? ""),
