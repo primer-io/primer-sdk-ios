@@ -80,6 +80,7 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    
     var debugOptions: PrimerDebugOptions
         
     var orderId: String?
@@ -155,11 +156,16 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         self.is3DSOnVaultingEnabled = true
         self.debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
     }
+    
+    func modify(withClientSession clientSession: ClientSession) {
+        
+    }
 }
 
 let mockPaymentMethodConfig = PrimerConfiguration(
     coreUrl: "url",
     pciUrl: "url",
+    clientSession: nil,
     paymentMethods: [
         PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
         PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
@@ -207,6 +213,7 @@ class MockAppState: AppStateProtocol {
         paymentMethodConfig: PrimerConfiguration? = PrimerConfiguration(
             coreUrl: "url",
             pciUrl: "url",
+            clientSession: nil,
             paymentMethods: [
                 PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
                 PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
