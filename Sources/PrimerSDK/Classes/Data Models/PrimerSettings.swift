@@ -32,6 +32,8 @@ internal protocol PrimerSettingsProtocol {
     var orderId: String? { get }
     var debugOptions: PrimerDebugOptions { get }
     var customer: Customer? { get set }
+    
+    func modify(withClientSession clientSession: ClientSession)
 }
 
 public struct PrimerDebugOptions {
@@ -164,6 +166,74 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.billingAddress = billingAddress
         self.orderId = orderId
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
+    }
+    static func modify(withClientSession clientSession: ClientSession) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        settings.modify(withClientSession: clientSession)
+    }
+    
+    func logClientSessionWarning(for val: String) {
+        print("Information relating to the \(val) has been provided in both client-session creation and checkout initialization. Provided client-session information will be favored.")
+    }
+    
+    func modify(withClientSession clientSession: ClientSession) {
+        if let order = clientSession.order {
+            if self.orderId != nil ||
+                self.amount != nil ||
+                self.currency != nil ||
+                !self.orderItems.isEmpty
+            {
+                logClientSessionWarning(for: "order")
+            }
+            self.orderId = order.id
+            self.amount = order.totalOrderAmount
+            self.currency = order.currencyCode
+            self.countryCode = order.countryCode
+            
+            var orderItems: [OrderItem] = []
+            order.items?.forEach({ item in
+                if let orderItem = try? OrderItem(
+                    name: item.name,
+                    unitAmount: item.unitAmount,
+                    quantity: item.quantity,
+                    isPending: false) {
+                    orderItems.append(orderItem)
+                }
+            })
+            self.orderItems = orderItems
+        }
+        
+        if let customer = clientSession.customer {
+            if self.customerId != nil ||
+                self.billingAddress != nil
+            {
+                logClientSessionWarning(for: "customer")
+            }
+            
+            self.customerId = customer.id
+            
+            self.customer = Customer(
+                firstName: customer.firstName,
+                lastName: customer.lastName,
+                email: customer.email,
+                homePhoneNumber: nil,
+                mobilePhoneNumber: customer.mobileNumber,
+                workPhoneNumber: nil,
+                billingAddress: nil)
+            
+            if let billingAddress = customer.billingAddress {
+                let address = Address(
+                    addressLine1: billingAddress.addressLine1,
+                    addressLine2: billingAddress.addressLine2,
+                    city: billingAddress.city,
+                    state: billingAddress.state,
+                    countryCode: billingAddress.countryCode?.rawValue,
+                    postalCode: billingAddress.postalCode)
+                
+                self.billingAddress = address
+                self.customer?.billingAddress = address
+            }
+        }
     }
 }
 
