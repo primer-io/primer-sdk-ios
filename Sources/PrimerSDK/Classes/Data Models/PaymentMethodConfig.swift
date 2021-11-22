@@ -68,19 +68,28 @@ struct PrimerConfiguration: Codable {
         self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
         self.clientSession = (try? container.decode(ClientSession?.self, forKey: .clientSession)) ?? nil
         let throwables = try container.decode([Throwable<PaymentMethodConfig>].self, forKey: .paymentMethods)
-        self.paymentMethods = throwables.flatMap({ $0.value })
+        self.paymentMethods = throwables.compactMap({ $0.value })
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
         
-        if let paymentMethodOptions = clientSession?.paymentMethod?.paymentMethodOptions, !paymentMethodOptions.isEmpty {
-            for paymentMethodOption in paymentMethodOptions {
-                if let type = paymentMethodOption["type"] as? String,
-                   let surcharge = paymentMethodOption["surcharge"] as? Int {
-                    
-                    if let paymentMethod = self.paymentMethods?.filter({ $0.type.rawValue == type }).first {
+        if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
+            for paymentMethodOption in options {
+                if let type = paymentMethodOption["type"] as? String {
+                    if type == PaymentMethodConfigType.paymentCard.rawValue,
+                        let networks = paymentMethodOption["networks"] as? [[String: Any]],
+                       !networks.isEmpty
+                    {
+                        for network in networks {
+                            guard let type = network["type"] as? String,
+                            let surcharge = network["surcharge"] as? Int
+                            else { continue }
+                            
+                        }
+                    } else if let surcharge = paymentMethodOption["surcharge"] as? Int,
+                              let paymentMethod = self.paymentMethods?.filter({ $0.type.rawValue == type }).first
+                    {
                         paymentMethod.hasUnknownSurcharge = false
                         paymentMethod.surcharge = surcharge
                     }
-                    
                 }
             }
         }
@@ -170,7 +179,7 @@ class PaymentMethodConfig: Codable {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             type = try container.decode(PaymentMethodConfigType.self, forKey: .type)
             print(type)
-            id = try container.decode(String?.self, forKey: .id)
+            id = (try? container.decode(String?.self, forKey: .id)) ?? nil
             processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
             
             if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {

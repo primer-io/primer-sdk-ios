@@ -90,23 +90,23 @@ public class ClientSession: Codable {
     
     public class PaymentMethod: Codable {
         let vaultOnSuccess: Bool
-        let paymentMethodOptions: [[String: Any]]?
+        let options: [[String: Any]]?
         
         enum CodingKeys: String, CodingKey {
-            case vaultOnSuccess, paymentMethodOptions
+            case vaultOnSuccess, options
         }
         
         required public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.vaultOnSuccess = (try? container.decode(Bool.self, forKey: .vaultOnSuccess)) ?? false
             
-            if let tmpOptions = (try? container.decode([[String: AnyCodable]]?.self, forKey: .paymentMethodOptions)),
+            if let tmpOptions = (try? container.decode([[String: AnyCodable]]?.self, forKey: .options)),
                let optionsData = try? JSONEncoder().encode(tmpOptions),
                let optionsJson = (try? JSONSerialization.jsonObject(with: optionsData, options: .allowFragments)) as? [[String: Any]]
             {
-                self.paymentMethodOptions = optionsJson
+                self.options = optionsJson
             } else {
-                self.paymentMethodOptions = nil
+                self.options = nil
             }
         }
         
@@ -114,10 +114,10 @@ public class ClientSession: Codable {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(vaultOnSuccess, forKey: .vaultOnSuccess)
             
-            if let options = paymentMethodOptions,
+            if let options = options,
                let optionsData = try? JSONSerialization.data(withJSONObject: options, options: .fragmentsAllowed),
                let optionsCodable = try? JSONDecoder().decode([String: AnyCodable]?.self, from: optionsData) {
-                try container.encode(optionsCodable, forKey: .paymentMethodOptions)
+                try container.encode(optionsCodable, forKey: .options)
             }
         }
     }
