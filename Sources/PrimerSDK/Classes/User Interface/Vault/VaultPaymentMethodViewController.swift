@@ -175,7 +175,9 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         tableView.alwaysBounceVertical = false
         tableView.register(VaultedPaymentInstrumentCell.self, forCellReuseIdentifier: "VaultedPaymentInstrumentCell")
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        viewModel.reloadVault { _ in } // TODO: what to do here?
+        viewModel.reloadVault { _ in
+            
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {

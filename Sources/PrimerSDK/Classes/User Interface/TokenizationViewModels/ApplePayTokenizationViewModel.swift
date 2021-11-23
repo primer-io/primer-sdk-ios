@@ -161,7 +161,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             throw err
         }
         
-        guard !settings.orderItems.isEmpty else {
+        guard !(settings.orderItems ?? []).isEmpty else {
             let err = PaymentException.missingOrderItems
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -247,9 +247,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             currency: currency,
             merchantIdentifier: merchantIdentifier,
             countryCode: countryCode,
-//            supportedNetworks: supportedNetworks,
-            items: orderItems
-//            merchantCapabilities: merchantCapabilities
+            items: (orderItems ?? [])
         )
         
         

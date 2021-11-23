@@ -179,7 +179,7 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .checkoutWithAsyncPaymentMethod(let paymentMethodType):
                     self?.presentPaymentMethod(type: paymentMethodType)
                     
-                case .checkoutWithAdyenDotPay:
+                case .checkoutWithAdyenBank:
                     self?.presentPaymentMethod(type: .adyenDotPay)
                     
                 case .none:
@@ -365,6 +365,19 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
     
+    func resetConstraint(for viewController: UIViewController) {
+        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height) > self.availableScreenHeight ? self.availableScreenHeight : (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height)
+        self.childViewHeightConstraint.isActive = false
+        self.childViewHeightConstraint?.constant = navigationControllerHeight + self.bottomPadding
+        self.childViewHeightConstraint.isActive = true
+        
+        UIView.animate(withDuration: self.presentationDuration, delay: 0, options: .curveEaseInOut) {
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+
+        }
+    }
+    
     internal func popViewController() {
         guard nc.viewControllers.count > 1,
               let viewController = (nc.viewControllers[nc.viewControllers.count-2] as? PrimerContainerViewController)?.childViewController else {
@@ -421,7 +434,12 @@ internal class PrimerRootViewController: PrimerViewController {
 extension PrimerRootViewController {
     
     func presentPaymentMethod(type: PaymentMethodConfigType) {
-        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else { return }
+        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
+            let err = PrimerError.misconfiguredPaymentMethod
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            return
+        }
+        
         paymentMethodTokenizationViewModel.didStartTokenization = {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         }
