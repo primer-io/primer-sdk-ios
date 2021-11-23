@@ -437,7 +437,12 @@ internal class PrimerRootViewController: PrimerViewController {
 extension PrimerRootViewController {
     
     func presentPaymentMethod(type: PaymentMethodConfigType) {
-        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else { return }
+        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
+            let err = PrimerError.misconfiguredPaymentMethod
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            return
+        }
+        
         paymentMethodTokenizationViewModel.didStartTokenization = {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         }
