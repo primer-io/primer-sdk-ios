@@ -49,7 +49,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     override lazy var buttonColor: UIColor? = {
         switch config.type {
         case .apaya:
-            return .white
+            return theme.paymentMethodButton.color(for: .enabled)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -59,7 +59,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     override lazy var buttonTitleColor: UIColor? = {
         switch config.type {
         case .apaya:
-            return theme.colorTheme.text1
+            return theme.paymentMethodButton.text.color
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -79,7 +79,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
         case .apaya:
-            return theme.colorTheme.text1
+            return theme.paymentMethodButton.text.color
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -89,7 +89,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
         case .apaya:
-            return theme.colorTheme.text1
+            return theme.paymentMethodButton.text.color
         default:
             assert(true, "Shouldn't end up in here")
             return nil

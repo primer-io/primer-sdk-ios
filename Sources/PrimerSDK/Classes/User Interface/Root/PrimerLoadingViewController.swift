@@ -28,7 +28,7 @@ class PrimerLoadingViewController: PrimerViewController {
         super.viewDidLoad()
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        view.backgroundColor = theme.colorTheme.main1
+        view.backgroundColor = theme.view.backgroundColor
         
         view.heightAnchor.constraint(equalToConstant: height).isActive = true
         

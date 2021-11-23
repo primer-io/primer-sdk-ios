@@ -39,7 +39,7 @@ class PrimerFormViewController: PrimerViewController {
                                                                bundle: Bundle.primerResources,
                                                                value: "Available payment methods",
                                                                comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
-        otherPaymentMethodsTitleLabel.textColor = theme.colorTheme.secondaryText1
+        otherPaymentMethodsTitleLabel.textColor = theme.text.subtitle.color
         otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
         otherPaymentMethodsTitleLabel.textAlignment = .left
         

@@ -30,20 +30,15 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
-        title = NSLocalizedString("primer-form-type-main-title-card-form",
-                                  tableName: nil,
-                                  bundle: Bundle.primerResources,
-                                  value: "Enter your card details",
-                                  comment: "Enter your card details - Form Type Main Title (Card)")
-
-        view.backgroundColor = theme.colorTheme.main1
-        
+        title = Content.PrimerCardFormView.title
+        view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
-        
-        
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
+        configureExpiryAndCvvRow()
+        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
+    }
 
+    private func configureExpiryAndCvvRow() {
         let horizontalStackView = UIStackView()
         horizontalStackView.axis = .horizontal
         horizontalStackView.alignment = .fill
@@ -68,7 +63,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
             
             let saveCardLabel = UILabel()
             saveCardLabel.text = "Save this card"
-            saveCardLabel.textColor = theme.colorTheme.text1
+            saveCardLabel.textColor = theme.text.body.color
             saveCardLabel.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
             saveCardSwitchContainerStackView.addArrangedSubview(saveCardLabel)
             
@@ -85,7 +80,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
     }
-    
 }
 
 #endif
