@@ -147,13 +147,13 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 throw err
             }
             
-            if settings.orderItems.isEmpty {
+            if (settings.orderItems ?? []).isEmpty {
                 let err = KlarnaException.missingOrderItems
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
             }
             
-            if !settings.orderItems.filter({ $0.unitAmount == nil }).isEmpty {
+            if !(settings.orderItems ?? []).filter({ $0.unitAmount == nil }).isEmpty {
                 let err = KlarnaException.orderItemMissesAmount
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
@@ -295,11 +295,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 return completion(.failure(KlarnaException.noCurrency))
             }
             
-            if settings.orderItems.isEmpty {
+            if (settings.orderItems ?? []).isEmpty {
                 return completion(.failure(KlarnaException.missingOrderItems))
             }
             
-            if !settings.orderItems.filter({ $0.unitAmount == nil }).isEmpty {
+            if !(settings.orderItems ?? []).filter({ $0.unitAmount == nil }).isEmpty {
                 return completion(.failure(KlarnaException.orderItemMissesAmount))
             }
             
