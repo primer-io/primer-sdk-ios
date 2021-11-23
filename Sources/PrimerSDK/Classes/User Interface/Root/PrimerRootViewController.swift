@@ -182,7 +182,7 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .checkoutWithAsyncPaymentMethod(let paymentMethodType):
                     self?.presentPaymentMethod(type: paymentMethodType)
                     
-                case .checkoutWithAdyenDotPay:
+                case .checkoutWithAdyenBank:
                     self?.presentPaymentMethod(type: .adyenDotPay)
                     
                 case .none:

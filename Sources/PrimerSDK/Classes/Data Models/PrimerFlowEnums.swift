@@ -51,7 +51,7 @@ public enum PrimerSessionFlow: Equatable {
     case checkoutWithPayPal
     case checkoutWithApplePay
     case addApayaToVault
-    case checkoutWithAdyenDotPay
+    case checkoutWithAdyenBank
     case checkoutWithAsyncPaymentMethod(paymentMethodType: PaymentMethodConfigType)
 
     internal var internalSessionFlow: PrimerInternalSessionFlow {
@@ -80,8 +80,8 @@ public enum PrimerSessionFlow: Equatable {
             return .vaultApaya
         case .checkoutWithPayPal:
             return .checkoutWithPayPal
-        case .checkoutWithAdyenDotPay:
-            return .checkoutWithAdyenDotPay
+        case .checkoutWithAdyenBank:
+            return .checkoutWithAdyenBank
         case .checkoutWithAsyncPaymentMethod:
             return .checkoutWithAsyncPaymentMethod
         }
@@ -102,7 +102,7 @@ internal enum PrimerInternalSessionFlow {
     case checkoutWithAsyncPaymentMethod
     case checkoutWithKlarna
     case checkoutWithPayPal
-    case checkoutWithAdyenDotPay
+    case checkoutWithAdyenBank
     
     var vaulted: Bool {
         switch self {
@@ -119,7 +119,7 @@ internal enum PrimerInternalSessionFlow {
              .checkoutWithPayPal,
              .checkoutWithKlarna,
              .checkoutWithApplePay,
-             .checkoutWithAdyenDotPay:
+             .checkoutWithAdyenBank:
             return false
         }
     }
@@ -139,7 +139,7 @@ internal enum PrimerInternalSessionFlow {
              .checkoutWithPayPal,
              .checkoutWithKlarna,
              .checkoutWithApplePay,
-             .checkoutWithAdyenDotPay:
+             .checkoutWithAdyenBank:
             return .CHECKOUT
         }
     }
