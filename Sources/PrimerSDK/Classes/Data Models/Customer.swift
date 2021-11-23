@@ -9,7 +9,7 @@
 
 import Foundation
 
-@available(*, deprecated, message: "Set the customer in the client session")
+@available(*, deprecated, message: "Set the customer in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
 public struct Customer: Codable {
     let firstName: String?
     let lastName: String?

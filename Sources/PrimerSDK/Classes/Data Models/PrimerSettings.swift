@@ -6,16 +6,16 @@ public typealias TokenizationSuccessCallBack = (_ paymentMethodToken: PaymentMet
 public typealias CheckoutDismissalCallback = () -> Void
 
 internal protocol PrimerSettingsProtocol {
-    @available(*, deprecated, message: "Use client session")
+    @available(*, deprecated, message: "Set the amount in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var amount: Int? { get }
-    @available(*, deprecated, message: "Use client session")
+    @available(*, deprecated, message: "Set the currency in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var currency: Currency? { get }
     var merchantIdentifier: String? { get }
-    @available(*, deprecated, message: "Use client session")
+    @available(*, deprecated, message: "Set the countryCode in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var countryCode: CountryCode? { get }
     var klarnaSessionType: KlarnaSessionType? { get }
     var klarnaPaymentDescription: String? { get }
-    @available(*, deprecated, message: "Use client session")
+    @available(*, deprecated, message: "Set the customerId in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var customerId: String? { get }
     var authorizePayment: PaymentMethodTokenCallBack { get }
     var onTokenizeSuccess: TokenizationSuccessCallBack { get }
@@ -26,16 +26,16 @@ internal protocol PrimerSettingsProtocol {
     var hasDisabledSuccessScreen: Bool { get }
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
-    @available(*, deprecated, message: "Use client session")
+    @available(*, deprecated, message: "Set the orderItems in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var orderItems: [OrderItem]? { get }
     var isInitialLoadingHidden: Bool { get }
     var localeData: LocaleData { get }
     var is3DSOnVaultingEnabled: Bool { get }
-    @available(*, deprecated, message: "Use client session")
+    @available(*, deprecated, message: "Set the billingAddress in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var billingAddress: Address? { get }
     var orderId: String? { get }
     var debugOptions: PrimerDebugOptions { get }
-    @available(*, deprecated, message: "Use client session")
+    @available(*, deprecated, message: "Set the customer in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var customer: Customer? { get set }
     
     func modify(withClientSession clientSession: ClientSession)
@@ -115,7 +115,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
-    @available(*, deprecated, message: "Use client session")
+    @available(*, deprecated, message: "Set the amount, currency, countryCode, customerId, customer, billingAddress & orderItems in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     public init(
         merchantIdentifier: String? = nil,
         customerId: String? = nil,
