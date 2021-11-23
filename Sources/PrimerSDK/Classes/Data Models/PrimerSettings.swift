@@ -217,7 +217,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
                 logClientSessionWarning(for: "order")
             }
             self.orderId = order.id
-            self.amount = order.totalOrderAmount
+            self.amount = order.merchantAmount ?? order.totalOrderAmount
             self.currency = order.currencyCode
             self.countryCode = order.countryCode
             

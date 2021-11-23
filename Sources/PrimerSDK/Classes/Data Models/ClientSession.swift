@@ -131,6 +131,7 @@ public class ClientSession: Codable {
     
     public struct Order: Codable {
         let id: String?
+        let merchantAmount: Int?
         let totalOrderAmount: Int?
         let totalTaxAmount: Int?
         let countryCode: CountryCode?
@@ -140,12 +141,13 @@ public class ClientSession: Codable {
         let shippingAmount: Int?
         
         enum CodingKeys: String, CodingKey {
-            case id = "orderId", totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, items, shippingAmount
+            case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, items, shippingAmount
         }
         
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             id = (try? container.decode(String?.self, forKey: .id)) ?? nil
+            merchantAmount = (try? container.decode(Int?.self, forKey: .merchantAmount)) ?? nil
             totalOrderAmount = (try? container.decode(Int?.self, forKey: .totalOrderAmount)) ?? nil
             totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
             countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
@@ -157,6 +159,7 @@ public class ClientSession: Codable {
         
         public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
+            try? container.encode(merchantAmount, forKey: .merchantAmount)
             try? container.encode(totalOrderAmount, forKey: .totalOrderAmount)
             try? container.encode(totalTaxAmount, forKey: .totalTaxAmount)
             try? container.encode(countryCode, forKey: .countryCode)
