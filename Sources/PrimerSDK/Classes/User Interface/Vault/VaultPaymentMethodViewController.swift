@@ -179,7 +179,7 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         tableView.register(VaultedPaymentInstrumentCell.self, forCellReuseIdentifier: "VaultedPaymentInstrumentCell")
         
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        viewModel.reloadVault { [weak self] _ in
+        viewModel.reloadVault { _ in
             
         }
     }

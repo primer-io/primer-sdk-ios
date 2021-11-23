@@ -33,7 +33,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.text = "1.00"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
-        performPaymentSwitch.isOn = true
+        performPaymentSwitch.isOn = false
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
         
         let countryPicker = UIPickerView()

@@ -148,7 +148,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             }
         }
         
-        verticalStackView.layoutIfNeeded()
+        (self.parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
+            self.verticalStackView.layoutIfNeeded()
+        }
         
         Primer.shared.primerRootVC?.layoutIfNeeded()
     }
