@@ -114,7 +114,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     func configurePrimer() {
         Primer.shared.configure(settings: generalSettings)
-        Primer.shared.configure(theme: CheckoutTheme.tropical)
+        Primer.shared.configure(theme: CheckoutTheme.primer)
         
         Primer.shared.setDirectDebitDetails(
             firstName: "John",

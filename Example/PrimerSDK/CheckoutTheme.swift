@@ -42,4 +42,29 @@ struct CheckoutTheme {
         data.input.text = PrimerThemeData.Text(defaultColor: tropical4)
         return PrimerTheme.init(with: data)
     }
+    
+    static var primer: PrimerTheme {
+        let data = PrimerThemeData()
+        data.colors.primary = .black
+        data.colors.gray = UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0)
+        data.colors.light = .white
+        data.view.backgroundColor = .white
+        data.text.title = PrimerThemeData.Text(defaultColor: .black)
+        data.text.amountLabel = PrimerThemeData.Text(defaultColor: .black)
+        data.text.subtitle = PrimerThemeData.Text(defaultColor: UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0))
+        data.text.body = PrimerThemeData.Text(defaultColor: .black)
+        data.text.system = PrimerThemeData.Text(defaultColor: .white)
+        data.buttons.paymentMethod.border.defaultColor = .black
+        data.buttons.paymentMethod.border.selectedColor = .blue
+        data.buttons.paymentMethod.text.defaultColor = .black
+        data.buttons.paymentMethod.iconColor = .clear
+        data.buttons.main.text.defaultColor = .blue
+        data.buttons.main.defaultColor = .blue
+        data.buttons.main.disabledColor = .lightGray
+        data.buttons.main.text.defaultColor = .white
+        data.input.border = PrimerThemeData.Border(defaultColor: UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0), selectedColor: .blue)
+        data.input.text = PrimerThemeData.Text(defaultColor: .black)
+        data.buttons.paymentMethod.border.width = 1.0
+        return PrimerTheme.init(with: data)
+    }
 }
