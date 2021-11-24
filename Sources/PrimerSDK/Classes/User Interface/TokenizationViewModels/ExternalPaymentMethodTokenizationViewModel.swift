@@ -61,6 +61,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenGiropay,
                 .buckarooIdeal,
                 .buckarooSofort,
+                .buckarooEps,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,
@@ -74,8 +75,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenMobilePay,
                 .adyenVipps:
             return nil
-        case .buckarooEps:
-            return "EPS"
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -88,6 +87,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .adyenGiropay:
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .buckarooEps:
+            return UIImage(named: "eps-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .buckarooSofort,
                 .adyenSofort:
             return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
@@ -136,7 +137,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenVipps:
             return UIColor(red: 255.0/255, green: 91.0/255, blue: 36.0/255, alpha: 1.0)
         case .buckarooEps:
-            return .blue
+            return .white
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
         case .mollieBankcontact,
@@ -166,6 +167,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenVipps,
                 .buckarooIdeal,
                 .buckarooSofort,
+                .buckarooEps,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,
@@ -174,8 +176,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLIdeal,
                 .payNLPayconiq:
             return nil
-        case .buckarooEps:
-            return .white
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -190,7 +190,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
-                .buckarooEps,
                 .buckarooIdeal,
                 .buckarooSofort,
                 .hoolah,
@@ -199,7 +198,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLIdeal,
                 .payNLPayconiq:
             return 0.0
-        case .mollieBankcontact,
+        case .buckarooEps,
+                .mollieBankcontact,
                 .payNLBancontact:
             return 1.0
         default:
@@ -216,7 +216,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
-                .buckarooEps,
                 .buckarooIdeal,
                 .buckarooSofort,
                 .hoolah,
@@ -225,7 +224,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLIdeal,
                 .payNLPayconiq:
             return nil
-        case .mollieBankcontact,
+        case .buckarooEps,
+                .mollieBankcontact,
                 .payNLBancontact:
             return .black
         default:
