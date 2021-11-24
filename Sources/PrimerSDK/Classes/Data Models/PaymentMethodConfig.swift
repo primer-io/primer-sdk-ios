@@ -11,7 +11,7 @@ struct PrimerConfiguration: Codable {
     }
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
-        var viewModels = paymentMethodConfigs?
+        var viewModels = PrimerConfiguration.paymentMethodConfigs?
             .filter({ $0.type.isEnabled })
             .compactMap({ $0.tokenizationViewModel })
         ?? []
@@ -88,6 +88,7 @@ struct PaymentMethodConfig: Codable {
             .adyenVipps,
             .adyenAlipay,
             .adyenGiropay,
+            .buckarooIdeal,
             .mollieBankcontact,
             .mollieIdeal,
             .payNLBancontact,
@@ -97,6 +98,7 @@ struct PaymentMethodConfig: Codable {
             .adyenTrustly,
             .adyenTwint
         ]
+        
         if type == .paymentCard {
             return CardFormPaymentMethodTokenizationViewModel(config: self)
         } else if type == .applePay {
@@ -234,6 +236,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case adyenVipps
     case apaya
     case applePay
+    case buckarooIdeal
     case goCardlessMandate
     case googlePay
     case hoolah
@@ -272,6 +275,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .apaya
         case "APPLE_PAY":
             self = .applePay
+        case "BUCKAROO_IDEAL":
+            self = .buckarooIdeal
         case "GOCARDLESS":
             self = .goCardlessMandate
         case "GOOGLE_PAY":
@@ -325,6 +330,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "APAYA"
         case .applePay:
             return "APPLE_PAY"
+        case .buckarooIdeal:
+            return "BUCKAROO_IDEAL"
         case .goCardlessMandate:
             return "GOCARDLESS"
         case .googlePay:
@@ -366,6 +373,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .adyenTwint,
                 .adyenVipps,
                 .applePay,
+                .buckarooIdeal,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,
