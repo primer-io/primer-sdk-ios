@@ -353,6 +353,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case delegateNotSet
     case userCancelled
     case invalidValue(key: String)
+    case misconfiguredPaymentMethod
     
     case clientTokenNull
     case clientTokenExpirationMissing
@@ -415,6 +416,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return 500
         case .userCancelled:
             return 1500
+        case .misconfiguredPaymentMethod:
+            return 1600
             
         // Settings
         case .clientTokenNull:
@@ -450,8 +453,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return 2000
         case .dataMissing:
             return 2010
-        case .orderIdMissing:
-            return 2022
         case .userDetailsMissing:
             return 2030
         case .userDetailsAddressMissing:
@@ -684,6 +685,13 @@ public enum PrimerError: PrimerErrorProtocol {
                                      bundle: Bundle.primerResources,
                                      value: "User cancelled",
                                      comment: "User cancelled. - Primer error message")
+            
+        case .misconfiguredPaymentMethod:
+            return NSLocalizedString("primer-error-message-misconfigured-payment-method",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Failed to initialize due to missing configuration. Please ensure the requested payment method has been configured in Primer's dashboard.",
+                                     comment: "Failed to initialize due to missing configuration. Please ensure the requested payment method has been configured in Primer's dashboard. - Primer error message")
             
         case .amountShouldBeNullForPendingOrderItems:
             return NSLocalizedString("primer-error-message-amount-should-be-null-for-pending-order-items",

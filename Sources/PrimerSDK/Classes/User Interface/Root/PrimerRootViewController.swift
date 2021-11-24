@@ -72,9 +72,9 @@ internal class PrimerRootViewController: PrimerViewController {
         
         view.addSubview(childView)
         
-        childView.backgroundColor = theme.colorTheme.main1
+        childView.backgroundColor = theme.view.backgroundColor
         childView.isUserInteractionEnabled = true
-        nc.view.backgroundColor = theme.colorTheme.main1
+        nc.view.backgroundColor = theme.view.backgroundColor
         
         childView.translatesAutoresizingMaskIntoConstraints = false
         childView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -86,8 +86,6 @@ internal class PrimerRootViewController: PrimerViewController {
         childViewBottomConstraint.isActive = true
         view.layoutIfNeeded()
         
-        
-
         let tapGesture = UITapGestureRecognizer(
             target: self,
             action: #selector(dismissGestureRecognizerAction))
@@ -111,7 +109,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     func blurBackground() {
         UIView.animate(withDuration: presentationDuration) {
-            self.backgroundView.backgroundColor = .black.withAlphaComponent(0.4)
+            self.backgroundView.backgroundColor = self.theme.blurView.backgroundColor
         }
     }
     
@@ -138,7 +136,6 @@ internal class PrimerRootViewController: PrimerViewController {
                     let pvmvc = PrimerVaultManagerViewController()
                     self?.show(viewController: pvmvc)
 
-                    
                 case .completeDirectCheckout:
                     self?.blurBackground()
                     self?.presentPaymentMethod(type: .paymentCard)
@@ -157,7 +154,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     
                 case .addDirectDebitToVault:
                     break
-                    
+
                 case .addKlarnaToVault:
                     self?.presentPaymentMethod(type: .klarna)
                     
@@ -182,7 +179,7 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .checkoutWithAsyncPaymentMethod(let paymentMethodType):
                     self?.presentPaymentMethod(type: paymentMethodType)
                     
-                case .checkoutWithAdyenDotPay:
+                case .checkoutWithAdyenBank:
                     self?.presentPaymentMethod(type: .adyenDotPay)
                     
                 case .none:
@@ -281,7 +278,7 @@ internal class PrimerRootViewController: PrimerViewController {
         let isPresented: Bool = self.nc.viewControllers.isEmpty
         
         let cvc = PrimerContainerViewController(childViewController: viewController)
-        cvc.view.backgroundColor = self.theme.colorTheme.main1
+        cvc.view.backgroundColor = self.theme.view.backgroundColor
         
         // Hide back button on some cases
         if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
@@ -368,6 +365,19 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
     
+    func resetConstraint(for viewController: UIViewController) {
+        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height) > self.availableScreenHeight ? self.availableScreenHeight : (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height)
+        self.childViewHeightConstraint.isActive = false
+        self.childViewHeightConstraint?.constant = navigationControllerHeight + self.bottomPadding
+        self.childViewHeightConstraint.isActive = true
+        
+        UIView.animate(withDuration: self.presentationDuration, delay: 0, options: .curveEaseInOut) {
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+
+        }
+    }
+    
     internal func popViewController() {
         guard nc.viewControllers.count > 1,
               let viewController = (nc.viewControllers[nc.viewControllers.count-2] as? PrimerContainerViewController)?.childViewController else {
@@ -424,7 +434,12 @@ internal class PrimerRootViewController: PrimerViewController {
 extension PrimerRootViewController {
     
     func presentPaymentMethod(type: PaymentMethodConfigType) {
-        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else { return }
+        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
+            let err = PrimerError.misconfiguredPaymentMethod
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            return
+        }
+        
         paymentMethodTokenizationViewModel.didStartTokenization = {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         }
@@ -491,7 +506,6 @@ extension PrimerRootViewController {
             })
         }
     }
-    
 }
 
 extension PrimerRootViewController: UIGestureRecognizerDelegate {

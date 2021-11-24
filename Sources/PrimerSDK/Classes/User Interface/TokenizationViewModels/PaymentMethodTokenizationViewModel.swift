@@ -115,7 +115,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .googlePay:
             return nil
         case .goCardlessMandate:
-            return .white
+            return theme.paymentMethodButton.color(for: .enabled)
         case .other:
             return nil
         default:
@@ -127,7 +127,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     lazy var buttonTitleColor: UIColor? = {
         switch config.type {
         case .goCardlessMandate:
-            return theme.colorTheme.text1
+            return theme.paymentMethodButton.text.color
         case .googlePay,
                 .other:
             return nil
@@ -153,7 +153,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     lazy var buttonBorderColor: UIColor? = {
         switch config.type {
         case .goCardlessMandate:
-            return theme.colorTheme.text1
+            return theme.paymentMethodButton.border.color(for: .enabled)
         case .googlePay,
                 .other:
             return nil
@@ -166,7 +166,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     lazy var buttonTintColor: UIColor? = {
         switch config.type {
         case .goCardlessMandate:
-            return theme.colorTheme.text1
+            return theme.paymentMethodButton.border.color(for: .enabled)
         case .googlePay,
                 .other:
             return nil

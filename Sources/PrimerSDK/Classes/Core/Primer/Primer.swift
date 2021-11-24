@@ -13,7 +13,7 @@ public class Primer {
     
     // MARK: - PROPERTIES
     
-    public var delegate: PrimerDelegate?
+    public var delegate: PrimerDelegate? // TODO: should this be weak?
     private(set) var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
 
@@ -129,7 +129,7 @@ public class Primer {
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
             let theme = themeProtocol as! PrimerTheme
-            theme.content.formTopTitles.setTopTitle(text, for: formType)
+//            theme.content.formTopTitles.setTopTitle(text, for: formType)
         }
     }
 
@@ -145,7 +145,7 @@ public class Primer {
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
             let theme = themeProtocol as! PrimerTheme
-            theme.content.formMainTitles.setMainTitle(text, for: formType)
+//            theme.content.formMainTitles.setMainTitle(text, for: formType)
         }
     }
 
@@ -207,52 +207,72 @@ public class Primer {
     
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
         switch (paymentMethod, intent) {
+        case (.adyenAlipay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenAlipay)
+            
+        case (.adyenDotPay, .checkout):
+            flow = .checkoutWithAdyenBank
+            
+        case (.adyenGiropay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenGiropay)
+            
+        case (.adyenIDeal, .checkout):
+            flow = .checkoutWithAdyenBank
+            
+        case (.adyenMobilePay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenMobilePay)
+            
+        case (.adyenSofortBanking, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenSofortBanking)
+            
+        case (.adyenTrustly, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenTrustly)
+            
+        case (.adyenTwint, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenTwint)
+            
+        case (.adyenVipps, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenVipps)
+            
         case (.apaya, .vault):
             flow = .addApayaToVault
             
         case (.applePay, .checkout):
             flow = .checkoutWithApplePay
             
-        case (.paymentCard, .checkout):
-            flow = .completeDirectCheckout
-            
-        case (.paymentCard, .vault):
-            flow = .addCardToVault
-            
-        case (.goCardlessMandate, .vault):
-            flow = .addDirectDebitToVault
+        case (.hoolah, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
             
         case (.klarna, .vault):
             flow = .addKlarnaToVault
             
         case (.klarna, .checkout):
             flow = .checkoutWithKlarna
-
+            
+        case (.mollieBankcontact, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .mollieBankcontact)
+            
+        case (.mollieIdeal, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .mollieIdeal)
+            
+        case (.payNLBancontact, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLBancontact)
+            
+        case (.payNLGiropay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLGiropay)
+            
         case (.payNLIdeal, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLIdeal)
             
-        case (.aliPay, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .aliPay)
+        case (.payNLPayconiq, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLPayconiq)
             
-        case (.giropay, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .giropay)
+        case (.paymentCard, .checkout):
+            flow = .completeDirectCheckout
             
-        case (.hoolah, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
-            
-        case (.twint, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .twint)
-            
-        case (.sofort, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .sofort)
-            
-        case (.trustly, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .trustly)
-            
-        case (.adyenDotPay, .checkout),
-            (.adyenIDeal, .checkout):
-            flow = .checkoutWithAdyenDotPay
-            
+        case (.paymentCard, .vault):
+            flow = .addCardToVault
+
         case (.payPal, .checkout):
             flow = .checkoutWithPayPal
             
@@ -263,15 +283,22 @@ public class Primer {
             (.applePay, .vault),
             (.goCardlessMandate, _),
             (.googlePay, _),
-            (.aliPay, .vault),
-            (.giropay, .vault),
+            (.adyenAlipay, .vault),
+            (.adyenDotPay, .vault),
+            (.adyenGiropay, .vault),
+            (.adyenIDeal, .vault),
             (.hoolah, .vault),
             (.payNLIdeal, .vault),
-            (.adyenDotPay, .vault),
-            (.adyenIDeal, .vault),
-            (.sofort, .vault),
-            (.trustly, .vault),
-            (.twint, .vault),
+            (.adyenSofortBanking, .vault),
+            (.adyenTrustly, .vault),
+            (.adyenTwint, .vault),
+            (.adyenMobilePay, .vault),
+            (.adyenVipps, .vault),
+            (.mollieBankcontact, .vault),
+            (.mollieIdeal, .vault),
+            (.payNLBancontact, .vault),
+            (.payNLPayconiq, .vault),
+            (.payNLGiropay, .vault),
             (.other, _):
             let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
             Primer.shared.delegate?.checkoutFailed?(with: err)

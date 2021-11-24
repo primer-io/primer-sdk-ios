@@ -6,12 +6,16 @@ public typealias TokenizationSuccessCallBack = (_ paymentMethodToken: PaymentMet
 public typealias CheckoutDismissalCallback = () -> Void
 
 internal protocol PrimerSettingsProtocol {
+    @available(*, deprecated, message: "Set the amount in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var amount: Int? { get }
+    @available(*, deprecated, message: "Set the currency in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var currency: Currency? { get }
     var merchantIdentifier: String? { get }
+    @available(*, deprecated, message: "Set the countryCode in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var countryCode: CountryCode? { get }
     var klarnaSessionType: KlarnaSessionType? { get }
     var klarnaPaymentDescription: String? { get }
+    @available(*, deprecated, message: "Set the customerId in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var customerId: String? { get }
     var authorizePayment: PaymentMethodTokenCallBack { get }
     var onTokenizeSuccess: TokenizationSuccessCallBack { get }
@@ -22,16 +26,19 @@ internal protocol PrimerSettingsProtocol {
     var hasDisabledSuccessScreen: Bool { get }
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
-    var orderItems: [OrderItem] { get }
-//    var supportedNetworks: [PaymentNetwork]? { get }
-//    var merchantCapabilities: [MerchantCapability]? { get }
+    @available(*, deprecated, message: "Set the orderItems in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
+    var orderItems: [OrderItem]? { get }
     var isInitialLoadingHidden: Bool { get }
     var localeData: LocaleData { get }
     var is3DSOnVaultingEnabled: Bool { get }
+    @available(*, deprecated, message: "Set the billingAddress in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var billingAddress: Address? { get }
     var orderId: String? { get }
     var debugOptions: PrimerDebugOptions { get }
+    @available(*, deprecated, message: "Set the customer in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var customer: Customer? { get set }
+    
+    func modify(withClientSession clientSession: ClientSession)
 }
 
 public struct PrimerDebugOptions {
@@ -79,9 +86,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var hasDisabledSuccessScreen: Bool
     internal(set) public var businessDetails: BusinessDetails?
     internal(set) public var directDebitHasNoAmount: Bool
-    internal(set) public var orderItems: [OrderItem]
-//    internal(set) public var supportedNetworks: [PaymentNetwork]?
-//    internal(set) public var merchantCapabilities: [MerchantCapability]?
+    internal(set) public var orderItems: [OrderItem]?
     internal(set) public var isInitialLoadingHidden: Bool
     internal(set) public var localeData: LocaleData
     internal(set) public var is3DSOnVaultingEnabled: Bool
@@ -110,6 +115,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
+    @available(*, deprecated, message: "Set the amount, currency, countryCode, customerId, customer, billingAddress & orderItems in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     public init(
         merchantIdentifier: String? = nil,
         customerId: String? = nil,
@@ -125,8 +131,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         businessDetails: BusinessDetails? = nil,
         directDebitHasNoAmount: Bool = false,
         orderItems: [OrderItem] = [],
-//        supportedNetworks: [PaymentNetwork]? = nil,
-//        merchantCapabilities: [MerchantCapability]? = nil,
         isInitialLoadingHidden: Bool = false,
         localeData: LocaleData? = nil,
         is3DSOnVaultingEnabled: Bool = true,
@@ -149,8 +153,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.businessDetails = businessDetails
         self.directDebitHasNoAmount = directDebitHasNoAmount
         self.orderItems = orderItems
-//        self.supportedNetworks = supportedNetworks
-//        self.merchantCapabilities = merchantCapabilities
         self.isInitialLoadingHidden = isInitialLoadingHidden
         self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
         self.customer = customer
@@ -164,6 +166,102 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.billingAddress = billingAddress
         self.orderId = orderId
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
+    }
+    
+    public init(
+        merchantIdentifier: String? = nil,
+        klarnaSessionType: KlarnaSessionType? = nil,
+        klarnaPaymentDescription: String? = nil,
+        urlScheme: String? = nil,
+        urlSchemeIdentifier: String? = nil,
+        isFullScreenOnly: Bool = false,
+        hasDisabledSuccessScreen: Bool = false,
+        businessDetails: BusinessDetails? = nil,
+        directDebitHasNoAmount: Bool = false,
+        isInitialLoadingHidden: Bool = false,
+        localeData: LocaleData? = nil,
+        is3DSOnVaultingEnabled: Bool = true,
+        debugOptions: PrimerDebugOptions? = nil
+    ) {
+        self.klarnaSessionType = klarnaSessionType
+        self.klarnaPaymentDescription = klarnaPaymentDescription
+        self.merchantIdentifier = merchantIdentifier
+        self.urlScheme = urlScheme
+        self.urlSchemeIdentifier = urlSchemeIdentifier
+        self.isFullScreenOnly = isFullScreenOnly
+        self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
+        self.businessDetails = businessDetails
+        self.directDebitHasNoAmount = directDebitHasNoAmount
+        self.isInitialLoadingHidden = isInitialLoadingHidden
+        self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
+        self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled
+        self.debugOptions = debugOptions ?? PrimerDebugOptions()
+    }
+    
+    static func modify(withClientSession clientSession: ClientSession) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        settings.modify(withClientSession: clientSession)
+    }
+    
+    func logClientSessionWarning(for val: String) {
+        print("Information relating to the \(val) has been provided in both client-session creation and checkout initialization. Provided client-session information will be favored.")
+    }
+    
+    func modify(withClientSession clientSession: ClientSession) {
+        if let order = clientSession.order {
+            if self.orderId != nil ||
+                self.amount != nil ||
+                self.currency != nil ||
+                !(self.orderItems ?? []).isEmpty
+            {
+                logClientSessionWarning(for: "order")
+            }
+            self.orderId = order.id
+            self.amount = order.merchantAmount ?? order.totalOrderAmount
+            self.currency = order.currencyCode
+            self.countryCode = order.countryCode
+            
+            var orderItems: [OrderItem] = []
+            order.items?.forEach({ lineItem in
+                if let orderItem = try? lineItem.toOrderItem() {
+                    orderItems.append(orderItem)
+                }
+            })
+            self.orderItems = orderItems
+        }
+        
+        if let customer = clientSession.customer {
+            if self.customerId != nil ||
+                self.billingAddress != nil
+            {
+                logClientSessionWarning(for: "customer")
+            }
+            
+            self.customerId = customer.id
+            
+            self.customer = Customer(
+                firstName: customer.firstName,
+                lastName: customer.lastName,
+                email: customer.email,
+                homePhoneNumber: nil,
+                mobilePhoneNumber: customer.mobileNumber,
+                workPhoneNumber: nil,
+                billingAddress: nil)
+            
+            if let billingAddress = customer.billingAddress {
+                let address = Address(
+                    addressLine1: billingAddress.addressLine1,
+                    addressLine2: billingAddress.addressLine2,
+                    city: billingAddress.city,
+                    state: billingAddress.state,
+                    countryCode: billingAddress.countryCode?.rawValue,
+                    postalCode: billingAddress.postalCode)
+                
+                self.billingAddress = address
+                self.customer?.billingAddress = address
+                self.countryCode = address.countryCode != nil ? CountryCode(rawValue: address.countryCode!) : nil
+            }
+        }
     }
 }
 

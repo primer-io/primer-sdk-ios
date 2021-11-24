@@ -30,7 +30,7 @@ internal class BankSelectorViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = theme.colorTheme.main1
+        view.backgroundColor = theme.text.title.color
         view.translatesAutoresizingMaskIntoConstraints = false
         view.heightAnchor.constraint(equalToConstant: 120+(CGFloat(viewModel.banks.count)*viewModel.tableView.rowHeight)).isActive = true
         viewModel.tableView.isScrollEnabled = false

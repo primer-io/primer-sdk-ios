@@ -150,7 +150,6 @@ internal extension PrimerAPI {
         switch self {
         case .directDebitCreateMandate(let clientToken, _),
              .vaultDeletePaymentMethod(let clientToken, _),
-             .fetchConfiguration(let clientToken),
              .vaultFetchPaymentMethods(let clientToken),
              .payPalStartOrderSession(let clientToken, _),
              .payPalStartBillingAgreementSession(let clientToken, _),
@@ -166,6 +165,13 @@ internal extension PrimerAPI {
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
+        case .fetchConfiguration(let clientToken):
+            tmpHeaders["X-Api-Version"] = "2021-10-19"
+            
+            if let token = clientToken.accessToken {
+                tmpHeaders["Primer-Client-Token"] = token
+            }
+            
         case .poll(let clientToken, _):
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token

@@ -3,17 +3,17 @@
 import UIKit
 
 internal class VaultedPaymentInstrumentCell: UITableViewCell {
-    
+
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private(set) var paymentMethodToken: PaymentMethodToken!
     var isDeleting: Bool = false {
         didSet {
             if isDeleting {
-                checkmarmImageView.image = ImageName.delete.image
-                checkmarmImageView.isHidden = false
+                checkmarkImageView.image = ImageName.delete.image
+                checkmarkImageView.isHidden = false
             } else {
-                checkmarmImageView.image = ImageName.check2.image
-                checkmarmImageView.isHidden = !isEnabled
+                checkmarkImageView.image = ImageName.check2.image
+                checkmarkImageView.isHidden = !isEnabled
             }
         }
     }
@@ -26,12 +26,12 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
     private var last4DigitsLabel = UILabel()
     private var expiryDateLabel = UILabel()
     private var border = PrimerView()
-    private var checkmarmImageView = UIImageView()
+    private var checkmarkImageView = UIImageView()
     
     var isEnabled: Bool = false {
         didSet {
-            checkmarmImageView.image = ImageName.check2.image
-            checkmarmImageView.isHidden = !isEnabled
+            checkmarkImageView.image = ImageName.check2.image
+            checkmarkImageView.isHidden = !isEnabled
         }
     }
     
@@ -75,68 +75,69 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
             verticalRightStackView.addArrangedSubview(expiryDateLabel)
         }
 
-        if checkmarmImageView.superview == nil {
+        if checkmarkImageView.superview == nil {
             let checkmarkContainerView = UIView()
             checkmarkContainerView.translatesAutoresizingMaskIntoConstraints = false
             checkmarkContainerView.widthAnchor.constraint(equalToConstant: 14).isActive = true
             checkmarkContainerView.heightAnchor.constraint(equalToConstant: 22).isActive = true
             horizontalStackView.addArrangedSubview(checkmarkContainerView)
 
-            checkmarkContainerView.addSubview(checkmarmImageView)
-            checkmarmImageView.translatesAutoresizingMaskIntoConstraints = false
-            checkmarmImageView.pin(view: checkmarkContainerView)
+            checkmarkContainerView.addSubview(checkmarkImageView)
+            checkmarkImageView.translatesAutoresizingMaskIntoConstraints = false
+            checkmarkImageView.pin(view: checkmarkContainerView)
         }
     }
-    
+
     func configure(paymentMethodToken: PaymentMethodToken, isDeleting: Bool) {
         self.paymentMethodToken = paymentMethodToken
         self.isDeleting = isDeleting
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        isEnabled = viewModel.selectedId == paymentMethodToken.token ?? ""
-        
+        isEnabled = viewModel.selectedId == paymentMethodToken.token
+
         horizontalStackView.axis = .horizontal
         horizontalStackView.alignment = .fill
         horizontalStackView.spacing = 16
-        
+
         verticalLeftStackView.axis = .vertical
         verticalLeftStackView.alignment = .fill
         verticalLeftStackView.distribution = .fillEqually
         verticalLeftStackView.spacing = 0
-        
+
         verticalRightStackView.axis = .vertical
         verticalRightStackView.alignment = .fill
         verticalRightStackView.distribution = .fillEqually
         verticalRightStackView.spacing = 0
-        
+
         cardNetworkImageView.image = paymentMethodToken.cardButtonViewModel?.imageName.image
         cardNetworkImageView.contentMode = .scaleAspectFit
-        
-        checkmarmImageView.image = isDeleting ? ImageName.delete.image?.withRenderingMode(.alwaysTemplate) : ImageName.check2.image?.withRenderingMode(.alwaysTemplate)
-        checkmarmImageView.tintColor = theme.colorTheme.tint1
-        checkmarmImageView.contentMode = .scaleAspectFit
-        checkmarmImageView.isHidden = isDeleting ? false : !isEnabled
-        
+
+        checkmarkImageView.image = isDeleting ? ImageName.delete.image?.withRenderingMode(.alwaysTemplate) : ImageName.check2.image?.withRenderingMode(.alwaysTemplate)
+        checkmarkImageView.tintColor = theme.paymentMethodButton.border.color(for: .selected)
+        checkmarkImageView.contentMode = .scaleAspectFit
+        checkmarkImageView.isHidden = isDeleting ? false : !isEnabled
+
+        let textColor = theme.paymentMethodButton.text.color
         cardNetworkLabel.text = paymentMethodToken.cardButtonViewModel?.network
         cardNetworkLabel.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        cardNetworkLabel.textColor = theme.colorTheme.text1
-        
+        cardNetworkLabel.textColor = textColor
+
         cardholderNameLabel.text = paymentMethodToken.cardButtonViewModel?.cardholder
         cardholderNameLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
-        cardholderNameLabel.textColor = theme.colorTheme.text1
-        
+        cardholderNameLabel.textColor = textColor
+
         last4DigitsLabel.text = paymentMethodToken.cardButtonViewModel?.last4
         last4DigitsLabel.textAlignment = .right
         last4DigitsLabel.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        last4DigitsLabel.textColor = theme.colorTheme.text1
-        
+        last4DigitsLabel.textColor = textColor
+
         expiryDateLabel.text = paymentMethodToken.cardButtonViewModel?.expiry
         expiryDateLabel.textAlignment = .right
         expiryDateLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
-        expiryDateLabel.textColor = theme.colorTheme.text1
-        
-        contentView.backgroundColor = theme.colorTheme.main1
+        expiryDateLabel.textColor = textColor
+
+        contentView.backgroundColor = theme.view.backgroundColor
     }
 
 }
@@ -152,57 +153,51 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         }
     }
     private var tableView = UITableView()
-    
+
     weak var delegate: ReloadDelegate?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        title = theme.content.vaultPaymentMethodView.mainTitleText
-
         rightBarButton = UIButton()
-        rightBarButton.setTitle(theme.content.vaultPaymentMethodView.editButtonText, for: .normal)
-        rightBarButton.setTitleColor(theme.colorTheme.main1, for: .normal)
+        rightBarButton.setTitle(Content.VaultView.editLabel, for: .normal)
+        rightBarButton.setTitleColor(theme.text.title.color, for: .normal)
         rightBarButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
-        
         view.addSubview(tableView)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.pin(view: view)
         tableView.accessibilityIdentifier = "payment_methods_table_view"
-        tableView.backgroundColor = theme.colorTheme.main1
+        tableView.backgroundColor = theme.view.backgroundColor
         tableView.rowHeight = 46
-//        tableView.tableFooterView = UIView()
         tableView.alwaysBounceVertical = false
         tableView.register(VaultedPaymentInstrumentCell.self, forCellReuseIdentifier: "VaultedPaymentInstrumentCell")
-        
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        viewModel.reloadVault { [weak self] _ in
+        viewModel.reloadVault { _ in
             
         }
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         (parent as? PrimerContainerViewController)?.mockedNavigationBar.rightBarButton = rightBarButton
     }
-    
+
     @objc
     func editButtonTapped(_ sender: UIButton) {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         isDeleting = !isDeleting
-        rightBarButton.setTitle(isDeleting ? "Cancel" : theme.content.vaultPaymentMethodView.editButtonText, for: .normal)
+        let title = isDeleting ? "Cancel" : Content.VaultView.editLabel
+        rightBarButton.setTitle(title, for: .normal)
     }
-    
+
     private func deletePaymentMethod(_ paymentMethodToken: String) {
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         viewModel.deletePaymentMethod(with: paymentMethodToken, and: { [weak self] _ in
             DispatchQueue.main.async {
                 self?.delegate?.reload()
                 self?.tableView.reloadData()
-                
                 // Going back if no payment method remains
                 if viewModel.paymentMethods.isEmpty {
                     Primer.shared.primerRootVC?.popViewController()
@@ -210,39 +205,41 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
             }
         })
     }
-    
 }
 
 extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITableViewDelegate {
-    
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-    
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 64.0
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         // That's actually payment instruments
         return viewModel.paymentMethods.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         let paymentMethod = viewModel.paymentMethods[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "VaultedPaymentInstrumentCell", for: indexPath) as! VaultedPaymentInstrumentCell
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: "VaultedPaymentInstrumentCell",
+            for: indexPath
+        ) as! VaultedPaymentInstrumentCell
         cell.configure(paymentMethodToken: paymentMethod, isDeleting: isDeleting)
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         let paymentMethod = viewModel.paymentMethods[indexPath.row]
-        
+
         if !isDeleting {
-            viewModel.selectedId = paymentMethod.token ?? ""
+            viewModel.selectedId = paymentMethod.token
             tableView.reloadData()
             // It will reload the payment instrument on the Universal Checkout view.
             delegate?.reload()
@@ -274,15 +271,13 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
                                                          comment: "Delete - Alert button delete"),
                                 style: .destructive,
                                 handler: { [weak self] _ in
-                                    self?.deletePaymentMethod(paymentMethod.token ?? "")
+                                    self?.deletePaymentMethod(paymentMethod.token)
                                 }))
 
             alert.show()
         }
-        
         tableView.reloadData()
     }
-    
 }
 
 #endif

@@ -14,16 +14,7 @@ extension MerchantCheckoutViewController {
     // MARK: - PRIMER HELPERS
     
     internal func fetchPaymentMethods() {
-        Primer.shared.fetchVaultedPaymentMethods { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .failure(let err):
-                    print("Error: \(err)")
-                case .success(let tokens):
-                    self?.paymentMethodsDataSource = tokens
-                }
-            }
-        }
+
     }
     
     internal func presentPrimerOptions(_ index: Int) {
@@ -93,19 +84,7 @@ extension MerchantCheckoutViewController {
     }
     
     internal func generatePrimerTheme() -> PrimerTheme {
-        if #available(iOS 13.0, *) {
-            return PrimerTheme(
-                cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
-                colorTheme: PrimerDefaultTheme(),
-                darkTheme: PrimerDarkTheme(),
-                layout: PrimerLayout(showTopTitle: true, textFieldHeight: 40))
-        } else {
-            return PrimerTheme(
-                cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
-                colorTheme: PrimerDefaultTheme(),
-                layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
-                textFieldTheme: .outlined)
-        }
+        return PrimerTheme()
     }
     
     internal func generateAmountAndOrderItems() -> (Int, [OrderItem]) {
@@ -121,15 +100,14 @@ extension MerchantCheckoutViewController {
     
     internal func generateBusinessDetails() -> BusinessDetails {
         return BusinessDetails(
-            name: "My Business",
-            address: Address(
+            name: "My business",
+            address: PrimerSDK.Address(
                 addressLine1: "107 Rue",
                 addressLine2: nil,
                 city: "Paris",
                 state: nil,
-                countryCode: "FR",
-                postalCode: "75001"
-            )
+                countryCode: CountryCode.fr.rawValue,
+                postalCode: "75001")
         )
     }
     

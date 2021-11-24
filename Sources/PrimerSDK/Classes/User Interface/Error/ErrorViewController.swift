@@ -24,15 +24,20 @@ internal class ErrorViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
-        
+
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        rightBarButton = UIBarButtonItem(title: "Done", style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
-        rightBarButton.tintColor = theme.colorTheme.main1
-        icon.tintColor = theme.colorTheme.error1
+        rightBarButton = UIBarButtonItem(
+            title: "Done",
+            style: UIBarButtonItem.Style.plain,
+            target: self,
+            action: #selector(close)
+        )
+        rightBarButton.tintColor = theme.text.system.color
+        icon.tintColor = theme.text.error.color
         icon.contentMode = .scaleAspectFit
-        
+
         view.addSubview(icon)
         view.addSubview(message)
 
@@ -42,13 +47,13 @@ internal class ErrorViewController: PrimerViewController {
         anchorMessage()
 
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
         (parent as? PrimerContainerViewController)?.navigationItem.rightBarButtonItem = rightBarButton
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
