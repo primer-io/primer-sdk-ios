@@ -19,6 +19,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Adyen Ali Pay"
         case .adyenGiropay:
             return "Giropay"
+        case .buckarooEps:
+            return "Buckaroo EPS"
         case .buckarooIdeal:
             return "Buckaroo iDeal"
         case .hoolah:
@@ -69,6 +71,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenMobilePay,
                 .adyenVipps:
             return nil
+        case .buckarooEps:
+            return "EPS"
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -116,6 +120,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
         case .adyenGiropay:
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
+        case .buckarooEps:
+            return .blue
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
         case .mollieBankcontact,
@@ -162,6 +168,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLIdeal,
                 .payNLPayconiq:
             return nil
+        case .buckarooEps:
+            return .white
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -176,6 +184,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
+                .buckarooEps,
                 .buckarooIdeal,
                 .hoolah,
                 .mollieIdeal,
@@ -200,6 +209,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
+                .buckarooEps,
                 .buckarooIdeal,
                 .hoolah,
                 .mollieIdeal,
@@ -219,6 +229,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
         case .adyenAlipay,
+                .buckarooEps,
                 .buckarooIdeal,
                 .hoolah,
                 .mollieIdeal,

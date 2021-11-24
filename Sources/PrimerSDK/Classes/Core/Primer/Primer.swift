@@ -240,6 +240,9 @@ public class Primer {
         case (.applePay, .checkout):
             flow = .checkoutWithApplePay
             
+        case (.buckarooEps, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooEps)
+            
         case (.buckarooIdeal, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooIdeal)
             
@@ -290,6 +293,7 @@ public class Primer {
             (.adyenDotPay, .vault),
             (.adyenGiropay, .vault),
             (.adyenIDeal, .vault),
+            (.buckarooEps, .vault),
             (.buckarooIdeal, .vault),
             (.hoolah, .vault),
             (.payNLIdeal, .vault),
