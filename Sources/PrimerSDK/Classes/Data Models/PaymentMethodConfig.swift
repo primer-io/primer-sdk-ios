@@ -90,12 +90,13 @@ struct PaymentMethodConfig: Codable {
             .adyenGiropay,
             .buckarooEps,
             .buckarooIdeal,
+            .buckarooSofort,
             .mollieBankcontact,
             .mollieIdeal,
             .payNLBancontact,
             .payNLGiropay,
             .payNLPayconiq,
-            .adyenSofortBanking,
+            .adyenSofort,
             .adyenTrustly,
             .adyenTwint
         ]
@@ -231,7 +232,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case adyenGiropay
     case adyenIDeal
     case adyenMobilePay
-    case adyenSofortBanking
+    case adyenSofort
     case adyenTrustly
     case adyenTwint
     case adyenVipps
@@ -239,6 +240,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case applePay
     case buckarooEps
     case buckarooIdeal
+    case buckarooSofort
     case goCardlessMandate
     case googlePay
     case hoolah
@@ -265,8 +267,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .adyenIDeal
         case "ADYEN_MOBILEPAY":
             self = .adyenMobilePay
-        case "ADYEN_SOFORT_BANKING":
-            self = .adyenSofortBanking
+        case "ADYEN_SOFORT":
+            self = .adyenSofort
         case "ADYEN_TRUSTLY":
             self = .adyenTrustly
         case "ADYEN_TWINT":
@@ -281,6 +283,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .buckarooEps
         case "BUCKAROO_IDEAL":
             self = .buckarooIdeal
+        case "BUCKAROO_SOFORT":
+            self = .buckarooSofort
         case "GOCARDLESS":
             self = .goCardlessMandate
         case "GOOGLE_PAY":
@@ -322,8 +326,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "ADYEN_IDEAL"
         case .adyenMobilePay:
             return "ADYEN_MOBILEPAY"
-        case .adyenSofortBanking:
-            return "ADYEN_SOFORT_BANKING"
+        case .adyenSofort:
+            return "ADYEN_SOFORT"
         case .adyenTrustly:
             return "ADYEN_TRUSTLY"
         case .adyenTwint:
@@ -338,6 +342,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "BUCKAROO_EPS"
         case .buckarooIdeal:
             return "BUCKAROO_IDEAL"
+        case .buckarooSofort:
+            return "BUCKAROO_SOFORT"
         case .goCardlessMandate:
             return "GOCARDLESS"
         case .googlePay:
@@ -374,13 +380,14 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .adyenGiropay,
                 .adyenIDeal,
                 .adyenMobilePay,
-                .adyenSofortBanking,
+                .adyenSofort,
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
                 .applePay,
                 .buckarooEps,
                 .buckarooIdeal,
+                .buckarooSofort,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,

@@ -23,6 +23,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Buckaroo EPS"
         case .buckarooIdeal:
             return "Buckaroo iDeal"
+        case .buckarooSofort:
+            return "Buckaroo Sofort"
         case .hoolah:
             return "Hoolah"
         case .mollieBankcontact:
@@ -37,7 +39,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Pay NL Ideal"
         case .payNLPayconiq:
             return "Pay NL Payconiq"
-        case .adyenSofortBanking:
+        case .adyenSofort:
             return "Sofort"
         case .adyenTwint:
             return "Twint"
@@ -58,6 +60,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .buckarooIdeal,
+                .buckarooSofort,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,
@@ -65,7 +68,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
-                .adyenSofortBanking,
+                .adyenSofort,
                 .adyenTwint,
                 .adyenTrustly,
                 .adyenMobilePay,
@@ -85,6 +88,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .adyenGiropay:
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .buckarooSofort,
+                .adyenSofort:
+            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .mollieBankcontact,
@@ -98,8 +104,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .payNLPayconiq:
             return UIImage(named: "payconiq-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .adyenSofortBanking:
-            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .adyenTwint:
             return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenTrustly:
@@ -120,6 +124,17 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
         case .adyenGiropay:
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
+        case .adyenSofort,
+                .buckarooSofort:
+            return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
+        case .adyenMobilePay:
+            return UIColor(red: 90.0/255, green: 120.0/255, blue: 255.0/255, alpha: 1.0)
+        case .adyenTrustly:
+            return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
+        case .adyenTwint:
+            return .black
+        case .adyenVipps:
+            return UIColor(red: 255.0/255, green: 91.0/255, blue: 36.0/255, alpha: 1.0)
         case .buckarooEps:
             return .blue
         case .hoolah:
@@ -135,16 +150,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
         case .payNLPayconiq:
             return UIColor(red: 255.0/255, green: 71.0/255, blue: 133.0/255, alpha: 1.0)
-        case .adyenSofortBanking:
-            return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
-        case .adyenTwint:
-            return .black
-        case .adyenTrustly:
-            return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
-        case .adyenMobilePay:
-            return UIColor(red: 90.0/255, green: 120.0/255, blue: 255.0/255, alpha: 1.0)
-        case .adyenVipps:
-            return UIColor(red: 255.0/255, green: 91.0/255, blue: 36.0/255, alpha: 1.0)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -160,6 +165,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTwint,
                 .adyenVipps,
                 .buckarooIdeal,
+                .buckarooSofort,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,
@@ -186,6 +192,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenVipps,
                 .buckarooEps,
                 .buckarooIdeal,
+                .buckarooSofort,
                 .hoolah,
                 .mollieIdeal,
                 .payNLGiropay,
@@ -211,6 +218,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenVipps,
                 .buckarooEps,
                 .buckarooIdeal,
+                .buckarooSofort,
                 .hoolah,
                 .mollieIdeal,
                 .payNLGiropay,
@@ -231,12 +239,13 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .buckarooEps,
                 .buckarooIdeal,
+                .buckarooSofort,
                 .hoolah,
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
-                .adyenSofortBanking,
+                .adyenSofort,
                 .adyenMobilePay,
                 .adyenVipps:
             return .white
