@@ -90,7 +90,7 @@ class PrimerNavigationBar: PrimerView {
         let image = UIImage(named: "back", in: Bundle.primerResources, compatibleWith: nil)
         let customColorImage = image?.withRenderingMode(.alwaysTemplate)
         backButton.setImage(customColorImage, for: .normal)
-        backButton.tintColor = theme.text.system.color
+        backButton.tintColor = theme.colors.primary
         backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
         leftView.addSubview(backButton)
         backButton.pin(view: leftView)
