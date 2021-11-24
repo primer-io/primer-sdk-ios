@@ -1,3 +1,7 @@
+#if canImport(UIKit)
+
+import UIKit
+
 internal enum ButtonType {
     case main, paymentMethod
 }
@@ -27,3 +31,5 @@ internal class ButtonTheme {
         colorStates.color(for: state)
     }
 }
+
+#endif

@@ -1,3 +1,7 @@
+#if canImport(UIKit)
+
+import UIKit
+
 internal enum InputType {
     case outlined, underlined, doublelined
 }
@@ -29,3 +33,5 @@ internal class InputTheme {
         self.inputType = inputType
     }
 }
+
+#endif

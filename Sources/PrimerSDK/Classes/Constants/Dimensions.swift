@@ -2,6 +2,7 @@ public struct PrimerDimensions {
     
     public static let cornerRadius: CGFloat = 0.0
     public static let safeArea: CGFloat = 10.0
+    public static let zero: CGFloat = CGFloat.zero
     
     public struct Component {
         public static let cornerRadius: CGFloat = 4.0

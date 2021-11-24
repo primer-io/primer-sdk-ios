@@ -32,7 +32,7 @@ class PrimerThemeTests: XCTestCase {
     }
     
     func test_view_theme_defaults_correctly() throws {
-        let theme = data.view.theme(with: data)
+        let theme = data.view.theme(for: .main, with: data)
         XCTAssert(theme.safeMargin == PrimerDimensions.safeArea)
         XCTAssert(theme.cornerRadius == PrimerDimensions.cornerRadius)
         XCTAssert(theme.backgroundColor == data.colors.light)

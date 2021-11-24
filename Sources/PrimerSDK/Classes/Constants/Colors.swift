@@ -34,4 +34,5 @@ public struct PrimerColors {
     
     // MARK: special cases
     static let klarnaPink = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
+    static let blurredBackground = UIColor.black.withAlphaComponent(0.4)
 }

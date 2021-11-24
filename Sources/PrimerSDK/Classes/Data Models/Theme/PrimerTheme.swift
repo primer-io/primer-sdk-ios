@@ -11,6 +11,7 @@ import UIKit
 
 protocol PrimerThemeProtocol {
     var colors: ColorSwatch { get }
+    var blurView: ViewTheme { get }
     var view: ViewTheme { get }
     var text: TextStyle { get }
     var paymentMethodButton: ButtonTheme { get }
@@ -53,7 +54,8 @@ public class PrimerTheme: PrimerThemeProtocol {
         error: data.colors.error
     )
     
-    internal lazy var view = data.view.theme(with: data)
+    internal lazy var blurView = data.blurView.theme(for: .blurredBackground, with: data)
+    internal lazy var view = data.view.theme(for: .main, with: data)
     
     internal lazy var text = TextStyle(
         body: data.text.theme(for: .body, with: data),

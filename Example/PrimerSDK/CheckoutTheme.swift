@@ -48,6 +48,7 @@ struct CheckoutTheme {
         data.colors.primary = .black
         data.colors.gray = UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0)
         data.colors.light = .white
+        data.blurView.backgroundColor = .black.withAlphaComponent(0.4)
         data.view.backgroundColor = .white
         data.text.title = PrimerThemeData.Text(defaultColor: .black)
         data.text.amountLabel = PrimerThemeData.Text(defaultColor: .black)

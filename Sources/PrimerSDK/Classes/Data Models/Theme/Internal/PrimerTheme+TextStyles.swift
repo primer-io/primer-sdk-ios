@@ -1,3 +1,7 @@
+#if canImport(UIKit)
+
+import UIKit
+
 internal enum TextType {
     case body, title, subtitle, amountLabel, system, error
 }
@@ -31,3 +35,5 @@ internal class TextTheme {
         self.fontSize = fontSize
     }
 }
+
+#endif

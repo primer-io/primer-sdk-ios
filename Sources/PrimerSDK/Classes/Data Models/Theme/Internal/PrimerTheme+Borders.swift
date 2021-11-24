@@ -1,3 +1,7 @@
+#if canImport(UIKit)
+
+import UIKit
+
 internal class BorderTheme {
     let colorStates: StatefulColor
     let width: CGFloat
@@ -11,3 +15,5 @@ internal class BorderTheme {
         return colorStates.color(for: state)
     }
 }
+
+#endif

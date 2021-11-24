@@ -1,8 +1,11 @@
+#if canImport(UIKit)
+
 import UIKit
 
 public class PrimerThemeData {
     public var colors: ColorSwatch
     public var dimensions: Dimensions
+    public var blurView: View
     public var view: View
     public var text: TextStyle
     public var buttons: ButtonStyle
@@ -11,6 +14,7 @@ public class PrimerThemeData {
     public init(
         colors: ColorSwatch = ColorSwatch(),
         dimensions: Dimensions = Dimensions(),
+        blurView: View = View(),
         view: View = View(),
         text: TextStyle = TextStyle(),
         buttons: ButtonStyle = ButtonStyle(),
@@ -18,6 +22,7 @@ public class PrimerThemeData {
     ) {
         self.colors = colors
         self.dimensions = dimensions
+        self.blurView = blurView
         self.view = view
         self.text = text
         self.buttons = buttons
@@ -132,12 +137,21 @@ public class PrimerThemeData {
             self.safeMargin = safeMargin
         }
         
-        internal func theme(with data: PrimerThemeData) -> ViewTheme {
-            ViewTheme(
-                backgroundColor: data.view.backgroundColor ?? data.colors.light,
-                cornerRadius: data.view.cornerRadius ?? PrimerDimensions.cornerRadius,
-                safeMargin: data.view.safeMargin ?? PrimerDimensions.safeArea
-            )
+        internal func theme(for viewType: ViewType, with data: PrimerThemeData) -> ViewTheme {
+            switch viewType {
+            case .blurredBackground:
+                return ViewTheme(
+                    backgroundColor: data.blurView.backgroundColor ?? PrimerColors.blurredBackground,
+                    cornerRadius: PrimerDimensions.zero,
+                    safeMargin: PrimerDimensions.zero
+                )
+            case .main:
+                return ViewTheme(
+                    backgroundColor: data.view.backgroundColor ?? data.colors.light,
+                    cornerRadius: data.view.cornerRadius ?? PrimerDimensions.cornerRadius,
+                    safeMargin: data.view.safeMargin ?? PrimerDimensions.safeArea
+                )
+            }
         }
     }
     
@@ -315,3 +329,4 @@ public class PrimerThemeData {
         }
     }
 }
+#endif

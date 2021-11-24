@@ -1,3 +1,7 @@
+#if canImport(UIKit)
+
+import UIKit
+
 internal enum ColorState {
     case enabled, disabled, selected
 }
@@ -38,3 +42,5 @@ internal class ColorSwatch {
         self.error = error
     }
 }
+
+#endif
