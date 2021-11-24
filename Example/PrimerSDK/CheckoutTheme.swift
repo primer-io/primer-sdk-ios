@@ -7,6 +7,7 @@
 //
 
 import PrimerSDK
+import UIKit
 
 private let tropical1 = UIColor(red: 0/255, green: 112/255, blue: 67/255, alpha: 1)
 private let tropical2 = UIColor(red: 255/255, green: 170/255, blue: 176/255, alpha: 1)
