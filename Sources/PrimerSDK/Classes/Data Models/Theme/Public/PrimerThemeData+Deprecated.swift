@@ -1,3 +1,7 @@
+#if canImport(UIKit)
+
+import UIKit
+
 public enum PrimerTextFieldTheme {
     case outlined, underlined, doublelined
 }
@@ -217,3 +221,5 @@ public struct PrimerDarkTheme: ColorTheme {
         self.success1 = success1
     }
 }
+
+#endif

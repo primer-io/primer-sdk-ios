@@ -1,3 +1,7 @@
+#if canImport(UIKit)
+
+import UIKit
+
 public struct PrimerDimensions {
     
     public static let cornerRadius: CGFloat = 0.0
@@ -19,3 +23,5 @@ public struct PrimerDimensions {
         public static let buttonLabel = 14
     }
 }
+
+#endif
