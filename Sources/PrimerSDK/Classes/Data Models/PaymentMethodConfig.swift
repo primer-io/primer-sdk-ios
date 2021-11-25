@@ -88,7 +88,9 @@ struct PaymentMethodConfig: Codable {
             .adyenVipps,
             .adyenAlipay,
             .adyenGiropay,
+            .buckarooBancontact,
             .buckarooEps,
+            .buckarooGiropay,
             .buckarooIdeal,
             .buckarooSofort,
             .mollieBankcontact,
@@ -238,7 +240,9 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case adyenVipps
     case apaya
     case applePay
+    case buckarooBancontact
     case buckarooEps
+    case buckarooGiropay
     case buckarooIdeal
     case buckarooSofort
     case goCardlessMandate
@@ -279,8 +283,12 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .apaya
         case "APPLE_PAY":
             self = .applePay
+        case "BUCKAROO_BANCONTACT":
+            self = .buckarooBancontact
         case "BUCKAROO_EPS":
             self = .buckarooEps
+        case "BUCKAROO_GIROPAY":
+            self = .buckarooGiropay
         case "BUCKAROO_IDEAL":
             self = .buckarooIdeal
         case "BUCKAROO_SOFORT":
@@ -338,8 +346,12 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "APAYA"
         case .applePay:
             return "APPLE_PAY"
+        case .buckarooBancontact:
+            return "BUCKAROO_BANCONTACT"
         case .buckarooEps:
             return "BUCKAROO_EPS"
+        case .buckarooGiropay:
+            return "BUCKAROO_GIROPAY"
         case .buckarooIdeal:
             return "BUCKAROO_IDEAL"
         case .buckarooSofort:
@@ -385,7 +397,9 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .adyenTwint,
                 .adyenVipps,
                 .applePay,
+                .buckarooBancontact,
                 .buckarooEps,
+                .buckarooGiropay,
                 .buckarooIdeal,
                 .buckarooSofort,
                 .hoolah,

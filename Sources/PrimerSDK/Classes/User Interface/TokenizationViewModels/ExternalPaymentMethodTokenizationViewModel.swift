@@ -19,8 +19,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Adyen Ali Pay"
         case .adyenGiropay:
             return "Giropay"
+        case .buckarooBancontact:
+            return "Buckaroo Bancontact"
         case .buckarooEps:
             return "Buckaroo EPS"
+        case .buckarooGiropay:
+            return "Buckaroo Giropay"
         case .buckarooIdeal:
             return "Buckaroo iDeal"
         case .buckarooSofort:
@@ -59,9 +63,11 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
+                .buckarooBancontact,
+                .buckarooEps,
+                .buckarooGiropay,
                 .buckarooIdeal,
                 .buckarooSofort,
-                .buckarooEps,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,
@@ -85,32 +91,34 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay:
             return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .adyenGiropay:
-            return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .buckarooEps:
-            return UIImage(named: "eps-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .buckarooSofort,
-                .adyenSofort:
-            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .hoolah:
-            return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .mollieBankcontact,
+        case .buckarooBancontact,
+                .mollieBankcontact,
                 .payNLBancontact:
             return UIImage(named: "bancontact-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .buckarooEps:
+            return UIImage(named: "eps-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenGiropay,
+                .buckarooGiropay,
+                .payNLGiropay:
+            return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .hoolah:
+            return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLIdeal,
                 .buckarooIdeal,
                 .mollieIdeal:
             return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .payNLGiropay:
-            return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .payNLPayconiq:
-            return UIImage(named: "payconiq-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .adyenTwint:
-            return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenTrustly:
-            return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenMobilePay:
             return UIImage(named: "mobile-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .payNLPayconiq:
+            return UIImage(named: "payconiq-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .buckarooSofort,
+                .adyenSofort:
+            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .adyenTrustly:
+            return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenTwint:
+            return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
+        
         case .adyenVipps:
             return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
@@ -123,7 +131,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay:
             return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
-        case .adyenGiropay:
+        case .adyenGiropay,
+                .buckarooGiropay:
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
         case .adyenSofort,
                 .buckarooSofort:
@@ -140,7 +149,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return .white
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
-        case .mollieBankcontact,
+        case .buckarooBancontact,
+                .mollieBankcontact,
                 .payNLBancontact:
             return .white
         case .payNLIdeal,
@@ -165,9 +175,11 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
-                .buckarooIdeal,
-                .buckarooSofort,
+                .buckarooBancontact,
                 .buckarooEps,
+                .buckarooIdeal,
+                .buckarooGiropay,
+                .buckarooSofort,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,
@@ -191,6 +203,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTwint,
                 .adyenVipps,
                 .buckarooIdeal,
+                .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
                 .mollieIdeal,
@@ -198,7 +211,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLIdeal,
                 .payNLPayconiq:
             return 0.0
-        case .buckarooEps,
+        case .buckarooBancontact,
+                .buckarooEps,
                 .mollieBankcontact,
                 .payNLBancontact:
             return 1.0
@@ -217,6 +231,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTwint,
                 .adyenVipps,
                 .buckarooIdeal,
+                .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
                 .mollieIdeal,
@@ -224,7 +239,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLIdeal,
                 .payNLPayconiq:
             return nil
-        case .buckarooEps,
+        case .buckarooBancontact,
+                .buckarooEps,
                 .mollieBankcontact,
                 .payNLBancontact:
             return .black
@@ -237,8 +253,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
         case .adyenAlipay,
+                .buckarooBancontact,
                 .buckarooEps,
                 .buckarooIdeal,
+                .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
                 .mollieIdeal,
