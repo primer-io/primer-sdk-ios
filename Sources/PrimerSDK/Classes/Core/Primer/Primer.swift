@@ -205,6 +205,7 @@ public class Primer {
         show(flow: .defaultWithVault)
     }
     
+    // swiftlint:disable cyclomatic_complexity
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
         switch (paymentMethod, intent) {
         case (.adyenAlipay, .checkout):
@@ -328,6 +329,7 @@ public class Primer {
         presentingViewController = viewController
         show(flow: flow!)
     }
+    // swiftlint:enable cyclomatic_complexity
 
     /**
      Performs an asynchronous get call returning all the saved payment methods for the user ID specified in the settings object when instantiating Primer. Provide a completion handler to access the returned list of saved payment methods (these have already been added to Primer vault and can be sent directly to your backend to authorize or capture a payment)
