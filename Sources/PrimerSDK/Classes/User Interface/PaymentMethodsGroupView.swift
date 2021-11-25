@@ -36,7 +36,7 @@ class PaymentMethodsGroupView: PrimerView {
     }
     
     func render() {
-        backgroundColor = .black.withAlphaComponent(0.05)
+        backgroundColor = UIColor.black.withAlphaComponent(0.05)
         translatesAutoresizingMaskIntoConstraints = false
         layer.cornerRadius = 4.0
         clipsToBounds = true

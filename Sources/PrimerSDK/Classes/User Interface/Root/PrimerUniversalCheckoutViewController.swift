@@ -121,7 +121,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             let paymentMethodStackView = UIStackView()
             paymentMethodStackView.layer.cornerRadius = 4.0
             paymentMethodStackView.clipsToBounds = true
-            paymentMethodStackView.backgroundColor = .black.withAlphaComponent(0.05)
+            paymentMethodStackView.backgroundColor = UIColor.black.withAlphaComponent(0.05)
             paymentMethodStackView.axis = .vertical
             paymentMethodStackView.alignment = .fill
             paymentMethodStackView.distribution = .fill
