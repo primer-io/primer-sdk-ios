@@ -9,11 +9,6 @@
 import PrimerSDK
 import UIKit
 
-enum ClientSessionVersion: String {
-    case v2 = "2021-09-27"
-    case v3 = "2021-10-19"
-}
-
 class MerchantCheckoutViewController: UIViewController {
     
     class func instantiate(environment: Environment, customerId: String, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
@@ -75,61 +70,19 @@ class MerchantCheckoutViewController: UIViewController {
         super.viewDidLoad()
         title = "Primer [\(environment.rawValue)]"
         
-        address = PrimerSDK.Address(
-            firstName: "John",
-            lastName: "Smith",
-            addressLine1: "107 Rue",
-            addressLine2: nil,
-            city: "Paris",
-            postalCode: "75001",
-            state: nil,
-            countryCode: CountryCode.fr)
-        
-        customer = PrimerSDK.Customer(
-            id: customerId,
-            firstName: "John",
-            lastName: "Smith",
-            email: "john@primer.io",
-            mobileNumber: phoneNumber,
-            billingAddress: address,
-            shippingAddress: nil,
-            taxId: nil)
-        
         generalSettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
-            customerId: customerId,
-            amount: amount,
-            currency: currency,
-            countryCode: .se,
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "primer",
             urlSchemeIdentifier: "primer",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
-            businessDetails: BusinessDetails(
-                name: "Primer",
-                address: PrimerSDK.Address(
-                    firstName: "John",
-                    lastName: "Smith",
-                    addressLine1: "107 Rue",
-                    addressLine2: nil,
-                    city: "Paris",
-                    postalCode: "75001",
-                    state: nil,
-                    countryCode: CountryCode.fr)),
             directDebitHasNoAmount: false,
-            orderItems: [
-                try! OrderItem(name: "Fish", unitAmount: 100, quantity: 1, isPending: false),
-                try! OrderItem(name: "Beef", unitAmount: 200, quantity: 2, isPending: false),
-                try! OrderItem(name: "Chicken", unitAmount: nil, quantity: 3, isPending: true)
-            ],
             isInitialLoadingHidden: false,
             is3DSOnVaultingEnabled: true,
-            billingAddress: address,
-            orderId: "order id",
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
-            customer: customer)
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+        )
 
         Primer.shared.delegate = self
         self.configurePrimer()
@@ -138,20 +91,17 @@ class MerchantCheckoutViewController: UIViewController {
     
     func configurePrimer() {
         Primer.shared.configure(settings: generalSettings)
-        
-        let theme = generatePrimerTheme()
-        Primer.shared.configure(theme: theme)
+        Primer.shared.configure(theme: CheckoutTheme.primer)
     }
     
     // MARK: - ACTIONS
     
     @IBAction func addApayaButtonTapped(_ sender: Any) {
         vaultApayaSettings = PrimerSettings(
-            currency: .GBP,
             isFullScreenOnly: true,
             hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true,
-            customer: customer)
+            isInitialLoadingHidden: true
+        )
         
         Primer.shared.configure(settings: vaultApayaSettings)
         Primer.shared.showPaymentMethod(.apaya, withIntent: .vault, on: self)
@@ -160,10 +110,6 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func addCardButtonTapped(_ sender: Any) {
         let cardSettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
-            customerId: customerId,
-            amount: amount,
-            currency: currency,
-            countryCode: .se,
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "primer",
@@ -172,35 +118,9 @@ class MerchantCheckoutViewController: UIViewController {
             hasDisabledSuccessScreen: false,
             businessDetails: nil,
             directDebitHasNoAmount: false,
-            orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
-            ],
             isInitialLoadingHidden: true,
             is3DSOnVaultingEnabled: true,
-            billingAddress: PrimerSDK.Address(
-                addressLine1: "Line 1",
-                addressLine2: "Line 2",
-                city: "City",
-                postalCode: "15236",
-                state: "State",
-                countryCode: .gb),
-            orderId: "order id",
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
-            customer: PrimerSDK.Customer(
-                firstName: "John",
-                lastName: "Smith",
-                email: "john.smith@primer.io",
-                mobileNumber: nil,
-                billingAddress: PrimerSDK.Address(
-                    addressLine1: "1 Rue",
-                    addressLine2: "",
-                    city: "Paris",
-                    postalCode: "75001",
-                    state: "",
-                    countryCode: .gb)
-            )
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
         
         Primer.shared.configure(settings: cardSettings)
@@ -209,9 +129,6 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {
         vaultPayPalSettings = PrimerSettings(
-            customerId: customerId,
-            currency: currency,
-            countryCode: .se,
             urlScheme: "primer",
             urlSchemeIdentifier: "primer",
             hasDisabledSuccessScreen: true,
@@ -236,18 +153,7 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
         applePaySettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
-            customerId: customerId,
-            currency: currency,
-            countryCode: .se,
             hasDisabledSuccessScreen: true,
-            businessDetails: BusinessDetails(
-                name: "My Business",
-                address: address!),
-            orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
-            ],
             isInitialLoadingHidden: true
         )
         
@@ -280,7 +186,6 @@ class MerchantCheckoutViewController: UIViewController {
             amount: amount,
             currencyCode: currency.rawValue,
             customerId: "customer_id",
-//            customerCountryCode: .gb,
             metadata: nil,
             customer: Customer(
                 firstName: "Vagz",
@@ -312,13 +217,13 @@ class MerchantCheckoutViewController: UIViewController {
                     LineItem(
                         itemId: "item_id",
                         description: "Description",
-                        amount: 1000,
+                        amount: amount,
                         discountAmount: nil,
-                        quantity: 2,
+                        quantity: 1,
                         taxAmount: nil,
                         taxCode: nil)
                 ],
-                shipping: Shipping(amount: 100)),
+                shipping: Shipping(amount: 0)),
             paymentMethod: nil)
         
         do {

@@ -25,9 +25,11 @@ class PrimerNavigationBar: PrimerView {
     
     var rightBarButton: UIButton? {
         didSet {
-            rightBarButton?.tintColor = theme.colorTheme.tint1
-            rightBarButton?.setTitleColor(theme.colorTheme.tint1, for: .normal)
-            rightBarButton?.frame = CGRect(x: 0, y: 0, width: rightView.bounds.size.width, height: rightView.bounds.size.height)
+            rightBarButton?.tintColor = theme.text.system.color
+            rightBarButton?.setTitleColor(theme.text.system.color, for: .normal)
+            rightBarButton?.frame = CGRect(
+                x: 0, y: 0, width: rightView.bounds.size.width, height: rightView.bounds.size.height
+            )
             
             rightView.subviews.forEach { view in
                 view.removeFromSuperview()
@@ -62,7 +64,7 @@ class PrimerNavigationBar: PrimerView {
         self.init(frame: CGRect.zero)
         setup()
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 44.0))
         setup()
@@ -71,7 +73,7 @@ class PrimerNavigationBar: PrimerView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     @objc
     func backButtonTapped(_ sender: Any) {
         Primer.shared.primerRootVC?.popViewController()
@@ -80,13 +82,15 @@ class PrimerNavigationBar: PrimerView {
     private func setup() {
         translatesAutoresizingMaskIntoConstraints = false
         heightAnchor.constraint(equalToConstant: 44.0).isActive = true
-        backgroundColor = theme.colorTheme.main1
-        
+        backgroundColor = theme.view.backgroundColor
+
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         backButton.translatesAutoresizingMaskIntoConstraints = false
-        backButton.setImage(UIImage(named: "back", in: Bundle.primerResources, compatibleWith: nil), for: .normal)
-        backButton.tintColor = theme.colorTheme.tint1
+        let image = UIImage(named: "back", in: Bundle.primerResources, compatibleWith: nil)
+        let customColorImage = image?.withRenderingMode(.alwaysTemplate)
+        backButton.setImage(customColorImage, for: .normal)
+        backButton.tintColor = theme.colors.primary
         backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
         leftView.addSubview(backButton)
         backButton.pin(view: leftView)
@@ -94,14 +98,14 @@ class PrimerNavigationBar: PrimerView {
         backButton.isHidden = hidesBackButton
         
         addSubview(horizontalStackView)
-        
+
         horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
         horizontalStackView.pin(view: self, leading: 8.0, top: 0, trailing: -8.0, bottom: 0)
         horizontalStackView.alignment = .fill
         horizontalStackView.axis = .horizontal
         horizontalStackView.distribution = .fill
         horizontalStackView.spacing = 8.0
-        
+
         leftView.translatesAutoresizingMaskIntoConstraints = false
         leftView.widthAnchor.constraint(equalToConstant: 44).isActive = true
         leftView.heightAnchor.constraint(equalToConstant: 44).isActive = true
@@ -152,7 +156,7 @@ class PrimerNavigationBar: PrimerView {
             titleLabel!.text = title
             titleLabel!.backgroundColor = .clear
             titleLabel!.textAlignment = .center
-            titleLabel!.textColor = theme.colorTheme.text1
+            titleLabel!.textColor = theme.text.title.color
             titleLabel!.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
             centerStackView!.addArrangedSubview(titleLabel!)
         }

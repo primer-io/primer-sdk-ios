@@ -84,44 +84,7 @@ extension MerchantCheckoutViewController {
     }
     
     internal func generatePrimerTheme() -> PrimerTheme {
-        if #available(iOS 13.0, *) {
-            return PrimerTheme(
-                cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
-                colorTheme: PrimerDefaultTheme(),
-                darkTheme: PrimerDarkTheme(),
-                layout: PrimerLayout(showTopTitle: true, textFieldHeight: 40))
-        } else {
-            return PrimerTheme(
-                cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
-                colorTheme: PrimerDefaultTheme(),
-                layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
-                textFieldTheme: .outlined)
-        }
-    }
-    
-    internal func generateAmountAndOrderItems() -> (Int, [OrderItem]) {
-        let items = [try! OrderItem(name: "Rent scooter", unitAmount: amount, quantity: 1)]
-        var newAmount = 0
-        items.forEach { newAmount += (($0.unitAmount ?? 0) * $0.quantity)  }
-        
-        return (
-            amount,
-            [try! OrderItem(name: "Rent scooter", unitAmount: newAmount, quantity: 1)]
-        )
-    }
-    
-    internal func generateBusinessDetails() -> BusinessDetails {
-        return BusinessDetails(
-            name: "My Business",
-            address: PrimerSDK.Address(
-                addressLine1: "107 Rue",
-                addressLine2: nil,
-                city: "Paris",
-                postalCode: "75001",
-                state: nil,
-                countryCode: .fr
-            )
-        )
+        return PrimerTheme()
     }
     
 }

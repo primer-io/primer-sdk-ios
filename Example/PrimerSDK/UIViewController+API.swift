@@ -11,6 +11,11 @@ import UIKit
 
 // MARK: - API HELPER
 
+enum ClientSessionVersion: String {
+    case v2 = "2021-09-27"
+    case v3 = "2021-10-19"
+}
+
 struct PaymentRequest: Encodable {
     let environment: Environment
     let paymentMethod: String

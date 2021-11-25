@@ -53,7 +53,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonColor: UIColor? = {
         switch config.type {
         case .paymentCard:
-            return .white
+            return theme.paymentMethodButton.color(for: .enabled)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -63,7 +63,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonTitleColor: UIColor? = {
         switch config.type {
         case .paymentCard:
-            return .black
+            return theme.paymentMethodButton.text.color
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -73,7 +73,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonBorderWidth: CGFloat = {
         switch config.type {
         case .paymentCard:
-            return 1.0
+            return theme.paymentMethodButton.border.width
         default:
             assert(true, "Shouldn't end up in here")
             return 0.0
@@ -83,7 +83,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
         case .paymentCard:
-            return .black
+            return theme.paymentMethodButton.border.color(for: .enabled)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -93,7 +93,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
         case .paymentCard:
-            return .black
+            return theme.paymentMethodButton.iconColor
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -112,7 +112,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         let cardNumberField = PrimerCardNumberFieldView()
         cardNumberField.placeholder = "4242 4242 4242 4242"
         cardNumberField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cardNumberField.textColor = theme.colorTheme.text1
+        cardNumberField.textColor = theme.input.text.color
         cardNumberField.borderStyle = .none
         cardNumberField.delegate = self
         return cardNumberField
@@ -122,7 +122,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         let expiryDateField = PrimerExpiryDateFieldView()
         expiryDateField.placeholder = "02/22"
         expiryDateField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        expiryDateField.textColor = theme.colorTheme.text1
+        expiryDateField.textColor = theme.input.text.color
         expiryDateField.delegate = self
         return expiryDateField
     }()
@@ -131,7 +131,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         let cvvField = PrimerCVVFieldView()
         cvvField.placeholder = "123"
         cvvField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cvvField.textColor = theme.colorTheme.text1
+        cvvField.textColor = theme.input.text.color
         cvvField.delegate = self
         return cvvField
     }()
@@ -140,7 +140,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         let cardholderNameField = PrimerCardholderNameFieldView()
         cardholderNameField.placeholder = "John Smith"
         cardholderNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cardholderNameField.textColor = theme.colorTheme.text1
+        cardholderNameField.textColor = theme.input.text.color
         cardholderNameField.delegate = self
         return cardholderNameField
     }()
@@ -150,7 +150,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cardNumberContainerView.fieldView = cardNumberField
         cardNumberContainerView.placeholderText = "Card number"
         cardNumberContainerView.setup()
-        cardNumberContainerView.tintColor = theme.colorTheme.tint1
+        cardNumberContainerView.tintColor = theme.input.border.color(for: .selected)
         return cardNumberContainerView
     }()
     internal lazy var expiryDateContainerView: PrimerCustomFieldView = {
@@ -158,7 +158,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         expiryDateContainerView.fieldView = expiryDateField
         expiryDateContainerView.placeholderText = "Expiry"
         expiryDateContainerView.setup()
-        expiryDateContainerView.tintColor = theme.colorTheme.tint1
+        expiryDateContainerView.tintColor = theme.input.border.color(for: .selected)
         return expiryDateContainerView
     }()
     internal lazy var cvvContainerView: PrimerCustomFieldView = {
@@ -166,7 +166,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cvvContainerView.fieldView = cvvField
         cvvContainerView.placeholderText = "CVV/CVC"
         cvvContainerView.setup()
-        cvvContainerView.tintColor = theme.colorTheme.tint1
+        cvvContainerView.tintColor = theme.input.border.color(for: .selected)
         return cvvContainerView
     }()
     internal lazy var cardholderNameContainerView: PrimerCustomFieldView = {
@@ -174,7 +174,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cardholderNameContainerView.fieldView = cardholderNameField
         cardholderNameContainerView.placeholderText = "Name"
         cardholderNameContainerView.setup()
-        cardholderNameContainerView.tintColor = theme.colorTheme.tint1
+        cardholderNameContainerView.tintColor = theme.input.border.color(for: .selected)
         return cardholderNameContainerView
     }()
     
@@ -202,8 +202,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         submitButton.accessibilityIdentifier = "submit_btn"
         submitButton.isEnabled = false
         submitButton.setTitle(buttonTitle, for: .normal)
-        submitButton.setTitleColor(theme.colorTheme.text2, for: .normal)
-        submitButton.backgroundColor = theme.colorTheme.disabled1
+        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
+        submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
         submitButton.layer.cornerRadius = 4
         submitButton.clipsToBounds = true
         submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
@@ -386,10 +386,10 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
            cardholderNameField.isTextValid
         {
             submitButton.isEnabled = true
-            submitButton.backgroundColor = theme.colorTheme.main2
+            submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
         } else {
             submitButton.isEnabled = false
-            submitButton.backgroundColor = theme.colorTheme.disabled1
+            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
         }
     }
     

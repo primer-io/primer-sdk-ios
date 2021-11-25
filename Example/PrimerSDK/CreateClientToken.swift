@@ -26,37 +26,6 @@ struct CreateClientTokenRequest: Codable {
     let paymentMethod: PaymentMethod?
 }
 
-public struct Address: Codable {
-    let addressLine1: String
-    let addressLine2: String?
-    let city: String
-    let countryCode: String
-    let postalCode: String
-    let firstName: String?
-    let lastName: String?
-    let state: String?
-    
-    public init(
-        addressLine1: String,
-        addressLine2: String?,
-        city: String,
-        countryCode: String,
-        postalCode: String,
-        firstName: String?,
-        lastName: String?,
-        state: String?
-    ) {
-        self.addressLine1 = addressLine1
-        self.addressLine2 = addressLine2
-        self.city = city
-        self.countryCode = countryCode
-        self.postalCode = postalCode
-        self.firstName = firstName
-        self.lastName = lastName
-        self.state = state
-    }
-}
-
 public struct Customer: Codable {
     let firstName: String?
     let lastName: String?
@@ -70,19 +39,19 @@ public struct Customer: Codable {
 public struct LineItem: Codable {
     let itemId: String?
     let description: String?
-    let amount: UInt?
-    let discountAmount: UInt?
+    let amount: Int?
+    let discountAmount: Int?
     let quantity: Int?
-    let taxAmount: UInt?
+    let taxAmount: Int?
     let taxCode: String?
     
     public init (
         itemId: String?,
         description: String?,
-        amount: UInt?,
-        discountAmount: UInt?,
+        amount: Int?,
+        discountAmount: Int?,
         quantity: Int?,
-        taxAmount: UInt?,
+        taxAmount: Int?,
         taxCode: String?
     ) {
         self.itemId = itemId
@@ -322,10 +291,36 @@ struct JWTToken: Decodable {
     var intent: String?
 }
 
-
-
-
-
+public struct Address: Codable {
+    let addressLine1: String
+    let addressLine2: String?
+    let city: String
+    let countryCode: String
+    let postalCode: String
+    let firstName: String?
+    let lastName: String?
+    let state: String?
+    
+    public init(
+        addressLine1: String,
+        addressLine2: String?,
+        city: String,
+        countryCode: String,
+        postalCode: String,
+        firstName: String?,
+        lastName: String?,
+        state: String?
+    ) {
+        self.addressLine1 = addressLine1
+        self.addressLine2 = addressLine2
+        self.city = city
+        self.countryCode = countryCode
+        self.postalCode = postalCode
+        self.firstName = firstName
+        self.lastName = lastName
+        self.state = state
+    }
+}
 
 struct TransactionResponse {
     var id: String

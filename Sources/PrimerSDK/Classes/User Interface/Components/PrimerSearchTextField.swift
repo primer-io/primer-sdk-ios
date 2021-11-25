@@ -37,7 +37,7 @@ internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
         rightImageView.contentMode = .scaleAspectFit
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        rightImageView.tintColor = theme.colorTheme.text1
+        rightImageView.tintColor = theme.input.color
         rightView = rightImageView
         
         let rightViewTap = UITapGestureRecognizer()

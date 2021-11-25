@@ -55,7 +55,7 @@ class PaymentMethodsGroupView: PrimerView {
             titleLabel = UILabel()
             titleLabel!.text = title
             titleLabel!.textAlignment = .right
-            titleLabel!.textColor = theme.colorTheme.text1
+            titleLabel!.textColor = theme.text.title.color
             stackView.addArrangedSubview(titleLabel!)
         }
         

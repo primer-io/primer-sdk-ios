@@ -2,8 +2,10 @@
 //  ClientSession.swift
 //  PrimerSDK
 //
-//  Created by Evangelos Pittas on 12/10/21.
+//  Created by Evangelos on 22/11/21.
 //
+
+#if canImport(UIKit)
 
 import Foundation
 
@@ -26,6 +28,7 @@ public class ClientSession: Codable {
         self.customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
         
         // Replace settings
+        PrimerSettings.modify(withClientSession: self)
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -33,8 +36,6 @@ public class ClientSession: Codable {
         try container.encode(paymentMethod, forKey: .paymentMethod)
         try container.encode(order, forKey: .order)
         try container.encode(customer, forKey: .customer)
-        
-        PrimerSettings.modify(withClientSession: self)
     }
     
     // MARK: - ClientSession.Action
@@ -130,7 +131,8 @@ public class ClientSession: Codable {
     
     public struct Order: Codable {
         let id: String?
-        let totalAmount: Int?
+        let merchantAmount: Int?
+        let totalOrderAmount: Int?
         let totalTaxAmount: Int?
         let countryCode: CountryCode?
         let currencyCode: Currency?
@@ -139,13 +141,14 @@ public class ClientSession: Codable {
         let shippingAmount: Int?
         
         enum CodingKeys: String, CodingKey {
-            case id = "orderId", totalAmount, totalTaxAmount, countryCode, currencyCode, fees, items, shippingAmount
+            case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, items, shippingAmount
         }
         
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             id = (try? container.decode(String?.self, forKey: .id)) ?? nil
-            totalAmount = (try? container.decode(Int?.self, forKey: .totalAmount)) ?? nil
+            merchantAmount = (try? container.decode(Int?.self, forKey: .merchantAmount)) ?? nil
+            totalOrderAmount = (try? container.decode(Int?.self, forKey: .totalOrderAmount)) ?? nil
             totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
             countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
             currencyCode = (try? container.decode(Currency?.self, forKey: .currencyCode)) ?? nil
@@ -156,7 +159,8 @@ public class ClientSession: Codable {
         
         public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
-            try? container.encode(totalAmount, forKey: .totalAmount)
+            try? container.encode(merchantAmount, forKey: .merchantAmount)
+            try? container.encode(totalOrderAmount, forKey: .totalOrderAmount)
             try? container.encode(totalTaxAmount, forKey: .totalTaxAmount)
             try? container.encode(countryCode, forKey: .countryCode)
             try? container.encode(currencyCode, forKey: .currencyCode)
@@ -173,6 +177,14 @@ public class ClientSession: Codable {
             let discountAmount: Int?
             let reference: String?
             let name: String
+            
+            func toOrderItem() throws -> OrderItem {
+                return try OrderItem(
+                    name: self.name,
+                    unitAmount: self.unitAmount,
+                    quantity: self.quantity,
+                    isPending: false)
+            }
         }
         
         // MARK: ClientSession.Order.Fee
@@ -259,3 +271,5 @@ internal extension Encodable {
         return dictionary
     }
 }
+
+#endif

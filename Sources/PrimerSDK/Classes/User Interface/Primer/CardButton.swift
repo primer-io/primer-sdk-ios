@@ -64,9 +64,17 @@ internal class CardButton: PrimerOldButton {
 
     func toggleBorder(isSelected: Bool, isError: Bool = false) {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        if isError { return border.layer.borderColor = theme.colorTheme.error1.cgColor }
-        border.layer.borderWidth = isSelected ? 1.5 : 1
-        border.layer.borderColor = isSelected ? theme.colorTheme.tint1.cgColor : theme.colorTheme.disabled1.cgColor
+        if (isError) {
+            border.layer.borderColor = theme.colors.error.cgColor
+            return
+        }
+        if (isSelected) {
+            border.layer.borderWidth = theme.paymentMethodButton.border.width
+            border.layer.borderColor = theme.paymentMethodButton.color(for: .selected).cgColor
+        } else {
+            border.layer.borderWidth = theme.paymentMethodButton.border.width
+            border.layer.borderColor = theme.paymentMethodButton.border.color(for: .enabled).cgColor
+        }
     }
 
     private func addCardIcon(image: UIImage?) {
@@ -80,11 +88,9 @@ internal class CardButton: PrimerOldButton {
 
         if iconView.image == ImageName.bank.image {
             let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-            
             let tintedIcon = image?.withRenderingMode(.alwaysTemplate)
-            iconView.tintColor = theme.colorTheme.tint1
+            iconView.tintColor = theme.paymentMethodButton.iconColor
             iconView.image = tintedIcon
-
             iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17).isActive = true
             iconView.heightAnchor.constraint(equalToConstant: 24).isActive = true
             iconView.widthAnchor.constraint(equalToConstant: 24).isActive = true
@@ -96,30 +102,43 @@ internal class CardButton: PrimerOldButton {
     }
 
     private func addDDMandateLabel(value: String) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let label = UILabel()
         label.text = value
+        label.textColor = theme.paymentMethodButton.text.color
         addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 17).isActive = true
+        label.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 17)
+            .isActive = true
         label.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
 
     private func addNetworkName(value: String) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         networkLabel = UILabel()
         networkLabel.text = value
+        networkLabel.textColor = theme.paymentMethodButton.text.color
         addSubview(networkLabel)
         networkLabel.translatesAutoresizingMaskIntoConstraints = false
         if iconView.image == ImageName.bank.image?.withRenderingMode(.alwaysTemplate) {
-            networkLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 17).isActive = true
+            networkLabel.leadingAnchor.constraint(
+                equalTo: iconView.trailingAnchor,
+                constant: 17
+            ).isActive = true
         } else {
-            networkLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 10).isActive = true
+            networkLabel.leadingAnchor.constraint(
+                equalTo: iconView.trailingAnchor,
+                constant: 10
+            ).isActive = true
         }
         networkLabel.bottomAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
 
     private func addCardholderName(value: String) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         cardholderLabel = UILabel()
         cardholderLabel.text = value
+        cardholderLabel.textColor = theme.paymentMethodButton.text.color
         cardholderLabel.font = .systemFont(ofSize: 12)
         addSubview(cardholderLabel)
         cardholderLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -129,18 +148,23 @@ internal class CardButton: PrimerOldButton {
     }
 
     private func addLast4Digits(value: String) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         last4Label = UILabel()
         last4Label.text = value
+        last4Label.textColor = theme.paymentMethodButton.text.color
         addSubview(last4Label)
         last4Label.translatesAutoresizingMaskIntoConstraints = false
-        checkmarkViewLeadingConstraint = last4Label.trailingAnchor.constraint(equalTo: checkView.leadingAnchor, constant: -14)
+        checkmarkViewLeadingConstraint = last4Label.trailingAnchor
+            .constraint(equalTo: checkView.leadingAnchor, constant: -14)
         checkmarkViewLeadingConstraint?.isActive = true
         last4Label.bottomAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
 
     private func addExpiryDetails(value: String) {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         expiryLabel = UILabel()
         expiryLabel.text = value
+        expiryLabel.textColor = theme.paymentMethodButton.text.color
         expiryLabel.font = .systemFont(ofSize: 12)
         addSubview(expiryLabel)
         expiryLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -152,9 +176,9 @@ internal class CardButton: PrimerOldButton {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         border = PrimerView()
-        border.layer.borderColor = theme.colorTheme.disabled1.cgColor
-        border.layer.borderWidth = 1
-        border.layer.cornerRadius = 4
+        border.layer.borderColor = theme.paymentMethodButton.border.color(for: .enabled).cgColor
+        border.layer.borderWidth = theme.paymentMethodButton.border.width
+        border.layer.cornerRadius = theme.paymentMethodButton.cornerRadius
         addSubview(border)
         border.translatesAutoresizingMaskIntoConstraints = false
         border.pin(to: self)
@@ -167,7 +191,7 @@ internal class CardButton: PrimerOldButton {
 
         // color
         let tintedIcon = ImageName.check2.image?.withRenderingMode(.alwaysTemplate)
-        checkView.tintColor = theme.colorTheme.tint1
+        checkView.tintColor = theme.paymentMethodButton.text.color
         checkView.image = tintedIcon
 
         addSubview(checkView)
@@ -203,7 +227,7 @@ internal class CardButton: PrimerOldButton {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         let line = UIView()
-        line.backgroundColor = theme.colorTheme.disabled1
+        line.backgroundColor = theme.paymentMethodButton.border.color(for: .disabled)
         line.translatesAutoresizingMaskIntoConstraints = false
         addSubview(line)
         line.topAnchor.constraint(equalTo: bottomAnchor, constant: -0.5).isActive = true

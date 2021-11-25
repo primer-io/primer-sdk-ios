@@ -49,7 +49,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     override lazy var buttonColor: UIColor? = {
         switch config.type {
         case .apaya:
-            return .white
+            return theme.paymentMethodButton.color(for: .enabled)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -59,7 +59,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     override lazy var buttonTitleColor: UIColor? = {
         switch config.type {
         case .apaya:
-            return theme.colorTheme.text1
+            return theme.paymentMethodButton.text.color
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -79,7 +79,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
         case .apaya:
-            return theme.colorTheme.text1
+            return theme.paymentMethodButton.text.color
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -89,7 +89,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
         case .apaya:
-            return theme.colorTheme.text1
+            return theme.paymentMethodButton.text.color
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -235,7 +235,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         let body = Apaya.CreateSessionAPIRequest(merchantAccountId: merchantAccountId,
                                                  language: settings.localeData.languageCode ?? "en",
                                                  currencyCode: currency.rawValue,
-                                                 phoneNumber: settings.customer?.mobileNumber)
+                                                 phoneNumber: settings.customer?.mobilePhoneNumber)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.apayaCreateSession(clientToken: clientToken, request: body) { [weak self] result in
