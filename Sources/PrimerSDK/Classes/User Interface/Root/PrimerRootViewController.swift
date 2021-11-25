@@ -27,6 +27,11 @@ internal class PrimerRootViewController: PrimerViewController {
         return UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
     }()
     
+    internal let swipeGesture = UISwipeGestureRecognizer(
+        target: self,
+        action: #selector(dismissGestureRecognizerAction)
+    )
+    
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -92,10 +97,6 @@ internal class PrimerRootViewController: PrimerViewController {
         tapGesture.delegate = self
         backgroundView.addGestureRecognizer(tapGesture)
         
-        let swipeGesture = UISwipeGestureRecognizer(
-            target: self,
-            action: #selector(dismissGestureRecognizerAction)
-        )
         swipeGesture.delegate = self
         swipeGesture.direction = .down
         childView.addGestureRecognizer(swipeGesture)

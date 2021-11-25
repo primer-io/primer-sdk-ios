@@ -13,15 +13,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     var savedCardView: CardButton!
     private var titleLabel: UILabel!
-//<<<<<<< HEAD
     private var savedPaymentMethodStackView: UIStackView!
     private var payButton: PrimerOldButton!
-//=======
-//    private var seeAllButton: UIButton!
-//    private var savedPaymentInstrumentStackView: UIStackView!
-//    private var payButton: PrimerOldButton!
-//    private var coveringView: PrimerView!
-//>>>>>>> master
     private var selectedPaymentInstrument: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
@@ -138,6 +131,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 paymentMethodStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
             }
 
+            var payButtonSurchargeStr: String = ""
             if let surCharge = cardButtonViewModel.surCharge {
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 let surChargeLabel = UILabel()
@@ -146,6 +140,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 surChargeLabel.textAlignment = .right
                 surChargeLabel.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                 paymentMethodStackView.addArrangedSubview(surChargeLabel)
+                
+                payButtonSurchargeStr = " + " + Int(surCharge).toCurrencyString(currency: settings.currency!)
             }
             
             if savedCardView == nil {
@@ -161,21 +157,16 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 payButton = PrimerOldButton()
             }
             
-            var buttonTitle = "Pay"
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+            let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                          tableName: nil,
+                                          bundle: Bundle.primerResources,
+                                          value: "Pay",
+                                          comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "") + payButtonSurchargeStr
             
-            var amount: Int = 0
-            amount += settings.amount ?? 0
-            
-            amount += Int(cardButtonViewModel.surCharge ?? 0)
-            
-            if amount != 0, let currency = settings.currency {
-                buttonTitle += " " + amount.toCurrencyString(currency: currency)
-            }
-
             payButton.layer.cornerRadius = 4
-            payButton.setTitle(buttonTitle, for: .normal)
-            payButton.setTitleColor(theme.text.subtitle.color, for: .normal)
+            payButton.setTitle(title, for: .normal)
+            payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
             payButton.titleLabel?.font = .boldSystemFont(ofSize: 19)
             payButton.backgroundColor = theme.mainButton.color(for: .enabled)
             payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
@@ -215,59 +206,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private func renderAvailablePaymentMethods() {
         PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
     }
-    
-// =======
 
-//     private func renderPayButton() {
-//         if coveringView == nil {
-//             coveringView = PrimerView()
-//         }
-        
-//         coveringView.backgroundColor = theme.view.backgroundColor.withAlphaComponent(0.5)
-//         view.addSubview(coveringView)
-//         coveringView.translatesAutoresizingMaskIntoConstraints = false
-//         coveringView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-//         coveringView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-//         coveringView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-//         coveringView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
-
-//         if payButton == nil {
-//             payButton = PrimerOldButton()
-//         }
-
-//         payButton.layer.cornerRadius = 12
-//         payButton.setTitle(Content.CheckoutView.payButtonTitle, for: .normal)
-//         payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-//         payButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
-//         payButton.backgroundColor = theme.mainButton.color(for: .enabled)
-//         payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
-//         let imageView = UIImageView(image: ImageName.lock.image)
-//         payButton.addSubview(imageView)
-//         imageView.translatesAutoresizingMaskIntoConstraints = false
-//         imageView.centerYAnchor.constraint(equalTo: payButton.centerYAnchor).isActive = true
-//         imageView.trailingAnchor.constraint(equalTo: payButton.trailingAnchor, constant: -16).isActive = true
-
-//         coveringView.addSubview(payButton)
-//         payButton.translatesAutoresizingMaskIntoConstraints = false
-//         payButton.leadingAnchor.constraint(equalTo: coveringView.leadingAnchor, constant: 20).isActive = true
-//         payButton.trailingAnchor.constraint(equalTo: coveringView.trailingAnchor, constant: -20).isActive = true
-//         payButton.bottomAnchor.constraint(equalTo: coveringView.bottomAnchor, constant: -10).isActive = true
-//         payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        
-//         coveringView.isHidden = true
-        
-//         let coveringViewTap = UITapGestureRecognizer()
-//         coveringViewTap.addTarget(self, action: #selector(togglePayButton))
-//         coveringView.addGestureRecognizer(coveringViewTap)
-//     }
-
-//     @objc
-//     func togglePayButton() {
-//         coveringView.isHidden = !coveringView.isHidden
-//         savedCardView.toggleBorder(isSelected: !coveringView.isHidden, isError: false)
-//     }
-
-// >>>>>>> master
     @objc
     func seeAllButtonTapped(_ sender: Any) {
         let vpivc = VaultedPaymentInstrumentsViewController()
@@ -316,7 +255,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     private func enableView(_ isEnabled: Bool) {
         DispatchQueue.main.async { [weak self] in
-            self?.view?.isUserInteractionEnabled = !isEnabled
+            self?.view?.isUserInteractionEnabled = isEnabled
+            (self?.parent as? PrimerContainerViewController)?.scrollView.isScrollEnabled = isEnabled
+            Primer.shared.primerRootVC?.swipeGesture.isEnabled = isEnabled
             
             for sv in (self?.verticalStackView.arrangedSubviews ?? []) {
                 sv.alpha = sv == self?.savedPaymentMethodStackView ? 1.0 : (isEnabled ? 1.0 : 0.5)
