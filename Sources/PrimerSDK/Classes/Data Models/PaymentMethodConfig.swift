@@ -432,9 +432,46 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     }
     // swiftlint:enable cyclomatic_complexity
     
+    private enum CodingKeys: String, CodingKey {
+        case adyenAlipay
+        case adyenDotPay
+        case adyenGiropay
+        case adyenIDeal
+        case adyenMobilePay
+        case adyenSofort
+        case adyenTrustly
+        case adyenTwint
+        case adyenVipps
+        case apaya
+        case applePay
+        case buckarooBancontact
+        case buckarooEps
+        case buckarooGiropay
+        case buckarooIdeal
+        case buckarooSofort
+        case goCardlessMandate
+        case googlePay
+        case hoolah
+        case klarna
+        case mollieBankcontact
+        case mollieIdeal
+        case payNLBancontact
+        case payNLGiropay
+        case payNLIdeal
+        case payNLPayconiq
+        case paymentCard
+        case payPal
+        case other
+    }
+    
     public init(from decoder: Decoder) throws {
         let rawValue: String = try decoder.singleValueContainer().decode(String.self)
         self = PaymentMethodConfigType(rawValue: rawValue)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.rawValue, forKey: CodingKeys(rawValue: "type")!)
     }
 }
 
