@@ -51,13 +51,8 @@ extension UIViewController {
         msg += "Headers:\n\(req.allHTTPHeaderFields ?? [:])\n"
         
         if let body = req.httpBody,
-           let reqJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments),
-           let jsonData = try? JSONSerialization.data(withJSONObject: reqJson, options: .prettyPrinted)
+           let reqJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments)
         {
-            var jsonStr: String?
-            if jsonData != nil {
-                jsonStr = String(data: jsonData, encoding: .utf8 )
-            }
             msg += "Body:\n\(reqJson)\n"
         }
         

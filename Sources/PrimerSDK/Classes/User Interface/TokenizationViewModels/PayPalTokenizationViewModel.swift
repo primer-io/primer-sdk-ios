@@ -310,8 +310,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private func generatePaypalPaymentInstrument(_ completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
-            let orderId: AppStateProtocol = DependencyContainer.resolve()
-            guard let orderId = orderId.orderId else {
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            guard let orderId = state.orderId else {
                 completion(.failure(PrimerError.orderIdMissing))
                 return
             }

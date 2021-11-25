@@ -563,7 +563,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 
         callApi(request) { (result) in
             switch result {
-            case .success(let data):
+            case .success:
                 resumeHandler.handleSuccess()
 
             case .failure(let err):
