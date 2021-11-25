@@ -220,7 +220,6 @@ platform :ios do
     )
   end
 
-  desc "Previewing..."
   lane :preview do
     time = Time.new
     str_time = time.strftime("%Y-%m-%d %H:%M:%S")
