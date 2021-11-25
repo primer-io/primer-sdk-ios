@@ -311,7 +311,7 @@ class MerchantCheckoutViewController: UIViewController {
                 let newAction = ClientSession.Action(
                     type: "SET_SURCHARGE_FEE",
                     params: [
-                        "amount": 342
+                        "amount": 456
                     ])
                 merchantActions.append(newAction)
             } else {
@@ -432,14 +432,14 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 options: [
                     "APPLE_PAY": [
                         "surcharge": [
-                            "amount": 374
+                            "amount": 123
                         ]
                     ],
                     "PAYMENT_CARD": [
                         "networks": [
                             "VISA": [
                                 "surcharge": [
-                                    "amount": 374
+                                    "amount": 456
                                 ]
                             ]
                         ]
