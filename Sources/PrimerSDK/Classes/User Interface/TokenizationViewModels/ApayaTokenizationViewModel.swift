@@ -146,7 +146,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
-        let params: [String: Any] = ["type": config.type.rawValue]
+        let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
         Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
             if let err = err {
                 self.handle(error: err)
@@ -270,18 +270,22 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     }
     
     private func presentApayaController(with url: URL, completion: @escaping (Apaya.WebViewResponse?, Error?) -> Void) {
-        webViewController = PrimerWebViewController(with: url)
-        webViewController!.navigationDelegate = self
-        webViewController!.modalPresentationStyle = .fullScreen
-        
-        webViewCompletion = { (res, err) in
-            completion(res, err)
+        DispatchQueue.main.async {
+            self.webViewController = PrimerWebViewController(with: url)
+            self.webViewController!.navigationDelegate = self
+            self.webViewController!.modalPresentationStyle = .fullScreen
+            
+            self.webViewCompletion = { (res, err) in
+                completion(res, err)
+            }
+            
+            self.willPresentExternalView?()
+            Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                DispatchQueue.main.async {
+                    self.didPresentExternalView?()
+                }
+            })
         }
-        
-        self.willPresentExternalView?()
-        Primer.shared.primerRootVC?.present(webViewController!, animated: true, completion: {
-            self.didPresentExternalView?()
-        })
     }
     
     private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse) -> Promise<PaymentMethodToken> {

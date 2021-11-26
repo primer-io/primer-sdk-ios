@@ -137,11 +137,11 @@ public class ClientSession: Codable {
         let countryCode: CountryCode?
         let currencyCode: Currency?
         let fees: [Fee]?
-        let items: [LineItem]?
+        let lineItems: [LineItem]?
         let shippingAmount: Int?
         
         enum CodingKeys: String, CodingKey {
-            case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, items, shippingAmount
+            case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, lineItems, shippingAmount
         }
         
         public init(from decoder: Decoder) throws {
@@ -153,7 +153,7 @@ public class ClientSession: Codable {
             countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
             currencyCode = (try? container.decode(Currency?.self, forKey: .currencyCode)) ?? nil
             fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
-            items = (try? container.decode([LineItem]?.self, forKey: .items)) ?? nil
+            lineItems = (try? container.decode([LineItem]?.self, forKey: .lineItems)) ?? nil
             shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
         }
         
@@ -165,23 +165,25 @@ public class ClientSession: Codable {
             try? container.encode(countryCode, forKey: .countryCode)
             try? container.encode(currencyCode, forKey: .currencyCode)
             try? container.encode(fees, forKey: .fees)
-            try? container.encode(items, forKey: .items)
+            try? container.encode(lineItems, forKey: .lineItems)
             try? container.encode(shippingAmount, forKey: .shippingAmount)
         }
         
         // MARK: ClientSession.Order.LineItem
         
         public struct LineItem: Codable {
+            let itemId: String?
             let quantity: Int
-            let unitAmount: Int?
+            let amount: Int?
             let discountAmount: Int?
             let reference: String?
-            let name: String
+            let name: String?
+            let description: String?
             
             func toOrderItem() throws -> OrderItem {
                 return try OrderItem(
-                    name: self.name,
-                    unitAmount: self.unitAmount,
+                    name: self.name ?? "Item",
+                    unitAmount: self.amount,
                     quantity: self.quantity,
                     isPending: false)
             }

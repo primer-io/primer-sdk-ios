@@ -423,8 +423,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     ClientSessionRequestBody.Order.LineItem(
                         itemId: "itemId0",
                         description: "I'm an item",
-                        amount: 123,
-                        quantity: 4)
+                        amount: 223,
+                        quantity: 1)
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
                 vaultOnSuccess: true,

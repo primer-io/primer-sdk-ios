@@ -317,7 +317,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
-        let params: [String: Any] = ["type": config.type.rawValue]
+        let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
         Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
             if let err = err {
                 self.handle(error: err)
@@ -524,8 +524,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 
                 self.willPresentExternalView?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
-                    self.didPresentExternalView?()
-                    seal.fulfill(())
+                    DispatchQueue.main.async {
+                        self.didPresentExternalView?()
+                        seal.fulfill(())
+                    }
                 })
             }
         }

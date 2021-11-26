@@ -222,7 +222,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
             self.countryCode = order.countryCode
             
             var orderItems: [OrderItem] = []
-            order.items?.forEach({ lineItem in
+            order.lineItems?.forEach({ lineItem in
                 if let orderItem = try? lineItem.toOrderItem() {
                     orderItems.append(orderItem)
                 }

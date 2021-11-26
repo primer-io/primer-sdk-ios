@@ -174,7 +174,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
-        let params: [String: Any] = ["type": config.type.rawValue]
+        let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
         Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
             if let err = err {
                 self.handle(error: err)
@@ -268,7 +268,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             items: (orderItems ?? [])
         )
         
-        
         let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
         if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
             request = PKPaymentRequest()
@@ -321,10 +320,14 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                 }
             }
             
-            self.willPresentExternalView?()
-            Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
-                self.didPresentExternalView?()
-            })
+            DispatchQueue.main.async {
+                self.willPresentExternalView?()
+                Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
+                    DispatchQueue.main.async {
+                        self.didPresentExternalView?()
+                    }
+                })
+            }
             
         } else {
             log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
