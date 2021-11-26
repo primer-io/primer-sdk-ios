@@ -282,18 +282,23 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     func configurePayButton(for cardNetwork: CardNetwork) {
         DispatchQueue.main.async {
-            var surchargeStr: String = ""
-            if self.flow == .checkout, let surcharge = cardNetwork.surcharge {
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                surchargeStr = " + " + surcharge.toCurrencyString(currency: settings.currency!)
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            var amount: Int = settings.amount ?? 0
+
+            if let surcharge = cardNetwork.surcharge {
+                amount += surcharge
             }
-            
-            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-            let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+
+            var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
                                           tableName: nil,
                                           bundle: Bundle.primerResources,
                                           value: "Pay",
-                                          comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "") + surchargeStr
+                                          comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
+            
+            if amount != 0, let currency = settings.currency {
+                title += " \(amount.toCurrencyString(currency: currency))"
+            }
+            
             self.submitButton.setTitle(title, for: .normal)
         }
     }

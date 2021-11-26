@@ -131,7 +131,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 paymentMethodStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
             }
 
-            var payButtonSurchargeStr: String = ""
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            var amount: Int = settings.amount ?? 0
+            
             if let surCharge = cardButtonViewModel.surCharge {
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 let surChargeLabel = UILabel()
@@ -141,7 +143,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 surChargeLabel.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                 paymentMethodStackView.addArrangedSubview(surChargeLabel)
                 
-                payButtonSurchargeStr = " + " + Int(surCharge).toCurrencyString(currency: settings.currency!)
+                amount += surCharge
             }
             
             if savedCardView == nil {
@@ -156,14 +158,17 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if payButton == nil {
                 payButton = PrimerOldButton()
             }
-            
-            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-            let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+
+            var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
                                           tableName: nil,
                                           bundle: Bundle.primerResources,
                                           value: "Pay",
-                                          comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "") + payButtonSurchargeStr
+                                          comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
             
+            if amount != 0, let currency = settings.currency {
+                title += " \(amount.toCurrencyString(currency: currency))"
+            }
+                                    
             payButton.layer.cornerRadius = 4
             payButton.setTitle(title, for: .normal)
             payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
@@ -221,8 +226,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         guard let paymentMethodToken = selectedPaymentInstrument else { return }
         
         enableView(false)
-        
-        payButton.showSpinner(true, color: theme.colors.primary)
+                
+        payButton.showSpinner(true)
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
             DispatchQueue.main.async { [weak self] in
                 self?.payButton.showSpinner(false)
@@ -284,6 +289,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     func handle(error: Error) {
         DispatchQueue.main.async {
+            self.payButton.showSpinner(false)
+            self.enableView(true)
+            
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
             if !settings.hasDisabledSuccessScreen {
@@ -302,7 +310,10 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     }
     
     func handleSuccess() {
-        DispatchQueue.main.async { 
+        DispatchQueue.main.async {
+            self.payButton.showSpinner(false)
+            self.enableView(true)
+            
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
             if settings.hasDisabledSuccessScreen {
