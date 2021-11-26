@@ -122,10 +122,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -234,10 +233,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     }
     
     private func payWithApple(completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        let decodedClientToken = state.decodedClientToken!
+        let decodedClientToken = ClientTokenService.decodedClientToken!
         let countryCode = settings.countryCode!
         let currency = settings.currency!
         let merchantIdentifier = settings.merchantIdentifier!
@@ -249,7 +247,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             countryCode: countryCode,
             items: (orderItems ?? [])
         )
-        
         
         let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
         if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {

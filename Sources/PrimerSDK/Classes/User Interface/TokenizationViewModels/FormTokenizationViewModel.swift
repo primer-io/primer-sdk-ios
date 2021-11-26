@@ -224,10 +224,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -305,7 +304,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        if let clientToken = state.accessToken {
+        if let clientToken = state.clientToken {
             completion(clientToken, nil)
         } else {
             completion(nil, PrimerError.clientTokenNull)
@@ -388,7 +387,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
     
     override func handle(newClientToken clientToken: String) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        if state.accessToken == clientToken {
+        if state.clientToken == clientToken {
             let err = PrimerError.invalidValue(key: "clientToken")
             handle(error: err)
             DispatchQueue.main.async {
@@ -400,8 +399,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
         do {
             try ClientTokenService.storeClientToken(clientToken)
            
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            let decodedClientToken = state.decodedClientToken!
+            let decodedClientToken = ClientTokenService.decodedClientToken!
             
             guard let paymentMethod = paymentMethod else {
                 let err = PrimerError.invalidValue(key: "paymentMethod")

@@ -71,8 +71,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     }
 
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        if state.decodedClientToken.exists {
+        if ClientTokenService.decodedClientToken.exists {
             let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
             paymentMethodConfigService.fetchConfig({ err in
                 if let err = err {
@@ -153,4 +152,3 @@ extension VaultCheckoutViewModel: ResumeHandlerProtocol {
 }
 
 #endif
-

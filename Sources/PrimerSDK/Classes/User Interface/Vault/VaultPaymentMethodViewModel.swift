@@ -23,10 +23,6 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
             state.selectedPaymentMethod = newValue
         }
     }
-    private var clientToken: DecodedClientToken? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.decodedClientToken
-    }
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -39,7 +35,7 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
 
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void) {
         let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-        vaultService.deleteVaultedPaymentMethod(with: id) { [weak self] _ in
+        vaultService.deleteVaultedPaymentMethod(with: id) { _ in
             let state: AppStateProtocol = DependencyContainer.resolve()
             
             // reset selected payment method if that has been deleted

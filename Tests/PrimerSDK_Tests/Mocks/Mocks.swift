@@ -194,11 +194,9 @@ class MockAppState: AppStateProtocol {
 
     var selectedPaymentMethod: String = ""
 
-    var decodedClientToken: DecodedClientToken? = mockClientToken
-
     var paymentMethodConfig: PrimerConfiguration?
 
-    var accessToken: String? = "accessToken"
+    var clientToken: String? = "accessToken"
 
     var billingAgreementToken: String? = "token"
 
@@ -209,7 +207,7 @@ class MockAppState: AppStateProtocol {
     var approveURL: String? = "approveUrl"
 
     init(
-        decodedClientToken: DecodedClientToken? = mockClientToken,
+        clientToken: String? = "accessToken",
         paymentMethodConfig: PrimerConfiguration? = PrimerConfiguration(
             coreUrl: "url",
             pciUrl: "url",
@@ -222,7 +220,7 @@ class MockAppState: AppStateProtocol {
             keys: nil
         )
     ) {
-        self.decodedClientToken = decodedClientToken
+        self.clientToken = clientToken
         self.paymentMethodConfig = paymentMethodConfig
     }
 }

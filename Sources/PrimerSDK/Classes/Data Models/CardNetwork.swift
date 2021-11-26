@@ -104,7 +104,7 @@ public enum CardNetwork: String, CaseIterable {
                     [650901, 650978],
                     [651652, 651679],
                     [655000, 655019],
-                    [655021, 655058],
+                    [655021, 655058]
                 ],
                 gaps: [4, 8, 12],
                 lengths: [16],
@@ -163,7 +163,7 @@ public enum CardNetwork: String, CaseIterable {
                     [56, 59],
                     [63],
                     [67],
-                    [6],
+                    [6]
                   ],
                 gaps: [4, 8, 12],
                 lengths: [16, 17, 18, 19],
@@ -219,7 +219,7 @@ public enum CardNetwork: String, CaseIterable {
               [8110, 8131],
               [8132, 8151],
               [8152, 8163],
-              [8164, 8171],
+              [8164, 8171]
             ],
                 gaps: [4, 8, 12],
                 lengths: [14, 15, 16, 17, 18, 19],
@@ -265,8 +265,6 @@ public enum CardNetwork: String, CaseIterable {
     }
     
     var directoryServerId: String? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         switch self {
         case .visa:
             return "A000000003"
@@ -281,8 +279,8 @@ public enum CardNetwork: String, CaseIterable {
         case .unionpay:
             return "A000000333"
         default:
-            if let clientToken = state.decodedClientToken,
-               let env = clientToken.env {
+            if let decodedClientToken = ClientTokenService.decodedClientToken,
+               let env = decodedClientToken.env {
                 if env.uppercased() == "PRODUCTION" {
                     return nil
                 } else {
@@ -458,18 +456,14 @@ public enum PaymentNetwork: String {
         ]
         
         if #available(iOS 11.2, *) {
-//            @available(iOS 11.2, *)
             supportedNetworks.append(.cartesBancaires)
         } else if #available(iOS 11.0, *) {
-//            @available(iOS, introduced: 11.0, deprecated: 11.2, message: "Use PKPaymentNetworkCartesBancaires instead.")
             supportedNetworks.append(.carteBancaires)
         } else if #available(iOS 10.3, *) {
-//            @available(iOS, introduced: 10.3, deprecated: 11.0, message: "Use PKPaymentNetworkCartesBancaires instead.")
             supportedNetworks.append(.carteBancaire)
         }
 
         if #available(iOS 12.0, *) {
-//            @available(iOS 12.0, *)
             supportedNetworks.append(.eftpos)
             supportedNetworks.append(.electron)
             supportedNetworks.append(.maestro)
@@ -477,30 +471,24 @@ public enum PaymentNetwork: String {
         }
 
         if #available(iOS 12.1.1, *) {
-//            @available(iOS 12.1.1, *)
             supportedNetworks.append(.elo)
             supportedNetworks.append(.mada)
         }
         
         if #available(iOS 10.3.1, *) {
-//            @available(iOS 10.3, *)
             supportedNetworks.append(.idCredit)
         }
         
         if #available(iOS 10.1, *) {
-//            @available(iOS 10.1, *)
             supportedNetworks.append(.JCB)
             supportedNetworks.append(.suica)
         }
         
         if #available(iOS 10.3, *) {
-//            @available(iOS 10.3, *)
             supportedNetworks.append(.quicPay)
         }
         
         if #available(iOS 14.0, *) {
-//            @available(iOS 14.0, *)
-//            supportedNetworks.append(.barcode)
             supportedNetworks.append(.girocard)
         }
         

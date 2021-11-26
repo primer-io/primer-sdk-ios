@@ -14,7 +14,7 @@ class VaultCheckoutViewModelTests: XCTestCase {
 
     func test_loadConfig_calls_clientTokenService_if_client_token_nil() throws {
         let clientTokenService = MockClientTokenService()
-        let state = MockAppState(decodedClientToken: nil)
+        let state = MockAppState(clientToken: nil)
 
         MockLocator.registerDependencies()
         DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)

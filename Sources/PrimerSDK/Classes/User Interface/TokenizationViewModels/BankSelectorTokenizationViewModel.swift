@@ -125,7 +125,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     override func validate() throws {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -247,8 +247,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     
     private func fetchBanks() -> Promise<[Bank]> {
         return Promise { seal in
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            let decodedClientToken = state.decodedClientToken!
+            let decodedClientToken = ClientTokenService.decodedClientToken!
             
             var paymentMethodRequestValue: String = ""
             switch self.config.type {
@@ -309,8 +308,6 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     }
 
     private func tokenize(bank: Bank, completion: @escaping (_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-
         let req = BankSelectorTokenizationRequest(
             paymentInstrument: PaymentInstrument(
                 paymentMethodConfigId: self.config.id!,
@@ -318,14 +315,14 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                 type: "OFF_SESSION_PAYMENT",
                 paymentMethodType: config.type.rawValue))
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             completion(nil, PrimerError.clientTokenNull)
             return
         }
         
         let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
         apiClient.tokenizePaymentMethod(
-            clientToken: clientToken,
+            clientToken: decodedClientToken,
             paymentMethodTokenizationRequest: req) { result in
                 switch result {
                 case .success(let paymentMethod):

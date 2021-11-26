@@ -50,7 +50,7 @@ struct PayPalCreateBillingAgreementResponse: Codable {
 }
 
 struct PayPalAccessTokenResponse: Codable {
-    let accessToken: String?
+    let clientToken: String?
 }
 
 struct PayPalOrderLink: Decodable {

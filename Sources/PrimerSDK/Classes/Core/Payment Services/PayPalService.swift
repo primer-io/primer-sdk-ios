@@ -17,7 +17,7 @@ internal class PayPalService: PayPalServiceProtocol {
     private func prepareUrlAndTokenAndId(path: String) -> (DecodedClientToken, URL, String)? {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return nil
         }
 
@@ -25,7 +25,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return nil
         }
 
-        guard let coreURL = clientToken.coreUrl else {
+        guard let coreURL = decodedClientToken.coreUrl else {
             return nil
         }
 
@@ -33,13 +33,13 @@ internal class PayPalService: PayPalServiceProtocol {
             return nil
         }
 
-        return (clientToken, url, configId)
+        return (decodedClientToken, url, configId)
     }
 
     func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(PrimerError.clientTokenNull))
         }
 
@@ -75,7 +75,7 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.payPalStartOrderSession(clientToken: clientToken, payPalCreateOrderRequest: body) { [weak self] (result) in
+        api.payPalStartOrderSession(clientToken: decodedClientToken, payPalCreateOrderRequest: body) { [weak self] (result) in
             switch result {
             case .failure:
                 completion(.failure(PrimerError.payPalSessionFailed))
@@ -89,7 +89,7 @@ internal class PayPalService: PayPalServiceProtocol {
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
@@ -129,7 +129,7 @@ internal class PayPalService: PayPalServiceProtocol {
     func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(PrimerError.payPalSessionFailed))
         }
 
@@ -145,7 +145,7 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.payPalConfirmBillingAgreement(clientToken: clientToken, payPalConfirmBillingAgreementRequest: body) { [weak self] (result) in
+        api.payPalConfirmBillingAgreement(clientToken: decodedClientToken, payPalConfirmBillingAgreementRequest: body) { (result) in
             switch result {
             case .failure:
                 completion(.failure(PrimerError.payPalSessionFailed))

@@ -9,33 +9,40 @@ internal protocol ClientTokenServiceProtocol {
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
     
-    static func storeClientToken(_ clientToken: String) throws {
-        guard var jwtTokenPayload = clientToken.jwtTokenPayload,
-              let expDate = jwtTokenPayload.expDate
-        else {
-            throw PrimerError.clientTokenNull
-        }
-        
-        if expDate < Date() {
-            throw PrimerError.clientTokenExpired
-        }
-        
+    static var decodedClientToken: DecodedClientToken? {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let previousEnv = state.decodedClientToken?.env
+        guard let clientToken = state.clientToken else { return nil }
         
-        if jwtTokenPayload.env == nil {
-            // That's because the clientToken returned for dynamic 3DS doesn't contain an env.
-            jwtTokenPayload.env = previousEnv
+        guard let decodedClientToken = clientToken.jwtTokenPayload else { return nil }
+        
+        do {
+            try decodedClientToken.validate()
+        } catch {
+            return nil
         }
 
-        state.decodedClientToken = jwtTokenPayload
-        state.accessToken = clientToken
+        return decodedClientToken
+    }
+    
+    static func storeClientToken(_ clientToken: String) throws {
+        guard var decodedClientToken = clientToken.jwtTokenPayload else { throw PrimerError.clientTokenNull }
+        
+        try decodedClientToken.validate()
+        
+        let previousEnv = ClientTokenService.decodedClientToken?.env
+        
+        if decodedClientToken.env == nil {
+            // That's because the clientToken returned for dynamic 3DS doesn't contain an env.
+            decodedClientToken.env = previousEnv
+        }
+
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        state.clientToken = clientToken
     }
     
     static func resetClientToken() {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        state.decodedClientToken = nil
-        state.accessToken = nil
+        state.clientToken = nil
     }
     
     deinit {

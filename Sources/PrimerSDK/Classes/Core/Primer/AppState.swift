@@ -10,9 +10,8 @@
 internal protocol AppStateProtocol: AnyObject {
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethod: String { get set }
-    var decodedClientToken: DecodedClientToken? { get set }
     var paymentMethodConfig: PrimerConfiguration? { get set }
-    var accessToken: String? { get set }
+    var clientToken: String? { get set }
     var billingAgreementToken: String? { get set }
     var orderId: String? { get set }
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? { get set }
@@ -29,9 +28,8 @@ internal protocol AppStateProtocol: AnyObject {
 internal class AppState: AppStateProtocol {
     var paymentMethods: [PaymentMethodToken] = []
     var selectedPaymentMethod: String = ""
-    var decodedClientToken: DecodedClientToken?
     var paymentMethodConfig: PrimerConfiguration?
-    var accessToken: String?
+    var clientToken: String?
     var billingAgreementToken: String?
     var orderId: String?
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
