@@ -262,7 +262,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         DispatchQueue.main.async { [weak self] in
             self?.view?.isUserInteractionEnabled = isEnabled
             (self?.parent as? PrimerContainerViewController)?.scrollView.isScrollEnabled = isEnabled
-            Primer.shared.primerRootVC?.swipeGesture.isEnabled = isEnabled
+            Primer.shared.primerRootVC?.swipeGesture?.isEnabled = isEnabled
             
             for sv in (self?.verticalStackView.arrangedSubviews ?? []) {
                 sv.alpha = sv == self?.savedPaymentMethodStackView ? 1.0 : (isEnabled ? 1.0 : 0.5)
