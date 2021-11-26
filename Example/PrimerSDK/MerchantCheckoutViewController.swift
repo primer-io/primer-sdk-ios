@@ -260,6 +260,7 @@ class MerchantCheckoutViewController: UIViewController {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue(ClientSessionVersion.v3.rawValue, forHTTPHeaderField: "X-Api-Version")
         
         do {
             if let requestBodyJson = requestBody.dictionaryValue {
@@ -297,10 +298,8 @@ class MerchantCheckoutViewController: UIViewController {
         }
         
         guard let url = URL(string: "\(endpoint)/actions") else {
-            completion(nil, NetworkError.missingParams)
-            return
+            return completion(nil, NetworkError.missingParams)
         }
-        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -358,16 +357,14 @@ class MerchantCheckoutViewController: UIViewController {
     
     func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
         guard let url = URL(string: "\(endpoint)/payments") else {
-            completion(nil, NetworkError.missingParams)
-            return
+            return completion(nil, NetworkError.missingParams)
         }
         
-        let type = paymentMethod.paymentInstrumentType
-        
         var request = URLRequest(url: url)
-        
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let type = paymentMethod.paymentInstrumentType
         
         let body = PaymentRequest(
             environment: environment,
