@@ -50,12 +50,13 @@ internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
     override func textRect(forBounds bounds: CGRect) -> CGRect {
-        let rightViewRect = rightViewRect(forBounds: bounds)
+        let tmpRect = rightViewRect(forBounds: bounds)
         return CGRect(
             x: Padding.horizontal,
             y: bounds.origin.y + Padding.vertical,
-            width: bounds.size.width - spacing - rightViewRect.size.width - 2*Padding.horizontal,
+            width: bounds.size.width - spacing - tmpRect.size.width - 2*Padding.horizontal,
             height: bounds.size.height - Padding.vertical * 2
         )
     }
