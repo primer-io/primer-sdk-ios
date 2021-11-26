@@ -88,12 +88,14 @@ extension MerchantCheckoutViewController {
     }
     
     internal func generateAmountAndOrderItems() -> (Int, [OrderItem]) {
+        // swiftlint:disable:next force_try
         let items = [try! OrderItem(name: "Rent scooter", unitAmount: amount, quantity: 1)]
         var newAmount = 0
         items.forEach { newAmount += (($0.unitAmount ?? 0) * $0.quantity)  }
         
         return (
             amount,
+            // swiftlint:disable:next force_try
             [try! OrderItem(name: "Rent scooter", unitAmount: newAmount, quantity: 1)]
         )
     }

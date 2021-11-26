@@ -24,7 +24,7 @@ enum Throwable<T: Decodable>: Decodable {
     
     var value: T? {
             switch self {
-            case .failure(_):
+            case .failure:
                 return nil
             case .success(let value):
                 return value

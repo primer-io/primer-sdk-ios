@@ -8,6 +8,7 @@
 
 import XCTest
 
+// swiftlint:disable:next type_name
 class PrimerSDKExample_UITests: XCTestCase {
 
     override func setUpWithError() throws {

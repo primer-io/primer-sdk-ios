@@ -28,6 +28,7 @@ class ApayaViewModel {
 }
 
 enum ApayaCarrier: String, Codable {
+    // swiftlint:disable:next identifier_name
     case EE_UK, O2_UK, Vodafone_UK, Three_UK, Strex_Norway
     
     var name: String {

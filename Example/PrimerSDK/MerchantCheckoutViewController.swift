@@ -11,7 +11,18 @@ import UIKit
 
 class MerchantCheckoutViewController: UIViewController {
     
-    class func instantiate(environment: Environment, customerId: String?, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
+    // hasjkhaskjhsajkhasjhsajkhsajkhjksahkjashajkshjaskhjskahjsakhsajkhasjkhaiusyhiunchiusaiashasihhaihaskjnasjknajjanskjhsahisahashahosahoashiosahoashiosahoiashis
+    
+    class func instantiate(
+        environment: Environment,
+        customerId: String?,
+        phoneNumber: String?,
+        countryCode: CountryCode?,
+        currency: Currency?,
+        amount: Int?,
+        performPayment: Bool
+    ) -> MerchantCheckoutViewController {
+        // swiftlint:disable:next force_cast
         let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
         mcvc.environment = environment
         mcvc.customerId = customerId
@@ -432,6 +443,7 @@ extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDele
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let paymentMethod = paymentMethodsDataSource[indexPath.row]
+        // swiftlint:disable:next force_cast
         let cell = tableView.dequeueReusableCell(withIdentifier: "PaymentMethodCell", for: indexPath) as! PaymentMethodCell
         
         switch paymentMethod.paymentInstrumentType {
