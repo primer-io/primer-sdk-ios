@@ -363,6 +363,7 @@ class MerchantCheckoutViewController: UIViewController {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("2021-09-27", forHTTPHeaderField: "x-api-version")
         
         let type = paymentMethod.paymentInstrumentType
         
@@ -370,7 +371,7 @@ class MerchantCheckoutViewController: UIViewController {
             environment: environment,
             paymentMethod: paymentMethod.token,
             amount: amount,
-            type: type.rawValue,
+            type: nil,
             currencyCode: currency,
             countryCode: countryCode)
         

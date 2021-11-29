@@ -17,6 +17,7 @@ enum ClientSessionVersion: String {
 }
 
 struct PaymentRequest: Encodable {
+    let isV3: Bool = true
     let environment: Environment
     let paymentMethod: String
     let amount: Int
