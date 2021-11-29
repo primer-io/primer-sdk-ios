@@ -430,14 +430,29 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 options: [
                     "APPLE_PAY": [
                         "surcharge": [
-                            "amount": 123
+                            "amount": 119
+                        ]
+                    ],
+                    "PAY_NL_IDEAL": [
+                        "surcharge": [
+                            "amount": 99
+                        ]
+                    ],
+                    "PAYPAL": [
+                        "surcharge": [
+                            "amount": 179
                         ]
                     ],
                     "PAYMENT_CARD": [
                         "networks": [
                             "VISA": [
                                 "surcharge": [
-                                    "amount": 456
+                                    "amount": 288
+                                ]
+                            ],
+                            "MASTERCARD": [
+                                "surcharge": [
+                                    "amount": 288
                                 ]
                             ]
                         ]
