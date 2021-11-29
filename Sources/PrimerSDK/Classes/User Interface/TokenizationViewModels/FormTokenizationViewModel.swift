@@ -403,7 +403,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
-        if let cardNetwork = cardNetwork, cardNumberContainerView.rightImage2 == nil && cardNetwork.icon != nil {
+        if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImage2 == nil && cardNetwork.icon != nil {
             let params: [String: Any] = [
                 "paymentMethodType": "PAYMENT_CARD",
                 "binData": [

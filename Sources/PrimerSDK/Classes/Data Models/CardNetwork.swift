@@ -334,7 +334,8 @@ public enum CardNetwork: String, CaseIterable {
         
         for cardNetwork in CardNetwork.allCases {
             if let patterns = cardNetwork.validation?.patterns,
-               CardNetwork.cardNumber(cardNumber.withoutNonNumericCharacters, matchesPatterns: patterns) {
+               CardNetwork.cardNumber(cardNumber.withoutNonNumericCharacters, matchesPatterns: patterns),
+               cardNetwork != .unknown {
                 self = cardNetwork
                 break
             }
