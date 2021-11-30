@@ -55,7 +55,7 @@ struct CheckoutTheme {
         data.text.amountLabel = PrimerThemeData.Text(defaultColor: .black)
         data.text.subtitle = PrimerThemeData.Text(defaultColor: UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0))
         data.text.body = PrimerThemeData.Text(defaultColor: .black)
-        data.text.system = PrimerThemeData.Text(defaultColor: .white)
+        data.text.system = PrimerThemeData.Text(defaultColor: .blue)
         data.buttons.paymentMethod.border.defaultColor = .black
         data.buttons.paymentMethod.border.selectedColor = .blue
         data.buttons.paymentMethod.text.defaultColor = .black
