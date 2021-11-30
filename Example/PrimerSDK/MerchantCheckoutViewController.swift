@@ -250,9 +250,7 @@ class MerchantCheckoutViewController: UIViewController {
             completion(nil, NetworkError.missingParams)
             return
         }
-        
-        let type = paymentMethod.paymentInstrumentType
-        
+                
         var request = URLRequest(url: url)
         
         request.httpMethod = "POST"
@@ -262,7 +260,7 @@ class MerchantCheckoutViewController: UIViewController {
             environment: environment,
             paymentMethod: paymentMethod.token,
             amount: amount,
-            type: type.rawValue,
+            type: nil,
             currencyCode: currency,
             countryCode: countryCode)
         
