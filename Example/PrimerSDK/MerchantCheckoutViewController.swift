@@ -171,88 +171,6 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showUniversalCheckout(on: self)
     }
     
-    func requestClientToken(_ completion: @escaping (String?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/clientSession") else {
-            return completion(nil, NetworkError.missingParams)
-        }
-        
-        let body = CreateClientTokenRequest(
-            environment: environment,
-            orderId: "order_id",
-            amount: amount,
-            currencyCode: currency.rawValue,
-            customerId: "customer_id",
-            metadata: nil,
-            customer: Customer(
-                firstName: "Vagz",
-                lastName: "Pie",
-                emailAddress: "vagz@primer.io",
-                billingAddress: Address(
-                    addressLine1: "Line 1",
-                    addressLine2: nil,
-                    city: "Athens",
-                    countryCode: "GR",
-                    postalCode: "15236",
-                    firstName: "Evangelos",
-                    lastName: "Pittas",
-                    state: "Attica"),
-                shippingAddress: Address(
-                    addressLine1: "Line 1",
-                    addressLine2: nil,
-                    city: "Athens",
-                    countryCode: "GR",
-                    postalCode: "15236",
-                    firstName: "Evangelos",
-                    lastName: "Pittas",
-                    state: "Attica"),
-                mobileNumber: "+306945995726",
-                nationalDocumentId: "doc_id"),
-            order: Order(
-                countryCode: "GB",
-                lineItems: [
-                    LineItem(
-                        itemId: "item_id",
-                        description: "Description",
-                        amount: amount,
-                        discountAmount: nil,
-                        quantity: 1,
-                        taxAmount: nil,
-                        taxCode: nil)
-                ],
-                shipping: Shipping(amount: 0)),
-            paymentMethod: nil)
-        
-        let bodyData = try? JSONEncoder().encode(body)
-        
-        let networking = Networking()
-        networking.request(
-            apiVersion: .v3,
-            url: url,
-            method: .post,
-            headers: nil,
-            queryParameters: nil,
-            body: bodyData) { result in
-                switch result {
-                case .success(let data):
-                    do {
-                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
-                            completion(token, nil)
-                            print("🔥 token: \(token)")
-                        } else {
-                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
-                            completion(nil, err)
-                        }
-                        
-                    } catch {
-                        completion(nil, error)
-                    }
-                case .failure(let err):
-                    completion(nil, err)
-                }
-            }
-    
-    }
-    
     func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
         guard let url = URL(string: "\(endpoint)/clientSession") else {
             return completion(nil, NetworkError.missingParams)
@@ -437,12 +355,11 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     ClientSessionRequestBody.Order.LineItem(
                         itemId: "itemId0",
                         description: "I'm an item",
-                        amount: 100,
+                        amount: amount,
                         quantity: 1)
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
                 vaultOnSuccess: true,
-                //                options: nil
                 options: [
                     "APPLE_PAY": [
                         "surcharge": [

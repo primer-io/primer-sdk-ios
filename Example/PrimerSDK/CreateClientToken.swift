@@ -17,7 +17,7 @@ struct CreateClientTokenRequest: Codable {
     let environment: Environment
     
     let orderId: String
-    let amount: Int
+    let amount: Int?
     let currencyCode: String
     let customerId: String?
     let metadata: [String: String]?
