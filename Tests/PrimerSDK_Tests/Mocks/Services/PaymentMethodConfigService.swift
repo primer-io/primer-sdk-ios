@@ -19,6 +19,12 @@ class MockPaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
         fetchConfigCalled = true
         completion(nil)
     }
+    
+    func fetchConfig() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
 }
 
 #endif
