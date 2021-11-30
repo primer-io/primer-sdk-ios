@@ -411,7 +411,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             customerId: customerId,
             orderId: "orderId",
             currencyCode: currency,
-            amount: amount,
+            amount: nil,
             metadata: nil,
             customer: ClientSessionRequestBody.Customer(
                 emailAddress: "john@primer.io"),
@@ -421,7 +421,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     ClientSessionRequestBody.Order.LineItem(
                         itemId: "itemId0",
                         description: "I'm an item",
-                        amount: 223,
+                        amount: 100,
                         quantity: 1)
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(

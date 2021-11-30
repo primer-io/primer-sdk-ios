@@ -116,7 +116,7 @@ struct ClientSessionRequestBody {
     let customerId: String?
     let orderId: String?
     let currencyCode: Currency?
-    let amount: Int
+    let amount: Int?
     let metadata: [String: Any]?
     let customer: ClientSessionRequestBody.Customer?
     let order: ClientSessionRequestBody.Order?
@@ -137,7 +137,9 @@ struct ClientSessionRequestBody {
             dic["currencyCode"] = currencyCode.rawValue
         }
         
-        dic["amount"] = amount
+        if let amount = amount {
+            dic["amount"] = amount
+        }
         
         if let metadata = metadata {
             dic["metadata"] = metadata
