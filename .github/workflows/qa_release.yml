@@ -12,7 +12,9 @@ on:
 
 jobs:
   branch:
-    runs-on: ubuntu-18.04
+    runs-on: macos-11
+    timeout-minutes: 15
+
     # Map a step output to a job output
     outputs:
       branch: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
@@ -29,7 +31,7 @@ jobs:
 
   build-test:
     needs: branch
-    runs-on: macos-latest
+    runs-on: macos-11
     timeout-minutes: 15
 
     steps:
@@ -46,7 +48,7 @@ jobs:
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: '13.1'
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
