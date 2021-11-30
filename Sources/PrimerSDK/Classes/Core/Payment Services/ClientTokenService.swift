@@ -9,17 +9,21 @@ internal protocol ClientTokenServiceProtocol {
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
     
+    static var decodedClientToken: DecodedClientToken? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.decodedClientToken
+    }
+    
     static func storeClientToken(_ clientToken: String) throws {
-        guard var jwtTokenPayload = clientToken.jwtTokenPayload
-//                ,
-//              let expDate = jwtTokenPayload.expDate
+        guard var jwtTokenPayload = clientToken.jwtTokenPayload,
+              let expDate = jwtTokenPayload.expDate
         else {
             throw PrimerError.clientTokenNull
         }
         
-//        if expDate < Date() {
-//            throw PrimerError.clientTokenExpired
-//        }
+        if expDate < Date() {
+            throw PrimerError.clientTokenExpired
+        }
         
         let state: AppStateProtocol = DependencyContainer.resolve()
         let previousEnv = state.decodedClientToken?.env
