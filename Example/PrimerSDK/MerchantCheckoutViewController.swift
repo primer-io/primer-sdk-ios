@@ -370,10 +370,10 @@ class MerchantCheckoutViewController: UIViewController {
         let body = PaymentRequest(
             environment: environment,
             paymentMethod: paymentMethod.token,
-            amount: amount,
+            amount: nil,
             type: nil,
-            currencyCode: currency,
-            countryCode: countryCode)
+            currencyCode: nil,
+            countryCode: nil)
         
         do {
             request.httpBody = try JSONEncoder().encode(body)
@@ -441,6 +441,11 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     "PAYPAL": [
                         "surcharge": [
                             "amount": 179
+                        ]
+                    ],
+                    "ADYEN_TWINT": [
+                        "surcharge": [
+                            "amount": 49
                         ]
                     ],
                     "PAYMENT_CARD": [
