@@ -317,78 +317,69 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
-        let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-        Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
-            if let err = err {
-                self.handle(error: err)
-            } else if let clientToken = clientToken {
-                do {
-                    try ClientTokenService.storeClientToken(clientToken)
-                    
-                    do {
-                        try self.validate()
-                    } catch {
-                        DispatchQueue.main.async {
-                            Primer.shared.delegate?.checkoutFailed?(with: error)
-                            self.handleFailedTokenizationFlow(error: error)
-                            self.completion?(nil, error)
-                        }
-                        return
-                    }
-                    
-                    var pollingURLs: PollingURLs!
-                    
-                    firstly {
-                        self.tokenize()
-                    }
-                    .then { tmpPaymentMethod -> Promise<PaymentMethodToken> in
-                        self.paymentMethod = tmpPaymentMethod
-                        return self.continueTokenizationFlow(for: tmpPaymentMethod)
-                    }
-                    .done { paymentMethod in
-                        self.paymentMethod = paymentMethod
-                        
-                        DispatchQueue.main.async {
-                            if Primer.shared.flow.internalSessionFlow.vaulted {
-                                Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                            }
-                            
-                            self.completion?(self.paymentMethod, nil)
-                            self.handleSuccessfulTokenizationFlow()
-                        }
-                    }
-                    .ensure { [unowned self] in
-                        DispatchQueue.main.async {
-                            self.willDismissExternalView?()
-                            self.webViewController?.dismiss(animated: true, completion: {
-                                self.didDismissExternalView?()
-                            })
-                        }
-                        
-                        self.willPresentExternalView = nil
-                        self.didPresentExternalView = nil
-                        self.willDismissExternalView = nil
-                        self.didDismissExternalView = nil
-                        self.webViewController = nil
-                        self.webViewCompletion = nil
-                        self.onResumeTokenCompletion = nil
-                        self.onClientToken = nil
-                    }
-                    .catch { err in
-                        DispatchQueue.main.async {
-                            Primer.shared.delegate?.checkoutFailed?(with: err)
-                            self.handleFailedTokenizationFlow(error: err)
-                        }
-                    }
-                    
-                } catch {
-                    Primer.shared.delegate?.checkoutFailed?(with: error)
-                    self.handle(error: error)
-                }
-            } else {
-                Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
+        if let onClientSessionActions = Primer.shared.delegate?.onClientSessionActions {
+            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
+            onClientSessionActions(actions, self)
+        } else {
+            continueTokenizationFlow()
+        }
+    }
+    
+    fileprivate func continueTokenizationFlow() {
+        do {
+            try self.validate()
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                self.handleFailedTokenizationFlow(error: error)
+                self.completion?(nil, error)
             }
-        })
+            return
+        }
+                
+        firstly {
+            self.tokenize()
+        }
+        .then { tmpPaymentMethod -> Promise<PaymentMethodToken> in
+            self.paymentMethod = tmpPaymentMethod
+            return self.continueTokenizationFlow(for: tmpPaymentMethod)
+        }
+        .done { paymentMethod in
+            self.paymentMethod = paymentMethod
+            
+            DispatchQueue.main.async {
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
+                }
+                
+                self.completion?(self.paymentMethod, nil)
+                self.handleSuccessfulTokenizationFlow()
+            }
+        }
+        .ensure { [unowned self] in
+            DispatchQueue.main.async {
+                self.willDismissExternalView?()
+                self.webViewController?.dismiss(animated: true, completion: {
+                    self.didDismissExternalView?()
+                })
+            }
+            
+            self.willPresentExternalView = nil
+            self.didPresentExternalView = nil
+            self.willDismissExternalView = nil
+            self.didDismissExternalView = nil
+            self.webViewController = nil
+            self.webViewCompletion = nil
+            self.onResumeTokenCompletion = nil
+            self.onClientToken = nil
+        }
+        .catch { err in
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+                self.handleFailedTokenizationFlow(error: err)
+            }
+        }
     }
     
     internal func continueTokenizationFlow(for tmpPaymentMethod: PaymentMethodToken) -> Promise<PaymentMethodToken> {
@@ -630,8 +621,29 @@ extension ExternalPaymentMethodTokenizationViewModel {
     override func handle(newClientToken clientToken: String) {
         do {
             try ClientTokenService.storeClientToken(clientToken)
-            onClientToken?(clientToken, nil)
-            onClientToken = nil
+            
+            let decodedClientToken = ClientTokenService.decodedClientToken!
+            
+            if decodedClientToken.intent?.contains("_REDIRECTION") == true {
+                onClientToken?(clientToken, nil)
+                onClientToken = nil
+                
+            } else {
+                // intent = "CHECKOUT"
+                // if decodedClientToken.intent == RequiredActionName.checkout.rawValue
+                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                
+                firstly {
+                    configService.fetchConfig()
+                }
+                .done {
+                    self.continueTokenizationFlow()
+                }
+                .catch { err in
+                    self.handle(error: err)
+                }
+            }
+            
         } catch {
             onClientToken?(nil, error)
             onClientToken = nil

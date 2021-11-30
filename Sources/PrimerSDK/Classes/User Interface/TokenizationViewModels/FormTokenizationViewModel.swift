@@ -265,7 +265,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         super.startTokenizationFlow()
         
         do {
-            try validate()
+            try self.validate()
         } catch {
             DispatchQueue.main.async {
                 Primer.shared.delegate?.checkoutFailed?(with: error)
@@ -280,26 +280,76 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    func configurePayButton(for cardNetwork: CardNetwork) {
+    fileprivate func continueTokenizationFlow() {
+        do {
+            try self.validate()
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                self.handleFailedTokenizationFlow(error: error)
+            }
+            return
+        }
+        
         DispatchQueue.main.async {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            var amount: Int = settings.amount ?? 0
+            let pcfvc = PrimerCardFormViewController(viewModel: self)
+            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+        }
+    }
+    
+    func configurePayButton(cardNetwork: CardNetwork?) {
+        DispatchQueue.main.async {
+            if !Primer.shared.flow.internalSessionFlow.vaulted {
+                guard let cardNetwork = cardNetwork, cardNetwork != .unknown else {
+                    let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+                    let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                                  tableName: nil,
+                                                  bundle: Bundle.primerResources,
+                                                  value: "Pay",
+                                                  comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+                    self.submitButton.setTitle(title, for: .normal)
+                    return
+                }
+                
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                var amount: Int = settings.amount ?? 0
 
-            if let surcharge = cardNetwork.surcharge {
-                amount += surcharge
-            }
+                if let surcharge = cardNetwork.surcharge {
+                    amount += surcharge
+                }
 
-            var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                          tableName: nil,
-                                          bundle: Bundle.primerResources,
-                                          value: "Pay",
-                                          comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
-            
-            if amount != 0, let currency = settings.currency {
-                title += " \(amount.toCurrencyString(currency: currency))"
+                var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                              tableName: nil,
+                                              bundle: Bundle.primerResources,
+                                              value: "Pay",
+                                              comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
+                
+                if amount != 0, let currency = settings.currency {
+                    title += " \(amount.toCurrencyString(currency: currency))"
+                }
+                
+                self.submitButton.setTitle(title, for: .normal)
             }
-            
-            self.submitButton.setTitle(title, for: .normal)
+        }
+    }
+    
+    func configurePayButton(amount: Int) {
+        DispatchQueue.main.async {
+            if !Primer.shared.flow.internalSessionFlow.vaulted {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                
+                var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                              tableName: nil,
+                                              bundle: Bundle.primerResources,
+                                              value: "Pay",
+                                              comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
+                
+                if let currency = settings.currency {
+                    title += " \(amount.toCurrencyString(currency: currency))"
+                }
+                
+                self.submitButton.setTitle(title, for: .normal)
+            }
         }
     }
     
@@ -420,42 +470,30 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                     "prepaid_reloadable_indicator": "NOT_APPLICABLE"
                 ]
             ]
-            
-            Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
-                do {
-                    if let clientToken = clientToken {
-                        try ClientTokenService.storeClientToken(clientToken)
-                    }
-                    
-                    let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                    configService.fetchConfig { err in
-                        self.configurePayButton(for: cardNetwork)
-                    }
-                    
-                } catch {
-                    
-                }
-            })
+            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
+            Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: self)
             
             cardNumberContainerView.rightImage2 = cardNetwork.icon
             
-            self.configurePayButton(for: cardNetwork)
+            if !Primer.shared.flow.internalSessionFlow.vaulted {
+                self.configurePayButton(cardNetwork: cardNetwork)
+            }
             
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
-            Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)], completion: { (clientToken, err) in
-                if let clientToken = clientToken {
-                    try? ClientTokenService.storeClientToken(clientToken)
-                }
-            })
-            
-            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-            let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                          tableName: nil,
-                                          bundle: Bundle.primerResources,
-                                          value: "Pay",
-                                          comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
-            submitButton.setTitle(title, for: .normal)
             cardNumberContainerView.rightImage2 = nil
+            
+            let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
+            Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: self)
+            
+            if !Primer.shared.flow.internalSessionFlow.vaulted {
+                let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+                let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                              tableName: nil,
+                                              bundle: Bundle.primerResources,
+                                              value: "Pay",
+                                              comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+                submitButton.setTitle(title, for: .normal)
+            }
         }
     }
     
@@ -487,17 +525,6 @@ extension CardFormPaymentMethodTokenizationViewModel {
             
             let state: AppStateProtocol = DependencyContainer.resolve()
             let decodedClientToken = state.decodedClientToken!
-            
-            guard let paymentMethod = paymentMethod else {
-                let err = PrimerError.invalidValue(key: "paymentMethod")
-                handle(error: err)
-                
-                DispatchQueue.main.async {
-                    Primer.shared.delegate?.onResumeError?(err)
-                }
-                
-                return
-            }
             
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)
@@ -532,6 +559,21 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 }
                 #endif
                 
+            } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
+                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                
+                firstly {
+                    configService.fetchConfig()
+                }
+                .done {
+                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                   if let amount = settings.amount {
+                       self.configurePayButton(amount: amount)
+                   }
+                }
+                .catch { err in
+                    
+                }
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken")
                 handle(error: err)

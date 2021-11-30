@@ -134,55 +134,54 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
-        let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-        Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
-            if let err = err {
-                self.handle(error: err)
-            } else if let clientToken = clientToken {
-                do {
-                    try ClientTokenService.storeClientToken(clientToken)
-                    
-                    do {
-                        try self.validate()
-                    } catch {
-                        DispatchQueue.main.async {
-                            Primer.shared.delegate?.checkoutFailed?(with: error)
-                            self.handleFailedTokenizationFlow(error: error)
-                        }
-                        return
-                    }
-                    
-                    firstly {
-                        self.tokenize()
-                    }
-                    .done { paymentMethod in
-                        self.paymentMethod = paymentMethod
-                        
-                        if Primer.shared.flow.internalSessionFlow.vaulted {
-                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                        }
-
-                        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
-                            if let err = err {
-                                self.handleFailedTokenizationFlow(error: err)
-                            } else {
-                                self.handleSuccessfulTokenizationFlow()
-                            }
-                        })
-                    }
-                    .catch { err in
-                        Primer.shared.delegate?.checkoutFailed?(with: err)
-                        self.handleFailedTokenizationFlow(error: err)
-                    }
-                } catch {
-                    Primer.shared.delegate?.checkoutFailed?(with: error)
-                    self.handle(error: error)
-                }
-            } else {
-                Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
+        if let onClientSessionActions = Primer.shared.delegate?.onClientSessionActions {
+            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
+            onClientSessionActions(actions, self)
+        } else {
+            continueTokenizationFlow()
+        }
+    }
+    
+    fileprivate func continueTokenizationFlow() {
+        do {
+            try self.validate()
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                self.handleFailedTokenizationFlow(error: error)
             }
-        })
+            return
+        }
+        
+        let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+        
+        firstly {
+            configService.fetchConfig()
+        }
+        .then {
+            self.tokenize()
+        }
+        .done { paymentMethod in
+            self.paymentMethod = paymentMethod
+            
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
+            }
+
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
+                if let err = err {
+                    self.handleFailedTokenizationFlow(error: err)
+                } else {
+                    self.handleSuccessfulTokenizationFlow()
+                }
+            })
+        }
+        .catch { err in
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            self.handleFailedTokenizationFlow(error: err)
+        }
     }
     
     func tokenize() -> Promise <PaymentMethodToken> {
@@ -360,7 +359,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
             
             let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
-            tokenizationService.tokenize(request: request) { [weak self] result in
+            tokenizationService.tokenize(request: request) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -382,7 +381,14 @@ extension PayPalTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
-        try? ClientTokenService.storeClientToken(clientToken)
+        do {
+            try ClientTokenService.storeClientToken(clientToken)
+            self.continueTokenizationFlow()
+            
+        } catch {
+            Primer.shared.delegate?.checkoutFailed?(with: error)
+            self.handle(error: error)
+        }
     }
     
     override func handleSuccess() {

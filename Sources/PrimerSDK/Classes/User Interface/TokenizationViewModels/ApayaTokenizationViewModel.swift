@@ -146,64 +146,57 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
+        if let onClientSessionActions = Primer.shared.delegate?.onClientSessionActions {
+            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
+            onClientSessionActions(actions, self)
+        } else {
+            continueTokenizationFlow()
+        }
+        
         let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-        Primer.shared.delegate?.onClientSessionActions?([ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)], completion: { (clientToken, err) in
-            if let err = err {
-                self.handle(error: err)
-            } else if let clientToken = clientToken {
-                do {
-                    try ClientTokenService.storeClientToken(clientToken)
-                    
-                    do {
-                        try self.validate()
-                    } catch {
-                        DispatchQueue.main.async {
-                            Primer.shared.delegate?.checkoutFailed?(with: error)
-                            self.handleFailedTokenizationFlow(error: error)
-                        }
-                        return
-                    }
-                    
-                    firstly {
-                        self.generateWebViewUrl()
-                    }
-                    .then { url -> Promise<Apaya.WebViewResponse> in
-                        self.presentApayaController(with: url)
-                    }
-                    .then { apayaWebViewResponse -> Promise<PaymentMethodToken> in
-                        self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
-                    }
-                    .done { paymentMethod in
-                        DispatchQueue.main.async {
-                            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
-                                if let err = err {
-                                    self.handleFailedTokenizationFlow(error: err)
-                                } else {
-                                    self.handleSuccessfulTokenizationFlow()
-                                }
-                            })
-                        }
-                    }
-                    .catch { err in
-                        DispatchQueue.main.async {
-                            Primer.shared.delegate?.checkoutFailed?(with: err)
-                            self.handleFailedTokenizationFlow(error: err)
-                        }
-                    }
-                    
-                } catch {
-                    DispatchQueue.main.async {
-                        Primer.shared.delegate?.checkoutFailed?(with: error)
-                        self.handle(error: error)
-                    }
-                }
-            } else {
-                DispatchQueue.main.async {
-                    Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
-                }
+        let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
+        Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: self)
+    }
+    
+    fileprivate func continueTokenizationFlow() {
+        do {
+            try self.validate()
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                self.handleFailedTokenizationFlow(error: error)
             }
-        })
+            return
+        }
+        
+        firstly {
+            self.generateWebViewUrl()
+        }
+        .then { url -> Promise<Apaya.WebViewResponse> in
+            self.presentApayaController(with: url)
+        }
+        .then { apayaWebViewResponse -> Promise<PaymentMethodToken> in
+            self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
+        }
+        .done { paymentMethod in
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
+                    if let err = err {
+                        self.handleFailedTokenizationFlow(error: err)
+                    } else {
+                        self.handleSuccessfulTokenizationFlow()
+                    }
+                })
+            }
+        }
+        .catch { err in
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: err)
+                self.handleFailedTokenizationFlow(error: err)
+            }
+        }
     }
     
     private func generateWebViewUrl() -> Promise<URL> {
@@ -398,7 +391,29 @@ extension ApayaTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
-        try? ClientTokenService.storeClientToken(clientToken)
+        do {
+            // For Apaya there's no redirection URL, once the webview is presented it will get its response from a URL redirection.
+            // We'll end up in here only for surcharge.
+            try ClientTokenService.storeClientToken(clientToken)
+            
+            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+            
+            firstly {
+                configService.fetchConfig()
+            }
+            .done {
+                self.continueTokenizationFlow()
+            }
+            .catch { err in
+                self.handle(error: err)
+            }
+                        
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                self.handle(error: error)
+            }
+        }
     }
     
     override func handleSuccess() {
