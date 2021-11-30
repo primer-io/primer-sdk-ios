@@ -407,7 +407,17 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             let params: [String: Any] = [
                 "paymentMethodType": "PAYMENT_CARD",
                 "binData": [
-                    "network": cardNetwork.rawValue.uppercased()
+                    "network": cardNetwork.rawValue.uppercased(),
+                    "issuer_name": nil,
+                    "product_code": cardNetwork.rawValue.uppercased(),
+                    "product_name": cardNetwork.rawValue.uppercased(),
+                    "product_usage_type": "UNKNOWN",
+                    "account_number_type": "UNKNOWN",
+                    "issuer_country_code": nil,
+                    "account_funding_type": "UNKNOWN",
+                    "issuer_currency_code": nil,
+                    "regional_restriction": "UNKNOWN",
+                    "prepaid_reloadable_indicator": "NOT_APPLICABLE"
                 ]
             ]
             
