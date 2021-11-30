@@ -11,7 +11,7 @@ struct PrimerConfiguration: Codable {
     }
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
-        var viewModels = paymentMethodConfigs?
+        var viewModels = PrimerConfiguration.paymentMethodConfigs?
             .filter({ $0.type.isEnabled })
             .compactMap({ $0.tokenizationViewModel })
         ?? []
@@ -88,15 +88,21 @@ struct PaymentMethodConfig: Codable {
             .adyenVipps,
             .adyenAlipay,
             .adyenGiropay,
+            .buckarooBancontact,
+            .buckarooEps,
+            .buckarooGiropay,
+            .buckarooIdeal,
+            .buckarooSofort,
             .mollieBankcontact,
             .mollieIdeal,
             .payNLBancontact,
             .payNLGiropay,
             .payNLPayconiq,
-            .adyenSofortBanking,
+            .adyenSofort,
             .adyenTrustly,
             .adyenTwint
         ]
+        
         if type == .paymentCard {
             return CardFormPaymentMethodTokenizationViewModel(config: self)
         } else if type == .applePay {
@@ -228,12 +234,17 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case adyenGiropay
     case adyenIDeal
     case adyenMobilePay
-    case adyenSofortBanking
+    case adyenSofort
     case adyenTrustly
     case adyenTwint
     case adyenVipps
     case apaya
     case applePay
+    case buckarooBancontact
+    case buckarooEps
+    case buckarooGiropay
+    case buckarooIdeal
+    case buckarooSofort
     case goCardlessMandate
     case googlePay
     case hoolah
@@ -248,6 +259,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case payPal
     case other(rawValue: String)
     
+    // swiftlint:disable cyclomatic_complexity
     init(rawValue: String) {
         switch rawValue {
         case "ADYEN_ALIPAY":
@@ -260,8 +272,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .adyenIDeal
         case "ADYEN_MOBILEPAY":
             self = .adyenMobilePay
-        case "ADYEN_SOFORT_BANKING":
-            self = .adyenSofortBanking
+        case "ADYEN_SOFORT":
+            self = .adyenSofort
         case "ADYEN_TRUSTLY":
             self = .adyenTrustly
         case "ADYEN_TWINT":
@@ -272,6 +284,16 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .apaya
         case "APPLE_PAY":
             self = .applePay
+        case "BUCKAROO_BANCONTACT":
+            self = .buckarooBancontact
+        case "BUCKAROO_EPS":
+            self = .buckarooEps
+        case "BUCKAROO_GIROPAY":
+            self = .buckarooGiropay
+        case "BUCKAROO_IDEAL":
+            self = .buckarooIdeal
+        case "BUCKAROO_SOFORT":
+            self = .buckarooSofort
         case "GOCARDLESS":
             self = .goCardlessMandate
         case "GOOGLE_PAY":
@@ -313,8 +335,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "ADYEN_IDEAL"
         case .adyenMobilePay:
             return "ADYEN_MOBILEPAY"
-        case .adyenSofortBanking:
-            return "ADYEN_SOFORT_BANKING"
+        case .adyenSofort:
+            return "ADYEN_SOFORT"
         case .adyenTrustly:
             return "ADYEN_TRUSTLY"
         case .adyenTwint:
@@ -325,6 +347,16 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "APAYA"
         case .applePay:
             return "APPLE_PAY"
+        case .buckarooBancontact:
+            return "BUCKAROO_BANCONTACT"
+        case .buckarooEps:
+            return "BUCKAROO_EPS"
+        case .buckarooGiropay:
+            return "BUCKAROO_GIROPAY"
+        case .buckarooIdeal:
+            return "BUCKAROO_IDEAL"
+        case .buckarooSofort:
+            return "BUCKAROO_SOFORT"
         case .goCardlessMandate:
             return "GOCARDLESS"
         case .googlePay:
@@ -361,11 +393,16 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .adyenGiropay,
                 .adyenIDeal,
                 .adyenMobilePay,
-                .adyenSofortBanking,
+                .adyenSofort,
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
                 .applePay,
+                .buckarooBancontact,
+                .buckarooEps,
+                .buckarooGiropay,
+                .buckarooIdeal,
+                .buckarooSofort,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,
@@ -393,10 +430,48 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return true
         }
     }
+    // swiftlint:enable cyclomatic_complexity
+    
+    private enum CodingKeys: String, CodingKey {
+        case adyenAlipay
+        case adyenDotPay
+        case adyenGiropay
+        case adyenIDeal
+        case adyenMobilePay
+        case adyenSofort
+        case adyenTrustly
+        case adyenTwint
+        case adyenVipps
+        case apaya
+        case applePay
+        case buckarooBancontact
+        case buckarooEps
+        case buckarooGiropay
+        case buckarooIdeal
+        case buckarooSofort
+        case goCardlessMandate
+        case googlePay
+        case hoolah
+        case klarna
+        case mollieBankcontact
+        case mollieIdeal
+        case payNLBancontact
+        case payNLGiropay
+        case payNLIdeal
+        case payNLPayconiq
+        case paymentCard
+        case payPal
+        case other
+    }
     
     public init(from decoder: Decoder) throws {
         let rawValue: String = try decoder.singleValueContainer().decode(String.self)
         self = PaymentMethodConfigType(rawValue: rawValue)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.rawValue, forKey: CodingKeys(rawValue: "type")!)
     }
 }
 
