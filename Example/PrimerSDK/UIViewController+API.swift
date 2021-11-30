@@ -20,10 +20,10 @@ struct PaymentRequest: Encodable {
     let isV3: Bool = true
     let environment: Environment
     let paymentMethod: String
-    let amount: Int
+    let amount: Int?
     let type: String?
-    let currencyCode: Currency
-    let countryCode: CountryCode
+    let currencyCode: Currency?
+    let countryCode: CountryCode?
 }
 
 enum NetworkError: Error {
@@ -118,7 +118,7 @@ extension UIViewController {
                 if jsonData != nil {
                     jsonStr = String(data: jsonData!, encoding: .utf8 )
                 }
-                msg += "Body:\n\(jsonStr)\n"
+                msg += "Body:\n\(resJson)\n"
             } else {
                 msg += "Body (String): \(String(data: data, encoding: .utf8))"
             }
