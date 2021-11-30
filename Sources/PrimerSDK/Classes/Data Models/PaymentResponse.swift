@@ -45,6 +45,7 @@ internal enum PaymentStatus: Int, Codable {
 }
 
 internal enum RequiredActionName: String, Codable {
+    case checkout = "CHECKOUT"
     case threeDSAuthentication = "3DS_AUTHENTICATION"
     case usePrimerSDK = "USE_PRIMER_SDK"
 }
