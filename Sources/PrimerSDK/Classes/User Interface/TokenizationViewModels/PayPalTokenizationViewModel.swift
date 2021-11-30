@@ -256,7 +256,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             }
             
             if #available(iOS 13, *) {
-                session =  ASWebAuthenticationSession(
+                let webAuthSession =  ASWebAuthenticationSession(
                     url: url,
                     callbackURLScheme: urlScheme,
                     completionHandler: { (url, error) in
@@ -266,11 +266,14 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                         } else if let url = url {
                             seal.fulfill(url)
                         }
+
+                        (self.session as! ASWebAuthenticationSession).cancel()
                     }
                 )
+                session = webAuthSession
                 
-                (session as! ASWebAuthenticationSession).presentationContextProvider = self
-                (session as! ASWebAuthenticationSession).start()
+                webAuthSession.presentationContextProvider = self
+                webAuthSession.start()
                 
             } else if #available(iOS 11, *) {
                 session = SFAuthenticationSession(
