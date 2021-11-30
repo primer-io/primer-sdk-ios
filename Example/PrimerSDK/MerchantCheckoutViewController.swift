@@ -175,10 +175,6 @@ class MerchantCheckoutViewController: UIViewController {
         guard let url = URL(string: "\(endpoint)/clientSession") else {
             return completion(nil, NetworkError.missingParams)
         }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue(ClientSessionVersion.v3.rawValue, forHTTPHeaderField: "X-Api-Version")
         
         let body = CreateClientTokenRequest(
             environment: environment,
@@ -226,69 +222,82 @@ class MerchantCheckoutViewController: UIViewController {
                 shipping: Shipping(amount: 0)),
             paymentMethod: nil)
         
-        do {
-            request.httpBody = try JSONEncoder().encode(body)
-        } catch {
-            return completion(nil, NetworkError.missingParams)
-        }
+        let bodyData = try? JSONEncoder().encode(body)
         
-        callApi(request, completion: { result in
-            switch result {
-            case .success(let data):
-                do {
-                    if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
-                        completion(token, nil)
-                        print("🔥 token: \(token)")
-                    } else {
-                        let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
-                        completion(nil, err)
+        let networking = Networking()
+        networking.request(
+            apiVersion: .v3,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                            completion(token, nil)
+                            print("🔥 token: \(token)")
+                        } else {
+                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                            completion(nil, err)
+                        }
+                        
+                    } catch {
+                        completion(nil, error)
                     }
-                    
-                } catch {
-                    completion(nil, error)
+                case .failure(let err):
+                    completion(nil, err)
                 }
-            case .failure(let err):
-                completion(nil, err)
             }
-        })
+    
     }
     
     func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
         guard let url = URL(string: "\(endpoint)/clientSession") else {
             return completion(nil, NetworkError.missingParams)
         }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue(ClientSessionVersion.v3.rawValue, forHTTPHeaderField: "X-Api-Version")
+        
+        let bodyData: Data!
         
         do {
             if let requestBodyJson = requestBody.dictionaryValue {
-                request.httpBody = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
+                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
+            } else {
+                completion(nil, NetworkError.serializationError)
+                return
             }
         } catch {
-            return completion(nil, NetworkError.missingParams)
+            completion(nil, NetworkError.missingParams)
+            return
         }
         
-        callApi(request, completion: { result in
-            switch result {
-            case .success(let data):
-                do {
-                    if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
-                        self.clientToken = token
-                        completion(token, nil)
-                    } else {
-                        let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
-                        completion(nil, err)
+        let networking = Networking()
+        networking.request(
+            apiVersion: .v3,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                            self.clientToken = token
+                            completion(token, nil)
+                        } else {
+                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                            completion(nil, err)
+                        }
+                        
+                    } catch {
+                        completion(nil, error)
                     }
-                    
-                } catch {
-                    completion(nil, error)
+                case .failure(let err):
+                    completion(nil, err)
                 }
-            case .failure(let err):
-                completion(nil, err)
             }
-        })
     }
     
     func requestClientSessionWithActions(_ actions: [PrimerSDK.ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
@@ -300,9 +309,6 @@ class MerchantCheckoutViewController: UIViewController {
         guard let url = URL(string: "\(endpoint)/actions") else {
             return completion(nil, NetworkError.missingParams)
         }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         var merchantActions: [ClientSession.Action] = []
         for action in actions {
@@ -318,55 +324,56 @@ class MerchantCheckoutViewController: UIViewController {
             }
         }
                 
+        var bodyData: Data!
+        
         do {
             let bodyJson = ClientSessionActionsRequest(clientToken: clientToken, actions: merchantActions)
-            request.httpBody = try JSONEncoder().encode(bodyJson)
-//            let bodyJson = ["actions": actions.compactMap({ $0.toDictionary() })]
-//            request.httpBody = try JSONSerialization.data(withJSONObject: bodyJson, options: .fragmentsAllowed)
+            bodyData = try JSONEncoder().encode(bodyJson)
         } catch {
-            return completion(nil, NetworkError.missingParams)
+            completion(nil, NetworkError.missingParams)
+            return
         }
         
-        callApi(request, completion: { result in
-            switch result {
-            case .success(let data):
-                do {
-                    guard let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
-                        completion(nil, NetworkError.missingParams)
-                        return
-                    }
-                    
-                    print("Client Token Response:\n\(json)")
-                    
-                    guard let clientToken = json["clientToken"] as? String else {
-                        completion(nil, NetworkError.missingParams)
-                        return
-                    }
+        let networking = Networking()
+        networking.request(
+            apiVersion: nil,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        guard let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
+                            completion(nil, NetworkError.missingParams)
+                            return
+                        }
+                        
+                        print("Client Token Response:\n\(json)")
+                        
+                        guard let clientToken = json["clientToken"] as? String else {
+                            completion(nil, NetworkError.missingParams)
+                            return
+                        }
 
-                    print("Client Token:\n\(clientToken)")
-                    completion(clientToken, nil)
+                        print("Client Token:\n\(clientToken)")
+                        completion(clientToken, nil)
 
-                } catch {
-                    completion(nil, error)
+                    } catch {
+                        completion(nil, error)
+                    }
+                case .failure(let err):
+                    completion(nil, err)
                 }
-            case .failure(let err):
-                completion(nil, err)
             }
-        })
     }
     
     func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
         guard let url = URL(string: "\(endpoint)/payments") else {
             return completion(nil, NetworkError.missingParams)
         }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("2021-09-27", forHTTPHeaderField: "x-api-version")
-        
-        let type = paymentMethod.paymentInstrumentType
-        
+                
         let body = PaymentRequest(
             environment: environment,
             paymentMethod: paymentMethod.token,
@@ -375,27 +382,36 @@ class MerchantCheckoutViewController: UIViewController {
             currencyCode: nil,
             countryCode: nil)
         
+        var bodyData: Data!
+        
         do {
-            request.httpBody = try JSONEncoder().encode(body)
+            bodyData = try JSONEncoder().encode(body)
         } catch {
             completion(nil, NetworkError.missingParams)
             return
         }
         
-        callApi(request) { (result) in
-            switch result {
-            case .success(let data):
-                if let dic = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                    completion(dic, nil)
-                } else {
-                    let err = NetworkError.invalidResponse
+        let networking = Networking()
+        networking.request(
+            apiVersion: .v3,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    if let dic = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                        completion(dic, nil)
+                    } else {
+                        let err = NetworkError.invalidResponse
+                        completion(nil, err)
+                    }
+                    
+                case .failure(let err):
                     completion(nil, err)
                 }
-                
-            case .failure(let err):
-                completion(nil, err)
             }
-        }
     }
 
 }
@@ -577,23 +593,32 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             "resumeToken": clientToken,
             "environment": environment.rawValue
         ]
-
+        
+        var bodyData: Data!
+        
         do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: bodyDic, options: .fragmentsAllowed)
+            bodyData = try JSONSerialization.data(withJSONObject: bodyDic, options: .fragmentsAllowed)
         } catch {
             resumeHandler.handle(error: NetworkError.missingParams)
             return
         }
+        
+        let networking = Networking()
+        networking.request(
+            apiVersion: nil,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success:
+                    resumeHandler.handleSuccess()
 
-        callApi(request) { (result) in
-            switch result {
-            case .success:
-                resumeHandler.handleSuccess()
-
-            case .failure(let err):
-                resumeHandler.handle(error: err)
+                case .failure(let err):
+                    resumeHandler.handle(error: err)
+                }
             }
-        }
     }
     
     func onResumeError(_ error: Error) {
