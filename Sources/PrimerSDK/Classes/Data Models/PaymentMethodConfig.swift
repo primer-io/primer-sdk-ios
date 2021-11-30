@@ -248,6 +248,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case payPal
     case other(rawValue: String)
     
+    // swiftlint:disable:next cyclomatic_complexity
     init(rawValue: String) {
         switch rawValue {
         case "ADYEN_ALIPAY":

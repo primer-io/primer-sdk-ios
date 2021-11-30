@@ -205,6 +205,7 @@ public class Primer {
         show(flow: .defaultWithVault)
     }
     
+    // swiftlint:disable:next cyclomatic_complexity
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
         switch (paymentMethod, intent) {
         case (.adyenAlipay, .checkout):
