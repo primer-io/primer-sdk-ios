@@ -61,10 +61,6 @@ class MerchantCheckoutViewController: UIViewController {
         
         generalSettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
-            customerId: customerId,
-            amount: amount,
-            currency: currency,
-            countryCode: .se,
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "primer",
@@ -73,38 +69,9 @@ class MerchantCheckoutViewController: UIViewController {
             hasDisabledSuccessScreen: false,
             businessDetails: nil,
             directDebitHasNoAmount: false,
-            orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
-            ],
             isInitialLoadingHidden: false,
             is3DSOnVaultingEnabled: true,
-            billingAddress: PrimerSDK.Address(
-                addressLine1: "Line 1",
-                addressLine2: "Line 2",
-                city: "City",
-                state: "State",
-                countryCode: "SE",
-                postalCode: "15236"),
-            orderId: "order id",
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
-            customer: PrimerSDK.Customer(
-                firstName: "John",
-                lastName: "Smith",
-                email: "john.smith@primer.io",
-                homePhoneNumber: nil,
-                mobilePhoneNumber: nil,
-                workPhoneNumber: nil,
-                billingAddress: PrimerSDK.Address(
-                    addressLine1: "1 Rue",
-                    addressLine2: "",
-                    city: "Paris",
-                    state: "",
-                    countryCode: "FR",
-                    postalCode: "75001"
-                )
-            )
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
 
         Primer.shared.delegate = self
@@ -115,28 +82,12 @@ class MerchantCheckoutViewController: UIViewController {
     func configurePrimer() {
         Primer.shared.configure(settings: generalSettings)
         Primer.shared.configure(theme: CheckoutTheme.primer)
-        
-        Primer.shared.setDirectDebitDetails(
-            firstName: "John",
-            lastName: "Doe",
-            email: "test@mail.com",
-            iban: "FR1420041010050500013M02606",
-            address: PrimerSDK.Address(
-                addressLine1: "1 Rue",
-                addressLine2: "",
-                city: "Paris",
-                state: "",
-                countryCode: "FR",
-                postalCode: "75001"
-            )
-        )
     }
     
     // MARK: - ACTIONS
     
     @IBAction func addApayaButtonTapped(_ sender: Any) {
         vaultApayaSettings = PrimerSettings(
-            currency: .GBP,
             isFullScreenOnly: true,
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
@@ -149,10 +100,6 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func addCardButtonTapped(_ sender: Any) {
         let cardSettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
-            customerId: customerId,
-            amount: amount,
-            currency: currency,
-            countryCode: .se,
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "primer",
@@ -161,38 +108,9 @@ class MerchantCheckoutViewController: UIViewController {
             hasDisabledSuccessScreen: false,
             businessDetails: nil,
             directDebitHasNoAmount: false,
-            orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
-            ],
             isInitialLoadingHidden: true,
             is3DSOnVaultingEnabled: true,
-            billingAddress: PrimerSDK.Address(
-                addressLine1: "Line 1",
-                addressLine2: "Line 2",
-                city: "City",
-                state: "State",
-                countryCode: "SE",
-                postalCode: "15236"),
-            orderId: "order id",
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
-            customer: PrimerSDK.Customer(
-                firstName: "John",
-                lastName: "Smith",
-                email: "john.smith@primer.io",
-                homePhoneNumber: nil,
-                mobilePhoneNumber: nil,
-                workPhoneNumber: nil,
-                billingAddress: PrimerSDK.Address(
-                    addressLine1: "1 Rue",
-                    addressLine2: "",
-                    city: "Paris",
-                    state: "",
-                    countryCode: "FR",
-                    postalCode: "75001"
-                )
-            )
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
         
         Primer.shared.configure(settings: cardSettings)
@@ -201,9 +119,6 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {
         vaultPayPalSettings = PrimerSettings(
-            customerId: customerId,
-            currency: currency,
-            countryCode: .se,
             urlScheme: "primer",
             urlSchemeIdentifier: "primer",
             hasDisabledSuccessScreen: true,
@@ -228,26 +143,7 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
         applePaySettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
-            customerId: customerId,
-            currency: currency,
-            countryCode: .se,
             hasDisabledSuccessScreen: true,
-            businessDetails: BusinessDetails(
-                name: "My Business",
-                address: PrimerSDK.Address(
-                    addressLine1: "107 Rue",
-                    addressLine2: nil,
-                    city: "Paris",
-                    state: nil,
-                    countryCode: "FR",
-                    postalCode: "75001"
-                )
-            ),
-            orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
-            ],
             isInitialLoadingHidden: true
         )
         
@@ -511,7 +407,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 
         callApi(request) { (result) in
             switch result {
-            case .success(let data):
+            case .success:
                 resumeHandler.handleSuccess()
 
             case .failure(let err):

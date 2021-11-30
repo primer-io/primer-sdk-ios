@@ -205,7 +205,7 @@ public class Primer {
         show(flow: .defaultWithVault)
     }
     
-    // swiftlint:disable:next cyclomatic_complexity
+    // swiftlint:disable cyclomatic_complexity
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
         switch (paymentMethod, intent) {
         case (.adyenAlipay, .checkout):
@@ -223,8 +223,8 @@ public class Primer {
         case (.adyenMobilePay, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenMobilePay)
             
-        case (.adyenSofortBanking, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenSofortBanking)
+        case (.adyenSofort, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenSofort)
             
         case (.adyenTrustly, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenTrustly)
@@ -240,6 +240,21 @@ public class Primer {
             
         case (.applePay, .checkout):
             flow = .checkoutWithApplePay
+            
+        case (.buckarooBancontact, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooEps)
+            
+        case (.buckarooEps, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooEps)
+            
+        case (.buckarooGiropay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooEps)
+            
+        case (.buckarooIdeal, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooIdeal)
+            
+        case (.buckarooSofort, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooSofort)
             
         case (.hoolah, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
@@ -288,9 +303,14 @@ public class Primer {
             (.adyenDotPay, .vault),
             (.adyenGiropay, .vault),
             (.adyenIDeal, .vault),
+            (.buckarooBancontact, .vault),
+            (.buckarooEps, .vault),
+            (.buckarooGiropay, .vault),
+            (.buckarooIdeal, .vault),
+            (.buckarooSofort, .vault),
             (.hoolah, .vault),
             (.payNLIdeal, .vault),
-            (.adyenSofortBanking, .vault),
+            (.adyenSofort, .vault),
             (.adyenTrustly, .vault),
             (.adyenTwint, .vault),
             (.adyenMobilePay, .vault),
@@ -309,6 +329,7 @@ public class Primer {
         presentingViewController = viewController
         show(flow: flow!)
     }
+    // swiftlint:enable cyclomatic_complexity
 
     /**
      Performs an asynchronous get call returning all the saved payment methods for the user ID specified in the settings object when instantiating Primer. Provide a completion handler to access the returned list of saved payment methods (these have already been added to Primer vault and can be sent directly to your backend to authorize or capture a payment)
