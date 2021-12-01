@@ -147,9 +147,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }()
     
     lazy var paymentMethodButton: PrimerButton = {
-        if self.config.type == .paymentCard {
-            
-        }
         let paymentMethodButton = PrimerButton()
         paymentMethodButton.accessibilityIdentifier = config.type.rawValue
         paymentMethodButton.clipsToBounds = true
@@ -163,7 +160,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         paymentMethodButton.setTitle(buttonTitle, for: .normal)
         paymentMethodButton.setImage(buttonImage, for: .normal)
         paymentMethodButton.setTitleColor(buttonTitleColor, for: .normal)
-        print("Button: \(self.config.type) Color: \(buttonTintColor?.hex)")
         paymentMethodButton.tintColor = buttonTintColor
         paymentMethodButton.layer.borderWidth = buttonBorderWidth
         paymentMethodButton.layer.borderColor = buttonBorderColor?.cgColor
