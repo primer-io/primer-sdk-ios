@@ -49,6 +49,8 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		849A28EB275614070037C2D1 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EA275614070037C2D1 /* Networking.swift */; };
+		849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */; };
+		849A28EF2757A9070037C2D1 /* PaymentCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EE2757A9070037C2D1 /* PaymentCard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +137,8 @@
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* PrimerSDK_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimerSDK_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		849A28EA275614070037C2D1 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
+		849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalPaymentMethods.swift; sourceTree = "<group>"; };
+		849A28EE2757A9070037C2D1 /* PaymentCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentCard.swift; sourceTree = "<group>"; };
 		8F5988CB146317F5C6E2C306 /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FC808D60F9740765D223369 /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		BB0D42009796741AAD1AC5C1 /* Pods-PrimerSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -271,6 +275,8 @@
 				15F9E67C2678C88000F6B6C1 /* UniversalCheckout.swift */,
 				15300DB8267A1211009A1B9C /* Vault.swift */,
 				15300DBA267A1646009A1B9C /* VaultKlarna.swift */,
+				849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */,
+				849A28EE2757A9070037C2D1 /* PaymentCard.swift */,
 			);
 			path = PrimerSDKExample_UITests;
 			sourceTree = "<group>";
@@ -636,8 +642,10 @@
 			files = (
 				15F9E67D2678C88000F6B6C1 /* UniversalCheckout.swift in Sources */,
 				1582B9AD260A402E00C80BD7 /* Base.swift in Sources */,
+				849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */,
 				1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */,
 				15300DBB267A1646009A1B9C /* VaultKlarna.swift in Sources */,
+				849A28EF2757A9070037C2D1 /* PaymentCard.swift in Sources */,
 				151B098C267A276100FB49B8 /* Vault.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

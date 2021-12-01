@@ -151,6 +151,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             
         }
         let paymentMethodButton = PrimerButton()
+        paymentMethodButton.accessibilityIdentifier = config.type.rawValue
         paymentMethodButton.clipsToBounds = true
         paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)

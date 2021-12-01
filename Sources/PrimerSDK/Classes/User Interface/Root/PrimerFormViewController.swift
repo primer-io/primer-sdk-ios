@@ -69,6 +69,7 @@ class PrimerFormViewController: PrimerViewController {
                 let noAdditionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.hasUnknownSurcharge == false && ($0.config.surcharge ?? 0) == 0 })
                 if !noAdditionalFeePaymentMethodsViewModels.isEmpty {
                     let noAdditionalFeesContainerView = PaymentMethodsGroupView(title: "No additional fee", paymentMethodTokenizationViewModels: noAdditionalFeePaymentMethodsViewModels)
+                    noAdditionalFeesContainerView.accessibilityIdentifier = "no_additional_fees_surcharge_group_view"
                     noAdditionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
                     availablePaymentMethodsStackView.addArrangedSubview(noAdditionalFeesContainerView)
                 }
@@ -80,6 +81,7 @@ class PrimerFormViewController: PrimerViewController {
                     for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
                         let title = additionalFeePaymentMethodsViewModel.surcharge
                         let additionalFeesContainerView = PaymentMethodsGroupView(title: title, paymentMethodTokenizationViewModels: [additionalFeePaymentMethodsViewModel])
+                        additionalFeesContainerView.accessibilityIdentifier = "\(additionalFeePaymentMethodsViewModel.config.type.rawValue.lowercased())_surcharge_group_view"
                         additionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                         availablePaymentMethodsStackView.addArrangedSubview(additionalFeesContainerView)
                     }
@@ -96,6 +98,7 @@ class PrimerFormViewController: PrimerViewController {
                                                  value: "Additional fee may apply",
                                                  comment: "Additional fee may apply - Surcharge (Label)"),
                         paymentMethodTokenizationViewModels: unknownFeePaymentMethodsViewModels)
+                    unknownFeesContainerView.accessibilityIdentifier = "additional_fees_surcharge_group_view"
                     
                     unknownFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
                     availablePaymentMethodsStackView.addArrangedSubview(unknownFeesContainerView)
