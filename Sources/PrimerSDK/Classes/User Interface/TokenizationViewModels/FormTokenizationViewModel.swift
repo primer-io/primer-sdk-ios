@@ -512,11 +512,11 @@ extension CardFormPaymentMethodTokenizationViewModel {
     override func handle(newClientToken clientToken: String) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         if state.accessToken == clientToken {
-            let err = PrimerError.invalidValue(key: "clientToken")
-            handle(error: err)
-            DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(err)
-            }
+//            let err = PrimerError.invalidValue(key: "clientToken")
+//            handle(error: err)
+//            DispatchQueue.main.async {
+//                Primer.shared.delegate?.onResumeError?(err)
+//            }
             return
         }
         
