@@ -105,25 +105,21 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
-            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
             let err = PrimerError.tokenizationPreRequestFailed
-            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard config.id != nil else {
             let err = PaymentException.missingConfigurationId
-            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.coreUrl != nil else {
             let err = PrimerError.invalidValue(key: "coreUrl")
-            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
     }
