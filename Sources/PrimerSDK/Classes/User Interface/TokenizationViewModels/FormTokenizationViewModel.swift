@@ -528,6 +528,12 @@ extension CardFormPaymentMethodTokenizationViewModel {
             
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)
+                guard let paymentMethod = paymentMethod else {
+                    let err = PrimerError.threeDSFailed
+                    Primer.shared.delegate?.onResumeError?(err)
+                    return
+                }
+                
                 let threeDSService = ThreeDSService()
                 threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
@@ -536,7 +542,6 @@ extension CardFormPaymentMethodTokenizationViewModel {
                             guard let threeDSPostAuthResponse = paymentMethodToken.1,
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
                                       let err = PrimerError.threeDSFailed
-
                                       Primer.shared.delegate?.onResumeError?(err)
                                       return
                                   }
