@@ -168,10 +168,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
-        if let onClientSessionActions = Primer.shared.delegate?.onClientSessionActions {
+        if Primer.shared.delegate?.onClientSessionActions != nil {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
-            onClientSessionActions(actions, self)
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
             continueTokenizationFlow()
         }
@@ -583,6 +582,7 @@ extension KlarnaTokenizationViewModel: WKNavigationDelegate {
 extension KlarnaTokenizationViewModel {
     
     override func handle(error: Error) {
+        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
         self.completion = nil
     }
