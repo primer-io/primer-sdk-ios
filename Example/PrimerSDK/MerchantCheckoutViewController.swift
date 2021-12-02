@@ -350,7 +350,20 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             amount: nil,
             metadata: nil,
             customer: ClientSessionRequestBody.Customer(
-                emailAddress: "john@primer.io"),
+                firstName: "John",
+                lastName: "Smith",
+                emailAddress: "john@primer.io",
+                mobileNumber: "+4478888888888",
+                shippingAddress: Address(
+                    firstName: "John",
+                    lastName: "Smith",
+                    addressLine1: "Line 1",
+                    addressLine2: nil,
+                    city: "Athens",
+                    postalCode: "15236",
+                    state: nil,
+                    countryCode: "GR")
+            ),
             order: ClientSessionRequestBody.Order(
                 countryCode: countryCode,
                 lineItems: [

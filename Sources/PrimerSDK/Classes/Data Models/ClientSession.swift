@@ -104,6 +104,7 @@ public class ClientSession: Codable {
         public func toString() -> String {
             return "\(addressLine1 ?? "")\(addressLine2?.withComma ?? "")\(city?.withComma ?? "")\(postalCode?.withComma ?? "")\(countryCode?.rawValue.withComma ?? "")"
         }
+        
     }
     
     // MARK: - ClientSession.PaymentMethod
@@ -234,14 +235,14 @@ public class ClientSession: Codable {
         let id: String?
         let firstName: String?
         let lastName: String?
-        let email: String?
+        let emailAddress: String?
         let mobileNumber: String?
         let billingAddress: ClientSession.Address?
         let shippingAddress: ClientSession.Address?
         let taxId: String?
         
         enum CodingKeys: String, CodingKey {
-            case id = "customerId", firstName, lastName, email, mobileNumber, billingAddress, shippingAddress, taxId
+            case id = "customerId", firstName, lastName, emailAddress, mobileNumber, billingAddress, shippingAddress, taxId
         }
         
         public init(from decoder: Decoder) throws {
@@ -249,7 +250,7 @@ public class ClientSession: Codable {
             self.id = (try? container.decode(String?.self, forKey: .id)) ?? nil
             self.firstName = (try? container.decode(String?.self, forKey: .firstName)) ?? nil
             self.lastName = (try? container.decode(String?.self, forKey: .lastName)) ?? nil
-            self.email = (try? container.decode(String?.self, forKey: .email)) ?? nil
+            self.emailAddress = (try? container.decode(String?.self, forKey: .emailAddress)) ?? nil
             self.mobileNumber = (try? container.decode(String?.self, forKey: .mobileNumber)) ?? nil
             self.billingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .billingAddress)) ?? nil
             self.shippingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .shippingAddress)) ?? nil
@@ -260,7 +261,7 @@ public class ClientSession: Codable {
             id: String? = nil,
             firstName: String? = nil,
             lastName: String? = nil,
-            email: String? = nil,
+            emailAddress: String? = nil,
             mobileNumber: String? = nil,
             billingAddress: Address? = nil,
             shippingAddress: Address? = nil,
@@ -269,7 +270,7 @@ public class ClientSession: Codable {
             self.id = id
             self.firstName = firstName
             self.lastName = lastName
-            self.email = email
+            self.emailAddress = emailAddress
             self.mobileNumber = mobileNumber
             self.billingAddress = billingAddress
             self.shippingAddress = shippingAddress

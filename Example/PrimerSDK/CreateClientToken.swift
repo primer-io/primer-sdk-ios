@@ -164,13 +164,29 @@ struct ClientSessionRequestBody {
     }
     
     struct Customer: Encodable {
+        let firstName: String?
+        let lastName: String?
         let emailAddress: String?
+        let mobileNumber: String?
+        let shippingAddress: Address?
         
         var dictionaryValue: [String: Any]? {
             var dic: [String: Any] = [:]
             
+            if let firstName = firstName {
+                dic["firstName"] = firstName
+            }
+            
+            if let lastName = lastName {
+                dic["lastName"] = lastName
+            }
+            
             if let emailAddress = emailAddress {
                 dic["emailAddress"] = emailAddress
+            }
+            
+            if let shippingAddress = shippingAddress {
+                dic["shippingAddress"] = shippingAddress.dictionaryValue
             }
 
             return dic.keys.count == 0 ? nil : dic
@@ -298,24 +314,24 @@ struct JWTToken: Decodable {
 }
 
 public struct Address: Codable {
-    let addressLine1: String
+    let addressLine1: String?
     let addressLine2: String?
-    let city: String
-    let countryCode: String
-    let postalCode: String
+    let city: String?
+    let countryCode: String?
+    let postalCode: String?
     let firstName: String?
     let lastName: String?
     let state: String?
     
     public init(
+        firstName: String?,
+        lastName: String?,
         addressLine1: String,
         addressLine2: String?,
         city: String,
-        countryCode: String,
         postalCode: String,
-        firstName: String?,
-        lastName: String?,
-        state: String?
+        state: String?,
+        countryCode: String
     ) {
         self.addressLine1 = addressLine1
         self.addressLine2 = addressLine2
@@ -325,6 +341,44 @@ public struct Address: Codable {
         self.firstName = firstName
         self.lastName = lastName
         self.state = state
+    }
+    
+    var dictionaryValue: [String: Any]? {
+        var dic: [String: Any] = [:]
+                    
+        if let firstName = firstName {
+            dic["firstName"] = firstName
+        }
+        
+        if let lastName = lastName {
+            dic["lastName"] = lastName
+        }
+        
+        if let addressLine1 = addressLine1 {
+            dic["addressLine1"] = addressLine1
+        }
+        
+        if let addressLine2 = addressLine2 {
+            dic["addressLine2"] = addressLine2
+        }
+        
+        if let city = city {
+            dic["city"] = city
+        }
+        
+        if let postalCode = postalCode {
+            dic["postalCode"] = postalCode
+        }
+        
+        if let state = state {
+            dic["state"] = state
+        }
+        
+        if let countryCode = countryCode {
+            dic["countryCode"] = countryCode
+        }
+
+        return dic.keys.count == 0 ? nil : dic
     }
 }
 
