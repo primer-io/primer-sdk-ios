@@ -391,7 +391,9 @@ extension PayPalTokenizationViewModel {
             self.continueTokenizationFlow()
             
         } catch {
-            Primer.shared.delegate?.checkoutFailed?(with: error)
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+            }
             self.handle(error: error)
         }
     }

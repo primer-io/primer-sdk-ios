@@ -643,11 +643,19 @@ extension ExternalPaymentMethodTokenizationViewModel {
                     self.continueTokenizationFlow()
                 }
                 .catch { err in
+                    DispatchQueue.main.async {
+                        Primer.shared.delegate?.onResumeError?(err)
+                    }
                     self.handle(error: err)
                 }
             }
             
         } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+            }
+            
+            handle(error: error)
             onClientToken?(nil, error)
             onClientToken = nil
         }

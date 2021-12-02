@@ -408,7 +408,7 @@ extension ApayaTokenizationViewModel {
                         
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                Primer.shared.delegate?.onResumeError?(error)
                 self.handle(error: error)
             }
         }
