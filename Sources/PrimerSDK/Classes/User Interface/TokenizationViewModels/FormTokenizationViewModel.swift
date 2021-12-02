@@ -334,6 +334,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     @objc
     func payButtonTapped(_ sender: UIButton) {
+        submitButton.showSpinner(true)
+        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+        
         if Primer.shared.delegate?.onClientSessionActions != nil {
             let params: [String: Any] = [
                 "paymentMethodType": "PAYMENT_CARD",
@@ -355,6 +358,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             onClientSessionActionCompletion = { err in
                 if let err = err {
                     DispatchQueue.main.async {
+                        self.submitButton.showSpinner(false)
+                        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
                         Primer.shared.delegate?.onResumeError?(err)
                         self.onClientSessionActionCompletion = nil
                     }
