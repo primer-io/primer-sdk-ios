@@ -38,8 +38,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         let state: AppStateProtocol = DependencyContainer.resolve()
         guard let token = state.decodedClientToken else { return }
-        let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        client.vaultFetchPaymentMethods(clientToken: token) { result in
+        let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+        vaultService.loadVaultedPaymentMethods { err in
             self.renderSelectedPaymentInstrument(insertAt: 1)
         }
     }
