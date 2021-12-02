@@ -35,20 +35,30 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         if !newText.withoutWhiteSpace.isNumeric && !string.isEmpty { return false }
         primerTextField._text = newText
-        cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
-        if newText.isEmpty {
-            delegate?.primerTextFieldView(self, didDetectCardNetwork: nil)
-        } else {
-            delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)
-        }
-        validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? PrimerTextField.Validation.valid : PrimerTextField.Validation.invalid(PrimerError.invalidCardnumber)
         
-        switch validation {
-        case .valid:
-            delegate?.primerTextFieldView(self, isValid: true)
-        default:
-            delegate?.primerTextFieldView(self, isValid: nil)
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
+            
+            DispatchQueue.main.async {
+                if newText.isEmpty {
+                    self.delegate?.primerTextFieldView(self, didDetectCardNetwork: nil)
+                } else {
+                    self.delegate?.primerTextFieldView(self, didDetectCardNetwork: self.cardNetwork)
+                }
+            }
+            
+            self.validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? PrimerTextField.Validation.valid : PrimerTextField.Validation.invalid(PrimerError.invalidCardnumber)
+            
+            DispatchQueue.main.async {
+                switch self.validation {
+                case .valid:
+                    self.delegate?.primerTextFieldView(self, isValid: true)
+                default:
+                    self.delegate?.primerTextFieldView(self, isValid: nil)
+                }
+            }
         }
+        
         
         primerTextField.text = newText.withoutWhiteSpace.separate(every: 4, with: " ")
         return false
