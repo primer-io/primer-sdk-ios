@@ -29,9 +29,9 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         countryCodeTextField.text = CountryCode.gb.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
-        currencyTextField.text = Currency.GBP.rawValue
+        currencyTextField.text = Currency.RON.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
-        amountTextField.text = "1.00"
+        amountTextField.text = "0.20"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
