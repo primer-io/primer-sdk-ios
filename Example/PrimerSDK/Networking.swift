@@ -12,6 +12,7 @@ import PrimerSDK
 enum APIVersion: String {
     case v2 = "2021-09-27"
     case v3 = "2021-10-19"
+    case v4 = "2021-12-01"
 }
 
 enum HTTPMethod: String {
