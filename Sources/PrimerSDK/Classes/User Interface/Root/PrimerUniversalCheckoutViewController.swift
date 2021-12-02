@@ -18,6 +18,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var selectedPaymentInstrument: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
+    private var onClientSessionActionCompletion: ((Error?) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -224,10 +225,53 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     @objc
     func payButtonTapped() {
         guard let paymentMethodToken = selectedPaymentInstrument else { return }
+        guard let config = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == paymentMethodToken.paymentInstrumentType.rawValue }).first else {
+            return
+        }
         
         enableView(false)
-                
         payButton.showSpinner(true)
+        
+        if Primer.shared.delegate?.onClientSessionActions != nil {
+            var params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            if config.type == .paymentCard {
+                params = [
+                    "paymentMethodType": "PAYMENT_CARD",
+                    "binData": [
+                        "network": paymentMethodToken.paymentInstrumentData?.network?.uppercased(),
+                        "issuer_name": nil,
+                        "product_code": paymentMethodToken.paymentInstrumentData?.network?.uppercased(),
+                        "product_name": paymentMethodToken.paymentInstrumentData?.network?.uppercased(),
+                        "product_usage_type": "UNKNOWN",
+                        "account_number_type": "UNKNOWN",
+                        "issuer_country_code": nil,
+                        "account_funding_type": "UNKNOWN",
+                        "issuer_currency_code": nil,
+                        "regional_restriction": "UNKNOWN",
+                        "prepaid_reloadable_indicator": "NOT_APPLICABLE"
+                    ]
+                ]
+            }
+            
+            onClientSessionActionCompletion = { err in
+                if let err = err {
+                    DispatchQueue.main.async {
+                        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                        Primer.shared.delegate?.onResumeError?(err)
+                        self.onClientSessionActionCompletion = nil
+                    }
+                } else {
+                    self.continuePayment(withVaultedPaymentMethod: paymentMethodToken)
+                }
+            }
+            
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+        } else {
+            continuePayment(withVaultedPaymentMethod: paymentMethodToken)
+        }
+    }
+    
+    private func continuePayment(withVaultedPaymentMethod paymentMethodToken: PaymentMethodToken) {
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
             DispatchQueue.main.async { [weak self] in
                 self?.payButton.showSpinner(false)
@@ -289,6 +333,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     func handle(error: Error) {
         DispatchQueue.main.async {
+            self.onClientSessionActionCompletion?(error)
+            
             self.payButton.showSpinner(false)
             self.enableView(true)
             
@@ -306,7 +352,85 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     }
     
     func handle(newClientToken clientToken: String) {
-        try? ClientTokenService.storeClientToken(clientToken)
+        do {
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            
+            if state.accessToken != clientToken {
+                try ClientTokenService.storeClientToken(clientToken)
+            }
+            
+            let decodedClientToken = state.decodedClientToken!
+            
+            if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+                #if canImport(Primer3DS)
+                guard let paymentMethod = selectedPaymentInstrument else {
+                    DispatchQueue.main.async {
+                        let err = PrimerError.threeDSFailed
+                        Primer.shared.delegate?.onResumeError?(err)
+                    }
+                    return
+                }
+                
+                let threeDSService = ThreeDSService()
+                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                    switch result {
+                    case .success(let paymentMethodToken):
+                        DispatchQueue.main.async {
+                            guard let threeDSPostAuthResponse = paymentMethodToken.1,
+                                  let resumeToken = threeDSPostAuthResponse.resumeToken else {
+                                      DispatchQueue.main.async {
+                                          let err = PrimerError.threeDSFailed
+                                          Primer.shared.delegate?.onResumeError?(err)
+                                      }
+                                      return
+                                  }
+                            
+                            Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
+                        }
+                        
+                    case .failure(let err):
+                        log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
+                        
+                        DispatchQueue.main.async {
+                            let err = PrimerError.threeDSFailed
+                            Primer.shared.delegate?.onResumeError?(err)
+                        }
+                    }
+                }
+                #else
+                
+                DispatchQueue.main.async {
+                    let error = PrimerError.threeDSFailed
+                    Primer.shared.delegate?.onResumeError?(error)
+                }
+                #endif
+                
+            } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
+                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                
+                firstly {
+                    configService.fetchConfig()
+                }
+                .done {
+                    self.onClientSessionActionCompletion?(nil)
+                }
+                .catch { err in
+                    self.handle(error: err)
+                }
+            } else {
+                let err = PrimerError.invalidValue(key: "resumeToken")
+                handle(error: err)
+                DispatchQueue.main.async {
+                    Primer.shared.delegate?.onResumeError?(err)
+                }
+            }
+            
+        } catch {
+            handle(error: error)
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+            }
+        }
     }
     
     func handleSuccess() {
