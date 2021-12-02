@@ -404,12 +404,12 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         requestClientSession(requestBody: clientSessionRequestBody, completion: completion)
     }
     
-    func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol) {
+    func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
         requestClientSessionWithActions(actions) { (clientToken, err) in
             if let err = err {
-                resumeHandler.handle(error: err)
+                resumeHandler?.handle(error: err)
             } else if let clientToken = clientToken {
-                resumeHandler.handle(newClientToken: clientToken)
+                resumeHandler?.handle(newClientToken: clientToken)
             }
         }
     }
