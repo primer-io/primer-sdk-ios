@@ -442,6 +442,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
         
         createPayment(with: paymentMethodToken) { (res, err) in
+//            resumeHandler.handle(error: NetworkError.missingParams)
+//            return
             if let err = err {
                 resumeHandler.handle(error: err)
             } else if let res = res {
