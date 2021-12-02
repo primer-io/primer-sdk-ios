@@ -245,7 +245,7 @@ class MerchantCheckoutViewController: UIViewController {
         var bodyData: Data!
         
         do {
-            let bodyJson = ClientSessionActionsRequest(clientToken: clientToken, actions: merchantActions)
+            let bodyJson = ClientSessionActionsRequest(environment: environment, clientToken: clientToken, actions: merchantActions)
             bodyData = try JSONEncoder().encode(bodyJson)
         } catch {
             completion(nil, NetworkError.missingParams)
@@ -293,6 +293,7 @@ class MerchantCheckoutViewController: UIViewController {
         }
                 
         let body = PaymentRequest(
+            isV3: true,
             environment: environment,
             paymentMethod: paymentMethod.token,
             amount: nil,
@@ -342,6 +343,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
         
         let clientSessionRequestBody = ClientSessionRequestBody(
+            environment: environment,
             customerId: customerId,
             orderId: "orderId",
             currencyCode: currency,
