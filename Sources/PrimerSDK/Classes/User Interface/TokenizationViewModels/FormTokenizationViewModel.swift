@@ -300,39 +300,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     func configurePayButton(cardNetwork: CardNetwork?) {
-        DispatchQueue.main.async {
-            if !Primer.shared.flow.internalSessionFlow.vaulted {
-                guard let cardNetwork = cardNetwork, cardNetwork != .unknown else {
-                    let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-                    let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                                  tableName: nil,
-                                                  bundle: Bundle.primerResources,
-                                                  value: "Pay",
-                                                  comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
-                    self.submitButton.setTitle(title, for: .normal)
-                    return
-                }
-                
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                var amount: Int = settings.amount ?? 0
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        var amount: Int = settings.amount ?? 0
 
-                if let surcharge = cardNetwork.surcharge {
-                    amount += surcharge
-                }
-
-                var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                              tableName: nil,
-                                              bundle: Bundle.primerResources,
-                                              value: "Pay",
-                                              comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
-                
-                if amount != 0, let currency = settings.currency {
-                    title += " \(amount.toCurrencyString(currency: currency))"
-                }
-                
-                self.submitButton.setTitle(title, for: .normal)
-            }
+        if let surcharge = cardNetwork?.surcharge {
+            amount += surcharge
         }
+
+        configurePayButton(amount: amount)
     }
     
     func configurePayButton(amount: Int) {
@@ -510,27 +485,11 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 ]
             ]
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
-            
             cardNumberContainerView.rightImage2 = cardNetwork.icon
-            
-            if !Primer.shared.flow.internalSessionFlow.vaulted {
-                self.configurePayButton(cardNetwork: cardNetwork)
-            }
             
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
-            
-            ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
-            
-            if !Primer.shared.flow.internalSessionFlow.vaulted {
-                let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-                let title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                              tableName: nil,
-                                              bundle: Bundle.primerResources,
-                                              value: "Pay",
-                                              comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
-                submitButton.setTitle(title, for: .normal)
-            }
+            ClientSession.Action.unselectPaymentMethod(resumeHandler: self)
         }
     }
     
@@ -614,9 +573,9 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 }
                 .done {
                     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                   if let amount = settings.amount {
-                       self.configurePayButton(amount: amount)
-                   }
+                    if let amount = settings.amount {
+                        self.configurePayButton(amount: amount)
+                    }
                     self.onClientSessionActionCompletion?(nil)
                 }
                 .catch { err in
