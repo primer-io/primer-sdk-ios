@@ -392,7 +392,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                             ],
                             "MASTERCARD": [
                                 "surcharge": [
-                                    "amount": 288
+                                    "amount": 388
                                 ]
                             ]
                         ]
