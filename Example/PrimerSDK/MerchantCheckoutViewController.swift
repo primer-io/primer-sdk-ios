@@ -245,7 +245,7 @@ class MerchantCheckoutViewController: UIViewController {
         var bodyData: Data!
         
         do {
-            let bodyJson = ClientSessionActionsRequest(clientToken: clientToken, actions: merchantActions)
+            let bodyJson = ClientSessionActionsRequest(environment: environment, clientToken: clientToken, actions: merchantActions)
             bodyData = try JSONEncoder().encode(bodyJson)
         } catch {
             completion(nil, NetworkError.missingParams)
@@ -293,6 +293,7 @@ class MerchantCheckoutViewController: UIViewController {
         }
                 
         let body = PaymentRequest(
+            isV3: true,
             environment: environment,
             paymentMethod: paymentMethod.token,
             amount: nil,
@@ -342,6 +343,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
         
         let clientSessionRequestBody = ClientSessionRequestBody(
+            environment: environment,
             customerId: customerId,
             orderId: "orderId",
             currencyCode: currency,
@@ -417,12 +419,12 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         requestClientSession(requestBody: clientSessionRequestBody, completion: completion)
     }
     
-    func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol) {
+    func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
         requestClientSessionWithActions(actions) { (clientToken, err) in
             if let err = err {
-                resumeHandler.handle(error: err)
+                resumeHandler?.handle(error: err)
             } else if let clientToken = clientToken {
-                resumeHandler.handle(newClientToken: clientToken)
+                resumeHandler?.handle(newClientToken: clientToken)
             }
         }
     }
@@ -455,6 +457,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
         
         createPayment(with: paymentMethodToken) { (res, err) in
+//            resumeHandler.handle(error: NetworkError.missingParams)
+//            return
             if let err = err {
                 resumeHandler.handle(error: err)
             } else if let res = res {

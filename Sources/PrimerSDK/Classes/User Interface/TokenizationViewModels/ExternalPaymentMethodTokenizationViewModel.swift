@@ -317,10 +317,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
-        if let onClientSessionActions = Primer.shared.delegate?.onClientSessionActions {
+        if Primer.shared.delegate?.onClientSessionActions != nil {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
-            onClientSessionActions(actions, self)
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
             continueTokenizationFlow()
         }
@@ -610,6 +609,10 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
 extension ExternalPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
+        DispatchQueue.main.async {
+            ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+        }
+        
         // onClientToken will be created when we're awaiting a new client token from the developer
         onClientToken?(nil, error)
         onClientToken = nil
@@ -640,11 +643,19 @@ extension ExternalPaymentMethodTokenizationViewModel {
                     self.continueTokenizationFlow()
                 }
                 .catch { err in
+                    DispatchQueue.main.async {
+                        Primer.shared.delegate?.onResumeError?(err)
+                    }
                     self.handle(error: err)
                 }
             }
             
         } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+            }
+            
+            handle(error: error)
             onClientToken?(nil, error)
             onClientToken = nil
         }

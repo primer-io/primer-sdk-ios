@@ -174,10 +174,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
-        if let onClientSessionActions = Primer.shared.delegate?.onClientSessionActions {
+        if Primer.shared.delegate?.onClientSessionActions != nil {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
-            onClientSessionActions(actions, self)
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
             continueTokenizationFlow()
         }
@@ -217,6 +216,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         }
         .catch { err in
             DispatchQueue.main.async {
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
@@ -276,6 +276,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
                 let err = AppleException.unableToPresentApplePay
                 _ = ErrorHandler.shared.handle(error: err)
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 return completion(nil, err)
             }
@@ -380,6 +381,7 @@ extension ApplePayTokenizationViewModel {
         if #available(iOS 11.0, *) {
             self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
         }
+        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.applePayControllerCompletion = nil
         self.completion?(nil, error)
         self.completion = nil
@@ -402,7 +404,9 @@ extension ApplePayTokenizationViewModel {
             }
             
         } catch {
-            Primer.shared.delegate?.checkoutFailed?(with: error)
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+            }
             self.handle(error: error)
         }
     }

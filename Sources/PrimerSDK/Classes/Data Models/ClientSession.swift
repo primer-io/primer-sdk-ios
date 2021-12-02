@@ -41,6 +41,21 @@ public class ClientSession: Codable {
     // MARK: - ClientSession.Action
     
     public class Action: NSObject, Encodable {
+        
+        static func unselectPaymentMethod(resumeHandler: ResumeHandlerProtocol?) {
+            DispatchQueue.main.async {
+                let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
+                Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+            }
+        }
+        
+        static func selectPaymentMethod(resumeHandler: ResumeHandlerProtocol, withParameters parameters: [String: Any]) {
+            DispatchQueue.main.async {
+                let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
+                Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+            }
+        }
+        
         public var type: String
         public var params: [String: Any]?
         

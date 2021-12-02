@@ -23,7 +23,7 @@ enum HTTPMethod: String {
 }
 
 struct PaymentRequest: Encodable {
-    let isV3: Bool = true
+    let isV3: Bool?
     let environment: Environment
     let paymentMethod: String
     let amount: Int?

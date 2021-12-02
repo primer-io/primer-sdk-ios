@@ -185,6 +185,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             try validate()
         } catch {
             DispatchQueue.main.async {
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
@@ -239,6 +240,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
         .catch { err in
             DispatchQueue.main.async {
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }

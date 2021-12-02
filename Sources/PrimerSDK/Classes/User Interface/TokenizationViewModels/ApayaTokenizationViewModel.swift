@@ -146,17 +146,12 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
-        if let onClientSessionActions = Primer.shared.delegate?.onClientSessionActions {
+        if Primer.shared.delegate?.onClientSessionActions != nil {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
-            onClientSessionActions(actions, self)
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
             continueTokenizationFlow()
         }
-        
-        let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-        let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
-        Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: self)
     }
     
     fileprivate func continueTokenizationFlow() {
@@ -164,6 +159,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             try self.validate()
         } catch {
             DispatchQueue.main.async {
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
@@ -193,6 +189,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
         .catch { err in
             DispatchQueue.main.async {
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
@@ -386,6 +383,7 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
 extension ApayaTokenizationViewModel {
     
     override func handle(error: Error) {
+        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
         self.completion = nil
     }
@@ -410,7 +408,7 @@ extension ApayaTokenizationViewModel {
                         
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                Primer.shared.delegate?.onResumeError?(error)
                 self.handle(error: error)
             }
         }

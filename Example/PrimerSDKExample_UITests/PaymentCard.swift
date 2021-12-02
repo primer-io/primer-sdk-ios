@@ -114,11 +114,11 @@ class PaymentCard: XCTestCase {
         submitButtonText = submitButton.staticTexts["Pay £1.00"]
         
         cardnumberTextField.typeText("51")
-        submitButtonTextExists = expectation(for: exists, evaluatedWith: submitButtonText, handler: nil)
-        wait(for: [submitButtonTextExists], timeout: 15)
-        submitButtonText = submitButton.staticTexts["Pay £2.88"]
-        submitButtonTextExists = expectation(for: exists, evaluatedWith: submitButtonText, handler: nil)
-        wait(for: [submitButtonTextExists], timeout: 15)
+//        submitButtonTextExists = expectation(for: exists, evaluatedWith: submitButtonText, handler: nil)
+//        wait(for: [submitButtonTextExists], timeout: 15)
+//        submitButtonText = submitButton.staticTexts["Pay £2.88"]
+//        submitButtonTextExists = expectation(for: exists, evaluatedWith: submitButtonText, handler: nil)
+//        wait(for: [submitButtonTextExists], timeout: 15)
         
         XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
         
