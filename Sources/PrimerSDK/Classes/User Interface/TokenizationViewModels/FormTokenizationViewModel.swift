@@ -548,6 +548,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                                       DispatchQueue.main.async {
                                           let err = PrimerError.threeDSFailed
                                           Primer.shared.delegate?.onResumeError?(err)
+                                          self.handle(error: err)
                                       }
                                       return
                                   }
