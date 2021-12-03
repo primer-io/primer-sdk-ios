@@ -261,20 +261,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
                 self.customer?.billingAddress = address
                 self.countryCode = address.countryCode != nil ? CountryCode(rawValue: address.countryCode!) : nil
             }
-            
-            if let shippingAddress = customer.shippingAddress {
-                let address = Address(
-                    addressLine1: shippingAddress.addressLine1,
-                    addressLine2: shippingAddress.addressLine2,
-                    city: shippingAddress.city,
-                    state: shippingAddress.state,
-                    countryCode: shippingAddress.countryCode?.rawValue,
-                    postalCode: shippingAddress.postalCode)
-                
-                self.billingAddress = address
-                self.customer?.billingAddress = address
-                self.countryCode = address.countryCode != nil ? CountryCode(rawValue: address.countryCode!) : nil
-            }
         }
     }
 }
