@@ -11,32 +11,7 @@ import XCTest
 class PaymentCard: XCTestCase {
     
     let app = XCUIApplication()
-    let payment = Payment(
-        id: "PAYMENT_CARD",
-        environment: .sandbox,
-        currency: "GBP",
-        countryCode: "GB",
-        amount: "1.00",
-        expecations: Payment.Expecations(
-            amount: "£1.00",
-            surcharge: "Additional fee may apply",
-            webviewImage: nil,
-            webviewTexts: nil,
-            buttonTexts: ["Pay £1.00"]))
-    let threeDSPayment = Payment(
-        id: "PAYMENT_CARD",
-        environment: .sandbox,
-        currency: "RON",
-        countryCode: "RO",
-        amount: "1.00",
-        expecations: Payment.Expecations(
-            amount: "RON 1.00",
-            surcharge: "Additional fee may apply",
-            webviewImage: nil,
-            webviewTexts: nil,
-            buttonTexts: ["Pay RON 1.00"]))
-    let exists = NSPredicate(format: "exists == true")
-    let doesNotExist = NSPredicate(format: "exists == false")
+    let base = Base()
 
     override func setUp() {
         super.setUp()
@@ -58,6 +33,7 @@ class PaymentCard: XCTestCase {
     }
     
     func testCardSurcharge() throws {
+        let payment = Base.paymentMethods.filter({ $0.id == "PAYMENT_CARD" }).first!
         try openCardForm(for: payment)
         
         let cardnumberTextField = app/*@START_MENU_TOKEN@*/.textFields["card_txt_fld"]/*[[".textFields[\"4242 4242 4242 4242\"]",".textFields[\"card_txt_fld\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
@@ -78,22 +54,22 @@ class PaymentCard: XCTestCase {
         cardnumberTextField.tap()
         cardnumberTextField.typeText("4")
         var submitButtonText = submitButton.staticTexts["Pay £3.88"]
-        var submitButtonTextExists = expectation(for: exists, evaluatedWith: submitButtonText, handler: nil)
+        var submitButtonTextExists = expectation(for: Expectation.exists, evaluatedWith: submitButtonText, handler: nil)
         wait(for: [submitButtonTextExists], timeout: 15)
         
         XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
         
         cardnumberTextField.clearText()
         submitButtonText = submitButton.staticTexts["Pay £1.00"]
-        submitButtonTextExists = expectation(for: exists, evaluatedWith: submitButtonText, handler: nil)
+        submitButtonTextExists = expectation(for: Expectation.exists, evaluatedWith: submitButtonText, handler: nil)
         wait(for: [submitButtonTextExists], timeout: 15)
         
         cardnumberTextField.typeText("51")
-        submitButtonTextExists = expectation(for: exists, evaluatedWith: submitButtonText, handler: nil)
+        submitButtonTextExists = expectation(for: Expectation.exists, evaluatedWith: submitButtonText, handler: nil)
         wait(for: [submitButtonTextExists], timeout: 15)
         
         submitButtonText = submitButton.staticTexts["Pay £4.88"]
-        submitButtonTextExists = expectation(for: exists, evaluatedWith: submitButtonText, handler: nil)
+        submitButtonTextExists = expectation(for: Expectation.exists, evaluatedWith: submitButtonText, handler: nil)
         wait(for: [submitButtonTextExists], timeout: 15)
         
         XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
@@ -120,11 +96,12 @@ class PaymentCard: XCTestCase {
         submitButton.tap()
         
         let successLabel = app.staticTexts["success_screen_message_label"]
-        let successLabelExists = expectation(for: exists, evaluatedWith: successLabel, handler: nil)
+        let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
         wait(for: [successLabelExists], timeout: 15)
     }
     
     func testPass3DSChallenge() throws {
+        let threeDSPayment = Base.paymentMethods.filter({ $0.id == "3DS_PAYMENT_CARD" }).first!
         try openCardForm(for: threeDSPayment)
         
         let cardnumberTextField = app/*@START_MENU_TOKEN@*/.textFields["card_txt_fld"]/*[[".textFields[\"4242 4242 4242 4242\"]",".textFields[\"card_txt_fld\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
@@ -163,7 +140,7 @@ class PaymentCard: XCTestCase {
         submitButton.tap()
         
         let threeDSNavigationBar = app.otherElements.otherElements.navigationBars["SECURE CHECKOUT"]
-        let threeDSNavigationBarExists = expectation(for: exists, evaluatedWith: threeDSNavigationBar, handler: nil)
+        let threeDSNavigationBarExists = expectation(for: Expectation.exists, evaluatedWith: threeDSNavigationBar, handler: nil)
         wait(for: [threeDSNavigationBarExists], timeout: 15)
         
         let passChallengeRadioButton = app.children(matching: .window).element(boundBy: 0).scrollViews.children(matching: .other).element(boundBy: 0).children(matching: .other).element(boundBy: 1).children(matching: .other).element.children(matching: .other).element(boundBy: 0).children(matching: .other).element(boundBy: 0).children(matching: .other).element.children(matching: .button).element
@@ -173,11 +150,12 @@ class PaymentCard: XCTestCase {
         submit3DSButton.tap()
         
         let successLabel = app.staticTexts["success_screen_message_label"]
-        let successLabelExists = expectation(for: exists, evaluatedWith: successLabel, handler: nil)
+        let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
         wait(for: [successLabelExists], timeout: 15)
     }
     
     func testFail3DSChallenge() throws {
+        let threeDSPayment = Base.paymentMethods.filter({ $0.id == "3DS_PAYMENT_CARD" }).first!
         try openCardForm(for: threeDSPayment)
         
         let cardnumberTextField = app/*@START_MENU_TOKEN@*/.textFields["card_txt_fld"]/*[[".textFields[\"4242 4242 4242 4242\"]",".textFields[\"card_txt_fld\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
@@ -216,7 +194,7 @@ class PaymentCard: XCTestCase {
         submitButton.tap()
         
         let threeDSNavigationBar = app.otherElements.otherElements.navigationBars["SECURE CHECKOUT"]
-        let threeDSNavigationBarExists = expectation(for: exists, evaluatedWith: threeDSNavigationBar, handler: nil)
+        let threeDSNavigationBarExists = expectation(for: Expectation.exists, evaluatedWith: threeDSNavigationBar, handler: nil)
         wait(for: [threeDSNavigationBarExists], timeout: 15)
         
         let failChallengeRadioButton = app.children(matching: .window).element(boundBy: 0).scrollViews.children(matching: .other).element(boundBy: 0).children(matching: .other).element(boundBy: 1).children(matching: .other).element.children(matching: .other).element(boundBy: 0).children(matching: .other).element(boundBy: 1).children(matching: .other).element.children(matching: .button).element
@@ -226,11 +204,12 @@ class PaymentCard: XCTestCase {
         submit3DSButton.tap()
         
         let successLabel = app.staticTexts["success_screen_message_label"]
-        let successLabelExists = expectation(for: exists, evaluatedWith: successLabel, handler: nil)
+        let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
         wait(for: [successLabelExists], timeout: 15)
     }
     
     func testCancel3DSChallenge() throws {
+        let threeDSPayment = Base.paymentMethods.filter({ $0.id == "3DS_PAYMENT_CARD" }).first!
         try openCardForm(for: threeDSPayment)
         
         let cardnumberTextField = app/*@START_MENU_TOKEN@*/.textFields["card_txt_fld"]/*[[".textFields[\"4242 4242 4242 4242\"]",".textFields[\"card_txt_fld\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
@@ -269,21 +248,21 @@ class PaymentCard: XCTestCase {
         submitButton.tap()
         
         let threeDSNavigationBar = app.otherElements.otherElements.navigationBars["SECURE CHECKOUT"]
-        let threeDSNavigationBarExists = expectation(for: exists, evaluatedWith: threeDSNavigationBar, handler: nil)
+        let threeDSNavigationBarExists = expectation(for: Expectation.exists, evaluatedWith: threeDSNavigationBar, handler: nil)
         wait(for: [threeDSNavigationBarExists], timeout: 15)
         
         let cancel3DSButton = threeDSNavigationBar.buttons["Cancel"]
         cancel3DSButton.tap()
         
         let errorLabel = app.staticTexts["primer-error-message-3ds-failed"]
-        let errorLabelExists = expectation(for: exists, evaluatedWith: errorLabel, handler: nil)
+        let errorLabelExists = expectation(for: Expectation.exists, evaluatedWith: errorLabel, handler: nil)
         wait(for: [errorLabelExists], timeout: 15)
     }
 
     // MARK: Helpers
     
     func openCardForm(for payment: Payment) throws {
-        try Base().testInitialize(
+        try base.testInitialize(
             env: payment.environment.rawValue,
             customerId: nil,
             phoneNumber: nil,
@@ -292,15 +271,7 @@ class PaymentCard: XCTestCase {
             amount: payment.amount,
             performPayment: true)
         
-        let universalCheckoutButton = app.buttons["universal_checkout_button"]
-        universalCheckoutButton.tap()
-
-        // Test that title is correct
-        let checkoutTitle = app.staticTexts["Choose payment method"]
-        let vaultTitle = app.staticTexts["Add payment method"]
-        expectation(for: exists, evaluatedWith: checkoutTitle, handler: nil)
-        expectation(for: doesNotExist, evaluatedWith: vaultTitle, handler: nil)
-        waitForExpectations(timeout: 30, handler: nil)
+        try base.openUniversalCheckout()
 
         if let amountExpectation = payment.expecations?.amount {
             let amountText = app.staticTexts[amountExpectation]

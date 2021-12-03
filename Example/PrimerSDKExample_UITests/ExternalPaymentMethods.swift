@@ -11,64 +11,7 @@ import XCTest
 class ExternalPaymentMethods: XCTestCase {
     
     let app = XCUIApplication()
-    let paymentMethods: [Payment] = [
-        Payment(
-            id: "ADYEN_GIROPAY",
-            environment: .sandbox,
-            currency: "EUR",
-            countryCode: "DE",
-            amount: "1.00",
-            expecations: Payment.Expecations(
-                amount: "€1.00",
-                surcharge: "€0.29",
-                webviewImage: "giropay",
-                webviewTexts: nil,
-                buttonTexts: nil
-            )
-        ),
-        Payment(
-            id: "ADYEN_MOBILEPAY",
-            environment: .sandbox,
-            currency: "DKK",
-            countryCode: "DK",
-            amount: "1.00",
-            expecations: Payment.Expecations(
-                amount: "DKK 1.00",
-                surcharge: nil,
-                webviewImage: "mobilepay-logo",
-                webviewTexts: nil,
-                buttonTexts: nil
-            )
-        ),
-        Payment(
-            id: "PAY_NL_BANCONTACT",
-            environment: .sandbox,
-            currency: "EUR",
-            countryCode: "NL",
-            amount: "1.00",
-            expecations: Payment.Expecations(
-                amount: "€1.00",
-                surcharge: "€0.49",
-                webviewImage: nil,
-                webviewTexts: ["Primer API Ltd", "€ 1,49"],
-                buttonTexts: nil
-            )
-        ),
-        Payment(
-            id: "ADYEN_ALIPAY",
-            environment: .sandbox,
-            currency: "CNY",
-            countryCode: "CN",
-            amount: "1.00",
-            expecations: Payment.Expecations(
-                amount: "CNY 1.00",
-                surcharge: nil,
-                webviewImage: nil,
-                webviewTexts: ["1.如果未安装支付宝APP，请先"],
-                buttonTexts: nil
-            )
-        )
-    ]
+    let base = Base()
 
     override func setUp() {
         super.setUp()
@@ -90,27 +33,76 @@ class ExternalPaymentMethods: XCTestCase {
     }
     
     func testAdyenAlipay() throws {
-        let pm = paymentMethods.filter({ $0.id == "ADYEN_ALIPAY" }).first!
+        let pm = Base.paymentMethods.filter({ $0.id == "ADYEN_ALIPAY" }).first!
         try testPaymentMethod(pm)
     }
     
     func testAdyenGiropay() throws {
-        let pm = paymentMethods.filter({ $0.id == "ADYEN_GIROPAY" }).first!
+        let pm = Base.paymentMethods.filter({ $0.id == "ADYEN_GIROPAY" }).first!
         try testPaymentMethod(pm)
     }
     
     func testAdyenMobilePay() throws {
-        let pm = paymentMethods.filter({ $0.id == "ADYEN_MOBILEPAY" }).first!
+        let pm = Base.paymentMethods.filter({ $0.id == "ADYEN_MOBILEPAY" }).first!
         try testPaymentMethod(pm)
     }
     
     func testPayNLBancontact() throws {
-        let pm = paymentMethods.filter({ $0.id == "PAY_NL_BANCONTACT" }).first!
+        let pm = Base.paymentMethods.filter({ $0.id == "PAY_NL_BANCONTACT" }).first!
         try testPaymentMethod(pm)
     }
     
     func testRec() throws {
+        
+        
+        let app = XCUIApplication()
+        app/*@START_MENU_TOKEN@*/.staticTexts["Universal Checkout"]/*[[".buttons[\"Universal Checkout\"].staticTexts[\"Universal Checkout\"]",".buttons[\"universal_checkout_button\"].staticTexts[\"Universal Checkout\"]",".staticTexts[\"Universal Checkout\"]"],[[[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        
+        let primerContainerScrollViewScrollView = app.scrollViews["primer_container_scroll_view"]
+        primerContainerScrollViewScrollView.children(matching: .other).element(boundBy: 0).children(matching: .other).element/*@START_MENU_TOKEN@*/.swipeRight()/*[[".swipeUp()",".swipeRight()"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        primerContainerScrollViewScrollView.otherElements/*@START_MENU_TOKEN@*/.buttons["APPLE_PAY"]/*[[".otherElements[\"apple_pay_surcharge_group_view\"]",".buttons[\"apple pay logo\"]",".buttons[\"APPLE_PAY\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
+        
+        let applePayStaticText = app.staticTexts["Apple Pay"]
+        applePayStaticText.tap()
+        applePayStaticText.tap()
+        app.windows.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 1).children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 0).tap()
+        
+        let elementsQuery = app.scrollViews.otherElements
+        elementsQuery.buttons["Simulated Card - AmEx, ‪•••• 1234‬"].tap()
+        app.tables.cells["Simulated Card - Visa, ‪•••• 1234‬"].children(matching: .other).element(boundBy: 0).children(matching: .other).element.tap()
+        app.buttons["Pay Total, €2.19"].tap()
+        elementsQuery.staticTexts["Total, €2.19"].tap()
+
                 
+                
+    }
+    
+    func testPresentApplePay() throws {
+        let pm = Base.paymentMethods.filter({ $0.id == "APPLE_PAY" }).first!
+        
+        try base.testInitialize(
+            env: pm.environment.rawValue,
+            customerId: nil,
+            phoneNumber: nil,
+            countryCode: pm.countryCode,
+            currency: pm.currency,
+            amount: pm.amount,
+            performPayment: true)
+
+        try base.openUniversalCheckout()
+
+        if let amountExpectation = pm.expecations?.amount {
+            let amountText = app.staticTexts[amountExpectation]
+            XCTAssert(amountText.exists, "Amount '\(amountExpectation)' should exist")
+        }
+        
+        let scrollView = app.scrollViews["primer_container_scroll_view"]
+        if let surchargeExpectation = pm.expecations?.surcharge {
+            Base.validateSurcharge(surchargeExpectation, forPaymentMethod: pm.id)
+        }
+        
+        let applePayButton = scrollView.buttons[pm.id]
+        applePayButton.tap()
     }
     
     func testPaymentMethod(_ pm: Payment) throws {
@@ -129,10 +121,10 @@ class ExternalPaymentMethods: XCTestCase {
         // Test that title is correct
         let checkoutTitle = app.staticTexts["Choose payment method"]
         let vaultTitle = app.staticTexts["Add payment method"]
-        let exists = NSPredicate(format: "exists == true")
-        let doesNotExist = NSPredicate(format: "exists == false")
-        expectation(for: exists, evaluatedWith: checkoutTitle, handler: nil)
-        expectation(for: doesNotExist, evaluatedWith: vaultTitle, handler: nil)
+
+        
+        expectation(for: Expectation.exists, evaluatedWith: checkoutTitle, handler: nil)
+        expectation(for: Expectation.doesNotExist, evaluatedWith: vaultTitle, handler: nil)
         waitForExpectations(timeout: 30, handler: nil)
 
         if let amountExpectation = pm.expecations?.amount {
@@ -161,7 +153,7 @@ class ExternalPaymentMethods: XCTestCase {
         let webViews = app.webViews
         if let webViewImageExpectation = pm.expecations?.webviewImage {
             let webViewGiroPayImage = webViews.images[webViewImageExpectation]
-            let webViewGiroPayImageExists = expectation(for: exists, evaluatedWith: webViewGiroPayImage, handler: nil)
+            let webViewGiroPayImageExists = expectation(for: Expectation.exists, evaluatedWith: webViewGiroPayImage, handler: nil)
             wait(for: [webViewGiroPayImageExists], timeout: 30)
         }
         
@@ -169,7 +161,7 @@ class ExternalPaymentMethods: XCTestCase {
             var webviewTextsExpectations: [XCTestExpectation] = []
             for text in webviewTexts {
                 let webViewText = webViews.staticTexts[text]
-                let webViewTextExists = expectation(for: exists, evaluatedWith: webViewText, handler: nil)
+                let webViewTextExists = expectation(for: Expectation.exists, evaluatedWith: webViewText, handler: nil)
                 webviewTextsExpectations.append(webViewTextExists)
                 
             }
@@ -180,7 +172,7 @@ class ExternalPaymentMethods: XCTestCase {
         let safariDoneButton = app.otherElements["TopBrowserBar"].buttons["Done"]
         safariDoneButton.tap()
         let canceledLabel = app.scrollViews["primer_container_scroll_view"].otherElements.staticTexts["User cancelled"]
-        let canceledLabelExists = expectation(for: exists, evaluatedWith: canceledLabel, handler: nil)
+        let canceledLabelExists = expectation(for: Expectation.exists, evaluatedWith: canceledLabel, handler: nil)
         wait(for: [canceledLabelExists], timeout: 3)
     }
     

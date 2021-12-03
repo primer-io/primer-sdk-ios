@@ -29,7 +29,109 @@ struct Payment {
     }
 }
 
+class Expectation {
+    static var exists: NSPredicate = NSPredicate(format: "exists == true")
+    static var doesNotExist = NSPredicate(format: "exists == false")
+}
+
 class Base: XCTestCase {
+    
+    static var paymentMethods: [Payment] = [
+        Payment(
+            id: "ADYEN_GIROPAY",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "DE",
+            amount: "1.00",
+            expecations: Payment.Expecations(
+                amount: "€1.00",
+                surcharge: "€0.29",
+                webviewImage: "giropay",
+                webviewTexts: nil,
+                buttonTexts: nil
+            )
+        ),
+        Payment(
+            id: "ADYEN_MOBILEPAY",
+            environment: .sandbox,
+            currency: "DKK",
+            countryCode: "DK",
+            amount: "1.00",
+            expecations: Payment.Expecations(
+                amount: "DKK 1.00",
+                surcharge: nil,
+                webviewImage: "mobilepay-logo",
+                webviewTexts: nil,
+                buttonTexts: nil
+            )
+        ),
+        Payment(
+            id: "PAY_NL_BANCONTACT",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "NL",
+            amount: "1.00",
+            expecations: Payment.Expecations(
+                amount: "€1.00",
+                surcharge: "€0.49",
+                webviewImage: nil,
+                webviewTexts: ["Primer API Ltd", "€ 1,49"],
+                buttonTexts: nil
+            )
+        ),
+        Payment(
+            id: "ADYEN_ALIPAY",
+            environment: .sandbox,
+            currency: "CNY",
+            countryCode: "CN",
+            amount: "1.00",
+            expecations: Payment.Expecations(
+                amount: "CNY 1.00",
+                surcharge: nil,
+                webviewImage: nil,
+                webviewTexts: ["1.如果未安装支付宝APP，请先"],
+                buttonTexts: nil
+            )
+        ),
+        Payment(
+            id: "APPLE_PAY",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "FR",
+            amount: "1.00",
+            expecations: Payment.Expecations(
+                amount: "€1.00",
+                surcharge: "€1.19",
+                webviewImage: nil,
+                webviewTexts: ["Primer API Ltd", "€ 1,49"],
+                buttonTexts: nil
+            )
+        ),
+        Payment(
+            id: "PAYMENT_CARD",
+            environment: .sandbox,
+            currency: "GBP",
+            countryCode: "GB",
+            amount: "1.00",
+            expecations: Payment.Expecations(
+                amount: "£1.00",
+                surcharge: "Additional fee may apply",
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay £1.00"])),
+        Payment(
+            id: "3DS_PAYMENT_CARD",
+            environment: .sandbox,
+            currency: "RON",
+            countryCode: "RO",
+            amount: "1.00",
+            expecations: Payment.Expecations(
+                amount: "RON 1.00",
+                surcharge: "Additional fee may apply",
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay RON 1.00"]))
+    ]
     
     let app = XCUIApplication()
 
@@ -115,6 +217,32 @@ class Base: XCTestCase {
         
         let initSDKButton = app.buttons["initialize_primer_sdk"]
         initSDKButton.tap()
+    }
+    
+    func openUniversalCheckout() throws {
+        let universalCheckoutButton = app.buttons["universal_checkout_button"]
+        universalCheckoutButton.tap()
+        
+        // Test that title is correct
+        let checkoutTitle = app.staticTexts["Choose payment method"]
+        let vaultTitle = app.staticTexts["Add payment method"]
+        let exists = NSPredicate(format: "exists == true")
+        let doesNotExist = NSPredicate(format: "exists == false")
+        expectation(for: exists, evaluatedWith: checkoutTitle, handler: nil)
+        expectation(for: doesNotExist, evaluatedWith: vaultTitle, handler: nil)
+        waitForExpectations(timeout: 30, handler: nil)
+    }
+    
+    func openVaultManager() throws {
+        let vaultButton = app.buttons["vault_button"]
+        vaultButton.tap()
+
+        // Test that title is correct
+        let vaultTitle = app.staticTexts["Add payment method"]
+        let checkoutTitle = app.staticTexts["Choose payment method"]
+        expectation(for: Expectation.doesNotExist, evaluatedWith: checkoutTitle, handler: nil)
+        expectation(for: Expectation.exists, evaluatedWith: vaultTitle, handler: nil)
+        waitForExpectations(timeout: 15, handler: nil)
     }
     
     static func validateSurcharge(_ surcharge: String, forPaymentMethod paymentMethodId: String) {
