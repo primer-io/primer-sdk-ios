@@ -51,6 +51,7 @@
 		849A28EB275614070037C2D1 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EA275614070037C2D1 /* Networking.swift */; };
 		849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */; };
 		849A28EF2757A9070037C2D1 /* PaymentCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EE2757A9070037C2D1 /* PaymentCard.swift */; };
+		849AFD14275A725600A1F4CB /* ResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849AFD13275A725600A1F4CB /* ResultViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,6 +127,7 @@
 		1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApayaTests.swift; sourceTree = "<group>"; };
 		1DED53AF2739561800CD9DE6 /* ThemeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemeTests.swift; sourceTree = "<group>"; };
 		1E113BA3965AA4CAA81A847F /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A5197153132A49CDD4C09A9 /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		3B55FBF1D40BE6B25F29A5D9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		4062721AFBBD008EC4170E31 /* Pods-PrimerSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
 		45CA532A34F52954A21835C5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -141,8 +143,8 @@
 		849A28EA275614070037C2D1 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalPaymentMethods.swift; sourceTree = "<group>"; };
 		849A28EE2757A9070037C2D1 /* PaymentCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentCard.swift; sourceTree = "<group>"; };
-		E5FD11B20EC2862B91A1A283 /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		FA33166C8EFD31B2098DF211 /* Pods-PrimerSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		849AFD13275A725600A1F4CB /* ResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultViewController.swift; sourceTree = "<group>"; };
+		AB1F05ED00E9956E9C1E949A /* Pods-PrimerSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -345,6 +347,7 @@
 				15F97C71262470CB00DCB3BA /* MerchantCheckoutViewController+Helpers.swift */,
 				15F97C6C26246FD300DCB3BA /* MerchantCheckoutViewController+Primer.swift */,
 				1DC7EE0B261FA39200BCBFFC /* SpinnerViewController.swift */,
+				849AFD13275A725600A1F4CB /* ResultViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -419,10 +422,10 @@
 		CAECC3F22E94EA70F1F01CFC /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				FA33166C8EFD31B2098DF211 /* Pods-PrimerSDK_Example.debug.xcconfig */,
 				4062721AFBBD008EC4170E31 /* Pods-PrimerSDK_Example.release.xcconfig */,
 				4BA493599ABAFFBED04F00A0 /* Pods-PrimerSDK_Tests.debug.xcconfig */,
-				E5FD11B20EC2862B91A1A283 /* Pods-PrimerSDK_Tests.release.xcconfig */,
+				AB1F05ED00E9956E9C1E949A /* Pods-PrimerSDK_Example.debug.xcconfig */,
+				2A5197153132A49CDD4C09A9 /* Pods-PrimerSDK_Tests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -666,6 +669,7 @@
 				15F97C72262470CB00DCB3BA /* MerchantCheckoutViewController+Helpers.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				1DC7EE14261FA3D400BCBFFC /* CreateClientToken.swift in Sources */,
+				849AFD14275A725600A1F4CB /* ResultViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -914,7 +918,7 @@
 		};
 		607FACF01AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FA33166C8EFD31B2098DF211 /* Pods-PrimerSDK_Example.debug.xcconfig */;
+			baseConfigurationReference = AB1F05ED00E9956E9C1E949A /* Pods-PrimerSDK_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PrimerSDK_Example.entitlements;
@@ -993,7 +997,7 @@
 		};
 		607FACF41AFB9204008FA782 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E5FD11B20EC2862B91A1A283 /* Pods-PrimerSDK_Tests.release.xcconfig */;
+			baseConfigurationReference = 2A5197153132A49CDD4C09A9 /* Pods-PrimerSDK_Tests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";

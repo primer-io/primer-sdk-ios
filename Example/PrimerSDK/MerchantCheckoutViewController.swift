@@ -320,11 +320,18 @@ class MerchantCheckoutViewController: UIViewController {
             body: bodyData) { result in
                 switch result {
                 case .success(let data):
+                    
+                    
                     if let dic = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
                         completion(dic, nil)
                     } else {
                         let err = NetworkError.invalidResponse
                         completion(nil, err)
+                    }
+                    
+                    DispatchQueue.main.async {
+                        let rvc = ResultViewController.instantiate(data: data)
+                        self.navigationController?.pushViewController(rvc, animated: true)
                     }
                     
                 case .failure(let err):
