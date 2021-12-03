@@ -5,9 +5,9 @@
 //  Created by Evangelos on 22/11/21.
 //
 
-import Foundation
-
 #if canImport(UIKit)
+
+import Foundation
 
 enum Throwable<T: Decodable>: Decodable {
     case success(T)

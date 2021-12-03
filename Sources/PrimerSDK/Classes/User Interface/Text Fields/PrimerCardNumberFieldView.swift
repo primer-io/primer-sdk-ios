@@ -36,7 +36,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         if !newText.withoutWhiteSpace.isNumeric && !string.isEmpty { return false }
         primerTextField._text = newText
         cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
-        if newText.isEmpty {
+        if newText.isEmpty || cardNetwork == .unknown {
             delegate?.primerTextFieldView(self, didDetectCardNetwork: nil)
         } else {
             delegate?.primerTextFieldView(self, didDetectCardNetwork: cardNetwork)

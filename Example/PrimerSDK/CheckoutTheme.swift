@@ -59,7 +59,7 @@ struct CheckoutTheme {
         data.buttons.paymentMethod.border.defaultColor = .black
         data.buttons.paymentMethod.border.selectedColor = .blue
         data.buttons.paymentMethod.text.defaultColor = .black
-        data.buttons.paymentMethod.iconColor = .clear
+        data.buttons.paymentMethod.iconColor = .black
         data.buttons.main.text.defaultColor = .blue
         data.buttons.main.defaultColor = .blue
         data.buttons.main.disabledColor = .lightGray

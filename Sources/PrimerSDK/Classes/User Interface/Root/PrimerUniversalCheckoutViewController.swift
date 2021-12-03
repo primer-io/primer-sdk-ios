@@ -13,13 +13,12 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     var savedCardView: CardButton!
     private var titleLabel: UILabel!
-    private var seeAllButton: UIButton!
-    private var savedPaymentInstrumentStackView: UIStackView!
+    private var savedPaymentMethodStackView: UIStackView!
     private var payButton: PrimerOldButton!
-    private var coveringView: PrimerView!
     private var selectedPaymentInstrument: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
+    private var onClientSessionActionCompletion: ((Error?) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +36,13 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         renderAmount()
         renderSelectedPaymentInstrument()
         renderAvailablePaymentMethods()
-        renderPayButton()
+        
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        guard let token = state.decodedClientToken else { return }
+        let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+        vaultService.loadVaultedPaymentMethods { err in
+            self.renderSelectedPaymentInstrument(insertAt: 1)
+        }
     }
     
     private func renderAmount() {
@@ -56,22 +61,16 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     }
     
     private func renderSelectedPaymentInstrument(insertAt index: Int? = nil) {
-        if seeAllButton != nil {
-            verticalStackView.removeArrangedSubview(seeAllButton)
-            seeAllButton.removeFromSuperview()
-            seeAllButton = nil
-        }
-        
         if savedCardView != nil {
             verticalStackView.removeArrangedSubview(savedCardView)
             savedCardView.removeFromSuperview()
             savedCardView = nil
         }
         
-        if savedPaymentInstrumentStackView != nil {
-            verticalStackView.removeArrangedSubview(savedPaymentInstrumentStackView)
-            savedPaymentInstrumentStackView.removeFromSuperview()
-            savedPaymentInstrumentStackView = nil
+        if savedPaymentMethodStackView != nil {
+            verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
+            savedPaymentMethodStackView.removeFromSuperview()
+            savedPaymentMethodStackView = nil
         }
         
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
@@ -81,55 +80,113 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             .first(where: { paymentInstrument in
             return paymentInstrument.token == checkoutViewModel.selectedPaymentMethodId
         }), let cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
+            
             self.selectedPaymentInstrument = selectedPaymentInstrument
             
-            if savedPaymentInstrumentStackView == nil {
-                savedPaymentInstrumentStackView = UIStackView()
-                savedPaymentInstrumentStackView.axis = .vertical
-                savedPaymentInstrumentStackView.alignment = .fill
-                savedPaymentInstrumentStackView.distribution = .fill
-                savedPaymentInstrumentStackView.spacing = verticalStackView.spacing
+            if savedPaymentMethodStackView == nil {
+                savedPaymentMethodStackView = UIStackView()
+                savedPaymentMethodStackView.axis = .vertical
+                savedPaymentMethodStackView.alignment = .fill
+                savedPaymentMethodStackView.distribution = .fill
+                savedPaymentMethodStackView.spacing = 5.0
             }
             
-            let savedPaymentInstrumentTitleLabel = UILabel()
-            savedPaymentInstrumentTitleLabel.text = NSLocalizedString("primer-vault-checkout-payment-method-title",
+            let titleHorizontalStackView = UIStackView()
+            titleHorizontalStackView.axis = .horizontal
+            titleHorizontalStackView.alignment = .fill
+            titleHorizontalStackView.distribution = .fillProportionally
+            titleHorizontalStackView.spacing = 8.0
+            
+            let savedPaymentMethodLabel = UILabel()
+            savedPaymentMethodLabel.text = NSLocalizedString("primer-vault-checkout-payment-method-title",
                                                                       tableName: nil,
                                                                       bundle: Bundle.primerResources,
                                                                       value: "SAVED PAYMENT METHOD",
                                                                       comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
-            savedPaymentInstrumentTitleLabel.textColor = theme.text.subtitle.color
-            savedPaymentInstrumentTitleLabel.font = UIFont.systemFont(ofSize: 13.0, weight: .regular)
-            savedPaymentInstrumentTitleLabel.textAlignment = .left
-            savedPaymentInstrumentStackView.addArrangedSubview(savedPaymentInstrumentTitleLabel)
+            savedPaymentMethodLabel.textColor = theme.text.subtitle.color
+            savedPaymentMethodLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
+            savedPaymentMethodLabel.textAlignment = .left
+            titleHorizontalStackView.addArrangedSubview(savedPaymentMethodLabel)
+            
+            let seeAllButton = UIButton()
+            seeAllButton.translatesAutoresizingMaskIntoConstraints = false
+            seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            seeAllButton.setTitle("See all", for: .normal)
+            seeAllButton.contentHorizontalAlignment = .right
+            seeAllButton.setTitleColor(theme.text.system.color, for: .normal)
+            seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
+            titleHorizontalStackView.addArrangedSubview(seeAllButton)
+            
+            savedPaymentMethodStackView.addArrangedSubview(titleHorizontalStackView)
+            
+            let paymentMethodStackView = UIStackView()
+            paymentMethodStackView.layer.cornerRadius = 4.0
+            paymentMethodStackView.clipsToBounds = true
+            paymentMethodStackView.backgroundColor = UIColor.black.withAlphaComponent(0.05)
+            paymentMethodStackView.axis = .vertical
+            paymentMethodStackView.alignment = .fill
+            paymentMethodStackView.distribution = .fill
+            paymentMethodStackView.spacing = 8.0
+            paymentMethodStackView.isLayoutMarginsRelativeArrangement = true
+            if #available(iOS 11.0, *) {
+                paymentMethodStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+            }
 
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            var amount: Int = settings.amount ?? 0
+            
+            if let surCharge = cardButtonViewModel.surCharge {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                let surChargeLabel = UILabel()
+                surChargeLabel.text = "+" + Int(surCharge).toCurrencyString(currency: settings.currency!)
+                surChargeLabel.textColor = .black
+                surChargeLabel.textAlignment = .right
+                surChargeLabel.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
+                paymentMethodStackView.addArrangedSubview(surChargeLabel)
+                
+                amount += surCharge
+            }
+            
             if savedCardView == nil {
                 savedCardView = CardButton()
-                savedCardView.backgroundColor = theme.paymentMethodButton.color(for: .enabled)
-                savedCardView.layer.cornerRadius = theme.paymentMethodButton.cornerRadius
-                savedPaymentInstrumentStackView.addArrangedSubview(savedCardView)
+                savedCardView.backgroundColor = .white
                 savedCardView.translatesAutoresizingMaskIntoConstraints = false
                 savedCardView.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
                 savedCardView.render(model: cardButtonViewModel, showIcon: false)
-                
-                let tapGesture = UITapGestureRecognizer()
-                tapGesture.addTarget(self, action: #selector(togglePayButton))
-                savedCardView.addGestureRecognizer(tapGesture)
+                paymentMethodStackView.addArrangedSubview(savedCardView)
+            }
+            
+            if payButton == nil {
+                payButton = PrimerOldButton()
             }
 
-            if seeAllButton == nil {
-                seeAllButton = UIButton()
-                seeAllButton.translatesAutoresizingMaskIntoConstraints = false
-                seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-                seeAllButton.setTitle("See all", for: .normal)
-                seeAllButton.setTitleColor(theme.text.system.color, for: .normal)
-                seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
-                savedPaymentInstrumentStackView.addArrangedSubview(seeAllButton)
+            var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                          tableName: nil,
+                                          bundle: Bundle.primerResources,
+                                          value: "Pay",
+                                          comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
+            
+            if amount != 0, let currency = settings.currency {
+                title += " \(amount.toCurrencyString(currency: currency))"
+            }
+                                    
+            payButton.layer.cornerRadius = 4
+            payButton.setTitle(title, for: .normal)
+            payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
+            payButton.titleLabel?.font = .boldSystemFont(ofSize: 19)
+            payButton.backgroundColor = theme.mainButton.color(for: .enabled)
+            payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
+            payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            paymentMethodStackView.addArrangedSubview(payButton)
+            
+            if !paymentMethodStackView.arrangedSubviews.isEmpty {
+                savedPaymentMethodStackView.addArrangedSubview(paymentMethodStackView)
             }
 
             if let index = index {
-                verticalStackView.insertArrangedSubview(savedPaymentInstrumentStackView, at: index)
+                verticalStackView.insertArrangedSubview(savedPaymentMethodStackView, at: index)
             } else {
-                verticalStackView.addArrangedSubview(savedPaymentInstrumentStackView)
+                verticalStackView.addArrangedSubview(savedPaymentMethodStackView)
             }
         } else {
             if savedCardView != nil {
@@ -138,16 +195,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 savedCardView = nil
             }
             
-            if seeAllButton != nil {
-                verticalStackView.removeArrangedSubview(seeAllButton)
-                seeAllButton.removeFromSuperview()
-                seeAllButton = nil
-            }
-
-            if savedPaymentInstrumentStackView != nil {
-                verticalStackView.removeArrangedSubview(savedPaymentInstrumentStackView)
-                savedPaymentInstrumentStackView.removeFromSuperview()
-                savedPaymentInstrumentStackView = nil
+            if savedPaymentMethodStackView != nil {
+                verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
+                savedPaymentMethodStackView.removeFromSuperview()
+                savedPaymentMethodStackView = nil
             }
         }
         
@@ -162,72 +213,69 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
     }
 
-    private func renderPayButton() {
-        if coveringView == nil {
-            coveringView = PrimerView()
-        }
-        
-        coveringView.backgroundColor = theme.view.backgroundColor.withAlphaComponent(0.5)
-        view.addSubview(coveringView)
-        coveringView.translatesAutoresizingMaskIntoConstraints = false
-        coveringView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        coveringView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        coveringView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        coveringView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
-
-        if payButton == nil {
-            payButton = PrimerOldButton()
-        }
-
-        payButton.layer.cornerRadius = 12
-        payButton.setTitle(Content.CheckoutView.payButtonTitle, for: .normal)
-        payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-        payButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
-        payButton.backgroundColor = theme.mainButton.color(for: .enabled)
-        payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
-        let imageView = UIImageView(image: ImageName.lock.image)
-        payButton.addSubview(imageView)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.centerYAnchor.constraint(equalTo: payButton.centerYAnchor).isActive = true
-        imageView.trailingAnchor.constraint(equalTo: payButton.trailingAnchor, constant: -16).isActive = true
-
-        coveringView.addSubview(payButton)
-        payButton.translatesAutoresizingMaskIntoConstraints = false
-        payButton.leadingAnchor.constraint(equalTo: coveringView.leadingAnchor, constant: 20).isActive = true
-        payButton.trailingAnchor.constraint(equalTo: coveringView.trailingAnchor, constant: -20).isActive = true
-        payButton.bottomAnchor.constraint(equalTo: coveringView.bottomAnchor, constant: -10).isActive = true
-        payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        
-        coveringView.isHidden = true
-        
-        let coveringViewTap = UITapGestureRecognizer()
-        coveringViewTap.addTarget(self, action: #selector(togglePayButton))
-        coveringView.addGestureRecognizer(coveringViewTap)
-    }
-
     @objc
-    func togglePayButton() {
-        coveringView.isHidden = !coveringView.isHidden
-        savedCardView.toggleBorder(isSelected: !coveringView.isHidden, isError: false)
-    }
-
-    @objc
-    func seeAllButtonTapped() {
+    func seeAllButtonTapped(_ sender: Any) {
         let vpivc = VaultedPaymentInstrumentsViewController()
         vpivc.delegate = self
         vpivc.view.translatesAutoresizingMaskIntoConstraints = false
-        vpivc.view.heightAnchor.constraint(equalToConstant: view.bounds.size.height).isActive = true
+        vpivc.view.heightAnchor.constraint(equalToConstant: self.parent!.view.bounds.height).isActive = true
         Primer.shared.primerRootVC?.show(viewController: vpivc)
     }
     
     @objc
     func payButtonTapped() {
         guard let paymentMethodToken = selectedPaymentInstrument else { return }
-
-        payButton.showSpinner(true, color: theme.mainButton.text.color)
+        guard let config = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == paymentMethodToken.paymentInstrumentType.rawValue }).first else {
+            return
+        }
+        
+        enableView(false)
+        payButton.showSpinner(true)
+        
+        if Primer.shared.delegate?.onClientSessionActions != nil {
+            var params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            if config.type == .paymentCard {
+                params = [
+                    "paymentMethodType": "PAYMENT_CARD",
+                    "binData": [
+                        "network": paymentMethodToken.paymentInstrumentData?.network?.uppercased(),
+                        "issuer_name": nil,
+                        "product_code": paymentMethodToken.paymentInstrumentData?.network?.uppercased(),
+                        "product_name": paymentMethodToken.paymentInstrumentData?.network?.uppercased(),
+                        "product_usage_type": "UNKNOWN",
+                        "account_number_type": "UNKNOWN",
+                        "issuer_country_code": nil,
+                        "account_funding_type": "UNKNOWN",
+                        "issuer_currency_code": nil,
+                        "regional_restriction": "UNKNOWN",
+                        "prepaid_reloadable_indicator": "NOT_APPLICABLE"
+                    ]
+                ]
+            }
+            
+            onClientSessionActionCompletion = { err in
+                if let err = err {
+                    DispatchQueue.main.async {
+                        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                        Primer.shared.delegate?.onResumeError?(err)
+                        self.onClientSessionActionCompletion = nil
+                    }
+                } else {
+                    self.continuePayment(withVaultedPaymentMethod: paymentMethodToken)
+                }
+            }
+            
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+        } else {
+            continuePayment(withVaultedPaymentMethod: paymentMethodToken)
+        }
+    }
+    
+    private func continuePayment(withVaultedPaymentMethod paymentMethodToken: PaymentMethodToken) {
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
             DispatchQueue.main.async { [weak self] in
                 self?.payButton.showSpinner(false)
+                self?.enableView(true)
 
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
@@ -248,14 +296,48 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 }
             }
         })
+        
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
     }
-
+    
+    // MARK: - Helpers
+    
+    private func enableView(_ isEnabled: Bool) {
+        DispatchQueue.main.async { [weak self] in
+            self?.view?.isUserInteractionEnabled = isEnabled
+            (self?.parent as? PrimerContainerViewController)?.scrollView.isScrollEnabled = isEnabled
+            Primer.shared.primerRootVC?.swipeGesture?.isEnabled = isEnabled
+            
+            for sv in (self?.verticalStackView.arrangedSubviews ?? []) {
+                sv.alpha = sv == self?.savedPaymentMethodStackView ? 1.0 : (isEnabled ? 1.0 : 0.5)
+            }
+            
+            for sv in (self?.savedPaymentMethodStackView.arrangedSubviews ?? []) {
+                if let stackView = sv as? UIStackView, !stackView.arrangedSubviews.filter({ $0 is PrimerButton }).isEmpty {
+                    for ssv in stackView.arrangedSubviews {
+                        if ssv is PrimerButton {
+                            ssv.alpha = 1.0
+                        } else {
+                            ssv.alpha = (isEnabled ? 1.0 : 0.5)
+                        }
+                    }
+                } else {
+                    sv.alpha = (isEnabled ? 1.0 : 0.5)
+                }
+            }
+        }
+    }
+    
 }
 
 extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     func handle(error: Error) {
         DispatchQueue.main.async {
+            self.onClientSessionActionCompletion?(error)
+            
+            self.payButton.showSpinner(false)
+            self.enableView(true)
+            
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
             if !settings.hasDisabledSuccessScreen {
@@ -270,11 +352,92 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     }
     
     func handle(newClientToken clientToken: String) {
-        try? ClientTokenService.storeClientToken(clientToken)
+        do {
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            
+            if state.accessToken != clientToken {
+                try ClientTokenService.storeClientToken(clientToken)
+            }
+            
+            let decodedClientToken = state.decodedClientToken!
+            
+            if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+                #if canImport(Primer3DS)
+                guard let paymentMethod = selectedPaymentInstrument else {
+                    DispatchQueue.main.async {
+                        let err = PrimerError.threeDSFailed
+                        Primer.shared.delegate?.onResumeError?(err)
+                    }
+                    return
+                }
+                
+                let threeDSService = ThreeDSService()
+                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                    switch result {
+                    case .success(let paymentMethodToken):
+                        DispatchQueue.main.async {
+                            guard let threeDSPostAuthResponse = paymentMethodToken.1,
+                                  let resumeToken = threeDSPostAuthResponse.resumeToken else {
+                                      DispatchQueue.main.async {
+                                          let err = PrimerError.threeDSFailed
+                                          Primer.shared.delegate?.onResumeError?(err)
+                                      }
+                                      return
+                                  }
+                            
+                            Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
+                        }
+                        
+                    case .failure(let err):
+                        log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
+                        
+                        DispatchQueue.main.async {
+                            let err = PrimerError.threeDSFailed
+                            Primer.shared.delegate?.onResumeError?(err)
+                        }
+                    }
+                }
+                #else
+                
+                DispatchQueue.main.async {
+                    let error = PrimerError.threeDSFailed
+                    Primer.shared.delegate?.onResumeError?(error)
+                }
+                #endif
+                
+            } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
+                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                
+                firstly {
+                    configService.fetchConfig()
+                }
+                .done {
+                    self.onClientSessionActionCompletion?(nil)
+                }
+                .catch { err in
+                    self.handle(error: err)
+                }
+            } else {
+                let err = PrimerError.invalidValue(key: "resumeToken")
+                handle(error: err)
+                DispatchQueue.main.async {
+                    Primer.shared.delegate?.onResumeError?(err)
+                }
+            }
+            
+        } catch {
+            handle(error: error)
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+            }
+        }
     }
     
     func handleSuccess() {
-        DispatchQueue.main.async { 
+        DispatchQueue.main.async {
+            self.payButton.showSpinner(false)
+            self.enableView(true)
+            
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
             if settings.hasDisabledSuccessScreen {
