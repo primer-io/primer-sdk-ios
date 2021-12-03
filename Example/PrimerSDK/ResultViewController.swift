@@ -24,7 +24,19 @@ class ResultViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let responseStr = data.prettyPrintedJSONString as? String
+        let paymentResponse = try! JSONDecoder().decode(Payment.Response.self, from: data)
+        responseStatus.text = paymentResponse.status.rawValue
+        responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
+        switch paymentResponse.status {
+        case .declined:
+            responseStatus.textColor = .red
+        case .settled:
+            responseStatus.textColor = .green
+        case .pending:
+            responseStatus.textColor = .orange
+        }
+        
+        let responseStr = data.prettyPrintedJSONString as String?
         responseTextView.text = responseStr
     }
     

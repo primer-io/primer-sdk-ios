@@ -22,14 +22,39 @@ enum HTTPMethod: String {
     case delete = "DELETE"
 }
 
-struct PaymentRequest: Encodable {
-    let isV3: Bool?
-    let environment: Environment
-    let paymentMethod: String
-    let amount: Int?
-    let type: String?
-    let currencyCode: Currency?
-    let countryCode: CountryCode?
+struct Payment {
+    
+    struct Request: Encodable {
+        let isV3: Bool?
+        let environment: Environment
+        let paymentMethod: String
+        let amount: Int?
+        let type: String?
+        let currencyCode: Currency?
+        let countryCode: CountryCode?
+    }
+
+    struct Response: Decodable {
+        let id: String
+        let requiredAction: Payment.Response.RequiredAction?
+        let customer: ClientSessionRequestBody.Customer?
+        let amount: Int?
+        let currency: String?
+        let order: ClientSessionRequestBody.Order?
+        let status: Status
+        
+        struct RequiredAction: Decodable {
+            let clientToken: String
+            let name: String
+            let description: String?
+        }
+        
+        enum Status: String, Codable {
+            case settled = "SETTLED"
+            case declined = "DECLINED"
+            case pending = "PENDING"
+        }
+    }
 }
 
 enum NetworkError: Error {

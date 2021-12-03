@@ -163,7 +163,7 @@ struct ClientSessionRequestBody {
         return dic.keys.count == 0 ? nil : dic
     }
     
-    struct Customer: Encodable {
+    struct Customer: Codable {
         let firstName: String?
         let lastName: String?
         let emailAddress: String?
@@ -198,7 +198,7 @@ struct ClientSessionRequestBody {
         }
     }
     
-    struct Order: Encodable {
+    struct Order: Codable {
         let countryCode: CountryCode?
         let lineItems: [LineItem]?
         
@@ -216,7 +216,7 @@ struct ClientSessionRequestBody {
             return dic.keys.count == 0 ? nil : dic
         }
         
-        struct LineItem: Encodable {
+        struct LineItem: Codable {
             let itemId: String?
             let description: String?
             let amount: Int?

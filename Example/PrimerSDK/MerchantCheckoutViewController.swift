@@ -292,7 +292,7 @@ class MerchantCheckoutViewController: UIViewController {
             return completion(nil, NetworkError.missingParams)
         }
                 
-        let body = PaymentRequest(
+        let body = Payment.Request(
             isV3: true,
             environment: environment,
             paymentMethod: paymentMethod.token,
@@ -320,8 +320,6 @@ class MerchantCheckoutViewController: UIViewController {
             body: bodyData) { result in
                 switch result {
                 case .success(let data):
-                    
-                    
                     if let dic = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
                         completion(dic, nil)
                     } else {
