@@ -12,7 +12,7 @@ enum Environment: String {
     case local, dev, sandbox, staging, production
 }
 
-struct PaymentMethod {
+struct Payment {
     let id: String
     let environment: Environment
     let currency: String

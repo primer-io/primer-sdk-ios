@@ -11,14 +11,14 @@ import XCTest
 class ExternalPaymentMethods: XCTestCase {
     
     let app = XCUIApplication()
-    let paymentMethods: [PaymentMethod] = [
-        PaymentMethod(
+    let paymentMethods: [Payment] = [
+        Payment(
             id: "ADYEN_GIROPAY",
             environment: .sandbox,
             currency: "EUR",
             countryCode: "DE",
             amount: "1.00",
-            expecations: PaymentMethod.Expecations(
+            expecations: Payment.Expecations(
                 amount: "€1.00",
                 surcharge: "€0.29",
                 webviewImage: "giropay",
@@ -26,13 +26,13 @@ class ExternalPaymentMethods: XCTestCase {
                 buttonTexts: nil
             )
         ),
-        PaymentMethod(
+        Payment(
             id: "ADYEN_MOBILEPAY",
             environment: .sandbox,
             currency: "DKK",
             countryCode: "DK",
             amount: "1.00",
-            expecations: PaymentMethod.Expecations(
+            expecations: Payment.Expecations(
                 amount: "DKK 1.00",
                 surcharge: nil,
                 webviewImage: "mobilepay-logo",
@@ -40,13 +40,13 @@ class ExternalPaymentMethods: XCTestCase {
                 buttonTexts: nil
             )
         ),
-        PaymentMethod(
+        Payment(
             id: "PAY_NL_BANCONTACT",
             environment: .sandbox,
             currency: "EUR",
             countryCode: "NL",
             amount: "1.00",
-            expecations: PaymentMethod.Expecations(
+            expecations: Payment.Expecations(
                 amount: "€1.00",
                 surcharge: "€0.49",
                 webviewImage: nil,
@@ -54,13 +54,13 @@ class ExternalPaymentMethods: XCTestCase {
                 buttonTexts: nil
             )
         ),
-        PaymentMethod(
+        Payment(
             id: "ADYEN_ALIPAY",
             environment: .sandbox,
             currency: "CNY",
             countryCode: "CN",
             amount: "1.00",
-            expecations: PaymentMethod.Expecations(
+            expecations: Payment.Expecations(
                 amount: "CNY 1.00",
                 surcharge: nil,
                 webviewImage: nil,
@@ -113,7 +113,7 @@ class ExternalPaymentMethods: XCTestCase {
                 
     }
     
-    func testPaymentMethod(_ pm: PaymentMethod) throws {
+    func testPaymentMethod(_ pm: Payment) throws {
         try Base().testInitialize(
             env: pm.environment.rawValue,
             customerId: nil,
