@@ -244,16 +244,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     "paymentMethodType": "PAYMENT_CARD",
                     "binData": [
                         "network": network,
-                        "issuer_name": nil,
-                        "product_code": network,
-                        "product_name": network,
-                        "product_usage_type": "UNKNOWN",
-                        "account_number_type": "UNKNOWN",
-                        "issuer_country_code": nil,
-                        "account_funding_type": "UNKNOWN",
-                        "issuer_currency_code": nil,
-                        "regional_restriction": "UNKNOWN",
-                        "prepaid_reloadable_indicator": "NOT_APPLICABLE"
                     ]
                 ]
             }
