@@ -235,20 +235,15 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         if Primer.shared.delegate?.onClientSessionActions != nil {
             var params: [String: Any] = ["paymentMethodType": config.type.rawValue]
             if config.type == .paymentCard {
+                var network = paymentMethodToken.paymentInstrumentData?.network?.uppercased()
+                if network == nil || network == "UNKNOWN" {
+                    network = "OTHER"
+                }
+                
                 params = [
                     "paymentMethodType": "PAYMENT_CARD",
                     "binData": [
-                        "network": paymentMethodToken.paymentInstrumentData?.network?.uppercased(),
-                        "issuer_name": nil,
-                        "product_code": paymentMethodToken.paymentInstrumentData?.network?.uppercased(),
-                        "product_name": paymentMethodToken.paymentInstrumentData?.network?.uppercased(),
-                        "product_usage_type": "UNKNOWN",
-                        "account_number_type": "UNKNOWN",
-                        "issuer_country_code": nil,
-                        "account_funding_type": "UNKNOWN",
-                        "issuer_currency_code": nil,
-                        "regional_restriction": "UNKNOWN",
-                        "prepaid_reloadable_indicator": "NOT_APPLICABLE"
+                        "network": network,
                     ]
                 ]
             }
