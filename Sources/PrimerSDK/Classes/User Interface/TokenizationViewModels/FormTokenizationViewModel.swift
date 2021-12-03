@@ -338,20 +338,15 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         
         if Primer.shared.delegate?.onClientSessionActions != nil {
+            var network = self.cardNetwork?.rawValue.uppercased()
+            if network == nil || network == "UNKNOWN" {
+                network = "OTHER"
+            }
+            
             let params: [String: Any] = [
                 "paymentMethodType": "PAYMENT_CARD",
                 "binData": [
-                    "network": self.cardNetwork?.rawValue.uppercased(),
-                    "issuer_name": nil,
-                    "product_code": self.cardNetwork?.rawValue.uppercased(),
-                    "product_name": self.cardNetwork?.rawValue.uppercased(),
-                    "product_usage_type": "UNKNOWN",
-                    "account_number_type": "UNKNOWN",
-                    "issuer_country_code": nil,
-                    "account_funding_type": "UNKNOWN",
-                    "issuer_currency_code": nil,
-                    "regional_restriction": "UNKNOWN",
-                    "prepaid_reloadable_indicator": "NOT_APPLICABLE"
+                    "network": network,
                 ]
             ]
     
@@ -473,22 +468,18 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         self.cardNetwork = cardNetwork
         
         if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImage2 == nil && cardNetwork.icon != nil {
+            var network = self.cardNetwork?.rawValue.uppercased()
+            if network == nil || network == "UNKNOWN" {
+                network = "OTHER"
+            }
+            
             let params: [String: Any] = [
                 "paymentMethodType": "PAYMENT_CARD",
                 "binData": [
-                    "network": cardNetwork.rawValue.uppercased(),
-                    "issuer_name": nil,
-                    "product_code": cardNetwork.rawValue.uppercased(),
-                    "product_name": cardNetwork.rawValue.uppercased(),
-                    "product_usage_type": "UNKNOWN",
-                    "account_number_type": "UNKNOWN",
-                    "issuer_country_code": nil,
-                    "account_funding_type": "UNKNOWN",
-                    "issuer_currency_code": nil,
-                    "regional_restriction": "UNKNOWN",
-                    "prepaid_reloadable_indicator": "NOT_APPLICABLE"
+                    "network": network,
                 ]
             ]
+            
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
             cardNumberContainerView.rightImage2 = cardNetwork.icon
             

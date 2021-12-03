@@ -107,7 +107,7 @@ class PrimerNavigationBar: PrimerView {
         horizontalStackView.spacing = 8.0
 
         leftView.translatesAutoresizingMaskIntoConstraints = false
-        leftView.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        leftView.widthAnchor.constraint(equalToConstant: 60).isActive = true
         leftView.heightAnchor.constraint(equalToConstant: 44).isActive = true
         leftView.backgroundColor = .clear
         horizontalStackView.addArrangedSubview(leftView)
@@ -116,7 +116,7 @@ class PrimerNavigationBar: PrimerView {
         renderAvailableCenterSpace()
         
         rightView.translatesAutoresizingMaskIntoConstraints = false
-        rightView.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        rightView.widthAnchor.constraint(equalToConstant: 60).isActive = true
         rightView.heightAnchor.constraint(equalToConstant: 44).isActive = true
         rightView.backgroundColor = .clear
         horizontalStackView.addArrangedSubview(rightView)

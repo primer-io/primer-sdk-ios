@@ -168,6 +168,7 @@ struct ClientSessionRequestBody {
         let lastName: String?
         let emailAddress: String?
         let mobileNumber: String?
+        let billingAddress: Address?
         let shippingAddress: Address?
         
         var dictionaryValue: [String: Any]? {
@@ -183,6 +184,10 @@ struct ClientSessionRequestBody {
             
             if let emailAddress = emailAddress {
                 dic["emailAddress"] = emailAddress
+            }
+            
+            if let billingAddress = billingAddress {
+                dic["billingAddress"] = billingAddress.dictionaryValue
             }
             
             if let shippingAddress = shippingAddress {
@@ -314,14 +319,16 @@ struct JWTToken: Decodable {
 }
 
 public struct Address: Codable {
+    let firstName: String?
+    let lastName: String?
     let addressLine1: String?
     let addressLine2: String?
     let city: String?
+    let state: String?
     let countryCode: String?
     let postalCode: String?
-    let firstName: String?
-    let lastName: String?
-    let state: String?
+    
+    
     
     public init(
         firstName: String?,
@@ -329,9 +336,9 @@ public struct Address: Codable {
         addressLine1: String,
         addressLine2: String?,
         city: String,
-        postalCode: String,
         state: String?,
-        countryCode: String
+        countryCode: String,
+        postalCode: String
     ) {
         self.addressLine1 = addressLine1
         self.addressLine2 = addressLine2
