@@ -32,6 +32,7 @@ class PrimerContainerViewController: PrimerViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        scrollView.accessibilityIdentifier = "primer_container_scroll_view"
 
         view.addSubview(mockedNavigationBar)
         mockedNavigationBar.translatesAutoresizingMaskIntoConstraints = false

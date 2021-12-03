@@ -390,6 +390,11 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                             "amount": 119
                         ]
                     ],
+                    "PAY_NL_BANCONTACT": [
+                        "surcharge": [
+                            "amount": 49
+                        ]
+                    ],
                     "PAY_NL_IDEAL": [
                         "surcharge": [
                             "amount": 99
@@ -403,6 +408,16 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     "ADYEN_TWINT": [
                         "surcharge": [
                             "amount": 49
+                        ]
+                    ],
+                    "ADYEN_GIROPAY": [
+                        "surcharge": [
+                            "amount": 29
+                        ]
+                    ],
+                    "BUCKAROO_BANCONTACT": [
+                        "surcharge": [
+                            "amount": 19
                         ]
                     ],
                     "PAYMENT_CARD": [
