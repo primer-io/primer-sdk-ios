@@ -354,15 +354,24 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 lastName: "Smith",
                 emailAddress: "john@primer.io",
                 mobileNumber: "+4478888888888",
+                billingAddress: Address(
+                    firstName: "John",
+                    lastName: "Smith",
+                    addressLine1: "65 York Road",
+                    addressLine2: nil,
+                    city: "London",
+                    state: nil,
+                    countryCode: "GB",
+                    postalCode: "NW06 4OM"),
                 shippingAddress: Address(
                     firstName: "John",
                     lastName: "Smith",
-                    addressLine1: "Line 1",
+                    addressLine1: "9446 Richmond Road",
                     addressLine2: nil,
-                    city: "Athens",
-                    postalCode: "15236",
+                    city: "London",
                     state: nil,
-                    countryCode: "GR")
+                    countryCode: "GB",
+                    postalCode: "EC53 8BT")
             ),
             order: ClientSessionRequestBody.Order(
                 countryCode: countryCode,
