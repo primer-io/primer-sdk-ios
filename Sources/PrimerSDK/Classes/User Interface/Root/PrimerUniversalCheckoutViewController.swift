@@ -360,8 +360,10 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 #if canImport(Primer3DS)
                 guard let paymentMethod = selectedPaymentInstrument else {
                     DispatchQueue.main.async {
+                        self.onClientSessionActionCompletion = nil
                         let err = PrimerError.threeDSFailed
                         Primer.shared.delegate?.onResumeError?(err)
+                        self.handle(error: err)
                     }
                     return
                 }
@@ -374,8 +376,10 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                             guard let threeDSPostAuthResponse = paymentMethodToken.1,
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
                                       DispatchQueue.main.async {
+                                          self.onClientSessionActionCompletion = nil
                                           let err = PrimerError.threeDSFailed
                                           Primer.shared.delegate?.onResumeError?(err)
+                                          self.handle(error: err)
                                       }
                                       return
                                   }
@@ -387,16 +391,20 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                         log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
                         
                         DispatchQueue.main.async {
+                            self.onClientSessionActionCompletion = nil
                             let err = PrimerError.threeDSFailed
                             Primer.shared.delegate?.onResumeError?(err)
+                            self.handle(error: err)
                         }
                     }
                 }
                 #else
                 
                 DispatchQueue.main.async {
-                    let error = PrimerError.threeDSFailed
-                    Primer.shared.delegate?.onResumeError?(error)
+                    self.onClientSessionActionCompletion = nil
+                    let err = PrimerError.threeDSFailed
+                    Primer.shared.delegate?.onResumeError?(err)
+                    self.handle(error: err)
                 }
                 #endif
                 
