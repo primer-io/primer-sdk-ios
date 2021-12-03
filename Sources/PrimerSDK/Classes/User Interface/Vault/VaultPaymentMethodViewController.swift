@@ -95,7 +95,6 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
         isEnabled = viewModel.selectedId == paymentMethodToken.token
-
         horizontalStackView.axis = .horizontal
         horizontalStackView.alignment = .fill
         horizontalStackView.spacing = 16

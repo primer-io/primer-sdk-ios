@@ -29,8 +29,6 @@ internal class PrimerOldButton: PrimerButton {
     
     func showSpinner(_ flag: Bool, color: UIColor = .white) {
         DispatchQueue.main.async {
-            let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-            
             if self.titleCopy == nil {
                 self.titleCopy = self.titleLabel?.text
             }
@@ -47,7 +45,7 @@ internal class PrimerOldButton: PrimerButton {
                 self.spinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
             }
             
-            self.spinner.color = theme.colors.primary
+            self.spinner.color = color
             
             flag ? self.spinner.startAnimating() : self.spinner.stopAnimating()
             flag ? self.setTitle(nil, for: .normal) : self.setTitle(self.titleCopy, for: .normal)

@@ -27,11 +27,11 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.de.rawValue
+        countryCodeTextField.text = CountryCode.gb.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
-        currencyTextField.text = Currency.EUR.rawValue
+        currencyTextField.text = Currency.RON.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
-        amountTextField.text = "1.00"
+        amountTextField.text = "0.20"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
@@ -55,12 +55,14 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         var env: Environment!
         switch environmentControl.selectedSegmentIndex {
         case 0:
-            env = .dev
+            env = .local
         case 1:
-            env = .sandbox
+            env = .dev
         case 2:
-            env = .staging
+            env = .sandbox
         case 3:
+            env = .staging
+        case 4:
             env = .production
         default:
             break
@@ -73,7 +75,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         
         let mcvc = MerchantCheckoutViewController.instantiate(
             environment: env,
-            customerId: customerIdTextField.text,
+            customerId: (customerIdTextField.text ?? "").isEmpty ? "vagz" : customerIdTextField.text!,
             phoneNumber: phoneNumberTextField.text,
             countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
             currency: Currency(rawValue: currencyTextField.text ?? ""),

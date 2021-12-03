@@ -23,17 +23,17 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .paymentCard:
             return Primer.shared.flow.internalSessionFlow.vaulted
-                ? NSLocalizedString("payment-method-type-card-vaulted",
-                                    tableName: nil,
-                                    bundle: Bundle.primerResources,
-                                    value: "Add new card",
-                                    comment: "Add new card - Payment Method Type (Card Vaulted)")
-
-                : NSLocalizedString("payment-method-type-card-not-vaulted",
-                                    tableName: nil,
-                                    bundle: Bundle.primerResources,
-                                    value: "Pay with card",
-                                    comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+            ? NSLocalizedString("payment-method-type-card-vaulted",
+                                tableName: nil,
+                                bundle: Bundle.primerResources,
+                                value: "Add new card",
+                                comment: "Add new card - Payment Method Type (Card Vaulted)")
+            
+            : NSLocalizedString("payment-method-type-card-not-vaulted",
+                                tableName: nil,
+                                bundle: Bundle.primerResources,
+                                value: "Pay with card",
+                                comment: "Pay with card - Payment Method Type (Card Not vaulted)")
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -210,6 +210,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return submitButton
     }()
     
+    var cardNetwork: CardNetwork?
+    
     required init(config: PaymentMethodConfig) {
         self.flow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout
         super.init(config: config)
@@ -255,11 +257,17 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     @objc
+    override func presentNativeUI() {
+        let cfvc = PrimerCardFormViewController(viewModel: self)
+        Primer.shared.primerRootVC?.show(viewController: cfvc)
+    }
+    
+    @objc
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
         do {
-            try validate()
+            try self.validate()
         } catch {
             DispatchQueue.main.async {
                 Primer.shared.delegate?.checkoutFailed?(with: error)
@@ -274,13 +282,102 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
+    fileprivate func continueTokenizationFlow() {
+        do {
+            try self.validate()
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.checkoutFailed?(with: error)
+                self.handleFailedTokenizationFlow(error: error)
+            }
+            return
+        }
+        
+        DispatchQueue.main.async {
+            let pcfvc = PrimerCardFormViewController(viewModel: self)
+            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+        }
+    }
+    
+    func configurePayButton(cardNetwork: CardNetwork?) {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        var amount: Int = settings.amount ?? 0
+
+        if let surcharge = cardNetwork?.surcharge {
+            amount += surcharge
+        }
+
+        configurePayButton(amount: amount)
+    }
+    
+    func configurePayButton(amount: Int) {
+        DispatchQueue.main.async {
+            if !Primer.shared.flow.internalSessionFlow.vaulted {
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                
+                var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                              tableName: nil,
+                                              bundle: Bundle.primerResources,
+                                              value: "Pay",
+                                              comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
+                
+                if let currency = settings.currency {
+                    title += " \(amount.toCurrencyString(currency: currency))"
+                }
+                
+                self.submitButton.setTitle(title, for: .normal)
+            }
+        }
+    }
+    
+    var onClientSessionActionCompletion: ((Error?) -> Void)?
+    
     @objc
     func payButtonTapped(_ sender: UIButton) {
-        cardComponentsManager.tokenize()
+        submitButton.showSpinner(true)
+        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+        
+        if Primer.shared.delegate?.onClientSessionActions != nil {
+            let params: [String: Any] = [
+                "paymentMethodType": "PAYMENT_CARD",
+                "binData": [
+                    "network": self.cardNetwork?.rawValue.uppercased(),
+                    "issuer_name": nil,
+                    "product_code": self.cardNetwork?.rawValue.uppercased(),
+                    "product_name": self.cardNetwork?.rawValue.uppercased(),
+                    "product_usage_type": "UNKNOWN",
+                    "account_number_type": "UNKNOWN",
+                    "issuer_country_code": nil,
+                    "account_funding_type": "UNKNOWN",
+                    "issuer_currency_code": nil,
+                    "regional_restriction": "UNKNOWN",
+                    "prepaid_reloadable_indicator": "NOT_APPLICABLE"
+                ]
+            ]
+    
+            onClientSessionActionCompletion = { err in
+                if let err = err {
+                    DispatchQueue.main.async {
+                        self.submitButton.showSpinner(false)
+                        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+                        Primer.shared.delegate?.onResumeError?(err)
+                        self.onClientSessionActionCompletion = nil
+                    }
+                    self.handle(error: err)
+                } else {
+                    self.cardComponentsManager.tokenize()
+                }
+            }
+            
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+        } else {
+            cardComponentsManager.tokenize()
+        }
     }
 }
 
 extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {
+    
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
         self.paymentMethod = paymentMethodToken
         
@@ -316,9 +413,11 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         submitButton.showSpinner(false)
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         
-        let err = PrimerError.containerError(errors: errors)
-        Primer.shared.delegate?.checkoutFailed?(with: err)
-        self.handleFailedTokenizationFlow(error: err)
+        DispatchQueue.main.async {
+            let err = PrimerError.containerError(errors: errors)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            self.handleFailedTokenizationFlow(error: err)
+        }
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
@@ -352,7 +451,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
             cardholderNameContainerView.errorText = "Invalid name"
         }
-
+        
         if cardNumberField.isTextValid,
            expiryDateField.isTextValid,
            cvvField.isTextValid,
@@ -367,11 +466,36 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {
-
+        
     }
     
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork) {
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
+        self.cardNetwork = cardNetwork
         
+        if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImage2 == nil && cardNetwork.icon != nil {
+            let params: [String: Any] = [
+                "paymentMethodType": "PAYMENT_CARD",
+                "binData": [
+                    "network": cardNetwork.rawValue.uppercased(),
+                    "issuer_name": nil,
+                    "product_code": cardNetwork.rawValue.uppercased(),
+                    "product_name": cardNetwork.rawValue.uppercased(),
+                    "product_usage_type": "UNKNOWN",
+                    "account_number_type": "UNKNOWN",
+                    "issuer_country_code": nil,
+                    "account_funding_type": "UNKNOWN",
+                    "issuer_currency_code": nil,
+                    "regional_restriction": "UNKNOWN",
+                    "prepaid_reloadable_indicator": "NOT_APPLICABLE"
+                ]
+            ]
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+            cardNumberContainerView.rightImage2 = cardNetwork.icon
+            
+        } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
+            cardNumberContainerView.rightImage2 = nil
+            ClientSession.Action.unselectPaymentMethod(resumeHandler: self)
+        }
     }
     
 }
@@ -380,42 +504,40 @@ extension CardFormPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
         DispatchQueue.main.async {
+            if self.onClientSessionActionCompletion != nil {
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                self.onClientSessionActionCompletion?(error)
+                self.onClientSessionActionCompletion = nil
+            }
+            
+            self.handleFailedTokenizationFlow(error: error)
             self.submitButton.showSpinner(false)
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
+        
         completion?(nil, error)
     }
     
     override func handle(newClientToken clientToken: String) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        if state.accessToken == clientToken {
-            let err = PrimerError.invalidValue(key: "clientToken")
-            handle(error: err)
-            DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(err)
-            }
-            return
-        }
-        
         do {
-            try ClientTokenService.storeClientToken(clientToken)
-           
             let state: AppStateProtocol = DependencyContainer.resolve()
+            
+            if state.accessToken != clientToken {
+                try ClientTokenService.storeClientToken(clientToken)
+            }
+            
             let decodedClientToken = state.decodedClientToken!
             
-            guard let paymentMethod = paymentMethod else {
-                let err = PrimerError.invalidValue(key: "paymentMethod")
-                handle(error: err)
-                
-                DispatchQueue.main.async {
-                    Primer.shared.delegate?.onResumeError?(err)
-                }
-                
-                return
-            }
-           
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)
+                guard let paymentMethod = paymentMethod else {
+                    DispatchQueue.main.async {
+                        let err = PrimerError.threeDSFailed
+                        Primer.shared.delegate?.onResumeError?(err)
+                    }
+                    return
+                }
+                
                 let threeDSService = ThreeDSService()
                 threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
@@ -423,10 +545,11 @@ extension CardFormPaymentMethodTokenizationViewModel {
                         DispatchQueue.main.async {
                             guard let threeDSPostAuthResponse = paymentMethodToken.1,
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                      let err = PrimerError.threeDSFailed
-                                      
-                                      
-                                      Primer.shared.delegate?.onResumeError?(err)
+                                      DispatchQueue.main.async {
+                                          let err = PrimerError.threeDSFailed
+                                          Primer.shared.delegate?.onResumeError?(err)
+                                          self.handle(error: err)
+                                      }
                                       return
                                   }
                             
@@ -447,15 +570,32 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     Primer.shared.delegate?.onResumeError?(error)
                 }
                 #endif
-               
+                
+            } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
+                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                
+                firstly {
+                    configService.fetchConfig()
+                }
+                .done {
+                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                    if let amount = settings.amount {
+                        self.configurePayButton(amount: amount)
+                    }
+                    self.onClientSessionActionCompletion?(nil)
+                }
+                .catch { err in
+                    self.onClientSessionActionCompletion?(err)
+                }
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken")
+
                 handle(error: err)
                 DispatchQueue.main.async {
                     Primer.shared.delegate?.onResumeError?(err)
                 }
             }
-           
+            
         } catch {
             handle(error: error)
             DispatchQueue.main.async {

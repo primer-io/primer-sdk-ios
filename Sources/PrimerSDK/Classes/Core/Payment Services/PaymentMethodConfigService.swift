@@ -4,6 +4,7 @@ import UIKit
 
 internal protocol PaymentMethodConfigServiceProtocol {
     func fetchConfig(_ completion: @escaping (Error?) -> Void)
+    func fetchConfig() -> Promise<Void>
 }
 
 internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
@@ -26,8 +27,21 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
             case .failure(let error):
                 completion(error)
             case .success(let config):
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 state.paymentMethodConfig = config
                 completion(nil)
+            }
+        }
+    }
+    
+    func fetchConfig() -> Promise<Void> {
+        return Promise { seal in
+            self.fetchConfig { err in
+                if let err = err {
+                    seal.reject(err)
+                } else {
+                    seal.fulfill()
+                }
             }
         }
     }

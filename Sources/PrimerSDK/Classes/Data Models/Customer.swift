@@ -13,7 +13,7 @@ import Foundation
 public struct Customer: Codable {
     let firstName: String?
     let lastName: String?
-    let email: String?
+    let emailAddress: String?
     let homePhoneNumber: String?
     let mobilePhoneNumber: String?
     let workPhoneNumber: String?
@@ -22,7 +22,7 @@ public struct Customer: Codable {
     public init(
         firstName: String? = nil,
         lastName: String? = nil,
-        email: String? = nil,
+        emailAddress: String? = nil,
         homePhoneNumber: String? = nil,
         mobilePhoneNumber: String? = nil,
         workPhoneNumber: String? = nil,
@@ -30,7 +30,7 @@ public struct Customer: Codable {
     ) {
         self.firstName = firstName
         self.lastName = lastName
-        self.email = email
+        self.emailAddress = emailAddress
         self.homePhoneNumber = homePhoneNumber
         self.mobilePhoneNumber = mobilePhoneNumber
         self.workPhoneNumber = workPhoneNumber

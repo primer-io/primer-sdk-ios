@@ -315,8 +315,19 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        
+        if Primer.shared.delegate?.onClientSessionActions != nil {
+            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+        } else {
+            continueTokenizationFlow()
+        }
+    }
+    
+    fileprivate func continueTokenizationFlow() {
         do {
-            try validate()
+            try self.validate()
         } catch {
             DispatchQueue.main.async {
                 Primer.shared.delegate?.checkoutFailed?(with: error)
@@ -503,8 +514,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 
                 self.willPresentExternalView?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
-                    self.didPresentExternalView?()
-                    seal.fulfill(())
+                    DispatchQueue.main.async {
+                        self.didPresentExternalView?()
+                        seal.fulfill(())
+                    }
                 })
             }
         }
@@ -596,6 +609,10 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
 extension ExternalPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
+        DispatchQueue.main.async {
+            ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+        }
+        
         // onClientToken will be created when we're awaiting a new client token from the developer
         onClientToken?(nil, error)
         onClientToken = nil
@@ -607,9 +624,38 @@ extension ExternalPaymentMethodTokenizationViewModel {
     override func handle(newClientToken clientToken: String) {
         do {
             try ClientTokenService.storeClientToken(clientToken)
-            onClientToken?(clientToken, nil)
-            onClientToken = nil
+            
+            let decodedClientToken = ClientTokenService.decodedClientToken!
+            
+            if decodedClientToken.intent?.contains("_REDIRECTION") == true {
+                onClientToken?(clientToken, nil)
+                onClientToken = nil
+                
+            } else {
+                // intent = "CHECKOUT"
+                // if decodedClientToken.intent == RequiredActionName.checkout.rawValue
+                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                
+                firstly {
+                    configService.fetchConfig()
+                }
+                .done {
+                    self.continueTokenizationFlow()
+                }
+                .catch { err in
+                    DispatchQueue.main.async {
+                        Primer.shared.delegate?.onResumeError?(err)
+                    }
+                    self.handle(error: err)
+                }
+            }
+            
         } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+            }
+            
+            handle(error: error)
             onClientToken?(nil, error)
             onClientToken = nil
         }

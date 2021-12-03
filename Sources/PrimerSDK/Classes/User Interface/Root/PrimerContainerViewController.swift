@@ -64,6 +64,8 @@ class PrimerContainerViewController: PrimerViewController {
         view.layoutIfNeeded()
 
         childViewController.didMove(toParent: self)
+        
+        scrollView.delegate = self
     }
     
     func layoutContainerViewControllerIfNeeded(block: (() -> Void)?) {
@@ -82,6 +84,14 @@ class PrimerContainerViewController: PrimerViewController {
         childViewHeightConstraint?.isActive = true
         Primer.shared.primerRootVC?.resetConstraint(for: childViewController)
         view.layoutIfNeeded()
+    }
+}
+
+extension PrimerContainerViewController: UIScrollViewDelegate {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y == 0 && scrollView.panGestureRecognizer.translation(in: scrollView.superview).y > 0 {
+            Primer.shared.dismiss()
+        }
     }
 }
 
