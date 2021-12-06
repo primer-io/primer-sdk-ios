@@ -66,6 +66,14 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     @objc
     func startTokenizationFlow() {
         didStartTokenization?()
+        
+        self.completion = { (tok, err) in
+            if let err = err {
+                self.handleFailedTokenizationFlow(error: err)
+            } else {
+                self.handleSuccessfulTokenizationFlow()
+            }
+        }
     }
     
     lazy var title: String = {
