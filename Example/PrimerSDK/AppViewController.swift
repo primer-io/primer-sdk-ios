@@ -27,11 +27,11 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.gb.rawValue
+        countryCodeTextField.text = CountryCode.nl.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
-        currencyTextField.text = Currency.RON.rawValue
+        currencyTextField.text = Currency.EUR.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
-        amountTextField.text = "0.20"
+        amountTextField.text = "100.20"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
@@ -75,7 +75,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         
         let mcvc = MerchantCheckoutViewController.instantiate(
             environment: env,
-            customerId: (customerIdTextField.text ?? "").isEmpty ? "vagz" : customerIdTextField.text!,
+            customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
             phoneNumber: phoneNumberTextField.text,
             countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
             currency: Currency(rawValue: currencyTextField.text ?? ""),

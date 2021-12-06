@@ -27,7 +27,7 @@ struct Payment {
     struct Request: Encodable {
         let isV3: Bool?
         let environment: Environment
-        let paymentMethod: String
+        let paymentMethodToken: String
         let amount: Int?
         let type: String?
         let currencyCode: Currency?
@@ -36,12 +36,23 @@ struct Payment {
 
     struct Response: Decodable {
         let id: String
-        let requiredAction: Payment.Response.RequiredAction?
-        let customer: ClientSessionRequestBody.Customer?
         let amount: Int?
         let currency: String?
+        let customer: ClientSessionRequestBody.Customer?
+        let customerId: String?
+        let dateStr: String?
+        var date: Date? {
+            return dateStr?.toDate()
+        }
         let order: ClientSessionRequestBody.Order?
+        let orderId: String?
+        let requiredAction: Payment.Response.RequiredAction?
         let status: Status
+        
+        enum CodingKeys: String, CodingKey {
+            case id, amount, currency, customer, customerId, order, orderId, requiredAction, status
+            case dateStr = "date"
+        }
         
         struct RequiredAction: Decodable {
             let clientToken: String
@@ -50,6 +61,7 @@ struct Payment {
         }
         
         enum Status: String, Codable {
+            case authorized = "AUTHORIZED"
             case settled = "SETTLED"
             case declined = "DECLINED"
             case pending = "PENDING"
@@ -179,4 +191,14 @@ class Networking {
         }).resume()
     }
     
+}
+
+internal extension String {
+    func toDate(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil) -> Date? {
+        let df = DateFormatter()
+        df.dateFormat = f
+        df.locale = Locale(identifier: "en_US_POSIX")
+        df.timeZone = timeZone == nil ? TimeZone(abbreviation: "UTC") : timeZone
+        return df.date(from: self)
+    }
 }

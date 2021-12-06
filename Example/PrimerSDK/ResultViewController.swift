@@ -10,34 +10,46 @@ import UIKit
 
 class ResultViewController: UIViewController {
     
-    static func instantiate(data: Data) -> ResultViewController {
+    static func instantiate(data: [Data]) -> ResultViewController {
         let rvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ResultViewController") as! ResultViewController
         rvc.data = data
         return rvc
     }
     
-    var data: Data!
+    var data: [Data]!
     
     @IBOutlet weak var responseStatus: UILabel!
+    @IBOutlet weak var requiredActionsLabel: UILabel!
     @IBOutlet weak var responseTextView: UITextView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let paymentResponse = try! JSONDecoder().decode(Payment.Response.self, from: data)
-        responseStatus.text = paymentResponse.status.rawValue
+        let paymentResponses = data.compactMap({ try? JSONDecoder().decode(Payment.Response.self, from: $0) }).sorted(by: { $0.dateStr ?? "" < $1.dateStr ?? "" })
+        responseStatus.text = paymentResponses.last?.status.rawValue
         responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
-        switch paymentResponse.status {
+        switch paymentResponses.last?.status {
         case .declined:
             responseStatus.textColor = .red
-        case .settled:
+        case .authorized,
+                .settled:
             responseStatus.textColor = .green
         case .pending:
             responseStatus.textColor = .orange
+        case .none:
+            break
         }
         
-        let responseStr = data.prettyPrintedJSONString as String?
-        responseTextView.text = responseStr
+        var requiredActionsNames = ""
+        requiredActionsNames = paymentResponses.filter({ $0.requiredAction != nil }).compactMap({ $0.requiredAction!.name }).joined(separator: ", ").uppercased()
+        requiredActionsLabel.text = requiredActionsNames
+        
+        var responsesStr = ""
+        for paymentResponseData in data {
+            responsesStr += (paymentResponseData.prettyPrintedJSONString as String? ?? "") + "\n\n"
+        }
+        
+        responseTextView.text = responsesStr
     }
     
 }

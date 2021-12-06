@@ -71,7 +71,7 @@ class MerchantCheckoutViewController: UIViewController {
         title = "Primer [\(environment.rawValue)]"
         
         generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
+            merchantIdentifier: "merchant.dx.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "primer",
@@ -287,15 +287,17 @@ class MerchantCheckoutViewController: UIViewController {
             }
     }
     
+    var paymentResponsesData: [Data] = []
+    
     func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
         guard let url = URL(string: "\(endpoint)/payments") else {
             return completion(nil, NetworkError.missingParams)
         }
                 
         let body = Payment.Request(
-            isV3: true,
+            isV3: nil,
             environment: environment,
-            paymentMethod: paymentMethod.token,
+            paymentMethodToken: paymentMethod.token,
             amount: nil,
             type: nil,
             currencyCode: nil,
@@ -312,7 +314,7 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         networking.request(
-            apiVersion: .v3,
+            apiVersion: .v2,
             url: url,
             method: .post,
             headers: nil,
@@ -327,9 +329,9 @@ class MerchantCheckoutViewController: UIViewController {
                         completion(nil, err)
                     }
                     
-                    DispatchQueue.main.async {
-                        let rvc = ResultViewController.instantiate(data: data)
-                        self.navigationController?.pushViewController(rvc, animated: true)
+                    let paymentResponse = try? JSONDecoder().decode(Payment.Response.self, from: data)
+                    if paymentResponse != nil {
+                        self.paymentResponsesData.append(data)
                     }
                     
                 case .failure(let err):
@@ -350,7 +352,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         let clientSessionRequestBody = ClientSessionRequestBody(
             environment: environment,
             customerId: customerId,
-            orderId: "orderId",
+            orderId: "ios_order_id",
             currencyCode: currency,
             amount: nil,
             metadata: nil,
@@ -531,6 +533,13 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         if let threeDSAlert = threeDSAlert {
             present(threeDSAlert, animated: true, completion: nil)
         }
+        
+        DispatchQueue.main.async {
+            if !self.paymentResponsesData.isEmpty {
+                let rvc = ResultViewController.instantiate(data: self.paymentResponsesData)
+                self.navigationController?.pushViewController(rvc, animated: true)
+            }
+        }
     }
     
     func checkoutFailed(with error: Error) {
@@ -575,7 +584,12 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             queryParameters: nil,
             body: bodyData) { result in
                 switch result {
-                case .success:
+                case .success(let data):
+                    let paymentResponse = try? JSONDecoder().decode(Payment.Response.self, from: data)
+                    if paymentResponse != nil {
+                        self.paymentResponsesData.append(data)
+                    }
+                    
                     resumeHandler.handleSuccess()
 
                 case .failure(let err):
