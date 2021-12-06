@@ -13,7 +13,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     var backgroundView = PrimerView()
-    var childView: UIView = UIView()
+    var childView: PrimerView = PrimerView()
     var childViewHeightConstraint: NSLayoutConstraint!
     var childViewBottomConstraint: NSLayoutConstraint!
     
@@ -26,6 +26,8 @@ internal class PrimerRootViewController: PrimerViewController {
     private lazy var availableScreenHeight: CGFloat = {
         return UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
     }()
+    
+    internal var swipeGesture: UISwipeGestureRecognizer?
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -92,13 +94,14 @@ internal class PrimerRootViewController: PrimerViewController {
         tapGesture.delegate = self
         backgroundView.addGestureRecognizer(tapGesture)
         
-        let swipeGesture = UISwipeGestureRecognizer(
+        let swipDown = UISwipeGestureRecognizer(
             target: self,
             action: #selector(dismissGestureRecognizerAction)
         )
-        swipeGesture.delegate = self
-        swipeGesture.direction = .down
-        childView.addGestureRecognizer(swipeGesture)
+        swipDown.delegate = self
+        swipDown.direction = .down
+        swipeGesture = swipDown
+        childView.addGestureRecognizer(swipDown)
         
         render()
     }

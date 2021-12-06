@@ -222,7 +222,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
             self.countryCode = order.countryCode
             
             var orderItems: [OrderItem] = []
-            order.items?.forEach({ lineItem in
+            order.lineItems?.forEach({ lineItem in
                 if let orderItem = try? lineItem.toOrderItem() {
                     orderItems.append(orderItem)
                 }
@@ -242,7 +242,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
             self.customer = Customer(
                 firstName: customer.firstName,
                 lastName: customer.lastName,
-                email: customer.email,
+                emailAddress: customer.emailAddress,
                 homePhoneNumber: nil,
                 mobilePhoneNumber: customer.mobileNumber,
                 workPhoneNumber: nil,

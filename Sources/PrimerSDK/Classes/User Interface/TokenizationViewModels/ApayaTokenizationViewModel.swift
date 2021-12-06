@@ -144,10 +144,22 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        
+        if Primer.shared.delegate?.onClientSessionActions != nil {
+            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+        } else {
+            continueTokenizationFlow()
+        }
+    }
+    
+    fileprivate func continueTokenizationFlow() {
         do {
-            try validate()
+            try self.validate()
         } catch {
             DispatchQueue.main.async {
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
@@ -155,7 +167,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
         
         firstly {
-            generateWebViewUrl()
+            self.generateWebViewUrl()
         }
         .then { url -> Promise<Apaya.WebViewResponse> in
             self.presentApayaController(with: url)
@@ -164,8 +176,6 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
         }
         .done { paymentMethod in
-            self.paymentMethod = paymentMethod
-            
             DispatchQueue.main.async {
                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
@@ -179,6 +189,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
         .catch { err in
             DispatchQueue.main.async {
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
@@ -210,7 +221,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         guard let currency = settings.currency else {
             return completion(.failure(PaymentException.missingCurrency))
         }
-                
+        
         let body = Apaya.CreateSessionAPIRequest(merchantAccountId: merchantAccountId,
                                                  language: settings.localeData.languageCode ?? "en",
                                                  currencyCode: currency.rawValue,
@@ -249,18 +260,22 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     }
     
     private func presentApayaController(with url: URL, completion: @escaping (Apaya.WebViewResponse?, Error?) -> Void) {
-        webViewController = PrimerWebViewController(with: url)
-        webViewController!.navigationDelegate = self
-        webViewController!.modalPresentationStyle = .fullScreen
-        
-        webViewCompletion = { (res, err) in
-            completion(res, err)
+        DispatchQueue.main.async {
+            self.webViewController = PrimerWebViewController(with: url)
+            self.webViewController!.navigationDelegate = self
+            self.webViewController!.modalPresentationStyle = .fullScreen
+            
+            self.webViewCompletion = { (res, err) in
+                completion(res, err)
+            }
+            
+            self.willPresentExternalView?()
+            Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                DispatchQueue.main.async {
+                    self.didPresentExternalView?()
+                }
+            })
         }
-        
-        self.willPresentExternalView?()
-        Primer.shared.primerRootVC?.present(webViewController!, animated: true, completion: {
-            self.didPresentExternalView?()
-        })
     }
     
     private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse) -> Promise<PaymentMethodToken> {
@@ -281,7 +296,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             }
         }
     }
-
+    
     private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -290,7 +305,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             completion(nil, PaymentException.missingCurrency)
             return
         }
-
+        
         let instrument = PaymentInstrument(mx: apayaWebViewResponse.mxNumber,
                                            mnc: apayaWebViewResponse.mnc,
                                            mcc: apayaWebViewResponse.mcc,
@@ -340,7 +355,7 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
             do {
                 let apayaWebViewResponse = try Apaya.WebViewResponse(url: navigationAction.request.url!)
                 webViewCompletion?(apayaWebViewResponse, nil)
-
+                
             } catch {
                 webViewCompletion?(nil, error)
             }
@@ -368,12 +383,35 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
 extension ApayaTokenizationViewModel {
     
     override func handle(error: Error) {
+        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
         self.completion = nil
     }
     
     override func handle(newClientToken clientToken: String) {
-        try? ClientTokenService.storeClientToken(clientToken)
+        do {
+            // For Apaya there's no redirection URL, once the webview is presented it will get its response from a URL redirection.
+            // We'll end up in here only for surcharge.
+            try ClientTokenService.storeClientToken(clientToken)
+            
+            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+            
+            firstly {
+                configService.fetchConfig()
+            }
+            .done {
+                self.continueTokenizationFlow()
+            }
+            .catch { err in
+                self.handle(error: err)
+            }
+                        
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+                self.handle(error: error)
+            }
+        }
     }
     
     override func handleSuccess() {

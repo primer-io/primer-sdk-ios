@@ -35,6 +35,10 @@ struct PrimerConfiguration: Codable {
     let paymentMethods: [PaymentMethodConfig]?
     let keys: ThreeDS.Keys?
     
+    var isSetByClientSession: Bool {
+        return clientSession != nil
+    }
+    
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
@@ -43,6 +47,34 @@ struct PrimerConfiguration: Codable {
         let throwables = try container.decode([Throwable<PaymentMethodConfig>].self, forKey: .paymentMethods)
         self.paymentMethods = throwables.compactMap({ $0.value })
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
+        
+        if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
+            for paymentMethodOption in options {
+                if let type = paymentMethodOption["type"] as? String {
+                    if type == PaymentMethodConfigType.paymentCard.rawValue,
+                        let networks = paymentMethodOption["networks"] as? [[String: Any]],
+                       !networks.isEmpty
+                    {
+                        for network in networks {
+                            guard let type = network["type"] as? String,
+                            let surcharge = network["surcharge"] as? Int
+                            else { continue }
+                            
+                        }
+                    } else if let surcharge = paymentMethodOption["surcharge"] as? Int,
+                              let paymentMethod = self.paymentMethods?.filter({ $0.type.rawValue == type }).first
+                    {
+                        paymentMethod.hasUnknownSurcharge = false
+                        paymentMethod.surcharge = surcharge
+                    }
+                }
+            }
+        }
+        
+        if let paymentMethod = self.paymentMethods?.filter({ $0.type == PaymentMethodConfigType.paymentCard }).first {
+            paymentMethod.hasUnknownSurcharge = true
+            paymentMethod.surcharge = nil
+        }
     }
     
     init(
@@ -76,12 +108,14 @@ struct PrimerConfiguration: Codable {
     }
 }
 
-struct PaymentMethodConfig: Codable {
+class PaymentMethodConfig: Codable {
     
     let id: String? // Will be nil for cards
     let processorConfigId: String?
     let type: PaymentMethodConfigType
     let options: PaymentMethodOptions?
+    var surcharge: Int?
+    var hasUnknownSurcharge: Bool = false
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
         let asyncPaymentMethodTypes: [PaymentMethodConfigType] = [
             .adyenMobilePay,
@@ -139,7 +173,7 @@ struct PaymentMethodConfig: Codable {
         self.type = type
     }
     
-    init(from decoder: Decoder) throws {
+    required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         type = try container.decode(PaymentMethodConfigType.self, forKey: .type)
         id = (try? container.decode(String?.self, forKey: .id)) ?? nil

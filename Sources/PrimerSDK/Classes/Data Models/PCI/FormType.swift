@@ -42,8 +42,7 @@ enum FormType {
                 [.addressLine1(mandate.address?.addressLine1)],
                 [.addressLine2(mandate.address?.addressLine2)],
                 [.city(mandate.address?.city)],
-                [.postalCode(mandate.address?.postalCode)],
-                [.country(mandate.address?.countryCode)]
+                [.postalCode(mandate.address?.postalCode)]
             ]
         case .cardForm(let theme):
             switch theme.input.inputType {

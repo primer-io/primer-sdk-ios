@@ -9,31 +9,7 @@
 import PrimerSDK
 import UIKit
 
-// MARK: - API HELPER
-
-enum ClientSessionVersion: String {
-    case v2 = "2021-09-27"
-    case v3 = "2021-10-19"
-}
-
-struct PaymentRequest: Encodable {
-    let isV3 = true
-    let environment: Environment
-    let paymentMethod: String
-    let amount: Int
-    let type: String?
-    let currencyCode: Currency
-    let countryCode: CountryCode
-}
-
-enum NetworkError: Error {
-    case missingParams
-    case unauthorised
-    case timeout
-    case serverError
-    case invalidResponse
-    case serializationError
-}
+// MARK: - HELPERS
 
 extension UIViewController {
     
@@ -44,70 +20,6 @@ extension UIViewController {
                 self.view.frame.origin.y -= keyboardSize.height
             }
         }
-    }
-
-    func callApi(_ req: URLRequest, completion: @escaping (_ result: Result<Data, Error>) -> Void) {
-        print("URL: \(req.url?.absoluteString ?? "N/A")")
-        print("Headers:\n\(req.allHTTPHeaderFields ?? [:])")
-        
-        if let body = req.httpBody, let json = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
-            print("Body:\n\(json)")
-        }
-        
-        URLSession.shared.dataTask(with: req, completionHandler: { (data, response, err) in
-
-            if err != nil {
-                print("Error: \(err!)")
-                completion(.failure(NetworkError.serverError))
-                return
-            }
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("No response")
-                completion(.failure(NetworkError.invalidResponse))
-                return
-            }
-
-            if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
-                print("Status code: \(httpResponse.statusCode)")
-                completion(.failure(NetworkError.invalidResponse))
-                
-                guard let data = data else {
-                    print("No data")
-                    completion(.failure(NetworkError.invalidResponse))
-                    return
-                }
-                
-                do {
-                    let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                    print("Response body: \(json)")
-                } catch {
-                    print("Error: \(error)")
-                }
-                return
-            }
-            
-            print("Status code: \(httpResponse.statusCode)")
-
-            guard let data = data else {
-                print("No data")
-                completion(.failure(NetworkError.invalidResponse))
-                return
-            }
-            
-            do {
-                let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                print("Response body: \(json)")
-            } catch {
-                print("Error: \(error)")
-            }
-            
-//            let str = String(data: data, encoding: .utf8)
-//            print("Response str: \(str)")
-
-            completion(.success(data))
-
-        }).resume()
     }
 
 }

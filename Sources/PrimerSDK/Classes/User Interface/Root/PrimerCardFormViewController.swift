@@ -36,6 +36,14 @@ class PrimerCardFormViewController: PrimerFormViewController {
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
         configureExpiryAndCvvRow()
         submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
+        
+        formPaymentMethodTokenizationViewModel.completion = { (paymentMethodToken, err) in
+            if let err = err {
+                Primer.shared.primerRootVC?.handle(error: err)
+            } else {
+                Primer.shared.primerRootVC?.handleSuccess()
+            }
+        }
     }
 
     private func configureExpiryAndCvvRow() {

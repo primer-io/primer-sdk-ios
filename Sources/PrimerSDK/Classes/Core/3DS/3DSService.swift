@@ -93,8 +93,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         if settings.customer?.billingAddress?.countryCode == nil {
             errors.append(PrimerError.userDetailsCountryCodeMissing)
-        } else if CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!) == nil {
-            errors.append(PrimerError.userDetailsCountryCodeMissing)
         }
         
         if (settings.customer?.billingAddress?.postalCode ?? "").isEmpty {
@@ -103,7 +101,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         if (settings.customer?.firstName ?? "").isEmpty ||
             (settings.customer?.lastName ?? "").isEmpty ||
-            (settings.customer?.email ?? "").isEmpty
+            (settings.customer?.emailAddress ?? "").isEmpty
         {
             errors.append(PrimerError.userDetailsMissing)
         }
@@ -128,16 +126,16 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
-                                        email: settings.customer!.email!,
-                                        homePhone: settings.customer!.homePhoneNumber,
+                                        email: settings.customer!.emailAddress!,
+                                        homePhone: nil,
                                         mobilePhone: settings.customer!.mobilePhoneNumber,
-                                        workPhone: settings.customer!.workPhoneNumber)
+                                        workPhone: nil)
         
         let threeDSAddress = ThreeDS.Address(title: nil,
                                              firstName: settings.customer!.firstName,
                                              lastName: settings.customer!.lastName,
-                                             email: settings.customer!.email,
-                                             phoneNumber: settings.customer!.mobilePhoneNumber ?? settings.customer!.homePhoneNumber ?? settings.customer!.workPhoneNumber,
+                                             email: settings.customer!.emailAddress,
+                                             phoneNumber: settings.customer!.mobilePhoneNumber,
                                              addressLine1: settings.customer!.billingAddress!.addressLine1!,
                                              addressLine2: settings.customer!.billingAddress!.addressLine2,
                                              addressLine3: nil,
@@ -237,44 +235,39 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                                                     shippingAddress: nil,
                                                                     customerAccount: nil)
         
-        if let beginAuthExtraData = beginAuthExtraData {
-            do {
-                try ThreeDSService.validate3DSParameters()
-            } catch {
-                completion(.failure(error))
-                return
-            }
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
-                                            email: settings.customer!.email!,
-                                            homePhone: settings.customer!.homePhoneNumber,
-                                            mobilePhone: settings.customer!.mobilePhoneNumber,
-                                            workPhone: settings.customer!.workPhoneNumber)
-            
-            let threeDSAddress = ThreeDS.Address(title: nil,
-                                                 firstName: settings.customer!.firstName,
-                                                 lastName: settings.customer!.lastName,
-                                                 email: settings.customer!.email,
-                                                 phoneNumber: settings.customer!.mobilePhoneNumber ?? settings.customer!.homePhoneNumber ?? settings.customer!.workPhoneNumber,
-                                                 addressLine1: settings.customer!.billingAddress!.addressLine1!,
-                                                 addressLine2: settings.customer!.billingAddress!.addressLine2,
-                                                 addressLine3: nil,
-                                                 city: settings.customer!.billingAddress!.city!,
-                                                 state: nil,
-                                                 countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!)!,
-                                                 postalCode: settings.customer!.billingAddress!.postalCode!)
-            
-            threeDSecureBeginAuthRequest.amount = beginAuthExtraData.amount
-            threeDSecureBeginAuthRequest.currencyCode = beginAuthExtraData.currencyCode
-            threeDSecureBeginAuthRequest.orderId = beginAuthExtraData.orderId
-            threeDSecureBeginAuthRequest.customer = beginAuthExtraData.customer
-            threeDSecureBeginAuthRequest.billingAddress = beginAuthExtraData.billingAddress
-            threeDSecureBeginAuthRequest.shippingAddress = beginAuthExtraData.shippingAddress
-            threeDSecureBeginAuthRequest.customerAccount = beginAuthExtraData.customerAccount
+        do {
+            try ThreeDSService.validate3DSParameters()
+        } catch {
+            completion(.failure(error))
+            return
         }
         
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
+                                        email: settings.customer!.emailAddress!,
+                                        homePhone: nil,
+                                        mobilePhone: settings.customer!.mobilePhoneNumber,
+                                        workPhone: nil)
+        
+        let threeDSAddress = ThreeDS.Address(title: nil,
+                                             firstName: settings.customer!.firstName,
+                                             lastName: settings.customer!.lastName,
+                                             email: settings.customer!.emailAddress,
+                                             phoneNumber: settings.customer!.mobilePhoneNumber,
+                                             addressLine1: settings.customer!.billingAddress!.addressLine1!,
+                                             addressLine2: settings.customer!.billingAddress!.addressLine2,
+                                             addressLine3: nil,
+                                             city: settings.customer!.billingAddress!.city!,
+                                             state: nil,
+                                             countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!)!,
+                                             postalCode: settings.customer!.billingAddress!.postalCode!)
+        
+        threeDSecureBeginAuthRequest.amount = settings.amount
+        threeDSecureBeginAuthRequest.currencyCode = settings.currency
+        threeDSecureBeginAuthRequest.orderId = settings.orderId
+        threeDSecureBeginAuthRequest.customer = customer
+        threeDSecureBeginAuthRequest.billingAddress = threeDSAddress
         
         firstly {
             self.beginRemoteAuth(paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)

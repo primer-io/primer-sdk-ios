@@ -10,16 +10,18 @@
 @testable import PrimerSDK
 import XCTest
 
-var mockClientToken = DecodedClientToken(
-    accessToken: "bla",
-    configurationUrl: "bla",
-    paymentFlow: "bla",
-    threeDSecureInitUrl: "bla",
-    threeDSecureToken: "bla",
-    coreUrl: "https://primer.io",
-    pciUrl: "https://primer.io",
-    env: "bla"
-)
+var mockClientToken = DecodedClientToken(accessToken: "bla", exp: 2000000000, configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io")
+
+//(
+//    accessToken: "bla",
+//    configurationUrl: "bla",
+//    paymentFlow: "bla",
+//    threeDSecureInitUrl: "bla",
+//    threeDSecureToken: "bla",
+//    coreUrl: "https://primer.io",
+//    pciUrl: "https://primer.io",
+//    env: "bla"
+//)
 
 var mockSettings = PrimerSettings(
     merchantIdentifier: "mid",

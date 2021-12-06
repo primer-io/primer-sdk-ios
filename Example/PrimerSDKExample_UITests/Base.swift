@@ -8,6 +8,27 @@
 
 import XCTest
 
+enum Environment: String {
+    case local, dev, sandbox, staging, production
+}
+
+struct Payment {
+    let id: String
+    let environment: Environment
+    let currency: String
+    let countryCode: String
+    let amount: String?
+    let expecations: Expecations?
+    
+    struct Expecations {
+        let amount: String?
+        let surcharge: String?
+        let webviewImage: String?
+        let webviewTexts: [String]?
+        let buttonTexts: [String]?
+    }
+}
+
 class Base: XCTestCase {
     
     let app = XCUIApplication()
@@ -69,15 +90,13 @@ class Base: XCTestCase {
         if let countryCode = countryCode {
             let countryCodeTextField = app.textFields["country_code_txt_field"]
             countryCodeTextField.tap()
-            countryCodeTextField.clearText()
-            countryCodeTextField.typeText(countryCode)
+            app.pickerWheels.element.adjust(toPickerWheelValue: countryCode)
         }
         
         if let currency = currency {
             let currencyTextField = app.textFields["currency_txt_field"]
             currencyTextField.tap()
-            currencyTextField.clearText()
-            currencyTextField.typeText(currency)
+            app.pickerWheels.element.adjust(toPickerWheelValue: currency)
         }
         
         if let amount = amount {
@@ -96,6 +115,14 @@ class Base: XCTestCase {
         
         let initSDKButton = app.buttons["initialize_primer_sdk"]
         initSDKButton.tap()
+    }
+    
+    static func validateSurcharge(_ surcharge: String, forPaymentMethod paymentMethodId: String) {
+        let app = XCUIApplication()
+        let scrollView = app.scrollViews["primer_container_scroll_view"]
+        let surchargeGroupViewId = paymentMethodId == "PAYMENT_CARD" ? "additional_fees_surcharge_group_view" : "\(paymentMethodId.lowercased())_surcharge_group_view"
+        let paymentMethodSurcharge = scrollView.otherElements[surchargeGroupViewId].staticTexts[surcharge]
+        XCTAssert(paymentMethodSurcharge.exists, "\(paymentMethodId) should have '\(surcharge)' surcharge")
     }
 
 }

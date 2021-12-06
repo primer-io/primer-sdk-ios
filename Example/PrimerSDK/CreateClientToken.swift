@@ -17,44 +17,13 @@ struct CreateClientTokenRequest: Codable {
     let environment: Environment
     
     let orderId: String
-    let amount: Int
+    let amount: Int?
     let currencyCode: String
     let customerId: String?
     let metadata: [String: String]?
     let customer: Customer?
     let order: Order?
     let paymentMethod: PaymentMethod?
-}
-
-public struct Address: Codable {
-    let addressLine1: String
-    let addressLine2: String?
-    let city: String
-    let countryCode: String
-    let postalCode: String
-    let firstName: String?
-    let lastName: String?
-    let state: String?
-    
-    public init(
-        addressLine1: String,
-        addressLine2: String?,
-        city: String,
-        countryCode: String,
-        postalCode: String,
-        firstName: String?,
-        lastName: String?,
-        state: String?
-    ) {
-        self.addressLine1 = addressLine1
-        self.addressLine2 = addressLine2
-        self.city = city
-        self.countryCode = countryCode
-        self.postalCode = postalCode
-        self.firstName = firstName
-        self.lastName = lastName
-        self.state = state
-    }
 }
 
 public struct Customer: Codable {
@@ -144,10 +113,11 @@ public struct PaymentMethod: Codable {
 }
 
 struct ClientSessionRequestBody {
+    let environment: Environment
     let customerId: String?
     let orderId: String?
     let currencyCode: Currency?
-    let amount: Int
+    let amount: Int?
     let metadata: [String: Any]?
     let customer: ClientSessionRequestBody.Customer?
     let order: ClientSessionRequestBody.Order?
@@ -155,6 +125,8 @@ struct ClientSessionRequestBody {
     
     var dictionaryValue: [String: Any]? {
         var dic: [String: Any] = [:]
+        
+        dic["environment"] = environment.rawValue
         
         if let customerId = customerId {
             dic["customerId"] = customerId
@@ -168,7 +140,9 @@ struct ClientSessionRequestBody {
             dic["currencyCode"] = currencyCode.rawValue
         }
         
-        dic["amount"] = amount
+        if let amount = amount {
+            dic["amount"] = amount
+        }
         
         if let metadata = metadata {
             dic["metadata"] = metadata
@@ -190,13 +164,34 @@ struct ClientSessionRequestBody {
     }
     
     struct Customer: Encodable {
+        let firstName: String?
+        let lastName: String?
         let emailAddress: String?
+        let mobileNumber: String?
+        let billingAddress: Address?
+        let shippingAddress: Address?
         
         var dictionaryValue: [String: Any]? {
             var dic: [String: Any] = [:]
             
+            if let firstName = firstName {
+                dic["firstName"] = firstName
+            }
+            
+            if let lastName = lastName {
+                dic["lastName"] = lastName
+            }
+            
             if let emailAddress = emailAddress {
                 dic["emailAddress"] = emailAddress
+            }
+            
+            if let billingAddress = billingAddress {
+                dic["billingAddress"] = billingAddress.dictionaryValue
+            }
+            
+            if let shippingAddress = shippingAddress {
+                dic["shippingAddress"] = shippingAddress.dictionaryValue
             }
 
             return dic.keys.count == 0 ? nil : dic
@@ -273,6 +268,7 @@ struct ClientSessionRequestBody {
 }
 
 public struct ClientSessionActionsRequest: Encodable {
+    let environment: Environment
     let clientToken: String
     let actions: [ClientSession.Action]
 }
@@ -320,6 +316,77 @@ struct JWTToken: Decodable {
     var pciUrl: String?
     var env: String?
     var intent: String?
+}
+
+public struct Address: Codable {
+    let firstName: String?
+    let lastName: String?
+    let addressLine1: String?
+    let addressLine2: String?
+    let city: String?
+    let state: String?
+    let countryCode: String?
+    let postalCode: String?
+    
+    
+    
+    public init(
+        firstName: String?,
+        lastName: String?,
+        addressLine1: String,
+        addressLine2: String?,
+        city: String,
+        state: String?,
+        countryCode: String,
+        postalCode: String
+    ) {
+        self.addressLine1 = addressLine1
+        self.addressLine2 = addressLine2
+        self.city = city
+        self.countryCode = countryCode
+        self.postalCode = postalCode
+        self.firstName = firstName
+        self.lastName = lastName
+        self.state = state
+    }
+    
+    var dictionaryValue: [String: Any]? {
+        var dic: [String: Any] = [:]
+                    
+        if let firstName = firstName {
+            dic["firstName"] = firstName
+        }
+        
+        if let lastName = lastName {
+            dic["lastName"] = lastName
+        }
+        
+        if let addressLine1 = addressLine1 {
+            dic["addressLine1"] = addressLine1
+        }
+        
+        if let addressLine2 = addressLine2 {
+            dic["addressLine2"] = addressLine2
+        }
+        
+        if let city = city {
+            dic["city"] = city
+        }
+        
+        if let postalCode = postalCode {
+            dic["postalCode"] = postalCode
+        }
+        
+        if let state = state {
+            dic["state"] = state
+        }
+        
+        if let countryCode = countryCode {
+            dic["countryCode"] = countryCode
+        }
+
+        return dic.keys.count == 0 ? nil : dic
+    }
 }
 
 struct TransactionResponse {

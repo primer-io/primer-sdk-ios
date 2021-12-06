@@ -10,6 +10,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
+    
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
@@ -165,8 +166,19 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        
+        if Primer.shared.delegate?.onClientSessionActions != nil {
+            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+        } else {
+            continueTokenizationFlow()
+        }
+    }
+    
+    fileprivate func continueTokenizationFlow() {
         do {
-            try validate()
+            try self.validate()
         } catch {
             DispatchQueue.main.async {
                 Primer.shared.delegate?.checkoutFailed?(with: error)
@@ -374,16 +386,20 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     }
     
     private func presentKlarnaController(with url: URL, completion: @escaping (_ authorizationToken: String?, _ err: Error?) -> Void) {
-        webViewController = PrimerWebViewController(with: url)
-        webViewController!.navigationDelegate = self
-        webViewController!.modalPresentationStyle = .fullScreen
-        
-        webViewCompletion = completion
-        
-        self.willPresentExternalView?()
-        Primer.shared.primerRootVC?.present(webViewController!, animated: true, completion: {
-            self.didPresentExternalView?()
-        })
+        DispatchQueue.main.async {
+            self.webViewController = PrimerWebViewController(with: url)
+            self.webViewController!.navigationDelegate = self
+            self.webViewController!.modalPresentationStyle = .fullScreen
+            
+            self.webViewCompletion = completion
+            
+            self.willPresentExternalView?()
+            Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                DispatchQueue.main.async {
+                    self.didPresentExternalView?()
+                }
+            })
+        }
     }
     
     private func createKlarnaCustomerToken(authorizationToken: String) -> Promise<KlarnaCustomerTokenAPIResponse> {
@@ -566,12 +582,31 @@ extension KlarnaTokenizationViewModel: WKNavigationDelegate {
 extension KlarnaTokenizationViewModel {
     
     override func handle(error: Error) {
+        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
         self.completion = nil
     }
     
     override func handle(newClientToken clientToken: String) {
-        try? ClientTokenService.storeClientToken(clientToken)
+        do {
+            try ClientTokenService.storeClientToken(clientToken)
+            
+            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+            
+            firstly {
+                configService.fetchConfig()
+            }
+            .done {
+                self.continueTokenizationFlow()
+            }
+            .catch { err in
+                self.handle(error: err)
+            }
+            
+        } catch {
+            Primer.shared.delegate?.checkoutFailed?(with: error)
+            self.handle(error: error)
+        }
     }
     
     override func handleSuccess() {
