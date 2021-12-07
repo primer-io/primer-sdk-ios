@@ -64,6 +64,7 @@ struct Payment {
             case authorized = "AUTHORIZED"
             case settled = "SETTLED"
             case declined = "DECLINED"
+            case failed = "FAILED"
             case pending = "PENDING"
         }
     }
