@@ -290,7 +290,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/payments") else {
+        guard let url = URL(string: "\(endpoint)/createPayment") else {
             return completion(nil, NetworkError.missingParams)
         }
                 
@@ -313,7 +313,7 @@ class MerchantCheckoutViewController: UIViewController {
         let networking = Networking()
         networking.request(
             environment: environment,
-            apiVersion: .v3,
+            apiVersion: .v2,
             url: url,
             method: .post,
             headers: nil,
@@ -535,7 +535,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken)")
         
-        guard let url = URL(string: "\(endpoint)/resume"),
+        guard let url = URL(string: "\(endpoint)/resumePayment"),
               let transactionResponse = transactionResponse else {
                   resumeHandler.handle(error: NetworkError.missingParams)
                   return
@@ -548,8 +548,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 
         let bodyDic: [String: Any] = [
             "id": transactionResponse.id,
-            "resumeToken": clientToken,
-            "environment": environment.rawValue
+            "resumeToken": clientToken
         ]
         
         var bodyData: Data!
@@ -564,7 +563,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         let networking = Networking()
         networking.request(
             environment: environment,
-            apiVersion: nil,
+            apiVersion: .v2,
             url: url,
             method: .post,
             headers: nil,
