@@ -192,6 +192,7 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         networking.request(
+            environment: environment,
             apiVersion: .v3,
             url: url,
             method: .post,
@@ -245,7 +246,7 @@ class MerchantCheckoutViewController: UIViewController {
         var bodyData: Data!
         
         do {
-            let bodyJson = ClientSessionActionsRequest(environment: environment, clientToken: clientToken, actions: merchantActions)
+            let bodyJson = ClientSessionActionsRequest(clientToken: clientToken, actions: merchantActions)
             bodyData = try JSONEncoder().encode(bodyJson)
         } catch {
             completion(nil, NetworkError.missingParams)
@@ -254,6 +255,7 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         networking.request(
+            environment: environment,
             apiVersion: nil,
             url: url,
             method: .post,
@@ -293,9 +295,7 @@ class MerchantCheckoutViewController: UIViewController {
         }
                 
         let body = PaymentRequest(
-            isV3: true,
-            environment: environment,
-            paymentMethod: paymentMethod.token,
+            paymentMethodToken: paymentMethod.token,
             amount: nil,
             type: nil,
             currencyCode: nil,
@@ -312,6 +312,7 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         networking.request(
+            environment: environment,
             apiVersion: .v3,
             url: url,
             method: .post,
@@ -343,7 +344,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
         
         let clientSessionRequestBody = ClientSessionRequestBody(
-            environment: environment,
             customerId: customerId,
             orderId: "orderId",
             currencyCode: currency,
@@ -563,6 +563,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         
         let networking = Networking()
         networking.request(
+            environment: environment,
             apiVersion: nil,
             url: url,
             method: .post,
