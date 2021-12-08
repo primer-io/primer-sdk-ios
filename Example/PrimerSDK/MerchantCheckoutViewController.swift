@@ -84,14 +84,12 @@ class MerchantCheckoutViewController: UIViewController {
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
 
-        Primer.shared.delegate = self
-        self.configurePrimer()
-        self.fetchPaymentMethods()
-    }
-    
-    func configurePrimer() {
+        
         Primer.shared.configure(settings: generalSettings)
         Primer.shared.configure(theme: CheckoutTheme.primer)
+        Primer.shared.delegate = self
+        
+        self.fetchPaymentMethods()
     }
     
     // MARK: - ACTIONS
@@ -172,7 +170,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/clientSession") else {
+        guard let url = URL(string: "\(endpoint)/api/client-session") else {
             return completion(nil, NetworkError.missingParams)
         }
         
@@ -225,7 +223,7 @@ class MerchantCheckoutViewController: UIViewController {
             return
         }
         
-        guard let url = URL(string: "\(endpoint)/actions") else {
+        guard let url = URL(string: "\(endpoint)/api/client-session/actions") else {
             return completion(nil, NetworkError.missingParams)
         }
         
@@ -290,7 +288,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/createPayment") else {
+        guard let url = URL(string: "\(endpoint)/api/payments/") else {
             return completion(nil, NetworkError.missingParams)
         }
                 
@@ -345,10 +343,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         
         let clientSessionRequestBody = ClientSessionRequestBody(
             customerId: customerId,
-            orderId: "orderId",
+            orderId: "ios_orser_id",
             currencyCode: currency,
             amount: nil,
-            metadata: nil,
+            metadata: ["key": "val"],
             customer: ClientSessionRequestBody.Customer(
                 firstName: "John",
                 lastName: "Smith",
@@ -377,64 +375,15 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 countryCode: countryCode,
                 lineItems: [
                     ClientSessionRequestBody.Order.LineItem(
-                        itemId: "itemId0",
-                        description: "I'm an item",
+                        itemId: "_item_id_0",
+                        description: "Item",
                         amount: amount,
                         quantity: 1)
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
                 vaultOnSuccess: true,
-                options: [
-                    "APPLE_PAY": [
-                        "surcharge": [
-                            "amount": 119
-                        ]
-                    ],
-                    "PAY_NL_BANCONTACT": [
-                        "surcharge": [
-                            "amount": 49
-                        ]
-                    ],
-                    "PAY_NL_IDEAL": [
-                        "surcharge": [
-                            "amount": 99
-                        ]
-                    ],
-                    "PAYPAL": [
-                        "surcharge": [
-                            "amount": 179
-                        ]
-                    ],
-                    "ADYEN_TWINT": [
-                        "surcharge": [
-                            "amount": 49
-                        ]
-                    ],
-                    "ADYEN_GIROPAY": [
-                        "surcharge": [
-                            "amount": 29
-                        ]
-                    ],
-                    "BUCKAROO_BANCONTACT": [
-                        "surcharge": [
-                            "amount": 19
-                        ]
-                    ],
-                    "PAYMENT_CARD": [
-                        "networks": [
-                            "VISA": [
-                                "surcharge": [
-                                    "amount": 288
-                                ]
-                            ],
-                            "MASTERCARD": [
-                                "surcharge": [
-                                    "amount": 388
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                options: nil
+                
             )
         )
         
@@ -535,19 +484,20 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken)")
         
-        guard let url = URL(string: "\(endpoint)/resumePayment"),
-              let transactionResponse = transactionResponse else {
-                  resumeHandler.handle(error: NetworkError.missingParams)
-                  return
-              }
+        guard let transactionResponse = transactionResponse,
+              let url = URL(string: "\(endpoint)/api/payments/\(transactionResponse.id)/resume")
+        else {
+            resumeHandler.handle(error: NetworkError.missingParams)
+            return
+        }
         
         var request = URLRequest(url: url)
-
+        
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         let bodyDic: [String: Any] = [
-            "id": transactionResponse.id,
+            //            "id": transactionResponse.id,
             "resumeToken": clientToken
         ]
         
