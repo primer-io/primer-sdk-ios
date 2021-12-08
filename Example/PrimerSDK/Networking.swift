@@ -25,19 +25,13 @@ enum HTTPMethod: String {
 struct Payment {
     
     struct Request: Encodable {
-        let isV3: Bool?
-        let environment: Environment
         let paymentMethodToken: String
-        let amount: Int?
-        let type: String?
-        let currencyCode: Currency?
-        let countryCode: CountryCode?
     }
 
     struct Response: Decodable {
         let id: String
         let amount: Int?
-        let currency: String?
+        let currencyCode: String?
         let customer: ClientSessionRequestBody.Customer?
         let customerId: String?
         let dateStr: String?
@@ -50,7 +44,7 @@ struct Payment {
         let status: Status
         
         enum CodingKeys: String, CodingKey {
-            case id, amount, currency, customer, customerId, order, orderId, requiredAction, status
+            case id, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status
             case dateStr = "date"
         }
         
@@ -82,6 +76,7 @@ enum NetworkError: Error {
 class Networking {
     
     func request(
+        environment: Environment,
         apiVersion: APIVersion?,
         url: URL,
         method: HTTPMethod,
@@ -104,7 +99,11 @@ class Networking {
         
         var request = URLRequest(url: components.url!)
         request.httpMethod = method.rawValue
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        request.addValue(environment.rawValue, forHTTPHeaderField: "environment")
+        if method != .get {
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        }
         
         if let headers = headers {
             for header in headers {

@@ -166,14 +166,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
-        self.completion = { (tok, err) in
-            if let err = err {
-                self.handleFailedTokenizationFlow(error: err)
-            } else {
-                self.handleSuccessfulTokenizationFlow()
-            }
-        }
-        
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
         if Primer.shared.delegate?.onClientSessionActions != nil {

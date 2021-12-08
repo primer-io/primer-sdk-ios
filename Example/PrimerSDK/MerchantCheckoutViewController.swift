@@ -84,14 +84,12 @@ class MerchantCheckoutViewController: UIViewController {
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
 
-        Primer.shared.delegate = self
-        self.configurePrimer()
-        self.fetchPaymentMethods()
-    }
-    
-    func configurePrimer() {
+        
         Primer.shared.configure(settings: generalSettings)
         Primer.shared.configure(theme: CheckoutTheme.primer)
+        Primer.shared.delegate = self
+        
+        self.fetchPaymentMethods()
     }
     
     // MARK: - ACTIONS
@@ -172,7 +170,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/clientSession") else {
+        guard let url = URL(string: "\(endpoint)/api/client-session") else {
             return completion(nil, NetworkError.missingParams)
         }
         
@@ -192,6 +190,7 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         networking.request(
+            environment: environment,
             apiVersion: .v3,
             url: url,
             method: .post,
@@ -224,7 +223,7 @@ class MerchantCheckoutViewController: UIViewController {
             return
         }
         
-        guard let url = URL(string: "\(endpoint)/actions") else {
+        guard let url = URL(string: "\(endpoint)/api/client-session/actions") else {
             return completion(nil, NetworkError.missingParams)
         }
         
@@ -245,7 +244,7 @@ class MerchantCheckoutViewController: UIViewController {
         var bodyData: Data!
         
         do {
-            let bodyJson = ClientSessionActionsRequest(environment: environment, clientToken: clientToken, actions: merchantActions)
+            let bodyJson = ClientSessionActionsRequest(clientToken: clientToken, actions: merchantActions)
             bodyData = try JSONEncoder().encode(bodyJson)
         } catch {
             completion(nil, NetworkError.missingParams)
@@ -254,6 +253,7 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         networking.request(
+            environment: environment,
             apiVersion: nil,
             url: url,
             method: .post,
@@ -290,18 +290,11 @@ class MerchantCheckoutViewController: UIViewController {
     var paymentResponsesData: [Data] = []
     
     func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/payments") else {
+        guard let url = URL(string: "\(endpoint)/api/payments/") else {
             return completion(nil, NetworkError.missingParams)
         }
                 
-        let body = Payment.Request(
-            isV3: nil,
-            environment: environment,
-            paymentMethodToken: paymentMethod.token,
-            amount: nil,
-            type: nil,
-            currencyCode: nil,
-            countryCode: nil)
+        let body = Payment.Request(paymentMethodToken: paymentMethod.token)
         
         var bodyData: Data!
         
@@ -314,6 +307,7 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         networking.request(
+            environment: environment,
             apiVersion: .v2,
             url: url,
             method: .post,
@@ -350,12 +344,11 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
         
         let clientSessionRequestBody = ClientSessionRequestBody(
-            environment: environment,
             customerId: customerId,
             orderId: "ios_order_id",
             currencyCode: currency,
             amount: nil,
-            metadata: nil,
+            metadata: ["key": "val"],
             customer: ClientSessionRequestBody.Customer(
                 firstName: "John",
                 lastName: "Smith",
@@ -384,8 +377,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 countryCode: countryCode,
                 lineItems: [
                     ClientSessionRequestBody.Order.LineItem(
-                        itemId: "itemId0",
-                        description: "I'm an item",
+                        itemId: "_item_id_0",
+                        description: "Item",
                         amount: amount,
                         quantity: 1)
                 ]),
@@ -394,49 +387,54 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 options: [
                     "APPLE_PAY": [
                         "surcharge": [
-                            "amount": 119
+                            "amount": 19
                         ]
                     ],
                     "PAY_NL_BANCONTACT": [
                         "surcharge": [
-                            "amount": 49
+                            "amount": 29
                         ]
                     ],
                     "PAY_NL_IDEAL": [
                         "surcharge": [
-                            "amount": 99
+                            "amount": 39
                         ]
                     ],
                     "PAYPAL": [
                         "surcharge": [
-                            "amount": 179
+                            "amount": 49
                         ]
                     ],
                     "ADYEN_TWINT": [
                         "surcharge": [
-                            "amount": 49
+                            "amount": 59
+                        ]
+                    ],
+                    "ADYEN_IDEAL": [
+                        "surcharge": [
+                            "amount": 69
                         ]
                     ],
                     "ADYEN_GIROPAY": [
                         "surcharge": [
-                            "amount": 29
+                            "amount": 79
                         ]
                     ],
                     "BUCKAROO_BANCONTACT": [
                         "surcharge": [
-                            "amount": 19
+                            "amount": 89
                         ]
                     ],
                     "PAYMENT_CARD": [
                         "networks": [
                             "VISA": [
                                 "surcharge": [
-                                    "amount": 288
+                                    "amount": 109
                                 ]
                             ],
                             "MASTERCARD": [
                                 "surcharge": [
-                                    "amount": 388
+                                    "amount": 129
                                 ]
                             ]
                         ]
@@ -549,21 +547,21 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken)")
         
-        guard let url = URL(string: "\(endpoint)/resume"),
-              let transactionResponse = transactionResponse else {
-                  resumeHandler.handle(error: NetworkError.missingParams)
-                  return
-              }
+        guard let transactionResponse = transactionResponse,
+              let url = URL(string: "\(endpoint)/api/payments/\(transactionResponse.id)/resume")
+        else {
+            resumeHandler.handle(error: NetworkError.missingParams)
+            return
+        }
         
         var request = URLRequest(url: url)
-
+        
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         let bodyDic: [String: Any] = [
-            "id": transactionResponse.id,
-            "resumeToken": clientToken,
-            "environment": environment.rawValue
+            //            "id": transactionResponse.id,
+            "resumeToken": clientToken
         ]
         
         var bodyData: Data!
@@ -577,7 +575,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         
         let networking = Networking()
         networking.request(
-            apiVersion: nil,
+            environment: environment,
+            apiVersion: .v2,
             url: url,
             method: .post,
             headers: nil,

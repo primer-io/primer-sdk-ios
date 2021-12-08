@@ -14,6 +14,9 @@ import XCTest
 class PrimerTests: XCTestCase {
     
     func test_primer() throws {
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+        
         Primer.shared.showPaymentMethod(.apaya, withIntent: .vault, on: UIViewController())
         XCTAssert(Primer.shared.flow == .addApayaToVault)
         Primer.shared.dismiss()

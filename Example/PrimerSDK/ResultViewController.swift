@@ -20,6 +20,7 @@ class ResultViewController: UIViewController {
     
     @IBOutlet weak var responseStatus: UILabel!
     @IBOutlet weak var requiredActionsLabel: UILabel!
+    @IBOutlet weak var amountLabel: UILabel!
     @IBOutlet weak var responseTextView: UITextView!
     
     override func viewDidLoad() {
@@ -53,24 +54,41 @@ class ResultViewController: UIViewController {
         let responseAttrStr = NSMutableAttributedString(string: responsesStr, attributes: nil)
         
         let settledRanges = responsesStr.allRanges(of: Payment.Response.Status.settled.rawValue).compactMap({ $0.toNSRange(in: responsesStr) })
-        settledRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.green, range: $0) })
+        settledRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemGreen, range: $0) })
         settledRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
         
         let authorizedRanges = responsesStr.allRanges(of: Payment.Response.Status.authorized.rawValue).compactMap({ $0.toNSRange(in: responsesStr) })
-        authorizedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.green, range: $0) })
+        authorizedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemGreen, range: $0) })
         authorizedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
         
         let declinedRanges = responsesStr.allRanges(of: Payment.Response.Status.declined.rawValue).compactMap({ $0.toNSRange(in: responsesStr) })
-        declinedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.red, range: $0) })
+        declinedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemRed, range: $0) })
         declinedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
         
         let failedRanges = responsesStr.allRanges(of: Payment.Response.Status.failed.rawValue).compactMap({ $0.toNSRange(in: responsesStr) })
-        failedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.red, range: $0) })
+        failedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemRed, range: $0) })
         failedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
         
         let pendingRanges = responsesStr.allRanges(of: Payment.Response.Status.pending.rawValue).compactMap({ $0.toNSRange(in: responsesStr) })
-        pendingRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.orange, range: $0) })
+        pendingRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemOrange, range: $0) })
         pendingRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
+        
+        if let amount = paymentResponses.last?.amount, let currencyCode = paymentResponses.last?.currencyCode {
+            let currencyFormatter = NumberFormatter()
+            currencyFormatter.usesGroupingSeparator = true
+            currencyFormatter.numberStyle = .currency
+            currencyFormatter.currencySymbol = ""
+
+            let amountDbl = Double(amount) / 100
+            let amountStr = currencyFormatter.string(from: NSNumber(value: amountDbl))!
+            
+            amountLabel.text = "\(currencyCode) \(amountStr)"
+            
+            let amountRanges = responsesStr.allRanges(of: String(amount)).compactMap({ $0.toNSRange(in: responsesStr) })
+            amountRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemBlue, range: $0) })
+            amountRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
+        }
+        
         
         responseTextView.attributedText = responseAttrStr
     }

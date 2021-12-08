@@ -177,10 +177,32 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
+    func cancel() {
+        self.willPresentExternalView = nil
+        self.didPresentExternalView = nil
+        self.willDismissExternalView = nil
+        self.didDismissExternalView = nil
+        self.webViewController = nil
+        self.webViewCompletion = nil
+        self.onResumeTokenCompletion = nil
+        self.onClientToken = nil
+        
+        if completion != nil {
+            DispatchQueue.main.async {
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                self.completion = nil
+            }
+        }
+        
+        tmpTokenizationCallback = nil
+    }
+        
     @objc
     override func startTokenizationFlow() {
-        didStartTokenization?()
-                
+        super.startTokenizationFlow()
+    }
+    
+    fileprivate func continueTokenizationFlow() {
         do {
             try validate()
         } catch {
@@ -401,6 +423,61 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
         dataSource = banks
         return true
     }
+}
+
+extension BankSelectorTokenizationViewModel {
+    
+    override func handle(error: Error) {
+        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+        self.completion?(nil, error)
+        self.completion = nil
+    }
+    
+    override func handle(newClientToken clientToken: String) {
+        do {
+            // For Apaya there's no redirection URL, once the webview is presented it will get its response from a URL redirection.
+            // We'll end up in here only for surcharge.
+            
+            guard let decodedClientToken = clientToken.jwtTokenPayload else {
+                let err = PrimerError.clientTokenNull
+                self.handle(error: err)
+                return
+            }
+            
+            if decodedClientToken.intent?.contains("_REDIRECTION") == true {
+                super.handle(newClientToken: clientToken)
+            } else if decodedClientToken.intent == "CHECKOUT" {
+                try ClientTokenService.storeClientToken(clientToken)
+                
+                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                
+                firstly {
+                    configService.fetchConfig()
+                }
+                .done {
+                    self.continueTokenizationFlow()
+                }
+                .catch { err in
+                    self.handle(error: err)
+                }
+            } else {
+                let err = PrimerError.clientTokenNull
+                self.handle(error: err)
+                return
+            }
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+                self.handle(error: error)
+            }
+        }
+    }
+    
+    override func handleSuccess() {
+        self.completion?(self.paymentMethod, nil)
+        self.completion = nil
+    }
+    
 }
 
 #endif
