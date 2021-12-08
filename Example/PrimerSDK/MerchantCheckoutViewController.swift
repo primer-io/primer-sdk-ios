@@ -382,8 +382,57 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
                 vaultOnSuccess: true,
-                options: nil
-                
+                options: [
+                    "APPLE_PAY": [
+                        "surcharge": [
+                            "amount": 119
+                        ]
+                    ],
+                    "PAY_NL_BANCONTACT": [
+                        "surcharge": [
+                            "amount": 49
+                        ]
+                    ],
+                    "PAY_NL_IDEAL": [
+                        "surcharge": [
+                            "amount": 99
+                        ]
+                    ],
+                    "PAYPAL": [
+                        "surcharge": [
+                            "amount": 179
+                        ]
+                    ],
+                    "ADYEN_TWINT": [
+                        "surcharge": [
+                            "amount": 49
+                        ]
+                    ],
+                    "ADYEN_GIROPAY": [
+                        "surcharge": [
+                            "amount": 29
+                        ]
+                    ],
+                    "BUCKAROO_BANCONTACT": [
+                        "surcharge": [
+                            "amount": 19
+                        ]
+                    ],
+                    "PAYMENT_CARD": [
+                        "networks": [
+                            "VISA": [
+                                "surcharge": [
+                                    "amount": 288
+                                ]
+                            ],
+                            "MASTERCARD": [
+                                "surcharge": [
+                                    "amount": 388
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
             )
         )
         
