@@ -14,8 +14,6 @@ enum Environment: String, Codable {
 }
 
 struct CreateClientTokenRequest: Codable {
-    let environment: Environment
-    
     let orderId: String
     let amount: Int?
     let currencyCode: String
@@ -113,7 +111,6 @@ public struct PaymentMethod: Codable {
 }
 
 struct ClientSessionRequestBody {
-    let environment: Environment
     let customerId: String?
     let orderId: String?
     let currencyCode: Currency?
@@ -125,9 +122,7 @@ struct ClientSessionRequestBody {
     
     var dictionaryValue: [String: Any]? {
         var dic: [String: Any] = [:]
-        
-        dic["environment"] = environment.rawValue
-        
+                
         if let customerId = customerId {
             dic["customerId"] = customerId
         }
@@ -268,7 +263,6 @@ struct ClientSessionRequestBody {
 }
 
 public struct ClientSessionActionsRequest: Encodable {
-    let environment: Environment
     let clientToken: String
     let actions: [ClientSession.Action]
 }
