@@ -26,6 +26,7 @@ struct Payment {
         let webviewImage: String?
         let webviewTexts: [String]?
         let buttonTexts: [String]?
+        let resultScreenTexts: [String: String]?
     }
 }
 
@@ -45,10 +46,15 @@ class Base: XCTestCase {
             amount: "1.00",
             expecations: Payment.Expecations(
                 amount: "€1.00",
-                surcharge: "€0.29",
+                surcharge: "€0.79",
                 webviewImage: "giropay",
                 webviewTexts: nil,
-                buttonTexts: nil
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "PENDING",
+                    "actions": "USE_PRIMER_SDK",
+                    "amount": "EUR 1.79"
+                ]
             )
         ),
         Payment(
@@ -62,7 +68,12 @@ class Base: XCTestCase {
                 surcharge: nil,
                 webviewImage: "mobilepay-logo",
                 webviewTexts: nil,
-                buttonTexts: nil
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "PENDING",
+                    "actions": "USE_PRIMER_SDK",
+                    "amount": "DKK 1.00"
+                ]
             )
         ),
         Payment(
@@ -73,10 +84,15 @@ class Base: XCTestCase {
             amount: "1.00",
             expecations: Payment.Expecations(
                 amount: "€1.00",
-                surcharge: "€0.49",
+                surcharge: "€0.29",
                 webviewImage: nil,
-                webviewTexts: ["Primer API Ltd", "€ 1,49"],
-                buttonTexts: nil
+                webviewTexts: ["Primer API Ltd", "€ 1,29"],
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "PENDING",
+                    "actions": "USE_PRIMER_SDK",
+                    "amount": "EUR 1.29"
+                ]
             )
         ),
         Payment(
@@ -90,7 +106,12 @@ class Base: XCTestCase {
                 surcharge: nil,
                 webviewImage: nil,
                 webviewTexts: ["1.如果未安装支付宝APP，请先"],
-                buttonTexts: nil
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "PENDING",
+                    "actions": "USE_PRIMER_SDK",
+                    "amount": "CNY 1.00"
+                ]
             )
         ),
         Payment(
@@ -101,10 +122,14 @@ class Base: XCTestCase {
             amount: "1.00",
             expecations: Payment.Expecations(
                 amount: "€1.00",
-                surcharge: "€1.19",
+                surcharge: "€0.19",
                 webviewImage: nil,
-                webviewTexts: ["Primer API Ltd", "€ 1,49"],
-                buttonTexts: nil
+                webviewTexts: ["Primer API Ltd", "€ 1,19"],
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "PENDING",
+                    "amount": "EUR 1.19"
+                ]
             )
         ),
         Payment(
@@ -118,7 +143,13 @@ class Base: XCTestCase {
                 surcharge: "Additional fee may apply",
                 webviewImage: nil,
                 webviewTexts: nil,
-                buttonTexts: ["Pay £1.00"])),
+                buttonTexts: ["Pay £1.00"],
+                resultScreenTexts: [
+                    "status": "SETTLED",
+                    "amount": "GBP 2.09"
+                ]
+            )
+        ),
         Payment(
             id: "3DS_PAYMENT_CARD",
             environment: .sandbox,
@@ -130,7 +161,10 @@ class Base: XCTestCase {
                 surcharge: "Additional fee may apply",
                 webviewImage: nil,
                 webviewTexts: nil,
-                buttonTexts: ["Pay RON 1.00"]))
+                buttonTexts: ["Pay RON 1.00"],
+                resultScreenTexts: nil
+            )
+        )
     ]
     
     let app = XCUIApplication()
@@ -251,6 +285,34 @@ class Base: XCTestCase {
         let surchargeGroupViewId = paymentMethodId == "PAYMENT_CARD" ? "additional_fees_surcharge_group_view" : "\(paymentMethodId.lowercased())_surcharge_group_view"
         let paymentMethodSurcharge = scrollView.otherElements[surchargeGroupViewId].staticTexts[surcharge]
         XCTAssert(paymentMethodSurcharge.exists, "\(paymentMethodId) should have '\(surcharge)' surcharge")
+    }
+    
+    func testResultScreenExpectations(for payment: Payment) throws {
+        if let resultScreenTextExpectations = payment.expecations?.resultScreenTexts {
+            var expectations: [XCTestExpectation] = []
+            
+            if let status = resultScreenTextExpectations["status"] as? String {
+                let statusText = app.staticTexts[status]
+                let statusTextExists = expectation(for: Expectation.exists, evaluatedWith: statusText, handler: nil)
+                expectations.append(statusTextExists)
+            }
+            
+            if let actions = resultScreenTextExpectations["actions"] as? String {
+                let actionsText = app.staticTexts[actions]
+                let actionsTextExists = expectation(for: Expectation.exists, evaluatedWith: actionsText, handler: nil)
+                expectations.append(actionsTextExists)
+            }
+            
+            if let amount = resultScreenTextExpectations["amount"] as? String {
+                let amountText = app.staticTexts[amount]
+                let amountTextExists = expectation(for: Expectation.exists, evaluatedWith: amountText, handler: nil)
+                expectations.append(amountTextExists)
+            }
+            
+            if !expectations.isEmpty {
+                wait(for: expectations, timeout: 3)
+            }
+        }
     }
 
 }

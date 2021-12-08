@@ -53,7 +53,7 @@ class PaymentCard: XCTestCase {
         
         cardnumberTextField.tap()
         cardnumberTextField.typeText("4")
-        var submitButtonText = submitButton.staticTexts["Pay £3.88"]
+        var submitButtonText = submitButton.staticTexts["Pay £2.09"]
         var submitButtonTextExists = expectation(for: Expectation.exists, evaluatedWith: submitButtonText, handler: nil)
         wait(for: [submitButtonTextExists], timeout: 15)
         
@@ -68,7 +68,7 @@ class PaymentCard: XCTestCase {
         submitButtonTextExists = expectation(for: Expectation.exists, evaluatedWith: submitButtonText, handler: nil)
         wait(for: [submitButtonTextExists], timeout: 15)
         
-        submitButtonText = submitButton.staticTexts["Pay £4.88"]
+        submitButtonText = submitButton.staticTexts["Pay £2.29"]
         submitButtonTextExists = expectation(for: Expectation.exists, evaluatedWith: submitButtonText, handler: nil)
         wait(for: [submitButtonTextExists], timeout: 15)
         
@@ -98,6 +98,11 @@ class PaymentCard: XCTestCase {
         let successLabel = app.staticTexts["success_screen_message_label"]
         let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
         wait(for: [successLabelExists], timeout: 15)
+        
+        let scrollView = app.scrollViews["primer_container_scroll_view"]
+        scrollView.swipeDown()
+        
+        try base.testResultScreenExpectations(for: payment)
     }
     
     func testPass3DSChallenge() throws {

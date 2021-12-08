@@ -13,8 +13,14 @@ internal class BankSelectorViewController: PrimerFormViewController {
     
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    private let viewModel: BankSelectorTokenizationViewModel
+    private var viewModel: BankSelectorTokenizationViewModel!
     internal private(set) var subtitle: String?
+    
+    deinit {
+        viewModel.cancel()
+        viewModel = nil
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
     
     init(viewModel: BankSelectorTokenizationViewModel) {
         self.viewModel = viewModel

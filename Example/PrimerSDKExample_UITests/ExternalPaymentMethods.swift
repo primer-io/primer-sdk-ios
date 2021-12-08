@@ -56,22 +56,18 @@ class ExternalPaymentMethods: XCTestCase {
         
         
         let app = XCUIApplication()
-        app/*@START_MENU_TOKEN@*/.staticTexts["Universal Checkout"]/*[[".buttons[\"Universal Checkout\"].staticTexts[\"Universal Checkout\"]",".buttons[\"universal_checkout_button\"].staticTexts[\"Universal Checkout\"]",".staticTexts[\"Universal Checkout\"]"],[[[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        app/*@START_MENU_TOKEN@*/.staticTexts["Initialize Primer SDK"]/*[[".buttons[\"Initialize Primer SDK\"].staticTexts[\"Initialize Primer SDK\"]",".buttons[\"initialize_primer_sdk\"].staticTexts[\"Initialize Primer SDK\"]",".staticTexts[\"Initialize Primer SDK\"]"],[[[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        app/*@START_MENU_TOKEN@*/.buttons["universal_checkout_button"]/*[[".buttons[\"Universal Checkout\"]",".buttons[\"universal_checkout_button\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
         
         let primerContainerScrollViewScrollView = app.scrollViews["primer_container_scroll_view"]
-        primerContainerScrollViewScrollView.children(matching: .other).element(boundBy: 0).children(matching: .other).element/*@START_MENU_TOKEN@*/.swipeRight()/*[[".swipeUp()",".swipeRight()"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
-        primerContainerScrollViewScrollView.otherElements/*@START_MENU_TOKEN@*/.buttons["APPLE_PAY"]/*[[".otherElements[\"apple_pay_surcharge_group_view\"]",".buttons[\"apple pay logo\"]",".buttons[\"APPLE_PAY\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
+        primerContainerScrollViewScrollView.otherElements/*@START_MENU_TOKEN@*/.buttons["ADYEN_GIROPAY"]/*[[".otherElements[\"adyen_giropay_surcharge_group_view\"]",".buttons[\"giropay logo\"]",".buttons[\"ADYEN_GIROPAY\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
+        app/*@START_MENU_TOKEN@*/.otherElements["URL"]/*[[".otherElements[\"BrowserView?WebViewProcessID=46134\"]",".otherElements[\"TopBrowserBar\"]",".buttons[\"Address\"]",".otherElements[\"Address\"]",".otherElements[\"URL\"]",".buttons[\"URL\"]"],[[[-1,4],[-1,3],[-1,5,3],[-1,2,3],[-1,1,2],[-1,0,1]],[[-1,4],[-1,3],[-1,5,3],[-1,2,3],[-1,1,2]],[[-1,4],[-1,3],[-1,5,3],[-1,2,3]],[[-1,4],[-1,3]]],[0]]@END_MENU_TOKEN@*/.tap()
+        primerContainerScrollViewScrollView.children(matching: .other).element(boundBy: 0).children(matching: .other).element.swipeDown()
+        app.staticTexts["PENDING"].tap()
+        app.staticTexts["USE_PRIMER_SDK"].tap()
+        app.staticTexts["EUR 1.79"].tap()
+                
         
-        let applePayStaticText = app.staticTexts["Apple Pay"]
-        applePayStaticText.tap()
-        applePayStaticText.tap()
-        app.windows.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 1).children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 0).tap()
-        
-        let elementsQuery = app.scrollViews.otherElements
-        elementsQuery.buttons["Simulated Card - AmEx, ‪•••• 1234‬"].tap()
-        app.tables.cells["Simulated Card - Visa, ‪•••• 1234‬"].children(matching: .other).element(boundBy: 0).children(matching: .other).element.tap()
-        app.buttons["Pay Total, €2.19"].tap()
-        elementsQuery.staticTexts["Total, €2.19"].tap()
 
                 
                 
@@ -105,7 +101,7 @@ class ExternalPaymentMethods: XCTestCase {
         applePayButton.tap()
     }
     
-    func testPaymentMethod(_ pm: Payment) throws {
+    func testPaymentMethod(_ pm: Payment, cancelPayment: Bool = true) throws {
         try Base().testInitialize(
             env: pm.environment.rawValue,
             customerId: nil,
@@ -169,11 +165,41 @@ class ExternalPaymentMethods: XCTestCase {
             wait(for: webviewTextsExpectations, timeout: 30)
         }
         
-        let safariDoneButton = app.otherElements["TopBrowserBar"].buttons["Done"]
-        safariDoneButton.tap()
-        let canceledLabel = app.scrollViews["primer_container_scroll_view"].otherElements.staticTexts["User cancelled"]
-        let canceledLabelExists = expectation(for: Expectation.exists, evaluatedWith: canceledLabel, handler: nil)
-        wait(for: [canceledLabelExists], timeout: 3)
+        if cancelPayment {
+            let safariDoneButton = app.otherElements["TopBrowserBar"].buttons["Done"]
+            safariDoneButton.tap()
+            let canceledLabel = app.scrollViews["primer_container_scroll_view"].otherElements.staticTexts["User cancelled"]
+            let canceledLabelExists = expectation(for: Expectation.exists, evaluatedWith: canceledLabel, handler: nil)
+            wait(for: [canceledLabelExists], timeout: 3)
+            
+            scrollView.swipeDown()
+            
+            if let resultScreenTextExpectations = pm.expecations?.resultScreenTexts {
+                var expectations: [XCTestExpectation] = []
+                
+                if let status = resultScreenTextExpectations["status"] as? String {
+                    let statusText = app.staticTexts[status]
+                    let statusTextExists = expectation(for: Expectation.exists, evaluatedWith: statusText, handler: nil)
+                    expectations.append(statusTextExists)
+                }
+                
+                if let actions = resultScreenTextExpectations["actions"] as? String {
+                    let actionsText = app.staticTexts[actions]
+                    let actionsTextExists = expectation(for: Expectation.exists, evaluatedWith: actionsText, handler: nil)
+                    expectations.append(actionsTextExists)
+                }
+                
+                if let amount = resultScreenTextExpectations["amount"] as? String {
+                    let amountText = app.staticTexts[amount]
+                    let amountTextExists = expectation(for: Expectation.exists, evaluatedWith: amountText, handler: nil)
+                    expectations.append(amountTextExists)
+                }
+                
+                if !expectations.isEmpty {
+                    wait(for: expectations, timeout: 3)
+                }
+            }
+        }
     }
     
     
