@@ -22,14 +22,46 @@ enum HTTPMethod: String {
     case delete = "DELETE"
 }
 
-struct PaymentRequest: Encodable {
-    let isV3: Bool?
-    let environment: Environment
-    let paymentMethod: String
-    let amount: Int?
-    let type: String?
-    let currencyCode: Currency?
-    let countryCode: CountryCode?
+struct Payment {
+    
+    struct Request: Encodable {
+        let paymentMethodToken: String
+    }
+
+    struct Response: Decodable {
+        let id: String
+        let amount: Int?
+        let currencyCode: String?
+        let customer: ClientSessionRequestBody.Customer?
+        let customerId: String?
+        let dateStr: String?
+        var date: Date? {
+            return dateStr?.toDate()
+        }
+        let order: ClientSessionRequestBody.Order?
+        let orderId: String?
+        let requiredAction: Payment.Response.RequiredAction?
+        let status: Status
+        
+        enum CodingKeys: String, CodingKey {
+            case id, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status
+            case dateStr = "date"
+        }
+        
+        struct RequiredAction: Decodable {
+            let clientToken: String
+            let name: String
+            let description: String?
+        }
+        
+        enum Status: String, Codable {
+            case authorized = "AUTHORIZED"
+            case settled = "SETTLED"
+            case declined = "DECLINED"
+            case failed = "FAILED"
+            case pending = "PENDING"
+        }
+    }
 }
 
 enum NetworkError: Error {
@@ -44,6 +76,7 @@ enum NetworkError: Error {
 class Networking {
     
     func request(
+        environment: Environment,
         apiVersion: APIVersion?,
         url: URL,
         method: HTTPMethod,
@@ -66,7 +99,11 @@ class Networking {
         
         var request = URLRequest(url: components.url!)
         request.httpMethod = method.rawValue
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        request.addValue(environment.rawValue, forHTTPHeaderField: "environment")
+        if method != .get {
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        }
         
         if let headers = headers {
             for header in headers {
@@ -154,4 +191,14 @@ class Networking {
         }).resume()
     }
     
+}
+
+internal extension String {
+    func toDate(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil) -> Date? {
+        let df = DateFormatter()
+        df.dateFormat = f
+        df.locale = Locale(identifier: "en_US_POSIX")
+        df.timeZone = timeZone == nil ? TimeZone(abbreviation: "UTC") : timeZone
+        return df.date(from: self)
+    }
 }

@@ -70,12 +70,12 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         
         var amount: Int?
         if let amountStr = amountTextField.text, let amountDbl = Double(amountStr) {
-            amount = Int(amountDbl * 100)
+            amount = ((Decimal(amountDbl) * 100) as NSDecimalNumber).intValue
         }
         
         let mcvc = MerchantCheckoutViewController.instantiate(
             environment: env,
-            customerId: (customerIdTextField.text ?? "").isEmpty ? "vagz" : customerIdTextField.text!,
+            customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
             phoneNumber: phoneNumberTextField.text,
             countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
             currency: Currency(rawValue: currencyTextField.text ?? ""),

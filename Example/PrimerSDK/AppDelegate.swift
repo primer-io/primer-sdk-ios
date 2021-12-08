@@ -32,8 +32,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func customizeAppearance() {
         UINavigationBar.appearance().barTintColor = UIColor(red: 240/255, green: 97/255, blue: 91/255, alpha: 1)
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.white]
-        UIBarButtonItem.appearance().tintColor = .white
+        UIBarButtonItem.appearance().tintColor = .black
         UINavigationBar.appearance().tintColor = .white
+        
+        if #available(iOS 15.0, *) {
+            let navigationBarAppearance = UINavigationBarAppearance()
+            navigationBarAppearance.configureWithDefaultBackground()
+            UINavigationBar.appearance().standardAppearance = navigationBarAppearance
+            UINavigationBar.appearance().compactAppearance = navigationBarAppearance
+            UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
+        } else {
+            
+        }
     }
 
 }
