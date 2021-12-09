@@ -60,7 +60,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     var selectedPaymentMethodId: String {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.selectedPaymentMethod
+        return state.selectedPaymentMethodToken
     }
 
     deinit {
@@ -105,14 +105,14 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     func authorizePayment(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let selectedPaymentMethod = state.paymentMethods.first(where: { paymentMethod in
-            return paymentMethod.token == state.selectedPaymentMethod
+        guard let selectedPaymentMethodToken = state.paymentMethods.first(where: { paymentMethod in
+            return paymentMethod.token == state.selectedPaymentMethodToken
         }) else { return }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        settings.authorizePayment(selectedPaymentMethod, completion)
-        settings.onTokenizeSuccess(selectedPaymentMethod, completion)
-        Primer.shared.delegate?.onTokenizeSuccess?(selectedPaymentMethod, resumeHandler: self)
+        settings.authorizePayment(selectedPaymentMethodToken, completion)
+        settings.onTokenizeSuccess(selectedPaymentMethodToken, completion)
+        Primer.shared.delegate?.onTokenizeSuccess?(selectedPaymentMethodToken, resumeHandler: self)
     }
 
 }
