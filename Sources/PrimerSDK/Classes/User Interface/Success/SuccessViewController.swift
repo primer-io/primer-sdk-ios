@@ -38,8 +38,6 @@ internal class SuccessViewController: PrimerViewController {
         configureIcon()
         configureMessage()
         configureConfirmationMessage()
-        configureReferenceTitle()
-        configureReference()
 
         anchorIcon()
         anchorMessage()
@@ -90,19 +88,6 @@ internal extension SuccessViewController {
         confirmationMessage.textAlignment = .center
     }
 
-    func configureReferenceTitle() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-        if screenType != .directDebit { return }
-        referenceTitle.text = "Reference".uppercased()
-        referenceTitle.textColor = theme.text.subtitle.color
-        referenceTitle.font = UIFont.systemFont(ofSize: 13)
-    }
-
-    func configureReference() {
-        reference.text = viewModel.getReference(screenType)
-        reference.font = UIFont.systemFont(ofSize: 17)
-    }
 }
 
 // MARK: Constraints
@@ -159,21 +144,14 @@ enum SuccessScreenType {
 }
 
 protocol SuccessScreenViewModelProtocol: AnyObject {
-    func getMandateId(_ screenType: SuccessScreenType?) -> String
     func getTitle(_ screenType: SuccessScreenType?) -> String
     func getConfirmationMessage(_ screenType: SuccessScreenType?) -> String
-    func getReference(_ screenType: SuccessScreenType?) -> String
 }
 
 internal class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-
-    func getMandateId(_ screenType: SuccessScreenType?) -> String {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.mandateId ?? ""
     }
 
     func getTitle(_ screenType: SuccessScreenType?) -> String {
@@ -218,9 +196,6 @@ internal class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
         }
     }
 
-    func getReference(_ screenType: SuccessScreenType?) -> String {
-        return getMandateId(screenType).uppercased()
-    }
 }
 
 #endif

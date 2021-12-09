@@ -50,7 +50,6 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
             case .failure:
                 completion(PrimerError.directDebitSessionFailed)
             case .success(let response):
-                state.mandateId = response.mandateId
                 completion(nil)
             }
         }
