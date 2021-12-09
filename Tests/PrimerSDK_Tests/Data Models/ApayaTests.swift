@@ -13,10 +13,10 @@ import XCTest
 
 class ApayaDataModelTests: XCTestCase {
     
-    let rootUrl = "https://primer.io/apaya/result?"
+    let rootUrl = "https://primer.io/apaya/result/?"
     
     func test_apaya_web_view_result_created_from_correct_url() throws {
-        let url = URL(string: "https://primer.io/apaya/result?success=1&token=A9IotQFdJBSYjth7h)hGWmFAgzVjxU6xeGGT)AaAbB=&pt=ExamplePTValue&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91&success=1")
+        let url = URL(string: rootUrl + "success=1&token=A9IotQFdJBSYjth7h)hGWmFAgzVjxU6xeGGT)AaAbB=&pt=ExamplePTValue&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91&success=1")
         
         let state: AppStateProtocol = MockAppState()
         state.primerConfiguration = mockPaymentMethodConfig
