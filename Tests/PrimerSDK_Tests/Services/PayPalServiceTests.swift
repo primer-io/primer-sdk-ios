@@ -52,6 +52,7 @@ class PayPalServiceTests: XCTestCase {
 
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
+        state.clientToken = nil
 
         let service = PayPalService()
 
@@ -106,28 +107,46 @@ class PayPalServiceTests: XCTestCase {
     func test_startBillingAgreementSession_calls_api() throws {
         let expectation = XCTestExpectation(description: "Create PayPal billing agreement | Success")
 
-        let response = PayPalCreateBillingAgreementResponse(tokenId: "tid", approvalUrl: "https://primer.io")
-        let data = try JSONEncoder().encode(response)
-        let api = MockPrimerAPIClient(with: data, throwsError: false)
+        let approvalUrl = "https://primer.io"
+        
         let state = MockAppState()
+        let settings = MockPrimerSettings()
+        let client = MockPrimerAPIClient()
 
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        DependencyContainer.register(client as PrimerAPIClientProtocol)
 
         let service = PayPalService()
-
-        service.startBillingAgreementSession({ result in
+        let createOrderRes = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: approvalUrl)
+        let createOrderData = try JSONEncoder().encode(createOrderRes)
+        client.response = createOrderData
+        client.throwsError = false
+        
+        service.startOrderSession({ result in
             switch result {
             case .failure:
-                XCTAssert(false, "Test should not get into the failure case.")
-            case .success(let url):
-                XCTAssertEqual(url, response.approvalUrl)
-            }
+                XCTAssert(true)
+            case .success:
+                let createBillingAgreementRes = PayPalCreateBillingAgreementResponse(tokenId: "tid", approvalUrl: "https://primer.io")
+                let createBillingAgreementData = try! JSONEncoder().encode(createBillingAgreementRes)
+                client.response = createBillingAgreementData
+                client.throwsError = false
+                
+                service.startBillingAgreementSession({ result in
+                    switch result {
+                    case .failure:
+                        XCTAssert(false, "Test should not get into the failure case.")
+                    case .success(let url):
+                        XCTAssertEqual(url, createOrderRes.approvalUrl)
+                    }
 
-            expectation.fulfill()
+                    expectation.fulfill()
+                })
+            }
         })
 
-        XCTAssertEqual(api.isCalled, true)
+        XCTAssertEqual(client.isCalled, true)
 
         wait(for: [expectation], timeout: 30.0)
     }
@@ -142,6 +161,7 @@ class PayPalServiceTests: XCTestCase {
 
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
+        state.clientToken = nil
 
         let service = PayPalService()
 
@@ -199,23 +219,23 @@ class PayPalServiceTests: XCTestCase {
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState()
+        let settings = MockPrimerSettings()
 
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
+        DependencyContainer.register(api as PrimerAPIClientProtocol)
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        
+        let createOrderRes = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: "approvalUrl")
+        let createOrderData = try JSONEncoder().encode(createOrderRes)
+        api.response = createOrderData
+        api.throwsError = false
 
         let service = PayPalService()
 
-        service.confirmBillingAgreement({ result in
-            switch result {
-            case .failure:
-                XCTAssert(false, "Test should not get into the failure case.")
-            case .success(let res):
-                XCTAssertEqual(res.billingAgreementId, response.billingAgreementId)
-            }
-
+        service.startOrderSession({ result in
             expectation.fulfill()
         })
-
+        
         XCTAssertEqual(api.isCalled, true)
 
         wait(for: [expectation], timeout: 30.0)
@@ -231,6 +251,7 @@ class PayPalServiceTests: XCTestCase {
 
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
+        state.clientToken = nil
 
         let service = PayPalService()
 

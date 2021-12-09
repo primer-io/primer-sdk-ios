@@ -177,19 +177,12 @@ let mockPaymentMethodConfig = PrimerConfiguration(
 )
 
 class MockAppState: AppStateProtocol {
-    var selectedPaymentMethod: PaymentMethodToken?
     
-    var paymentMethods: [PaymentMethodToken] = []
-
-    var selectedPaymentMethodToken: String?
-
-    var decodedClientToken: DecodedClientToken? = mockClientToken
-
+    var clientToken: String?
     var primerConfiguration: PrimerConfiguration?
-
-    var clientToken: String? = "accessToken"
-
-    var paypalTokenId: String? = "token"
+    var paymentMethods: [PaymentMethodToken] = []
+    var selectedPaymentMethodToken: String?
+    var selectedPaymentMethod: PaymentMethodToken?
 
     init(
         decodedClientToken: DecodedClientToken? = mockClientToken,
@@ -205,7 +198,7 @@ class MockAppState: AppStateProtocol {
             keys: nil
         )
     ) {
-        self.decodedClientToken = decodedClientToken
+        self.clientToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjI2MzQzMTcwODgsImFjY2Vzc1Rva2VuIjoiOTUxODRhNWYtMWMxNS00OGQ0LTk4MzYtYmM4ZWFkZmYzMzFiIiwiYW5hbHl0aWNzVXJsIjoiaHR0cHM6Ly9hbmFseXRpY3MuYXBpLnN0YWdpbmcuY29yZS5wcmltZXIuaW8vbWl4cGFuZWwiLCJpbnRlbnQiOiJDSEVDS09VVCIsImNvbmZpZ3VyYXRpb25VcmwiOiJodHRwczovL2FwaS5zdGFnaW5nLnByaW1lci5pby9jbGllbnQtc2RrL2NvbmZpZ3VyYXRpb24iLCJjb3JlVXJsIjoiaHR0cHM6Ly9hcGkuc3RhZ2luZy5wcmltZXIuaW8iLCJwY2lVcmwiOiJodHRwczovL3Nkay5hcGkuc3RhZ2luZy5wcmltZXIuaW8iLCJlbnYiOiJTVEFHSU5HIiwicGF5bWVudEZsb3ciOiJQUkVGRVJfVkFVTFQifQ.aybIRUso7r9LJcL3pg8_Rg2aVMHDUikcooA3KcCX43g"
         self.primerConfiguration = primerConfiguration
     }
 }

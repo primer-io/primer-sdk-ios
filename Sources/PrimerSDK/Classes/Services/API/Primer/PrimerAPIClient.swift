@@ -241,7 +241,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
 internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     var response: Data?
-    let throwsError: Bool
+    var throwsError: Bool
     var isCalled: Bool = false
 
     init(with response: Data? = nil, throwsError: Bool = false) {

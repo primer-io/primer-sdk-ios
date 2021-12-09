@@ -35,7 +35,7 @@ class ClientTokenServiceTests: XCTestCase {
                     XCTAssert(false, err.localizedDescription)
                 }
             } else {
-                XCTAssertEqual(state.decodedClientToken?.accessToken, accessToken)
+                XCTAssertEqual(state.clientToken?.jwtTokenPayload?.accessToken, accessToken)
             }
             
             expectation.fulfill()
