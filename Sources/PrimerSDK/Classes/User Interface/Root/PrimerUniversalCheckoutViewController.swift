@@ -15,7 +15,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var titleLabel: UILabel!
     private var savedPaymentMethodStackView: UIStackView!
     private var payButton: PrimerOldButton!
-    private var selectedPaymentInstrument: PaymentMethodToken?
+    private var selectedPaymentMethod: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
     private var onClientSessionActionCompletion: ((Error?) -> Void)?
@@ -74,13 +74,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
-        self.selectedPaymentInstrument = nil
-        if let selectedPaymentInstrument = checkoutViewModel.paymentMethods
-            .first(where: { paymentInstrument in
-            return paymentInstrument.token == checkoutViewModel.selectedPaymentMethodToken
-        }), let cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
+        self.selectedPaymentMethod = nil
+        if let selectedPaymentMethod = checkoutViewModel.selectedPaymentMethod, let cardButtonViewModel = selectedPaymentMethod.cardButtonViewModel {
             
-            self.selectedPaymentInstrument = selectedPaymentInstrument
+            self.selectedPaymentMethod = selectedPaymentMethod
             
             if savedPaymentMethodStackView == nil {
                 savedPaymentMethodStackView = UIStackView()
@@ -223,8 +220,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     @objc
     func payButtonTapped() {
-        guard let paymentMethodToken = selectedPaymentInstrument else { return }
-        guard let config = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == paymentMethodToken.paymentInstrumentType.rawValue }).first else {
+        guard let selectedPaymentMethod = selectedPaymentMethod else { return }
+        guard let config = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == selectedPaymentMethod.paymentInstrumentType.rawValue }).first else {
             return
         }
         
@@ -234,7 +231,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         if Primer.shared.delegate?.onClientSessionActions != nil {
             var params: [String: Any] = ["paymentMethodType": config.type.rawValue]
             if config.type == .paymentCard {
-                var network = paymentMethodToken.paymentInstrumentData?.network?.uppercased()
+                var network = selectedPaymentMethod.paymentInstrumentData?.network?.uppercased()
                 if network == nil || network == "UNKNOWN" {
                     network = "OTHER"
                 }
@@ -255,13 +252,13 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                         self.onClientSessionActionCompletion = nil
                     }
                 } else {
-                    self.continuePayment(withVaultedPaymentMethod: paymentMethodToken)
+                    self.continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)
                 }
             }
             
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
-            continuePayment(withVaultedPaymentMethod: paymentMethodToken)
+            continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)
         }
     }
     

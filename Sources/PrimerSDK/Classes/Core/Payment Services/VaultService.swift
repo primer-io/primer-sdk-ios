@@ -13,7 +13,6 @@ internal class VaultService: VaultServiceProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
-    // swiftlint:disable cyclomatic_complexity
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
@@ -31,9 +30,9 @@ internal class VaultService: VaultServiceProtocol {
 
             let paymentMethods = state.paymentMethods
 
-            if state.selectedPaymentMethodToken == nil && paymentMethods.isEmpty == false {
-                guard let id = paymentMethods.first?.token else { return }
-                state.selectedPaymentMethodToken = id
+            if state.selectedPaymentMethodToken == nil && !paymentMethods.isEmpty {
+                guard let firstPaymentMethodToken = paymentMethods.first?.token else { return }
+                state.selectedPaymentMethodToken = firstPaymentMethodToken
             }
 
             completion(nil)

@@ -49,7 +49,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let vaultedPaymentMethodsResponse):
                 let state: AppStateProtocol = DependencyContainer.resolve()
-                state.selectedPaymentMethodToken = vaultedPaymentMethodsResponse.data.first?.token ?? ""
+                state.selectedPaymentMethodToken = vaultedPaymentMethodsResponse.data.first?.token
                 completion(.success(vaultedPaymentMethodsResponse))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)

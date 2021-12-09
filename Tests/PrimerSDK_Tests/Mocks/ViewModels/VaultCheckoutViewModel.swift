@@ -10,6 +10,8 @@
 @testable import PrimerSDK
 
 class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
+    var selectedPaymentMethod: PaymentMethodToken?
+    
     var mandate: DirectDebitMandate {
         return DirectDebitMandate()
     }

@@ -177,6 +177,8 @@ let mockPaymentMethodConfig = PrimerConfiguration(
 )
 
 class MockAppState: AppStateProtocol {
+    var selectedPaymentMethod: PaymentMethodToken?
+    
     
     var customerToken: String? = "customerToken"
 

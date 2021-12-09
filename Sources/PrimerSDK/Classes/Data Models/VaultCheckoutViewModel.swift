@@ -13,7 +13,7 @@ internal protocol VaultCheckoutViewModelProtocol {
     var paymentMethods: [PaymentMethodToken] { get }
     var mandate: DirectDebitMandate { get }
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] { get }
-    var selectedPaymentMethodToken: String? { get }
+    var selectedPaymentMethod: PaymentMethodToken? { get }
     var amountStringed: String? { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
     func authorizePayment(_ completion: @escaping (Error?) -> Void)
@@ -58,9 +58,9 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         }
     }
 
-    var selectedPaymentMethodToken: String? {
+    var selectedPaymentMethod: PaymentMethodToken? {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.selectedPaymentMethodToken
+        return state.selectedPaymentMethod
     }
 
     deinit {
@@ -104,14 +104,15 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     func authorizePayment(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let selectedPaymentMethodToken = state.paymentMethods.first(where: { paymentMethod in
-            return paymentMethod.token == state.selectedPaymentMethodToken
-        }) else { return }
+        guard let selectedPaymentMethod = state.selectedPaymentMethod else {
+            completion(PrimerError.invalidValue(key: "selectedPaymentMethod"))
+            return
+        }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        settings.authorizePayment(selectedPaymentMethodToken, completion)
-        settings.onTokenizeSuccess(selectedPaymentMethodToken, completion)
-        Primer.shared.delegate?.onTokenizeSuccess?(selectedPaymentMethodToken, resumeHandler: self)
+        settings.authorizePayment(selectedPaymentMethod, completion)
+        settings.onTokenizeSuccess(selectedPaymentMethod, completion)
+        Primer.shared.delegate?.onTokenizeSuccess?(selectedPaymentMethod, resumeHandler: self)
     }
 
 }
