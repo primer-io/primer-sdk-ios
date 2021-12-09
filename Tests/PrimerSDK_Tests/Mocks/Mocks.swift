@@ -185,8 +185,6 @@ class MockAppState: AppStateProtocol {
 
     var sessionId: String? = "klarnaSessionId123"
 
-    var directDebitFormCompleted: Bool = false
-
     var mandateId: String?
 
     var paymentMethods: [PaymentMethodToken] = []
