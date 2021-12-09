@@ -8,13 +8,13 @@
 #if canImport(UIKit)
 
 internal protocol AppStateProtocol: AnyObject {
+    
     var clientToken: String? { get set }
     var primerConfiguration: PrimerConfiguration? { get set }
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethodToken: String? { get set }
     var selectedPaymentMethod: PaymentMethodToken? { get }
     
-    var orderId: String? { get set }
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? { get set }
     var approveURL: String? { get set }
     var directDebitMandate: DirectDebitMandate { get set }
@@ -38,7 +38,6 @@ internal class AppState: AppStateProtocol {
         return state.paymentMethods.first(where: { $0.token == selectedPaymentMethodToken })
     }
 
-    var orderId: String?
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
     var approveURL: String?
     var directDebitMandate: DirectDebitMandate = DirectDebitMandate(address: Address())

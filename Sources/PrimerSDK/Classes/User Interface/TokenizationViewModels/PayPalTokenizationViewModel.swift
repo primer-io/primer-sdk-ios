@@ -12,6 +12,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     var didDismissExternalView: (() -> Void)?
     
     private var session: Any!
+    private var orderId: String?
     
     override lazy var title: String = {
         return "PayPal"
@@ -210,12 +211,13 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             case .CHECKOUT:
                 paypalService.startOrderSession { result in
                     switch result {
-                    case .success(let urlStr):
-                        guard let url = URL(string: urlStr) else {
+                    case .success(let res):
+                        guard let url = URL(string: res.approvalUrl) else {
                             seal.reject(PrimerError.failedToLoadSession)
                             return
                         }
                         
+                        self.orderId = res.orderId
                         seal.fulfill(url)
                         
                     case .failure(let err):
@@ -306,8 +308,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private func generatePaypalPaymentInstrument(_ completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let orderId = state.orderId else {
+            guard let orderId = orderId else {
                 completion(.failure(PrimerError.orderIdMissing))
                 return
             }

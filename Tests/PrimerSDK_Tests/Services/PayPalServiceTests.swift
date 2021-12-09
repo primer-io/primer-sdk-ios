@@ -15,8 +15,8 @@ class PayPalServiceTests: XCTestCase {
     // MARK: startOrderSession
     func test_startOrderSession_calls_api() throws {
         let expectation = XCTestExpectation(description: "Create PayPal payment sesion | Success")
-
-        let response = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: "primer.io")
+        let approvalUrl = "https://primer.io"
+        let response = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: approvalUrl)
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState()
@@ -26,15 +26,12 @@ class PayPalServiceTests: XCTestCase {
 
         let service = PayPalService()
 
-        var approvalUrl = ""
-
         service.startOrderSession({ result in
             switch result {
             case .failure:
                 XCTAssert(false, "Test should not get into the failure case.")
-            case .success(let url):
-                approvalUrl = url
-                XCTAssertEqual(approvalUrl, response.approvalUrl)
+            case .success(let res):
+                XCTAssertEqual(res.approvalUrl, approvalUrl)
             }
 
             expectation.fulfill()

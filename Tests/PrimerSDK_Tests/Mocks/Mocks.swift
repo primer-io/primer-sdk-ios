@@ -179,7 +179,6 @@ let mockPaymentMethodConfig = PrimerConfiguration(
 class MockAppState: AppStateProtocol {
     var selectedPaymentMethod: PaymentMethodToken?
     
-    
     var customerToken: String? = "customerToken"
 
     var authorizationToken: String? = "authToken"
@@ -205,8 +204,6 @@ class MockAppState: AppStateProtocol {
     var clientToken: String? = "accessToken"
 
     var paypalTokenId: String? = "token"
-
-    var orderId: String? = "oid"
 
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
 

@@ -3,7 +3,7 @@
 import Foundation
 
 internal protocol PayPalServiceProtocol {
-    func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void)
+    func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void)
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void)
 }
@@ -38,7 +38,7 @@ internal class PayPalService: PayPalServiceProtocol {
         return (decodedClientToken, url, configId)
     }
 
-    func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void) {
+    func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -77,13 +77,12 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.payPalStartOrderSession(clientToken: decodedClientToken, payPalCreateOrderRequest: body) { [weak self] (result) in
+        api.payPalStartOrderSession(clientToken: decodedClientToken, payPalCreateOrderRequest: body) { result in
             switch result {
             case .failure:
                 completion(.failure(PrimerError.payPalSessionFailed))
-            case .success(let response):
-                state.orderId = response.orderId
-                completion(.success(response.approvalUrl))
+            case .success(let res):
+                completion(.success(res))
             }
         }
     }
