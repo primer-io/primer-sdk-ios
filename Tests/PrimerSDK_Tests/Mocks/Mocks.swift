@@ -205,8 +205,6 @@ class MockAppState: AppStateProtocol {
 
     var paypalTokenId: String? = "token"
 
-    var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
-
     var approveURL: String? = "approveUrl"
 
     init(

@@ -13,6 +13,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     
     private var session: Any!
     private var orderId: String?
+    private var confirmBillingAgreementResponse: PayPalConfirmBillingAgreementResponse?
     
     override lazy var title: String = {
         return "PayPal"
@@ -317,8 +318,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             completion(.success(paymentInstrument))
             
         case .VAULT:
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let confirmedBillingAgreement = state.confirmedBillingAgreement else {
+            guard let confirmedBillingAgreement = self.confirmBillingAgreementResponse else {
                 generateBillingAgreementConfirmation { [weak self] err in
                     if let err = err {
                         completion(.failure(err))
@@ -345,7 +345,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             case .failure(let error):
                 log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                 completion(PrimerError.payPalSessionFailed)
-            case .success:
+            case .success(let res):
+                self.confirmBillingAgreementResponse = res
                 completion(nil)
             }
         })

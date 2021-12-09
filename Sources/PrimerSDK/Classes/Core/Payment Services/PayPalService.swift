@@ -151,7 +151,6 @@ internal class PayPalService: PayPalServiceProtocol {
             case .failure:
                 completion(.failure(PrimerError.payPalSessionFailed))
             case .success(let response):
-                state.confirmedBillingAgreement = response
                 completion(.success(response))
             }
         }
