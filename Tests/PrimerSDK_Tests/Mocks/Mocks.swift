@@ -185,8 +185,6 @@ class MockAppState: AppStateProtocol {
 
     var sessionId: String? = "klarnaSessionId123"
 
-    var cardData: CardData = CardData(name: "", number: "", expiryYear: "", expiryMonth: "", cvc: "")
-
     var directDebitMandate: DirectDebitMandate = DirectDebitMandate(firstName: "", lastName: "", email: "", iban: "", accountNumber: "", sortCode: "", address: nil)
 
     var directDebitFormCompleted: Bool = false
