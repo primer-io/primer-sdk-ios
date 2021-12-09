@@ -183,8 +183,6 @@ class MockAppState: AppStateProtocol {
 
     var authorizationToken: String? = "authToken"
 
-    var sessionId: String? = "klarnaSessionId123"
-
     var mandateId: String?
 
     var paymentMethods: [PaymentMethodToken] = []

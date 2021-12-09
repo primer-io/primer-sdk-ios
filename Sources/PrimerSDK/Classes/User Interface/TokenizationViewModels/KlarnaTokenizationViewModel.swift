@@ -6,6 +6,8 @@ import UIKit
 
 class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
+    private var sessionId: String?
+    
     var willPresentExternalView: (() -> Void)?
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
@@ -361,7 +363,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                     function: #function
                 )
                 
-                state.sessionId = res.sessionId
+                self?.sessionId = res.sessionId
                 
                 guard let url = URL(string: res.hppRedirectUrl) else {
                     completion(.failure(PrimerError.generic))
@@ -425,7 +427,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
-              let sessionId = state.sessionId else {
+              let sessionId = self.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
@@ -470,7 +472,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
-              let sessionId = state.sessionId else {
+              let sessionId = self.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 

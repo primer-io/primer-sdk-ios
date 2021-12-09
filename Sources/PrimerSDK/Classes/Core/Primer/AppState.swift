@@ -18,7 +18,6 @@ internal protocol AppStateProtocol: AnyObject {
     var mandateId: String? { get set }
     var authorizationToken: String? { get set }
     var customerToken: String? { get set }
-    var sessionId: String? { get set }
 }
 
 internal class AppState: AppStateProtocol {
@@ -36,7 +35,6 @@ internal class AppState: AppStateProtocol {
     var mandateId: String?
     var authorizationToken: String?
     var customerToken: String?
-    var sessionId: String?
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
