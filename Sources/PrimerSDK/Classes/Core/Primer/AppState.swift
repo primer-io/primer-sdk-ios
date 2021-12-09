@@ -15,7 +15,6 @@ internal protocol AppStateProtocol: AnyObject {
     var selectedPaymentMethodToken: String? { get set }
     var selectedPaymentMethod: PaymentMethodToken? { get }
     
-    var customerToken: String? { get set }
 }
 
 internal class AppState: AppStateProtocol {
@@ -29,8 +28,6 @@ internal class AppState: AppStateProtocol {
         guard let selectedPaymentMethodToken = selectedPaymentMethodToken else { return nil }
         return state.paymentMethods.first(where: { $0.token == selectedPaymentMethodToken })
     }
-
-    var customerToken: String?
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
