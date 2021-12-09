@@ -15,7 +15,6 @@ internal protocol AppStateProtocol: AnyObject {
     var selectedPaymentMethodToken: String? { get set }
     var selectedPaymentMethod: PaymentMethodToken? { get }
     
-    var approveURL: String? { get set }
     var directDebitMandate: DirectDebitMandate { get set }
     var directDebitFormCompleted: Bool { get set }
     var cardData: CardData { get set }
@@ -37,7 +36,6 @@ internal class AppState: AppStateProtocol {
         return state.paymentMethods.first(where: { $0.token == selectedPaymentMethodToken })
     }
 
-    var approveURL: String?
     var directDebitMandate: DirectDebitMandate = DirectDebitMandate(address: Address())
     var directDebitFormCompleted: Bool = false
     var mandateId: String?

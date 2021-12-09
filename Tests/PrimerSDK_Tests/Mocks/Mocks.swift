@@ -205,8 +205,6 @@ class MockAppState: AppStateProtocol {
 
     var paypalTokenId: String? = "token"
 
-    var approveURL: String? = "approveUrl"
-
     init(
         decodedClientToken: DecodedClientToken? = mockClientToken,
         primerConfiguration: PrimerConfiguration? = PrimerConfiguration(
