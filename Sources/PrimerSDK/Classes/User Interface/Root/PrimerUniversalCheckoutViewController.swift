@@ -37,8 +37,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         renderSelectedPaymentInstrument()
         renderAvailablePaymentMethods()
         
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let token = state.decodedClientToken else { return }
+        guard ClientTokenService.decodedClientToken.exists else { return }
         let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
         vaultService.loadVaultedPaymentMethods { err in
             self.renderSelectedPaymentInstrument(insertAt: 1)
@@ -354,7 +353,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 try ClientTokenService.storeClientToken(clientToken)
             }
             
-            let decodedClientToken = state.decodedClientToken!
+            let decodedClientToken = ClientTokenService.decodedClientToken!
             
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)

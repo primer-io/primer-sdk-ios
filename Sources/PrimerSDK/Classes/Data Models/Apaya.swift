@@ -70,7 +70,7 @@ public struct Apaya {
             }
             
             let state: AppStateProtocol = DependencyContainer.resolve()
-            guard state.decodedClientToken != nil,
+            guard ClientTokenService.decodedClientToken != nil,
                   let merchantAccountId = state.primerConfiguration?.getProductId(for: .apaya)
             else {
                 throw ApayaException.invalidWebViewResult

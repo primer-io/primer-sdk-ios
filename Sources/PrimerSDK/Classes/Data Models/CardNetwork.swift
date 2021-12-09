@@ -264,9 +264,7 @@ public enum CardNetwork: String, CaseIterable {
         }
     }
     
-    var directoryServerId: String? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
+    var directoryServerId: String? {        
         switch self {
         case .visa:
             return "A000000003"
@@ -281,8 +279,8 @@ public enum CardNetwork: String, CaseIterable {
         case .unionpay:
             return "A000000333"
         default:
-            if let clientToken = state.decodedClientToken,
-               let env = clientToken.env {
+            if let decodedClientToken = ClientTokenService.decodedClientToken,
+               let env = decodedClientToken.env {
                 if env.uppercased() == "PRODUCTION" {
                     return nil
                 } else {

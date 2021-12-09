@@ -11,7 +11,18 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
     
     static var decodedClientToken: DecodedClientToken? {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.decodedClientToken
+        guard let clientToken = state.clientToken else { return nil }
+        guard let jwtTokenPayload = clientToken.jwtTokenPayload,
+              let expDate = jwtTokenPayload.expDate
+        else {
+            return nil
+        }
+        
+        if expDate < Date() {
+            return nil
+        }
+        
+        return jwtTokenPayload
     }
     
     static func storeClientToken(_ clientToken: String) throws {
@@ -26,7 +37,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         }
         
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let previousEnv = state.decodedClientToken?.env
+        let previousEnv = ClientTokenService.decodedClientToken?.env
         
         jwtTokenPayload.configurationUrl = jwtTokenPayload.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
         jwtTokenPayload.coreUrl = jwtTokenPayload.coreUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
@@ -37,13 +48,11 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
             jwtTokenPayload.env = previousEnv
         }
 
-        state.decodedClientToken = jwtTokenPayload
         state.clientToken = clientToken
     }
     
     static func resetClientToken() {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        state.decodedClientToken = nil
         state.clientToken = nil
     }
     

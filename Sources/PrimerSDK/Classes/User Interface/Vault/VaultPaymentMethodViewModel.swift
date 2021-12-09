@@ -23,10 +23,6 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
             state.selectedPaymentMethodToken = newValue
         }
     }
-    private var clientToken: DecodedClientToken? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.decodedClientToken
-    }
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

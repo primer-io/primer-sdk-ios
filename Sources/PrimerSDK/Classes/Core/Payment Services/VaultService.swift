@@ -17,7 +17,7 @@ internal class VaultService: VaultServiceProtocol {
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             return completion(PrimerError.vaultFetchFailed)
         }
         
@@ -43,10 +43,8 @@ internal class VaultService: VaultServiceProtocol {
         }
     }
 
-    func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+    func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {        
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             return completion(PrimerError.vaultDeleteFailed)
         }
         

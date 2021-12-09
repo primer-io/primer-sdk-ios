@@ -115,7 +115,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -211,7 +211,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     
     private func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let clientToken = state.decodedClientToken,
+        guard let decodedClientToken = ClientTokenService.decodedClientToken,
               let merchantAccountId = state.primerConfiguration?.getProductId(for: .apaya)
         else {
             return completion(.failure(ApayaException.noToken))
@@ -228,7 +228,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
                                                  phoneNumber: settings.customer?.mobilePhoneNumber)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        api.apayaCreateSession(clientToken: clientToken, request: body) { [weak self] result in
+        api.apayaCreateSession(clientToken: decodedClientToken, request: body) { [weak self] result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -318,14 +318,14 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             state: state
         )
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             completion(nil, PrimerError.clientTokenNull)
             return
         }
         
         let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
         apiClient.tokenizePaymentMethod(
-            clientToken: clientToken,
+            clientToken: decodedClientToken,
             paymentMethodTokenizationRequest: request) { result in
                 switch result {
                 case .success(let paymentMethod):

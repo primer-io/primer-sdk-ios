@@ -20,7 +20,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
     func createMandate(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             return completion(PrimerError.directDebitSessionFailed)
         }
 
