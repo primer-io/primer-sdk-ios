@@ -397,7 +397,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        if let clientToken = state.accessToken {
+        if let clientToken = state.clientToken {
             completion(clientToken, nil)
         } else {
             completion(nil, PrimerError.clientTokenNull)
@@ -513,7 +513,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
         do {
             let state: AppStateProtocol = DependencyContainer.resolve()
             
-            if state.accessToken != clientToken {
+            if state.clientToken != clientToken {
                 try ClientTokenService.storeClientToken(clientToken)
             }
             

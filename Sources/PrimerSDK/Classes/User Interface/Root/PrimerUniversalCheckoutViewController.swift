@@ -350,7 +350,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
         do {
             let state: AppStateProtocol = DependencyContainer.resolve()
             
-            if state.accessToken != clientToken {
+            if state.clientToken != clientToken {
                 try ClientTokenService.storeClientToken(clientToken)
             }
             

@@ -38,13 +38,13 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         }
 
         state.decodedClientToken = jwtTokenPayload
-        state.accessToken = clientToken
+        state.clientToken = clientToken
     }
     
     static func resetClientToken() {
         let state: AppStateProtocol = DependencyContainer.resolve()
         state.decodedClientToken = nil
-        state.accessToken = nil
+        state.clientToken = nil
     }
     
     deinit {

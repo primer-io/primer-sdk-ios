@@ -200,7 +200,7 @@ class MockAppState: AppStateProtocol {
 
     var primerConfiguration: PrimerConfiguration?
 
-    var accessToken: String? = "accessToken"
+    var clientToken: String? = "accessToken"
 
     var billingAgreementToken: String? = "token"
 
