@@ -33,6 +33,7 @@ struct Payment {
 class Expectation {
     static var exists: NSPredicate = NSPredicate(format: "exists == true")
     static var doesNotExist = NSPredicate(format: "exists == false")
+    static var isHittable = NSPredicate(format: "isHittable == 1")
 }
 
 class Base: XCTestCase {
@@ -51,7 +52,7 @@ class Base: XCTestCase {
                 webviewTexts: nil,
                 buttonTexts: nil,
                 resultScreenTexts: [
-                    "status": "PENDING",
+                    "status": "SETTLED",
                     "actions": "USE_PRIMER_SDK",
                     "amount": "EUR 1.79"
                 ]
@@ -285,6 +286,19 @@ class Base: XCTestCase {
         let surchargeGroupViewId = paymentMethodId == "PAYMENT_CARD" ? "additional_fees_surcharge_group_view" : "\(paymentMethodId.lowercased())_surcharge_group_view"
         let paymentMethodSurcharge = scrollView.otherElements[surchargeGroupViewId].staticTexts[surcharge]
         XCTAssert(paymentMethodSurcharge.exists, "\(paymentMethodId) should have '\(surcharge)' surcharge")
+    }
+    
+    func testDismissSDK() throws {
+        let scrollView = app.scrollViews["primer_container_scroll_view"]
+        scrollView.swipeDown()
+        let expectation = expectation(for: Expectation.doesNotExist, evaluatedWith: scrollView, handler: nil)
+        wait(for: [expectation], timeout: 3.0)
+    }
+    
+    func testSuccessMessageExists() throws {
+        let successLabel = app.staticTexts["success_screen_message_label"]
+        let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
+        wait(for: [successLabelExists], timeout: 30)
     }
     
     func testResultScreenExpectations(for payment: Payment) throws {

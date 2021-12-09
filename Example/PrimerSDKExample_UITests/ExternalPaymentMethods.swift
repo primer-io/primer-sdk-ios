@@ -34,22 +34,66 @@ class ExternalPaymentMethods: XCTestCase {
     
     func testAdyenAlipay() throws {
         let pm = Base.paymentMethods.filter({ $0.id == "ADYEN_ALIPAY" }).first!
-        try testPaymentMethod(pm)
+        try testPayment(pm)
     }
     
     func testAdyenGiropay() throws {
-        let pm = Base.paymentMethods.filter({ $0.id == "ADYEN_GIROPAY" }).first!
-        try testPaymentMethod(pm)
+        let payment = Base.paymentMethods.filter({ $0.id == "ADYEN_GIROPAY" }).first!
+        try testPayment(payment, cancelPayment: false)
+        
+        let safariWebView = app.otherElements.matching(NSPredicate(format: "identifier CONTAINS 'BrowserView?WebViewProcessID'"))
+        
+        let continueButton = app.webViews.firstMatch.buttons.firstMatch
+        let continueButtonIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: continueButton, handler: nil)
+        wait(for: [continueButtonIsHittable], timeout: 30)
+        continueButton.tap()
+        
+        let scTextField = app.otherElements.containing(NSPredicate(format: "label == 'sc:'")).firstMatch.textFields.firstMatch
+        let scTextFieldIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: scTextField, handler: nil)
+        wait(for: [scTextFieldIsHittable], timeout: 30)
+        scTextField.tap()
+        scTextField.typeText("10")
+        
+        let toolBarDoneButton = app.toolbars["Toolbar"].firstMatch.buttons["Done"].firstMatch
+        toolBarDoneButton.tap()
+        
+        let extensionScTextField = app.otherElements.containing(NSPredicate(format: "label == 'extensionSc:'")).firstMatch.textFields.element(boundBy: 1)
+        extensionScTextField.tap()
+        extensionScTextField.typeText("4000")
+        
+        toolBarDoneButton.tap()
+        safariWebView.webViews.firstMatch.pinch(withScale: 0.5, velocity: -0.5)
+        
+        let customerNameTextField = app.otherElements.containing(NSPredicate(format: "label == 'customerName1:'")).firstMatch.textFields.element(boundBy: 2)
+        customerNameTextField.tap()
+        customerNameTextField.typeText("John Smith")
+        
+        toolBarDoneButton.tap()
+        safariWebView.webViews.firstMatch.pinch(withScale: 0.5, velocity: -0.5)
+        
+        let customerIbanTextField = app.otherElements.containing(NSPredicate(format: "label == 'customerIBAN:'")).firstMatch.textFields.element(boundBy: 3)
+        customerIbanTextField.tap()
+        customerIbanTextField.typeText("DE36444488881234567890")
+        
+        toolBarDoneButton.tap()
+        safariWebView.webViews.firstMatch.pinch(withScale: 0.5, velocity: -0.5)
+        
+        let submitButton = app.buttons.matching(NSPredicate(format: "label == 'Absenden'")).firstMatch
+        submitButton.tap()
+        
+        try base.testSuccessMessageExists()
+        try base.testDismissSDK()
+        try base.testResultScreenExpectations(for: payment)
     }
     
     func testAdyenMobilePay() throws {
         let pm = Base.paymentMethods.filter({ $0.id == "ADYEN_MOBILEPAY" }).first!
-        try testPaymentMethod(pm)
+        try testPayment(pm)
     }
     
     func testPayNLBancontact() throws {
         let pm = Base.paymentMethods.filter({ $0.id == "PAY_NL_BANCONTACT" }).first!
-        try testPaymentMethod(pm)
+        try testPayment(pm)
     }
     
     func testRec() throws {
@@ -101,14 +145,14 @@ class ExternalPaymentMethods: XCTestCase {
         applePayButton.tap()
     }
     
-    func testPaymentMethod(_ pm: Payment, cancelPayment: Bool = true) throws {
+    func testPayment(_ payment: Payment, cancelPayment: Bool = true) throws {
         try Base().testInitialize(
-            env: pm.environment.rawValue,
+            env: payment.environment.rawValue,
             customerId: nil,
             phoneNumber: nil,
-            countryCode: pm.countryCode,
-            currency: pm.currency,
-            amount: pm.amount,
+            countryCode: payment.countryCode,
+            currency: payment.currency,
+            amount: payment.amount,
             performPayment: true)
 
         let universalCheckoutButton = app.buttons["universal_checkout_button"]
@@ -123,17 +167,17 @@ class ExternalPaymentMethods: XCTestCase {
         expectation(for: Expectation.doesNotExist, evaluatedWith: vaultTitle, handler: nil)
         waitForExpectations(timeout: 30, handler: nil)
 
-        if let amountExpectation = pm.expecations?.amount {
+        if let amountExpectation = payment.expecations?.amount {
             let amountText = app.staticTexts[amountExpectation]
             XCTAssert(amountText.exists, "Amount '\(amountExpectation)' should exist")
         }
         
         let scrollView = app.scrollViews["primer_container_scroll_view"]
-        if let surchargeExpectation = pm.expecations?.surcharge {
-            Base.validateSurcharge(surchargeExpectation, forPaymentMethod: pm.id)
+        if let surchargeExpectation = payment.expecations?.surcharge {
+            Base.validateSurcharge(surchargeExpectation, forPaymentMethod: payment.id)
         }
         
-        let paymentMethodButton = app.buttons[pm.id]
+        let paymentMethodButton = app.buttons[payment.id]
         
         if !paymentMethodButton.exists {
             var isHittable: Bool = false
@@ -143,17 +187,17 @@ class ExternalPaymentMethods: XCTestCase {
             }
         }
         
-        let adyenGiropayButton = scrollView.otherElements.buttons[pm.id]
+        let adyenGiropayButton = scrollView.otherElements.buttons[payment.id]
         adyenGiropayButton.tap()
         
         let webViews = app.webViews
-        if let webViewImageExpectation = pm.expecations?.webviewImage {
+        if let webViewImageExpectation = payment.expecations?.webviewImage {
             let webViewGiroPayImage = webViews.images[webViewImageExpectation]
             let webViewGiroPayImageExists = expectation(for: Expectation.exists, evaluatedWith: webViewGiroPayImage, handler: nil)
             wait(for: [webViewGiroPayImageExists], timeout: 30)
         }
         
-        if let webviewTexts = pm.expecations?.webviewTexts {
+        if let webviewTexts = payment.expecations?.webviewTexts {
             var webviewTextsExpectations: [XCTestExpectation] = []
             for text in webviewTexts {
                 let webViewText = webViews.staticTexts[text]
@@ -174,7 +218,7 @@ class ExternalPaymentMethods: XCTestCase {
             
             scrollView.swipeDown()
             
-            if let resultScreenTextExpectations = pm.expecations?.resultScreenTexts {
+            if let resultScreenTextExpectations = payment.expecations?.resultScreenTexts {
                 var expectations: [XCTestExpectation] = []
                 
                 if let status = resultScreenTextExpectations["status"] as? String {
