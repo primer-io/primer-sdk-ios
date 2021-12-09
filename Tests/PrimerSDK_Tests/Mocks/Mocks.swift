@@ -202,7 +202,7 @@ class MockAppState: AppStateProtocol {
 
     var clientToken: String? = "accessToken"
 
-    var billingAgreementToken: String? = "token"
+    var paypalTokenId: String? = "token"
 
     var orderId: String? = "oid"
 

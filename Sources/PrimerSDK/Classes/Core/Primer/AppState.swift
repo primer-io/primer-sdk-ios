@@ -8,11 +8,11 @@
 #if canImport(UIKit)
 
 internal protocol AppStateProtocol: AnyObject {
-    var paymentMethods: [PaymentMethodToken] { get set }
-    var selectedPaymentMethodToken: String { get set }
     var clientToken: String? { get set }
     var primerConfiguration: PrimerConfiguration? { get set }
-    var billingAgreementToken: String? { get set }
+    var paymentMethods: [PaymentMethodToken] { get set }
+    var selectedPaymentMethodToken: String { get set }
+    
     var orderId: String? { get set }
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse? { get set }
     var approveURL: String? { get set }
@@ -27,10 +27,11 @@ internal protocol AppStateProtocol: AnyObject {
 
 internal class AppState: AppStateProtocol {
     var clientToken: String?
+    var primerConfiguration: PrimerConfiguration?
     var paymentMethods: [PaymentMethodToken] = []
     var selectedPaymentMethodToken: String = ""
-    var primerConfiguration: PrimerConfiguration?
-    var billingAgreementToken: String?
+    
+
     var orderId: String?
     var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
     var approveURL: String?
