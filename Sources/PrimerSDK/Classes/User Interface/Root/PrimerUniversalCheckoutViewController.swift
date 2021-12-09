@@ -77,7 +77,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         self.selectedPaymentInstrument = nil
         if let selectedPaymentInstrument = checkoutViewModel.paymentMethods
             .first(where: { paymentInstrument in
-            return paymentInstrument.token == checkoutViewModel.selectedPaymentMethodId
+            return paymentInstrument.token == checkoutViewModel.selectedPaymentMethodToken
         }), let cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
             
             self.selectedPaymentInstrument = selectedPaymentInstrument

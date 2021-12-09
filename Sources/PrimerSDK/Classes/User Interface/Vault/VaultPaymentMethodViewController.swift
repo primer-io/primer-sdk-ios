@@ -94,7 +94,7 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        isEnabled = viewModel.selectedId == paymentMethodToken.token
+        isEnabled = viewModel.selectedPaymentMethodToken == paymentMethodToken.token
         horizontalStackView.axis = .horizontal
         horizontalStackView.alignment = .fill
         horizontalStackView.spacing = 16
@@ -238,7 +238,7 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
         let paymentMethod = viewModel.paymentMethods[indexPath.row]
 
         if !isDeleting {
-            viewModel.selectedId = paymentMethod.token
+            viewModel.selectedPaymentMethodToken = paymentMethod.token
             tableView.reloadData()
             // It will reload the payment instrument on the Universal Checkout view.
             delegate?.reload()

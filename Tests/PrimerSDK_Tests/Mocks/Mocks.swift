@@ -194,7 +194,7 @@ class MockAppState: AppStateProtocol {
 
     var paymentMethods: [PaymentMethodToken] = []
 
-    var selectedPaymentMethodToken: String = ""
+    var selectedPaymentMethodToken: String?
 
     var decodedClientToken: DecodedClientToken? = mockClientToken
 

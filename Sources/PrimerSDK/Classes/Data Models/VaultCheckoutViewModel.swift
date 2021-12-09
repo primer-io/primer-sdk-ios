@@ -13,7 +13,7 @@ internal protocol VaultCheckoutViewModelProtocol {
     var paymentMethods: [PaymentMethodToken] { get }
     var mandate: DirectDebitMandate { get }
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] { get }
-    var selectedPaymentMethodId: String { get }
+    var selectedPaymentMethodToken: String? { get }
     var amountStringed: String? { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
     func authorizePayment(_ completion: @escaping (Error?) -> Void)
@@ -37,8 +37,8 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         if Primer.shared.flow.internalSessionFlow.vaulted { return nil }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        guard let amount = settings.amount else { return "" }
-        guard let currency = settings.currency else { return "" }
+        guard let amount = settings.amount else { return nil }
+        guard let currency = settings.currency else { return nil }
         return amount.toCurrencyString(currency: currency)
     }
 
@@ -58,7 +58,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         }
     }
 
-    var selectedPaymentMethodId: String {
+    var selectedPaymentMethodToken: String? {
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.selectedPaymentMethodToken
     }
