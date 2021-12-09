@@ -198,7 +198,7 @@ class MockAppState: AppStateProtocol {
 
     var decodedClientToken: DecodedClientToken? = mockClientToken
 
-    var paymentMethodConfig: PrimerConfiguration?
+    var primerConfiguration: PrimerConfiguration?
 
     var accessToken: String? = "accessToken"
 
@@ -212,7 +212,7 @@ class MockAppState: AppStateProtocol {
 
     init(
         decodedClientToken: DecodedClientToken? = mockClientToken,
-        paymentMethodConfig: PrimerConfiguration? = PrimerConfiguration(
+        primerConfiguration: PrimerConfiguration? = PrimerConfiguration(
             coreUrl: "url",
             pciUrl: "url",
             clientSession: nil,
@@ -225,7 +225,7 @@ class MockAppState: AppStateProtocol {
         )
     ) {
         self.decodedClientToken = decodedClientToken
-        self.paymentMethodConfig = paymentMethodConfig
+        self.primerConfiguration = primerConfiguration
     }
 }
 
@@ -234,7 +234,7 @@ let mockPayPalBillingAgreement = PayPalConfirmBillingAgreementResponse(billingAg
 class MockLocator {
     static func registerDependencies() {
         let state: AppStateProtocol = MockAppState()
-        state.paymentMethodConfig = mockPaymentMethodConfig
+        state.primerConfiguration = mockPaymentMethodConfig
         DependencyContainer.register(state as AppStateProtocol)
         // register dependencies
         DependencyContainer.register(mockSettings as PrimerSettingsProtocol)

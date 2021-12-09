@@ -424,7 +424,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
+        guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
               let sessionId = state.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
@@ -469,7 +469,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             return completion(.failure(KlarnaException.noToken))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
+        guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
               let sessionId = state.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }

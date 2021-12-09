@@ -28,7 +28,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                 completion(error)
             case .success(let config):
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                state.paymentMethodConfig = config
+                state.primerConfiguration = config
                 completion(nil)
             }
         }

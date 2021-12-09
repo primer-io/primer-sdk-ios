@@ -11,7 +11,7 @@ internal protocol AppStateProtocol: AnyObject {
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethodToken: String { get set }
     var decodedClientToken: DecodedClientToken? { get set }
-    var paymentMethodConfig: PrimerConfiguration? { get set }
+    var primerConfiguration: PrimerConfiguration? { get set }
     var accessToken: String? { get set }
     var billingAgreementToken: String? { get set }
     var orderId: String? { get set }
@@ -30,7 +30,7 @@ internal class AppState: AppStateProtocol {
     var paymentMethods: [PaymentMethodToken] = []
     var selectedPaymentMethodToken: String = ""
     var decodedClientToken: DecodedClientToken?
-    var paymentMethodConfig: PrimerConfiguration?
+    var primerConfiguration: PrimerConfiguration?
     var accessToken: String?
     var billingAgreementToken: String?
     var orderId: String?

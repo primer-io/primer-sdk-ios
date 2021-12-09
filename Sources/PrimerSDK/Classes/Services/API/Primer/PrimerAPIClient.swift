@@ -75,8 +75,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken)
         networkService.request(endpoint) { (result: Result<PrimerConfiguration, NetworkServiceError>) in
             switch result {
-            case .success(let paymentMethodConfig):
-                completion(.success(paymentMethodConfig))
+            case .success(let primerConfiguration):
+                completion(.success(primerConfiguration))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.configFetchFailed))
@@ -88,8 +88,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.directDebitCreateMandate(clientToken: clientToken, mandateRequest: mandateRequest)
         networkService.request(endpoint) { (result: Result<DirectDebitCreateMandateResponse, NetworkServiceError>) in
             switch result {
-            case .success(let paymentMethodConfig):
-                completion(.success(paymentMethodConfig))
+            case .success(let primerConfiguration):
+                completion(.success(primerConfiguration))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.configFetchFailed))

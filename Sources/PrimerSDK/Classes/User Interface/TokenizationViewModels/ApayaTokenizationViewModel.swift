@@ -127,7 +127,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             throw err
         }
         
-        guard state.paymentMethodConfig?.getProductId(for: .apaya) != nil else {
+        guard state.primerConfiguration?.getProductId(for: .apaya) != nil else {
             let err = ApayaException.noToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -212,7 +212,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     private func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         guard let clientToken = state.decodedClientToken,
-              let merchantAccountId = state.paymentMethodConfig?.getProductId(for: .apaya)
+              let merchantAccountId = state.primerConfiguration?.getProductId(for: .apaya)
         else {
             return completion(.failure(ApayaException.noToken))
         }
