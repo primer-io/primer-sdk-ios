@@ -159,7 +159,6 @@ enum SuccessScreenType {
 }
 
 protocol SuccessScreenViewModelProtocol: AnyObject {
-    var mandate: DirectDebitMandate { get }
     func getMandateId(_ screenType: SuccessScreenType?) -> String
     func getTitle(_ screenType: SuccessScreenType?) -> String
     func getConfirmationMessage(_ screenType: SuccessScreenType?) -> String
@@ -167,11 +166,6 @@ protocol SuccessScreenViewModelProtocol: AnyObject {
 }
 
 internal class SuccessScreenViewModel: SuccessScreenViewModelProtocol {
-
-    var mandate: DirectDebitMandate {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.directDebitMandate
-    }
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

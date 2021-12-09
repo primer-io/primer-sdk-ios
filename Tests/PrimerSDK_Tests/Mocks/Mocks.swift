@@ -185,8 +185,6 @@ class MockAppState: AppStateProtocol {
 
     var sessionId: String? = "klarnaSessionId123"
 
-    var directDebitMandate: DirectDebitMandate = DirectDebitMandate(firstName: "", lastName: "", email: "", iban: "", accountNumber: "", sortCode: "", address: nil)
-
     var directDebitFormCompleted: Bool = false
 
     var mandateId: String?
@@ -247,7 +245,7 @@ class MockLocator {
 }
 
 class MockDirectDebitService: DirectDebitServiceProtocol {
-    func createMandate(_ completion: @escaping (Error?) -> Void) {
+    func createMandate(_ directDebitMandate: DirectDebitMandate, completion: @escaping (Error?) -> Void) {
 
     }
 }

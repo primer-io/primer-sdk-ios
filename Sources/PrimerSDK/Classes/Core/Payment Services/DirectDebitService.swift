@@ -8,7 +8,7 @@
 #if canImport(UIKit)
 
 internal protocol DirectDebitServiceProtocol {
-    func createMandate(_ completion: @escaping (Error?) -> Void)
+    func createMandate(_ directDebitMandate: DirectDebitMandate, completion: @escaping (Error?) -> Void)
 }
 
 internal class DirectDebitService: DirectDebitServiceProtocol {
@@ -17,7 +17,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
-    func createMandate(_ completion: @escaping (Error?) -> Void) {
+    func createMandate(_ directDebitMandate: DirectDebitMandate, completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
@@ -32,13 +32,11 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         guard let customer = settings.customer else {
             return completion(PrimerError.userDetailsMissing)
         }
-
-        let mandate = state.directDebitMandate
         
         let bankDetails = BankDetails(
-            iban: mandate.iban,
-            bankCode: mandate.sortCode,
-            accountNumber: mandate.accountNumber)
+            iban: directDebitMandate.iban,
+            bankCode: directDebitMandate.sortCode,
+            accountNumber: directDebitMandate.accountNumber)
 
         let body = DirectDebitCreateMandateRequest(
             id: configId,
@@ -47,7 +45,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { [weak self] result in
+        api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { result in
             switch result {
             case .failure:
                 completion(PrimerError.directDebitSessionFailed)
