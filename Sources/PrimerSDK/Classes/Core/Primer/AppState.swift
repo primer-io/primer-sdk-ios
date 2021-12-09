@@ -15,7 +15,6 @@ internal protocol AppStateProtocol: AnyObject {
     var selectedPaymentMethodToken: String? { get set }
     var selectedPaymentMethod: PaymentMethodToken? { get }
     
-    var authorizationToken: String? { get set }
     var customerToken: String? { get set }
 }
 
@@ -31,7 +30,6 @@ internal class AppState: AppStateProtocol {
         return state.paymentMethods.first(where: { $0.token == selectedPaymentMethodToken })
     }
 
-    var authorizationToken: String?
     var customerToken: String?
 
     deinit {
