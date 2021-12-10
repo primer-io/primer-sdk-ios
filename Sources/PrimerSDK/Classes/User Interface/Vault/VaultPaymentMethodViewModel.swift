@@ -2,7 +2,7 @@
 
 internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     var paymentMethods: [PaymentMethodToken] { get }
-    var selectedId: String { get set }
+    var selectedPaymentMethodToken: String? { get set }
     func reloadVault(with completion: @escaping (Error?) -> Void)
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void)
 }
@@ -13,7 +13,7 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.paymentMethods
     }
-    var selectedId: String {
+    var selectedPaymentMethodToken: String? {
         get {
             let state: AppStateProtocol = DependencyContainer.resolve()
             return state.selectedPaymentMethodToken
@@ -33,14 +33,14 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
         vaultService.loadVaultedPaymentMethods(completion)
     }
 
-    func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void) {
+    func deletePaymentMethod(with paymentMethodToken: String, and completion: @escaping (Error?) -> Void) {
         let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-        vaultService.deleteVaultedPaymentMethod(with: id) { [weak self] _ in
+        vaultService.deleteVaultedPaymentMethod(with: paymentMethodToken) { _ in
             let state: AppStateProtocol = DependencyContainer.resolve()
             
             // reset selected payment method if that has been deleted
-            if id == state.selectedPaymentMethodToken {
-                state.selectedPaymentMethodToken = ""
+            if paymentMethodToken == state.selectedPaymentMethodToken {
+                state.selectedPaymentMethodToken = nil
             }
 
             // reload vaulted payment methods
@@ -53,7 +53,7 @@ internal class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProto
     
     var theme: PrimerTheme { return PrimerTheme() }
     var paymentMethods: [PaymentMethodToken] { return [] }
-    var selectedId: String = "id"
+    var selectedPaymentMethodToken: String? = "id"
 
     func reloadVault(with completion: @escaping (Error?) -> Void) {
 
