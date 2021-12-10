@@ -11,6 +11,7 @@ import XCTest
 class Vault: XCTestCase {
     
     let app = XCUIApplication()
+    let base = Base()
 
     override func setUp() {
         super.setUp()
@@ -23,7 +24,7 @@ class Vault: XCTestCase {
     }
 
     func testVault() throws {
-        try Base().testInitialize(
+        try base.testInitialize(
             env: "sandbox",
             customerId: "customer_id",
             phoneNumber: "+447888888888",
@@ -32,17 +33,7 @@ class Vault: XCTestCase {
             amount: "1.00",
             performPayment: false)
         
-        let vaultButton = app.buttons["vault_button"]
-        vaultButton.tap()
-
-        // Test that title is correct
-        let vaultTitle = app.staticTexts["Add payment method"]
-        let checkoutTitle = app.staticTexts["Choose payment method"]
-        let exists = NSPredicate(format: "exists == true")
-        let doesNotExist = NSPredicate(format: "exists == false")
-        expectation(for: doesNotExist, evaluatedWith: checkoutTitle, handler: nil)
-        expectation(for: exists, evaluatedWith: vaultTitle, handler: nil)
-        waitForExpectations(timeout: 15, handler: nil)
+        try base.openVaultManager()
         
         // UI tests are a black box, we cannot access the actual amount from the code.
         // Test against € 0.05 since we know that this is the configuration we pass.

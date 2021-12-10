@@ -38,10 +38,10 @@ class UniversalCheckout: XCTestCase {
         // Test that title is correct
         let checkoutTitle = app.staticTexts["Choose payment method"]
         let vaultTitle = app.staticTexts["Add payment method"]
-        let exists = NSPredicate(format: "exists == true")
-        let doesNotExist = NSPredicate(format: "exists == false")
-        expectation(for: exists, evaluatedWith: checkoutTitle, handler: nil)
-        expectation(for: doesNotExist, evaluatedWith: vaultTitle, handler: nil)
+
+        
+        expectation(for: Expectation.exists, evaluatedWith: checkoutTitle, handler: nil)
+        expectation(for: Expectation.doesNotExist, evaluatedWith: vaultTitle, handler: nil)
         waitForExpectations(timeout: 15, handler: nil)
         
         // UI tests are a black box, we cannot access the actual amount from the code.
