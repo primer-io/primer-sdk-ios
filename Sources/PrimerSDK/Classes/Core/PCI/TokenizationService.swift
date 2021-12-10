@@ -82,10 +82,15 @@ internal class TokenizationService: TokenizationServiceProtocol {
                         onTokenizeSuccess(.success(paymentMethodToken))
                         return
                     }
+                    
+                    guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                        Primer.shared.delegate?.checkoutFailed?(with: PrimerError.clientTokenNull)
+                        return
+                    }
 
                     threeDSService.perform3DS(
                             paymentMethodToken: paymentMethodToken,
-                        protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
+                        protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2,
                         beginAuthExtraData: threeDSBeginAuthExtraData,
                             sdkDismissed: { () in
 

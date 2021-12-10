@@ -96,27 +96,6 @@ class ExternalPaymentMethods: XCTestCase {
         try testPayment(pm)
     }
     
-    func testRec() throws {
-        
-        
-        let app = XCUIApplication()
-        app/*@START_MENU_TOKEN@*/.staticTexts["Initialize Primer SDK"]/*[[".buttons[\"Initialize Primer SDK\"].staticTexts[\"Initialize Primer SDK\"]",".buttons[\"initialize_primer_sdk\"].staticTexts[\"Initialize Primer SDK\"]",".staticTexts[\"Initialize Primer SDK\"]"],[[[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-        app/*@START_MENU_TOKEN@*/.buttons["universal_checkout_button"]/*[[".buttons[\"Universal Checkout\"]",".buttons[\"universal_checkout_button\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-        
-        let primerContainerScrollViewScrollView = app.scrollViews["primer_container_scroll_view"]
-        primerContainerScrollViewScrollView.otherElements/*@START_MENU_TOKEN@*/.buttons["ADYEN_GIROPAY"]/*[[".otherElements[\"adyen_giropay_surcharge_group_view\"]",".buttons[\"giropay logo\"]",".buttons[\"ADYEN_GIROPAY\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.tap()
-        app/*@START_MENU_TOKEN@*/.otherElements["URL"]/*[[".otherElements[\"BrowserView?WebViewProcessID=46134\"]",".otherElements[\"TopBrowserBar\"]",".buttons[\"Address\"]",".otherElements[\"Address\"]",".otherElements[\"URL\"]",".buttons[\"URL\"]"],[[[-1,4],[-1,3],[-1,5,3],[-1,2,3],[-1,1,2],[-1,0,1]],[[-1,4],[-1,3],[-1,5,3],[-1,2,3],[-1,1,2]],[[-1,4],[-1,3],[-1,5,3],[-1,2,3]],[[-1,4],[-1,3]]],[0]]@END_MENU_TOKEN@*/.tap()
-        primerContainerScrollViewScrollView.children(matching: .other).element(boundBy: 0).children(matching: .other).element.swipeDown()
-        app.staticTexts["PENDING"].tap()
-        app.staticTexts["USE_PRIMER_SDK"].tap()
-        app.staticTexts["EUR 1.79"].tap()
-                
-        
-
-                
-                
-    }
-    
     func testPresentApplePay() throws {
         let pm = Base.paymentMethods.filter({ $0.id == "APPLE_PAY" }).first!
         

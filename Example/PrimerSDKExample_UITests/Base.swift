@@ -154,15 +154,15 @@ class Base: XCTestCase {
         Payment(
             id: "3DS_PAYMENT_CARD",
             environment: .sandbox,
-            currency: "RON",
-            countryCode: "RO",
-            amount: "1.00",
+            currency: "EUR",
+            countryCode: "FR",
+            amount: "105.00",
             expecations: Payment.Expecations(
-                amount: "RON 1.00",
+                amount: "EUR 1.00",
                 surcharge: "Additional fee may apply",
                 webviewImage: nil,
                 webviewTexts: nil,
-                buttonTexts: ["Pay RON 1.00"],
+                buttonTexts: ["Pay € 1.00"],
                 resultScreenTexts: nil
             )
         )

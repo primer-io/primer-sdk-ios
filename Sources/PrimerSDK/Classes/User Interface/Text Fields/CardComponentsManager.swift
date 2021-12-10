@@ -284,10 +284,15 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                                 self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
                                 return
                             }
+                            
+                            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                                self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [PrimerError.clientTokenNull])
+                                return
+                            }
 
                             threeDSService.perform3DS(
                                     paymentMethodToken: paymentMethodToken,
-                                protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
+                                protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2,
                                 beginAuthExtraData: beginAuthExtraData,
                                     sdkDismissed: { () in
 
