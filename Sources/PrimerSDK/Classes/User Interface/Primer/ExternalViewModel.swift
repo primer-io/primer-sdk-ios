@@ -22,7 +22,7 @@ internal class ExternalViewModel: ExternalViewModelProtocol {
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        if state.decodedClientToken.exists {
+        if ClientTokenService.decodedClientToken.exists {
             let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
             vaultService.loadVaultedPaymentMethods({ err in
                 if let err = err {

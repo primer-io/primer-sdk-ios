@@ -12,6 +12,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     var didDismissExternalView: (() -> Void)?
     
     private var session: Any!
+    private var orderId: String?
+    private var confirmBillingAgreementResponse: PayPalConfirmBillingAgreementResponse?
     
     override lazy var title: String = {
         return "PayPal"
@@ -100,10 +102,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-//        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PaymentException.missingClientToken
             throw err
         }
@@ -213,12 +212,13 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             case .CHECKOUT:
                 paypalService.startOrderSession { result in
                     switch result {
-                    case .success(let urlStr):
-                        guard let url = URL(string: urlStr) else {
+                    case .success(let res):
+                        guard let url = URL(string: res.approvalUrl) else {
                             seal.reject(PrimerError.failedToLoadSession)
                             return
                         }
                         
+                        self.orderId = res.orderId
                         seal.fulfill(url)
                         
                     case .failure(let err):
@@ -309,8 +309,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private func generatePaypalPaymentInstrument(_ completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let orderId = state.orderId else {
+            guard let orderId = orderId else {
                 completion(.failure(PrimerError.orderIdMissing))
                 return
             }
@@ -319,8 +318,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             completion(.success(paymentInstrument))
             
         case .VAULT:
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let confirmedBillingAgreement = state.confirmedBillingAgreement else {
+            guard let confirmedBillingAgreement = self.confirmBillingAgreementResponse else {
                 generateBillingAgreementConfirmation { [weak self] err in
                     if let err = err {
                         completion(.failure(err))
@@ -347,7 +345,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             case .failure(let error):
                 log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                 completion(PrimerError.payPalSessionFailed)
-            case .success:
+            case .success(let res):
+                self.confirmBillingAgreementResponse = res
                 completion(nil)
             }
         })

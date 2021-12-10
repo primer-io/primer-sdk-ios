@@ -103,7 +103,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             guard let currency = settings.currency else { return nil }
             
             let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let availablePaymentMethods = state.paymentMethodConfig?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
+            guard let availablePaymentMethods = state.primerConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
             
             return availablePaymentMethods.filter({ $0.type == config.type }).first?.surcharge?.toCurrencyString(currency: currency)
         }

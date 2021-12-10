@@ -10,6 +10,8 @@
 @testable import PrimerSDK
 
 class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
+    var selectedPaymentMethod: PaymentMethodToken?
+    
     var mandate: DirectDebitMandate {
         return DirectDebitMandate()
     }
@@ -26,9 +28,7 @@ class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return []
     }
 
-    var selectedPaymentMethodId: String {
-        return "id"
-    }
+    var selectedPaymentMethodToken: String? = "id"
 
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
 

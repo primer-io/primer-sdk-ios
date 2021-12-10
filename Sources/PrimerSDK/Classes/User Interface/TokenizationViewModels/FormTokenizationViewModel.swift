@@ -226,10 +226,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -397,7 +396,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        if let clientToken = state.accessToken {
+        if let clientToken = state.clientToken {
             completion(clientToken, nil)
         } else {
             completion(nil, PrimerError.clientTokenNull)
@@ -513,11 +512,11 @@ extension CardFormPaymentMethodTokenizationViewModel {
         do {
             let state: AppStateProtocol = DependencyContainer.resolve()
             
-            if state.accessToken != clientToken {
+            if state.clientToken != clientToken {
                 try ClientTokenService.storeClientToken(clientToken)
             }
             
-            let decodedClientToken = state.decodedClientToken!
+            let decodedClientToken = ClientTokenService.decodedClientToken!
             
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)

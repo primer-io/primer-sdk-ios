@@ -26,9 +26,10 @@ class MockPayPalService: PayPalServiceProtocol {
 
     var startOrderSessionCalled = false
 
-    func startOrderSession(_ completion: @escaping (Result<String, Error>) -> Void) {
+    func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
         startOrderSessionCalled = true
-        completion(.success(""))
+        let res = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: "https://primer.io")
+        completion(.success(res))
     }
 }
 
