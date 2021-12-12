@@ -236,6 +236,9 @@ class MerchantCheckoutViewController: UIViewController {
                         "amount": 456
                     ])
                 merchantActions.append(newAction)
+            } else if action.type == "SET_ZIP_CODE" {
+                // do nothing for now
+                print(action.type)
             } else {
                 merchantActions.append(action)
             }

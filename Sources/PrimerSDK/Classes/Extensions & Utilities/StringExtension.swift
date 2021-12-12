@@ -143,6 +143,17 @@ internal extension String {
         let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-")
         return !(self.rangeOfCharacter(from: set.inverted) != nil)
     }
+    
+    var isTypingValidZipCode: Bool? {
+        if isValidZipCode { return true }
+        return nil
+    }
+    
+    var isValidZipCode: Bool {
+        if count < 2 { return false }
+        let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-1234567890")
+        return !(self.rangeOfCharacter(from: set.inverted) != nil)
+    }
 
     var isValidEmail: Bool {
         let emailRegEx = "(?:[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}~-]+(?:\\.[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}" +

@@ -33,10 +33,17 @@ struct PrimerConfiguration: Codable {
     let pciUrl: String?
     let clientSession: ClientSession?
     let paymentMethods: [PaymentMethodConfig]?
+    let checkoutModules: [CheckoutModule]?
     let keys: ThreeDS.Keys?
     
     var isSetByClientSession: Bool {
         return clientSession != nil
+    }
+    
+    var requireZipCode: Bool {
+        checkoutModules?
+            .first { $0.type == "BILLING_ADDRESS" }?
+            .options?["postalCode"] ?? true
     }
     
     public init(from decoder: Decoder) throws {
@@ -46,6 +53,8 @@ struct PrimerConfiguration: Codable {
         self.clientSession = (try? container.decode(ClientSession?.self, forKey: .clientSession)) ?? nil
         let throwables = try container.decode([Throwable<PaymentMethodConfig>].self, forKey: .paymentMethods)
         self.paymentMethods = throwables.compactMap({ $0.value })
+        let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
+        self.checkoutModules = moduleThrowables.compactMap({ $0.value })
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
         
         if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
@@ -82,12 +91,14 @@ struct PrimerConfiguration: Codable {
         pciUrl: String?,
         clientSession: ClientSession?,
         paymentMethods: [PaymentMethodConfig]?,
+        checkoutModules: [CheckoutModule]?,
         keys: ThreeDS.Keys?
     ) {
         self.coreUrl = coreUrl
         self.pciUrl = pciUrl
         self.clientSession = clientSession
         self.paymentMethods = paymentMethods
+        self.checkoutModules = checkoutModules
         self.keys = keys
     }
     
