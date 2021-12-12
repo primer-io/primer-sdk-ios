@@ -58,8 +58,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var amount: Int?
     public var currency: Currency?
     internal var decodedClientToken: DecodedClientToken? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.decodedClientToken
+        return ClientTokenService.decodedClientToken
     }
     internal var paymentMethodsConfig: PrimerConfiguration?
     private(set) public var isLoading: Bool = false
@@ -90,7 +89,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         
         self.cardholderField = cardholderNameField
         
-        if let clientToken = clientToken, let decodedClientToken = clientToken.jwtTokenPayload {
+        if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
         }
     }
@@ -115,8 +114,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 } else if let clientToken = clientToken {
                     do {
                         try ClientTokenService.storeClientToken(clientToken)
-                        let state: AppStateProtocol = DependencyContainer.resolve()
-                        if let decodedClientToken = state.decodedClientToken {
+                        if let decodedClientToken = self.decodedClientToken {
                             seal.fulfill(decodedClientToken)
                         } else {
                             seal.reject(PrimerError.clientTokenNull)
@@ -276,7 +274,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         let state: AppStateProtocol = DependencyContainer.resolve()
                                                 
                         var isThreeDSEnabled: Bool = false
-                        if state.paymentMethodConfig?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                        if state.primerConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                             isThreeDSEnabled = true
                         }
 
@@ -377,8 +375,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     var currency: Currency?
     
     var decodedClientToken: DecodedClientToken? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.decodedClientToken
+        return ClientTokenService.decodedClientToken
     }
     
     var paymentMethodsConfig: PrimerConfiguration?

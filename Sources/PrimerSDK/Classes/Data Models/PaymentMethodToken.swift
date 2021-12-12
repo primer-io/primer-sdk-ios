@@ -130,7 +130,7 @@ struct CardButtonViewModel {
     let paymentMethodType: PaymentInstrumentType
     var surCharge: Int? {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let options = state.paymentMethodConfig?.clientSession?.paymentMethod?.options else { return nil }
+        guard let options = state.primerConfiguration?.clientSession?.paymentMethod?.options else { return nil }
         guard let paymentCardOption = options.filter({ $0["type"] as? String == "PAYMENT_CARD" }).first else { return nil }
         guard let networks = paymentCardOption["networks"] as? [[String: Any]] else { return nil }
         guard let tmpNetwork = networks.filter({ ($0["type"] as? String)?.lowercased() == network.lowercased() }).first else { return nil }

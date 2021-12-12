@@ -173,12 +173,12 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         let env = Environment(rawValue: decodedClientToken.env ?? "")
         
-        guard let paymentMethodConfig = state.paymentMethodConfig else {
+        guard let primerConfiguration = state.primerConfiguration else {
             completion(.failure(PrimerError.configFetchFailed))
             return
         }
         
-        guard let licenseKey = paymentMethodConfig.keys?.netceteraLicenseKey else {
+        guard let licenseKey = primerConfiguration.keys?.netceteraLicenseKey else {
             completion(.failure(PrimerError.threeDSSDKKeyMissing))
             return
         }
@@ -200,7 +200,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
         
         var certs: [Primer3DSCertificate] = []
-        for certificate in paymentMethodConfig.keys?.threeDSecureIoCertificates ?? [] {
+        for certificate in primerConfiguration.keys?.threeDSecureIoCertificates ?? [] {
             let cer = ThreeDS.Cer(cardScheme: certificate.cardNetwork, rootCertificate: certificate.rootCertificate, encryptionKey: certificate.encryptionKey)
             certs.append(cer)
         }

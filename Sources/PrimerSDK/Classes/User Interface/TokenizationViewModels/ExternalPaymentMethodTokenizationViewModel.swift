@@ -303,10 +303,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        if state.decodedClientToken?.isValid != true {
+    override func validate() throws {        
+        if ClientTokenService.decodedClientToken?.isValid != true {
             throw PrimerError.clientTokenNull
         }
     }
@@ -473,9 +471,15 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 if let err = err {
                     seal.reject(err)
                 } else if let clientToken = clientToken {
-                    let state: AppStateProtocol = DependencyContainer.resolve()
-                    if let decodedClientToken = state.decodedClientToken {
-                        if let intent = decodedClientToken.intent {
+                    do {
+                        try ClientTokenService.storeClientToken(clientToken)
+                    } catch {
+                        seal.reject(error)
+                        return
+                    }
+                    
+                    if let decodedClientToken = ClientTokenService.decodedClientToken {
+                        if decodedClientToken.intent != nil {
                             if let redirectUrl = decodedClientToken.redirectUrl,
                                let statusUrl = decodedClientToken.statusUrl {
                                 seal.fulfill(PollingURLs(status: statusUrl, redirect: redirectUrl, complete: nil))
@@ -538,9 +542,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     fileprivate func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        client.poll(clientToken: state.decodedClientToken, url: url.absoluteString) { result in
+        client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
             if self.webViewCompletion == nil {
                 completion(nil, PrimerError.userCancelled)
                 return
@@ -698,7 +701,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
     var failValidation: Bool = false {
         didSet {
             let state: AppStateProtocol = DependencyContainer.resolve()
-            state.decodedClientToken = nil
+            state.clientToken = nil
         }
     }
     var returnedPaymentMethodJson: String?

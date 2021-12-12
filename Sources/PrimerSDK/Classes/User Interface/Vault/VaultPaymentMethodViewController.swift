@@ -5,7 +5,7 @@ import UIKit
 internal class VaultedPaymentInstrumentCell: UITableViewCell {
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private(set) var paymentMethodToken: PaymentMethodToken!
+    private(set) var paymentMethod: PaymentMethodToken!
     var isDeleting: Bool = false {
         didSet {
             if isDeleting {
@@ -88,13 +88,13 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         }
     }
 
-    func configure(paymentMethodToken: PaymentMethodToken, isDeleting: Bool) {
-        self.paymentMethodToken = paymentMethodToken
+    func configure(paymentMethod: PaymentMethodToken, isDeleting: Bool) {
+        self.paymentMethod = paymentMethod
         self.isDeleting = isDeleting
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        isEnabled = viewModel.selectedId == paymentMethodToken.token
+        isEnabled = viewModel.selectedPaymentMethodToken == paymentMethod.token
         horizontalStackView.axis = .horizontal
         horizontalStackView.alignment = .fill
         horizontalStackView.spacing = 16
@@ -109,7 +109,7 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         verticalRightStackView.distribution = .fillEqually
         verticalRightStackView.spacing = 0
 
-        cardNetworkImageView.image = paymentMethodToken.cardButtonViewModel?.imageName.image
+        cardNetworkImageView.image = paymentMethod.cardButtonViewModel?.imageName.image
         cardNetworkImageView.contentMode = .scaleAspectFit
 
         checkmarkImageView.image = isDeleting ? ImageName.delete.image?.withRenderingMode(.alwaysTemplate) : ImageName.check2.image?.withRenderingMode(.alwaysTemplate)
@@ -118,20 +118,20 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         checkmarkImageView.isHidden = isDeleting ? false : !isEnabled
 
         let textColor = theme.paymentMethodButton.text.color
-        cardNetworkLabel.text = paymentMethodToken.cardButtonViewModel?.network
+        cardNetworkLabel.text = paymentMethod.cardButtonViewModel?.network
         cardNetworkLabel.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         cardNetworkLabel.textColor = textColor
 
-        cardholderNameLabel.text = paymentMethodToken.cardButtonViewModel?.cardholder
+        cardholderNameLabel.text = paymentMethod.cardButtonViewModel?.cardholder
         cardholderNameLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         cardholderNameLabel.textColor = textColor
 
-        last4DigitsLabel.text = paymentMethodToken.cardButtonViewModel?.last4
+        last4DigitsLabel.text = paymentMethod.cardButtonViewModel?.last4
         last4DigitsLabel.textAlignment = .right
         last4DigitsLabel.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         last4DigitsLabel.textColor = textColor
 
-        expiryDateLabel.text = paymentMethodToken.cardButtonViewModel?.expiry
+        expiryDateLabel.text = paymentMethod.cardButtonViewModel?.expiry
         expiryDateLabel.textAlignment = .right
         expiryDateLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         expiryDateLabel.textColor = textColor
@@ -229,7 +229,7 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
             withIdentifier: "VaultedPaymentInstrumentCell",
             for: indexPath
         ) as! VaultedPaymentInstrumentCell
-        cell.configure(paymentMethodToken: paymentMethod, isDeleting: isDeleting)
+        cell.configure(paymentMethod: paymentMethod, isDeleting: isDeleting)
         return cell
     }
 
@@ -238,7 +238,7 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
         let paymentMethod = viewModel.paymentMethods[indexPath.row]
 
         if !isDeleting {
-            viewModel.selectedId = paymentMethod.token
+            viewModel.selectedPaymentMethodToken = paymentMethod.token
             tableView.reloadData()
             // It will reload the payment instrument on the Universal Checkout view.
             delegate?.reload()

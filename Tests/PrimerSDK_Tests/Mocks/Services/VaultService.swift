@@ -38,11 +38,11 @@ class MockVaultService: VaultServiceProtocol {
 
     let paymentMethodsIsEmpty: Bool
 
-    var selectedPaymentMethod: String = "tokenId"
+    var selectedPaymentMethodToken: String = "tokenId"
 
-    init(paymentMethodsIsEmpty: Bool = false, selectedPaymentMethod: String = "tokenId") {
+    init(paymentMethodsIsEmpty: Bool = false, selectedPaymentMethodToken: String = "tokenId") {
         self.paymentMethodsIsEmpty = paymentMethodsIsEmpty
-        self.selectedPaymentMethod = selectedPaymentMethod
+        self.selectedPaymentMethodToken = selectedPaymentMethodToken
     }
 
     var loadVaultedPaymentMethodsCalled = false

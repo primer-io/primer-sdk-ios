@@ -13,11 +13,10 @@ internal class VaultService: VaultServiceProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
-    // swiftlint:disable cyclomatic_complexity
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             return completion(PrimerError.vaultFetchFailed)
         }
         
@@ -31,9 +30,9 @@ internal class VaultService: VaultServiceProtocol {
 
             let paymentMethods = state.paymentMethods
 
-            if state.selectedPaymentMethod.isEmpty == true && paymentMethods.isEmpty == false {
-                guard let id = paymentMethods.first?.token else { return }
-                state.selectedPaymentMethod = id
+            if state.selectedPaymentMethodToken == nil && !paymentMethods.isEmpty {
+                guard let firstPaymentMethodToken = paymentMethods.first?.token else { return }
+                state.selectedPaymentMethodToken = firstPaymentMethodToken
             }
 
             completion(nil)
@@ -43,10 +42,8 @@ internal class VaultService: VaultServiceProtocol {
         }
     }
 
-    func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+    func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {        
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             return completion(PrimerError.vaultDeleteFailed)
         }
         
