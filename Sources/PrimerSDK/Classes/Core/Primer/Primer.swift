@@ -157,6 +157,7 @@ public class Primer {
      - Version:
      1.4.0
      */
+    @available(swift, obsoleted: 4.1, message: "Set direct debit details in the client session.")
     public func setDirectDebitDetails(
         firstName: String,
         lastName: String,
@@ -164,14 +165,7 @@ public class Primer {
         iban: String,
         address: Address
     ) {
-        DispatchQueue.main.async {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            state.directDebitMandate.firstName = firstName
-            state.directDebitMandate.lastName = lastName
-            state.directDebitMandate.email = email
-            state.directDebitMandate.iban = iban
-            state.directDebitMandate.address = address
-        }
+
     }
 
     /**

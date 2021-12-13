@@ -49,7 +49,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let vaultedPaymentMethodsResponse):
                 let state: AppStateProtocol = DependencyContainer.resolve()
-                state.selectedPaymentMethod = vaultedPaymentMethodsResponse.data.first?.token ?? ""
+                state.selectedPaymentMethodToken = vaultedPaymentMethodsResponse.data.first?.token
                 completion(.success(vaultedPaymentMethodsResponse))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
@@ -75,8 +75,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken)
         networkService.request(endpoint) { (result: Result<PrimerConfiguration, NetworkServiceError>) in
             switch result {
-            case .success(let paymentMethodConfig):
-                completion(.success(paymentMethodConfig))
+            case .success(let primerConfiguration):
+                completion(.success(primerConfiguration))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.configFetchFailed))
@@ -88,8 +88,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.directDebitCreateMandate(clientToken: clientToken, mandateRequest: mandateRequest)
         networkService.request(endpoint) { (result: Result<DirectDebitCreateMandateResponse, NetworkServiceError>) in
             switch result {
-            case .success(let paymentMethodConfig):
-                completion(.success(paymentMethodConfig))
+            case .success(let primerConfiguration):
+                completion(.success(primerConfiguration))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.configFetchFailed))
@@ -241,7 +241,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
 internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     var response: Data?
-    let throwsError: Bool
+    var throwsError: Bool
     var isCalled: Bool = false
 
     init(with response: Data? = nil, throwsError: Bool = false) {

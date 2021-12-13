@@ -6,7 +6,7 @@ struct PrimerConfiguration: Codable {
         if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state
-            .paymentMethodConfig?
+            .primerConfiguration?
             .paymentMethods
     }
     

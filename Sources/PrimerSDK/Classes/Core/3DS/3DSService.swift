@@ -166,19 +166,19 @@ class ThreeDSService: ThreeDSServiceProtocol {
     ) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             completion(.failure(PrimerError.clientTokenNull))
             return
         }
         
         let env = Environment(rawValue: decodedClientToken.env ?? "")
         
-        guard let paymentMethodConfig = state.paymentMethodConfig else {
+        guard let primerConfiguration = state.primerConfiguration else {
             completion(.failure(PrimerError.configFetchFailed))
             return
         }
         
-        guard let licenseKey = paymentMethodConfig.keys?.netceteraLicenseKey else {
+        guard let licenseKey = primerConfiguration.keys?.netceteraLicenseKey else {
             completion(.failure(PrimerError.threeDSSDKKeyMissing))
             return
         }
@@ -200,7 +200,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
         
         var certs: [Primer3DSCertificate] = []
-        for certificate in paymentMethodConfig.keys?.threeDSecureIoCertificates ?? [] {
+        for certificate in primerConfiguration.keys?.threeDSecureIoCertificates ?? [] {
             let cer = ThreeDS.Cer(cardScheme: certificate.cardNetwork, rootCertificate: certificate.rootCertificate, encryptionKey: certificate.encryptionKey)
             certs.append(cer)
         }
@@ -373,15 +373,13 @@ class ThreeDSService: ThreeDSServiceProtocol {
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
                          threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
                          completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         
-        api.threeDSBeginAuth(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
+        api.threeDSBeginAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -392,14 +390,12 @@ class ThreeDSService: ThreeDSServiceProtocol {
     }
     
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        api.threeDSContinueAuth(clientToken: clientToken, threeDSTokenId: threeDSTokenId) { result in
+        api.threeDSContinueAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId) { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -432,9 +428,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
     }
     
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
@@ -442,13 +436,11 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         api.response = response
         
-        api.threeDSBeginAuth(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
+        api.threeDSBeginAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
     }
     
-    func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+    func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
@@ -456,7 +448,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         api.response = response
         
-        api.threeDSContinueAuth(clientToken: clientToken, threeDSTokenId: threeDSTokenId, completion: completion)
+        api.threeDSContinueAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId, completion: completion)
     }
 }
 

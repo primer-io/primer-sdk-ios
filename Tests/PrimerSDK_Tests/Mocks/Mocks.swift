@@ -178,41 +178,15 @@ let mockPaymentMethodConfig = PrimerConfiguration(
 
 class MockAppState: AppStateProtocol {
     
-    var customerToken: String? = "customerToken"
-
-    var authorizationToken: String? = "authToken"
-
-    var sessionId: String? = "klarnaSessionId123"
-
-    var cardData: CardData = CardData(name: "", number: "", expiryYear: "", expiryMonth: "", cvc: "")
-
-    var directDebitMandate: DirectDebitMandate = DirectDebitMandate(firstName: "", lastName: "", email: "", iban: "", accountNumber: "", sortCode: "", address: nil)
-
-    var directDebitFormCompleted: Bool = false
-
-    var mandateId: String?
-
+    var clientToken: String?
+    var primerConfiguration: PrimerConfiguration?
     var paymentMethods: [PaymentMethodToken] = []
-
-    var selectedPaymentMethod: String = ""
-
-    var decodedClientToken: DecodedClientToken? = mockClientToken
-
-    var paymentMethodConfig: PrimerConfiguration?
-
-    var accessToken: String? = "accessToken"
-
-    var billingAgreementToken: String? = "token"
-
-    var orderId: String? = "oid"
-
-    var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
-
-    var approveURL: String? = "approveUrl"
+    var selectedPaymentMethodToken: String?
+    var selectedPaymentMethod: PaymentMethodToken?
 
     init(
         decodedClientToken: DecodedClientToken? = mockClientToken,
-        paymentMethodConfig: PrimerConfiguration? = PrimerConfiguration(
+        primerConfiguration: PrimerConfiguration? = PrimerConfiguration(
             coreUrl: "url",
             pciUrl: "url",
             clientSession: nil,
@@ -224,8 +198,8 @@ class MockAppState: AppStateProtocol {
             keys: nil
         )
     ) {
-        self.decodedClientToken = decodedClientToken
-        self.paymentMethodConfig = paymentMethodConfig
+        self.clientToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjI2MzQzMTcwODgsImFjY2Vzc1Rva2VuIjoiOTUxODRhNWYtMWMxNS00OGQ0LTk4MzYtYmM4ZWFkZmYzMzFiIiwiYW5hbHl0aWNzVXJsIjoiaHR0cHM6Ly9hbmFseXRpY3MuYXBpLnN0YWdpbmcuY29yZS5wcmltZXIuaW8vbWl4cGFuZWwiLCJpbnRlbnQiOiJDSEVDS09VVCIsImNvbmZpZ3VyYXRpb25VcmwiOiJodHRwczovL2FwaS5zdGFnaW5nLnByaW1lci5pby9jbGllbnQtc2RrL2NvbmZpZ3VyYXRpb24iLCJjb3JlVXJsIjoiaHR0cHM6Ly9hcGkuc3RhZ2luZy5wcmltZXIuaW8iLCJwY2lVcmwiOiJodHRwczovL3Nkay5hcGkuc3RhZ2luZy5wcmltZXIuaW8iLCJlbnYiOiJTVEFHSU5HIiwicGF5bWVudEZsb3ciOiJQUkVGRVJfVkFVTFQifQ.aybIRUso7r9LJcL3pg8_Rg2aVMHDUikcooA3KcCX43g"
+        self.primerConfiguration = primerConfiguration
     }
 }
 
@@ -234,7 +208,7 @@ let mockPayPalBillingAgreement = PayPalConfirmBillingAgreementResponse(billingAg
 class MockLocator {
     static func registerDependencies() {
         let state: AppStateProtocol = MockAppState()
-        state.paymentMethodConfig = mockPaymentMethodConfig
+        state.primerConfiguration = mockPaymentMethodConfig
         DependencyContainer.register(state as AppStateProtocol)
         // register dependencies
         DependencyContainer.register(mockSettings as PrimerSettingsProtocol)
@@ -254,7 +228,7 @@ class MockLocator {
 }
 
 class MockDirectDebitService: DirectDebitServiceProtocol {
-    func createMandate(_ completion: @escaping (Error?) -> Void) {
+    func createMandate(_ directDebitMandate: DirectDebitMandate, completion: @escaping (Error?) -> Void) {
 
     }
 }

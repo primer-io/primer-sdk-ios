@@ -15,7 +15,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var titleLabel: UILabel!
     private var savedPaymentMethodStackView: UIStackView!
     private var payButton: PrimerOldButton!
-    private var selectedPaymentInstrument: PaymentMethodToken?
+    private var selectedPaymentMethod: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
     private var onClientSessionActionCompletion: ((Error?) -> Void)?
@@ -37,8 +37,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         renderSelectedPaymentInstrument()
         renderAvailablePaymentMethods()
         
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let token = state.decodedClientToken else { return }
+        guard ClientTokenService.decodedClientToken.exists else { return }
         let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
         vaultService.loadVaultedPaymentMethods { err in
             self.renderSelectedPaymentInstrument(insertAt: 1)
@@ -75,13 +74,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
-        self.selectedPaymentInstrument = nil
-        if let selectedPaymentInstrument = checkoutViewModel.paymentMethods
-            .first(where: { paymentInstrument in
-            return paymentInstrument.token == checkoutViewModel.selectedPaymentMethodId
-        }), let cardButtonViewModel = selectedPaymentInstrument.cardButtonViewModel {
+        self.selectedPaymentMethod = nil
+        if let selectedPaymentMethod = checkoutViewModel.selectedPaymentMethod, let cardButtonViewModel = selectedPaymentMethod.cardButtonViewModel {
             
-            self.selectedPaymentInstrument = selectedPaymentInstrument
+            self.selectedPaymentMethod = selectedPaymentMethod
             
             if savedPaymentMethodStackView == nil {
                 savedPaymentMethodStackView = UIStackView()
@@ -224,8 +220,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     @objc
     func payButtonTapped() {
-        guard let paymentMethodToken = selectedPaymentInstrument else { return }
-        guard let config = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == paymentMethodToken.paymentInstrumentType.rawValue }).first else {
+        guard let selectedPaymentMethod = selectedPaymentMethod else { return }
+        guard let config = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == selectedPaymentMethod.paymentInstrumentType.rawValue }).first else {
             return
         }
         
@@ -235,7 +231,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         if Primer.shared.delegate?.onClientSessionActions != nil {
             var params: [String: Any] = ["paymentMethodType": config.type.rawValue]
             if config.type == .paymentCard {
-                var network = paymentMethodToken.paymentInstrumentData?.network?.uppercased()
+                var network = selectedPaymentMethod.paymentInstrumentData?.network?.uppercased()
                 if network == nil || network == "UNKNOWN" {
                     network = "OTHER"
                 }
@@ -256,13 +252,13 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                         self.onClientSessionActionCompletion = nil
                     }
                 } else {
-                    self.continuePayment(withVaultedPaymentMethod: paymentMethodToken)
+                    self.continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)
                 }
             }
             
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
-            continuePayment(withVaultedPaymentMethod: paymentMethodToken)
+            continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)
         }
     }
     
@@ -350,15 +346,15 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
         do {
             let state: AppStateProtocol = DependencyContainer.resolve()
             
-            if state.accessToken != clientToken {
+            if state.clientToken != clientToken {
                 try ClientTokenService.storeClientToken(clientToken)
             }
             
-            let decodedClientToken = state.decodedClientToken!
+            let decodedClientToken = ClientTokenService.decodedClientToken!
             
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)
-                guard let paymentMethod = selectedPaymentInstrument else {
+                guard let paymentMethod = selectedPaymentMethod else {
                     DispatchQueue.main.async {
                         self.onClientSessionActionCompletion = nil
                         let err = PrimerError.threeDSFailed
@@ -369,7 +365,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 }
                 
                 let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: ClientTokenService.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
                     case .success(let paymentMethodToken):
                         DispatchQueue.main.async {
