@@ -49,8 +49,6 @@
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		849A28EB275614070037C2D1 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EA275614070037C2D1 /* Networking.swift */; };
 		849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */; };
-		849A28EF2757A9070037C2D1 /* PaymentCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EE2757A9070037C2D1 /* PaymentCard.swift */; };
-		849AFD12275A691000A1F4CB /* ApplePay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849AFD11275A691000A1F4CB /* ApplePay.swift */; };
 		849AFD14275A725600A1F4CB /* ResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849AFD13275A725600A1F4CB /* ResultViewController.swift */; };
 		CE065FD4AE538F5B4313EA80 /* Pods_PrimerSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA9AB433B6090C8D528405C8 /* Pods_PrimerSDK_Tests.framework */; };
 /* End PBXBuildFile section */
@@ -140,9 +138,7 @@
 		78CC4E38FC80A4F93E836524 /* Pods-PrimerSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		849A28EA275614070037C2D1 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalPaymentMethods.swift; sourceTree = "<group>"; };
-		849A28EE2757A9070037C2D1 /* PaymentCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentCard.swift; sourceTree = "<group>"; };
 		849AFD13275A725600A1F4CB /* ResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultViewController.swift; sourceTree = "<group>"; };
-		849AFD11275A691000A1F4CB /* ApplePay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePay.swift; sourceTree = "<group>"; };
 		AA9AB433B6090C8D528405C8 /* Pods_PrimerSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2DD3ED0696BA60BF6000E28 /* Pods-PrimerSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		DE6E9DA66F8C8A26248777C8 /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -271,8 +267,6 @@
 				15300DB8267A1211009A1B9C /* Vault.swift */,
 				15300DBA267A1646009A1B9C /* VaultKlarna.swift */,
 				849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */,
-				849A28EE2757A9070037C2D1 /* PaymentCard.swift */,
-				849AFD11275A691000A1F4CB /* ApplePay.swift */,
 			);
 			path = PrimerSDKExample_UITests;
 			sourceTree = "<group>";
@@ -655,8 +649,6 @@
 				849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */,
 				1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */,
 				15300DBB267A1646009A1B9C /* VaultKlarna.swift in Sources */,
-				849AFD12275A691000A1F4CB /* ApplePay.swift in Sources */,
-				849A28EF2757A9070037C2D1 /* PaymentCard.swift in Sources */,
 				151B098C267A276100FB49B8 /* Vault.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
