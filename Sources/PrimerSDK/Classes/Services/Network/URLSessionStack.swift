@@ -24,6 +24,31 @@ internal class URLSessionStack: NetworkService {
 
     // swiftlint:disable function_body_length
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) {
+        var urlStr: String?
+        if let baseUrl = endpoint.baseURL {
+            urlStr = baseUrl + endpoint.path
+        }
+        
+        let reqEvent = Analytics.Event(
+            eventType: .network,
+            properties: Analytics.Event.Properties(
+                action: nil,
+                callType: .requestStart,
+                errorBody: nil,
+                extra: nil,
+                extraProperties: nil,
+                id: nil,
+                message: nil,
+                messageType: nil,
+                method: endpoint.method,
+                objectType: nil,
+                place: nil,
+                responseCode: nil,
+                severity: .info,
+                stacktrace: nil,
+                url: urlStr))
+        Analytics.Service.record(event: reqEvent)
+        
         guard let url = url(for: endpoint) else {
             completion(.failure(.invalidURL))
             return
@@ -62,6 +87,26 @@ internal class URLSessionStack: NetworkService {
         #endif
 
         let dataTask = session.dataTask(with: request) { data, response, error in
+            let resEvent = Analytics.Event(
+                eventType: .network,
+                properties: Analytics.Event.Properties(
+                    action: nil,
+                    callType: .requestEnd,
+                    errorBody: nil,
+                    extra: nil,
+                    extraProperties: nil,
+                    id: nil,
+                    message: nil,
+                    messageType: nil,
+                    method: endpoint.method,
+                    objectType: nil,
+                    place: nil,
+                    responseCode: (response as? HTTPURLResponse)?.statusCode,
+                    severity: .info,
+                    stacktrace: nil,
+                    url: urlStr))
+            Analytics.Service.record(event: resEvent)
+            
             #if DEBUG
             msg = ""
 
