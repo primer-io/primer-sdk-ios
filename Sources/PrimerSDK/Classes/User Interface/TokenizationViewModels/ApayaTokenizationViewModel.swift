@@ -331,12 +331,7 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
         decidePolicyFor navigationAction: WKNavigationAction,
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ) {
-        let allowedHosts: [String] = [
-            "primer.io",
-            "livedemostore.primer.io"
-        ]
-        
-        if let host = navigationAction.request.url?.host, allowedHosts.contains(host) {
+        if let host = navigationAction.request.url?.host, WebViewUtil.allowedHostsContain(host) {
             do {
                 let apayaWebViewResponse = try Apaya.WebViewResponse(url: navigationAction.request.url!)
                 webViewCompletion?(apayaWebViewResponse, nil)
