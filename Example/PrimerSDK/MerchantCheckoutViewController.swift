@@ -134,7 +134,7 @@ class MerchantCheckoutViewController: UIViewController {
         )
         
         Primer.shared.configure(settings: vaultPayPalSettings)
-        Primer.shared.showPaymentMethod(.payPal, withIntent: .vault, on: self)
+        Primer.shared.showPaymentMethod(.payPal, withIntent: .checkout, on: self)
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {

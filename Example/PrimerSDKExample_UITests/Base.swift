@@ -342,7 +342,7 @@ class Base: XCTestCase {
             }
             
             if !expectations.isEmpty {
-                wait(for: expectations, timeout: 3)
+                wait(for: expectations, timeout: 15)
             }
         }
     }

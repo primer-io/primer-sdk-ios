@@ -62,6 +62,42 @@ class UniversalCheckout: XCTestCase {
             XCTAssert(!savedPaymentMethodView.exists, "Saved payment method view should not exist")
         }
     }
+    
+    func testPresentApplePay() throws {
+        let pm = Base.paymentMethods.filter({ $0.id == "APPLE_PAY" }).first!
+        
+        try base.testInitialize(
+            env: pm.environment.rawValue,
+            customerId: nil,
+            phoneNumber: nil,
+            countryCode: pm.countryCode,
+            currency: pm.currency,
+            amount: pm.amount,
+            performPayment: true)
+
+        try base.openUniversalCheckout()
+
+        if let amountExpectation = pm.expecations?.amount {
+            let amountText = app.staticTexts[amountExpectation]
+            XCTAssert(amountText.exists, "Amount '\(amountExpectation)' should exist")
+        }
+        
+        let scrollView = app.scrollViews["primer_container_scroll_view"]
+        if let surchargeExpectation = pm.expecations?.surcharge {
+            Base.validateSurcharge(surchargeExpectation, forPaymentMethod: pm.id)
+        }
+        
+        let applePayButton = scrollView.buttons[pm.id]
+        applePayButton.tap()
+        
+        let applePay = XCUIApplication(bundleIdentifier: "com.apple.PassbookUIService")
+        let applePayExists = expectation(for: Expectation.exists, evaluatedWith: applePay, handler: nil)
+        wait(for: [applePayExists], timeout: 15.0)
+        _ = applePay.wait(for: .runningForeground, timeout: 5)
+
+        applePay.buttons["Pay Total, €1.19"].tap()
+    }
+
 
     func testPayPal() throws {
         let payment = Base.paymentMethods.filter({ $0.id == "PAYPAL" }).first!
