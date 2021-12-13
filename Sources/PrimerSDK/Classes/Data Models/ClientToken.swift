@@ -2,7 +2,7 @@
 
 import Foundation
 
-struct DecodedClientToken: Decodable {
+struct DecodedClientToken: Codable {
     var accessToken: String?
     var exp: Int?
     var expDate: Date? {

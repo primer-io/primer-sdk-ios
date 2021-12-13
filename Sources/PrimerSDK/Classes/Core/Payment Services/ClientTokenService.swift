@@ -47,8 +47,24 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
             // That's because the clientToken returned for dynamic 3DS doesn't contain an env.
             jwtTokenPayload.env = previousEnv
         }
-
-        state.clientToken = clientToken
+        
+        var segments: [String] = clientToken.split(separator: ".").compactMap({ String($0) })
+        
+        var tmpSecondSegment: String?
+        if let data = try? JSONEncoder().encode(jwtTokenPayload),
+           let dataStr = String(data: data.base64EncodedData(), encoding: .utf8) {
+            tmpSecondSegment = dataStr
+        }
+        
+        if segments.count > 1, let tmpSecondSegment = tmpSecondSegment {
+            segments[1] = tmpSecondSegment
+        } else if segments.count == 1, let tmpSecondSegment = tmpSecondSegment {
+            segments.append(tmpSecondSegment)
+        }
+        
+        let modifiedClientToken = segments.joined(separator: ".")
+        
+        state.clientToken = modifiedClientToken
     }
     
     static func resetClientToken() {
