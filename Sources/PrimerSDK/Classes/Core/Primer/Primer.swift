@@ -16,6 +16,7 @@ public class Primer {
     public var delegate: PrimerDelegate? // TODO: should this be weak?
     private(set) var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
+    internal var checkoutSessionId: String?
 
     // MARK: - INITIALIZATION
 
@@ -34,8 +35,6 @@ public class Primer {
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
         }
-        
-        
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -182,6 +181,8 @@ public class Primer {
     }
     
     public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil) {
+        checkoutSessionId = String.randomString(length: 16)
+        
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
         }
@@ -191,6 +192,8 @@ public class Primer {
     }
     
     public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
+        checkoutSessionId = String.randomString(length: 16)
+        
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
         }
@@ -201,6 +204,8 @@ public class Primer {
     
     // swiftlint:disable cyclomatic_complexity
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
+        checkoutSessionId = String.randomString(length: 16)
+        
         switch (paymentMethod, intent) {
         case (.adyenAlipay, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenAlipay)
@@ -342,6 +347,8 @@ public class Primer {
 
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
+        checkoutSessionId = nil
+        
         flow = nil
         ClientTokenService.resetClientToken()
         
@@ -353,6 +360,8 @@ public class Primer {
                 Primer.shared.delegate?.onCheckoutDismissed?()
             })
         }
+        
+        Analytics.Service.sync()
     }
     
     public func show(flow: PrimerSessionFlow) {
