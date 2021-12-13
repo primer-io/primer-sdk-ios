@@ -138,7 +138,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addApayaButtonTapped(_ sender: Any) {
         vaultApayaSettings = PrimerSettings(
-            currency: .GBP,
+            currency: currency,
             isFullScreenOnly: true,
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
@@ -267,90 +267,103 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showUniversalCheckout(on: self)
     }
     
+    var clientToken: String?
+    
     // MARK: - Helpers
     
-    func requestClientToken(_ completion: @escaping (String?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/clientToken") else {
+    func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
+        guard let url = URL(string: "\(endpoint)/api/client-session") else {
             return completion(nil, NetworkError.missingParams)
         }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(
-            customerId: (customerId ?? "").isEmpty ? "customer_id" : customerId!,
-            customerCountryCode: countryCode,
-            environment: environment)
+        let bodyData: Data!
         
         do {
-            request.httpBody = try JSONEncoder().encode(body)
+            if let requestBodyJson = requestBody.dictionaryValue {
+                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
+            } else {
+                completion(nil, NetworkError.serializationError)
+                return
+            }
         } catch {
-            return completion(nil, NetworkError.missingParams)
+            completion(nil, NetworkError.missingParams)
+            return
         }
         
-        callApi(request, completion: { result in
-            switch result {
-            case .success(let data):
-                do {
-                    if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
-                        completion(token, nil)
-                        print("🔥 token: \(token)")
+        let networking = Networking()
+        networking.request(
+            environment: environment,
+            apiVersion: .v3,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                            self.clientToken = token
+                            completion(token, nil)
+                        } else {
+                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                            completion(nil, err)
+                        }
+                        
+                    } catch {
+                        completion(nil, error)
+                    }
+                case .failure(let err):
+                    completion(nil, err)
+                }
+            }
+    }
+    
+    var paymentResponsesData: [Data] = []
+    
+    func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
+        guard let url = URL(string: "\(endpoint)/api/payments/") else {
+            return completion(nil, NetworkError.missingParams)
+        }
+                
+        let body = Payment.Request(paymentMethodToken: paymentMethod.token)
+        
+        var bodyData: Data!
+        
+        do {
+            bodyData = try JSONEncoder().encode(body)
+        } catch {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        let networking = Networking()
+        networking.request(
+            environment: environment,
+            apiVersion: .v2,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    if let dic = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                        completion(dic, nil)
                     } else {
-                        let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                        let err = NetworkError.invalidResponse
                         completion(nil, err)
                     }
                     
-                } catch {
-                    completion(nil, error)
-                }
-            case .failure(let err):
-                completion(nil, err)
-            }
-        })
-    }
-    
-    func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/payments") else {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-        
-        let type = paymentMethod.paymentInstrumentType
-        
-        var request = URLRequest(url: url)
-        
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let body = PaymentRequest(
-            environment: environment,
-            paymentMethod: paymentMethod.token,
-            amount: amount,
-            type: type.rawValue,
-            currencyCode: currency,
-            countryCode: countryCode)
-        
-        do {
-            request.httpBody = try JSONEncoder().encode(body)
-        } catch {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-        
-        callApi(request) { (result) in
-            switch result {
-            case .success(let data):
-                if let dic = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                    completion(dic, nil)
-                } else {
-                    let err = NetworkError.invalidResponse
+                    let paymentResponse = try? JSONDecoder().decode(Payment.Response.self, from: data)
+                    if paymentResponse != nil {
+                        self.paymentResponsesData.append(data)
+                    }
+                    
+                case .failure(let err):
                     completion(nil, err)
                 }
-                
-            case .failure(let err):
-                completion(nil, err)
             }
-        }
     }
     
 }
@@ -360,7 +373,109 @@ class MerchantCheckoutViewController: UIViewController {
 extension MerchantCheckoutViewController: PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
-        requestClientToken(completion)
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
+        
+        let clientSessionRequestBody = ClientSessionRequestBody(
+            customerId: customerId,
+            orderId: "ios_order_id",
+            currencyCode: currency,
+            amount: nil,
+            metadata: ["key": "val"],
+            customer: ClientSessionRequestBody.Customer(
+                firstName: "John",
+                lastName: "Smith",
+                emailAddress: "john@primer.io",
+                mobileNumber: "+4478888888888",
+                billingAddress: Address(
+                    firstName: "John",
+                    lastName: "Smith",
+                    addressLine1: "65 York Road",
+                    addressLine2: nil,
+                    city: "London",
+                    state: nil,
+                    countryCode: "GB",
+                    postalCode: "NW06 4OM"),
+                shippingAddress: Address(
+                    firstName: "John",
+                    lastName: "Smith",
+                    addressLine1: "9446 Richmond Road",
+                    addressLine2: nil,
+                    city: "London",
+                    state: nil,
+                    countryCode: "GB",
+                    postalCode: "EC53 8BT")
+            ),
+            order: ClientSessionRequestBody.Order(
+                countryCode: countryCode,
+                lineItems: [
+                    ClientSessionRequestBody.Order.LineItem(
+                        itemId: "_item_id_0",
+                        description: "Item",
+                        amount: amount,
+                        quantity: 1)
+                ]),
+            paymentMethod: ClientSessionRequestBody.PaymentMethod(
+                vaultOnSuccess: true,
+                options: [
+                    "APPLE_PAY": [
+                        "surcharge": [
+                            "amount": 19
+                        ]
+                    ],
+                    "PAY_NL_BANCONTACT": [
+                        "surcharge": [
+                            "amount": 29
+                        ]
+                    ],
+                    "PAY_NL_IDEAL": [
+                        "surcharge": [
+                            "amount": 39
+                        ]
+                    ],
+                    "PAYPAL": [
+                        "surcharge": [
+                            "amount": 49
+                        ]
+                    ],
+                    "ADYEN_TWINT": [
+                        "surcharge": [
+                            "amount": 59
+                        ]
+                    ],
+                    "ADYEN_IDEAL": [
+                        "surcharge": [
+                            "amount": 69
+                        ]
+                    ],
+                    "ADYEN_GIROPAY": [
+                        "surcharge": [
+                            "amount": 79
+                        ]
+                    ],
+                    "BUCKAROO_BANCONTACT": [
+                        "surcharge": [
+                            "amount": 89
+                        ]
+                    ],
+                    "PAYMENT_CARD": [
+                        "networks": [
+                            "VISA": [
+                                "surcharge": [
+                                    "amount": 109
+                                ]
+                            ],
+                            "MASTERCARD": [
+                                "surcharge": [
+                                    "amount": 129
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            )
+        )
+        
+        requestClientSession(requestBody: clientSessionRequestBody, completion: completion)
     }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol) {

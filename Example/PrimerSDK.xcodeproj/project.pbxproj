@@ -45,6 +45,8 @@
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
+		848361A12767B85600273DB3 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848361A02767B85600273DB3 /* Networking.swift */; };
+		848361A22767E50400273DB3 /* WebViewUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3922C9270DEC2F001BDCCA /* WebViewUtilTests.swift */; };
 		9CF24E32326B97712CE2EB2E /* Pods_PrimerSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 929756388B919ACE3B4DA6D6 /* Pods_PrimerSDK_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -129,6 +131,7 @@
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* PrimerSDK_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimerSDK_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		836F9D0A52451045BFDAE31B /* Pods-PrimerSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		848361A02767B85600273DB3 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		929756388B919ACE3B4DA6D6 /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCC01259D9B0116F72F3882C /* Pods_PrimerSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9482F9D9C5A2B5300BA0A0B /* Pods-PrimerSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -310,6 +313,7 @@
 			children = (
 				1DC7EE13261FA3D400BCBFFC /* CreateClientToken.swift */,
 				15B2E64726F8A9EE005B8343 /* Apaya.swift */,
+				848361A02767B85600273DB3 /* Networking.swift */,
 			);
 			name = "Data Models";
 			sourceTree = "<group>";
@@ -658,6 +662,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				15F97C682624488700DCB3BA /* MerchantCheckoutViewController.swift in Sources */,
+				848361A12767B85600273DB3 /* Networking.swift in Sources */,
 				15F97C632624480500DCB3BA /* AppViewController.swift in Sources */,
 				15F97C7D2624730800DCB3BA /* UIViewController+API.swift in Sources */,
 				15F97C772624718800DCB3BA /* PaymentMethodCell.swift in Sources */,
@@ -688,6 +693,7 @@
 				1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */,
 				1582B984260A3F2900C80BD7 /* TokenizationService.swift in Sources */,
 				1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */,
+				848361A22767E50400273DB3 /* WebViewUtilTests.swift in Sources */,
 				1582B982260A3F2900C80BD7 /* VaultService.swift in Sources */,
 				1582B97D260A3F2900C80BD7 /* VaultCheckoutViewModel.swift in Sources */,
 				1582B987260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift in Sources */,

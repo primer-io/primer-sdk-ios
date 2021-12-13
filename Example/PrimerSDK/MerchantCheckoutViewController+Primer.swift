@@ -119,18 +119,4 @@ extension MerchantCheckoutViewController {
         )
     }
     
-    internal func generateBusinessDetails() -> BusinessDetails {
-        return BusinessDetails(
-            name: "My Business",
-            address: Address(
-                addressLine1: "107 Rue",
-                addressLine2: nil,
-                city: "Paris",
-                state: nil,
-                countryCode: "FR",
-                postalCode: "75001"
-            )
-        )
-    }
-    
 }
