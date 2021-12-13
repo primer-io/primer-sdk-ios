@@ -347,8 +347,9 @@ public class Primer {
 
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
-        checkoutSessionId = nil
+        Analytics.Service.sync()
         
+        checkoutSessionId = nil
         flow = nil
         ClientTokenService.resetClientToken()
         
@@ -360,8 +361,6 @@ public class Primer {
                 Primer.shared.delegate?.onCheckoutDismissed?()
             })
         }
-        
-        Analytics.Service.sync()
     }
     
     public func show(flow: PrimerSessionFlow) {

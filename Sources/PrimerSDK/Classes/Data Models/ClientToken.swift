@@ -2,7 +2,7 @@
 
 import Foundation
 
-struct DecodedClientToken: Decodable {
+struct DecodedClientToken: Codable {
     var accessToken: String?
     var analyticsUrl: String?
     var configurationUrl: String?
@@ -28,29 +28,6 @@ struct DecodedClientToken: Decodable {
         } catch {
             return false
         }
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case accessToken, analyticsUrl, exp, configurationUrl, paymentFlow, threeDSecureInitUrl, threeDSecureToken, coreUrl, pciUrl,
-             env, intent, statusUrl, redirectUrl
-    }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        accessToken = (try? container.decode(String.self, forKey: .accessToken)) ?? nil
-        analyticsUrl = (try? container.decode(String.self, forKey: .analyticsUrl)) ?? nil
-        configurationUrl = (try? container.decode(String.self, forKey: .configurationUrl)) ?? nil
-        paymentFlow = (try? container.decode(String.self, forKey: .paymentFlow)) ?? nil
-        threeDSecureInitUrl = (try? container.decode(String.self, forKey: .threeDSecureInitUrl)) ?? nil
-        threeDSecureToken = (try? container.decode(String.self, forKey: .threeDSecureToken)) ?? nil
-        coreUrl = (try? container.decode(String.self, forKey: .coreUrl)) ?? nil
-        pciUrl = (try? container.decode(String.self, forKey: .pciUrl)) ?? nil
-        env = (try? container.decode(String.self, forKey: .env)) ?? nil
-        intent = (try? container.decode(String.self, forKey: .intent)) ?? nil
-        statusUrl = (try? container.decode(String.self, forKey: .statusUrl)) ?? nil
-        redirectUrl = (try? container.decode(String.self, forKey: .redirectUrl)) ?? nil
-        exp = try? container.decode(Int.self, forKey: .exp)
     }
     
     init(
