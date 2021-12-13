@@ -20,7 +20,6 @@ class Analytics {
         var customerId: String?
         var device: Device = Device()
         var eventType: Analytics.Event.`Type`
-        var isSynced: Bool = false
         var primerAccountId: String?
         var properties: [String: String]?
         let sdkType: String = "IOS_NATIVE"

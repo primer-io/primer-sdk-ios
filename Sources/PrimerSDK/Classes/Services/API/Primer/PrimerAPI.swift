@@ -31,6 +31,8 @@ enum PrimerAPI: Endpoint {
     
     // Generic
     case poll(clientToken: DecodedClientToken?, url: String)
+    
+    case genericRequest(url: URL, method: HTTPMethod, headers: [String: String]?, queryParameters: [String: String]?, body: Data?)
 }
 
 internal extension PrimerAPI {
@@ -67,6 +69,8 @@ internal extension PrimerAPI {
             return urlStr
         case .poll(_, let url):
             return url
+        case .genericRequest(let url, _, _, _, _):
+            return url.absoluteString
         }
     }
     // MARK: Path
@@ -105,6 +109,8 @@ internal extension PrimerAPI {
             return "/adyen/checkout"
         case .poll:
             return ""
+        case .genericRequest:
+            return ""
         }
     }
 
@@ -137,8 +143,10 @@ internal extension PrimerAPI {
              .apayaCreateSession,
              .adyenBanksList:
             return .post
-        case .poll(_, let url):
+        case .poll:
             return .get
+        case .genericRequest(_, let method, _, _, _):
+            return method
         }
     }
 
@@ -176,13 +184,9 @@ internal extension PrimerAPI {
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
-        }
-        
-        switch self {
-        case .fetchConfiguration:
-            tmpHeaders["X-Api-Version"] = "2021-10-19"
-        default:
-            break
+            
+        case .genericRequest(_, _, let headers, _, _):
+            return headers
         }
 
         return tmpHeaders
@@ -192,6 +196,8 @@ internal extension PrimerAPI {
     
     var queryParameters: [String: String]? {
         switch self {
+        case .genericRequest(_, _, _, let queryParameters, _):
+            return queryParameters
         default:
             return nil
         }
@@ -237,6 +243,8 @@ internal extension PrimerAPI {
              .threeDSContinueRemoteAuth,
              .poll:
             return nil
+        case .genericRequest(_, _, _, _, let body):
+            return body
         }
     }
 

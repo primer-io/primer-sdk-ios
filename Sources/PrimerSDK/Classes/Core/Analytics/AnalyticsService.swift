@@ -63,14 +63,8 @@ extension Analytics {
             // Merge them
             tmpEvents.append(contentsOf: events)
             
-            // Make sure they are unique
-            let uniqueEvents = tmpEvents.unique(map: { $0.checkoutSessionId })
-            
-            // Remove synced events
-            let filteredEvents = uniqueEvents.filter({ $0.isSynced == false })
-            
             // Sort them
-            let sortedEvents = filteredEvents.sorted(by: { $0.createdAt < $1.createdAt })
+            let sortedEvents = tmpEvents.sorted(by: { $0.createdAt < $1.createdAt })
             
             try? Analytics.Service.save(events: sortedEvents)
         }
@@ -86,27 +80,29 @@ extension Analytics {
             if !enforce && !isSyncAllowed { return }
 
             let storedEvents = Analytics.Service.loadEvents()
-            let isSuccess = false
             let queue = DispatchQueue(label: "primer.reporting", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
 
-            let firstBatch = storedEvents
-            let firstBatchIds = firstBatch.compactMap({ $0.clientSessionId })
-            queue.async {
-                if isSuccess {
-                    for var e in storedEvents {
-                        if !firstBatchIds.contains(e.clientSessionId ?? "") { continue }
-                        e.isSynced = true
-                    }
-
-                    let remainingEvents = storedEvents.filter({ $0.isSynced == false })
-
-                    if remainingEvents.isEmpty { return }
-                    try! Analytics.Service.save(events: remainingEvents)
-                    Analytics.Service.sync(enforce: enforce, batchSize: batchSize)
-                }
+            guard let analyticsUrlStr = ClientTokenService.decodedClientToken?.analyticsUrl, let analyticsUrl = URL(string: analyticsUrlStr) else {
+                return
             }
+            
+            guard let body = try? JSONEncoder().encode(storedEvents) else { return }
+            
+            let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            client.genericRequest(
+                url: analyticsUrl,
+                method: .post,
+                headers: nil,
+                queryParameters: nil,
+                body: body) { result in
+                    
+                }
         }
     }
+}
+
+extension PrimerAPI {
+//    case gen
 }
 
 #endif

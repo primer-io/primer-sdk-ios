@@ -4,22 +4,23 @@ import Foundation
 
 struct DecodedClientToken: Decodable {
     var accessToken: String?
+    var analyticsUrl: String?
+    var configurationUrl: String?
+    var coreUrl: String?
+    var env: String?
     var exp: Int?
     var expDate: Date? {
         guard let exp = exp else { return nil }
         return Date(timeIntervalSince1970: TimeInterval(exp))
     }
-    var configurationUrl: String?
+    var intent: String?
     var paymentFlow: String?
+    var pciUrl: String?
+    var redirectUrl: String?
+    var statusUrl: String?
     var threeDSecureInitUrl: String?
     var threeDSecureToken: String?
-    var coreUrl: String?
-    var pciUrl: String?
-    var env: String?
-    var intent: String?
-    var statusUrl: String?
-    var redirectUrl: String?
-    
+
     var isValid: Bool {
         do {
             try validate()
@@ -30,7 +31,7 @@ struct DecodedClientToken: Decodable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case accessToken, exp, configurationUrl, paymentFlow, threeDSecureInitUrl, threeDSecureToken, coreUrl, pciUrl,
+        case accessToken, analyticsUrl, exp, configurationUrl, paymentFlow, threeDSecureInitUrl, threeDSecureToken, coreUrl, pciUrl,
              env, intent, statusUrl, redirectUrl
     }
     
@@ -38,6 +39,7 @@ struct DecodedClientToken: Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         accessToken = (try? container.decode(String.self, forKey: .accessToken)) ?? nil
+        analyticsUrl = (try? container.decode(String.self, forKey: .analyticsUrl)) ?? nil
         configurationUrl = (try? container.decode(String.self, forKey: .configurationUrl)) ?? nil
         paymentFlow = (try? container.decode(String.self, forKey: .paymentFlow)) ?? nil
         threeDSecureInitUrl = (try? container.decode(String.self, forKey: .threeDSecureInitUrl)) ?? nil

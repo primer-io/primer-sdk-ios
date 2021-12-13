@@ -37,15 +37,26 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         }
         
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let previousEnv = ClientTokenService.decodedClientToken?.env
+        let previousJwtTokenPayload = ClientTokenService.decodedClientToken
+
+        if jwtTokenPayload.analyticsUrl == nil {
+            jwtTokenPayload.analyticsUrl = previousJwtTokenPayload?.analyticsUrl
+        }
         
-        jwtTokenPayload.configurationUrl = jwtTokenPayload.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
-        jwtTokenPayload.coreUrl = jwtTokenPayload.coreUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
-        jwtTokenPayload.pciUrl = jwtTokenPayload.pciUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        if jwtTokenPayload.configurationUrl == nil {
+            jwtTokenPayload.configurationUrl = previousJwtTokenPayload?.configurationUrl
+        }
+        
+        if jwtTokenPayload.coreUrl == nil {
+            jwtTokenPayload.coreUrl = previousJwtTokenPayload?.coreUrl
+        }
         
         if jwtTokenPayload.env == nil {
-            // That's because the clientToken returned for dynamic 3DS doesn't contain an env.
-            jwtTokenPayload.env = previousEnv
+            jwtTokenPayload.env = previousJwtTokenPayload?.env
+        }
+        
+        if jwtTokenPayload.pciUrl == nil {
+            jwtTokenPayload.pciUrl = previousJwtTokenPayload?.pciUrl
         }
 
         state.clientToken = clientToken
