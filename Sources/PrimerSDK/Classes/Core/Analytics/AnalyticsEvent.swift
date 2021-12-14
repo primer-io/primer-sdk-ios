@@ -17,6 +17,7 @@ extension Analytics.Event {
         case message = "MESSAGE_EVENT"
         case networkCall = "NETWORK_CALL_EVENT"
         case networkConnectivity = "NETWORK_CONNECTIVITY_EVENT"
+        case sdkEvent = "SDK_FUNCTION_EVENT"
         case timerEvent = "TIMER_EVENT"
     }
     

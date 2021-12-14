@@ -59,14 +59,6 @@ public class Primer {
     
     private var primerWindow: UIWindow?
     
-    public func testAutolayout() {
-        primerWindow = UIWindow(frame: UIScreen.main.bounds)
-        primerWindow!.rootViewController = primerRootVC
-        primerWindow!.backgroundColor = UIColor.clear
-        primerWindow!.windowLevel = UIWindow.Level.normal
-        primerWindow!.makeKeyAndVisible()
-    }
-    
     /**
      Set or reload all SDK dependencies.
      
@@ -113,6 +105,13 @@ public class Primer {
                 DependencyContainer.register(theme as PrimerThemeProtocol)
                 DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
             }
+            
+            let event = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: nil))
+            Analytics.Service.record(event: event)
         }
     }
 
@@ -125,6 +124,16 @@ public class Primer {
      1.4.0
      */
     public func setFormTopTitle(_ text: String, for formType: PrimerFormType) {
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "title": text,
+                    "formType": formType.rawValue
+                ]))
+        Analytics.Service.record(event: event)
+        
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
             let theme = themeProtocol as! PrimerTheme
@@ -141,6 +150,16 @@ public class Primer {
      1.4.0
      */
     public func setFormMainTitle(_ text: String, for formType: PrimerFormType) {
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "title": text,
+                    "formType": formType.rawValue
+                ]))
+        Analytics.Service.record(event: event)
+        
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
             let theme = themeProtocol as! PrimerTheme
@@ -177,11 +196,29 @@ public class Primer {
      */
     @available(*, deprecated, message: "Use showUniversalCheckout or showVaultManager instead.")
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "flow": flow.internalSessionFlow.rawValue
+                ]))
+        Analytics.Service.record(event: event)
+        
         show(flow: flow)
     }
     
     public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil) {
         checkoutSessionId = String.randomString(length: 32)
+        
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "flow": PrimerInternalSessionFlow.checkout.rawValue
+                ]))
+        Analytics.Service.record(event: event)
         
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
@@ -193,6 +230,15 @@ public class Primer {
     
     public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
         checkoutSessionId = String.randomString(length: 32)
+        
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "flow": PrimerInternalSessionFlow.vault.rawValue
+                ]))
+        Analytics.Service.record(event: event)
         
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
@@ -325,6 +371,15 @@ public class Primer {
             return
         }
         
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "flow": PrimerInternalSessionFlow.vault.rawValue
+                ]))
+        Analytics.Service.record(event: event)
+        
         presentingViewController = viewController
         show(flow: flow!)
     }
@@ -339,6 +394,13 @@ public class Primer {
      1.4.0
      */
     public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: nil))
+        Analytics.Service.record(event: event)
+        
         DispatchQueue.main.async {
             let externalViewModel: ExternalViewModelProtocol = DependencyContainer.resolve()
             externalViewModel.fetchVaultedPaymentMethods(completion)
@@ -347,6 +409,13 @@ public class Primer {
 
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: nil))
+        Analytics.Service.record(event: event)
+        
         Analytics.Service.sync()
         
         checkoutSessionId = nil
@@ -365,6 +434,13 @@ public class Primer {
     
     public func show(flow: PrimerSessionFlow) {
         self.flow = flow
+        
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: nil))
+        Analytics.Service.record(event: event)
         
         DispatchQueue.main.async {
             if self.primerRootVC == nil {
