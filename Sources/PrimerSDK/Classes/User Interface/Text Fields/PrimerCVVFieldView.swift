@@ -29,6 +29,32 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         }
     }
     
+    public override func textFieldDidBeginEditing(_ textField: UITextField) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: nil,
+                extra: "cvv textfield",
+                objectType: .textField,
+                objectId: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+    }
+    
+    public override func textFieldDidEndEditing(_ textField: UITextField) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .blur,
+                context: nil,
+                extra: "cvv textfield",
+                objectType: .textField,
+                objectId: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+    }
+    
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField._text ?? ""

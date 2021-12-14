@@ -24,6 +24,17 @@ internal class ErrorViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: nil,
+                extra: nil,
+                objectType: .view,
+                objectId: "\(Self.self)",
+                place: .failureScreen))
+        Analytics.Service.record(event: viewEvent)
 
         (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
 

@@ -23,6 +23,17 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: nil,
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                place: .universalCheckout))
+        Analytics.Service.record(event: viewEvent)
+        
         title = NSLocalizedString("primer-checkout-nav-bar-title",
                                           tableName: nil,
                                           bundle: Bundle.primerResources,
@@ -220,6 +231,17 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     @objc
     func payButtonTapped() {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: nil,
+                extra: "Pay button",
+                objectType: .button,
+                objectId: nil,
+                place: .universalCheckout))
+        Analytics.Service.record(event: viewEvent)
+        
         guard let selectedPaymentMethod = selectedPaymentMethod else { return }
         guard let config = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == selectedPaymentMethod.paymentInstrumentType.rawValue }).first else {
             return

@@ -265,6 +265,17 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
+        let event = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: "CARD_FORM",
+                extra: nil,
+                objectType: .button,
+                objectId: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: event)
+        
         do {
             try self.validate()
         } catch {
@@ -333,6 +344,17 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     @objc
     func payButtonTapped(_ sender: UIButton) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: nil,
+                extra: "Pay button",
+                objectType: .button,
+                objectId: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+        
         submitButton.showSpinner(true)
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         

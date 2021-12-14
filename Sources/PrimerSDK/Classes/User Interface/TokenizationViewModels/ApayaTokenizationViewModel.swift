@@ -144,6 +144,17 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
+        let event = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: "APAYA",
+                extra: nil,
+                objectType: .button,
+                objectId: "\(Self.self)",
+                place: .universalCheckout))
+        Analytics.Service.record(event: event)
+        
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
         if Primer.shared.delegate?.onClientSessionActions != nil {

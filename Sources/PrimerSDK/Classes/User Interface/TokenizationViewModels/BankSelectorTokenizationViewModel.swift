@@ -200,6 +200,17 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     @objc
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
+        
+        let event = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: "BANK_SELECTION",
+                extra: nil,
+                objectType: .button,
+                objectId: "\(Self.self)",
+                place: .universalCheckout))
+        Analytics.Service.record(event: event)
     }
     
     fileprivate func continueTokenizationFlow() {

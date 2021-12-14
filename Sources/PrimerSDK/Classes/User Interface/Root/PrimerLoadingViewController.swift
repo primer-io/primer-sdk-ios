@@ -27,6 +27,17 @@ class PrimerLoadingViewController: PrimerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: nil,
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                place: .loading))
+        Analytics.Service.record(event: viewEvent)
+        
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         view.backgroundColor = theme.view.backgroundColor
         

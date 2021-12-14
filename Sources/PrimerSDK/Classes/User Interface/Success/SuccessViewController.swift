@@ -23,6 +23,17 @@ internal class SuccessViewController: PrimerViewController {
     let reference = UILabel()
 
     override func viewDidLoad() {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: nil,
+                extra: nil,
+                objectType: .view,
+                objectId: "\(Self.self)",
+                place: .successScreen))
+        Analytics.Service.record(event: viewEvent)
+        
         view.addSubview(icon)
         view.addSubview(message)
         view.addSubview(confirmationMessage)
