@@ -104,11 +104,17 @@ extension Analytics.Event {
     
     struct Property {
         enum Action: String, Codable {
+            case blur = "BLUR"
             case click = "CLICK"
+            case focus = "FOCUS"
             case view = "VIEW"
         }
         
         enum Context: String, Codable {
+            case apaya = "APAYA"
+            case apple = "APPLE"
+            case klarna = "KLARNA"
+            case paymentCard = "PAYMENT_CARD"
             case paypal = "PAYPAL"
         }
         
@@ -139,7 +145,10 @@ extension Analytics.Event {
         enum Place: String, Codable {
             case bankSelectionList = "BANK_SELECTION_LIST"
             case cardForm = "CARD_FORM"
+            case failureScreen = "FAILURE_SCREEN"
+            case loading = "LOADING"
             case paymentMethodsList = "PAYMENT_METHODS_LIST"
+            case successScreen = "SUCCESS_SCREEN"
             case universalCheckout = "UNIVERSAL_CHECKOUT"
             case vaultManager = "VAULT_MANAGER"
         }
@@ -185,7 +194,7 @@ struct TimerEventProperties: AnalyticsEventProperties {
 
 struct UIEventProperties: AnalyticsEventProperties {
     var action: Analytics.Event.Property.Action
-    var context: Analytics.Event.Property.Context
+    var context: String? //Analytics.Event.Property.Context?
     var extra: String?
     var objectType: Analytics.Event.Property.ObjectType
     var objectId: String?
