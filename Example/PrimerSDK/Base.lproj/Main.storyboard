@@ -227,7 +227,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="QCD-dO-9qb"/>
                                         </constraints>
-                                        <state key="normal" title="Add PayPal">
+                                        <state key="normal" title="PayPal Checkout">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
@@ -248,11 +248,11 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g8Q-ku-LZj">
                                         <rect key="frame" x="0.0" y="208" width="334" height="40"/>
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <accessibility key="accessibilityConfiguration" identifier="add_direct_debit_button"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="apple_pay_checkout_button"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="0PY-qq-diV"/>
                                         </constraints>
-                                        <state key="normal" title="Add Apple Pay">
+                                        <state key="normal" title="ApplePay Checkout">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>

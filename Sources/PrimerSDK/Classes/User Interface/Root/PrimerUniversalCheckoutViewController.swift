@@ -354,7 +354,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
             
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)
-                guard let paymentMethod = selectedPaymentInstrument else {
+                guard let paymentMethod = selectedPaymentMethod else {
                     DispatchQueue.main.async {
                         self.onClientSessionActionCompletion = nil
                         let err = PrimerError.threeDSFailed
@@ -365,7 +365,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 }
                 
                 let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: ClientTokenService.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
                     case .success(let paymentMethodToken):
                         DispatchQueue.main.async {

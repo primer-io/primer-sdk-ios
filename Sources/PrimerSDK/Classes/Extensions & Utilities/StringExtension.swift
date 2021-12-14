@@ -193,16 +193,21 @@ internal extension String {
     var jwtTokenPayload: DecodedClientToken? {
         let components = self.split(separator: ".")
         if components.count < 2 { return nil }
-        let segment = String(components[1]).fixedBase64Format
+        let segment = String(components[1]).base64IOSFormat
         guard !segment.isEmpty, let data = Data(base64Encoded: segment, options: .ignoreUnknownCharacters) else { return nil }
         return try? JSONParser().parse(DecodedClientToken.self, from: data)
     }
     
-    var fixedBase64Format: Self {
+    var base64IOSFormat: Self {
         let str = self.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
         let offset = str.count % 4
         guard offset != 0 else { return str }
         return str.padding(toLength: str.count + 4 - offset, withPad: "=", startingAt: 0)
+    }
+    
+    var base64RFC4648Format: Self {
+        let str = self.replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "=", with: "")
+        return str
     }
     
     func toDate(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil) -> Date? {
