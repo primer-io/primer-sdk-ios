@@ -181,7 +181,7 @@ public class Primer {
     }
     
     public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil) {
-        checkoutSessionId = String.randomString(length: 16)
+        checkoutSessionId = String.randomString(length: 32)
         
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
@@ -192,7 +192,7 @@ public class Primer {
     }
     
     public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
-        checkoutSessionId = String.randomString(length: 16)
+        checkoutSessionId = String.randomString(length: 32)
         
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
@@ -204,7 +204,7 @@ public class Primer {
     
     // swiftlint:disable cyclomatic_complexity
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
-        checkoutSessionId = String.randomString(length: 16)
+        checkoutSessionId = String.randomString(length: 32)
         
         switch (paymentMethod, intent) {
         case (.adyenAlipay, .checkout):
