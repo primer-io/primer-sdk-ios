@@ -11,17 +11,18 @@ import Foundation
 
 extension Analytics.Event {
     
-    enum `Type`: String, Codable {
+    enum EventType: String, Codable {
         case ui = "UI_EVENT"
         case crash = "APP_CRASHED_EVENT"
         case message = "MESSAGE_EVENT"
-        case network = "NETWORK_CALL_EVENT"
+        case networkCall = "NETWORK_CALL_EVENT"
         case networkConnectivity = "NETWORK_CONNECTIVITY_EVENT"
+        case timerEvent = "TIMER_EVENT"
     }
     
     struct Properties {
         var action: Analytics.Event.Property.Action?
-        var callType: Analytics.Event.Property.NetworkCall?
+        var callType: Analytics.Event.Property.NetworkCallType?
         var errorBody: String?
         var extra: String?
         var extraProperties: [String: String]?
@@ -107,6 +108,10 @@ extension Analytics.Event {
             case view = "VIEW"
         }
         
+        enum Context: String, Codable {
+            case paypal = "PAYPAL"
+        }
+        
         enum Message: String, Codable {
             case missingAmount = "MISSING_AMOUNT"
             case missingCountryCode = "MISSING_COUNTRY_CODE"
@@ -115,7 +120,12 @@ extension Analytics.Event {
             case validationFailed = "VALIDATION_FAILED"
         }
         
-        enum NetworkCall: String, Codable {
+        enum MomentType: String, Codable {
+            case start = "START"
+            case end = "END"
+        }
+        
+        enum NetworkCallType: String, Codable {
             case requestStart = "REQUEST_START"
             case requestEnd = "REQUEST_END"
         }
@@ -141,6 +151,45 @@ extension Analytics.Event {
             case error = "ERROR"
         }
     }
+    
+}
+
+protocol AnalyticsEventProperties: Codable {}
+
+struct CrashEventProperties: AnalyticsEventProperties {
+    var stacktrace: [String]
+}
+
+struct MessageEventProperties: AnalyticsEventProperties {
+    var networkType: String
+}
+
+struct NetworkCallEventProperties: AnalyticsEventProperties {
+    var callType: Analytics.Event.Property.NetworkCallType
+    var id: String
+    var url: String
+    var method: HTTPMethod
+    var errorBody: String?
+    var responseCode: Int?
+}
+
+struct SDKEventProperties: AnalyticsEventProperties {
+    var name: String
+    var params: [String: String]?
+}
+
+struct TimerEventProperties: AnalyticsEventProperties {
+    var momentType: Analytics.Event.Property.MomentType
+    var id: String?
+}
+
+struct UIEventProperties: AnalyticsEventProperties {
+    var action: Analytics.Event.Property.Action
+    var context: Analytics.Event.Property.Context
+    var extra: String?
+    var objectType: Analytics.Event.Property.ObjectType
+    var objectId: String?
+    var place: Analytics.Event.Property.Place
 }
 
 #endif

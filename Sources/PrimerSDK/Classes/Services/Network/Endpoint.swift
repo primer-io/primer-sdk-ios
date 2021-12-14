@@ -30,7 +30,7 @@ internal protocol Endpoint {
 //    }
 // }
 
-enum HTTPMethod: String {
+enum HTTPMethod: String, Codable {
     case get = "GET"
     case post = "POST"
     case put = "PUT"

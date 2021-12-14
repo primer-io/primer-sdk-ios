@@ -86,7 +86,8 @@ extension Analytics {
                 return
             }
             
-            guard let body = try? JSONEncoder().encode(storedEvents) else { return }
+            let request = Analytics.Service.Request(data: storedEvents)
+            guard let body = try? JSONEncoder().encode(request) else { return }
             
             let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
             client.genericRequest(
@@ -98,7 +99,13 @@ extension Analytics {
                     
                 }
         }
+        
+        struct Request: Encodable {
+            let data: [Analytics.Event]
+        }
+        
     }
+    
 }
 
 extension PrimerAPI {
