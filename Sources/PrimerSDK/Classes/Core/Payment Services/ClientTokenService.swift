@@ -26,8 +26,8 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
     }
     
     static func storeClientToken(_ clientToken: String) throws {
-        guard var jwtTokenPayload = clientToken.jwtTokenPayload,
-              let expDate = jwtTokenPayload.expDate
+        guard var currentDecodedToken = clientToken.jwtTokenPayload,
+              let expDate = currentDecodedToken.expDate
         else {
             throw PrimerError.clientTokenNull
         }
@@ -37,32 +37,36 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         }
         
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let previousJwtTokenPayload = ClientTokenService.decodedClientToken
+        let previousDecodedToken = ClientTokenService.decodedClientToken
+        
+        currentDecodedToken.configurationUrl = currentDecodedToken.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        currentDecodedToken.coreUrl = currentDecodedToken.coreUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        currentDecodedToken.pciUrl = currentDecodedToken.pciUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        
+        if currentDecodedToken.env == nil {
+            currentDecodedToken.env = previousDecodedToken?.env
+        }
 
-        if jwtTokenPayload.analyticsUrl == nil {
-            jwtTokenPayload.analyticsUrl = previousJwtTokenPayload?.analyticsUrl
+        if currentDecodedToken.analyticsUrl == nil {
+            currentDecodedToken.analyticsUrl = previousDecodedToken?.analyticsUrl
         }
         
-        if jwtTokenPayload.configurationUrl == nil {
-            jwtTokenPayload.configurationUrl = previousJwtTokenPayload?.configurationUrl
+        if currentDecodedToken.configurationUrl == nil {
+            currentDecodedToken.configurationUrl = previousDecodedToken?.configurationUrl
         }
         
-        if jwtTokenPayload.coreUrl == nil {
-            jwtTokenPayload.coreUrl = previousJwtTokenPayload?.coreUrl
+        if currentDecodedToken.coreUrl == nil {
+            currentDecodedToken.coreUrl = previousDecodedToken?.coreUrl
         }
         
-        if jwtTokenPayload.env == nil {
-            jwtTokenPayload.env = previousJwtTokenPayload?.env
-        }
-        
-        if jwtTokenPayload.pciUrl == nil {
-            jwtTokenPayload.pciUrl = previousJwtTokenPayload?.pciUrl
+        if currentDecodedToken.pciUrl == nil {
+            currentDecodedToken.pciUrl = previousDecodedToken?.pciUrl
         }
         
         var segments: [String] = clientToken.split(separator: ".").compactMap({ String($0) })
         
         var tmpSecondSegment: String?
-        if let data = try? JSONEncoder().encode(jwtTokenPayload),
+        if let data = try? JSONEncoder().encode(currentDecodedToken),
            let dataStr = String(data: data.base64EncodedData(), encoding: .utf8) {
             tmpSecondSegment = dataStr
         }
@@ -73,7 +77,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
             segments.append(tmpSecondSegment)
         }
         
-        let modifiedClientToken = segments.joined(separator: ".")
+        let modifiedClientToken = segments.joined(separator: ".").base64RFC4648Format
         
         state.clientToken = modifiedClientToken
     }
