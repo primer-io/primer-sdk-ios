@@ -26,8 +26,8 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
     }
     
     static func storeClientToken(_ clientToken: String) throws {
-        guard var jwtTokenPayload = clientToken.jwtTokenPayload,
-              let expDate = jwtTokenPayload.expDate
+        guard var currentDecodedToken = clientToken.jwtTokenPayload,
+              let expDate = currentDecodedToken.expDate
         else {
             throw PrimerError.clientTokenNull
         }
@@ -37,18 +37,45 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         }
         
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let previousEnv = ClientTokenService.decodedClientToken?.env
+        let previousDecodedToken = ClientTokenService.decodedClientToken
         
-        jwtTokenPayload.configurationUrl = jwtTokenPayload.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
-        jwtTokenPayload.coreUrl = jwtTokenPayload.coreUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
-        jwtTokenPayload.pciUrl = jwtTokenPayload.pciUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        currentDecodedToken.configurationUrl = currentDecodedToken.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        currentDecodedToken.coreUrl = currentDecodedToken.coreUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        currentDecodedToken.pciUrl = currentDecodedToken.pciUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
         
-        if jwtTokenPayload.env == nil {
-            // That's because the clientToken returned for dynamic 3DS doesn't contain an env.
-            jwtTokenPayload.env = previousEnv
+        if currentDecodedToken.env == nil {
+            currentDecodedToken.env = previousDecodedToken?.env
         }
-
-        state.clientToken = clientToken
+        
+        if currentDecodedToken.configurationUrl == nil {
+            currentDecodedToken.configurationUrl = previousDecodedToken?.configurationUrl
+        }
+        
+        if currentDecodedToken.coreUrl == nil {
+            currentDecodedToken.coreUrl = previousDecodedToken?.coreUrl
+        }
+        
+        if currentDecodedToken.pciUrl == nil {
+            currentDecodedToken.pciUrl = previousDecodedToken?.pciUrl
+        }
+        
+        var segments: [String] = clientToken.split(separator: ".").compactMap({ String($0) })
+        
+        var tmpSecondSegment: String?
+        if let data = try? JSONEncoder().encode(currentDecodedToken),
+           let dataStr = String(data: data.base64EncodedData(), encoding: .utf8) {
+            tmpSecondSegment = dataStr
+        }
+        
+        if segments.count > 1, let tmpSecondSegment = tmpSecondSegment {
+            segments[1] = tmpSecondSegment
+        } else if segments.count == 1, let tmpSecondSegment = tmpSecondSegment {
+            segments.append(tmpSecondSegment)
+        }
+        
+        let modifiedClientToken = segments.joined(separator: ".").base64RFC4648Format
+        
+        state.clientToken = modifiedClientToken
     }
     
     static func resetClientToken() {
