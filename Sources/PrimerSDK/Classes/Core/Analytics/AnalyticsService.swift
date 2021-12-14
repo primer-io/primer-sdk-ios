@@ -38,18 +38,15 @@ extension Analytics {
         }
         
         private static func loadEvents() -> [Event] {
-            guard let encryptedEventsData = try? Data(contentsOf: Analytics.Service.filepath) else { return [] }
+            guard let eventsData = try? Data(contentsOf: Analytics.Service.filepath) else { return [] }
             
-            let aes = AES256()
-            guard let deryptedEventsData = try? aes.decrypt(encryptedEventsData) else {
-                return []
-            }
+//            let aes = AES256()
+//            guard let deryptedEventsData = try? aes.decrypt(encryptedEventsData) else {
+//                return []
+//            }
             
-            guard let events = try? JSONDecoder().decode([Analytics.Event].self, from: deryptedEventsData) else {
-                return []
-            }
-
-            return events.unique(map: { $0.checkoutSessionId }).sorted(by: { $0.createdAt > $1.createdAt })
+            let events = (try? JSONDecoder().decode([Analytics.Event].self, from: eventsData)) ?? []
+            return events.sorted(by: { $0.createdAt > $1.createdAt })
         }
         
         internal static func record(event: Analytics.Event) {
@@ -71,9 +68,13 @@ extension Analytics {
         
         private static func save(events: [Analytics.Event]) throws {
             let eventsData = try JSONEncoder().encode(events)
-            let aes = AES256()
-            let encryptedEventsData = try aes.encrypt(eventsData)
-            try encryptedEventsData.write(to: Analytics.Service.filepath)
+//            let aes = AES256()
+//            let encryptedEventsData = try aes.encrypt(eventsData)
+            try eventsData.write(to: Analytics.Service.filepath)
+        }
+        
+        internal static func deleteEvents() throws {
+            try? Analytics.Service.save(events: [])
         }
         
         internal static func sync(enforce: Bool = false, batchSize: UInt = 50) {
@@ -82,9 +83,11 @@ extension Analytics {
             let storedEvents = Analytics.Service.loadEvents()
             let queue = DispatchQueue(label: "primer.reporting", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
 
-            guard let analyticsUrlStr = ClientTokenService.decodedClientToken?.analyticsUrl, let analyticsUrl = URL(string: analyticsUrlStr) else {
-                return
-            }
+//            guard let analyticsUrlStr = ClientTokenService.decodedClientToken?.analyticsUrl, let analyticsUrl = URL(string: analyticsUrlStr) else {
+//                return
+//            }
+            
+            let analyticsUrl = URL(string: "https://us-central1-primerdemo-8741b.cloudfunctions.net/analytics/\(Primer.shared.checkoutSessionId!)")!
             
             let request = Analytics.Service.Request(data: storedEvents)
             guard let body = try? JSONEncoder().encode(request) else { return }
@@ -96,7 +99,9 @@ extension Analytics {
                 headers: nil,
                 queryParameters: nil,
                 body: body) { result in
-                    
+                    try? Analytics.Service.deleteEvents()
+                    let storedEvents2 = Analytics.Service.loadEvents()
+                    print(storedEvents2)
                 }
         }
         
