@@ -43,7 +43,7 @@ struct PrimerConfiguration: Codable {
     var requireZipCode: Bool {
         checkoutModules?
             .first { $0.type == "BILLING_ADDRESS" }?
-            .options?["postalCode"] ?? true
+            .options?["postalCode"] ?? false
     }
     
     public init(from decoder: Decoder) throws {

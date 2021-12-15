@@ -121,7 +121,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     var requireZipCode: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let paymentMethodConfig = state.paymentMethodConfig else { return false }
+        guard let paymentMethodConfig = state.primerConfiguration else { return false }
         return paymentMethodConfig.requireZipCode
     }
     
@@ -393,7 +393,15 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
             }
             
-            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+            var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
+            
+            if (requireZipCode) {
+                let zipParams = ["zipCode": zipCodeField.zipCode]
+                let zipAction = ClientSession.Action(type: "SET_ZIP_CODE", params: zipParams)
+                actions.append(zipAction)
+            }
+            
+            ClientSession.Action.dispatchMultiple(resumeHandler: self, actions: actions)
         } else {
             cardComponentsManager.tokenize()
         }
@@ -478,11 +486,12 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             cardholderNameContainerView.errorText = "Invalid name"
         } else if primerTextFieldView is PrimerZipCodeFieldView, isValid == false {
             zipCodeContainerView.errorText = "Invalid zip code" // todo: localise if UK, etc.
-        } else if primerTextFieldView is PrimerZipCodeFieldView, isValid == true {
-            ClientSession.Action.setZipCode(
-                resumeHandler: self,
-                withParameters: ["zipCode": primerTextFieldView.text]
-            )
+        }
+        
+        // dispatch zip code action if valid zip code.
+        if let fieldView = (primerTextFieldView as? PrimerZipCodeFieldView), isValid  == true {
+            let params = ["zipCode": fieldView.zipCode]
+            ClientSession.Action.setZipCode(resumeHandler: self, withParameters: params)
         }
         
         var validations = [

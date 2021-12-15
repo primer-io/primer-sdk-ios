@@ -63,6 +63,12 @@ public class ClientSession: Codable {
             }
         }
         
+        static func dispatchMultiple(resumeHandler: ResumeHandlerProtocol, actions: [ClientSession.Action]) {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+            }
+        }
+        
         public var type: String
         public var params: [String: Any]?
         

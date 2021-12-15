@@ -144,11 +144,6 @@ internal extension String {
         return !(self.rangeOfCharacter(from: set.inverted) != nil)
     }
     
-    var isTypingValidZipCode: Bool? {
-        if isValidZipCode { return true }
-        return nil
-    }
-    
     var isValidZipCode: Bool {
         if count < 2 { return false }
         let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-1234567890")

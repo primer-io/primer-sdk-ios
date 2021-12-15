@@ -52,7 +52,10 @@ class PrimerCardFormViewController: PrimerFormViewController {
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
         
         configureExpiryAndCvvRow()
-        configureZipCodeFieldRow()
+        
+        if (formPaymentMethodTokenizationViewModel.requireZipCode) {
+            configureZipCodeFieldRow()
+        }
         
         // separator view
         let separatorView = UIView()
