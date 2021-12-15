@@ -16,7 +16,9 @@ public class Primer {
     public var delegate: PrimerDelegate? // TODO: should this be weak?
     private(set) var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
+    internal let sdkSessionId = String.randomString(length: 32)
     internal var checkoutSessionId: String?
+    private var timingEventId: String?
 
     // MARK: - INITIALIZATION
 
