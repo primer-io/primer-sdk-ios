@@ -38,6 +38,12 @@ internal class URLSessionStack: NetworkService {
                 responseCode: nil))
         Analytics.Service.record(event: reqEvent)
         
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        Analytics.Service.record(event: connectivityEvent)
+        
         guard let url = url(for: endpoint) else {
             completion(.failure(.invalidURL))
             return

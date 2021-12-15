@@ -31,11 +31,15 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
         let viewEvent = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
-                action: .click,
-                context: nil,
-                extra: "cardholder textfield",
-                objectType: .textField,
-                objectId: "\(Self.self)",
+                action: .focus,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .input,
+                objectId: .cardHolder,
+                objectClass: "\(Self.self)",
                 place: .cardForm))
         Analytics.Service.record(event: viewEvent)
     }
@@ -45,10 +49,14 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
             eventType: .ui,
             properties: UIEventProperties(
                 action: .blur,
-                context: nil,
-                extra: "cardholder textfield",
-                objectType: .textField,
-                objectId: "\(Self.self)",
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .input,
+                objectId: .cardHolder,
+                objectClass: "\(Self.self)",
                 place: .cardForm))
         Analytics.Service.record(event: viewEvent)
     }

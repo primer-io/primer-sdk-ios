@@ -36,6 +36,7 @@ public class Primer {
         DispatchQueue.main.async { [weak self] in
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
+            try! Analytics.Service.deleteEvents()
         }
     }
     
@@ -213,14 +214,27 @@ public class Primer {
     public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil) {
         checkoutSessionId = String.randomString(length: 32)
         
-        let event = Analytics.Event(
+        let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
                 params: [
                     "flow": PrimerInternalSessionFlow.checkout.rawValue
                 ]))
-        Analytics.Service.record(event: event)
+        
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        
+        self.timingEventId = String.randomString(length: 32)
+        let timingEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: self.timingEventId!))
+        
+        Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
@@ -233,14 +247,27 @@ public class Primer {
     public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
         checkoutSessionId = String.randomString(length: 32)
         
-        let event = Analytics.Event(
+        let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
                 params: [
                     "flow": PrimerInternalSessionFlow.vault.rawValue
                 ]))
-        Analytics.Service.record(event: event)
+        
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        
+        self.timingEventId = String.randomString(length: 32)
+        let timingEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: self.timingEventId!))
+        
+        Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
@@ -373,14 +400,26 @@ public class Primer {
             return
         }
         
-        let event = Analytics.Event(
+        let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
                 params: [
                     "flow": PrimerInternalSessionFlow.vault.rawValue
                 ]))
-        Analytics.Service.record(event: event)
+        
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        
+        self.timingEventId = String.randomString(length: 32)
+        let timingEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: self.timingEventId!))
+        Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
         presentingViewController = viewController
         show(flow: flow!)
@@ -411,12 +450,19 @@ public class Primer {
 
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
-        let event = Analytics.Event(
+        let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
                 params: nil))
-        Analytics.Service.record(event: event)
+        
+        let timingEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .end,
+                id: self.timingEventId))
+        
+        Analytics.Service.record(events: [sdkEvent, timingEvent])
         
         Analytics.Service.sync()
         
@@ -441,7 +487,9 @@ public class Primer {
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
-                params: nil))
+                params: [
+                    "flow": flow.internalSessionFlow.rawValue
+                ]))
         Analytics.Service.record(event: event)
         
         DispatchQueue.main.async {

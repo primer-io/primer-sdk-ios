@@ -269,10 +269,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             eventType: .ui,
             properties: UIEventProperties(
                 action: .click,
-                context: "CARD_FORM",
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type.rawValue,
+                    url: nil),
                 extra: nil,
                 objectType: .button,
-                objectId: "\(Self.self)",
+                objectId: .select,
+                objectClass: "\(Self.self)",
                 place: .cardForm))
         Analytics.Service.record(event: event)
         
@@ -348,10 +352,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             eventType: .ui,
             properties: UIEventProperties(
                 action: .click,
-                context: nil,
-                extra: "Pay button",
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type.rawValue,
+                    url: nil),
+                extra: nil,
                 objectType: .button,
-                objectId: "\(Self.self)",
+                objectId: .submit,
+                objectClass: "\(Self.self)",
                 place: .cardForm))
         Analytics.Service.record(event: viewEvent)
         

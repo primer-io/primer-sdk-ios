@@ -35,7 +35,8 @@ class PrimerLoadingViewController: PrimerViewController {
                 extra: nil,
                 objectType: .view,
                 objectId: nil,
-                place: .loading))
+                objectClass: "\(Self.self)",
+                place: .sdkLoading))
         Analytics.Service.record(event: viewEvent)
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()

@@ -35,10 +35,14 @@ class PrimerCardFormViewController: PrimerFormViewController {
             eventType: .ui,
             properties: UIEventProperties(
                 action: .view,
-                context: nil,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.formPaymentMethodTokenizationViewModel.config.type.rawValue,
+                    url: nil),
                 extra: nil,
                 objectType: .view,
                 objectId: nil,
+                objectClass: "\(Self.self)",
                 place: .cardForm))
         Analytics.Service.record(event: viewEvent)
         

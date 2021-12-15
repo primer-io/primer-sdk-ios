@@ -148,11 +148,15 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             eventType: .ui,
             properties: UIEventProperties(
                 action: .click,
-                context: "APAYA",
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type.rawValue,
+                    url: nil),
                 extra: nil,
                 objectType: .button,
-                objectId: "\(Self.self)",
-                place: .universalCheckout))
+                objectId: .select,
+                objectClass: "\(Self.self)",
+                place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()

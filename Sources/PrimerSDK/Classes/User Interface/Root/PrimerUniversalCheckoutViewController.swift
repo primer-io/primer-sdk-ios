@@ -31,6 +31,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 extra: nil,
                 objectType: .view,
                 objectId: nil,
+                objectClass: "\(Self.self)",
                 place: .universalCheckout))
         Analytics.Service.record(event: viewEvent)
         
@@ -222,6 +223,18 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
     @objc
     func seeAllButtonTapped(_ sender: Any) {
+        let uiEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: nil,
+                extra: nil,
+                objectType: .button,
+                objectId: .seeAll,
+                objectClass: "\(Self.self)",
+                place: .universalCheckout))
+        Analytics.Service.record(event: uiEvent)
+        
         let vpivc = VaultedPaymentInstrumentsViewController()
         vpivc.delegate = self
         vpivc.view.translatesAutoresizingMaskIntoConstraints = false
@@ -231,21 +244,25 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     @objc
     func payButtonTapped() {
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: nil,
-                extra: "Pay button",
-                objectType: .button,
-                objectId: nil,
-                place: .universalCheckout))
-        Analytics.Service.record(event: viewEvent)
-        
         guard let selectedPaymentMethod = selectedPaymentMethod else { return }
         guard let config = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == selectedPaymentMethod.paymentInstrumentType.rawValue }).first else {
             return
         }
+        
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .pay,
+                objectClass: "\(Self.self)",
+                place: .universalCheckout))
+        Analytics.Service.record(event: viewEvent)
         
         enableView(false)
         payButton.showSpinner(true)

@@ -30,7 +30,8 @@ internal class SuccessViewController: PrimerViewController {
                 context: nil,
                 extra: nil,
                 objectType: .view,
-                objectId: "\(Self.self)",
+                objectId: nil,
+                objectClass: "\(Self.self)",
                 place: .successScreen))
         Analytics.Service.record(event: viewEvent)
         

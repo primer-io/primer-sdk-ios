@@ -205,11 +205,15 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             eventType: .ui,
             properties: UIEventProperties(
                 action: .click,
-                context: "BANK_SELECTION",
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type.rawValue,
+                    url: nil),
                 extra: nil,
                 objectType: .button,
-                objectId: "\(Self.self)",
-                place: .universalCheckout))
+                objectId: .select,
+                objectClass: "\(Self.self)",
+                place: .bankSelectionList))
         Analytics.Service.record(event: event)
     }
     

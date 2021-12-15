@@ -31,6 +31,7 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                 extra: nil,
                 objectType: .view,
                 objectId: nil,
+                objectClass: "\(Self.self)",
                 place: .vaultManager))
         Analytics.Service.record(event: viewEvent)
         
