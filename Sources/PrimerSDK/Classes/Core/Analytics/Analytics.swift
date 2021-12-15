@@ -12,6 +12,7 @@ import Foundation
 class Analytics {
     
     struct Event: Codable {
+        var localId: String?
         
         var appIdentifier: String? = Bundle.main.bundleIdentifier
         var checkoutSessionId: String?
@@ -22,11 +23,13 @@ class Analytics {
         var eventType: Analytics.Event.EventType
         var primerAccountId: String?
         var properties: AnalyticsEventProperties? = nil
+        var sdkSessionId: String
         var sdkType: String = "IOS_NATIVE"
         var sdkVersion = Bundle.primerFramework.releaseVersionNumber
         
         init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {
             self.eventType = eventType
+            self.properties = properties
             
             if let checkoutSessionId = Primer.shared.checkoutSessionId {
                 self.checkoutSessionId = checkoutSessionId
@@ -42,11 +45,12 @@ class Analytics {
                 self.customerId = customerId
             }
             
-            self.properties = properties
+            self.localId = String.randomString(length: 32)
+            self.sdkSessionId = Primer.shared.sdkSessionId
         }
         
         private enum CodingKeys: String, CodingKey {
-            case appIdentifier, checkoutSessionId, clientSessionId, createdAt, customerId, device, eventType, primerAccountId, properties, sdkType, sdkVersion
+            case appIdentifier, checkoutSessionId, clientSessionId, createdAt, customerId, device, eventType, localId, primerAccountId, properties, sdkSessionId, sdkType, sdkVersion
         }
         
         func encode(to encoder: Encoder) throws {
@@ -58,7 +62,11 @@ class Analytics {
             try? container.encode(customerId, forKey: .customerId)
             try? container.encode(device, forKey: .device)
             try? container.encode(eventType, forKey: .eventType)
+            if let localId = localId {
+                try? container.encode(localId, forKey: .localId)
+            }
             try? container.encode(primerAccountId, forKey: .primerAccountId)
+            try? container.encode(sdkSessionId, forKey: .sdkSessionId)
             try? container.encode(sdkType, forKey: .sdkType)
             try? container.encode(sdkVersion, forKey: .sdkVersion)
             
@@ -68,6 +76,8 @@ class Analytics {
                 try? container.encode(messageEventProperties, forKey: .properties)
             } else if let networkCallEventProperties = properties as? NetworkCallEventProperties {
                 try? container.encode(networkCallEventProperties, forKey: .properties)
+            } else if let networkConnectivityEventProperties = properties as? NetworkConnectivityEventProperties {
+                try? container.encode(networkConnectivityEventProperties, forKey: .properties)
             } else if let sdkEventProperties = properties as? SDKEventProperties {
                 try? container.encode(sdkEventProperties, forKey: .properties)
             } else if let timerEventProperties = properties as? TimerEventProperties {
@@ -86,7 +96,9 @@ class Analytics {
             self.customerId = (try container.decode(String?.self, forKey: .customerId)) ?? nil
             self.device = try container.decode(Device.self, forKey: .device)
             self.eventType = try container.decode(Analytics.Event.EventType.self, forKey: .eventType)
+            self.localId = (try? container.decode(String?.self, forKey: .localId)) ?? nil
             self.primerAccountId = (try? container.decode(String?.self, forKey: .primerAccountId)) ?? nil
+            self.sdkSessionId = try container.decode(String.self, forKey: .sdkSessionId)
             self.sdkType = try container.decode(String.self, forKey: .sdkType)
             self.sdkVersion = try container.decode(String.self, forKey: .sdkVersion)
             
@@ -96,6 +108,8 @@ class Analytics {
                 self.properties = messageEventProperties
             } else if let networkCallEventProperties = (try? container.decode(NetworkCallEventProperties?.self, forKey: .properties)) {
                 self.properties = networkCallEventProperties
+            } else if let networkConnectivityEventProperties = (try? container.decode(NetworkConnectivityEventProperties?.self, forKey: .properties)) {
+                self.properties = networkConnectivityEventProperties
             } else if let sdkEventProperties = (try? container.decode(SDKEventProperties?.self, forKey: .properties)) {
                 self.properties = sdkEventProperties
             } else if let timerEventProperties = (try? container.decode(TimerEventProperties?.self, forKey: .properties)) {

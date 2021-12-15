@@ -9,6 +9,9 @@
 
 import Foundation
 
+var called: Int = 0
+var numberOfEvents: Int = 0
+
 extension Analytics {
     
     internal class Service {
@@ -54,16 +57,24 @@ extension Analytics {
         }
         
         internal static func record(events: [Analytics.Event]) {
-            // First load events
-            var tmpEvents = Analytics.Service.loadEvents()
+            numberOfEvents += events.count
+            called += 1
+            print(" *** Called: \(called), totalEvents: \(numberOfEvents)")
             
-            // Merge them
-            tmpEvents.append(contentsOf: events)
+            let analyticsQueue = DispatchQueue(label: "primer.analytics", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
             
-            // Sort them
-            let sortedEvents = tmpEvents.sorted(by: { $0.createdAt < $1.createdAt })
-            
-            try? Analytics.Service.save(events: sortedEvents)
+            analyticsQueue.sync {
+                // First load events
+                var tmpEvents = Analytics.Service.loadEvents()
+                
+                // Merge them
+                tmpEvents.append(contentsOf: events)
+                
+                // Sort them
+                let sortedEvents = tmpEvents.sorted(by: { $0.createdAt < $1.createdAt })
+                
+                try? Analytics.Service.save(events: sortedEvents)
+            }
         }
         
         private static func save(events: [Analytics.Event]) throws {
@@ -73,29 +84,36 @@ extension Analytics {
             try eventsData.write(to: Analytics.Service.filepath)
         }
         
-        internal static func deleteEvents() throws {
-            try? Analytics.Service.save(events: [])
+        internal static func deleteEvents(_ events: [Analytics.Event]? = nil) throws {
+            if let events = events {
+                let eventsIds = events.compactMap({ $0.localId })
+                let allEvents = Analytics.Service.loadEvents()
+                let remainingEvents = allEvents.filter({ !eventsIds.contains($0.localId ?? "") })
+                try? save(events: remainingEvents)
+            } else {
+                try? Analytics.Service.save(events: [])
+            }
         }
         
         internal static func sync(enforce: Bool = false, batchSize: UInt = 50) {
             if !enforce && !isSyncAllowed { return }
-
-            let storedEvents = Analytics.Service.loadEvents()
-            let queue = DispatchQueue(label: "primer.reporting", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
-
-//            guard let analyticsUrlStr = ClientTokenService.decodedClientToken?.analyticsUrl, let analyticsUrl = URL(string: analyticsUrlStr) else {
-//                return
-//            }
             
-            let analyticsUrl = URL(string: "https://us-central1-primerdemo-8741b.cloudfunctions.net/api/analytics/\(Primer.shared.checkoutSessionId!)")!
+            let analyticsQueue = DispatchQueue(label: "primer.analytics", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
             
-            let requestBody = Analytics.Service.Request(data: storedEvents)
-            
-            let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
-            client.sendAnalyticsEvent(url: analyticsUrl, body: requestBody) { result in
-                try? Analytics.Service.deleteEvents()
-                let storedEvents2 = Analytics.Service.loadEvents()
-                print(storedEvents2)
+            analyticsQueue.sync {
+                var storedEvents = Analytics.Service.loadEvents()
+                for (i, _) in storedEvents.enumerated() {
+                    storedEvents[i].localId = nil
+                }
+                
+                let analyticsUrl = URL(string: "https://us-central1-primerdemo-8741b.cloudfunctions.net/api/analytics/\(Primer.shared.sdkSessionId)")!
+                
+                let requestBody = Analytics.Service.Request(data: storedEvents)
+                
+                let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+                client.sendAnalyticsEvent(url: analyticsUrl, body: requestBody) { result in
+                    try? Analytics.Service.deleteEvents(storedEvents)
+                }
             }
         }
         

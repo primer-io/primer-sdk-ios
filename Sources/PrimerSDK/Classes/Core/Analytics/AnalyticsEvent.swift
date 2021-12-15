@@ -21,88 +21,6 @@ extension Analytics.Event {
         case timerEvent = "TIMER_EVENT"
     }
     
-    struct Properties {
-        var action: Analytics.Event.Property.Action?
-        var callType: Analytics.Event.Property.NetworkCallType?
-        var errorBody: String?
-        var extra: String?
-        var extraProperties: [String: String]?
-        var id: String?
-        var message: String?
-        var messageType: Analytics.Event.Property.Message?
-        var method: HTTPMethod?
-        var objectType: Analytics.Event.Property.ObjectType?
-        var place: Analytics.Event.Property.Place?
-        var responseCode: Int?
-        var severity: Analytics.Event.Property.Severity?
-        var stacktrace: [String]?
-        var url: String?
-        
-        var jsonValue: [String: String]? {
-            var json: [String: String] = [:]
-            
-            if let val = action {
-                json["action"] = val.rawValue
-            }
-            
-            if let val = callType {
-                json["callType"] = val.rawValue
-            }
-            
-            if let val = errorBody {
-                json["errorBody"] = val
-            }
-            
-            if let val = extra {
-                json["extra"] = val
-            }
-            
-            if let val = id {
-                json["id"] = val
-            }
-            
-            if let val = message {
-                json["message"] = val
-            }
-            
-            if let val = messageType {
-                json["messageType"] = val.rawValue
-            }
-            
-            if let val = method {
-                json["method"] = val.rawValue
-            }
-            
-            if let val = objectType {
-                json["objectType"] = val.rawValue
-            }
-            
-            if let val = place {
-                json["place"] = val.rawValue
-            }
-            
-            if let val = responseCode {
-                json["responseCode"] = String(val)
-            }
-            
-            if let val = severity {
-                json["severity"] = val.rawValue
-            }
-            
-            if let val = stacktrace {
-//                json["stacktrace"] = val
-            }
-            
-            if let val = url {
-                json["url"] = val
-            }
-            
-            
-            return json.merging(extraProperties ?? [:]) { (_, new) in new }
-        }
-        
-    }
-    
     struct Property {
         enum Action: String, Codable {
             case blur = "BLUR"
@@ -111,23 +29,18 @@ extension Analytics.Event {
             case view = "VIEW"
         }
         
-        enum Context: String, Codable {
-            case apaya = "APAYA"
-            case apple = "APPLE"
-            case klarna = "KLARNA"
-            case paymentCard = "PAYMENT_CARD"
-            case paypal = "PAYPAL"
+        struct Context: Codable {
+            var issuerId: String?
+            var paymentMethodType: String?
+            var url: String?
         }
         
-        enum Message: String, Codable {
-            case missingAmount = "MISSING_AMOUNT"
-            case missingCountryCode = "MISSING_COUNTRY_CODE"
-            case missingOrder = "MISSING_ORDER"
-            case missingAuthToken = "MISSING_AUTH_TOKEN"
+        enum MessageType: String, Codable {
+            case missingValue = "MISSING_VALUE"
             case validationFailed = "VALIDATION_FAILED"
         }
         
-        enum MomentType: String, Codable {
+        enum TimerType: String, Codable {
             case start = "START"
             case end = "END"
         }
@@ -138,20 +51,52 @@ extension Analytics.Event {
         }
         
         enum ObjectType: String, Codable {
+            case alert = "ALERT"
             case button = "BUTTON"
-            case textField = "TEXT_FIELD"
+            case image = "IMAGE"
+            case input = "INPUT"
+            case label = "LABEL"
+            case listItem = "LIST_ITEM"
+            case loader = "LOADER"
             case view = "VIEW"
+            case webpage = "WEB_PAGE"
+        }
+        
+        enum ObjectId: String, Codable {
+            case back = "BACK"
+            case cancel = "CANCEL"
+            case cardHolder = "CARD_HOLDER"
+            case cardNumber = "CARD_NUMBER"
+            case cvc = "CVC"
+            case delete = "DELETE"
+            case done = "DONE"
+            case edit = "EDIT"
+            case expiry = "EXPIRY"
+            case ibank = "IBAN"
+            case otp = "OTP"
+            case seeAll = "SEE_ALL"
+            case select = "SELECT"
+            case pay = "PAY"
+            case phone = "PHONE"
+            case retry = "RETRY"
+            case submit = "SUBMIT"
+            case zipCode = "ZIP_CODE"
         }
         
         enum Place: String, Codable {
             case bankSelectionList = "BANK_SELECTION_LIST"
             case cardForm = "CARD_FORM"
-            case failureScreen = "FAILURE_SCREEN"
-            case loading = "LOADING"
+            case directCheckout = "DIRECT_CHECKOUT"
+            case dynamicForm = "DYNAMIC_FORM"
+            case errorScreen = "ERROR_SCREEN"
             case paymentMethodsList = "PAYMENT_METHODS_LIST"
+            case paymentMethodLoading = "PAYMENT_METHOD_LOADING"
+            case paymentMethodPopup = "PAYMENT_METHOD_POPUP"
+            case sdkLoading = "SDK_LOADING"
             case successScreen = "SUCCESS_SCREEN"
-            case universalCheckout = "UNIVERSAL_CHECKOUT"
             case vaultManager = "VAULT_MANAGER"
+            case webview = "WEBVIEW"
+            case universalCheckout = "UNIVERSAL_CHECKOUT"
         }
         
         enum Severity: String, Codable {
@@ -171,7 +116,9 @@ struct CrashEventProperties: AnalyticsEventProperties {
 }
 
 struct MessageEventProperties: AnalyticsEventProperties {
-    var networkType: String
+    var message: String?
+    var messageType: Analytics.Event.Property.MessageType
+//    var severity = Analytics.Event.Property.Severity
 }
 
 struct NetworkCallEventProperties: AnalyticsEventProperties {
@@ -183,22 +130,27 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
     var responseCode: Int?
 }
 
+struct NetworkConnectivityEventProperties: AnalyticsEventProperties {
+    var networkType: Connectivity.NetworkType
+}
+
 struct SDKEventProperties: AnalyticsEventProperties {
     var name: String
     var params: [String: String]?
 }
 
 struct TimerEventProperties: AnalyticsEventProperties {
-    var momentType: Analytics.Event.Property.MomentType
+    var momentType: Analytics.Event.Property.TimerType
     var id: String?
 }
 
 struct UIEventProperties: AnalyticsEventProperties {
     var action: Analytics.Event.Property.Action
-    var context: String? //Analytics.Event.Property.Context?
+    var context: Analytics.Event.Property.Context?
     var extra: String?
     var objectType: Analytics.Event.Property.ObjectType
-    var objectId: String?
+    var objectId: Analytics.Event.Property.ObjectId?
+    var objectClass: String?
     var place: Analytics.Event.Property.Place
 }
 
