@@ -12,6 +12,7 @@ import Foundation
 struct Device: Codable {
     
     var batteryLevel: Int
+    var batteryStatus: String
     var memoryFootprint: Int?
     var modelIdentifier: String?
     var modelName: String
@@ -21,12 +22,13 @@ struct Device: Codable {
     var userAgent: String?
     
     private enum CodingKeys : String, CodingKey {
-        case batteryLevel, memoryFootprint, modelIdentifier, modelName, platformVersion, screen, uniqueDeviceIdentifier, userAgent
+        case batteryLevel, batteryStatus, memoryFootprint, modelIdentifier, modelName, platformVersion, screen, uniqueDeviceIdentifier, userAgent
     }
     
     init() {
         UIDevice.current.isBatteryMonitoringEnabled = true
         batteryLevel = Int((UIDevice.current.batteryLevel * 100).rounded())
+        batteryStatus = batteryLevel == -100 ? "CHARGING" : "NOT_CHARGING"
         UIDevice.current.isBatteryMonitoringEnabled = false
         
         
