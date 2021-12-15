@@ -32,7 +32,7 @@ enum PrimerAPI: Endpoint {
     // Generic
     case poll(clientToken: DecodedClientToken?, url: String)
     
-    case genericRequest(url: URL, method: HTTPMethod, headers: [String: String]?, queryParameters: [String: String]?, body: Data?)
+    case sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?)
 }
 
 internal extension PrimerAPI {
@@ -69,7 +69,7 @@ internal extension PrimerAPI {
             return urlStr
         case .poll(_, let url):
             return url
-        case .genericRequest(let url, _, _, _, _):
+        case .sendAnalyticsEvents(let url, _):
             return url.absoluteString
         }
     }
@@ -109,7 +109,7 @@ internal extension PrimerAPI {
             return "/adyen/checkout"
         case .poll:
             return ""
-        case .genericRequest:
+        case .sendAnalyticsEvents:
             return ""
         }
     }
@@ -141,12 +141,11 @@ internal extension PrimerAPI {
              .threeDSBeginRemoteAuth,
              .threeDSContinueRemoteAuth,
              .apayaCreateSession,
-             .adyenBanksList:
+             .adyenBanksList,
+             .sendAnalyticsEvents:
             return .post
         case .poll:
             return .get
-        case .genericRequest(_, let method, _, _, _):
-            return method
         }
     }
 
@@ -185,8 +184,8 @@ internal extension PrimerAPI {
                 tmpHeaders["Primer-Client-Token"] = token
             }
             
-        case .genericRequest(_, _, let headers, _, _):
-            return headers
+        case .sendAnalyticsEvents:
+            break
         }
 
         return tmpHeaders
@@ -196,8 +195,6 @@ internal extension PrimerAPI {
     
     var queryParameters: [String: String]? {
         switch self {
-        case .genericRequest(_, _, _, let queryParameters, _):
-            return queryParameters
         default:
             return nil
         }
@@ -243,8 +240,8 @@ internal extension PrimerAPI {
              .threeDSContinueRemoteAuth,
              .poll:
             return nil
-        case .genericRequest(_, _, _, _, let body):
-            return body
+        case .sendAnalyticsEvents(_, let body):
+            return try? JSONEncoder().encode(body)
         }
     }
 

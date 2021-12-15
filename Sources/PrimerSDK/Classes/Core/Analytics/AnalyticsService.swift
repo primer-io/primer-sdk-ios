@@ -87,26 +87,24 @@ extension Analytics {
 //                return
 //            }
             
-            let analyticsUrl = URL(string: "https://us-central1-primerdemo-8741b.cloudfunctions.net/analytics/\(Primer.shared.checkoutSessionId!)")!
+            let analyticsUrl = URL(string: "https://us-central1-primerdemo-8741b.cloudfunctions.net/api/analytics/\(Primer.shared.checkoutSessionId!)")!
             
-            let request = Analytics.Service.Request(data: storedEvents)
-            guard let body = try? JSONEncoder().encode(request) else { return }
+            let requestBody = Analytics.Service.Request(data: storedEvents)
             
             let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
-            client.genericRequest(
-                url: analyticsUrl,
-                method: .post,
-                headers: nil,
-                queryParameters: nil,
-                body: body) { result in
-                    try? Analytics.Service.deleteEvents()
-                    let storedEvents2 = Analytics.Service.loadEvents()
-                    print(storedEvents2)
-                }
+            client.sendAnalyticsEvent(url: analyticsUrl, body: requestBody) { result in
+                try? Analytics.Service.deleteEvents()
+                let storedEvents2 = Analytics.Service.loadEvents()
+                print(storedEvents2)
+            }
         }
         
         struct Request: Encodable {
             let data: [Analytics.Event]
+        }
+        
+        struct Response: Decodable {
+            let success: Bool
         }
         
     }

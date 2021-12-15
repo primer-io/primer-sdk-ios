@@ -56,12 +56,7 @@ internal class URLSessionStack: NetworkService {
 
         if let data = endpoint.body {
             request.httpBody = data
-            let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-            let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
-            var jsonStr: String?
-            if jsonData != nil {
-                jsonStr = String(data: jsonData!, encoding: .utf8 )
-            }
+            let jsonStr = data.prettyPrintedJSONString
             #if DEBUG
             msg += "\nBody:\n\(jsonStr ?? "Empty body")"
             #endif

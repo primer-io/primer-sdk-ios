@@ -27,7 +27,8 @@ protocol PrimerAPIClientProtocol {
     func apayaCreateSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest, completion: @escaping (_ result: Result<Apaya.CreateSessionAPIResponse, Error>) -> Void)
     func adyenBanksList(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (_ result: Result<[Bank], Error>) -> Void)
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
-    func genericRequest(url: URL, method: HTTPMethod, headers: [String: String]?, queryParameters: [String: String]?, body: Data?, completion: @escaping (_ result: Result<Data, Error>) -> Void)
+    
+    func sendAnalyticsEvent(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -238,16 +239,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func genericRequest(
-        url: URL,
-        method: HTTPMethod,
-        headers: [String: String]?,
-        queryParameters: [String: String]?,
-        body: Data?,
-        completion: @escaping (_ result: Result<Data, Error>) -> Void
-    ) {
-        let endpoint = PrimerAPI.genericRequest(url: url, method: method, headers: headers, queryParameters: queryParameters, body: body)
-        networkService.request(endpoint) { (result: Result<Data, NetworkServiceError>) in
+    func sendAnalyticsEvent(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void) {
+        let endpoint = PrimerAPI.sendAnalyticsEvents(url: url, body: body)
+        networkService.request(endpoint) { (result: Result<Analytics.Service.Response, NetworkServiceError>) in
             switch result {
             case .success(let res):
                 completion(.success(res))
@@ -453,7 +447,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         
     }
     
-    func genericRequest(url: URL, method: HTTPMethod, headers: [String : String]?, queryParameters: [String : String]?, body: Data?, completion: @escaping (Result<Data, Error>) -> Void) {
+    func sendAnalyticsEvent(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void) {
         
     }
 
