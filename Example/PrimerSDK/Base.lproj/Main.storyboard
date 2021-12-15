@@ -132,14 +132,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="40" estimatedRowHeight="40" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="5Bg-Yz-vOr">
-                                <rect key="frame" x="0.0" y="64" width="414" height="406"/>
+                                <rect key="frame" x="20" y="120" width="374" height="362"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="PaymentMethodCell" rowHeight="40" id="hfT-yD-Z4D" customClass="PaymentMethodCell" customModule="PrimerSDK_Example" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="44.5" width="414" height="40"/>
+                                        <rect key="frame" x="0.0" y="44.5" width="374" height="40"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hfT-yD-Z4D" id="vfo-wa-jVh">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="40"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="374" height="40"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fMG-7w-kbM">
@@ -149,7 +149,7 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JNC-tf-ocd">
-                                                    <rect key="frame" x="58" y="10" width="336" height="20.5"/>
+                                                    <rect key="frame" x="58" y="10" width="296" height="20.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -289,26 +289,34 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Zip code:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Zgj-Y0-gEw">
+                                <rect key="frame" x="20" y="52" width="374" height="60"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="leading" secondItem="1AU-v5-4lz" secondAttribute="leading" id="5sw-ep-7bL"/>
                             <constraint firstItem="Fpg-xO-ASt" firstAttribute="leading" secondItem="1AU-v5-4lz" secondAttribute="leadingMargin" constant="20" id="7ft-US-D2G"/>
-                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="top" secondItem="5Bg-Yz-vOr" secondAttribute="bottom" constant="20" id="9iO-nh-s03"/>
+                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="trailing" secondItem="1AU-v5-4lz" secondAttribute="trailingMargin" id="CxG-K3-tC7"/>
+                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="leading" secondItem="1AU-v5-4lz" secondAttribute="leadingMargin" id="Inn-hY-E34"/>
                             <constraint firstItem="Y9U-da-1f0" firstAttribute="top" secondItem="Fpg-xO-ASt" secondAttribute="bottom" constant="20" id="J3Q-UE-2ox"/>
+                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="top" secondItem="Zgj-Y0-gEw" secondAttribute="bottom" constant="8" symbolic="YES" id="LVc-3i-k8w"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Fpg-xO-ASt" secondAttribute="trailing" constant="20" id="Zwa-lM-9Fh"/>
-                            <constraint firstAttribute="trailing" secondItem="5Bg-Yz-vOr" secondAttribute="trailing" id="fsd-nq-idO"/>
-                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="top" secondItem="Ih5-6I-Tgq" secondAttribute="bottom" constant="20" id="zJI-wZ-1q5"/>
+                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="top" secondItem="5Bg-Yz-vOr" secondAttribute="bottom" constant="8" symbolic="YES" id="ehg-2v-zep"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="0lO-Kc-k9w"/>
                     <connections>
                         <outlet property="tableView" destination="5Bg-Yz-vOr" id="BdS-K3-eOb"/>
+                        <outlet property="zipLabel" destination="Zgj-Y0-gEw" id="q15-X6-IwF"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IiI-j4-1kq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2688.8000000000002" y="132.68365817091455"/>
+            <point key="canvasLocation" x="2688.4057971014495" y="132.58928571428572"/>
         </scene>
         <!--Result View Controller-->
         <scene sceneID="Tkv-cI-sz4">

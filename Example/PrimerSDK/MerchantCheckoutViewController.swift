@@ -32,6 +32,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var zipLabel: UILabel!
     
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
         didSet {
@@ -237,8 +238,10 @@ class MerchantCheckoutViewController: UIViewController {
                     ])
                 merchantActions.append(newAction)
             } else if action.type == "SET_ZIP_CODE" {
-                // do nothing for now
-                print(action.type)
+                // do something with zip code.
+                if let zipCode = (action.params?["zipCode"] as? String), zipCode.count > 4 {
+                    zipLabel.text = "Zip code: \(zipCode)"
+                }
             } else {
                 merchantActions.append(action)
             }
