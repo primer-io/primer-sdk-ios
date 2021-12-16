@@ -141,9 +141,13 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     fileprivate var tmpTokenizationCallback: ((_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void)?
     
     internal lazy var tableView: UITableView = {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         let tableView = UITableView()
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
+        tableView.backgroundColor = theme.view.backgroundColor
+        
         if #available(iOS 11.0, *) {
             tableView.contentInsetAdjustmentBehavior = .never
         }
@@ -160,7 +164,6 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
         textField.delegate = self
-        textField.backgroundColor = UIColor(red: 36.0/255, green: 42.0/255, blue: 47.0/255, alpha: 0.03)
         textField.borderStyle = .none
         textField.layer.cornerRadius = 3.0
         textField.font = UIFont.systemFont(ofSize: 16.0)

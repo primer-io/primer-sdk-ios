@@ -43,6 +43,8 @@ internal class BankSelectorViewController: PrimerFormViewController {
                 
         verticalStackView.spacing = 5
         
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
         let bankTitleLabel = UILabel()
         bankTitleLabel.text = NSLocalizedString("choose-your-bank-title-label",
                                                 tableName: nil,
@@ -50,7 +52,7 @@ internal class BankSelectorViewController: PrimerFormViewController {
                                                 value: "Choose your bank",
                                                 comment: "Choose your bank - Choose your bank title label")
         bankTitleLabel.font = UIFont.systemFont(ofSize: 20)
-        bankTitleLabel.textColor = .black
+        bankTitleLabel.textColor = theme.text.title.color
         verticalStackView.addArrangedSubview(bankTitleLabel)
         
         if let subtitle = subtitle {

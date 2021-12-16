@@ -27,6 +27,9 @@ class BankTableViewCell: UITableViewCell {
         self.contentView.preservesSuperviewLayoutMargins = false
         self.selectionStyle = .none
         
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        backgroundColor = theme.view.backgroundColor
+        
         contentView.addSubview(stackView)
         stackView.axis = .horizontal
         stackView.alignment = .fill
@@ -55,6 +58,7 @@ class BankTableViewCell: UITableViewCell {
         arrowImageView.widthAnchor.constraint(equalToConstant: 11).isActive = true
         
         nameLabel.numberOfLines = 1
+        nameLabel.textColor = theme.text.body.color
     }
     
     required init?(coder: NSCoder) {
