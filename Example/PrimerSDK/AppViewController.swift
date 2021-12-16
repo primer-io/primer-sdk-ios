@@ -104,17 +104,17 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if pickerView.tag == 0 {
-            return CountryCode.allCases[row].rawValue
+            return CountryCode.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         } else {
-            return Currency.allCases[row].rawValue
+            return Currency.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         }
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView.tag == 0 {
-            countryCodeTextField.text = CountryCode.allCases[row].rawValue
+            countryCodeTextField.text = CountryCode.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         } else {
-            currencyTextField.text = Currency.allCases[row].rawValue
+            currencyTextField.text = Currency.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         }
     }
 }
