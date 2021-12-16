@@ -396,6 +396,12 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
 
 extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if string == "\n" {
+            // Keyboard's return button tapoped
+            textField.resignFirstResponder()
+            return false
+        }
+        
         var query: String
         
         if string.isEmpty {
