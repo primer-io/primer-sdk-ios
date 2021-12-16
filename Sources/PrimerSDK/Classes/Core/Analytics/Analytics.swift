@@ -11,6 +11,8 @@ import Foundation
 
 class Analytics {
     
+    static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics")
+    
     struct Event: Codable {
         var localId: String?
         

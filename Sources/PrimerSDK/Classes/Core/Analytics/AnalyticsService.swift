@@ -9,46 +9,41 @@
 
 import Foundation
 
-var called: Int = 0
-var numberOfEvents: Int = 0
-
 extension Analytics {
     
     internal class Service {
+        
         static var filepath: URL = {
-            return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("reporting")
+            let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
+            log(logLevel: .info, title: "Analytics URL", message: "Analytics URL:\n\(url)\n", file: #file, className: "Analytics.Service", function: #function, line: #line)
+            return url
         }()
         
         static var lastSyncAt: Date? {
-            guard let lastSyncAtStr = UserDefaults.standard.string(forKey: "primer.reporting.lastSyncAt") else { return nil }
-            guard let lastSyncAt = lastSyncAtStr.toDate() else { return nil }
-            return lastSyncAt
+            get {
+                guard let lastSyncAtStr = UserDefaults.primerFramework.string(forKey: "primer.analytics.lastSyncAt") else { return nil }
+                guard let lastSyncAt = lastSyncAtStr.toDate() else { return nil }
+                return lastSyncAt
+            }
+            set {
+                let lastSyncAtStr = newValue?.toString()
+                UserDefaults.primerFramework.set(lastSyncAtStr, forKey: "primer.analytics.lastSyncAt")
+                UserDefaults.primerFramework.synchronize()
+            }
         }
         
         static var isSyncAllowed: Bool {
-            return true
-        }
-                
-        init() {
-            NotificationCenter.default.removeObserver(self)
-            NotificationCenter.default.addObserver(self, selector: #selector(onTerminate), name: UIApplication.willTerminateNotification, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(onTerminate), name: UIApplication.willResignActiveNotification, object: nil)
-        }
-        
-        @objc
-        private func onTerminate() {
-            Analytics.Service.sync(enforce: true)
+            guard let lastSyncedAt = Analytics.Service.lastSyncAt else { return true }
+            return lastSyncedAt.addingTimeInterval(10) < Date()
         }
         
         private static func loadEvents() -> [Event] {
             guard let eventsData = try? Data(contentsOf: Analytics.Service.filepath) else { return [] }
             
-//            let aes = AES256()
-//            guard let deryptedEventsData = try? aes.decrypt(encryptedEventsData) else {
-//                return []
-//            }
+            let aes = AES256()
+            let deryptedEventsData = (try? aes.decrypt(eventsData)) ?? eventsData
             
-            let events = (try? JSONDecoder().decode([Analytics.Event].self, from: eventsData)) ?? []
+            let events = (try? JSONDecoder().decode([Analytics.Event].self, from: deryptedEventsData)) ?? []
             return events.sorted(by: { $0.createdAt > $1.createdAt })
         }
         
@@ -57,20 +52,9 @@ extension Analytics {
         }
         
         internal static func record(events: [Analytics.Event]) {
-            numberOfEvents += events.count
-            called += 1
-            print(" *** Called: \(called), totalEvents: \(numberOfEvents)")
-            
-            let analyticsQueue = DispatchQueue(label: "primer.analytics", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
-            
-            analyticsQueue.sync {
-                // First load events
+            Analytics.queue.async {
                 var tmpEvents = Analytics.Service.loadEvents()
-                
-                // Merge them
                 tmpEvents.append(contentsOf: events)
-                
-                // Sort them
                 let sortedEvents = tmpEvents.sorted(by: { $0.createdAt < $1.createdAt })
                 
                 try? Analytics.Service.save(events: sortedEvents)
@@ -79,9 +63,9 @@ extension Analytics {
         
         private static func save(events: [Analytics.Event]) throws {
             let eventsData = try JSONEncoder().encode(events)
-//            let aes = AES256()
-//            let encryptedEventsData = try aes.encrypt(eventsData)
-            try eventsData.write(to: Analytics.Service.filepath)
+            let aes = AES256()
+            let encryptedEventsData = try aes.encrypt(eventsData)
+            try encryptedEventsData.write(to: Analytics.Service.filepath)
         }
         
         internal static func deleteEvents(_ events: [Analytics.Event]? = nil) throws {
@@ -97,11 +81,9 @@ extension Analytics {
         
         internal static func sync(enforce: Bool = false, batchSize: UInt = 50) {
             if !enforce && !isSyncAllowed { return }
-            
-            let analyticsQueue = DispatchQueue(label: "primer.analytics", qos: .background, attributes: .concurrent, autoreleaseFrequency: .workItem, target: nil)
-            
-            analyticsQueue.sync {
-                var storedEvents = Analytics.Service.loadEvents()
+                        
+            Analytics.queue.async {
+                var storedEvents = Array(Analytics.Service.loadEvents()[0..<Int(batchSize)])
                 for (i, _) in storedEvents.enumerated() {
                     storedEvents[i].localId = nil
                 }
@@ -112,7 +94,20 @@ extension Analytics {
                 
                 let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
                 client.sendAnalyticsEvent(url: analyticsUrl, body: requestBody) { result in
-                    try? Analytics.Service.deleteEvents(storedEvents)
+                    switch result {
+                    case .success:
+                        try? Analytics.Service.deleteEvents(storedEvents)
+                        self.lastSyncAt = Date()
+                        
+                        let remainingEvents = Analytics.Service.loadEvents()
+                        if !remainingEvents.isEmpty {
+                            Analytics.Service.sync(enforce: true)
+                        }
+                        
+                    case .failure(let err):
+                        break
+                    }
+                    
                 }
             }
         }
@@ -127,10 +122,6 @@ extension Analytics {
         
     }
     
-}
-
-extension PrimerAPI {
-//    case gen
 }
 
 #endif

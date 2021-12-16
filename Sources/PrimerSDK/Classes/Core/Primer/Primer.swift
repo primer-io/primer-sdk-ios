@@ -12,10 +12,11 @@ private let _Primer = Primer()
 public class Primer {
     
     // MARK: - PROPERTIES
-    
+    private var primerWindow: UIWindow?
     public var delegate: PrimerDelegate? // TODO: should this be weak?
     private(set) var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
+    internal var primerRootVC: PrimerRootViewController?
     internal let sdkSessionId = String.randomString(length: 32)
     internal var checkoutSessionId: String?
     private var timingEventId: String?
@@ -25,6 +26,10 @@ public class Primer {
     public static var shared: Primer {
         return _Primer
     }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 
     fileprivate init() {
         #if canImport(Primer3DS)
@@ -32,6 +37,10 @@ public class Primer {
         #else
         print("Failed to import Primer3DS")
         #endif
+        
+        NotificationCenter.default.removeObserver(self)
+        NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
         
         DispatchQueue.main.async { [weak self] in
             let settings = PrimerSettings()
@@ -58,9 +67,10 @@ public class Primer {
         return false
     }
     
-    var primerRootVC: PrimerRootViewController?
-    
-    private var primerWindow: UIWindow?
+    @objc
+    private func onAppStateChange() {
+        Analytics.Service.sync(enforce: true)
+    }
     
     /**
      Set or reload all SDK dependencies.
