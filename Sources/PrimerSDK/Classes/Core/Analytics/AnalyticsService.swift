@@ -32,18 +32,10 @@ extension Analytics {
             }
         }
         
-        static var isSyncAllowed: Bool {
-            guard let lastSyncedAt = Analytics.Service.lastSyncAt else { return true }
-            return lastSyncedAt.addingTimeInterval(10) < Date()
-        }
-        
         private static func loadEvents() -> [Event] {
+            
             guard let eventsData = try? Data(contentsOf: Analytics.Service.filepath) else { return [] }
-            
-            let aes = AES256()
-            let deryptedEventsData = (try? aes.decrypt(eventsData)) ?? eventsData
-            
-            let events = (try? JSONDecoder().decode([Analytics.Event].self, from: deryptedEventsData)) ?? []
+            let events = (try? JSONDecoder().decode([Analytics.Event].self, from: eventsData)) ?? []
             return events.sorted(by: { $0.createdAt > $1.createdAt })
         }
         
@@ -56,16 +48,13 @@ extension Analytics {
                 var tmpEvents = Analytics.Service.loadEvents()
                 tmpEvents.append(contentsOf: events)
                 let sortedEvents = tmpEvents.sorted(by: { $0.createdAt < $1.createdAt })
-                
                 try? Analytics.Service.save(events: sortedEvents)
             }
         }
         
         private static func save(events: [Analytics.Event]) throws {
             let eventsData = try JSONEncoder().encode(events)
-            let aes = AES256()
-            let encryptedEventsData = try aes.encrypt(eventsData)
-            try encryptedEventsData.write(to: Analytics.Service.filepath)
+            try eventsData.write(to: Analytics.Service.filepath)
         }
         
         internal static func deleteEvents(_ events: [Analytics.Event]? = nil) throws {
@@ -73,41 +62,59 @@ extension Analytics {
                 let eventsIds = events.compactMap({ $0.localId })
                 let allEvents = Analytics.Service.loadEvents()
                 let remainingEvents = allEvents.filter({ !eventsIds.contains($0.localId ?? "") })
-                try? save(events: remainingEvents)
+                try save(events: remainingEvents)
             } else {
-                try? Analytics.Service.save(events: [])
+                try Analytics.Service.save(events: [])
             }
         }
         
-        internal static func sync(enforce: Bool = false, batchSize: UInt = 50) {
-            if !enforce && !isSyncAllowed { return }
-                        
+        internal static func sync(batchSize: UInt = 100) {
             Analytics.queue.async {
-                var storedEvents = Array(Analytics.Service.loadEvents()[0..<Int(batchSize)])
-                for (i, _) in storedEvents.enumerated() {
-                    storedEvents[i].localId = nil
+                
+                var storedEvents = Analytics.Service.loadEvents()
+                if storedEvents.count > batchSize {
+                    storedEvents = Array(storedEvents[0..<Int(batchSize)])
                 }
                 
-                let analyticsUrl = URL(string: "https://us-central1-primerdemo-8741b.cloudfunctions.net/api/analytics/\(Primer.shared.sdkSessionId)")!
+                let analyticsUrlStrs: [String?] = Array(Set(storedEvents.map({ $0.analyticsUrl })))
                 
-                let requestBody = Analytics.Service.Request(data: storedEvents)
-                
-                let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
-                client.sendAnalyticsEvent(url: analyticsUrl, body: requestBody) { result in
-                    switch result {
-                    case .success:
-                        try? Analytics.Service.deleteEvents(storedEvents)
-                        self.lastSyncAt = Date()
-                        
-                        let remainingEvents = Analytics.Service.loadEvents()
-                        if !remainingEvents.isEmpty {
-                            Analytics.Service.sync(enforce: true)
-                        }
-                        
-                    case .failure(let err):
-                        break
+                for analyticsUrlStr in analyticsUrlStrs {
+                    let events = storedEvents.filter({ $0.analyticsUrl == analyticsUrlStr })
+                    // FIXME: Change hardcoded URL
+                    let urlStr = analyticsUrlStr ?? "https://us-central1-primerdemo-8741b.cloudfunctions.net/api/analytics/\(Primer.shared.sdkSessionId)"
+                    guard let url = URL(string: urlStr) else { continue }
+                    
+                    var _events = events
+                    for (i, _) in _events.enumerated() {
+                        _events[i].localId = nil
+                        _events[i].analyticsUrl = nil
                     }
                     
+                    let requestBody = Analytics.Service.Request(data: _events)
+                    
+                    let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+                    client.sendAnalyticsEvent(url: url, body: requestBody) { result in
+                        switch result {
+                        case .success:
+                            do {
+                                try Analytics.Service.deleteEvents(events)
+                            } catch {
+                                _ = ErrorHandler.shared.handle(error: error)
+                                return
+                            }
+                            
+                            self.lastSyncAt = Date()
+                            
+                            let remainingEvents = Analytics.Service.loadEvents()
+                                .filter({ $0.analyticsUrl == analyticsUrlStr })
+                                .filter({ $0.eventType != Analytics.Event.EventType.networkCall && $0.eventType != Analytics.Event.EventType.networkConnectivity })
+                            if !remainingEvents.isEmpty {
+                                Analytics.Service.sync()
+                            }
+                            
+                        case .failure(let err):
+                        }
+                    }
                 }
             }
         }

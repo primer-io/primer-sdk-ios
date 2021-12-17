@@ -69,7 +69,7 @@ public class Primer {
     
     @objc
     private func onAppStateChange() {
-        Analytics.Service.sync(enforce: true)
+        Analytics.Service.sync()
     }
     
     /**
