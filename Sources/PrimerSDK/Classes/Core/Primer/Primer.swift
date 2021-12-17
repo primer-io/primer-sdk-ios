@@ -17,7 +17,7 @@ public class Primer {
     private(set) var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
     internal var primerRootVC: PrimerRootViewController?
-    internal let sdkSessionId = String.randomString(length: 32)
+    internal let sdkSessionId = UUID().uuidString
     internal var checkoutSessionId: String?
     private var timingEventId: String?
 
@@ -222,7 +222,7 @@ public class Primer {
     }
     
     public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil) {
-        checkoutSessionId = String.randomString(length: 32)
+        checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
@@ -237,7 +237,7 @@ public class Primer {
             properties: NetworkConnectivityEventProperties(
                 networkType: Connectivity.networkType))
         
-        self.timingEventId = String.randomString(length: 32)
+        self.timingEventId = UUID().uuidString
         let timingEvent = Analytics.Event(
             eventType: .timerEvent,
             properties: TimerEventProperties(
@@ -255,7 +255,7 @@ public class Primer {
     }
     
     public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
-        checkoutSessionId = String.randomString(length: 32)
+        checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
@@ -270,7 +270,7 @@ public class Primer {
             properties: NetworkConnectivityEventProperties(
                 networkType: Connectivity.networkType))
         
-        self.timingEventId = String.randomString(length: 32)
+        self.timingEventId = UUID().uuidString
         let timingEvent = Analytics.Event(
             eventType: .timerEvent,
             properties: TimerEventProperties(
@@ -289,7 +289,7 @@ public class Primer {
     
     // swiftlint:disable cyclomatic_complexity
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
-        checkoutSessionId = String.randomString(length: 32)
+        checkoutSessionId = UUID().uuidString
         
         switch (paymentMethod, intent) {
         case (.adyenAlipay, .checkout):
@@ -423,7 +423,7 @@ public class Primer {
             properties: NetworkConnectivityEventProperties(
                 networkType: Connectivity.networkType))
         
-        self.timingEventId = String.randomString(length: 32)
+        self.timingEventId = UUID().uuidString
         let timingEvent = Analytics.Event(
             eventType: .timerEvent,
             properties: TimerEventProperties(
