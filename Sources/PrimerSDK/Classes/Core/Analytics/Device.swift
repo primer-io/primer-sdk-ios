@@ -71,11 +71,7 @@ struct Device: Codable {
         if kerr == KERN_SUCCESS {
             let mb = Double(info.resident_size) / 1048576
             return Int(mb.rounded())
-            print("Memory in use (in bytes): \(info.resident_size)")
-        }
-        else {
-            print("Error with task_info(): " +
-                (String(cString: mach_error_string(kerr), encoding: String.Encoding.ascii) ?? "unknown error"))
+        } else {
             return nil
         }
     }

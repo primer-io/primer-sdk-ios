@@ -213,7 +213,6 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let res):
                 let banks = res.result
-                print(banks)
                 completion(.success(banks))
             case .failure(let error):
                 _ = ErrorHandler.shared.handle(error: error)
