@@ -14,6 +14,8 @@ class Analytics {
     static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics")
     
     struct Event: Codable {
+        // The variables below are used locally, and are getting deleted before sending them.
+        var analyticsUrl: String?
         var localId: String?
         
         var appIdentifier: String? = Bundle.main.bundleIdentifier
@@ -32,6 +34,8 @@ class Analytics {
         init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {
             self.eventType = eventType
             self.properties = properties
+            
+            analyticsUrl = ClientTokenService.decodedClientToken?.analyticsUrl
             
             if let checkoutSessionId = Primer.shared.checkoutSessionId {
                 self.checkoutSessionId = checkoutSessionId
@@ -52,11 +56,14 @@ class Analytics {
         }
         
         private enum CodingKeys: String, CodingKey {
-            case appIdentifier, checkoutSessionId, clientSessionId, createdAt, customerId, device, eventType, localId, primerAccountId, properties, sdkSessionId, sdkType, sdkVersion
+            case analyticsUrl, appIdentifier, checkoutSessionId, clientSessionId,
+                 createdAt, customerId, device, eventType, localId, primerAccountId,
+                 properties, sdkSessionId, sdkType, sdkVersion
         }
         
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
+            try? container.encode(analyticsUrl, forKey: .analyticsUrl)
             try? container.encode(appIdentifier, forKey: .appIdentifier)
             try? container.encode(checkoutSessionId, forKey: .checkoutSessionId)
             try? container.encode(clientSessionId, forKey: .clientSessionId)
@@ -91,6 +98,7 @@ class Analytics {
         
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.analyticsUrl = (try? container.decode(String?.self, forKey: .analyticsUrl)) ?? nil
             self.appIdentifier = (try? container.decode(String.self, forKey: .appIdentifier)) ?? nil
             self.checkoutSessionId = (try? container.decode(String?.self, forKey: .checkoutSessionId)) ?? nil
             self.clientSessionId = (try? container.decode(String?.self, forKey: .clientSessionId)) ?? nil
