@@ -85,9 +85,9 @@ class Base: XCTestCase {
             amount: "100",
             expecations: Payment.Expecations(
                 amount: "€1.00",
-                surcharge: "+€0.29",
+                surcharge: nil,
                 webviewImage: nil,
-                webviewTexts: ["Primer API Ltd", "€ 1,29"],
+                webviewTexts: ["Primer API Ltd", "€ 1,00"],
                 buttonTexts: nil,
                 resultScreenTexts: [
                     "status": "PENDING",
