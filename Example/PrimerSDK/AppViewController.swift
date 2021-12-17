@@ -27,11 +27,12 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.fr.rawValue
+        countryCodeTextField.text = CountryCode.nl.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
         currencyTextField.text = Currency.EUR.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
-        amountTextField.text = "1.00"
+        amountTextField.placeholder = "In minor units (type 100 for 1.00)"
+        amountTextField.text = "100"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
@@ -49,6 +50,10 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         currencyTextField.inputView = currencyPicker
         currencyPicker.dataSource = self
         currencyPicker.delegate = self
+    }
+    
+    @IBAction func viewTapped(_ sender: Any) {
+        view.endEditing(true)
     }
     
     @IBAction func initializePrimerButtonTapped(_ sender: Any) {
@@ -69,8 +74,8 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         }
         
         var amount: Int?
-        if let amountStr = amountTextField.text, let amountDbl = Double(amountStr) {
-            amount = ((Decimal(amountDbl) * 100) as NSDecimalNumber).intValue
+        if let amountStr = amountTextField.text {
+            amount = Int(amountStr)
         }
         
         let mcvc = MerchantCheckoutViewController.instantiate(
@@ -99,17 +104,17 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if pickerView.tag == 0 {
-            return CountryCode.allCases[row].rawValue
+            return CountryCode.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         } else {
-            return Currency.allCases[row].rawValue
+            return Currency.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         }
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView.tag == 0 {
-            countryCodeTextField.text = CountryCode.allCases[row].rawValue
+            countryCodeTextField.text = CountryCode.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         } else {
-            currencyTextField.text = Currency.allCases[row].rawValue
+            currencyTextField.text = Currency.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         }
     }
 }

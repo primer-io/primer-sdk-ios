@@ -145,9 +145,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             
             if let surCharge = cardButtonViewModel.surCharge {
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+                
                 let surChargeLabel = UILabel()
                 surChargeLabel.text = "+" + Int(surCharge).toCurrencyString(currency: settings.currency!)
-                surChargeLabel.textColor = .black
+                surChargeLabel.textColor = theme.text.body.color
                 surChargeLabel.textAlignment = .right
                 surChargeLabel.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                 paymentMethodStackView.addArrangedSubview(surChargeLabel)
