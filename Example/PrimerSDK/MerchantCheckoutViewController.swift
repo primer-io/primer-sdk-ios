@@ -390,11 +390,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                             "amount": 19
                         ]
                     ],
-                    "PAY_NL_BANCONTACT": [
-                        "surcharge": [
-                            "amount": 29
-                        ]
-                    ],
                     "PAY_NL_IDEAL": [
                         "surcharge": [
                             "amount": 39

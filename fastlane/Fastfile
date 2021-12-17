@@ -103,23 +103,23 @@ platform :ios do
       note: sdk_version_name
     )
 
-    # Build for firebase
-    build_app(
-      scheme: "PrimerSDK-Example",
-      workspace: "./Example/PrimerSDK.xcworkspace",
-      configuration: "Debug",
-      export_method: "development",
-      # Build speed optimisation
-      skip_package_pkg: true, 
-    )
+    # # Build for firebase
+    # build_app(
+    #   scheme: "PrimerSDK-Example",
+    #   workspace: "./Example/PrimerSDK.xcworkspace",
+    #   configuration: "Debug",
+    #   export_method: "development",
+    #   # Build speed optimisation
+    #   skip_package_pkg: true, 
+    # )
 
-    # Firebase
-    firebase_app_distribution(
-      service_credentials_file: "firebase_credentials.json",
-      app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
-      groups: "primer-internal",
-      release_notes: "Preview release: " + sdk_version_name + " [" + str_time + "]"
-    )
+    # # Firebase
+    # firebase_app_distribution(
+    #   service_credentials_file: "firebase_credentials.json",
+    #   app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
+    #   groups: "primer-internal",
+    #   release_notes: "Preview release: " + sdk_version_name + " [" + str_time + "]"
+    # )
   end
 
   lane :release do
