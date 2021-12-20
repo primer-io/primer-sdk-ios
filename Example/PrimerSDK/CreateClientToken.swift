@@ -181,6 +181,10 @@ struct ClientSessionRequestBody {
                 dic["emailAddress"] = emailAddress
             }
             
+            if let mobileNumber = mobileNumber {
+                dic["mobileNumber"] = mobileNumber
+            }
+            
             if let billingAddress = billingAddress {
                 dic["billingAddress"] = billingAddress.dictionaryValue
             }
