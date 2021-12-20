@@ -58,7 +58,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         }
         
         // separator view
-        let separatorView = UIView()
+        let separatorView = PrimerView()
         separatorView.translatesAutoresizingMaskIntoConstraints = false
         separatorView.heightAnchor.constraint(equalToConstant: 8).isActive = true
         verticalStackView.addArrangedSubview(separatorView)
@@ -108,7 +108,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     private func configureZipCodeFieldRow() {
         zipCodeFieldRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.zipCodeContainerView)
-        zipCodeFieldRow.addArrangedSubview(UIView())
+        zipCodeFieldRow.addArrangedSubview(PrimerView())
         verticalStackView.addArrangedSubview(zipCodeFieldRow)
     }
     
@@ -132,7 +132,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
             }
         }
         
-        view.updateConstraints()
+        view.layoutIfNeeded()
     }
 }
 
