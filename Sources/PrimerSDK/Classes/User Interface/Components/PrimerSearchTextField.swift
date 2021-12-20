@@ -30,14 +30,34 @@ internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
     private let clearImage = UIImage(named: "error", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
     private var rightImageView = UIImageView()
     
+    override var placeholder: String? {
+        didSet {
+            if placeholder == nil {
+                super.placeholder = placeholder
+            } else {
+                let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+                
+                attributedPlaceholder = NSAttributedString(
+                    string: placeholder!,
+                    attributes: [NSAttributedString.Key.foregroundColor: theme.text.subtitle.color]
+                )
+            }
+            
+        }
+    }
+    
     override init(frame: CGRect = .zero) {
         super.init(frame: frame)
         super.delegate = self
-        rightImageView.image = searchImage
-        rightImageView.contentMode = .scaleAspectFit
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        rightImageView.tintColor = theme.input.color
+        backgroundColor = theme.input.color
+        
+        rightImageView.image = searchImage
+        rightImageView.contentMode = .scaleAspectFit
+        textColor = theme.text.body.color
+        
+        rightImageView.tintColor = theme.paymentMethodButton.iconColor
         rightView = rightImageView
         
         let rightViewTap = UITapGestureRecognizer()
