@@ -111,6 +111,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
         return Primer.shared.delegate?.onCheckoutDismissed ?? {}
     }
     
+    private var isModifiedByClientSession: Bool = false
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
@@ -204,6 +206,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     }
     
     func logClientSessionWarning(for val: String) {
+        if isModifiedByClientSession { return }
         print("Information relating to the \(val) has been provided in both client-session creation and checkout initialization. Provided client-session information will be favored.")
     }
     
@@ -262,6 +265,8 @@ public class PrimerSettings: PrimerSettingsProtocol {
                 self.countryCode = address.countryCode != nil ? CountryCode(rawValue: address.countryCode!) : nil
             }
         }
+        
+        isModifiedByClientSession = true
     }
 }
 
