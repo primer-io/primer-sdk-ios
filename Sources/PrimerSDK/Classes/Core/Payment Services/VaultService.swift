@@ -49,7 +49,7 @@ internal class VaultService: VaultServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.vaultDeletePaymentMethod(clientToken: clientToken, id: id) { (result) in
+        api.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { (result) in
             switch result {
             case .failure:
                 completion(PrimerError.vaultDeleteFailed)
