@@ -270,7 +270,8 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
                                                          comment: "Delete - Alert button delete"),
                                 style: .destructive,
                                 handler: { [weak self] _ in
-                                    self?.deletePaymentMethod(paymentMethod.token)
+                                    guard let id = paymentMethod.token else { return }
+                                    self?.deletePaymentMethod(id)
                                 }))
 
             alert.show()

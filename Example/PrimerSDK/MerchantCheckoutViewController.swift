@@ -290,11 +290,17 @@ class MerchantCheckoutViewController: UIViewController {
     var paymentResponsesData: [Data] = []
     
     func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
+        guard let paymentMethodToken = paymentMethod.token else {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
         guard let url = URL(string: "\(endpoint)/api/payments/") else {
-            return completion(nil, NetworkError.missingParams)
+            completion(nil, NetworkError.missingParams)
+            return
         }
                 
-        let body = Payment.Request(paymentMethodToken: paymentMethod.token)
+        let body = Payment.Request(paymentMethodToken: paymentMethodToken)
         
         var bodyData: Data!
         
