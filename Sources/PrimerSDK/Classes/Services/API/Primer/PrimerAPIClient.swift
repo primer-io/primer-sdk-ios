@@ -99,7 +99,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     }
 
     func payPalStartOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void) {
-        let endpoint = PrimerAPI.payPalStartOrderSession(clientToken: clientToken, payPalCreateOrderRequest: payPalCreateOrderRequest)
+        let endpoint = PrimerAPI.createPayPalOrderSession(clientToken: clientToken, payPalCreateOrderRequest: payPalCreateOrderRequest)
         networkService.request(endpoint) { (result: Result<PayPalCreateOrderResponse, NetworkServiceError>) in
             switch result {
             case .success(let payPalCreateOrderResponse):
