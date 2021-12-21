@@ -23,7 +23,7 @@ internal class VaultService: VaultServiceProtocol {
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         
         firstly {
-            api.vaultFetchPaymentMethods(clientToken: clientToken)
+            api.fetchVaultedPaymentMethods(clientToken: clientToken)
         }
         .done { paymentMethods in
             state.paymentMethods = paymentMethods.data

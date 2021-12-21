@@ -11,7 +11,7 @@ import Foundation
 
 enum PrimerAPI: Endpoint {
     case fetchConfiguration(clientToken: DecodedClientToken)
-    case vaultFetchPaymentMethods(clientToken: DecodedClientToken)
+    case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
     case vaultDeletePaymentMethod(clientToken: DecodedClientToken, id: String)
 
     case directDebitCreateMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
@@ -56,7 +56,7 @@ internal extension PrimerAPI {
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .vaultDeletePaymentMethod(let clientToken, _),
-             .vaultFetchPaymentMethods(let clientToken),
+             .fetchVaultedPaymentMethods(let clientToken),
              .tokenizePaymentMethod(let clientToken, _),
              .threeDSBeginRemoteAuth(let clientToken, _, _),
              .threeDSContinueRemoteAuth(let clientToken, _):
@@ -77,7 +77,7 @@ internal extension PrimerAPI {
             return "/payment-instruments/\(id)/vault"
         case .fetchConfiguration:
             return ""
-        case .vaultFetchPaymentMethods:
+        case .fetchVaultedPaymentMethods:
             return "/payment-instruments"
         case .payPalStartOrderSession:
             return "/paypal/orders/create"
@@ -122,7 +122,7 @@ internal extension PrimerAPI {
         case .vaultDeletePaymentMethod:
             return .delete
         case .fetchConfiguration,
-             .vaultFetchPaymentMethods:
+             .fetchVaultedPaymentMethods:
             return .get
         case .directDebitCreateMandate,
              .payPalStartOrderSession,
@@ -150,7 +150,7 @@ internal extension PrimerAPI {
         switch self {
         case .directDebitCreateMandate(let clientToken, _),
              .vaultDeletePaymentMethod(let clientToken, _),
-             .vaultFetchPaymentMethods(let clientToken),
+             .fetchVaultedPaymentMethods(let clientToken),
              .payPalStartOrderSession(let clientToken, _),
              .payPalStartBillingAgreementSession(let clientToken, _),
              .payPalConfirmBillingAgreement(let clientToken, _),
@@ -233,7 +233,7 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(request)
         case .vaultDeletePaymentMethod,
              .fetchConfiguration,
-             .vaultFetchPaymentMethods,
+             .fetchVaultedPaymentMethods,
              .threeDSContinueRemoteAuth,
              .poll:
             return nil
