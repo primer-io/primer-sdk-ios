@@ -16,6 +16,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private var cardComponentsManager: CardComponentsManager!
     var onConfigurationFetched: (() -> Void)?
     
+    private var isTokenizing = false
+    
     override lazy var title: String = {
         return "Payment Card"
     }()
@@ -363,6 +365,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     @objc
     func payButtonTapped(_ sender: UIButton) {
+        isTokenizing = true
         submitButton.showSpinner(true)
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         
@@ -385,12 +388,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         self.submitButton.showSpinner(false)
                         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
                         Primer.shared.delegate?.onResumeError?(err)
-                        self.onClientSessionActionCompletion = nil
                     }
                     self.handle(error: err)
                 } else {
                     self.cardComponentsManager.tokenize()
                 }
+                self.onClientSessionActionCompletion = nil
             }
             
             var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
@@ -621,7 +624,8 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 }
                 .done {
                     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    if let amount = settings.amount {
+                    
+                    if let amount = settings.amount, !self.isTokenizing {
                         self.configurePayButton(amount: amount)
                     }
                         

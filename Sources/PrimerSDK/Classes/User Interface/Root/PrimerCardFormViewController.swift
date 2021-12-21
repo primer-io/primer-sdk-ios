@@ -132,7 +132,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
             }
         }
         
-        view.layoutIfNeeded()
+       view.layoutIfNeeded()
     }
 }
 
