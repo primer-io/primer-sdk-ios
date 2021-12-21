@@ -500,7 +500,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
             cardholderNameContainerView.errorText = "Invalid name"
         } else if primerTextFieldView is PrimerZipCodeFieldView, isValid == false {
-            zipCodeContainerView.errorText = "Invalid zip code" // todo: localise if UK, etc.
+            zipCodeContainerView.errorText = "\(localZipCodeTitle) is required" // todo: localise if UK, etc.
         }
         
         // dispatch zip code action if valid zip code.
