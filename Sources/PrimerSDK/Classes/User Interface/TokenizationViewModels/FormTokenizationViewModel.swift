@@ -154,9 +154,15 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return cardholderNameField
     }()
     
+    private var localSampleZipCode: String {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let countryCode = state.primerConfiguration?.clientSession?.order?.countryCode
+        return ZipCode.sample(for: countryCode)
+    }
+    
     lazy var zipCodeField: PrimerZipCodeFieldView = {
         let zipCodeField = PrimerZipCodeFieldView()
-        zipCodeField.placeholder = "12345"
+        zipCodeField.placeholder = localSampleZipCode
         zipCodeField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         zipCodeField.textColor = theme.input.text.color
         zipCodeField.delegate = self
@@ -199,10 +205,16 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return cardholderNameContainerView
     }()
     
+    private var localZipCodeTitle: String {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let countryCode = state.primerConfiguration?.clientSession?.order?.countryCode
+        return ZipCode.name(for: countryCode)
+    }
+    
     internal lazy var zipCodeContainerView: PrimerCustomFieldView = {
          let zipCodeContainerView = PrimerCustomFieldView()
          zipCodeContainerView.fieldView = zipCodeField
-         zipCodeContainerView.placeholderText = "Zip code" // todo: should localise to postal code for UK, etc.
+         zipCodeContainerView.placeholderText = localZipCodeTitle
          zipCodeContainerView.setup()
          zipCodeContainerView.tintColor = theme.input.border.color(for: .selected)
          return zipCodeContainerView

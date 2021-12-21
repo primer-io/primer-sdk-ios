@@ -27,6 +27,7 @@
 		1B8BC9520ED660CC4ED84F5DE39ED6EF /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D95377EF84E50593B0DFF2338003381 /* UIColorExtension.swift */; };
 		1BA4A6848E6472C81BF997EDA29453C9 /* PrimerAPIClient+3DS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6883F2007772E8F848A9C8DE93792D90 /* PrimerAPIClient+3DS.swift */; };
 		1C71E07A5294E52F26FBE72B0DE7008D /* PrimerImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1BBDA995024526FCB723077070DA27 /* PrimerImage.swift */; };
+		1D1E2AB92771608F006A219C /* ZipCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1E2AB82771608F006A219C /* ZipCode.swift */; };
 		1DC01EA42766315500CE8083 /* CheckoutModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC01EA32766315500CE8083 /* CheckoutModule.swift */; };
 		1DC01EA62766343400CE8083 /* PrimerZipCodeFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC01EA52766343400CE8083 /* PrimerZipCodeFieldView.swift */; };
 		1F3EA96C592E47BE52F501E1421BB423 /* WrapperProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3527A3BF8D4D2FF09DC57B6C0F79B75 /* WrapperProtocols.swift */; };
@@ -245,6 +246,7 @@
 		196495A997091F1D89FD28914F8CD110 /* VaultPaymentMethodViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewModel.swift; sourceTree = "<group>"; };
 		1C5AC63145332DE4074C215A66A194E2 /* sv.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = sv.lproj; sourceTree = "<group>"; };
 		1CE580D6F273995E427D870A3C347312 /* CountryCode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountryCode.swift; sourceTree = "<group>"; };
+		1D1E2AB82771608F006A219C /* ZipCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipCode.swift; sourceTree = "<group>"; };
 		1D95377EF84E50593B0DFF2338003381 /* UIColorExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		1DC01EA32766315500CE8083 /* CheckoutModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutModule.swift; sourceTree = "<group>"; };
 		1DC01EA52766343400CE8083 /* PrimerZipCodeFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerZipCodeFieldView.swift; sourceTree = "<group>"; };
@@ -966,6 +968,7 @@
 				7A220F598FF56DBADA5703465559D596 /* UserDefaultsExtension.swift */,
 				10E41AB9788EFCBE21BF2C183DC0CC98 /* Validation.swift */,
 				DC04E34E978BB637EFC15A4F60189710 /* WebViewUtil.swift */,
+				1D1E2AB82771608F006A219C /* ZipCode.swift */,
 			);
 			name = "Extensions & Utilities";
 			path = "Sources/PrimerSDK/Classes/Extensions & Utilities";
@@ -1467,6 +1470,7 @@
 				DBC0E81A3E4A4D76456C3ED949E1B5F0 /* Validation.swift in Sources */,
 				3AB8DA0FA7F1E3FD11ADB8E08DCFBFE4 /* VaultCheckoutViewModel.swift in Sources */,
 				4EFDB1EE013E9DC40ADC2229A810D665 /* VaultPaymentMethodView.swift in Sources */,
+				1D1E2AB92771608F006A219C /* ZipCode.swift in Sources */,
 				253AE1AB4D236307D3D3C8D5CFC7C673 /* VaultPaymentMethodViewController.swift in Sources */,
 				F6FD05193B67F460E0BA5A6D888F7637 /* VaultPaymentMethodViewModel.swift in Sources */,
 				1DC01EA42766315500CE8083 /* CheckoutModule.swift in Sources */,
