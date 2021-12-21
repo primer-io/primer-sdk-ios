@@ -19,7 +19,7 @@ enum PrimerAPI: Endpoint {
     case createPayPalSBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest)
     case confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest)
     case createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest)
-    case klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest)
+    case createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest)
     case klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
     case apayaCreateSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest)
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest)
@@ -49,7 +49,7 @@ internal extension PrimerAPI {
              .createPayPalSBillingAgreementSession(let clientToken, _),
              .confirmPayPalBillingAgreement(let clientToken, _),
              .createKlarnaPaymentSession(let clientToken, _),
-             .klarnaCreateCustomerToken(let clientToken, _),
+             .createKlarnaCustomerToken(let clientToken, _),
              .klarnaFinalizePaymentSession(let clientToken, _),
              .apayaCreateSession(let clientToken, _),
              .adyenBanksList(let clientToken, _):
@@ -87,7 +87,7 @@ internal extension PrimerAPI {
             return "/paypal/billing-agreements/confirm-agreement"
         case .createKlarnaPaymentSession:
             return "/klarna/payment-sessions"
-        case .klarnaCreateCustomerToken:
+        case .createKlarnaCustomerToken:
             return "/klarna/customer-tokens"
         case .klarnaFinalizePaymentSession:
             return "/klarna/payment-sessions/finalize"
@@ -129,7 +129,7 @@ internal extension PrimerAPI {
              .createPayPalSBillingAgreementSession,
              .confirmPayPalBillingAgreement,
              .createKlarnaPaymentSession,
-             .klarnaCreateCustomerToken,
+             .createKlarnaCustomerToken,
              .klarnaFinalizePaymentSession,
              .tokenizePaymentMethod,
              .threeDSBeginRemoteAuth,
@@ -155,7 +155,7 @@ internal extension PrimerAPI {
              .createPayPalSBillingAgreementSession(let clientToken, _),
              .confirmPayPalBillingAgreement(let clientToken, _),
              .createKlarnaPaymentSession(let clientToken, _),
-             .klarnaCreateCustomerToken(let clientToken, _),
+             .createKlarnaCustomerToken(let clientToken, _),
              .klarnaFinalizePaymentSession(let clientToken, _),
              .tokenizePaymentMethod(let clientToken, _),
              .threeDSBeginRemoteAuth(let clientToken, _, _),
@@ -211,7 +211,7 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(payPalConfirmBillingAgreementRequest)
         case .createKlarnaPaymentSession(_, let klarnaCreatePaymentSessionAPIRequest):
             return try? JSONEncoder().encode(klarnaCreatePaymentSessionAPIRequest)
-        case .klarnaCreateCustomerToken(_, let klarnaCreateCustomerTokenAPIRequest):
+        case .createKlarnaCustomerToken(_, let klarnaCreateCustomerTokenAPIRequest):
             return try? JSONEncoder().encode(klarnaCreateCustomerTokenAPIRequest)
         case .klarnaFinalizePaymentSession(_, let klarnaFinalizePaymentSessionRequest):
             return try? JSONEncoder().encode(klarnaFinalizePaymentSessionRequest)
