@@ -26,8 +26,8 @@ enum PrimerAPI: Endpoint {
     case listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest)
     
     // 3DS
-    case threeDSBeginRemoteAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
-    case threeDSContinueRemoteAuth(clientToken: DecodedClientToken, threeDSTokenId: String)
+    case begin3DSRemoteAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
+    case continue3DSRemoteAuth(clientToken: DecodedClientToken, threeDSTokenId: String)
     
     // Generic
     case poll(clientToken: DecodedClientToken?, url: String)
@@ -58,8 +58,8 @@ internal extension PrimerAPI {
         case .deleteVaultedPaymentMethod(let clientToken, _),
              .fetchVaultedPaymentMethods(let clientToken),
              .tokenizePaymentMethod(let clientToken, _),
-             .threeDSBeginRemoteAuth(let clientToken, _, _),
-             .threeDSContinueRemoteAuth(let clientToken, _):
+             .begin3DSRemoteAuth(let clientToken, _, _),
+             .continue3DSRemoteAuth(let clientToken, _):
             guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
         case .fetchConfiguration(let clientToken):
@@ -95,9 +95,9 @@ internal extension PrimerAPI {
             return "/gocardless/mandates"
         case .tokenizePaymentMethod:
             return "/payment-instruments"
-        case .threeDSBeginRemoteAuth(_, let paymentMethodToken, _):
+        case .begin3DSRemoteAuth(_, let paymentMethodToken, _):
             return "/3ds/\(paymentMethodToken.token)/auth"
-        case .threeDSContinueRemoteAuth(_, let threeDSTokenId):
+        case .continue3DSRemoteAuth(_, let threeDSTokenId):
             return "/3ds/\(threeDSTokenId)/continue"
         case .createApayaSession:
             return "/session-token"
@@ -132,8 +132,8 @@ internal extension PrimerAPI {
              .createKlarnaCustomerToken,
              .finalizeKlarnaPaymentSession,
              .tokenizePaymentMethod,
-             .threeDSBeginRemoteAuth,
-             .threeDSContinueRemoteAuth,
+             .begin3DSRemoteAuth,
+             .continue3DSRemoteAuth,
              .createApayaSession,
              .listAdyenBanks:
             return .post
@@ -158,8 +158,8 @@ internal extension PrimerAPI {
              .createKlarnaCustomerToken(let clientToken, _),
              .finalizeKlarnaPaymentSession(let clientToken, _),
              .tokenizePaymentMethod(let clientToken, _),
-             .threeDSBeginRemoteAuth(let clientToken, _, _),
-             .threeDSContinueRemoteAuth(let clientToken, _),
+             .begin3DSRemoteAuth(let clientToken, _, _),
+             .continue3DSRemoteAuth(let clientToken, _),
              .createApayaSession(let clientToken, _),
              .listAdyenBanks(let clientToken, _):
             if let token = clientToken.accessToken {
@@ -227,14 +227,14 @@ internal extension PrimerAPI {
             } else {
                 return nil
             }
-        case .threeDSBeginRemoteAuth(_, _, let threeDSecureBeginAuthRequest):
+        case .begin3DSRemoteAuth(_, _, let threeDSecureBeginAuthRequest):
             return try? JSONEncoder().encode(threeDSecureBeginAuthRequest)
         case .listAdyenBanks(_, let request):
             return try? JSONEncoder().encode(request)
         case .deleteVaultedPaymentMethod,
              .fetchConfiguration,
              .fetchVaultedPaymentMethods,
-             .threeDSContinueRemoteAuth,
+             .continue3DSRemoteAuth,
              .poll:
             return nil
         }

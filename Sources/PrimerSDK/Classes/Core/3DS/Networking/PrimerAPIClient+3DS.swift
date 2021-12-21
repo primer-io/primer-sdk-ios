@@ -12,7 +12,7 @@ import Foundation
 extension PrimerAPIClient {
     
     func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
-        let endpoint = PrimerAPI.threeDSBeginRemoteAuth(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
+        let endpoint = PrimerAPI.begin3DSRemoteAuth(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
         networkService.request(endpoint) { (result: Result<ThreeDS.BeginAuthResponse, NetworkServiceError>) in
             switch result {
             case .success(let threeDSecureBeginAuthResponse):
@@ -25,7 +25,7 @@ extension PrimerAPIClient {
     }
     
     func threeDSContinueAuth(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
-        let endpoint = PrimerAPI.threeDSContinueRemoteAuth(clientToken: clientToken, threeDSTokenId: threeDSTokenId)
+        let endpoint = PrimerAPI.continue3DSRemoteAuth(clientToken: clientToken, threeDSTokenId: threeDSTokenId)
         networkService.request(endpoint) { (result: Result<ThreeDS.PostAuthResponse, NetworkServiceError>) in
             switch result {
             case .success(let postAuthResponse):
