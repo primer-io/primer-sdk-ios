@@ -165,9 +165,8 @@ internal extension PrimerAPI {
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
-        case .fetchConfiguration(let clientToken):
-            tmpHeaders["X-Api-Version"] = "2021-10-19"
             
+        case .fetchConfiguration(let clientToken):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -181,6 +180,10 @@ internal extension PrimerAPI {
         switch self {
         case .fetchConfiguration:
             tmpHeaders["X-Api-Version"] = "2021-10-19"
+        case .tokenizePaymentMethod,
+                .fetchVaultedPaymentMethods,
+                .deleteVaultedPaymentMethod:
+            tmpHeaders["X-Api-Version"] = "2021-12-10"
         default:
             break
         }
