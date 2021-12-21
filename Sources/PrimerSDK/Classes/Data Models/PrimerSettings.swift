@@ -262,7 +262,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
                 
                 self.billingAddress = address
                 self.customer?.billingAddress = address
-                self.countryCode = address.countryCode != nil ? CountryCode(rawValue: address.countryCode!) : nil
             }
         }
         
