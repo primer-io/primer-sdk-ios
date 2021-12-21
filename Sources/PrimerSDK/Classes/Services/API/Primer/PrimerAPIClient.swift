@@ -194,7 +194,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         request: Apaya.CreateSessionAPIRequest,
         completion: @escaping (Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
     ) {
-        let endpoint = PrimerAPI.apayaCreateSession(clientToken: clientToken, request: request)
+        let endpoint = PrimerAPI.createApayaSession(clientToken: clientToken, request: request)
         networkService.request(endpoint) { (result: Result<Apaya.CreateSessionAPIResponse, NetworkServiceError>) in
             switch result {
             case .success(let response):
