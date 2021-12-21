@@ -16,7 +16,7 @@ enum PrimerAPI: Endpoint {
 
     case createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
     case createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest)
-    case payPalStartBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest)
+    case createPayPalSBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest)
     case payPalConfirmBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest)
     case klarnaCreatePaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest)
     case klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest)
@@ -46,7 +46,7 @@ internal extension PrimerAPI {
         switch self {
         case .createDirectDebitMandate(let clientToken, _),
              .createPayPalOrderSession(let clientToken, _),
-             .payPalStartBillingAgreementSession(let clientToken, _),
+             .createPayPalSBillingAgreementSession(let clientToken, _),
              .payPalConfirmBillingAgreement(let clientToken, _),
              .klarnaCreatePaymentSession(let clientToken, _),
              .klarnaCreateCustomerToken(let clientToken, _),
@@ -81,7 +81,7 @@ internal extension PrimerAPI {
             return "/payment-instruments"
         case .createPayPalOrderSession:
             return "/paypal/orders/create"
-        case .payPalStartBillingAgreementSession:
+        case .createPayPalSBillingAgreementSession:
             return "/paypal/billing-agreements/create-agreement"
         case .payPalConfirmBillingAgreement:
             return "/paypal/billing-agreements/confirm-agreement"
@@ -126,7 +126,7 @@ internal extension PrimerAPI {
             return .get
         case .createDirectDebitMandate,
              .createPayPalOrderSession,
-             .payPalStartBillingAgreementSession,
+             .createPayPalSBillingAgreementSession,
              .payPalConfirmBillingAgreement,
              .klarnaCreatePaymentSession,
              .klarnaCreateCustomerToken,
@@ -152,7 +152,7 @@ internal extension PrimerAPI {
              .deleteVaultedPaymentMethod(let clientToken, _),
              .fetchVaultedPaymentMethods(let clientToken),
              .createPayPalOrderSession(let clientToken, _),
-             .payPalStartBillingAgreementSession(let clientToken, _),
+             .createPayPalSBillingAgreementSession(let clientToken, _),
              .payPalConfirmBillingAgreement(let clientToken, _),
              .klarnaCreatePaymentSession(let clientToken, _),
              .klarnaCreateCustomerToken(let clientToken, _),
@@ -205,7 +205,7 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(mandateRequest)
         case .createPayPalOrderSession(_, let payPalCreateOrderRequest):
             return try? JSONEncoder().encode(payPalCreateOrderRequest)
-        case .payPalStartBillingAgreementSession(_, let payPalCreateBillingAgreementRequest):
+        case .createPayPalSBillingAgreementSession(_, let payPalCreateBillingAgreementRequest):
             return try? JSONEncoder().encode(payPalCreateBillingAgreementRequest)
         case .payPalConfirmBillingAgreement(_, let payPalConfirmBillingAgreementRequest):
             return try? JSONEncoder().encode(payPalConfirmBillingAgreementRequest)
