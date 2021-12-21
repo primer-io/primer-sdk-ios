@@ -45,7 +45,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { result in
+        api.createDirectDebitMandate(clientToken: clientToken, mandateRequest: body) { result in
             switch result {
             case .failure:
                 completion(PrimerError.directDebitSessionFailed)

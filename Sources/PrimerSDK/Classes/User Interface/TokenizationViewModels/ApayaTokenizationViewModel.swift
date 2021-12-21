@@ -228,7 +228,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
                                                  phoneNumber: settings.customer?.mobilePhoneNumber)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        api.apayaCreateSession(clientToken: decodedClientToken, request: body) { [weak self] result in
+        api.createApayaSession(clientToken: decodedClientToken, request: body) { [weak self] result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
