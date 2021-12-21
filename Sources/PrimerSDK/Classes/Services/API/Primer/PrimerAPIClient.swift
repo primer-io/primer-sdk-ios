@@ -207,7 +207,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func adyenBanksList(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
-        let endpoint = PrimerAPI.adyenBanksList(clientToken: clientToken, request: request)
+        let endpoint = PrimerAPI.listAdyenBanks(clientToken: clientToken, request: request)
         networkService.request(endpoint) { (result: Result<BanksListSessionResponse, NetworkServiceError>) in
             switch result {
             case .success(let res):
