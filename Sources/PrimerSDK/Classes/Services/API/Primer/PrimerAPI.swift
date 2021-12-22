@@ -36,11 +36,62 @@ enum PrimerAPI: Endpoint {
 
 internal extension PrimerAPI {
     
-    static var headers: [String: String] = [
+    // MARK: Headers
+    
+    static let headers: [String: String] = [
         "Content-Type": "application/json",
         "Primer-SDK-Version": Bundle.primerFramework.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "n/a",
         "Primer-SDK-Client": "IOS_NATIVE"
     ]
+    
+    var headers: [String: String]? {
+        var tmpHeaders = PrimerAPI.headers
+        
+        switch self {
+        case .createDirectDebitMandate(let clientToken, _),
+                .deleteVaultedPaymentMethod(let clientToken, _),
+                .exchangePaymentMethodToken(let clientToken, _),
+                .fetchVaultedPaymentMethods(let clientToken),
+                .createPayPalOrderSession(let clientToken, _),
+                .createPayPalSBillingAgreementSession(let clientToken, _),
+                .confirmPayPalBillingAgreement(let clientToken, _),
+                .createKlarnaPaymentSession(let clientToken, _),
+                .createKlarnaCustomerToken(let clientToken, _),
+                .finalizeKlarnaPaymentSession(let clientToken, _),
+                .tokenizePaymentMethod(let clientToken, _),
+                .begin3DSRemoteAuth(let clientToken, _, _),
+                .continue3DSRemoteAuth(let clientToken, _),
+                .createApayaSession(let clientToken, _),
+                .listAdyenBanks(let clientToken, _):
+            if let token = clientToken.accessToken {
+                tmpHeaders["Primer-Client-Token"] = token
+            }
+            
+        case .fetchConfiguration(let clientToken):
+            if let token = clientToken.accessToken {
+                tmpHeaders["Primer-Client-Token"] = token
+            }
+            
+        case .poll(let clientToken, _):
+            if let token = clientToken?.accessToken {
+                tmpHeaders["Primer-Client-Token"] = token
+            }
+        }
+        
+        switch self {
+        case .fetchConfiguration:
+            tmpHeaders["X-Api-Version"] = "2021-10-19"
+        case .tokenizePaymentMethod,
+                .fetchVaultedPaymentMethods,
+                .deleteVaultedPaymentMethod,
+                .exchangePaymentMethodToken:
+            tmpHeaders["X-Api-Version"] = "2021-12-10"
+        default:
+            break
+        }
+        
+        return tmpHeaders
+    }
     
     // MARK: Base URL
     var baseURL: String? {
@@ -145,57 +196,6 @@ internal extension PrimerAPI {
         case .poll(_, let url):
             return .get
         }
-    }
-    
-    // MARK: Headers
-    
-    var headers: [String: String]? {
-        var tmpHeaders = PrimerAPI.headers
-        
-        switch self {
-        case .createDirectDebitMandate(let clientToken, _),
-                .deleteVaultedPaymentMethod(let clientToken, _),
-                .exchangePaymentMethodToken(let clientToken, _),
-                .fetchVaultedPaymentMethods(let clientToken),
-                .createPayPalOrderSession(let clientToken, _),
-                .createPayPalSBillingAgreementSession(let clientToken, _),
-                .confirmPayPalBillingAgreement(let clientToken, _),
-                .createKlarnaPaymentSession(let clientToken, _),
-                .createKlarnaCustomerToken(let clientToken, _),
-                .finalizeKlarnaPaymentSession(let clientToken, _),
-                .tokenizePaymentMethod(let clientToken, _),
-                .begin3DSRemoteAuth(let clientToken, _, _),
-                .continue3DSRemoteAuth(let clientToken, _),
-                .createApayaSession(let clientToken, _),
-                .listAdyenBanks(let clientToken, _):
-            if let token = clientToken.accessToken {
-                tmpHeaders["Primer-Client-Token"] = token
-            }
-            
-        case .fetchConfiguration(let clientToken):
-            if let token = clientToken.accessToken {
-                tmpHeaders["Primer-Client-Token"] = token
-            }
-            
-        case .poll(let clientToken, _):
-            if let token = clientToken?.accessToken {
-                tmpHeaders["Primer-Client-Token"] = token
-            }
-        }
-        
-        switch self {
-        case .fetchConfiguration:
-            tmpHeaders["X-Api-Version"] = "2021-10-19"
-        case .tokenizePaymentMethod,
-                .fetchVaultedPaymentMethods,
-                .deleteVaultedPaymentMethod,
-                .exchangePaymentMethodToken:
-            tmpHeaders["X-Api-Version"] = "2021-12-10"
-        default:
-            break
-        }
-        
-        return tmpHeaders
     }
     
     // MARK: Query Parameters
