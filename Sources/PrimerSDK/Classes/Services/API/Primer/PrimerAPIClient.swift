@@ -12,6 +12,7 @@ import Foundation
 protocol PrimerAPIClientProtocol {
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<GetVaultedPaymentMethodsResponse, Error>) -> Void)
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse>
+    func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
     func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Data, Error>) -> Void)
     func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void)
     func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
@@ -51,6 +52,19 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                 let state: AppStateProtocol = DependencyContainer.resolve()
                 state.selectedPaymentMethodToken = vaultedPaymentMethodsResponse.data.first?.token
                 completion(.success(vaultedPaymentMethodsResponse))
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(PrimerError.vaultFetchFailed))
+            }
+        }
+    }
+    
+    func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void) {
+        let endpoint = PrimerAPI.exchangePaymentMethodToken(clientToken: clientToken, paymentMethodId: paymentMethodId)
+        networkService.request(endpoint) { (result: Result<PaymentMethodToken, NetworkServiceError>) in
+            switch result {
+            case .success(let paymentInstrument):
+                completion(.success(paymentInstrument))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.vaultFetchFailed))
@@ -239,6 +253,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
 }
 
 internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
+
     
     var response: Data?
     var throwsError: Bool
@@ -259,6 +274,10 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         } catch {
             completion(.failure(error))
         }
+    }
+
+    func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+        
     }
     
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse> {

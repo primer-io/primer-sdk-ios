@@ -265,32 +265,36 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     }
     
     private func continuePayment(withVaultedPaymentMethod paymentMethodToken: PaymentMethodToken) {
-        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
-            DispatchQueue.main.async { [weak self] in
-                self?.payButton.showSpinner(false)
-                self?.enableView(true)
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else { return }
+        let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        client.exchangePaymentMethodToken(clientToken: decodedClientToken, paymentMethodId: paymentMethodToken.token!) { result in
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
+                DispatchQueue.main.async { [weak self] in
+                    self?.payButton.showSpinner(false)
+                    self?.enableView(true)
 
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
-                if settings.hasDisabledSuccessScreen {
-                    Primer.shared.dismiss()
-                } else {
-                    if let err = err {
-                        let evc = ErrorViewController(message: err.localizedDescription)
-                        evc.view.translatesAutoresizingMaskIntoConstraints = false
-                        evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                        Primer.shared.primerRootVC?.show(viewController: evc)
+                    if settings.hasDisabledSuccessScreen {
+                        Primer.shared.dismiss()
                     } else {
-                        let svc = SuccessViewController()
-                        svc.view.translatesAutoresizingMaskIntoConstraints = false
-                        svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                        Primer.shared.primerRootVC?.show(viewController: svc)
+                        if let err = err {
+                            let evc = ErrorViewController(message: err.localizedDescription)
+                            evc.view.translatesAutoresizingMaskIntoConstraints = false
+                            evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                            Primer.shared.primerRootVC?.show(viewController: evc)
+                        } else {
+                            let svc = SuccessViewController()
+                            svc.view.translatesAutoresizingMaskIntoConstraints = false
+                            svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
+                            Primer.shared.primerRootVC?.show(viewController: svc)
+                        }
                     }
                 }
-            }
-        })
-        
-        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
+            })
+            
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
+        }
     }
     
     // MARK: - Helpers

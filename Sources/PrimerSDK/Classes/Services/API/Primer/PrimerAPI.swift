@@ -10,10 +10,11 @@
 import Foundation
 
 enum PrimerAPI: Endpoint {
+    case exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String)
     case fetchConfiguration(clientToken: DecodedClientToken)
     case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
     case deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String)
-
+    
     case createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
     case createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest)
     case createPayPalSBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest)
@@ -40,26 +41,27 @@ internal extension PrimerAPI {
         "Primer-SDK-Version": Bundle.primerFramework.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "n/a",
         "Primer-SDK-Client": "IOS_NATIVE"
     ]
-
+    
     // MARK: Base URL
     var baseURL: String? {
         switch self {
         case .createDirectDebitMandate(let clientToken, _),
-             .createPayPalOrderSession(let clientToken, _),
-             .createPayPalSBillingAgreementSession(let clientToken, _),
-             .confirmPayPalBillingAgreement(let clientToken, _),
-             .createKlarnaPaymentSession(let clientToken, _),
-             .createKlarnaCustomerToken(let clientToken, _),
-             .finalizeKlarnaPaymentSession(let clientToken, _),
-             .createApayaSession(let clientToken, _),
-             .listAdyenBanks(let clientToken, _):
+                .createPayPalOrderSession(let clientToken, _),
+                .createPayPalSBillingAgreementSession(let clientToken, _),
+                .confirmPayPalBillingAgreement(let clientToken, _),
+                .createKlarnaPaymentSession(let clientToken, _),
+                .createKlarnaCustomerToken(let clientToken, _),
+                .finalizeKlarnaPaymentSession(let clientToken, _),
+                .createApayaSession(let clientToken, _),
+                .listAdyenBanks(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .deleteVaultedPaymentMethod(let clientToken, _),
-             .fetchVaultedPaymentMethods(let clientToken),
-             .tokenizePaymentMethod(let clientToken, _),
-             .begin3DSRemoteAuth(let clientToken, _, _),
-             .continue3DSRemoteAuth(let clientToken, _):
+                .fetchVaultedPaymentMethods(let clientToken),
+                .exchangePaymentMethodToken(let clientToken, _),
+                .tokenizePaymentMethod(let clientToken, _),
+                .begin3DSRemoteAuth(let clientToken, _, _),
+                .continue3DSRemoteAuth(let clientToken, _):
             guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
         case .fetchConfiguration(let clientToken):
@@ -79,6 +81,8 @@ internal extension PrimerAPI {
             return ""
         case .fetchVaultedPaymentMethods:
             return "/payment-instruments"
+        case .exchangePaymentMethodToken(_, let paymentMethodId):
+            return "/payment-instruments/\(paymentMethodId)/exchange"
         case .createPayPalOrderSession:
             return "/paypal/orders/create"
         case .createPayPalSBillingAgreementSession:
@@ -107,14 +111,14 @@ internal extension PrimerAPI {
             return ""
         }
     }
-
+    
     // MARK: Port
     // (not needed atm since port is included in the base URL provided by the access token)
     
     var port: Int? {
         return nil
     }
-
+    
     // MARK: HTTP Method
     
     var method: HTTPMethod {
@@ -122,26 +126,27 @@ internal extension PrimerAPI {
         case .deleteVaultedPaymentMethod:
             return .delete
         case .fetchConfiguration,
-             .fetchVaultedPaymentMethods:
+                .fetchVaultedPaymentMethods:
             return .get
         case .createDirectDebitMandate,
-             .createPayPalOrderSession,
-             .createPayPalSBillingAgreementSession,
-             .confirmPayPalBillingAgreement,
-             .createKlarnaPaymentSession,
-             .createKlarnaCustomerToken,
-             .finalizeKlarnaPaymentSession,
-             .tokenizePaymentMethod,
-             .begin3DSRemoteAuth,
-             .continue3DSRemoteAuth,
-             .createApayaSession,
-             .listAdyenBanks:
+                .createPayPalOrderSession,
+                .createPayPalSBillingAgreementSession,
+                .confirmPayPalBillingAgreement,
+                .createKlarnaPaymentSession,
+                .createKlarnaCustomerToken,
+                .exchangePaymentMethodToken,
+                .finalizeKlarnaPaymentSession,
+                .tokenizePaymentMethod,
+                .begin3DSRemoteAuth,
+                .continue3DSRemoteAuth,
+                .createApayaSession,
+                .listAdyenBanks:
             return .post
         case .poll(_, let url):
             return .get
         }
     }
-
+    
     // MARK: Headers
     
     var headers: [String: String]? {
@@ -149,19 +154,20 @@ internal extension PrimerAPI {
         
         switch self {
         case .createDirectDebitMandate(let clientToken, _),
-             .deleteVaultedPaymentMethod(let clientToken, _),
-             .fetchVaultedPaymentMethods(let clientToken),
-             .createPayPalOrderSession(let clientToken, _),
-             .createPayPalSBillingAgreementSession(let clientToken, _),
-             .confirmPayPalBillingAgreement(let clientToken, _),
-             .createKlarnaPaymentSession(let clientToken, _),
-             .createKlarnaCustomerToken(let clientToken, _),
-             .finalizeKlarnaPaymentSession(let clientToken, _),
-             .tokenizePaymentMethod(let clientToken, _),
-             .begin3DSRemoteAuth(let clientToken, _, _),
-             .continue3DSRemoteAuth(let clientToken, _),
-             .createApayaSession(let clientToken, _),
-             .listAdyenBanks(let clientToken, _):
+                .deleteVaultedPaymentMethod(let clientToken, _),
+                .exchangePaymentMethodToken(let clientToken, _),
+                .fetchVaultedPaymentMethods(let clientToken),
+                .createPayPalOrderSession(let clientToken, _),
+                .createPayPalSBillingAgreementSession(let clientToken, _),
+                .confirmPayPalBillingAgreement(let clientToken, _),
+                .createKlarnaPaymentSession(let clientToken, _),
+                .createKlarnaCustomerToken(let clientToken, _),
+                .finalizeKlarnaPaymentSession(let clientToken, _),
+                .tokenizePaymentMethod(let clientToken, _),
+                .begin3DSRemoteAuth(let clientToken, _, _),
+                .continue3DSRemoteAuth(let clientToken, _),
+                .createApayaSession(let clientToken, _),
+                .listAdyenBanks(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -182,15 +188,16 @@ internal extension PrimerAPI {
             tmpHeaders["X-Api-Version"] = "2021-10-19"
         case .tokenizePaymentMethod,
                 .fetchVaultedPaymentMethods,
-                .deleteVaultedPaymentMethod:
+                .deleteVaultedPaymentMethod,
+                .exchangePaymentMethodToken:
             tmpHeaders["X-Api-Version"] = "2021-12-10"
         default:
             break
         }
-
+        
         return tmpHeaders
     }
-
+    
     // MARK: Query Parameters
     
     var queryParameters: [String: String]? {
@@ -199,7 +206,7 @@ internal extension PrimerAPI {
             return nil
         }
     }
-
+    
     // MARK: HTTP Body
     
     var body: Data? {
@@ -235,14 +242,15 @@ internal extension PrimerAPI {
         case .listAdyenBanks(_, let request):
             return try? JSONEncoder().encode(request)
         case .deleteVaultedPaymentMethod,
-             .fetchConfiguration,
-             .fetchVaultedPaymentMethods,
-             .continue3DSRemoteAuth,
-             .poll:
+                .exchangePaymentMethodToken,
+                .fetchConfiguration,
+                .fetchVaultedPaymentMethods,
+                .continue3DSRemoteAuth,
+                .poll:
             return nil
         }
     }
-
+    
 }
 
 #endif
