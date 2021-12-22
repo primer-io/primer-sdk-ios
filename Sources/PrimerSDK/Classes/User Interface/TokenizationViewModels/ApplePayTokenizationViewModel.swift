@@ -472,6 +472,18 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
 extension ApplePayTokenizationViewModel {
     
     override func handle(error: Error) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)",
+                    "error": error.localizedDescription
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         if #available(iOS 11.0, *) {
             self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
         }
@@ -482,6 +494,17 @@ extension ApplePayTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         do {
             try ClientTokenService.storeClientToken(clientToken)
             
@@ -520,6 +543,17 @@ extension ApplePayTokenizationViewModel {
     }
     
     override func handleSuccess() {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         if #available(iOS 11.0, *) {
             self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .success, errors: nil))
         }

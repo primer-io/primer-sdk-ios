@@ -183,6 +183,17 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
     
     func handleSuccessfulTokenizationFlow() {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         Primer.shared.primerRootVC?.handleSuccess()
     }
     

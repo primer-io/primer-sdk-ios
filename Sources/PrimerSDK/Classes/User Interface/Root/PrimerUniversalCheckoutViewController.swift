@@ -403,6 +403,18 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
 extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     func handle(error: Error) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)",
+                    "error": error.localizedDescription
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         DispatchQueue.main.async {
             self.onClientSessionActionCompletion?(error)
             
@@ -423,6 +435,17 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     }
     
     func handle(newClientToken clientToken: String) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         do {
             let state: AppStateProtocol = DependencyContainer.resolve()
             
@@ -606,6 +629,17 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     
     func handleSuccess() {
         DispatchQueue.main.async {
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "line": "\(#line)"
+                    ]))
+            Analytics.Service.record(event: sdkEvent)
+            
             self.payButton.showSpinner(false)
             self.enableView(true)
             

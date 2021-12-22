@@ -602,6 +602,18 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 extension CardFormPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)",
+                    "error": error.localizedDescription
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         DispatchQueue.main.async {
             if self.onClientSessionActionCompletion != nil {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
@@ -618,6 +630,17 @@ extension CardFormPaymentMethodTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         do {
             let state: AppStateProtocol = DependencyContainer.resolve()
             
@@ -801,6 +824,17 @@ extension CardFormPaymentMethodTokenizationViewModel {
     }
     
     override func handleSuccess() {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         DispatchQueue.main.async {
             self.submitButton.showSpinner(false)
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true

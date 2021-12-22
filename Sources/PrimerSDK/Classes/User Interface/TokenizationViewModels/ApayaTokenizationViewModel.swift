@@ -458,12 +458,35 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
 extension ApayaTokenizationViewModel {
     
     override func handle(error: Error) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)",
+                    "error": error.localizedDescription
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
         self.completion = nil
     }
     
     override func handle(newClientToken clientToken: String) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         do {
             // For Apaya there's no redirection URL, once the webview is presented it will get its response from a URL redirection.
             // We'll end up in here only for surcharge.
@@ -503,6 +526,17 @@ extension ApayaTokenizationViewModel {
     }
     
     override func handleSuccess() {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         self.completion?(self.paymentMethod, nil)
         self.completion = nil
     }

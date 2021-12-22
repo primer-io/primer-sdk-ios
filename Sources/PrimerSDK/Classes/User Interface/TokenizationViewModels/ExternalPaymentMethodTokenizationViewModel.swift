@@ -731,6 +731,18 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
 extension ExternalPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)",
+                    "error": error.localizedDescription
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         DispatchQueue.main.async {
             ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         }
@@ -744,6 +756,17 @@ extension ExternalPaymentMethodTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         do {
             try ClientTokenService.storeClientToken(clientToken)
             

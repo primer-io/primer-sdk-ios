@@ -674,12 +674,35 @@ extension KlarnaTokenizationViewModel: WKNavigationDelegate {
 extension KlarnaTokenizationViewModel {
     
     override func handle(error: Error) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)",
+                    "error": error.localizedDescription
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
         self.completion = nil
     }
     
     override func handle(newClientToken clientToken: String) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         do {
             try ClientTokenService.storeClientToken(clientToken)
             
@@ -716,6 +739,17 @@ extension KlarnaTokenizationViewModel {
     }
     
     override func handleSuccess() {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         self.completion?(self.paymentMethod, nil)
         self.completion = nil
     }

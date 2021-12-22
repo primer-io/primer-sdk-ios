@@ -597,6 +597,18 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
 
 extension PrimerRootViewController: ResumeHandlerProtocol {
     func handle(error: Error) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)",
+                    "error": error.localizedDescription
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         DispatchQueue.main.async {
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
@@ -612,6 +624,17 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
     }
     
     func handle(newClientToken clientToken: String) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         try? ClientTokenService.storeClientToken(clientToken)
     }
     
