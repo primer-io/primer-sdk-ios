@@ -133,6 +133,7 @@ class PaymentMethodConfig: Codable {
             .adyenVipps,
             .adyenAlipay,
             .adyenGiropay,
+            .atome,
             .buckarooBancontact,
             .buckarooEps,
             .buckarooGiropay,
@@ -285,6 +286,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case adyenVipps
     case apaya
     case applePay
+    case atome
     case buckarooBancontact
     case buckarooEps
     case buckarooGiropay
@@ -329,6 +331,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .apaya
         case "APPLE_PAY":
             self = .applePay
+        case "ATOME":
+            self = .atome
         case "BUCKAROO_BANCONTACT":
             self = .buckarooBancontact
         case "BUCKAROO_EPS":
@@ -392,6 +396,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "APAYA"
         case .applePay:
             return "APPLE_PAY"
+        case .atome:
+            return "ATOME"
         case .buckarooBancontact:
             return "BUCKAROO_BANCONTACT"
         case .buckarooEps:
@@ -443,6 +449,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .adyenTwint,
                 .adyenVipps,
                 .applePay,
+                .atome,
                 .buckarooBancontact,
                 .buckarooEps,
                 .buckarooGiropay,
@@ -489,6 +496,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case adyenVipps
         case apaya
         case applePay
+        case atome
         case buckarooBancontact
         case buckarooEps
         case buckarooGiropay
