@@ -333,10 +333,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     paymentMethodType: self.config.type.rawValue,
                     url: nil),
                 extra: nil,
-                objectType: .button,
+                objectType: .listItem,
                 objectId: .select,
                 objectClass: "\(Self.self)",
-                place: .paymentMethodPopup))
+                place: .paymentMethodsList))
         Analytics.Service.record(event: event)
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()

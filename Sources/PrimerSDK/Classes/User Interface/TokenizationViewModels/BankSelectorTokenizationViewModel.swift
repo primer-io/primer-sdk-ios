@@ -213,10 +213,10 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                     paymentMethodType: self.config.type.rawValue,
                     url: nil),
                 extra: nil,
-                objectType: .button,
+                objectType: .listItem,
                 objectId: .select,
                 objectClass: "\(Self.self)",
-                place: .bankSelectionList))
+                place: .paymentMethodsList))
         Analytics.Service.record(event: event)
     }
     
