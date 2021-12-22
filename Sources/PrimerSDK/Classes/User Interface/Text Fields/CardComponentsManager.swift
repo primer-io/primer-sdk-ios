@@ -193,6 +193,12 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     private func validateCardComponents() throws {
         var errors: [Error] = []
         if !cardnumberField.cardnumber.isValidCardNumber {
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Invalid cardnumber",
+                    messageType: .validationFailed))
+            Analytics.Service.record(event: event)
             errors.append(PrimerError.invalidCardnumber)
         }
         
@@ -201,6 +207,13 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         }
         
         if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Invalid CVV",
+                    messageType: .validationFailed))
+            Analytics.Service.record(event: event)
+            
             errors.append(PrimerError.invalidCVV)
         }
         

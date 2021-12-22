@@ -100,6 +100,13 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             expiryMonth = String(newText.prefix(2))
             expiryYear = String(newText.suffix(2))
         } else {
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Invalid expiry date",
+                    messageType: .validationFailed))
+            Analytics.Service.record(event: event)
+            
             expiryMonth = nil
             expiryYear = nil
         }
