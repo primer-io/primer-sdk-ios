@@ -84,6 +84,19 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     }
                     
                     guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                        let sdkEvent = Analytics.Event(
+                            eventType: .sdkEvent,
+                            properties: SDKEventProperties(
+                                name: #function,
+                                params: [
+                                    "delegate": "checkoutFailed(with:)",
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)"
+                                ]))
+                        Analytics.Service.record(event: sdkEvent)
+                        
                         Primer.shared.delegate?.checkoutFailed?(with: PrimerError.clientTokenNull)
                         return
                     }
@@ -99,6 +112,18 @@ internal class TokenizationService: TokenizationServiceProtocol {
                                     switch result {
                                     case .success(let paymentMethodToken):
                                         if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
+                                            let sdkEvent = Analytics.Event(
+                                                eventType: .sdkEvent,
+                                                properties: SDKEventProperties(
+                                                    name: #function,
+                                                    params: [
+                                                        "delegate": "tokenAddedToVault(_:)",
+                                                        "file": #file,
+                                                        "class": "\(Self.self)",
+                                                        "function": #function,
+                                                        "line": "\(#line)"
+                                                    ]))
+                                            Analytics.Service.record(event: sdkEvent)
                                             Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken.0)
                                         }
 

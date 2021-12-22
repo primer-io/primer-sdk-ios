@@ -198,6 +198,20 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             try self.validate()
         } catch {
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(with:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.checkoutFailed?(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
@@ -255,10 +269,47 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             
             DispatchQueue.main.async {
                 if Primer.shared.flow.internalSessionFlow.vaulted {
+                    let sdkEvent = Analytics.Event(
+                        eventType: .sdkEvent,
+                        properties: SDKEventProperties(
+                            name: #function,
+                            params: [
+                                "delegate": "tokenAddedToVault()",
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)",
+                            ]))
+                    Analytics.Service.record(event: sdkEvent)
                     Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                 }
                 
+                let sdkEvent1 = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onTokenizeSuccess(_:resumeHandler:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                        ]))
                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                
+                let sdkEvent2 = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onTokenizeSuccess(_:completion:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                        ]))
+                Analytics.Service.record(events: [sdkEvent1, sdkEvent2])
+                
                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
                     if let err = err {
                         self.handleFailedTokenizationFlow(error: err)
@@ -273,6 +324,20 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         .catch { err in
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(with:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": err.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
@@ -621,6 +686,20 @@ extension KlarnaTokenizationViewModel {
             }
             
         } catch {
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "delegate": "checkoutFailed(with:)",
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)",
+                        "error": error.localizedDescription
+                    ]))
+            Analytics.Service.record(event: sdkEvent)
+            
             Primer.shared.delegate?.checkoutFailed?(with: error)
             self.handle(error: error)
         }

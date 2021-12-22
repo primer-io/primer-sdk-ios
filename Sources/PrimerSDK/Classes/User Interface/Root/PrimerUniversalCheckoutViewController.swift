@@ -289,6 +289,20 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 if let err = err {
                     DispatchQueue.main.async {
                         ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                        
+                        let sdkEvent = Analytics.Event(
+                            eventType: .sdkEvent,
+                            properties: SDKEventProperties(
+                                name: #function,
+                                params: [
+                                    "delegate": "onResumeError(_:)",
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)",
+                                    "error": err.localizedDescription
+                                ]))
+                        Analytics.Service.record(event: sdkEvent)
                         Primer.shared.delegate?.onResumeError?(err)
                         self.onClientSessionActionCompletion = nil
                     }
@@ -304,6 +318,18 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     }
     
     private func continuePayment(withVaultedPaymentMethod paymentMethodToken: PaymentMethodToken) {
+        let sdkEvent1 = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "delegate": "onTokenizeSuccess(_:completion)",
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)",
+                ]))
+        
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
             DispatchQueue.main.async { [weak self] in
                 self?.payButton.showSpinner(false)
@@ -328,6 +354,19 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 }
             }
         })
+        
+        let sdkEvent2 = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "delegate": "onTokenizeSuccess(_:resumeHandler:)",
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)",
+                ]))
+        Analytics.Service.record(events: [sdkEvent1, sdkEvent2])
         
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
     }
@@ -399,6 +438,21 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                     DispatchQueue.main.async {
                         self.onClientSessionActionCompletion = nil
                         let err = PrimerError.threeDSFailed
+                        
+                        let sdkEvent = Analytics.Event(
+                            eventType: .sdkEvent,
+                            properties: SDKEventProperties(
+                                name: #function,
+                                params: [
+                                    "delegate": "onResumeError(_:)",
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)",
+                                    "error": err.localizedDescription
+                                ]))
+                        Analytics.Service.record(event: sdkEvent)
+                        
                         Primer.shared.delegate?.onResumeError?(err)
                         self.handle(error: err)
                     }
@@ -415,12 +469,37 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                                       DispatchQueue.main.async {
                                           self.onClientSessionActionCompletion = nil
                                           let err = PrimerError.threeDSFailed
+                                          let sdkEvent = Analytics.Event(
+                                              eventType: .sdkEvent,
+                                              properties: SDKEventProperties(
+                                                  name: #function,
+                                                  params: [
+                                                      "delegate": "onResumeError(_:)",
+                                                      "file": #file,
+                                                      "class": "\(Self.self)",
+                                                      "function": #function,
+                                                      "line": "\(#line)",
+                                                      "error": err.localizedDescription
+                                                  ]))
+                                          Analytics.Service.record(event: sdkEvent)
                                           Primer.shared.delegate?.onResumeError?(err)
                                           self.handle(error: err)
                                       }
                                       return
                                   }
                             
+                            let sdkEvent = Analytics.Event(
+                                eventType: .sdkEvent,
+                                properties: SDKEventProperties(
+                                    name: #function,
+                                    params: [
+                                        "delegate": "onResumeSuccess(_:)",
+                                        "file": #file,
+                                        "class": "\(Self.self)",
+                                        "function": #function,
+                                        "line": "\(#line)",
+                                    ]))
+                            Analytics.Service.record(event: sdkEvent)
                             Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
                         }
                         
@@ -430,6 +509,19 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                         DispatchQueue.main.async {
                             self.onClientSessionActionCompletion = nil
                             let err = PrimerError.threeDSFailed
+                            let sdkEvent = Analytics.Event(
+                                eventType: .sdkEvent,
+                                properties: SDKEventProperties(
+                                    name: #function,
+                                    params: [
+                                        "delegate": "onResumeError(_:)",
+                                        "file": #file,
+                                        "class": "\(Self.self)",
+                                        "function": #function,
+                                        "line": "\(#line)",
+                                        "error": err.localizedDescription
+                                    ]))
+                            Analytics.Service.record(event: sdkEvent)
                             Primer.shared.delegate?.onResumeError?(err)
                             self.handle(error: err)
                         }
@@ -440,6 +532,19 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 DispatchQueue.main.async {
                     self.onClientSessionActionCompletion = nil
                     let err = PrimerError.threeDSFailed
+                    let sdkEvent = Analytics.Event(
+                        eventType: .sdkEvent,
+                        properties: SDKEventProperties(
+                            name: #function,
+                            params: [
+                                "delegate": "onResumeError(_:)",
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)",
+                                "error": err.localizedDescription
+                            ]))
+                    Analytics.Service.record(event: sdkEvent)
                     Primer.shared.delegate?.onResumeError?(err)
                     self.handle(error: err)
                 }
@@ -461,6 +566,19 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 let err = PrimerError.invalidValue(key: "resumeToken")
                 handle(error: err)
                 DispatchQueue.main.async {
+                    let sdkEvent = Analytics.Event(
+                        eventType: .sdkEvent,
+                        properties: SDKEventProperties(
+                            name: #function,
+                            params: [
+                                "delegate": "onResumeError(_:)",
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)",
+                                "error": err.localizedDescription
+                            ]))
+                    Analytics.Service.record(event: sdkEvent)
                     Primer.shared.delegate?.onResumeError?(err)
                 }
             }
@@ -468,6 +586,19 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
         } catch {
             handle(error: error)
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onResumeError(_:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
                 Primer.shared.delegate?.onResumeError?(error)
             }
         }

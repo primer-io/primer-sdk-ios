@@ -226,6 +226,21 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         } catch {
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(with:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.checkoutFailed?(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
@@ -254,6 +269,19 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             
             DispatchQueue.main.async {
                 if Primer.shared.flow.internalSessionFlow.vaulted {
+                    let sdkEvent = Analytics.Event(
+                        eventType: .sdkEvent,
+                        properties: SDKEventProperties(
+                            name: #function,
+                            params: [
+                                "delegate": "tokenAddedToVault()",
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)",
+                            ]))
+                    Analytics.Service.record(event: sdkEvent)
+                    
                     Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                 }
                 
@@ -281,6 +309,21 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         .catch { err in
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(with:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": err.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
@@ -491,6 +534,20 @@ extension BankSelectorTokenizationViewModel {
             }
         } catch {
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onResumeError(_:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.onResumeError?(error)
                 self.handle(error: error)
             }

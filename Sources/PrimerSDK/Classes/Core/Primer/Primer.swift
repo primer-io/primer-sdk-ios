@@ -119,12 +119,17 @@ public class Primer {
                 DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
             }
             
-            let event = Analytics.Event(
+            var params: [String: String]?
+            if let settingsData = try? JSONEncoder().encode(settings), let settingsStr = settingsData.prettyPrintedJSONString as String? {
+                params = ["settings": settingsStr]
+            }
+            
+            let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
                 properties: SDKEventProperties(
                     name: #function,
-                    params: nil))
-            Analytics.Service.record(event: event)
+                    params: params))
+            Analytics.Service.record(event: sdkEvent)
         }
     }
 
@@ -137,7 +142,7 @@ public class Primer {
      1.4.0
      */
     public func setFormTopTitle(_ text: String, for formType: PrimerFormType) {
-        let event = Analytics.Event(
+        let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
@@ -145,7 +150,7 @@ public class Primer {
                     "title": text,
                     "formType": formType.rawValue
                 ]))
-        Analytics.Service.record(event: event)
+        Analytics.Service.record(event: sdkEvent)
         
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -163,7 +168,7 @@ public class Primer {
      1.4.0
      */
     public func setFormMainTitle(_ text: String, for formType: PrimerFormType) {
-        let event = Analytics.Event(
+        let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
@@ -171,7 +176,7 @@ public class Primer {
                     "title": text,
                     "formType": formType.rawValue
                 ]))
-        Analytics.Service.record(event: event)
+        Analytics.Service.record(event: sdkEvent)
         
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -209,14 +214,14 @@ public class Primer {
      */
     @available(*, deprecated, message: "Use showUniversalCheckout or showVaultManager instead.")
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
-        let event = Analytics.Event(
+        let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
                 params: [
                     "flow": flow.internalSessionFlow.rawValue
                 ]))
-        Analytics.Service.record(event: event)
+        Analytics.Service.record(event: sdkEvent)
         
         show(flow: flow)
     }
@@ -289,6 +294,15 @@ public class Primer {
     
     // swiftlint:disable cyclomatic_complexity
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "paymentMethod": paymentMethod.rawValue,
+                    "intent": intent.rawValue
+                ]))
+        
         checkoutSessionId = UUID().uuidString
         
         switch (paymentMethod, intent) {
@@ -410,17 +424,22 @@ public class Primer {
             (.payNLGiropay, .vault),
             (.other, _):
             let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
+            
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "delegate": "checkoutFailed(with:)",
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ]))
+            Analytics.Service.record(event: sdkEvent)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return
         }
-        
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "flow": PrimerInternalSessionFlow.vault.rawValue
-                ]))
         
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,
@@ -489,6 +508,19 @@ public class Primer {
                 self?.primerRootVC = nil
                 self?.primerWindow?.resignKey()
                 self?.primerWindow = nil
+                
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onCheckoutDismissed()",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
                 Primer.shared.delegate?.onCheckoutDismissed?()
             })
         }
@@ -497,14 +529,14 @@ public class Primer {
     public func show(flow: PrimerSessionFlow) {
         self.flow = flow
         
-        let event = Analytics.Event(
+        let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
                 params: [
                     "flow": flow.internalSessionFlow.rawValue
                 ]))
-        Analytics.Service.record(event: event)
+        Analytics.Service.record(event: sdkEvent)
         
         DispatchQueue.main.async {
             if self.primerRootVC == nil {

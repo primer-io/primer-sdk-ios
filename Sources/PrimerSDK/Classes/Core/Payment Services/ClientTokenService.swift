@@ -101,6 +101,19 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
             return
         }
         
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "delegate": "clientTokenCallback(_:completion:)",
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ]))
+        Analytics.Service.record(event: sdkEvent)
+        
         clientTokenCallback({ (token, err) in
             if let err = err {
                 completion(err)

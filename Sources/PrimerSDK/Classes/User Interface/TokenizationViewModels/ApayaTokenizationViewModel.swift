@@ -175,6 +175,21 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         } catch {
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(_:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.checkoutFailed?(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
@@ -192,7 +207,32 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
         .done { paymentMethod in
             DispatchQueue.main.async {
+                let sdkEvent1 = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onTokenizeSuccess(_:resumeHandler:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                        ]))
                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                
+                let sdkEvent2 = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onTokenizeSuccess(_:completion:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                        ]))
+                Analytics.Service.record(events: [sdkEvent1, sdkEvent2])
+                
                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
                     if let err = err {
                         self.handleFailedTokenizationFlow(error: err)
@@ -205,6 +245,19 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         .catch { err in
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(_:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": err.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
@@ -418,6 +471,19 @@ extension ApayaTokenizationViewModel {
                         
         } catch {
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onResumeError(_:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
                 Primer.shared.delegate?.onResumeError?(error)
                 self.handle(error: error)
             }

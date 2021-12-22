@@ -45,6 +45,20 @@ public class ClientSession: Codable {
         static func unselectPaymentMethod(resumeHandler: ResumeHandlerProtocol?) {
             DispatchQueue.main.async {
                 let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
+                
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onClientSessionActions(_:resumeHandler:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "action": "UNSELECT_PAYMENT_METHOD"
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
                 Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
             }
         }
@@ -52,6 +66,20 @@ public class ClientSession: Codable {
         static func selectPaymentMethod(resumeHandler: ResumeHandlerProtocol, withParameters parameters: [String: Any]) {
             DispatchQueue.main.async {
                 let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
+                
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onClientSessionActions(_:resumeHandler:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "action": "SELECT_PAYMENT_METHOD"
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
                 Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
             }
         }

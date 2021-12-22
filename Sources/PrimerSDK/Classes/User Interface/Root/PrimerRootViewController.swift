@@ -439,6 +439,20 @@ extension PrimerRootViewController {
     func presentPaymentMethod(type: PaymentMethodConfigType) {
         guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
             let err = PrimerError.misconfiguredPaymentMethod
+            
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "delegate": "checkoutFailed(with:)",
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)",
+                        "error": err.localizedDescription
+                    ]))
+            Analytics.Service.record(event: sdkEvent)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return
         }
@@ -475,17 +489,68 @@ extension PrimerRootViewController {
     func handleSuccessfulTokenization(paymentMethod: PaymentMethodToken) {
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else {
-                Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
+                let err = PrimerError.generic
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(with:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": err.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                Primer.shared.delegate?.checkoutFailed?(with: err)
                 return
             }
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
             strongSelf.showLoadingScreenIfNeeded()
             
+            let sdkEvent1 = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "delegate": "onTokenizeSuccess(_:resumeHandler:)",
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)",
+                    ]))
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: strongSelf)
+            
+            let sdkEvent2 = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "delegate": "onTokenizeSuccess(_:completion:)",
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)",
+                    ]))
+            Analytics.Service.record(events: [sdkEvent1, sdkEvent2])
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
                 DispatchQueue.main.async { [weak self] in
                     guard let strongSelf = self else {
+                        let sdkEvent = Analytics.Event(
+                            eventType: .sdkEvent,
+                            properties: SDKEventProperties(
+                                name: #function,
+                                params: [
+                                    "delegate": "checkoutFailed(with:)",
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)",
+                                    "error": PrimerError.generic.localizedDescription
+                                ]))
+                        Analytics.Service.record(event: sdkEvent)
                         Primer.shared.delegate?.checkoutFailed?(with: PrimerError.generic)
                         return
                     }

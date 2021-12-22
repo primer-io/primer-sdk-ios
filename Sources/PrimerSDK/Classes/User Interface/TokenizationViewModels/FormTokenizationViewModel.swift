@@ -284,6 +284,20 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             try self.validate()
         } catch {
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(with:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.checkoutFailed?(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
@@ -301,6 +315,20 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             try self.validate()
         } catch {
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(with:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.checkoutFailed?(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
@@ -407,10 +435,47 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         
         DispatchQueue.main.async {
             if Primer.shared.flow.internalSessionFlow.vaulted {
+                let sdkEvent1 = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "tokenAddedToVault()",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                        ]))
+                Analytics.Service.record(event: sdkEvent1)
                 Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
             }
             
+            let sdkEvent2 = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "delegate": "onTokenizeSuccess(_:resumeHandler:)",
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)",
+                    ]))
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
+            
+            let sdkEvent3 = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "delegate": "onTokenizeSuccess(_:completion:)",
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)",
+                    ]))
+            Analytics.Service.record(events: [sdkEvent2, sdkEvent3])
+            
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
                 self.cardComponentsManager.setIsLoading(false)
                 
@@ -439,6 +504,20 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         
         DispatchQueue.main.async {
             let err = PrimerError.containerError(errors: errors)
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "delegate": "checkoutFailed(with:)",
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)",
+                        "error": err.localizedDescription
+                    ]))
+            Analytics.Service.record(event: sdkEvent)
+            
             Primer.shared.delegate?.checkoutFailed?(with: err)
             self.handleFailedTokenizationFlow(error: err)
         }
@@ -553,6 +632,20 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 guard let paymentMethod = paymentMethod else {
                     DispatchQueue.main.async {
                         let err = PrimerError.threeDSFailed
+                        let sdkEvent = Analytics.Event(
+                            eventType: .sdkEvent,
+                            properties: SDKEventProperties(
+                                name: #function,
+                                params: [
+                                    "delegate": "onResumeError(_:)",
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)",
+                                    "error": err.localizedDescription
+                                ]))
+                        Analytics.Service.record(event: sdkEvent)
+                        
                         Primer.shared.delegate?.onResumeError?(err)
                     }
                     return
@@ -567,11 +660,38 @@ extension CardFormPaymentMethodTokenizationViewModel {
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
                                       DispatchQueue.main.async {
                                           let err = PrimerError.threeDSFailed
+                                          let sdkEvent = Analytics.Event(
+                                              eventType: .sdkEvent,
+                                              properties: SDKEventProperties(
+                                                  name: #function,
+                                                  params: [
+                                                      "delegate": "onResumeError(_:)",
+                                                      "file": #file,
+                                                      "class": "\(Self.self)",
+                                                      "function": #function,
+                                                      "line": "\(#line)",
+                                                      "error": err.localizedDescription
+                                                  ]))
+                                          Analytics.Service.record(event: sdkEvent)
+                                          
                                           Primer.shared.delegate?.onResumeError?(err)
                                           self.handle(error: err)
                                       }
                                       return
                                   }
+                            
+                            let sdkEvent = Analytics.Event(
+                                eventType: .sdkEvent,
+                                properties: SDKEventProperties(
+                                    name: #function,
+                                    params: [
+                                        "delegate": "onResumeSuccess(_:resumeHandler:)",
+                                        "file": #file,
+                                        "class": "\(Self.self)",
+                                        "function": #function,
+                                        "line": "\(#line)",
+                                    ]))
+                            Analytics.Service.record(event: sdkEvent)
                             
                             Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
                         }
@@ -580,6 +700,20 @@ extension CardFormPaymentMethodTokenizationViewModel {
                         log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
                         let err = PrimerError.threeDSFailed
                         DispatchQueue.main.async {
+                            let sdkEvent = Analytics.Event(
+                                eventType: .sdkEvent,
+                                properties: SDKEventProperties(
+                                    name: #function,
+                                    params: [
+                                        "delegate": "onResumeError(_:)",
+                                        "file": #file,
+                                        "class": "\(Self.self)",
+                                        "function": #function,
+                                        "line": "\(#line)",
+                                        "error": err.localizedDescription
+                                    ]))
+                            Analytics.Service.record(event: sdkEvent)
+                            
                             Primer.shared.delegate?.onResumeError?(err)
                         }
                     }
@@ -587,6 +721,20 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 #else
                 let error = PrimerError.threeDSFailed
                 DispatchQueue.main.async {
+                    let sdkEvent = Analytics.Event(
+                        eventType: .sdkEvent,
+                        properties: SDKEventProperties(
+                            name: #function,
+                            params: [
+                                "delegate": "onResumeError(_:)",
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)",
+                                "error": error.localizedDescription
+                            ]))
+                    Analytics.Service.record(event: sdkEvent)
+                    
                     Primer.shared.delegate?.onResumeError?(error)
                 }
                 #endif
@@ -612,6 +760,20 @@ extension CardFormPaymentMethodTokenizationViewModel {
 
                 handle(error: err)
                 DispatchQueue.main.async {
+                    let sdkEvent = Analytics.Event(
+                        eventType: .sdkEvent,
+                        properties: SDKEventProperties(
+                            name: #function,
+                            params: [
+                                "delegate": "onResumeError(_:)",
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)",
+                                "error": err.localizedDescription
+                            ]))
+                    Analytics.Service.record(event: sdkEvent)
+                    
                     Primer.shared.delegate?.onResumeError?(err)
                 }
             }
@@ -619,6 +781,20 @@ extension CardFormPaymentMethodTokenizationViewModel {
         } catch {
             handle(error: error)
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onResumeError(_:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.onResumeError?(error)
             }
         }

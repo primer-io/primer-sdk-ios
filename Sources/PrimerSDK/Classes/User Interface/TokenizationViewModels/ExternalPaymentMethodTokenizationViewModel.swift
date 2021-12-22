@@ -354,6 +354,20 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             try self.validate()
         } catch {
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(with:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.checkoutFailed?(with: error)
                 self.handleFailedTokenizationFlow(error: error)
                 self.completion?(nil, error)
@@ -373,6 +387,19 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             
             DispatchQueue.main.async {
                 if Primer.shared.flow.internalSessionFlow.vaulted {
+                    let sdkEvent = Analytics.Event(
+                        eventType: .sdkEvent,
+                        properties: SDKEventProperties(
+                            name: #function,
+                            params: [
+                                "delegate": "tokenAddedToVault()",
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)",
+                            ]))
+                    Analytics.Service.record(event: sdkEvent)
+                    
                     Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                 }
                 
@@ -399,6 +426,20 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
         .catch { err in
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(with:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": err.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
@@ -523,6 +564,19 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onResumeSuccess(_:resumeHandler)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
             }
         }
@@ -609,6 +663,19 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onResumeSuccess(_:resumeHandler)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
             }
         }
@@ -673,6 +740,20 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 }
                 .catch { err in
                     DispatchQueue.main.async {
+                        let sdkEvent = Analytics.Event(
+                            eventType: .sdkEvent,
+                            properties: SDKEventProperties(
+                                name: #function,
+                                params: [
+                                    "delegate": "onResumeError(_:)",
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)",
+                                    "error": err.localizedDescription
+                                ]))
+                        Analytics.Service.record(event: sdkEvent)
+                        
                         Primer.shared.delegate?.onResumeError?(err)
                     }
                     self.handle(error: err)
@@ -681,6 +762,20 @@ extension ExternalPaymentMethodTokenizationViewModel {
             
         } catch {
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onResumeError(_:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.onResumeError?(error)
             }
             

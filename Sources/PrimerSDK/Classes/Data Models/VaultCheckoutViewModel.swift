@@ -104,8 +104,58 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        let sdkEvent1 = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "delegate": "authorizePayment(_:completion:)",
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ]))
         settings.authorizePayment(selectedPaymentMethod, completion)
+        
+        let sdkEvent2 = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "delegate": "onTokenizeSuccess(_:completion:)",
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ]))
         settings.onTokenizeSuccess(selectedPaymentMethod, completion)
+        
+        let sdkEvent3 = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "delegate": "onTokenizeSuccess(_:resumeHandler:)",
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ]))
+        
+        let sdkEvent4 = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "delegate": "onTokenizeSuccess(_:resumeHandler:)",
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)",
+                ]))
+
+        Analytics.Service.record(events: [sdkEvent1, sdkEvent2, sdkEvent3, sdkEvent4])
         Primer.shared.delegate?.onTokenizeSuccess?(selectedPaymentMethod, resumeHandler: self)
     }
 

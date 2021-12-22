@@ -71,7 +71,7 @@ public struct PrimerDebugOptions {
  - Version: 1.2.2
  */
 
-public class PrimerSettings: PrimerSettingsProtocol {
+public class PrimerSettings: PrimerSettingsProtocol, Encodable {
         
     internal(set) public var amount: Int?
     internal(set) public var currency: Currency?
@@ -94,10 +94,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var orderId: String?
     internal(set) public var debugOptions: PrimerDebugOptions = PrimerDebugOptions()
     internal(set) public var customer: Customer?
-
-    public var clientTokenRequestCallback: ClientTokenCallBack {
-        return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
-    }
 
     internal var authorizePayment: PaymentMethodTokenCallBack {
         return Primer.shared.delegate?.authorizePayment ?? { _, _ in }
@@ -198,6 +194,34 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
         self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case amount, billingAddress, businessDetails, countryCode, currency, customer, customerId, directDebitHasNoAmount, hasDisabledSuccessScreen, is3DSOnVaultingEnabled, isFullScreenOnly, isInitialLoadingHidden, merchantIdentifier, klarnaSessionType, klarnaPaymentDescription, localeData, orderId, orderItems, urlScheme, urlSchemeIdentifier
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try? container.encode(amount, forKey: .amount)
+        try? container.encode(billingAddress, forKey: .billingAddress)
+        try? container.encode(businessDetails, forKey: .businessDetails)
+        try? container.encode(countryCode, forKey: .countryCode)
+        try? container.encode(currency, forKey: .currency)
+        try? container.encode(customer, forKey: .customer)
+        try? container.encode(customerId, forKey: .customerId)
+        try? container.encode(directDebitHasNoAmount, forKey: .directDebitHasNoAmount)
+        try? container.encode(hasDisabledSuccessScreen, forKey: .hasDisabledSuccessScreen)
+        try? container.encode(is3DSOnVaultingEnabled, forKey: .is3DSOnVaultingEnabled)
+        try? container.encode(isFullScreenOnly, forKey: .isFullScreenOnly)
+        try? container.encode(isInitialLoadingHidden, forKey: .isInitialLoadingHidden)
+        try? container.encode(merchantIdentifier, forKey: .merchantIdentifier)
+        try? container.encode(klarnaSessionType, forKey: .klarnaSessionType)
+        try? container.encode(klarnaPaymentDescription, forKey: .klarnaPaymentDescription)
+        try? container.encode(localeData, forKey: .localeData)
+        try? container.encode(orderId, forKey: .orderId)
+        try? container.encode(orderItems, forKey: .orderItems)
+        try? container.encode(urlScheme, forKey: .urlScheme)
+        try? container.encode(urlSchemeIdentifier, forKey: .urlSchemeIdentifier)
     }
     
     static func modify(withClientSession clientSession: ClientSession) {

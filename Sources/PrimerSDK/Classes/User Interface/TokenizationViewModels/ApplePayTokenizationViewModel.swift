@@ -212,10 +212,47 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                 self.paymentMethod = paymentMethod
                 
                 if Primer.shared.flow.internalSessionFlow.vaulted {
+                    let sdkEvent1 = Analytics.Event(
+                        eventType: .sdkEvent,
+                        properties: SDKEventProperties(
+                            name: #function,
+                            params: [
+                                "delegate": "tokenAddedToVault()",
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)",
+                            ]))
+                    Analytics.Service.record(event: sdkEvent1)
                     Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                 }
                 
+                let sdkEvent2 = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onTokenizeSuccess(_:resumeHandler:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                        ]))
                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                
+                let sdkEvent3 = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onTokenizeSuccess(_:completion:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                        ]))
+                Analytics.Service.record(events: [sdkEvent2, sdkEvent3])
+                
                 Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
                     if let err = err {
                         self.handleFailedTokenizationFlow(error: err)
@@ -231,6 +268,21 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         .catch { err in
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(with:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": err.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
@@ -294,6 +346,21 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                 let err = AppleException.unableToPresentApplePay
                 _ = ErrorHandler.shared.handle(error: err)
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "checkoutFailed(with:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": err.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 return completion(nil, err)
             }
@@ -422,6 +489,20 @@ extension ApplePayTokenizationViewModel {
             
         } catch {
             DispatchQueue.main.async {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: #function,
+                        params: [
+                            "delegate": "onResumeError(_:)",
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)",
+                            "error": error.localizedDescription
+                        ]))
+                Analytics.Service.record(event: sdkEvent)
+                
                 Primer.shared.delegate?.onResumeError?(error)
             }
             self.handle(error: error)
