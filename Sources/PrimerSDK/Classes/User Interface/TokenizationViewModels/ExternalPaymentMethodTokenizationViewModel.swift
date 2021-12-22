@@ -19,6 +19,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Adyen Ali Pay"
         case .adyenGiropay:
             return "Giropay"
+        case .atome:
+            return "Atome"
         case .buckarooBancontact:
             return "Buckaroo Bancontact"
         case .buckarooEps:
@@ -63,6 +65,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
+                .atome,
                 .buckarooBancontact,
                 .buckarooEps,
                 .buckarooGiropay,
@@ -91,6 +94,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay:
             return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .atome:
+            return UIImage(named: "atome-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .buckarooBancontact,
                 .mollieBankcontact,
                 .payNLBancontact:
@@ -145,6 +150,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return .black
         case .adyenVipps:
             return UIColor(red: 255.0/255, green: 91.0/255, blue: 36.0/255, alpha: 1.0)
+        case .atome:
+            return UIColor(red: 240.0/255, green: 255.0/255, blue: 95.0/255, alpha: 1.0)
         case .buckarooEps:
             return .white
         case .hoolah:
@@ -175,6 +182,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
+                .atome,
                 .buckarooBancontact,
                 .buckarooEps,
                 .buckarooIdeal,
@@ -202,6 +210,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
+                .atome,
                 .buckarooIdeal,
                 .buckarooGiropay,
                 .buckarooSofort,
@@ -230,6 +239,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
+                .atome,
                 .buckarooIdeal,
                 .buckarooGiropay,
                 .buckarooSofort,
@@ -253,6 +263,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
         case .adyenAlipay,
+                .atome,
                 .buckarooBancontact,
                 .buckarooEps,
                 .buckarooIdeal,
