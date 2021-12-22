@@ -437,6 +437,16 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: nil,
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .paymentMethodLoading))
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
         let bank = self.dataSource[indexPath.row]

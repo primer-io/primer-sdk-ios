@@ -159,6 +159,18 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
                 place: .paymentMethodsList))
         Analytics.Service.record(event: event)
         
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: nil,
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .paymentMethodLoading))
+        Analytics.Service.record(event: viewEvent)
+        
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
         if Primer.shared.delegate?.onClientSessionActions != nil {

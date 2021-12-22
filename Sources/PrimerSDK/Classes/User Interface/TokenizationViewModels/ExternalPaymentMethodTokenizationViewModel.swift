@@ -339,6 +339,16 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 place: .paymentMethodsList))
         Analytics.Service.record(event: event)
         
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: nil,
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .paymentMethodLoading))
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
         if Primer.shared.delegate?.onClientSessionActions != nil {

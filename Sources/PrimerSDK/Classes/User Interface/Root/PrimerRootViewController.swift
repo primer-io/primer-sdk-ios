@@ -121,6 +121,18 @@ internal class PrimerRootViewController: PrimerViewController {
         
         if !settings.isInitialLoadingHidden {
             blurBackground()
+            
+            let viewEvent = Analytics.Event(
+                eventType: .ui,
+                properties: UIEventProperties(
+                    action: .view,
+                    context: nil,
+                    extra: nil,
+                    objectType: .view,
+                    objectId: nil,
+                    objectClass: "\(Self.self)",
+                    place: .sdkLoading))
+            Analytics.Service.record(event: viewEvent)
             showLoadingScreenIfNeeded()
         }
         
