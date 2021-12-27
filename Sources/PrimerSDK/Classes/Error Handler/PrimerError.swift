@@ -164,18 +164,22 @@ internal enum NetworkError: PrimerErrorProtocol {
     var extraUserInfo: [String: String]? {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
         
-//        switch self {
-//        case .generic(_, let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .invalidClientToken(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .missingPrimerConfiguration(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .missingPrimerDelegate(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .underlyingErrors(_, let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        }
+        switch self {
+        case .connectivityErrors(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidUrl(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidValue(_, _, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .noData(let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .serverError(_, _, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .unauthorized(_, _, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .underlyingErrors(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        }
         
         return tmpUserInfo
     }
@@ -238,18 +242,14 @@ internal enum ParserError: PrimerErrorProtocol {
     var extraUserInfo: [String: String]? {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
         
-//        switch self {
-//        case .generic(_, let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .invalidClientToken(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .missingPrimerConfiguration(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .missingPrimerDelegate(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .underlyingErrors(_, let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        }
+        switch self {
+        case .failedToEncode(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .failedToDecode(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .failedToSerialize(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        }
         
         return tmpUserInfo
     }
@@ -309,18 +309,16 @@ internal enum ValidationError: PrimerErrorProtocol {
     var extraUserInfo: [String: String]? {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
         
-//        switch self {
-//        case .generic(_, let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .invalidClientToken(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .missingPrimerConfiguration(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .missingPrimerDelegate(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .underlyingErrors(_, let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        }
+        switch self {
+        case .invalidCardholderName(let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidCardnumber(let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidCvv(let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidExpiryDate(let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        }
         
         return tmpUserInfo
     }
@@ -433,18 +431,40 @@ internal enum PaymentError: PrimerErrorProtocol {
     var extraUserInfo: [String: String]? {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
         
-//        switch self {
-//        case .generic(_, let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .invalidClientToken(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .missingPrimerConfiguration(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .missingPrimerDelegate(let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        case .underlyingErrors(_, let userInfo):
-//            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-//        }
+        switch self {
+        case .cancelled(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .failedToCreateSession(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .failedOnWebViewFlow(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .failedToPerform3DS(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidUrl(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalid3DSKey(let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidAmount(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidCurrency(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidCountryCode(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidMerchantCapabilities(let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidMerchantIdentifier(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidSupportedPaymentNetworks(let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidValue(_, _, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .unableToMakePaymentsOnProvidedNetworks(let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .unableToPresentPaymentMethod(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .unsupportedIntent(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        }
         
         return tmpUserInfo
     }
