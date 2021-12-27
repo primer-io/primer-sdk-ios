@@ -436,14 +436,41 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if primerTextFieldView is PrimerCardNumberFieldView, isValid == false {
-            cardNumberContainerView.errorText = "Invalid card number"
-        } else if primerTextFieldView is PrimerExpiryDateFieldView, isValid == false {
-            expiryDateContainerView.errorText = "Invalid date"
-        } else if primerTextFieldView is PrimerCVVFieldView, isValid == false {
-            cvvContainerView.errorText = "Invalid CVV"
-        } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
-            cardholderNameContainerView.errorText = "Invalid name"
+        if isValid == false {
+            // We know for sure that the text is not valid, even if the user hasn't finished typing.
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = !primerTextFieldView.isEmpty ? "Invalid card number" : nil
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = !primerTextFieldView.isEmpty ? "Invalid date" : nil
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = !primerTextFieldView.isEmpty ? "Invalid CVV" : nil
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                cardholderNameContainerView.errorText = !primerTextFieldView.isEmpty ? "Invalid name" : nil
+            }
+        } else if isValid == true {
+            // We know for sure that the text is valid, but could change to invalid if the user continues typing.
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = nil
+                _ = expiryDateField.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = nil
+                _ = cvvField.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = nil
+                _ = cardholderNameField.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                cardholderNameContainerView.errorText = nil
+            }
+        } else {
+            // We don't know for sure if the text is valid
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+            }
         }
         
         if cardNumberField.isTextValid,
