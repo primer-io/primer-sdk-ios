@@ -47,10 +47,6 @@ public class Primer {
             self?.setDependencies(settings: settings, theme: PrimerTheme())
             try! Analytics.Service.deleteEvents()
         }
-        
-        let err = NetworkError.invalidValue(key: "key", value: "value")
-        let nsErr = err as NSError
-        print("\(nsErr.domain) \(nsErr.code) \(nsErr.localizedDescription)\n\(err.localizedDescription)")
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -99,6 +95,11 @@ public class Primer {
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
+        
+        let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        _ = ErrorHandler.shared.handle(error: err)
+        let nsErr = err as NSError
+        print("\(nsErr.domain) \(nsErr.code) \(nsErr.localizedDescription)\n\(err.localizedDescription)")
     }
 
     // MARK: - CONFIGURATION
@@ -409,7 +410,7 @@ public class Primer {
             (.payNLPayconiq, .vault),
             (.payNLGiropay, .vault),
             (.other, _):
-            let err = PaymentError.unsupportedIntent(intent: intent)
+            let err = PaymentError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return

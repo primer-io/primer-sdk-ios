@@ -69,7 +69,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         if !(newText.isNumeric || newText.isEmpty) { return false }
         if string != "" && newText.withoutWhiteSpace.count >= 5 { return false }
         
-        validation = (self.isValid?(newText) ?? false) ? .valid : .invalid(ValidationError.invalidExpiryDate)
+        validation = (self.isValid?(newText) ?? false) ? .valid : .invalid(ValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         
         switch validation {
         case .valid:

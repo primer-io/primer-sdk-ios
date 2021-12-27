@@ -107,56 +107,56 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
-            let err = PrimerInternalError.invalidClientToken
+            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
-            let err = PrimerInternalError.invalidClientToken
+            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard config.id != nil else {
-            let err = PaymentError.invalidValue(key: "configuration.id", value: config.id)
+            let err = PaymentError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard let klarnaSessionType = settings.klarnaSessionType else {
-            let err = PaymentError.invalidValue(key: "settings.klarnaSessionType", value: nil)
+            let err = PaymentError.invalidValue(key: "settings.klarnaSessionType", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         if Primer.shared.flow == .checkoutWithKlarna && settings.amount == nil  {
-            let err = PaymentError.invalidAmount(amount: settings.amount)
+            let err = PaymentError.invalidAmount(amount: settings.amount, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         if case .hostedPaymentPage = klarnaSessionType {
             if settings.amount == nil {
-                let err = PaymentError.invalidAmount(amount: settings.amount)
+                let err = PaymentError.invalidAmount(amount: settings.amount, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
             }
             
             if settings.currency == nil {
-                let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue)
+                let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
             }
             
             if (settings.orderItems ?? []).isEmpty {
-                let err = PaymentError.invalidValue(key: "settings.orderItems", value: nil)
+                let err = PaymentError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
             }
             
             if !(settings.orderItems ?? []).filter({ $0.unitAmount == nil }).isEmpty {
-                let err = PaymentError.invalidValue(key: "settings.orderItems", value: nil)
+                let err = PaymentError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
             }
@@ -293,21 +293,21 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     
     private func generateWebViewUrl(completion: @escaping (Result<URL, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            completion(.failure(PrimerInternalError.invalidClientToken))
+            completion(.failure(PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])))
             return
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let configId = config.id else {
-            let err = PrimerInternalError.missingPrimerConfiguration
+            let err = PrimerInternalError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
         }
         
         guard let klarnaSessionType = settings.klarnaSessionType else {
-            let err = PaymentError.invalidValue(key: "settings.klarnaSessionType", value: nil)
+            let err = PaymentError.invalidValue(key: "settings.klarnaSessionType", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
@@ -315,7 +315,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         var amount = settings.amount
         if amount == nil && Primer.shared.flow == .checkoutWithKlarna {
-            let err = PaymentError.invalidAmount(amount: amount)
+            let err = PaymentError.invalidAmount(amount: amount, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
@@ -325,28 +325,28 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         if case .hostedPaymentPage = klarnaSessionType {
             if amount == nil {
-                let err = PaymentError.invalidAmount(amount: amount)
+                let err = PaymentError.invalidAmount(amount: amount, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 completion(.failure(err))
                 return
             }
             
             if settings.currency == nil {
-                let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue)
+                let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 completion(.failure(err))
                 return
             }
             
             if (settings.orderItems ?? []).isEmpty {
-                let err = PaymentError.invalidValue(key: "settings.orderItems", value: nil)
+                let err = PaymentError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 completion(.failure(err))
                 return
             }
             
             if !(settings.orderItems ?? []).filter({ $0.unitAmount == nil }).isEmpty {
-                let err = PaymentError.invalidValue(key: "settings.orderItems.amount", value: nil)
+                let err = PaymentError.invalidValue(key: "settings.orderItems.amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 completion(.failure(err))
                 return
@@ -401,7 +401,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 self?.sessionId = res.sessionId
                 
                 guard let url = URL(string: res.hppRedirectUrl) else {
-                    let err = PaymentError.invalidValue(key: "hppRedirectUrl", value: res.hppRedirectUrl)
+                    let err = PaymentError.invalidValue(key: "hppRedirectUrl", value: res.hppRedirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     _ = ErrorHandler.shared.handle(error: err)
                     completion(.failure(err))
                     return
@@ -458,7 +458,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerInternalError.invalidClientToken
+            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
@@ -468,7 +468,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
               let sessionId = self.sessionId else {
-                  let err = PrimerInternalError.missingPrimerConfiguration
+                  let err = PrimerInternalError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                   _ = ErrorHandler.shared.handle(error: err)
                   completion(.failure(err))
                   return
@@ -511,7 +511,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerInternalError.invalidClientToken
+            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
@@ -519,7 +519,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
               let sessionId = self.sessionId else {
-                  let err = PrimerInternalError.missingPrimerConfiguration
+                  let err = PrimerInternalError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                   _ = ErrorHandler.shared.handle(error: err)
                   completion(.failure(err))
                   return
@@ -584,7 +584,7 @@ extension KlarnaTokenizationViewModel: WKNavigationDelegate {
         if let url = navigationAction.request.url, let host = url.host, allowedHosts.contains(host) {
             let urlStateParameter = url.queryParameterValue(for: "state")
             if urlStateParameter == "cancel" {
-                let err = PaymentError.cancelled(paymentMethodType: self.config.type)
+                let err = PaymentError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 webViewCompletion?(nil, err)
                 webViewCompletion = nil
@@ -595,7 +595,7 @@ extension KlarnaTokenizationViewModel: WKNavigationDelegate {
             let token = url.queryParameterValue(for: "token")
             
             if (token ?? "").isEmpty || token == "undefined" || token == "null" {
-                let err = PaymentError.invalidValue(key: "paymentMethodToken", value: token)
+                let err = PaymentError.invalidValue(key: "paymentMethodToken", value: token, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 webViewCompletion?(nil, err)
                 webViewCompletion = nil

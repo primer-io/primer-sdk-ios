@@ -42,14 +42,14 @@ internal class PayPalService: PayPalServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerInternalError.invalidClientToken
+            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
         }
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
-            let err = PaymentError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal))
+            let err = PaymentError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
@@ -58,21 +58,21 @@ internal class PayPalService: PayPalServiceProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         guard let amount = settings.amount else {
-            let err = PaymentError.invalidAmount(amount: settings.amount)
+            let err = PaymentError.invalidAmount(amount: settings.amount, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
         }
 
         guard let currency = settings.currency else {
-            let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue)
+            let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
         }
 
         guard var urlScheme = settings.urlScheme else {
-            let err = PaymentError.invalidValue(key: "urlScheme", value: settings.urlScheme)
+            let err = PaymentError.invalidValue(key: "urlScheme", value: settings.urlScheme, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
@@ -95,7 +95,7 @@ internal class PayPalService: PayPalServiceProtocol {
         api.payPalStartOrderSession(clientToken: decodedClientToken, payPalCreateOrderRequest: body) { result in
             switch result {
             case .failure(let err):
-                let containerErr = PaymentError.failedToCreateSession(error: err)
+                let containerErr = PaymentError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: containerErr)
                 completion(.failure(containerErr))
             case .success(let res):
@@ -108,14 +108,14 @@ internal class PayPalService: PayPalServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerInternalError.invalidClientToken
+            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
         }
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
-            let err = PaymentError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal))
+            let err = PaymentError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
@@ -124,7 +124,7 @@ internal class PayPalService: PayPalServiceProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         guard var urlScheme = settings.urlScheme else {
-            let err = PaymentError.invalidValue(key: "urlScheme", value: settings.urlScheme)
+            let err = PaymentError.invalidValue(key: "urlScheme", value: settings.urlScheme, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
@@ -145,7 +145,7 @@ internal class PayPalService: PayPalServiceProtocol {
         api.payPalStartBillingAgreementSession(clientToken: decodedClientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
-                let containerErr = PaymentError.failedToCreateSession(error: err)
+                let containerErr = PaymentError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: containerErr)
                 completion(.failure(containerErr))
             case .success(let config):
@@ -159,21 +159,21 @@ internal class PayPalService: PayPalServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerInternalError.invalidClientToken
+            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
         }
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
-            let err = PaymentError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal))
+            let err = PaymentError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
         }
 
         guard let tokenId = self.paypalTokenId else {
-            let err = PaymentError.invalidValue(key: "paypalTokenId", value: self.paypalTokenId)
+            let err = PaymentError.invalidValue(key: "paypalTokenId", value: self.paypalTokenId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(.failure(err))
             return
@@ -186,7 +186,7 @@ internal class PayPalService: PayPalServiceProtocol {
         api.payPalConfirmBillingAgreement(clientToken: decodedClientToken, payPalConfirmBillingAgreementRequest: body) { result in
             switch result {
             case .failure(let err):
-                let containerErr = PaymentError.failedToCreateSession(error: err)
+                let containerErr = PaymentError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: containerErr)
                 completion(.failure(containerErr))
             case .success(let response):

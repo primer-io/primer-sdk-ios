@@ -24,7 +24,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void
     ) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerInternalError.invalidClientToken
+            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             onTokenizeSuccess(.failure(err))
             return
@@ -33,7 +33,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
         log(logLevel: .verbose, title: nil, message: "Client Token: \(decodedClientToken)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
         guard let pciURL = decodedClientToken.pciUrl else {
-            let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl)
+            let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             onTokenizeSuccess(.failure(err))
             return
@@ -42,7 +42,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
         log(logLevel: .verbose, title: nil, message: "PCI URL: \(pciURL)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
         guard let url = URL(string: "\(pciURL)/payment-instruments") else {
-            let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl)
+            let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             onTokenizeSuccess(.failure(err))
             return

@@ -229,26 +229,26 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerInternalError.invalidClientToken
+            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
-            let err = PaymentError.invalidValue(key: "clientToken.pciUrl", value: decodedClientToken.pciUrl)
+            let err = PaymentError.invalidValue(key: "clientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
             if settings.amount == nil {
-                let err = PaymentError.invalidAmount(amount: settings.amount)
+                let err = PaymentError.invalidAmount(amount: settings.amount, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
             }
             
             if settings.currency == nil {
-                let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue)
+                let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
             }
@@ -429,7 +429,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         if let clientToken = state.clientToken {
             completion(clientToken, nil)
         } else {
-            let err = PrimerInternalError.invalidClientToken
+            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             completion(nil, err)
         }
@@ -440,7 +440,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         
         DispatchQueue.main.async {
-            let err = PrimerInternalError.underlyingErrors(errors: errors)
+            let err = PrimerInternalError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             _ = ErrorHandler.shared.handle(error: err)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             self.handleFailedTokenizationFlow(error: err)
@@ -593,7 +593,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     }
                 }
                 #else
-                let err = PaymentError.failedToPerform3DS(error: nil)
+                let err = PaymentError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 DispatchQueue.main.async {
                     Primer.shared.delegate?.onResumeError?(err)
@@ -617,7 +617,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     self.onClientSessionActionCompletion?(err)
                 }
             } else {
-                let err = PaymentError.invalidValue(key: "resumeToken", value: nil)
+                let err = PaymentError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
 
                 handle(error: err)

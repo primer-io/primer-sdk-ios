@@ -119,7 +119,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         isCalled = true
 
         guard throwsError == false else {
-            completion(.failure(NetworkError.connectivityErrors(errors: [NSError(domain: NSURLErrorDomain, code: -1001, userInfo: nil)])))
+            completion(.failure(NetworkError.connectivityErrors(errors: [NSError(domain: NSURLErrorDomain, code: -1001, userInfo: nil)], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])))
             return
         }
         guard let response = response else { return }
@@ -136,7 +136,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         isCalled = true
 
         guard throwsError == false else {
-            completion(.failure(NetworkError.connectivityErrors(errors: [NSError(domain: NSURLErrorDomain, code: -1001, userInfo: nil)])))
+            completion(.failure(NetworkError.connectivityErrors(errors: [NSError(domain: NSURLErrorDomain, code: -1001, userInfo: nil)], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])))
             return
         }
 
@@ -153,7 +153,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         isCalled = true
 
         guard throwsError == false else {
-            completion(.failure(NetworkError.connectivityErrors(errors: [NSError(domain: NSURLErrorDomain, code: -1001, userInfo: nil)])))
+            completion(.failure(NetworkError.connectivityErrors(errors: [NSError(domain: NSURLErrorDomain, code: -1001, userInfo: nil)], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])))
             return
         }
 

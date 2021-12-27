@@ -73,7 +73,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            validation = .invalid(ValidationError.invalidCardholderName)
+            validation = .invalid(ValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         default:
             validation = .notAvailable
         }

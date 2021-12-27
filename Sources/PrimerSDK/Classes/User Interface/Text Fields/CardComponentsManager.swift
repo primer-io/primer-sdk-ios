@@ -94,7 +94,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         return Promise { seal in
             guard let delegate = delegate else {
                 print("Warning: Delegate has not been set")
-                let err = PrimerInternalError.missingPrimerDelegate
+                let err = PrimerInternalError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 _ = ErrorHandler.shared.handle(error: err)
                 seal.reject(err)
                 return
@@ -109,7 +109,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         if let decodedClientToken = self.decodedClientToken {
                             seal.fulfill(decodedClientToken)
                         } else {
-                            let err = PrimerInternalError.invalidClientToken
+                            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                             _ = ErrorHandler.shared.handle(error: err)
                             seal.reject(err)
                         }
@@ -168,7 +168,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 seal.fulfill(paymentMethodsConfig)
             } else {
                 guard let decodedClientToken = decodedClientToken else {
-                    let err = PrimerInternalError.invalidClientToken
+                    let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     _ = ErrorHandler.shared.handle(error: err)
                     seal.reject(err)
                     return
@@ -197,25 +197,25 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     private func validateCardComponents() throws {
         var errors: [Error] = []
         if !cardnumberField.cardnumber.isValidCardNumber {
-            errors.append(ValidationError.invalidCardnumber)
+            errors.append(ValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         }
         
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
-            errors.append(ValidationError.invalidExpiryDate)
+            errors.append(ValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         }
         
         if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
-            errors.append(ValidationError.invalidCvv)
+            errors.append(ValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         }
         
         if let cardholderField  = cardholderField {
             if !cardholderField.cardholderName.isValidCardholderName {
-                errors.append(ValidationError.invalidCardholderName)
+                errors.append(ValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
             }
         }
         
         if !errors.isEmpty {
-            throw PrimerInternalError.underlyingErrors(errors: errors)
+            throw PrimerInternalError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
         }
     }
     
@@ -325,7 +325,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         }
                 
                     case .failure(let err):
-                        let containerErr = PrimerInternalError.underlyingErrors(errors: [err])
+                        let containerErr = PrimerInternalError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         _ = ErrorHandler.shared.handle(error: containerErr)
                         self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                     }
@@ -335,7 +335,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 self.setIsLoading(false)
             }
-        } catch PrimerInternalError.underlyingErrors(errors: let errors) {
+        } catch PrimerInternalError.underlyingErrors(errors: let errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
             delegate?.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)
         } catch {
