@@ -66,7 +66,18 @@ internal enum PrimerInternalError: PrimerErrorProtocol {
     }
     
     var recoverySuggestion: String? {
-        return nil
+        switch self {
+        case .generic:
+            return nil
+        case .invalidClientToken:
+            return "Check if the token you have provided is a valid token (not nil and not expired)."
+        case .missingPrimerConfiguration:
+            return "Check if you have an active internet connection."
+        case .missingPrimerDelegate:
+            return nil
+        case .underlyingErrors:
+            return "Check underlying errors for more information."
+        }
     }
     
     var exposedError: Error {
@@ -129,7 +140,22 @@ internal enum NetworkError: PrimerErrorProtocol {
     }
     
     var recoverySuggestion: String? {
-        return nil
+        switch self {
+        case .connectivityErrors:
+            return "Check underlying conectivity errors for more information."
+        case .invalidUrl:
+            return "Provide a valid URL, meaning that it must include http(s):// at the begining and also follow URL formatting rules."
+        case .invalidValue(let key, let value):
+            return "Check if value \(value ?? "nil") is valid for key \(key)"
+        case .noData:
+            return "If you were expecting data on this response, check that your backend has sent the appropriate data."
+        case .serverError:
+            return "Check the server's response to debug this error further."
+        case .unauthorized:
+            return "Check that the you have provided the SDK with a client token."
+        case .underlyingErrors(let errors):
+            return "Check underlying errors' recovery suggestions for more information.\nRecovery Suggestions:\n\(errors.compactMap({ ($0 as NSError).localizedRecoverySuggestion }))"
+        }
     }
     
     var exposedError: Error {
@@ -165,7 +191,14 @@ internal enum ParserError: PrimerErrorProtocol {
     }
     
     var recoverySuggestion: String? {
-        return nil
+        switch self {
+        case .failedToEncode:
+            return "Check object's encode(to:) function for wrong CodingKeys, or unexpected values."
+        case .failedToDecode:
+            return "Check object's init(from:) function for wrong CodingKeys, or unexpected values."
+        case .failedToSerialize:
+            return "Check if all object's properties can be serialized."
+        }
     }
 
     var exposedError: Error {
@@ -286,7 +319,56 @@ internal enum PaymentError: PrimerErrorProtocol {
     }
     
     var recoverySuggestion: String? {
-        return nil
+        switch self {
+        case .cancelled:
+            return nil
+        case .failedToCreateSession:
+            // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
+            return nil
+        case .failedOnWebViewFlow:
+            // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
+            return nil
+        case .failedToPerform3DS(let error):
+            // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
+            return nil
+        case .invalidUrl(let url):
+            // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
+            return nil
+        case .invalid3DSKey:
+            return "Contact Primer to enable 3DS on your account."
+        case .invalidAmount:
+            return "Check if you have provided a valid amount on your client session."
+        case .invalidCardholderName:
+            return nil
+        case .invalidCardnumber:
+            return nil
+        case .invalidCurrency:
+            return "Check if you have provided a valid currency code on your client session."
+        case .invalidCountryCode:
+            return "Check if you have provided a valid country code on your client session."
+        case .invalidCvv:
+            return nil
+        case .invalidExpiryDate:
+            return nil
+        case .invalidMerchantCapabilities:
+            return nil
+        case .invalidMerchantIdentifier:
+            return "Check if you have provided a valid merchant identifier on the PrimerSettings."
+        case .invalidSupportedPaymentNetworks:
+            return nil
+        case .invalidValue(let key, let value):
+            return "Check if value \(value ?? "nil") is valid for key \(key)"
+        case .unableToMakePaymentsOnProvidedNetworks:
+            return nil
+        case .unableToPresentPaymentMethod:
+            return "Check if all necessary values have been provided on your client session. You can find the necessary values on our documentation (website)"
+        case .unsupportedIntent(let intent):
+            if intent == .checkout {
+                return "Change the intent to .vault"
+            } else {
+                return "Change the intent to .checkout"
+            }
+        }
     }
     
     var exposedError: Error {

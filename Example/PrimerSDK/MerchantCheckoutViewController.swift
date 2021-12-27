@@ -102,7 +102,7 @@ class MerchantCheckoutViewController: UIViewController {
         )
         
         Primer.shared.configure(settings: vaultApayaSettings)
-        Primer.shared.showPaymentMethod(.apaya, withIntent: .vault, on: self)
+        Primer.shared.showPaymentMethod(.paymentCard, withIntent: .vault, on: self)
     }
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
