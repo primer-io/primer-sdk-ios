@@ -343,11 +343,9 @@ internal enum PaymentError: PrimerErrorProtocol {
     case failedToPerform3DS(error: Error?, userInfo: [String: String]?)
     case invalidUrl(url: String?, userInfo: [String: String]?)
     case invalid3DSKey(userInfo: [String: String]?)
-    case invalidAmount(amount: Int?, userInfo: [String: String]?)
-    case invalidCurrency(currency: String?, userInfo: [String: String]?)
-    case invalidCountryCode(countryCode: String?, userInfo: [String: String]?)
     case invalidMerchantCapabilities(userInfo: [String: String]?)
     case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?)
+    case invalidSetting(name: String, value: String?, userInfo: [String: String]?)
     case invalidSupportedPaymentNetworks(userInfo: [String: String]?)
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?)
     case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?)
@@ -368,16 +366,12 @@ internal enum PaymentError: PrimerErrorProtocol {
             return "invalid-3ds-key"
         case .invalidUrl:
             return "invalid-url"
-        case .invalidAmount:
-            return "invalid-amount"
-        case .invalidCurrency:
-            return "invalid-currency"
-        case .invalidCountryCode:
-            return "invalid-country-code"
         case .invalidMerchantCapabilities:
             return "invalid-merchant-capabilities"
         case .invalidMerchantIdentifier:
             return "invalid-merchant-identifier"
+        case .invalidSetting:
+            return "invalid-setting"
         case .invalidSupportedPaymentNetworks:
             return "invalid-supported-payment-networks"
         case .invalidValue:
@@ -405,16 +399,12 @@ internal enum PaymentError: PrimerErrorProtocol {
             return "[\(errorId)] Invalid 3DS key"
         case .invalidUrl(url: let url, _):
             return "[\(errorId)] Invalid URL: \(url ?? "nil")"
-        case .invalidAmount(amount: let amount, _):
-            return "[\(errorId)] Invalid amount: \(amount == nil ? "nil" : "\(amount!)")"
-        case .invalidCurrency(currency: let currency, _):
-            return "[\(errorId)] Invalid currency: \(currency == nil ? "nil" : "\(currency!)")"
-        case .invalidCountryCode(countryCode: let countryCode, _):
-            return "[\(errorId)] Invalid country code: \(countryCode == nil ? "nil" : "\(countryCode!)")"
         case .invalidMerchantCapabilities:
             return "[\(errorId)] Invalid merchant capabilities"
         case .invalidMerchantIdentifier(merchantIdentifier: let merchantIdentifier, _):
             return "[\(errorId)] Invalid merchant identifier: \(merchantIdentifier == nil ? "nil" : "\(merchantIdentifier!)")"
+        case .invalidSetting(let name, let value, _):
+            return "[\(errorId)] Invalid setting for \(name) (provided value is \(value ?? "nil"))"
         case .invalidSupportedPaymentNetworks:
             return "[\(errorId)] Invalid supported payment networks"
         case .invalidValue(key: let key, value: let value, _):
@@ -444,15 +434,11 @@ internal enum PaymentError: PrimerErrorProtocol {
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         case .invalid3DSKey(let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidAmount(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidCurrency(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidCountryCode(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         case .invalidMerchantCapabilities(let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         case .invalidMerchantIdentifier(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .invalidSetting(_, _, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         case .invalidSupportedPaymentNetworks(let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
@@ -491,16 +477,12 @@ internal enum PaymentError: PrimerErrorProtocol {
             return nil
         case .invalid3DSKey:
             return "Contact Primer to enable 3DS on your account."
-        case .invalidAmount:
-            return "Check if you have provided a valid amount on your client session."
-        case .invalidCurrency:
-            return "Check if you have provided a valid currency code on your client session."
-        case .invalidCountryCode:
-            return "Check if you have provided a valid country code on your client session."
         case .invalidMerchantCapabilities:
             return nil
         case .invalidMerchantIdentifier:
             return "Check if you have provided a valid merchant identifier on the PrimerSettings."
+        case .invalidSetting(let name, _, _):
+            return "Check if you have provided \(name) in client session or in the PrimerSettings."
         case .invalidSupportedPaymentNetworks:
             return nil
         case .invalidValue(let key, let value, _):
