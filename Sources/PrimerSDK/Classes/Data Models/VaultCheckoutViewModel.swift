@@ -99,7 +99,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     func authorizePayment(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         guard let selectedPaymentMethod = state.selectedPaymentMethod else {
-            completion(PrimerError.invalidValue(key: "selectedPaymentMethod"))
+            completion(PaymentError.invalidValue(key: "state.selectedPaymentMethod", value: state.selectedPaymentMethod))
             return
         }
         

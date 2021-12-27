@@ -66,7 +66,8 @@ internal extension String {
                 eventType: .message,
                 properties: MessageEventProperties(
                     message: "Invalid cardnumber",
-                    messageType: .validationFailed))
+                    messageType: .validationFailed,
+                    severity: .warning))
             Analytics.Service.record(event: event)
         }
         
@@ -132,7 +133,8 @@ internal extension String {
                 eventType: .message,
                 properties: MessageEventProperties(
                     message: "Invalid expiry date",
-                    messageType: .validationFailed))
+                    messageType: .validationFailed,
+                    severity: .error))
             Analytics.Service.record(event: event)
         }
         
@@ -159,7 +161,8 @@ internal extension String {
                 eventType: .message,
                 properties: MessageEventProperties(
                     message: "Invalid CVV",
-                    messageType: .validationFailed))
+                    messageType: .validationFailed,
+                    severity: .warning))
             Analytics.Service.record(event: event)
         }
         

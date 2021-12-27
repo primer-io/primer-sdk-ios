@@ -125,43 +125,43 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
-            let err = PaymentException.missingClientToken
+            let err = PrimerInternalError.invalidClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
-            let err = PrimerError.tokenizationPreRequestFailed
+            let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: nil)
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard config.id != nil else {
-            let err = PaymentException.missingConfigurationId
+            let err = PaymentError.invalidValue(key: "configuration.id", value: config.id)
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard settings.countryCode != nil else {
-            let err = PaymentException.missingCountryCode
+            let err = PaymentError.invalidCountryCode(countryCode: settings.countryCode?.rawValue)
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard settings.currency != nil else {
-            let err = PaymentException.missingCurrency
+            let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue)
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard settings.merchantIdentifier != nil else {
-            let err = AppleException.missingMerchantIdentifier
+            let err = PaymentError.invalidMerchantIdentifier(merchantIdentifier: settings.merchantIdentifier)
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard !(settings.orderItems ?? []).isEmpty else {
-            let err = PaymentException.missingOrderItems
+            let err = PaymentError.invalidValue(key: "settings.orderItems", value: nil)
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
@@ -240,7 +240,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             if Primer.shared.flow.internalSessionFlow.vaulted {
-                seal.reject(PrimerError.vaultNotSupported)
+                let err = PaymentError.unsupportedIntent(intent: .vault)
+                _ = ErrorHandler.shared.handle(error: err)
+                seal.reject(err)
                 return
             }
             
@@ -261,7 +263,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            completion(nil, PrimerError.clientTokenNull)
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(nil, err)
             return
         }
         
@@ -291,7 +295,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
             
             guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
-                let err = AppleException.unableToPresentApplePay
+                let err = PaymentError.unableToPresentPaymentMethod(paymentMethodType: .applePay)
                 _ = ErrorHandler.shared.handle(error: err)
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
@@ -306,7 +310,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                     let state: AppStateProtocol = DependencyContainer.resolve()
                                         
                     guard let applePayConfigId = self.config.id else {
-                        return completion(nil, PaymentException.missingConfigurationId)
+                        let err = PaymentError.invalidValue(key: "configuration.id", value: self.config.id)
+                        _ = ErrorHandler.shared.handle(error: err)
+                        completion(nil, err)
+                        return
                     }
 
                     let instrument = PaymentInstrument(
@@ -344,7 +351,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             
         } else {
             log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
-            completion(nil, AppleException.unableToMakePaymentsOnProvidedNetworks)
+            let err = PaymentError.unableToMakePaymentsOnProvidedNetworks
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(nil, err)
         }
     }
     
@@ -354,7 +363,9 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
         controller.dismiss(animated: true, completion: nil)
-        applePayReceiveDataCompletion?(.failure(AppleException.cancelled))
+        let err = PaymentError.cancelled(paymentMethodType: .applePay)
+        _ = ErrorHandler.shared.handle(error: err)
+        applePayReceiveDataCompletion?(.failure(err))
         applePayReceiveDataCompletion = nil
     }
     

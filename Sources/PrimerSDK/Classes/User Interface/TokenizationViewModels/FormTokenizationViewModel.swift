@@ -229,26 +229,26 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PaymentException.missingClientToken
+            let err = PrimerInternalError.invalidClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
-            let err = PrimerError.tokenizationPreRequestFailed
+            let err = PaymentError.invalidValue(key: "clientToken.pciUrl", value: decodedClientToken.pciUrl)
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
             if settings.amount == nil {
-                let err = PaymentException.missingAmount
+                let err = PaymentError.invalidAmount(amount: settings.amount)
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
             }
             
             if settings.currency == nil {
-                let err = PaymentException.missingCurrency
+                let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue)
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
             }
@@ -429,7 +429,9 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         if let clientToken = state.clientToken {
             completion(clientToken, nil)
         } else {
-            completion(nil, PrimerError.clientTokenNull)
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(nil, err)
         }
     }
     
@@ -438,7 +440,8 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         
         DispatchQueue.main.async {
-            let err = PrimerError.containerError(errors: errors)
+            let err = PrimerInternalError.underlyingErrors(errors: errors)
+            _ = ErrorHandler.shared.handle(error: err)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             self.handleFailedTokenizationFlow(error: err)
         }
@@ -552,8 +555,10 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 #if canImport(Primer3DS)
                 guard let paymentMethod = paymentMethod else {
                     DispatchQueue.main.async {
-                        let err = PrimerError.threeDSFailed
-                        Primer.shared.delegate?.onResumeError?(err)
+                        let err = PrimerInternalError.generic(message: "Failed to find paymentMethod", userInfo: nil)
+                        let containerErr = PaymentError.failedToPerform3DS(error: err)
+                        _ = ErrorHandler.shared.handle(error: containerErr)
+                        Primer.shared.delegate?.onResumeError?(containerErr)
                     }
                     return
                 }
@@ -566,7 +571,9 @@ extension CardFormPaymentMethodTokenizationViewModel {
                             guard let threeDSPostAuthResponse = paymentMethodToken.1,
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
                                       DispatchQueue.main.async {
-                                          let err = PrimerError.threeDSFailed
+                                          let decodeError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse")
+                                          let err = PaymentError.failedToPerform3DS(error: decodeError)
+                                          _ = ErrorHandler.shared.handle(error: err)
                                           Primer.shared.delegate?.onResumeError?(err)
                                           self.handle(error: err)
                                       }
@@ -578,16 +585,18 @@ extension CardFormPaymentMethodTokenizationViewModel {
                         
                     case .failure(let err):
                         log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
-                        let err = PrimerError.threeDSFailed
+                        let containerErr = PaymentError.failedToPerform3DS(error: err)
+                        _ = ErrorHandler.shared.handle(error: containerErr)
                         DispatchQueue.main.async {
-                            Primer.shared.delegate?.onResumeError?(err)
+                            Primer.shared.delegate?.onResumeError?(containerErr)
                         }
                     }
                 }
                 #else
-                let error = PrimerError.threeDSFailed
+                let err = PaymentError.failedToPerform3DS(error: nil)
+                _ = ErrorHandler.shared.handle(error: err)
                 DispatchQueue.main.async {
-                    Primer.shared.delegate?.onResumeError?(error)
+                    Primer.shared.delegate?.onResumeError?(err)
                 }
                 #endif
                 
@@ -608,7 +617,8 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     self.onClientSessionActionCompletion?(err)
                 }
             } else {
-                let err = PrimerError.invalidValue(key: "resumeToken")
+                let err = PaymentError.invalidValue(key: "resumeToken", value: nil)
+                _ = ErrorHandler.shared.handle(error: err)
 
                 handle(error: err)
                 DispatchQueue.main.async {

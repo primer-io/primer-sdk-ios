@@ -47,6 +47,10 @@ public class Primer {
             self?.setDependencies(settings: settings, theme: PrimerTheme())
             try! Analytics.Service.deleteEvents()
         }
+        
+        let err = NetworkError.invalidValue(key: "key", value: "value")
+        let nsErr = err as NSError
+        print("\(nsErr.domain) \(nsErr.code) \(nsErr.localizedDescription)\n\(err.localizedDescription)")
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -405,7 +409,8 @@ public class Primer {
             (.payNLPayconiq, .vault),
             (.payNLGiropay, .vault),
             (.other, _):
-            let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
+            let err = PaymentError.unsupportedIntent(intent: intent)
+            _ = ErrorHandler.shared.handle(error: err)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return
         }

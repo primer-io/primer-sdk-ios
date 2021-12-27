@@ -73,7 +73,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            validation = .invalid(PrimerError.invalidCardholderName)
+            validation = .invalid(PaymentError.invalidCardholderName)
         default:
             validation = .notAvailable
         }

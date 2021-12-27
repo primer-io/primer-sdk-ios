@@ -21,16 +21,25 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
-            return completion(PrimerError.directDebitSessionFailed)
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(err)
+            return
         }
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .goCardlessMandate) else {
-            return completion(PrimerError.directDebitSessionFailed)
+            let err = PaymentError.invalidValue(key: "configId", value: state.primerConfiguration?.getConfigId(for: .goCardlessMandate))
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(err)
+            return
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         guard let customer = settings.customer else {
-            return completion(PrimerError.userDetailsMissing)
+            let err = PaymentError.invalidValue(key: "settings.customer", value: nil)
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(err)
+            return
         }
         
         let bankDetails = BankDetails(
@@ -47,8 +56,10 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
 
         api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { result in
             switch result {
-            case .failure:
-                completion(PrimerError.directDebitSessionFailed)
+            case .failure(let err):
+                let containerErr = PaymentError.failedToCreateSession(error: err)
+                _ = ErrorHandler.shared.handle(error: containerErr)
+                completion(containerErr)
             case .success(let response):
                 completion(nil)
             }

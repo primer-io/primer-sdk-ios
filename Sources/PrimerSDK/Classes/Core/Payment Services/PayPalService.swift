@@ -42,25 +42,40 @@ internal class PayPalService: PayPalServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            return completion(.failure(PrimerError.clientTokenNull))
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(.failure(err))
+            return
         }
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
-            return completion(.failure(PrimerError.configFetchFailed))
+            let err = PaymentError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal))
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(.failure(err))
+            return
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         guard let amount = settings.amount else {
-            return completion(.failure(PrimerError.amountMissing))
+            let err = PaymentError.invalidAmount(amount: settings.amount)
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(.failure(err))
+            return
         }
 
         guard let currency = settings.currency else {
-            return completion(.failure(PrimerError.currencyMissing))
+            let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue)
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(.failure(err))
+            return
         }
 
         guard var urlScheme = settings.urlScheme else {
-            return completion(.failure(PrimerError.missingURLScheme))
+            let err = PaymentError.invalidValue(key: "urlScheme", value: settings.urlScheme)
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(.failure(err))
+            return
         }
         
         if urlScheme.suffix(3) == "://" {
@@ -79,8 +94,10 @@ internal class PayPalService: PayPalServiceProtocol {
 
         api.payPalStartOrderSession(clientToken: decodedClientToken, payPalCreateOrderRequest: body) { result in
             switch result {
-            case .failure:
-                completion(.failure(PrimerError.payPalSessionFailed))
+            case .failure(let err):
+                let containerErr = PaymentError.failedToCreateSession(error: err)
+                _ = ErrorHandler.shared.handle(error: containerErr)
+                completion(.failure(containerErr))
             case .success(let res):
                 completion(.success(res))
             }
@@ -91,17 +108,26 @@ internal class PayPalService: PayPalServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            return completion(.failure(PrimerError.payPalSessionFailed))
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(.failure(err))
+            return
         }
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
-            return completion(.failure(PrimerError.payPalSessionFailed))
+            let err = PaymentError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal))
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(.failure(err))
+            return
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
         guard var urlScheme = settings.urlScheme else {
-            return completion(.failure(PrimerError.missingURLScheme))
+            let err = PaymentError.invalidValue(key: "urlScheme", value: settings.urlScheme)
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(.failure(err))
+            return
         }
         
         if urlScheme.suffix(3) == "://" {
@@ -118,8 +144,10 @@ internal class PayPalService: PayPalServiceProtocol {
 
         api.payPalStartBillingAgreementSession(clientToken: decodedClientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
-            case .failure:
-                completion(.failure(PrimerError.payPalSessionFailed))
+            case .failure(let err):
+                let containerErr = PaymentError.failedToCreateSession(error: err)
+                _ = ErrorHandler.shared.handle(error: containerErr)
+                completion(.failure(containerErr))
             case .success(let config):
                 self?.paypalTokenId = config.tokenId
                 completion(.success(config.approvalUrl))
@@ -131,15 +159,24 @@ internal class PayPalService: PayPalServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            return completion(.failure(PrimerError.payPalSessionFailed))
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(.failure(err))
+            return
         }
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
-            return completion(.failure(PrimerError.payPalSessionFailed))
+            let err = PaymentError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal))
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(.failure(err))
+            return
         }
 
         guard let tokenId = self.paypalTokenId else {
-            return completion(.failure(PrimerError.payPalSessionFailed))
+            let err = PaymentError.invalidValue(key: "paypalTokenId", value: self.paypalTokenId)
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(.failure(err))
+            return
         }
 
         let body = PayPalConfirmBillingAgreementRequest(paymentMethodConfigId: configId, tokenId: tokenId)
@@ -148,8 +185,10 @@ internal class PayPalService: PayPalServiceProtocol {
 
         api.payPalConfirmBillingAgreement(clientToken: decodedClientToken, payPalConfirmBillingAgreementRequest: body) { result in
             switch result {
-            case .failure:
-                completion(.failure(PrimerError.payPalSessionFailed))
+            case .failure(let err):
+                let containerErr = PaymentError.failedToCreateSession(error: err)
+                _ = ErrorHandler.shared.handle(error: containerErr)
+                completion(.failure(containerErr))
             case .success(let response):
                 completion(.success(response))
             }

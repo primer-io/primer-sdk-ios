@@ -60,15 +60,21 @@ struct DecodedClientToken: Codable {
     
     func validate() throws {
         if accessToken == nil {
-            throw PrimerError.clientTokenNull
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
         }
         
         guard let expDate = expDate else {
-            throw PrimerError.clientTokenExpirationMissing
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
         }
         
         if expDate < Date() {
-            throw PrimerError.clientTokenExpired
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
         }
     }
 }

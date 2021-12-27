@@ -36,6 +36,7 @@ extension Analytics.Event {
         }
         
         enum MessageType: String, Codable {
+            case error = "ERROR"
             case missingValue = "MISSING_VALUE"
             case validationFailed = "VALIDATION_FAILED"
         }
@@ -118,7 +119,7 @@ struct CrashEventProperties: AnalyticsEventProperties {
 struct MessageEventProperties: AnalyticsEventProperties {
     var message: String?
     var messageType: Analytics.Event.Property.MessageType
-//    var severity = Analytics.Event.Property.Severity
+    var severity: Analytics.Event.Property.Severity
 }
 
 struct NetworkCallEventProperties: AnalyticsEventProperties {

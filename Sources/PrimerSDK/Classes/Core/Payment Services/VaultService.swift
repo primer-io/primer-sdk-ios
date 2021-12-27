@@ -17,7 +17,10 @@ internal class VaultService: VaultServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
-            return completion(PrimerError.vaultFetchFailed)
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(err)
+            return
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
@@ -38,21 +41,26 @@ internal class VaultService: VaultServiceProtocol {
             completion(nil)
         }
         .catch { err in
-            completion(PrimerError.vaultFetchFailed)
+            completion(err)
         }
     }
 
     func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {        
         guard let clientToken = ClientTokenService.decodedClientToken else {
-            return completion(PrimerError.vaultDeleteFailed)
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(err)
+            return
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
         api.vaultDeletePaymentMethod(clientToken: clientToken, id: id) { (result) in
             switch result {
-            case .failure:
-                completion(PrimerError.vaultDeleteFailed)
+            case .failure(let err):
+                let containerErr = PaymentError.failedToCreateSession(error: err)
+                _ = ErrorHandler.shared.handle(error: err)
+                completion(containerErr)
             case .success:
                 completion(nil)
             }

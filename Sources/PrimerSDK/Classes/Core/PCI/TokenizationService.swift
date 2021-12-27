@@ -6,7 +6,7 @@ internal protocol TokenizationServiceProtocol {
     var tokenizedPaymentMethodToken: PaymentMethodToken? { get set }
     func tokenize(
         request: TokenizationRequest,
-        onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void
+        onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void
     )
     func tokenize(request: TokenizationRequest) -> Promise<PaymentMethodToken>
 }
@@ -21,22 +21,31 @@ internal class TokenizationService: TokenizationServiceProtocol {
 
     func tokenize(
         request: TokenizationRequest,
-        onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void
+        onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void
     ) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            return onTokenizeSuccess(.failure(PrimerError.tokenizationPreRequestFailed))
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            onTokenizeSuccess(.failure(err))
+            return
         }
 
         log(logLevel: .verbose, title: nil, message: "Client Token: \(decodedClientToken)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
         guard let pciURL = decodedClientToken.pciUrl else {
-            return onTokenizeSuccess(.failure(PrimerError.tokenizationPreRequestFailed))
+            let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl)
+            _ = ErrorHandler.shared.handle(error: err)
+            onTokenizeSuccess(.failure(err))
+            return
         }
 
         log(logLevel: .verbose, title: nil, message: "PCI URL: \(pciURL)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
         guard let url = URL(string: "\(pciURL)/payment-instruments") else {
-            return onTokenizeSuccess(.failure(PrimerError.tokenizationPreRequestFailed))
+            let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl)
+            _ = ErrorHandler.shared.handle(error: err)
+            onTokenizeSuccess(.failure(err))
+            return
         }
 
         log(logLevel: .verbose, title: nil, message: "URL: \(url)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
@@ -45,10 +54,8 @@ internal class TokenizationService: TokenizationServiceProtocol {
         
         api.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: request) { (result) in
             switch result {
-            case .failure:
-                DispatchQueue.main.async {
-                    onTokenizeSuccess(.failure( PrimerError.tokenizationRequestFailed ))
-                }
+            case .failure(let err):
+                DispatchQueue.main.async { onTokenizeSuccess(.failure(err)) }
                 
             case .success(let paymentMethodToken):
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -84,7 +91,9 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     }
                     
                     guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                        Primer.shared.delegate?.checkoutFailed?(with: PrimerError.clientTokenNull)
+                        let err = PrimerInternalError.invalidClientToken
+                        _ = ErrorHandler.shared.handle(error: err)
+                        Primer.shared.delegate?.checkoutFailed?(with: err.exposedError)
                         return
                     }
 

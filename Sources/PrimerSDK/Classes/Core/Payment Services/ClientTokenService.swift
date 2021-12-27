@@ -29,11 +29,15 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         guard var currentDecodedToken = clientToken.jwtTokenPayload,
               let expDate = currentDecodedToken.expDate
         else {
-            throw PrimerError.clientTokenNull
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
         }
         
         if expDate < Date() {
-            throw PrimerError.clientTokenExpired
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            throw err
         }
         
         let state: AppStateProtocol = DependencyContainer.resolve()
@@ -96,7 +100,8 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
      */
     func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
         guard let clientTokenCallback = Primer.shared.delegate?.clientTokenCallback else {
-            let err = PrimerError.invalidValue(key: "clientTokenCallback delegate function.")
+            let err = PrimerInternalError.missingPrimerDelegate
+            _ = ErrorHandler.shared.handle(error: err)
             completion(err)
             return
         }

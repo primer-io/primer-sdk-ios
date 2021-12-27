@@ -49,14 +49,15 @@ public struct Apaya {
                 url.queryParameterValue(for: "success") != nil,
                 let status = url.queryParameterValue(for: "status")
             else {
-                throw ApayaException.invalidWebViewResult
+                let err = PrimerInternalError.generic(message: "Failed to find query parameters: [status, success]", userInfo: nil)
+                throw PaymentError.failedOnWebViewFlow(error: err)
             }
             
-            if (status == "SETUP_ERROR") {
-                throw ApayaException.webViewFlowError
-            }
-            if (status == "SETUP_ABANDONED") {
-                throw ApayaException.webViewFlowCancelled
+            if status == "SETUP_ERROR" {
+                let err = PrimerInternalError.generic(message: "Apaya status is SETUP_ERROR", userInfo: nil)
+                throw PaymentError.failedOnWebViewFlow(error: err)
+            } else if status == "SETUP_ABANDONED" {
+                throw PaymentError.cancelled(paymentMethodType: .apaya)
             }
             
             guard
@@ -66,14 +67,14 @@ public struct Apaya {
                 let mnc = url.queryParameterValue(for: "MNC"),
                 let success = url.queryParameterValue(for: "success")
             else {
-                throw ApayaException.invalidWebViewResult
+                throw PaymentError.invalidValue(key: "apaya-params", value: nil)
             }
             
             let state: AppStateProtocol = DependencyContainer.resolve()
             guard ClientTokenService.decodedClientToken != nil,
                   let merchantAccountId = state.primerConfiguration?.getProductId(for: .apaya)
             else {
-                throw ApayaException.invalidWebViewResult
+                throw PaymentError.invalidValue(key: "apaya-merchantAccountId", value: nil)
             }
     
             self.hashedIdentifier = hashedIdentifier
@@ -87,7 +88,6 @@ public struct Apaya {
     }
     
     class ViewModel {
-        
         var carrier: Apaya.Carrier
         var hashedIdentifier: String?
         

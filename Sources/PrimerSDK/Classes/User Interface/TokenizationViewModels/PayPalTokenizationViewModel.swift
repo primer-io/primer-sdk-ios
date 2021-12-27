@@ -103,22 +103,26 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     
     override func validate() throws {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PaymentException.missingClientToken
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
-            let err = PrimerError.tokenizationPreRequestFailed
+            let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl)
+            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard config.id != nil else {
-            let err = PaymentException.missingConfigurationId
+            let err = PaymentError.invalidValue(key: "configuration.id", value: config.id)
+            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.coreUrl != nil else {
-            let err = PrimerError.invalidValue(key: "coreUrl")
+            let err = PaymentError.invalidValue(key: "decodedClientToken.coreUrl", value: decodedClientToken.pciUrl)
+            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
     }
@@ -229,7 +233,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                     switch result {
                     case .success(let res):
                         guard let url = URL(string: res.approvalUrl) else {
-                            seal.reject(PrimerError.failedToLoadSession)
+                            let err = PaymentError.invalidValue(key: "res.approvalUrl", value: res.approvalUrl)
+                            _ = ErrorHandler.shared.handle(error: err)
+                            seal.reject(err)
                             return
                         }
                         
@@ -245,7 +251,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                     switch result {
                     case .success(let urlStr):
                         guard let url = URL(string: urlStr) else {
-                            seal.reject(PrimerError.failedToLoadSession)
+                            let err = PaymentError.invalidValue(key: "billingAgreement.response.url", value: urlStr)
+                            _ = ErrorHandler.shared.handle(error: err)
+                            seal.reject(err)
                             return
                         }
                         
@@ -263,7 +271,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         return Promise { seal in
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             guard let urlScheme = settings.urlScheme else {
-                seal.reject(PrimerError.missingURLScheme)
+                let err = PaymentError.invalidValue(key: "settings.urlScheme", value: settings.urlScheme)
+                _ = ErrorHandler.shared.handle(error: err)
+                seal.reject(err)
                 return
             }
             
@@ -325,7 +335,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
             guard let orderId = orderId else {
-                completion(.failure(PrimerError.orderIdMissing))
+                let err = PaymentError.invalidValue(key: "orderId", value: orderId)
+                _ = ErrorHandler.shared.handle(error: err)
+                completion(.failure(err))
                 return
             }
             
@@ -357,9 +369,10 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
         paypalService.confirmBillingAgreement({ result in
             switch result {
-            case .failure(let error):
-                log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
-                completion(PrimerError.payPalSessionFailed)
+            case .failure(let err):
+                let contaiinerErr = PaymentError.failedToCreateSession(error: err)
+                _ = ErrorHandler.shared.handle(error: err)
+                completion(contaiinerErr)
             case .success(let res):
                 self.confirmBillingAgreementResponse = res
                 completion(nil)

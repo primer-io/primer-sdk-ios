@@ -94,7 +94,9 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         return Promise { seal in
             guard let delegate = delegate else {
                 print("Warning: Delegate has not been set")
-                seal.reject(PrimerError.delegateNotSet)
+                let err = PrimerInternalError.missingPrimerDelegate
+                _ = ErrorHandler.shared.handle(error: err)
+                seal.reject(err)
                 return
             }
             
@@ -107,7 +109,9 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         if let decodedClientToken = self.decodedClientToken {
                             seal.fulfill(decodedClientToken)
                         } else {
-                            seal.reject(PrimerError.clientTokenNull)
+                            let err = PrimerInternalError.invalidClientToken
+                            _ = ErrorHandler.shared.handle(error: err)
+                            seal.reject(err)
                         }
                         
                     } catch {
@@ -140,9 +144,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 
             } catch {
                 switch error {
-                case PrimerError.clientTokenNull,
-                     PrimerError.clientTokenExpirationMissing,
-                     PrimerError.clientTokenExpired:
+                case PrimerInternalError.invalidClientToken:
                     firstly {
                         self.fetchClientToken()
                     }
@@ -166,7 +168,9 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 seal.fulfill(paymentMethodsConfig)
             } else {
                 guard let decodedClientToken = decodedClientToken else {
-                    seal.reject(PrimerError.clientTokenNull)
+                    let err = PrimerInternalError.invalidClientToken
+                    _ = ErrorHandler.shared.handle(error: err)
+                    seal.reject(err)
                     return
                 }
                 
@@ -193,25 +197,25 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     private func validateCardComponents() throws {
         var errors: [Error] = []
         if !cardnumberField.cardnumber.isValidCardNumber {
-            errors.append(PrimerError.invalidCardnumber)
+            errors.append(PaymentError.invalidCardnumber)
         }
         
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
-            errors.append(PrimerError.invalidExpiryDate)
+            errors.append(PaymentError.invalidExpiryDate)
         }
         
         if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
-            errors.append(PrimerError.invalidCVV)
+            errors.append(PaymentError.invalidCvv)
         }
         
         if let cardholderField  = cardholderField {
             if !cardholderField.cardholderName.isValidCardholderName {
-                errors.append(PrimerError.invalidCardholderName)
+                errors.append(PaymentError.invalidCardholderName)
             }
         }
         
         if !errors.isEmpty {
-            throw PrimerError.containerError(errors: errors)
+            throw PrimerInternalError.underlyingErrors(errors: errors)
         }
     }
     
@@ -286,7 +290,9 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                             }
                             
                             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                                self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [PrimerError.clientTokenNull])
+                                let err = PrimerInternalError.invalidClientToken
+                                _ = ErrorHandler.shared.handle(error: err)
+                                self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                                 return
                             }
 
@@ -319,7 +325,9 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         }
                 
                     case .failure(let err):
-                        self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [PrimerError.tokenizationRequestFailed])
+                        let containerErr = PrimerInternalError.underlyingErrors(errors: [err])
+                        _ = ErrorHandler.shared.handle(error: containerErr)
+                        self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                     }
                 }
             }
@@ -327,7 +335,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 self.setIsLoading(false)
             }
-        } catch PrimerError.containerError(let errors) {
+        } catch PrimerInternalError.underlyingErrors(errors: let errors) {
             delegate?.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)
         } catch {

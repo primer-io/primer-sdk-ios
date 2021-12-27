@@ -29,7 +29,7 @@ class ClientTokenServiceTests: XCTestCase {
         let service = ClientTokenService()
         service.fetchClientToken { (err) in
             if let err = err {
-                if case PrimerError.clientTokenExpired = err {
+                if case PrimerInternalError.invalidClientToken = err {
                     XCTAssert(true, err.localizedDescription)
                 } else {
                     XCTAssert(false, err.localizedDescription)

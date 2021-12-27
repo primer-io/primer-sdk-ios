@@ -126,7 +126,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
-            let err = PaymentException.missingClientToken
+            let err = PrimerInternalError.invalidClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
@@ -290,7 +290,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     private func fetchBanks() -> Promise<[Bank]> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                seal.reject(PrimerError.clientTokenNull)
+                let err = PrimerInternalError.invalidClientToken
+                _ = ErrorHandler.shared.handle(error: err)
+                seal.reject(err)
                 return
             }
             
@@ -361,7 +363,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                 paymentMethodType: config.type.rawValue))
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            completion(nil, PrimerError.clientTokenNull)
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(nil, err)
             return
         }
         
@@ -463,7 +467,8 @@ extension BankSelectorTokenizationViewModel {
             // We'll end up in here only for surcharge.
             
             guard let decodedClientToken = clientToken.jwtTokenPayload else {
-                let err = PrimerError.clientTokenNull
+                let err = PrimerInternalError.invalidClientToken
+                _ = ErrorHandler.shared.handle(error: err)
                 self.handle(error: err)
                 return
             }
@@ -485,7 +490,8 @@ extension BankSelectorTokenizationViewModel {
                     self.handle(error: err)
                 }
             } else {
-                let err = PrimerError.clientTokenNull
+                let err = PrimerInternalError.invalidClientToken
+                _ = ErrorHandler.shared.handle(error: err)
                 self.handle(error: err)
                 return
             }

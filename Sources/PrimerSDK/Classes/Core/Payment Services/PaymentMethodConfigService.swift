@@ -17,7 +17,10 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
-            return completion(PrimerError.configFetchFailed)
+            let err = PrimerInternalError.invalidClientToken
+            _ = ErrorHandler.shared.handle(error: err)
+            completion(err)
+            return
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
