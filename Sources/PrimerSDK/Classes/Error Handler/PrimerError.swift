@@ -206,6 +206,47 @@ internal enum ParserError: PrimerErrorProtocol {
     }
 }
 
+internal enum ValidationError: PrimerErrorProtocol {
+    case invalidCardholderName
+    case invalidCardnumber
+    case invalidCvv
+    case invalidExpiryDate
+    
+    var errorId: String {
+        switch self {
+        case .invalidCardholderName:
+            return "invalid-cardholder-name"
+        case .invalidCardnumber:
+            return "invalid-cardnumber"
+        case .invalidCvv:
+            return "invalid-cvv"
+        case .invalidExpiryDate:
+            return "invalid-expiry-date"
+        }
+    }
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidCardholderName:
+            return "[\(errorId)] Invalid cardholder name"
+        case .invalidCardnumber:
+            return "[\(errorId)] Invalid cardnumber"
+        case .invalidCvv:
+            return "[\(errorId)] Invalid CVV"
+        case .invalidExpiryDate:
+            return "[\(errorId)] Invalid expiry date"
+        }
+    }
+    
+    var recoverySuggestion: String? {
+        return nil
+    }
+    
+    var exposedError: Error {
+        return self
+    }
+}
+
 internal enum PaymentError: PrimerErrorProtocol {
     case cancelled(paymentMethodType: PaymentMethodConfigType)
     case failedToCreateSession(error: Error?)
@@ -214,12 +255,8 @@ internal enum PaymentError: PrimerErrorProtocol {
     case invalidUrl(url: String?)
     case invalid3DSKey
     case invalidAmount(amount: Int?)
-    case invalidCardholderName
-    case invalidCardnumber
     case invalidCurrency(currency: String?)
     case invalidCountryCode(countryCode: String?)
-    case invalidCvv
-    case invalidExpiryDate
     case invalidMerchantCapabilities
     case invalidMerchantIdentifier(merchantIdentifier: String?)
     case invalidSupportedPaymentNetworks
@@ -244,18 +281,10 @@ internal enum PaymentError: PrimerErrorProtocol {
             return "invalid-url"
         case .invalidAmount:
             return "invalid-amount"
-        case .invalidCardholderName:
-            return "invalid-cardholder-name"
-        case .invalidCardnumber:
-            return "invalid-cardnumber"
         case .invalidCurrency:
             return "invalid-currency"
         case .invalidCountryCode:
             return "invalid-country-code"
-        case .invalidCvv:
-            return "invalid-cvv"
-        case .invalidExpiryDate:
-            return "invalid-expiry-date"
         case .invalidMerchantCapabilities:
             return "invalid-merchant-capabilities"
         case .invalidMerchantIdentifier:
@@ -289,18 +318,10 @@ internal enum PaymentError: PrimerErrorProtocol {
             return "[\(errorId)] Invalid URL: \(url ?? "nil")"
         case .invalidAmount(amount: let amount):
             return "[\(errorId)] Invalid amount: \(amount == nil ? "nil" : "\(amount!)")"
-        case .invalidCardholderName:
-            return "[\(errorId)] Invalid cardholder name"
-        case .invalidCardnumber:
-            return "[\(errorId)] Invalid cardnumber"
         case .invalidCurrency(currency: let currency):
             return "[\(errorId)] Invalid currency: \(currency == nil ? "nil" : "\(currency!)")"
         case .invalidCountryCode(countryCode: let countryCode):
             return "[\(errorId)] Invalid country code: \(countryCode == nil ? "nil" : "\(countryCode!)")"
-        case .invalidCvv:
-            return "[\(errorId)] Invalid CVV"
-        case .invalidExpiryDate:
-            return "[\(errorId)] Invalid expiry date"
         case .invalidMerchantCapabilities:
             return "[\(errorId)] Invalid merchant capabilities"
         case .invalidMerchantIdentifier(merchantIdentifier: let merchantIdentifier):
@@ -338,18 +359,10 @@ internal enum PaymentError: PrimerErrorProtocol {
             return "Contact Primer to enable 3DS on your account."
         case .invalidAmount:
             return "Check if you have provided a valid amount on your client session."
-        case .invalidCardholderName:
-            return nil
-        case .invalidCardnumber:
-            return nil
         case .invalidCurrency:
             return "Check if you have provided a valid currency code on your client session."
         case .invalidCountryCode:
             return "Check if you have provided a valid country code on your client session."
-        case .invalidCvv:
-            return nil
-        case .invalidExpiryDate:
-            return nil
         case .invalidMerchantCapabilities:
             return nil
         case .invalidMerchantIdentifier:

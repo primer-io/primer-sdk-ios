@@ -197,20 +197,20 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     private func validateCardComponents() throws {
         var errors: [Error] = []
         if !cardnumberField.cardnumber.isValidCardNumber {
-            errors.append(PaymentError.invalidCardnumber)
+            errors.append(ValidationError.invalidCardnumber)
         }
         
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
-            errors.append(PaymentError.invalidExpiryDate)
+            errors.append(ValidationError.invalidExpiryDate)
         }
         
         if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
-            errors.append(PaymentError.invalidCvv)
+            errors.append(ValidationError.invalidCvv)
         }
         
         if let cardholderField  = cardholderField {
             if !cardholderField.cardholderName.isValidCardholderName {
-                errors.append(PaymentError.invalidCardholderName)
+                errors.append(ValidationError.invalidCardholderName)
             }
         }
         

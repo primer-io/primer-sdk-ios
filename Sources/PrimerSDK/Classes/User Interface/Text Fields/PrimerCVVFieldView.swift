@@ -74,7 +74,7 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            let err = PaymentError.invalidCvv
+            let err = ValidationError.invalidCvv
             _ = ErrorHandler.shared.handle(error: err)
             validation = .invalid(err)
         default:
