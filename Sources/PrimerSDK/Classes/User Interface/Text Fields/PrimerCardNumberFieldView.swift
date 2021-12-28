@@ -84,7 +84,9 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
             if self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false {
                 self.validation = .valid
             } else {
-                self.validation = PrimerTextField.Validation.invalid(ValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+                let err = ValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                _ = ErrorHandler.shared.handle(error: err)
+                self.validation = PrimerTextField.Validation.invalid(err)
             }
             
             DispatchQueue.main.async {

@@ -458,6 +458,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return Promise { seal in
             guard let configId = config.id else {
                 let err = PaymentError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                _ = ErrorHandler.shared.handle(error: err)
                 seal.reject(err)
                 return
             }
