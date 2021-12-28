@@ -10,6 +10,10 @@
 import Foundation
 
 internal class ErrorHandler {
+    
+    static func handle(error: Error) {
+        _ = ErrorHandler.shared.handle(error: error)
+    }
 
     static var shared = ErrorHandler()
 
