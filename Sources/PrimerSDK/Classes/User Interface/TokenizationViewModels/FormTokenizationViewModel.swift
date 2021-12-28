@@ -108,7 +108,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return 4.0
     }()
     
-    private var isCardholderNameFieldEnabled: Bool = true
+    private var isCardholderNameFieldEnabled: Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        if (state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName == false {
+            return false
+        } else {
+            return true
+        }
+    }
     
     lazy var cardNumberField: PrimerCardNumberFieldView = {
         let cardNumberField = PrimerCardNumberFieldView()
