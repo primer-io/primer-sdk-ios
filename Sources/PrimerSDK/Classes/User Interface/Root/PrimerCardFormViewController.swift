@@ -63,7 +63,9 @@ class PrimerCardFormViewController: PrimerFormViewController {
         horizontalStackView.spacing = 16
         verticalStackView.addArrangedSubview(horizontalStackView)
         
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardholderNameContainerView)
+        if let cardholderNameContainerView = formPaymentMethodTokenizationViewModel.cardholderNameContainerView {
+            verticalStackView.addArrangedSubview(cardholderNameContainerView)
+        }
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
             let saveCardSwitchContainerStackView = UIStackView()

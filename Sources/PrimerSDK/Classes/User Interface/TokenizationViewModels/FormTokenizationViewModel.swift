@@ -108,6 +108,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return 4.0
     }()
     
+    private var isCardholderNameFieldEnabled: Bool = true
+    
     lazy var cardNumberField: PrimerCardNumberFieldView = {
         let cardNumberField = PrimerCardNumberFieldView()
         cardNumberField.placeholder = "4242 4242 4242 4242"
@@ -136,7 +138,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return cvvField
     }()
     
-    lazy var cardholderNameField: PrimerCardholderNameFieldView = {
+    lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
+        if !isCardholderNameFieldEnabled { return nil }
         let cardholderNameField = PrimerCardholderNameFieldView()
         cardholderNameField.placeholder = "John Smith"
         cardholderNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
@@ -169,7 +172,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cvvContainerView.tintColor = theme.input.border.color(for: .selected)
         return cvvContainerView
     }()
-    internal lazy var cardholderNameContainerView: PrimerCustomFieldView = {
+    internal lazy var cardholderNameContainerView: PrimerCustomFieldView? = {
+        if !isCardholderNameFieldEnabled { return nil }
         let cardholderNameContainerView = PrimerCustomFieldView()
         cardholderNameContainerView.fieldView = cardholderNameField
         cardholderNameContainerView.placeholderText = "Name"
@@ -431,7 +435,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         } else if primerTextFieldView is PrimerCVVFieldView {
             cvvContainerView.errorText = nil
         } else if primerTextFieldView is PrimerCardholderNameFieldView {
-            cardholderNameContainerView.errorText = nil
+            cardholderNameContainerView?.errorText = nil
         }
     }
     
@@ -443,13 +447,13 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         } else if primerTextFieldView is PrimerCVVFieldView, isValid == false {
             cvvContainerView.errorText = "Invalid CVV"
         } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
-            cardholderNameContainerView.errorText = "Invalid name"
+            cardholderNameContainerView?.errorText = "Invalid name"
         }
         
         if cardNumberField.isTextValid,
            expiryDateField.isTextValid,
            cvvField.isTextValid,
-           cardholderNameField.isTextValid
+           (cardholderNameContainerView != nil) ? (cardholderNameField?.isTextValid ?? false) : true
         {
             submitButton.isEnabled = true
             submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
