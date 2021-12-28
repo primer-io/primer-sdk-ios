@@ -73,7 +73,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             validation = .valid
         } else {
             let err = ValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             validation = .invalid(err)
         }
         

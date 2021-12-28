@@ -127,7 +127,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
     }
@@ -291,7 +291,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                 let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
@@ -364,7 +364,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(nil, err)
             return
         }
@@ -468,7 +468,7 @@ extension BankSelectorTokenizationViewModel {
             
             guard let decodedClientToken = clientToken.jwtTokenPayload else {
                 let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 self.handle(error: err)
                 return
             }
@@ -491,7 +491,7 @@ extension BankSelectorTokenizationViewModel {
                 }
             } else {
                 let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 self.handle(error: err)
                 return
             }

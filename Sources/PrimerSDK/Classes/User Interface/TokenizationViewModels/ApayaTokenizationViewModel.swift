@@ -117,32 +117,32 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
             let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard let configuration = state.primerConfiguration else {
             let err = PrimerInternalError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
                 
                 
         guard configuration.getProductId(for: .apaya) != nil else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard settings.currency != nil else {
             let err = PaymentError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
     }
@@ -237,14 +237,14 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
               let merchantAccountId = state.primerConfiguration?.getProductId(for: .apaya)
         else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             return completion(.failure(err))
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         guard let currency = settings.currency else {
             let err = PaymentError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             return completion(.failure(err))
         }
         
@@ -329,7 +329,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         
         guard let currencyStr = settings.currency?.rawValue else {
             let err = PaymentError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(nil, err)
             return
         }
@@ -348,7 +348,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(nil, err)
             return
         }

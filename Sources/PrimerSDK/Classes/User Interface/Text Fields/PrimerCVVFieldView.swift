@@ -75,7 +75,7 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
             validation = .valid
         case false:
             let err = ValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             validation = .invalid(err)
         default:
             validation = .notAvailable

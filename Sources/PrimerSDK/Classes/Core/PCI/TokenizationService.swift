@@ -25,7 +25,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
     ) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             onTokenizeSuccess(.failure(err))
             return
         }
@@ -34,7 +34,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
 
         guard let pciURL = decodedClientToken.pciUrl else {
             let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             onTokenizeSuccess(.failure(err))
             return
         }
@@ -43,7 +43,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
 
         guard let url = URL(string: "\(pciURL)/payment-instruments") else {
             let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             onTokenizeSuccess(.failure(err))
             return
         }
@@ -92,7 +92,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     
                     guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                         let err = PrimerInternalError.invalidClientToken
-                        _ = ErrorHandler.shared.handle(error: err)
+                        ErrorHandler.handle(error: err)
                         Primer.shared.delegate?.checkoutFailed?(with: err.exposedError)
                         return
                     }

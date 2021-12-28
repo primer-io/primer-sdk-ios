@@ -18,7 +18,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(err)
             return
         }

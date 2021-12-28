@@ -249,7 +249,7 @@ public struct ThreeDS {
                 authentication = threeDSMethodAPIResponse
             }  else {
                 let err = ParserError.failedToDecode(message: "ThreeDS.BeginAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 throw err
             }
             

@@ -22,14 +22,14 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(err)
             return
         }
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .goCardlessMandate) else {
             let err = PaymentError.invalidValue(key: "configId", value: state.primerConfiguration?.getConfigId(for: .goCardlessMandate), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(err)
             return
         }
@@ -37,7 +37,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         guard let customer = settings.customer else {
             let err = PaymentError.invalidValue(key: "settings.customer", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(err)
             return
         }
@@ -58,7 +58,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
             switch result {
             case .failure(let err):
                 let containerErr = PaymentError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: containerErr)
+                ErrorHandler.handle(error: containerErr)
                 completion(containerErr)
             case .success(let response):
                 completion(nil)

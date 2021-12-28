@@ -50,17 +50,17 @@ public struct Apaya {
                 let status = url.queryParameterValue(for: "status")
             else {
                 let err = PrimerInternalError.generic(message: "Failed to find query parameters: [status, success]", userInfo: nil)
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 throw PaymentError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             }
             
             if status == "SETUP_ERROR" {
                 let err = PrimerInternalError.generic(message: "Apaya status is SETUP_ERROR", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 throw PaymentError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             } else if status == "SETUP_ABANDONED" {
                 let err = PaymentError.cancelled(paymentMethodType: .apaya, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 throw err
             }
             
@@ -72,20 +72,20 @@ public struct Apaya {
                 let success = url.queryParameterValue(for: "success")
             else {
                 let err = PaymentError.invalidValue(key: "apaya-params", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 throw err
             }
             
             guard ClientTokenService.decodedClientToken != nil else {
                 let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 throw err
             }
             
             let state: AppStateProtocol = DependencyContainer.resolve()
             guard let merchantAccountId = state.primerConfiguration?.getProductId(for: .apaya) else {
                 let err = PaymentError.invalidValue(key: "apaya-merchantAccountId", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 throw err
             }
     

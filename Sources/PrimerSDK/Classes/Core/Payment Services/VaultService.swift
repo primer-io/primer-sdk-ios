@@ -18,7 +18,7 @@ internal class VaultService: VaultServiceProtocol {
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(err)
             return
         }
@@ -48,7 +48,7 @@ internal class VaultService: VaultServiceProtocol {
     func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {        
         guard let clientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(err)
             return
         }
@@ -59,7 +59,7 @@ internal class VaultService: VaultServiceProtocol {
             switch result {
             case .failure(let err):
                 let containerErr = PaymentError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 completion(containerErr)
             case .success:
                 completion(nil)

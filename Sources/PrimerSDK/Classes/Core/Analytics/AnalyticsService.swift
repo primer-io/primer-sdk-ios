@@ -168,7 +168,7 @@ extension Analytics {
                             do {
                                 try Analytics.Service.deleteEvents(events)
                             } catch {
-                                _ = ErrorHandler.shared.handle(error: error)
+                                ErrorHandler.handle(error: error)
                                 return
                             }
                             

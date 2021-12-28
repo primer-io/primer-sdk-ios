@@ -126,43 +126,43 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
             let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard config.id != nil else {
             let err = PaymentError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard settings.countryCode != nil else {
             let err = PaymentError.invalidSetting(name: "countryCode", value: settings.countryCode?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard settings.currency != nil else {
             let err = PaymentError.invalidSetting(name: "currency", value: settings.countryCode?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard settings.merchantIdentifier != nil else {
             let err = PaymentError.invalidMerchantIdentifier(merchantIdentifier: settings.merchantIdentifier, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard !(settings.orderItems ?? []).isEmpty else {
             let err = PaymentError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
     }
@@ -241,7 +241,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         return Promise { seal in
             if Primer.shared.flow.internalSessionFlow.vaulted {
                 let err = PaymentError.unsupportedIntent(intent: .vault, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
@@ -264,7 +264,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(nil, err)
             return
         }
@@ -296,7 +296,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             
             guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
                 let err = PaymentError.unableToPresentPaymentMethod(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 return completion(nil, err)
@@ -311,7 +311,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                                         
                     guard let applePayConfigId = self.config.id else {
                         let err = PaymentError.invalidValue(key: "configuration.id", value: self.config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        _ = ErrorHandler.shared.handle(error: err)
+                        ErrorHandler.handle(error: err)
                         completion(nil, err)
                         return
                     }
@@ -352,7 +352,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         } else {
             log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
             let err = PaymentError.unableToMakePaymentsOnProvidedNetworks(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(nil, err)
         }
     }
@@ -364,7 +364,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
         controller.dismiss(animated: true, completion: nil)
         let err = PaymentError.cancelled(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-        _ = ErrorHandler.shared.handle(error: err)
+        ErrorHandler.handle(error: err)
         applePayReceiveDataCompletion?(.failure(err))
         applePayReceiveDataCompletion = nil
     }

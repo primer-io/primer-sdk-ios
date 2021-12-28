@@ -32,13 +32,13 @@ public struct OrderItem: Codable {
     ) throws {
         if isPending && unitAmount != nil {
             let err = PrimerInternalError.generic(message: "amount should be null for pending items", userInfo: nil)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         if !isPending && unitAmount == nil {
             let err = PrimerInternalError.generic(message: "amount cannot be null for non-pending items", userInfo: nil)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         

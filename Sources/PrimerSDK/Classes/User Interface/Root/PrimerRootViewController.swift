@@ -439,7 +439,7 @@ extension PrimerRootViewController {
     func presentPaymentMethod(type: PaymentMethodConfigType) {
         guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
             let err = PaymentError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return
         }
@@ -484,7 +484,7 @@ extension PrimerRootViewController {
                         "class": "\(Self.self)",
                         "line": "\(#line)"]
                 )
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 return
             }
@@ -504,7 +504,7 @@ extension PrimerRootViewController {
                                 "class": "\(Self.self)",
                                 "line": "\(#line)"]
                         )
-                        _ = ErrorHandler.shared.handle(error: err)
+                        ErrorHandler.handle(error: err)
                         Primer.shared.delegate?.checkoutFailed?(with: err)
                         return
                     }

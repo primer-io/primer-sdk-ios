@@ -46,7 +46,7 @@ internal class URLSessionStack: NetworkService {
         
         guard let url = url(for: endpoint) else {
             let err = NetworkError.invalidUrl(url: "Base URL: \(endpoint.baseURL ?? "nil") | Endpoint: \(endpoint.path)", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
@@ -114,7 +114,7 @@ internal class URLSessionStack: NetworkService {
                 #endif
 
                 let err = NetworkError.underlyingErrors(errors: [error], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: error)
+                ErrorHandler.handle(error: error)
                 DispatchQueue.main.async { completion(.failure(err)) }
                 return
             }
@@ -130,7 +130,7 @@ internal class URLSessionStack: NetworkService {
                 #endif
 
                 let err = NetworkError.noData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 DispatchQueue.main.async { completion(.failure(err)) }
                 return
             }
@@ -166,7 +166,7 @@ internal class URLSessionStack: NetworkService {
 
                     if statusCode == 401 {
                         let err = NetworkError.unauthorized(url: urlStr, method: endpoint.method, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        _ = ErrorHandler.shared.handle(error: err)
+                        ErrorHandler.handle(error: err)
                         
                         #if DEBUG
                         msg += "\nError: Status code \(statusCode)\n\(err)"
@@ -177,7 +177,7 @@ internal class URLSessionStack: NetworkService {
 
                     } else if (400...499).contains(statusCode) {
                         let err = NetworkError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        _ = ErrorHandler.shared.handle(error: err)
+                        ErrorHandler.handle(error: err)
 
                         #if DEBUG
                         msg += "\nError: Status code \(statusCode)\n\(err)"
@@ -188,7 +188,7 @@ internal class URLSessionStack: NetworkService {
 
                     } else if (500...599).contains(statusCode) {
                         let err = NetworkError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        _ = ErrorHandler.shared.handle(error: err)
+                        ErrorHandler.handle(error: err)
 
                         #if DEBUG
                         msg += "\nError: Status code \(statusCode)\n\(err)"
@@ -199,7 +199,7 @@ internal class URLSessionStack: NetworkService {
 
                     } else {
                         let err = NetworkError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        _ = ErrorHandler.shared.handle(error: err)
+                        ErrorHandler.handle(error: err)
                         
                         resEventProperties.errorBody = err.localizedDescription
                         resEvent.properties = resEventProperties
@@ -215,7 +215,7 @@ internal class URLSessionStack: NetworkService {
 
                 } else {
                     let err = ParserError.failedToDecode(message: "Failed to decode response from URL: \(urlStr)", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    _ = ErrorHandler.shared.handle(error: err)
+                    ErrorHandler.handle(error: err)
                     
                     resEventProperties.errorBody = err.localizedDescription
                     resEvent.properties = resEventProperties

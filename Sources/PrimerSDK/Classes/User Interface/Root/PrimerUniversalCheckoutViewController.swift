@@ -399,7 +399,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                     DispatchQueue.main.async {
                         self.onClientSessionActionCompletion = nil
                         let err = PaymentError.invalid3DSKey
-                        _ = ErrorHandler.shared.handle(error: err)
+                        ErrorHandler.handle(error: err)
                         Primer.shared.delegate?.onResumeError?(err)
                         self.handle(error: err)
                     }
@@ -417,7 +417,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                                           self.onClientSessionActionCompletion = nil
                                           let decodeError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse")
                                           let err = PaymentError.failedToPerform3DS(error: decodeError)
-                                          _ = ErrorHandler.shared.handle(error: err)
+                                          ErrorHandler.handle(error: err)
                                           Primer.shared.delegate?.onResumeError?(err)
                                           self.handle(error: err)
                                       }
@@ -433,7 +433,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                         DispatchQueue.main.async {
                             self.onClientSessionActionCompletion = nil
                             let containerErr = PaymentError.failedToPerform3DS(error: err)
-                            _ = ErrorHandler.shared.handle(error: containerErr)
+                            ErrorHandler.handle(error: containerErr)
                             Primer.shared.delegate?.onResumeError?(containerErr)
                             self.handle(error: err)
                         }
@@ -444,7 +444,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 DispatchQueue.main.async {
                     self.onClientSessionActionCompletion = nil
                     let err = PaymentError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    _ = ErrorHandler.shared.handle(error: err)
+                    ErrorHandler.handle(error: err)
                     Primer.shared.delegate?.onResumeError?(err)
                     self.handle(error: err)
                 }
@@ -464,7 +464,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 }
             } else {
                 let err = PaymentError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 handle(error: err)
                 DispatchQueue.main.async {
                     Primer.shared.delegate?.onResumeError?(err)

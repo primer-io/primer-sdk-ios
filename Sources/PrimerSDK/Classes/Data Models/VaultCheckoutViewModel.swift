@@ -100,7 +100,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         guard let selectedPaymentMethod = state.selectedPaymentMethod else {
             let err = PaymentError.invalidValue(key: "state.selectedPaymentMethod", value: state.selectedPaymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(err)
             return
         }

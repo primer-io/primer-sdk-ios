@@ -104,25 +104,25 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     override func validate() throws {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
             let err = PaymentError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard config.id != nil else {
             let err = PaymentError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.coreUrl != nil else {
             let err = PaymentError.invalidValue(key: "decodedClientToken.coreUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
     }
@@ -234,7 +234,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                     case .success(let res):
                         guard let url = URL(string: res.approvalUrl) else {
                             let err = PaymentError.invalidValue(key: "res.approvalUrl", value: res.approvalUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                            _ = ErrorHandler.shared.handle(error: err)
+                            ErrorHandler.handle(error: err)
                             seal.reject(err)
                             return
                         }
@@ -252,7 +252,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                     case .success(let urlStr):
                         guard let url = URL(string: urlStr) else {
                             let err = PaymentError.invalidValue(key: "billingAgreement.response.url", value: urlStr, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                            _ = ErrorHandler.shared.handle(error: err)
+                            ErrorHandler.handle(error: err)
                             seal.reject(err)
                             return
                         }
@@ -272,7 +272,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             guard let urlScheme = settings.urlScheme else {
                 let err = PaymentError.invalidValue(key: "settings.urlScheme", value: settings.urlScheme, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
@@ -336,7 +336,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         case .CHECKOUT:
             guard let orderId = orderId else {
                 let err = PaymentError.invalidValue(key: "orderId", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 completion(.failure(err))
                 return
             }
@@ -371,7 +371,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             switch result {
             case .failure(let err):
                 let contaiinerErr = PaymentError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 completion(contaiinerErr)
             case .success(let res):
                 self.confirmBillingAgreementResponse = res

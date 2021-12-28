@@ -85,7 +85,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
                 self.validation = .valid
             } else {
                 let err = ValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 self.validation = PrimerTextField.Validation.invalid(err)
             }
             

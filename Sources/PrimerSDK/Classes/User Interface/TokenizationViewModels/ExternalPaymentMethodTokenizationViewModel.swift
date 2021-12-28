@@ -306,7 +306,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func validate() throws {        
         if ClientTokenService.decodedClientToken?.isValid != true {
             let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             throw err
         }
     }
@@ -419,7 +419,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 
                 guard let redirectUrl = pollingURLs.redirectUrl else {
                     let err = PaymentError.invalidValue(key: "redirectUrl", value: pollingURLs.redirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    _ = ErrorHandler.shared.handle(error: err)
+                    ErrorHandler.handle(error: err)
                     throw err
                 }
                 
@@ -428,7 +428,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             .then { () -> Promise<String> in
                 guard let statusUrl = pollingURLs.statusUrl else {
                     let err = PaymentError.invalidValue(key: "statusUrl", value: pollingURLs.redirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    _ = ErrorHandler.shared.handle(error: err)
+                    ErrorHandler.handle(error: err)
                     throw err
                 }
                 
@@ -458,7 +458,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return Promise { seal in
             guard let configId = config.id else {
                 let err = PaymentError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
@@ -513,7 +513,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     }
                     
                     let err = PaymentError.invalidValue(key: "polling params", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    _ = ErrorHandler.shared.handle(error: err)
+                    ErrorHandler.handle(error: err)
                     seal.reject(err)
                 } else {
                     assert(true, "Should have received one parameter")
@@ -570,7 +570,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
             if self.webViewCompletion == nil {
                 let err = PaymentError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 completion(nil, err)
                 return
             }
@@ -622,7 +622,7 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
         if let webViewCompletion = webViewCompletion {
             // Cancelled
             let err = PaymentError.cancelled(paymentMethodType: config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
         }
         
@@ -738,7 +738,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
         return Promise { seal in
             guard let _ = config.id else {
                 let err = PaymentError.invalidValue(key: "configuration.\(config.type.rawValue.lowercased()).id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
@@ -749,7 +749,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
                 seal.fulfill(paymentMethod)
             } else {
                 let err = ParserError.failedToDecode(message: "Failed to decode tokenization response.", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 seal.reject(err)
             }
         }

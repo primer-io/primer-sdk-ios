@@ -73,67 +73,67 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         if !Primer.shared.flow.internalSessionFlow.vaulted && settings.amount == nil {
             let err = PaymentError.invalidAmount(amount: settings.amount)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if settings.currency == nil {
             let err = PaymentError.invalidCurrency(currency: settings.currency?.rawValue)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if settings.orderId == nil {
             let err = PaymentError.invalidValue(key: "orderId", value: settings.orderId)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.billingAddress?.addressLine1 ?? "").isEmpty {
             let err = PaymentError.invalidValue(key: "settings.customer?.billingAddress?.addressLine1", value: settings.customer?.billingAddress?.addressLine1)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.billingAddress?.city ?? "").isEmpty {
             let err = PaymentError.invalidValue(key: "settings.customer?.billingAddress?.city", value: settings.customer?.billingAddress?.city)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if settings.customer?.billingAddress?.countryCode == nil {
             let err = PaymentError.invalidValue(key: "settings.customer?.billingAddress?.countryCode", value: settings.customer?.billingAddress?.countryCode)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.billingAddress?.postalCode ?? "").isEmpty {
             let err = PaymentError.invalidValue(key: "settings.customer?.billingAddress?.postalCode", value: settings.customer?.billingAddress?.postalCode)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.firstName ?? "").isEmpty {
             let err = PaymentError.invalidValue(key: "settings.customer?.firstName", value: settings.customer?.firstName)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.lastName ?? "").isEmpty {
             let err = PaymentError.invalidValue(key: "settings.customer?.lastName", value: settings.customer?.lastName)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.emailAddress ?? "").isEmpty {
             let err = PaymentError.invalidValue(key: "settings.customer?.emailAddress", value: settings.customer?.emailAddress)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if !errors.isEmpty {
             let containerErr = PrimerInternalError.underlyingErrors(errors: errors)
-            _ = ErrorHandler.shared.handle(error: containerErr)
+            ErrorHandler.handle(error: containerErr)
             throw containerErr
         }
     }
@@ -191,7 +191,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
@@ -200,14 +200,14 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         guard let primerConfiguration = state.primerConfiguration else {
             let err = PrimerInternalError.missingPrimerConfiguration
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
         
         guard let licenseKey = primerConfiguration.keys?.netceteraLicenseKey else {
             let err = PaymentError.invalid3DSKey
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
@@ -216,7 +216,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         guard let directoryServerId = cardNetwork.directoryServerId else {
             let err = PaymentError.invalidValue(key: "cardNetwork.directoryServerId", value: cardNetwork.directoryServerId)
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
@@ -387,7 +387,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         return Promise { seal in
             guard let primer3DS = primer3DS else {
                 let err = PrimerInternalError.generic(message: "Failed to find Primer3DS", userInfo: nil)
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
@@ -395,13 +395,13 @@ class ThreeDSService: ThreeDSServiceProtocol {
             primer3DS.performChallenge(with: threeDSecureAuthResponse, urlScheme: urlScheme, presentOn: viewController) { (primer3DSCompletion, err) in
                 if let err = err {
                     let containerErr = PaymentError.failedToPerform3DS(error: err)
-                    _ = ErrorHandler.shared.handle(error: containerErr)
+                    ErrorHandler.handle(error: containerErr)
                     seal.reject(containerErr)
                 } else if let primer3DSCompletion = primer3DSCompletion {
                     seal.fulfill(primer3DSCompletion)
                 } else {
                     let err = PaymentError.failedToPerform3DS(error: nil)
-                    _ = ErrorHandler.shared.handle(error: err)
+                    ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }
             }
@@ -413,7 +413,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                          completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
@@ -433,7 +433,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
@@ -475,7 +475,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                 let err = PrimerInternalError.invalidClientToken
-                _ = ErrorHandler.shared.handle(error: err)
+                ErrorHandler.handle(error: err)
                 completion(.failure(err))
                 return
             }
@@ -491,7 +491,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {        
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerInternalError.invalidClientToken
-            _ = ErrorHandler.shared.handle(error: err)
+            ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
