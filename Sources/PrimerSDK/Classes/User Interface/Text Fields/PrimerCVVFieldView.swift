@@ -50,7 +50,11 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         
         switch validation {
         case .valid:
-            delegate?.primerTextFieldView(self, isValid: true)
+            if let cvvLength = cardNetwork.validation?.code.length, newText.count == cvvLength {
+                delegate?.primerTextFieldView(self, isValid: true)
+            } else {
+                delegate?.primerTextFieldView(self, isValid: nil)
+            }
         case .invalid:
             if let cvvLength = cardNetwork.validation?.code.length, newText.count == cvvLength {
                 delegate?.primerTextFieldView(self, isValid: false)

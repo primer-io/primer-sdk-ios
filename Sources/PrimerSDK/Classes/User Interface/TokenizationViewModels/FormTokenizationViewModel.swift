@@ -210,7 +210,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return submitButton
     }()
     
-    var cardNetwork: CardNetwork?
+    var cardNetwork: CardNetwork? {
+        didSet {
+            cvvField.cardNetwork = cardNetwork ?? .unknown
+        }
+    }
     
     required init(config: PaymentMethodConfig) {
         self.flow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout
