@@ -1,6 +1,46 @@
 #if canImport(UIKit)
 
+protocol CheckoutModuleOptions: Codable {}
+
 struct PrimerConfiguration: Codable {
+    
+    struct CheckoutModule: Codable {
+        let type: String
+        let requestUrlStr: String?
+        let options: CheckoutModuleOptions?
+        
+        private enum CodingKeys: String, CodingKey {
+            case type, options
+            case requestUrlStr = "requestUrl"
+        }
+        
+        struct CardInformationOptions: CheckoutModuleOptions {
+            let cardHolderName: Bool?
+            let saveCardCheckbox: Bool?
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.type = try container.decode(String.self, forKey: .type)
+            self.requestUrlStr = (try? container.decode(String?.self, forKey: .requestUrlStr)) ?? nil
+            
+            if let options = (try? container.decode(CardInformationOptions?.self, forKey: .options)) {
+                self.options = options
+            } else {
+                self.options = nil
+            }
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(type, forKey: .type)
+            try container.encode(requestUrlStr, forKey: .requestUrlStr)
+            
+            if let options = options as? CardInformationOptions {
+                try container.encode(options, forKey: .options)
+            }
+        }
+    }
     
     static var paymentMethodConfigs: [PaymentMethodConfig]? {
         if Primer.shared.flow == nil { return nil }
@@ -34,6 +74,7 @@ struct PrimerConfiguration: Codable {
     let clientSession: ClientSession?
     let paymentMethods: [PaymentMethodConfig]?
     let keys: ThreeDS.Keys?
+    let checkoutModules: [CheckoutModule]?
     
     var isSetByClientSession: Bool {
         return clientSession != nil
@@ -47,6 +88,7 @@ struct PrimerConfiguration: Codable {
         let throwables = try container.decode([Throwable<PaymentMethodConfig>].self, forKey: .paymentMethods)
         self.paymentMethods = throwables.compactMap({ $0.value })
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
+        self.checkoutModules = (try? container.decode([CheckoutModule]?.self, forKey: .checkoutModules)) ?? nil
         
         if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
             for paymentMethodOption in options {
@@ -82,13 +124,15 @@ struct PrimerConfiguration: Codable {
         pciUrl: String?,
         clientSession: ClientSession?,
         paymentMethods: [PaymentMethodConfig]?,
-        keys: ThreeDS.Keys?
+        keys: ThreeDS.Keys?,
+        checkoutModules: [PrimerConfiguration.CheckoutModule]?
     ) {
         self.coreUrl = coreUrl
         self.pciUrl = pciUrl
         self.clientSession = clientSession
         self.paymentMethods = paymentMethods
         self.keys = keys
+        self.checkoutModules = checkoutModules
     }
     
     func getConfigId(for type: PaymentMethodConfigType) -> String? {
