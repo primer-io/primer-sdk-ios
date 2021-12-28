@@ -13,44 +13,6 @@ protocol CheckoutModuleOptions: Codable {}
 
 struct PrimerConfiguration: Codable {
     
-    struct CheckoutModule: Codable {
-        let type: String
-        let requestUrlStr: String?
-        let options: CheckoutModuleOptions?
-        
-        private enum CodingKeys: String, CodingKey {
-            case type, options
-            case requestUrlStr = "requestUrl"
-        }
-        
-        struct CardInformationOptions: CheckoutModuleOptions {
-            let cardHolderName: Bool?
-            let saveCardCheckbox: Bool?
-        }
-        
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.type = try container.decode(String.self, forKey: .type)
-            self.requestUrlStr = (try? container.decode(String?.self, forKey: .requestUrlStr)) ?? nil
-            
-            if let options = (try? container.decode(CardInformationOptions?.self, forKey: .options)) {
-                self.options = options
-            } else {
-                self.options = nil
-            }
-        }
-        
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(type, forKey: .type)
-            try container.encode(requestUrlStr, forKey: .requestUrlStr)
-            
-            if let options = options as? CardInformationOptions {
-                try container.encode(options, forKey: .options)
-            }
-        }
-    }
-    
     static var paymentMethodConfigs: [PaymentMethodConfig]? {
         if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
@@ -157,6 +119,46 @@ struct PrimerConfiguration: Codable {
             return apayaOptions.merchantAccountId
         } else {
             return nil
+        }
+    }
+}
+
+extension PrimerConfiguration {
+    struct CheckoutModule: Codable {
+        let type: String
+        let requestUrlStr: String?
+        let options: CheckoutModuleOptions?
+        
+        private enum CodingKeys: String, CodingKey {
+            case type, options
+            case requestUrlStr = "requestUrl"
+        }
+        
+        struct CardInformationOptions: CheckoutModuleOptions {
+            let cardHolderName: Bool?
+            let saveCardCheckbox: Bool?
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.type = try container.decode(String.self, forKey: .type)
+            self.requestUrlStr = (try? container.decode(String?.self, forKey: .requestUrlStr)) ?? nil
+            
+            if let options = (try? container.decode(CardInformationOptions?.self, forKey: .options)) {
+                self.options = options
+            } else {
+                self.options = nil
+            }
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(type, forKey: .type)
+            try container.encode(requestUrlStr, forKey: .requestUrlStr)
+            
+            if let options = options as? CardInformationOptions {
+                try container.encode(options, forKey: .options)
+            }
         }
     }
 }
