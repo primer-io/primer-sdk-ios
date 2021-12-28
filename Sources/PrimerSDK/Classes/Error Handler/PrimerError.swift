@@ -14,7 +14,7 @@ import UIKit
 internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var errorId: String { get }
     var exposedError: Error { get }
-    var extraUserInfo: [String: String]? { get }
+    var info: [String: String]? { get }
 }
 
 internal enum PrimerInternalError: PrimerErrorProtocol {
@@ -64,19 +64,15 @@ internal enum PrimerInternalError: PrimerErrorProtocol {
         }
     }
     
-    var extraUserInfo: [String: String]? {
+    var info: [String: String]? {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
         
         switch self {
-        case .generic(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidClientToken(let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .missingPrimerConfiguration(let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .missingPrimerDelegate(let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .underlyingErrors(_, let userInfo):
+        case .generic(_, let userInfo),
+                .invalidClientToken(let userInfo),
+                .missingPrimerConfiguration(let userInfo),
+                .missingPrimerDelegate(let userInfo),
+                .underlyingErrors(_, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -84,7 +80,7 @@ internal enum PrimerInternalError: PrimerErrorProtocol {
     }
     
     var errorUserInfo: [String : Any] {
-        return extraUserInfo ?? [:]
+        return info ?? [:]
     }
     
     var recoverySuggestion: String? {
@@ -105,6 +101,7 @@ internal enum PrimerInternalError: PrimerErrorProtocol {
     var exposedError: Error {
         return self
     }
+    
 }
 
 internal enum NetworkError: PrimerErrorProtocol {
@@ -161,23 +158,17 @@ internal enum NetworkError: PrimerErrorProtocol {
         }
     }
     
-    var extraUserInfo: [String: String]? {
+    var info: [String: String]? {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
         
         switch self {
-        case .connectivityErrors(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidUrl(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidValue(_, _, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .noData(let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .serverError(_, _, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .unauthorized(_, _, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .underlyingErrors(_, let userInfo):
+        case .connectivityErrors(_, let userInfo),
+                .invalidUrl(_, let userInfo),
+                .invalidValue(_, _, let userInfo),
+                .noData(let userInfo),
+                .serverError(_, _, let userInfo),
+                .unauthorized(_, _, let userInfo),
+                .underlyingErrors(_, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -185,7 +176,7 @@ internal enum NetworkError: PrimerErrorProtocol {
     }
     
     var errorUserInfo: [String : Any] {
-        return extraUserInfo ?? [:]
+        return info ?? [:]
     }
     
     var recoverySuggestion: String? {
@@ -210,6 +201,7 @@ internal enum NetworkError: PrimerErrorProtocol {
     var exposedError: Error {
         return self
     }
+    
 }
 
 internal enum ParserError: PrimerErrorProtocol {
@@ -239,15 +231,13 @@ internal enum ParserError: PrimerErrorProtocol {
         }
     }
     
-    var extraUserInfo: [String: String]? {
+    var info: [String: String]? {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
         
         switch self {
-        case .failedToEncode(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .failedToDecode(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .failedToSerialize(_, let userInfo):
+        case .failedToEncode(_, let userInfo),
+                .failedToDecode(_, let userInfo),
+                .failedToSerialize(_, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -255,7 +245,7 @@ internal enum ParserError: PrimerErrorProtocol {
     }
     
     var errorUserInfo: [String : Any] {
-        return extraUserInfo ?? [:]
+        return info ?? [:]
     }
     
     var recoverySuggestion: String? {
@@ -272,6 +262,7 @@ internal enum ParserError: PrimerErrorProtocol {
     var exposedError: Error {
         return self
     }
+    
 }
 
 internal enum ValidationError: PrimerErrorProtocol {
@@ -306,17 +297,14 @@ internal enum ValidationError: PrimerErrorProtocol {
         }
     }
     
-    var extraUserInfo: [String: String]? {
+    var info: [String: String]? {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
         
         switch self {
-        case .invalidCardholderName(let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidCardnumber(let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidCvv(let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidExpiryDate(let userInfo):
+        case .invalidCardholderName(let userInfo),
+                .invalidCardnumber(let userInfo),
+                .invalidCvv(let userInfo),
+                .invalidExpiryDate(let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -324,7 +312,7 @@ internal enum ValidationError: PrimerErrorProtocol {
     }
     
     var errorUserInfo: [String : Any] {
-        return extraUserInfo ?? [:]
+        return info ?? [:]
     }
     
     var recoverySuggestion: String? {
@@ -334,6 +322,7 @@ internal enum ValidationError: PrimerErrorProtocol {
     var exposedError: Error {
         return self
     }
+    
 }
 
 internal enum PaymentError: PrimerErrorProtocol {
@@ -343,6 +332,7 @@ internal enum PaymentError: PrimerErrorProtocol {
     case failedToPerform3DS(error: Error?, userInfo: [String: String]?)
     case invalidUrl(url: String?, userInfo: [String: String]?)
     case invalid3DSKey(userInfo: [String: String]?)
+    case invalidClientSessionSetting(name: String, value: String?, userInfo: [String: String]?)
     case invalidMerchantCapabilities(userInfo: [String: String]?)
     case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?)
     case invalidSetting(name: String, value: String?, userInfo: [String: String]?)
@@ -364,6 +354,8 @@ internal enum PaymentError: PrimerErrorProtocol {
             return "failed-to-perform-3ds"
         case .invalid3DSKey:
             return "invalid-3ds-key"
+        case .invalidClientSessionSetting:
+            return "invalid-client-session-setting"
         case .invalidUrl:
             return "invalid-url"
         case .invalidMerchantCapabilities:
@@ -397,6 +389,8 @@ internal enum PaymentError: PrimerErrorProtocol {
             return "[\(errorId)] Failed on perform 3DS with error: \(error?.localizedDescription ?? "nil")"
         case .invalid3DSKey:
             return "[\(errorId)] Invalid 3DS key"
+        case .invalidClientSessionSetting(let name, let value, _):
+            return "[\(errorId)] Invalid client session setting for '\(name)' with value '\(value ?? "nil")'"
         case .invalidUrl(url: let url, _):
             return "[\(errorId)] Invalid URL: \(url ?? "nil")"
         case .invalidMerchantCapabilities:
@@ -418,37 +412,25 @@ internal enum PaymentError: PrimerErrorProtocol {
         }
     }
     
-    var extraUserInfo: [String: String]? {
+    var info: [String: String]? {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
         
         switch self {
-        case .cancelled(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .failedToCreateSession(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .failedOnWebViewFlow(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .failedToPerform3DS(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidUrl(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalid3DSKey(let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidMerchantCapabilities(let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidMerchantIdentifier(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidSetting(_, _, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidSupportedPaymentNetworks(let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .invalidValue(_, _, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .unableToMakePaymentsOnProvidedNetworks(let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .unableToPresentPaymentMethod(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .unsupportedIntent(_, let userInfo):
+        case .cancelled(_, let userInfo),
+                .failedToCreateSession(_, let userInfo),
+                .failedOnWebViewFlow(_, let userInfo),
+                .failedToPerform3DS(_, let userInfo),
+                .invalidUrl(_, let userInfo),
+                .invalid3DSKey(let userInfo),
+                .invalidClientSessionSetting(_, _, let userInfo),
+                .invalidMerchantCapabilities(let userInfo),
+                .invalidMerchantIdentifier(_, let userInfo),
+                .invalidSetting(_, _, let userInfo),
+                .invalidSupportedPaymentNetworks(let userInfo),
+                .invalidValue(_, _, let userInfo),
+                .unableToMakePaymentsOnProvidedNetworks(let userInfo),
+                .unableToPresentPaymentMethod(_, let userInfo),
+                .unsupportedIntent(_, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -456,7 +438,7 @@ internal enum PaymentError: PrimerErrorProtocol {
     }
     
     var errorUserInfo: [String : Any] {
-        return extraUserInfo ?? [:]
+        return info ?? [:]
     }
     
     var recoverySuggestion: String? {
@@ -477,12 +459,14 @@ internal enum PaymentError: PrimerErrorProtocol {
             return nil
         case .invalid3DSKey:
             return "Contact Primer to enable 3DS on your account."
+        case .invalidClientSessionSetting(let name, _, _):
+            return "Check if you have provided a value for \(name) in your client session"
         case .invalidMerchantCapabilities:
             return nil
         case .invalidMerchantIdentifier:
-            return "Check if you have provided a valid merchant identifier on the PrimerSettings."
+            return "Check if you have provided a valid merchant identifier in the SDK settings."
         case .invalidSetting(let name, _, _):
-            return "Check if you have provided \(name) in client session or in the PrimerSettings."
+            return "Check if you have provided a value for \(name) in the SDK settings."
         case .invalidSupportedPaymentNetworks:
             return nil
         case .invalidValue(let key, let value, _):
@@ -503,6 +487,7 @@ internal enum PaymentError: PrimerErrorProtocol {
     var exposedError: Error {
         return self
     }
+    
 }
 
 fileprivate extension Array where Element == Error {
