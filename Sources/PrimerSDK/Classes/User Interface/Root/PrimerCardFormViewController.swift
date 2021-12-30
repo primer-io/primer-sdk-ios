@@ -64,12 +64,11 @@ class PrimerCardFormViewController: PrimerFormViewController {
         title = Content.PrimerCardFormView.title
         view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
         
-        configureExpiryAndCvvRow()
-        
+        renderCardnumberRow()
+        renderExpiryAndCvvRow()
         if (formPaymentMethodTokenizationViewModel.requireZipCode) {
-            configureZipCodeFieldRow()
+            renderZipCodeFieldRow()
         }
         
         // separator view
@@ -79,11 +78,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
         verticalStackView.addArrangedSubview(separatorView)
         
         // submit button
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
-        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
-        
-        _ = formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
-        
+        renderSubmitButton()
+                
         formPaymentMethodTokenizationViewModel.completion = { (paymentMethodToken, err) in
             if let err = err {
                 Primer.shared.primerRootVC?.handle(error: err)
@@ -95,11 +91,14 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
+        _ = formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
+    }
+    
+    private func renderCardnumberRow() {
+        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
     }
 
-    private func configureExpiryAndCvvRow() {
-        
+    private func renderExpiryAndCvvRow() {
         expiryAndCvvRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.expiryDateContainerView)
         expiryAndCvvRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.cvvContainerView)
         verticalStackView.addArrangedSubview(expiryAndCvvRow)
@@ -126,10 +125,15 @@ class PrimerCardFormViewController: PrimerFormViewController {
         }
     }
     
-    private func configureZipCodeFieldRow() {
+    private func renderZipCodeFieldRow() {
         zipCodeFieldRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.zipCodeContainerView)
         zipCodeFieldRow.addArrangedSubview(PrimerView())
         verticalStackView.addArrangedSubview(zipCodeFieldRow)
+    }
+    
+    private func renderSubmitButton() {
+        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
+        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
     }
     
     private func onConfigurationFetched() {
@@ -138,9 +142,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
         let parentVC = parent as? PrimerContainerViewController
         
         let requireZipCode = formPaymentMethodTokenizationViewModel.requireZipCode
-        
-        // FIXME: Check this
-        // verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
         
         if (requireZipCode && isZipCodeViewHidden) {
             parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
