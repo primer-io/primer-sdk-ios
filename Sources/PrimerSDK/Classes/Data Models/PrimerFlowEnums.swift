@@ -56,7 +56,7 @@ public enum PrimerSessionFlow: Equatable {
 
     internal var internalSessionFlow: PrimerInternalSessionFlow {
         switch self {
-        case .default:
+        case .`default`:
             return .checkout
         case .defaultWithVault:
             return .vault
