@@ -21,14 +21,14 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(err)
             return
         }
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .goCardlessMandate) else {
-            let err = PaymentError.invalidValue(key: "configId", value: state.primerConfiguration?.getConfigId(for: .goCardlessMandate), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidValue(key: "configId", value: state.primerConfiguration?.getConfigId(for: .goCardlessMandate), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(err)
             return
@@ -36,7 +36,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         guard let customer = settings.customer else {
-            let err = PaymentError.invalidValue(key: "settings.customer", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidValue(key: "settings.customer", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(err)
             return
@@ -57,7 +57,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { result in
             switch result {
             case .failure(let err):
-                let containerErr = PaymentError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: containerErr)
                 completion(containerErr)
             case .success(let response):

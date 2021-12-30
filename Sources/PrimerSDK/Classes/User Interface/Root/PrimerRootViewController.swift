@@ -438,7 +438,7 @@ extension PrimerRootViewController {
     
     func presentPaymentMethod(type: PaymentMethodConfigType) {
         guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
-            let err = PaymentError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return
@@ -476,7 +476,7 @@ extension PrimerRootViewController {
     func handleSuccessfulTokenization(paymentMethod: PaymentMethodToken) {
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else {
-                let err = PrimerInternalError.generic(
+                let err = PrimerError.generic(
                     message: "self has been deinitialized",
                     userInfo: [
                         "file": #file,
@@ -496,7 +496,7 @@ extension PrimerRootViewController {
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
                 DispatchQueue.main.async { [weak self] in
                     guard let strongSelf = self else {
-                        let err = PrimerInternalError.generic(
+                        let err = PrimerError.generic(
                             message: "self has been deinitialized",
                             userInfo: [
                                 "file": #file,

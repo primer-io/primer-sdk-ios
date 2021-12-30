@@ -32,7 +32,7 @@ class MockClientTokenService: ClientTokenServiceProtocol {
     
     func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
         loadCheckoutConfigCalled = true
-        if (throwError) { return completion(PrimerInternalError.generic(message: "An error occured", userInfo: nil)) }
+        if (throwError) { return completion(PrimerError.generic(message: "An error occured", userInfo: nil)) }
         return completion(nil)
     }
 }

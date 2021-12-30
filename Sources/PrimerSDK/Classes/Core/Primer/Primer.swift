@@ -96,7 +96,7 @@ public class Primer {
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
         
-        let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
         ErrorHandler.handle(error: err)
         let nsErr = err as NSError
         print("\(nsErr.domain) \(nsErr.code) \(nsErr.localizedDescription)\n\(err.localizedDescription)")
@@ -414,7 +414,7 @@ public class Primer {
             (.payNLPayconiq, .vault),
             (.payNLGiropay, .vault),
             (.other, _):
-            let err = PaymentError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return

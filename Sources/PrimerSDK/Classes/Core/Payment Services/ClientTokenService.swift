@@ -29,13 +29,13 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         guard var currentDecodedToken = clientToken.jwtTokenPayload,
               let expDate = currentDecodedToken.expDate
         else {
-            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             throw err
         }
         
         if expDate < Date() {
-            let err = PrimerInternalError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -100,7 +100,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
      */
     func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
         guard let clientTokenCallback = Primer.shared.delegate?.clientTokenCallback else {
-            let err = PrimerInternalError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(err)
             return

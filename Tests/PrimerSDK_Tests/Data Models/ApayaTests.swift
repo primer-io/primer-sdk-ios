@@ -67,7 +67,7 @@ class ApayaDataModelTests: XCTestCase {
             XCTFail()
         }
         catch {
-            if let err = error as? PaymentError {
+            if let err = error as? PrimerError {
                 switch err {
                 case .failedOnWebViewFlow:
                     XCTAssertNotNil(err)

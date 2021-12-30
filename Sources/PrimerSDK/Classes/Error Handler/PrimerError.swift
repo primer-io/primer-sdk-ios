@@ -17,93 +17,6 @@ internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var info: [String: String]? { get }
 }
 
-internal enum PrimerInternalError: PrimerErrorProtocol {
-    case generic(message: String, userInfo: [String: String]?)
-    case invalidClientToken(userInfo: [String: String]?)
-    case missingPrimerConfiguration(userInfo: [String: String]?)
-    case missingPrimerDelegate(userInfo: [String: String]?)
-    case underlyingErrors(errors: [Error], userInfo: [String: String]?)
-    
-    var errorId: String {
-        switch self {
-        case .generic:
-            return "primer-generic"
-        case .invalidClientToken:
-            return "invalid-client-token"
-        case .missingPrimerConfiguration:
-            return "missing-configuration"
-        case .missingPrimerDelegate:
-            return "missing-primer-delegate"
-        case .underlyingErrors:
-            return "generic-underlying-errors"
-        }
-    }
-    
-    var errorDescription: String? {
-        switch self {
-        case .generic(let message, let userInfo):
-            if let userInfo = userInfo,
-                let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .fragmentsAllowed),
-               let jsonStr = jsonData.prettyPrintedJSONString as String? {
-                return "[\(errorId)] Generic error | Message: \(message) | Data: \(jsonStr))"
-            } else {
-                return "[\(errorId)] Generic error | Message: \(message)"
-            }
-            
-        case .invalidClientToken:
-            return "Client token is not valid"
-            
-        case .missingPrimerConfiguration:
-            return "[\(errorId)] Missing SDK configuration"
-            
-        case .missingPrimerDelegate:
-            return "[\(errorId)] Primer delegate has not been set"
-            
-        case .underlyingErrors(let errors, _):
-            return "[\(errorId)] Multiple errors occured: \(errors.combinedDescription)"
-        }
-    }
-    
-    var info: [String: String]? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
-        
-        switch self {
-        case .generic(_, let userInfo),
-                .invalidClientToken(let userInfo),
-                .missingPrimerConfiguration(let userInfo),
-                .missingPrimerDelegate(let userInfo),
-                .underlyingErrors(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        }
-        
-        return tmpUserInfo
-    }
-    
-    var errorUserInfo: [String : Any] {
-        return info ?? [:]
-    }
-    
-    var recoverySuggestion: String? {
-        switch self {
-        case .generic:
-            return nil
-        case .invalidClientToken:
-            return "Check if the token you have provided is a valid token (not nil and not expired)."
-        case .missingPrimerConfiguration:
-            return "Check if you have an active internet connection."
-        case .missingPrimerDelegate:
-            return nil
-        case .underlyingErrors:
-            return "Check underlying errors for more information."
-        }
-    }
-    
-    var exposedError: Error {
-        return self
-    }
-    
-}
-
 internal enum NetworkError: PrimerErrorProtocol {
     case connectivityErrors(errors: [Error], userInfo: [String: String]?)
     case invalidUrl(url: String?, userInfo: [String: String]?)
@@ -331,7 +244,11 @@ internal enum ValidationError: PrimerErrorProtocol {
     
 }
 
-internal enum PaymentError: PrimerErrorProtocol {
+internal enum PrimerError: PrimerErrorProtocol {
+    case generic(message: String, userInfo: [String: String]?)
+    case invalidClientToken(userInfo: [String: String]?)
+    case missingPrimerConfiguration(userInfo: [String: String]?)
+    case missingPrimerDelegate(userInfo: [String: String]?)
     case cancelled(paymentMethodType: PaymentMethodConfigType, userInfo: [String: String]?)
     case failedToCreateSession(error: Error?, userInfo: [String: String]?)
     case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?)
@@ -347,9 +264,18 @@ internal enum PaymentError: PrimerErrorProtocol {
     case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?)
     case unableToPresentPaymentMethod(paymentMethodType: PaymentMethodConfigType, userInfo: [String: String]?)
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?)
+    case underlyingErrors(errors: [Error], userInfo: [String: String]?)
     
     var errorId: String {
         switch self {
+        case .generic:
+            return "primer-generic"
+        case .invalidClientToken:
+            return "invalid-client-token"
+        case .missingPrimerConfiguration:
+            return "missing-configuration"
+        case .missingPrimerDelegate:
+            return "missing-primer-delegate"
         case .cancelled:
             return "payment-cancelled"
         case .failedToCreateSession:
@@ -380,11 +306,27 @@ internal enum PaymentError: PrimerErrorProtocol {
             return "unable-to-present-payment-method"
         case .unsupportedIntent:
             return "unsupported-session-intent"
+        case .underlyingErrors:
+            return "generic-underlying-errors"
         }
     }
     
     var errorDescription: String? {
         switch self {
+        case .generic(let message, let userInfo):
+            if let userInfo = userInfo,
+                let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .fragmentsAllowed),
+               let jsonStr = jsonData.prettyPrintedJSONString as String? {
+                return "[\(errorId)] Generic error | Message: \(message) | Data: \(jsonStr))"
+            } else {
+                return "[\(errorId)] Generic error | Message: \(message)"
+            }
+        case .invalidClientToken:
+            return "[\(errorId)] Client token is not valid"
+        case .missingPrimerConfiguration:
+            return "[\(errorId)] Missing SDK configuration"
+        case .missingPrimerDelegate:
+            return "[\(errorId)] Primer delegate has not been set"
         case .cancelled(let paymentMethodType, _):
             return "[\(errorId)] Payment method \(paymentMethodType.rawValue) cancelled"
         case .failedToCreateSession(error: let error, _):
@@ -415,6 +357,8 @@ internal enum PaymentError: PrimerErrorProtocol {
             return "[\(errorId)] Unable to present payment method \(paymentMethodType.rawValue)"
         case .unsupportedIntent(let intent, _):
             return "[\(errorId)] Unsupported session intent \(intent.rawValue)"
+        case .underlyingErrors(let errors, _):
+            return "[\(errorId)] Multiple errors occured: \(errors.combinedDescription)"
         }
     }
     
@@ -422,7 +366,11 @@ internal enum PaymentError: PrimerErrorProtocol {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
         
         switch self {
-        case .cancelled(_, let userInfo),
+        case .generic(_, let userInfo),
+                .invalidClientToken(let userInfo),
+                .missingPrimerConfiguration(let userInfo),
+                .missingPrimerDelegate(let userInfo),
+                .cancelled(_, let userInfo),
                 .failedToCreateSession(_, let userInfo),
                 .failedOnWebViewFlow(_, let userInfo),
                 .failedToPerform3DS(_, let userInfo),
@@ -436,7 +384,8 @@ internal enum PaymentError: PrimerErrorProtocol {
                 .invalidValue(_, _, let userInfo),
                 .unableToMakePaymentsOnProvidedNetworks(let userInfo),
                 .unableToPresentPaymentMethod(_, let userInfo),
-                .unsupportedIntent(_, let userInfo):
+                .unsupportedIntent(_, let userInfo),
+                .underlyingErrors(_, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -449,6 +398,14 @@ internal enum PaymentError: PrimerErrorProtocol {
     
     var recoverySuggestion: String? {
         switch self {
+        case .generic:
+            return nil
+        case .invalidClientToken:
+            return "Check if the token you have provided is a valid token (not nil and not expired)."
+        case .missingPrimerConfiguration:
+            return "Check if you have an active internet connection."
+        case .missingPrimerDelegate:
+            return nil
         case .cancelled:
             return nil
         case .failedToCreateSession:
@@ -487,6 +444,8 @@ internal enum PaymentError: PrimerErrorProtocol {
             } else {
                 return "Change the intent to .checkout"
             }
+        case .underlyingErrors:
+            return "Check underlying errors for more information."
         }
     }
     
