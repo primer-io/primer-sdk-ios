@@ -49,6 +49,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var expiryDateField: PrimerExpiryDateFieldView
     public var cvvField: PrimerCVVFieldView
     public var cardholderField: PrimerCardholderNameFieldView?
+    public var zipCodeField: PrimerZipCodeFieldView?
     
     private(set) public var flow: PaymentFlow
     public var delegate: CardComponentsManagerDelegate?
@@ -68,11 +69,20 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     }
     
     /// The CardComponentsManager can be initialized with/out an access token. In the case that is initialized without an access token, the delegate function cardComponentsManager(_:clientTokenCallback:) will be called. You can initialize an instance (representing a session) by providing the flow (checkout or vault) and registering the necessary PrimerTextFieldViews
-    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderNameField: PrimerCardholderNameFieldView?) {
+    public init(
+        clientToken: String? = nil,
+        flow: PaymentFlow,
+        cardnumberField: PrimerCardNumberFieldView,
+        expiryDateField: PrimerExpiryDateFieldView,
+        cvvField: PrimerCVVFieldView,
+        cardholderNameField: PrimerCardholderNameFieldView?,
+        zipCodeField: PrimerZipCodeFieldView?
+    ) {
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
+        self.zipCodeField = zipCodeField
         
         super.init()
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
@@ -214,8 +224,16 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             }
         }
         
+        if let zipCodeField = zipCodeField {
+            if !zipCodeField.zipCode.isValidZipCode {
+                errors.append(ValidationError.invalidZipCode(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+            }
+        }
+        
         if !errors.isEmpty {
-            throw PrimerInternalError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerInternalError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
         }
     }
     
@@ -357,6 +375,8 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var cardholderField: PrimerCardholderNameFieldView?
     
+    var zipCodeField: PrimerZipCodeFieldView?
+    
     var flow: PaymentFlow
     
     var delegate: CardComponentsManagerDelegate?
@@ -375,13 +395,22 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var paymentMethodsConfig: PrimerConfiguration?
     
-    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderNameField: PrimerCardholderNameFieldView?) {
+    public init(
+        clientToken: String? = nil,
+        flow: PaymentFlow,
+        cardnumberField: PrimerCardNumberFieldView,
+        expiryDateField: PrimerExpiryDateFieldView,
+        cvvField: PrimerCVVFieldView,
+        cardholderNameField: PrimerCardholderNameFieldView?,
+        zipCodeField: PrimerZipCodeFieldView
+    ) {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
         self.cardholderField = cardholderNameField
+        self.zipCodeField = zipCodeField
         
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
@@ -394,7 +423,15 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     ) {
         let cardnumberFieldView = PrimerCardNumberFieldView()
         cardnumberFieldView.textField._text = cardnumber
-        self.init(clientToken: clientToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderNameField: PrimerCardholderNameFieldView())
+        self.init(
+            clientToken: clientToken,
+            flow: .checkout,
+            cardnumberField: cardnumberFieldView,
+            expiryDateField: PrimerExpiryDateFieldView(),
+            cvvField: PrimerCVVFieldView(),
+            cardholderNameField: PrimerCardholderNameFieldView(),
+            zipCodeField: PrimerZipCodeFieldView()
+        )
         
         try? ClientTokenService.storeClientToken(clientToken)
     }

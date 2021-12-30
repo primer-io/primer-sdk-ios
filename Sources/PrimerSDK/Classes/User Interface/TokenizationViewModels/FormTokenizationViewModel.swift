@@ -14,6 +14,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     private var flow: PaymentFlow
     private var cardComponentsManager: CardComponentsManager!
+    var onConfigurationFetched: (() -> Void)?
+    
+    // FIXME: Is this the fix for the button's indicator?
+    private var isTokenizing = false
     
     override lazy var title: String = {
         return "Payment Card"
@@ -118,6 +122,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return cardNumberField
     }()
     
+    var requireZipCode: Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        guard let paymentMethodConfig = state.primerConfiguration else { return false }
+        return paymentMethodConfig.requireZipCode
+    }
+    
     lazy var expiryDateField: PrimerExpiryDateFieldView = {
         let expiryDateField = PrimerExpiryDateFieldView()
         expiryDateField.placeholder = "02/22"
@@ -145,6 +155,21 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return cardholderNameField
     }()
     
+    private var localSampleZipCode: String {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let countryCode = state.primerConfiguration?.clientSession?.order?.countryCode
+        return ZipCode.sample(for: countryCode)
+    }
+    
+    lazy var zipCodeField: PrimerZipCodeFieldView = {
+        let zipCodeField = PrimerZipCodeFieldView()
+        zipCodeField.placeholder = localSampleZipCode
+        zipCodeField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        zipCodeField.textColor = theme.input.text.color
+        zipCodeField.delegate = self
+        return zipCodeField
+    }()
+    
     internal lazy var cardNumberContainerView: PrimerCustomFieldView = {
         let cardNumberContainerView = PrimerCustomFieldView()
         cardNumberContainerView.fieldView = cardNumberField
@@ -153,6 +178,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cardNumberContainerView.tintColor = theme.input.border.color(for: .selected)
         return cardNumberContainerView
     }()
+    
     internal lazy var expiryDateContainerView: PrimerCustomFieldView = {
         let expiryDateContainerView = PrimerCustomFieldView()
         expiryDateContainerView.fieldView = expiryDateField
@@ -161,6 +187,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         expiryDateContainerView.tintColor = theme.input.border.color(for: .selected)
         return expiryDateContainerView
     }()
+    
     internal lazy var cvvContainerView: PrimerCustomFieldView = {
         let cvvContainerView = PrimerCustomFieldView()
         cvvContainerView.fieldView = cvvField
@@ -169,6 +196,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cvvContainerView.tintColor = theme.input.border.color(for: .selected)
         return cvvContainerView
     }()
+    
     internal lazy var cardholderNameContainerView: PrimerCustomFieldView = {
         let cardholderNameContainerView = PrimerCustomFieldView()
         cardholderNameContainerView.fieldView = cardholderNameField
@@ -177,6 +205,21 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cardholderNameContainerView.tintColor = theme.input.border.color(for: .selected)
         return cardholderNameContainerView
     }()
+    
+    private var localZipCodeTitle: String {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let countryCode = state.primerConfiguration?.clientSession?.order?.countryCode
+        return ZipCode.name(for: countryCode)
+    }
+    
+    internal lazy var zipCodeContainerView: PrimerCustomFieldView = {
+         let zipCodeContainerView = PrimerCustomFieldView()
+         zipCodeContainerView.fieldView = zipCodeField
+         zipCodeContainerView.placeholderText = localZipCodeTitle
+         zipCodeContainerView.setup()
+         zipCodeContainerView.tintColor = theme.input.border.color(for: .selected)
+         return zipCodeContainerView
+     }()
     
     lazy var submitButton: PrimerOldButton = {
         var buttonTitle: String = ""
@@ -221,7 +264,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             cardnumberField: cardNumberField,
             expiryDateField: expiryDateField,
             cvvField: cvvField,
-            cardholderNameField: cardholderNameField)
+            cardholderNameField: cardholderNameField,
+            zipCodeField: zipCodeField
+        )
         cardComponentsManager.delegate = self
     }
     
@@ -363,6 +408,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 place: .cardForm))
         Analytics.Service.record(event: viewEvent)
         
+        isTokenizing = true
         submitButton.showSpinner(true)
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         
@@ -385,15 +431,23 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         self.submitButton.showSpinner(false)
                         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
                         Primer.shared.delegate?.onResumeError?(err)
-                        self.onClientSessionActionCompletion = nil
                     }
                     self.handle(error: err)
                 } else {
                     self.cardComponentsManager.tokenize()
                 }
+                self.onClientSessionActionCompletion = nil
             }
             
-            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+            var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
+            
+            if (requireZipCode) {
+                let zipParams = ["zipCode": zipCodeField.zipCode]
+                let zipAction = ClientSession.Action(type: "SET_ZIP_CODE", params: zipParams)
+                actions.append(zipAction)
+            }
+            
+            ClientSession.Action.dispatchMultiple(resumeHandler: self, actions: actions)
         } else {
             cardComponentsManager.tokenize()
         }
@@ -465,6 +519,8 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             cvvContainerView.errorText = nil
         } else if primerTextFieldView is PrimerCardholderNameFieldView {
             cardholderNameContainerView.errorText = nil
+        } else if primerTextFieldView is PrimerZipCodeFieldView {
+            zipCodeContainerView.errorText = nil
         }
     }
     
@@ -477,13 +533,26 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             cvvContainerView.errorText = "Invalid CVV"
         } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
             cardholderNameContainerView.errorText = "Invalid name"
+        } else if primerTextFieldView is PrimerZipCodeFieldView, isValid == false {
+            zipCodeContainerView.errorText = "\(localZipCodeTitle) is required" // todo: localise if UK, etc.
         }
         
-        if cardNumberField.isTextValid,
-           expiryDateField.isTextValid,
-           cvvField.isTextValid,
-           cardholderNameField.isTextValid
-        {
+        // dispatch zip code action if valid zip code.
+        if let fieldView = (primerTextFieldView as? PrimerZipCodeFieldView), isValid  == true {
+            let params = ["zipCode": fieldView.zipCode]
+            ClientSession.Action.setZipCode(resumeHandler: self, withParameters: params)
+        }
+        
+        var validations = [
+            cardNumberField.isTextValid,
+            expiryDateField.isTextValid,
+            cvvField.isTextValid,
+            cardholderNameField.isTextValid,
+        ]
+
+        if requireZipCode { validations.append(zipCodeField.isTextValid) }
+
+        if validations.allSatisfy({ $0 == true }) {
             submitButton.isEnabled = true
             submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
         } else {
@@ -514,7 +583,6 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
             cardNumberContainerView.rightImage2 = cardNetwork.icon
-            
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
             ClientSession.Action.unselectPaymentMethod(resumeHandler: self)
@@ -608,9 +676,14 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 }
                 .done {
                     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    if let amount = settings.amount {
+                    
+                    if let amount = settings.amount, !self.isTokenizing {
                         self.configurePayButton(amount: amount)
                     }
+                        
+                    // determine zip code textfield visibility
+                    self.onConfigurationFetched?()
+                    
                     self.onClientSessionActionCompletion?(nil)
                 }
                 .catch { err in
