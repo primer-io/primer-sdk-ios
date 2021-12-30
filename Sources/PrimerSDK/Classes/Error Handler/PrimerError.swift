@@ -405,7 +405,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .missingPrimerConfiguration:
             return "Check if you have an active internet connection."
         case .missingPrimerDelegate:
-            return nil
+            return "Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self on the view controller you wish to present Primer's SDK."
         case .cancelled:
             return nil
         case .failedToCreateSession:
