@@ -77,6 +77,11 @@ class PrimerCardFormViewController: PrimerFormViewController {
             }
         }
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
+    }
 
     private func configureExpiryAndCvvRow() {
         
@@ -119,6 +124,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         let requireZipCode = formPaymentMethodTokenizationViewModel.requireZipCode
         
+        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
         if (requireZipCode && isZipCodeViewHidden) {
             parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
                 self?.zipCodeFieldRow.insertArrangedSubview(zipView, at: 0)
