@@ -126,8 +126,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         let requireZipCode = formPaymentMethodTokenizationViewModel.requireZipCode
         
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
-        
         if (requireZipCode && isZipCodeViewHidden) {
             parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
                 self?.zipCodeFieldRow.insertArrangedSubview(zipView, at: 0)
