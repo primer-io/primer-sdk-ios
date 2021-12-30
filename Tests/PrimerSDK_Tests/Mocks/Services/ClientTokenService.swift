@@ -21,16 +21,7 @@ class MockClientTokenService: ClientTokenServiceProtocol {
 
     var decodedClientToken: DecodedClientToken? {
         if tokenIsNil { return nil }
-        return DecodedClientToken(
-            accessToken: "bla",
-            configurationUrl: "bla",
-            paymentFlow: "bla",
-            threeDSecureInitUrl: "bla",
-            threeDSecureToken: "bla",
-            coreUrl: "bla",
-            pciUrl: "bla",
-            env: "bla"
-        )
+        return DecodedClientToken(accessToken: "bla", exp: 2000000000, configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io")
     }
 
     var loadCheckoutConfigCalled = false

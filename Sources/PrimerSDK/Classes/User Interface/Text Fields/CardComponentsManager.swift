@@ -49,6 +49,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var expiryDateField: PrimerExpiryDateFieldView
     public var cvvField: PrimerCVVFieldView
     public var cardholderField: PrimerCardholderNameFieldView?
+    public var zipCodeField: PrimerZipCodeFieldView?
     
     private(set) public var flow: PaymentFlow
     public var delegate: CardComponentsManagerDelegate?
@@ -57,8 +58,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var amount: Int?
     public var currency: Currency?
     internal var decodedClientToken: DecodedClientToken? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.decodedClientToken
+        return ClientTokenService.decodedClientToken
     }
     internal var paymentMethodsConfig: PrimerConfiguration?
     private(set) public var isLoading: Bool = false
@@ -69,18 +69,27 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     }
     
     /// The CardComponentsManager can be initialized with/out an access token. In the case that is initialized without an access token, the delegate function cardComponentsManager(_:clientTokenCallback:) will be called. You can initialize an instance (representing a session) by providing the flow (checkout or vault) and registering the necessary PrimerTextFieldViews
-    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderNameField: PrimerCardholderNameFieldView?) {
+    public init(
+        clientToken: String? = nil,
+        flow: PaymentFlow,
+        cardnumberField: PrimerCardNumberFieldView,
+        expiryDateField: PrimerExpiryDateFieldView,
+        cvvField: PrimerCVVFieldView,
+        cardholderNameField: PrimerCardholderNameFieldView?,
+        zipCodeField: PrimerZipCodeFieldView?
+    ) {
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
+        self.zipCodeField = zipCodeField
         
         super.init()
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         
         self.cardholderField = cardholderNameField
         
-        if let clientToken = clientToken, let decodedClientToken = clientToken.jwtTokenPayload {
+        if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
         }
     }
@@ -105,8 +114,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 } else if let clientToken = clientToken {
                     do {
                         try ClientTokenService.storeClientToken(clientToken)
-                        let state: AppStateProtocol = DependencyContainer.resolve()
-                        if let decodedClientToken = state.decodedClientToken {
+                        if let decodedClientToken = self.decodedClientToken {
                             seal.fulfill(decodedClientToken)
                         } else {
                             seal.reject(PrimerError.clientTokenNull)
@@ -212,6 +220,12 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             }
         }
         
+        if let zipCodeField = zipCodeField {
+            if !zipCodeField.zipCode.isValidZipCode {
+                errors.append(PrimerError.invalidZipCode)
+            }
+        }
+        
         if !errors.isEmpty {
             throw PrimerError.containerError(errors: errors)
         }
@@ -260,7 +274,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         let state: AppStateProtocol = DependencyContainer.resolve()
                                                 
                         var isThreeDSEnabled: Bool = false
-                        if state.paymentMethodConfig?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                        if state.primerConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                             isThreeDSEnabled = true
                         }
 
@@ -286,10 +300,15 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                                 self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
                                 return
                             }
+                            
+                            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                                self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [PrimerError.clientTokenNull])
+                                return
+                            }
 
                             threeDSService.perform3DS(
                                     paymentMethodToken: paymentMethodToken,
-                                protocolVersion: state.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2,
+                                protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2,
                                 beginAuthExtraData: beginAuthExtraData,
                                     sdkDismissed: { () in
 
@@ -346,6 +365,8 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var cardholderField: PrimerCardholderNameFieldView?
     
+    var zipCodeField: PrimerZipCodeFieldView?
+    
     var flow: PaymentFlow
     
     var delegate: CardComponentsManagerDelegate?
@@ -359,19 +380,27 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     var currency: Currency?
     
     var decodedClientToken: DecodedClientToken? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.decodedClientToken
+        return ClientTokenService.decodedClientToken
     }
     
     var paymentMethodsConfig: PrimerConfiguration?
     
-    public init(clientToken: String? = nil, flow: PaymentFlow, cardnumberField: PrimerCardNumberFieldView, expiryDateField: PrimerExpiryDateFieldView, cvvField: PrimerCVVFieldView, cardholderNameField: PrimerCardholderNameFieldView?) {
+    public init(
+        clientToken: String? = nil,
+        flow: PaymentFlow,
+        cardnumberField: PrimerCardNumberFieldView,
+        expiryDateField: PrimerExpiryDateFieldView,
+        cvvField: PrimerCVVFieldView,
+        cardholderNameField: PrimerCardholderNameFieldView?,
+        zipCodeField: PrimerZipCodeFieldView
+    ) {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
         self.cardholderField = cardholderNameField
+        self.zipCodeField = zipCodeField
         
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
@@ -384,7 +413,15 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     ) {
         let cardnumberFieldView = PrimerCardNumberFieldView()
         cardnumberFieldView.textField._text = cardnumber
-        self.init(clientToken: clientToken, flow: .checkout, cardnumberField: cardnumberFieldView, expiryDateField: PrimerExpiryDateFieldView(), cvvField: PrimerCVVFieldView(), cardholderNameField: PrimerCardholderNameFieldView())
+        self.init(
+            clientToken: clientToken,
+            flow: .checkout,
+            cardnumberField: cardnumberFieldView,
+            expiryDateField: PrimerExpiryDateFieldView(),
+            cvvField: PrimerCVVFieldView(),
+            cardholderNameField: PrimerCardholderNameFieldView(),
+            zipCodeField: PrimerZipCodeFieldView()
+        )
         
         try? ClientTokenService.storeClientToken(clientToken)
     }

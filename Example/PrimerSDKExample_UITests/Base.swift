@@ -8,7 +8,183 @@
 
 import XCTest
 
+enum Environment: String {
+    case local, dev, sandbox, staging, production
+}
+
+struct Payment {
+    let id: String
+    let environment: Environment
+    let currency: String
+    let countryCode: String
+    let amount: String?
+    let expecations: Expecations?
+    
+    struct Expecations {
+        let amount: String?
+        let surcharge: String?
+        let webviewImage: String?
+        let webviewTexts: [String]?
+        let buttonTexts: [String]?
+        let resultScreenTexts: [String: String]?
+    }
+}
+
+class Expectation {
+    static var exists: NSPredicate = NSPredicate(format: "exists == true")
+    static var doesNotExist = NSPredicate(format: "exists == false")
+    static var isHittable = NSPredicate(format: "isHittable == 1")
+}
+
 class Base: XCTestCase {
+    
+    static var paymentMethods: [Payment] = [
+        Payment(
+            id: "ADYEN_GIROPAY",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "CH",
+            amount: "100",
+            expecations: Payment.Expecations(
+                amount: "€1.00",
+                surcharge: "+€0.79",
+                webviewImage: "giropay",
+                webviewTexts: nil,
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "SETTLED",
+                    "actions": "USE_PRIMER_SDK",
+                    "amount": "EUR 1.79"
+                ]
+            )
+        ),
+        Payment(
+            id: "ADYEN_MOBILEPAY",
+            environment: .sandbox,
+            currency: "DKK",
+            countryCode: "DK",
+            amount: "100",
+            expecations: Payment.Expecations(
+                amount: "DKK 1.00",
+                surcharge: nil,
+                webviewImage: "mobilepay-logo",
+                webviewTexts: nil,
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "PENDING",
+                    "actions": "USE_PRIMER_SDK",
+                    "amount": "DKK 1.00"
+                ]
+            )
+        ),
+        Payment(
+            id: "PAY_NL_BANCONTACT",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "NL",
+            amount: "100",
+            expecations: Payment.Expecations(
+                amount: "€1.00",
+                surcharge: nil,
+                webviewImage: nil,
+                webviewTexts: ["Primer API Ltd", "€ 1,00"],
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "PENDING",
+                    "actions": "USE_PRIMER_SDK",
+                    "amount": "EUR 1.29"
+                ]
+            )
+        ),
+        Payment(
+            id: "ADYEN_ALIPAY",
+            environment: .sandbox,
+            currency: "CNY",
+            countryCode: "CN",
+            amount: "100",
+            expecations: Payment.Expecations(
+                amount: "CNY 1.00",
+                surcharge: nil,
+                webviewImage: nil,
+                webviewTexts: ["1.如果未安装支付宝APP，请先"],
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "PENDING",
+                    "actions": "USE_PRIMER_SDK",
+                    "amount": "CNY 1.00"
+                ]
+            )
+        ),
+        Payment(
+            id: "APPLE_PAY",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "FR",
+            amount: "100",
+            expecations: Payment.Expecations(
+                amount: "€1.00",
+                surcharge: "+€0.19",
+                webviewImage: nil,
+                webviewTexts: ["Primer API Ltd", "€ 1,19"],
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "PENDING",
+                    "amount": "EUR 1.19"
+                ]
+            )
+        ),
+        Payment(
+            id: "PAYPAL",
+            environment: .sandbox,
+            currency: "GBP",
+            countryCode: "GB",
+            amount: "1000",
+            expecations: Payment.Expecations(
+                amount: "£10.00",
+                surcharge: "+£0.49",
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "FAILED",
+                    "amount": "GBP 10.49"
+                ]
+            )
+        ),
+        Payment(
+            id: "PAYMENT_CARD",
+            environment: .sandbox,
+            currency: "GBP",
+            countryCode: "GB",
+            amount: "100",
+            expecations: Payment.Expecations(
+                amount: "+£1.00",
+                surcharge: "Additional fee may apply",
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay £1.00"],
+                resultScreenTexts: [
+                    "status": "SETTLED",
+                    "amount": "GBP 2.09"
+                ]
+            )
+        ),
+        Payment(
+            id: "3DS_PAYMENT_CARD",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "FR",
+            amount: "10500",
+            expecations: Payment.Expecations(
+                amount: "EUR 1.00",
+                surcharge: "Additional fee may apply",
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay € 1.00"],
+                resultScreenTexts: nil
+            )
+        )
+    ]
     
     let app = XCUIApplication()
 
@@ -69,15 +245,13 @@ class Base: XCTestCase {
         if let countryCode = countryCode {
             let countryCodeTextField = app.textFields["country_code_txt_field"]
             countryCodeTextField.tap()
-            countryCodeTextField.clearText()
-            countryCodeTextField.typeText(countryCode)
+            app.pickerWheels.element.adjust(toPickerWheelValue: countryCode)
         }
         
         if let currency = currency {
             let currencyTextField = app.textFields["currency_txt_field"]
             currencyTextField.tap()
-            currencyTextField.clearText()
-            currencyTextField.typeText(currency)
+            app.pickerWheels.element.adjust(toPickerWheelValue: currency)
         }
         
         if let amount = amount {
@@ -97,7 +271,182 @@ class Base: XCTestCase {
         let initSDKButton = app.buttons["initialize_primer_sdk"]
         initSDKButton.tap()
     }
+    
+    func openUniversalCheckout() throws {
+        let universalCheckoutButton = app.buttons["universal_checkout_button"]
+        universalCheckoutButton.tap()
+        
+        // Test that title is correct
+        let checkoutTitle = app.staticTexts["Choose payment method"]
+        let vaultTitle = app.staticTexts["Add payment method"]
+        let exists = NSPredicate(format: "exists == true")
+        let doesNotExist = NSPredicate(format: "exists == false")
+        expectation(for: exists, evaluatedWith: checkoutTitle, handler: nil)
+        expectation(for: doesNotExist, evaluatedWith: vaultTitle, handler: nil)
+        waitForExpectations(timeout: 30, handler: nil)
+    }
+    
+    func openVaultManager() throws {
+        let vaultButton = app.buttons["vault_button"]
+        vaultButton.tap()
 
+        // Test that title is correct
+        let vaultTitle = app.staticTexts["Add payment method"]
+        let checkoutTitle = app.staticTexts["Choose payment method"]
+        expectation(for: Expectation.doesNotExist, evaluatedWith: checkoutTitle, handler: nil)
+        expectation(for: Expectation.exists, evaluatedWith: vaultTitle, handler: nil)
+        waitForExpectations(timeout: 15, handler: nil)
+    }
+    
+    static func validateSurcharge(_ surcharge: String, forPaymentMethod paymentMethodId: String) {
+        let app = XCUIApplication()
+        let scrollView = app.scrollViews["primer_container_scroll_view"]
+        let surchargeGroupViewId = paymentMethodId == "PAYMENT_CARD" ? "additional_fees_surcharge_group_view" : "\(paymentMethodId.lowercased())_surcharge_group_view"
+        let paymentMethodSurcharge = scrollView.otherElements[surchargeGroupViewId].staticTexts[surcharge]
+        XCTAssert(paymentMethodSurcharge.exists, "\(paymentMethodId) should have '\(surcharge)' surcharge")
+    }
+    
+    func testDismissSDK() throws {
+        let scrollView = app.scrollViews["primer_container_scroll_view"]
+        scrollView.swipeDown()
+        let expectation = expectation(for: Expectation.doesNotExist, evaluatedWith: scrollView, handler: nil)
+        wait(for: [expectation], timeout: 3.0)
+    }
+    
+    func testSuccessMessageExists() throws {
+        let successLabel = app.staticTexts["success_screen_message_label"]
+        let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
+        wait(for: [successLabelExists], timeout: 30)
+    }
+    
+    func testResultScreenExpectations(for payment: Payment) throws {
+        if let resultScreenTextExpectations = payment.expecations?.resultScreenTexts {
+            var expectations: [XCTestExpectation] = []
+            
+            if let status = resultScreenTextExpectations["status"] as? String {
+                let statusText = app.staticTexts[status]
+                let statusTextExists = expectation(for: Expectation.exists, evaluatedWith: statusText, handler: nil)
+                expectations.append(statusTextExists)
+            }
+            
+            if let actions = resultScreenTextExpectations["actions"] as? String {
+                let actionsText = app.staticTexts[actions]
+                let actionsTextExists = expectation(for: Expectation.exists, evaluatedWith: actionsText, handler: nil)
+                expectations.append(actionsTextExists)
+            }
+            
+            if let amount = resultScreenTextExpectations["amount"] as? String {
+                let amountText = app.staticTexts[amount]
+                let amountTextExists = expectation(for: Expectation.exists, evaluatedWith: amountText, handler: nil)
+                expectations.append(amountTextExists)
+            }
+            
+            if !expectations.isEmpty {
+                wait(for: expectations, timeout: 15)
+            }
+        }
+    }
+
+    func testPayment(_ payment: Payment, cancelPayment: Bool = true) throws {
+        try testInitialize(
+            env: payment.environment.rawValue,
+            customerId: nil,
+            phoneNumber: nil,
+            countryCode: payment.countryCode,
+            currency: payment.currency,
+            amount: payment.amount,
+            performPayment: true)
+
+        let universalCheckoutButton = app.buttons["universal_checkout_button"]
+        universalCheckoutButton.tap()
+
+        // Test that title is correct
+        let checkoutTitle = app.staticTexts["Choose payment method"]
+        let vaultTitle = app.staticTexts["Add payment method"]
+
+        
+        expectation(for: Expectation.exists, evaluatedWith: checkoutTitle, handler: nil)
+        expectation(for: Expectation.doesNotExist, evaluatedWith: vaultTitle, handler: nil)
+        waitForExpectations(timeout: 30, handler: nil)
+
+        if let amountExpectation = payment.expecations?.amount {
+            let amountText = app.staticTexts[amountExpectation]
+            XCTAssert(amountText.exists, "Amount '\(amountExpectation)' should exist")
+        }
+        
+        let scrollView = app.scrollViews["primer_container_scroll_view"]
+        if let surchargeExpectation = payment.expecations?.surcharge {
+            Base.validateSurcharge(surchargeExpectation, forPaymentMethod: payment.id)
+        }
+        
+        let paymentMethodButton = app.buttons[payment.id]
+        
+        if !paymentMethodButton.exists {
+            var isHittable: Bool = false
+            while !isHittable {
+                scrollView.swipeUp()
+                isHittable = paymentMethodButton.isHittable
+            }
+        }
+        
+        let adyenGiropayButton = scrollView.otherElements.buttons[payment.id]
+        adyenGiropayButton.tap()
+        
+        let webViews = app.webViews
+        if let webViewImageExpectation = payment.expecations?.webviewImage {
+            let webViewGiroPayImage = webViews.images[webViewImageExpectation]
+            let webViewGiroPayImageExists = expectation(for: Expectation.exists, evaluatedWith: webViewGiroPayImage, handler: nil)
+            wait(for: [webViewGiroPayImageExists], timeout: 30)
+        }
+        
+        if let webviewTexts = payment.expecations?.webviewTexts {
+            var webviewTextsExpectations: [XCTestExpectation] = []
+            for text in webviewTexts {
+                let webViewText = webViews.staticTexts[text]
+                let webViewTextExists = expectation(for: Expectation.exists, evaluatedWith: webViewText, handler: nil)
+                webviewTextsExpectations.append(webViewTextExists)
+                
+            }
+            
+            wait(for: webviewTextsExpectations, timeout: 30)
+        }
+        
+        if cancelPayment {
+            let safariDoneButton = app.otherElements["TopBrowserBar"].buttons["Done"]
+            safariDoneButton.tap()
+            let canceledLabel = app.scrollViews["primer_container_scroll_view"].otherElements.staticTexts["User cancelled"]
+            let canceledLabelExists = expectation(for: Expectation.exists, evaluatedWith: canceledLabel, handler: nil)
+            wait(for: [canceledLabelExists], timeout: 3)
+            
+            scrollView.swipeDown()
+            
+            if let resultScreenTextExpectations = payment.expecations?.resultScreenTexts {
+                var expectations: [XCTestExpectation] = []
+                
+                if let status = resultScreenTextExpectations["status"] as? String {
+                    let statusText = app.staticTexts[status]
+                    let statusTextExists = expectation(for: Expectation.exists, evaluatedWith: statusText, handler: nil)
+                    expectations.append(statusTextExists)
+                }
+                
+                if let actions = resultScreenTextExpectations["actions"] as? String {
+                    let actionsText = app.staticTexts[actions]
+                    let actionsTextExists = expectation(for: Expectation.exists, evaluatedWith: actionsText, handler: nil)
+                    expectations.append(actionsTextExists)
+                }
+                
+                if let amount = resultScreenTextExpectations["amount"] as? String {
+                    let amountText = app.staticTexts[amount]
+                    let amountTextExists = expectation(for: Expectation.exists, evaluatedWith: amountText, handler: nil)
+                    expectations.append(amountTextExists)
+                }
+                
+                if !expectations.isEmpty {
+                    wait(for: expectations, timeout: 3)
+                }
+            }
+        }
+    }
 }
 
 extension XCUIElement {

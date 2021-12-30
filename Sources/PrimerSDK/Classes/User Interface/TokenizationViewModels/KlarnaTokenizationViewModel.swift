@@ -6,10 +6,13 @@ import UIKit
 
 class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
+    private var sessionId: String?
+    
     var willPresentExternalView: (() -> Void)?
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
+    
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
@@ -104,7 +107,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -147,13 +150,13 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 throw err
             }
             
-            if settings.orderItems.isEmpty {
+            if (settings.orderItems ?? []).isEmpty {
                 let err = KlarnaException.missingOrderItems
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
             }
             
-            if !settings.orderItems.filter({ $0.unitAmount == nil }).isEmpty {
+            if !(settings.orderItems ?? []).filter({ $0.unitAmount == nil }).isEmpty {
                 let err = KlarnaException.orderItemMissesAmount
                 _ = ErrorHandler.shared.handle(error: err)
                 throw err
@@ -165,8 +168,19 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        
+        if Primer.shared.delegate?.onClientSessionActions != nil {
+            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+        } else {
+            continueTokenizationFlow()
+        }
+    }
+    
+    fileprivate func continueTokenizationFlow() {
         do {
-            try validate()
+            try self.validate()
         } catch {
             DispatchQueue.main.async {
                 Primer.shared.delegate?.checkoutFailed?(with: error)
@@ -265,7 +279,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     
     private func generateWebViewUrl(completion: @escaping (Result<URL, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(ApayaException.noToken))
         }
         
@@ -295,11 +309,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 return completion(.failure(KlarnaException.noCurrency))
             }
             
-            if settings.orderItems.isEmpty {
+            if (settings.orderItems ?? []).isEmpty {
                 return completion(.failure(KlarnaException.missingOrderItems))
             }
             
-            if !settings.orderItems.filter({ $0.unitAmount == nil }).isEmpty {
+            if !(settings.orderItems ?? []).filter({ $0.unitAmount == nil }).isEmpty {
                 return completion(.failure(KlarnaException.orderItemMissesAmount))
             }
             
@@ -336,7 +350,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
 
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.klarnaCreatePaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
+        api.klarnaCreatePaymentSession(clientToken: decodedClientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -349,7 +363,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                     function: #function
                 )
                 
-                state.sessionId = res.sessionId
+                self?.sessionId = res.sessionId
                 
                 guard let url = URL(string: res.hppRedirectUrl) else {
                     completion(.failure(PrimerError.generic))
@@ -374,16 +388,20 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     }
     
     private func presentKlarnaController(with url: URL, completion: @escaping (_ authorizationToken: String?, _ err: Error?) -> Void) {
-        webViewController = PrimerWebViewController(with: url)
-        webViewController!.navigationDelegate = self
-        webViewController!.modalPresentationStyle = .fullScreen
-        
-        webViewCompletion = completion
-        
-        self.willPresentExternalView?()
-        Primer.shared.primerRootVC?.present(webViewController!, animated: true, completion: {
-            self.didPresentExternalView?()
-        })
+        DispatchQueue.main.async {
+            self.webViewController = PrimerWebViewController(with: url)
+            self.webViewController!.navigationDelegate = self
+            self.webViewController!.modalPresentationStyle = .fullScreen
+            
+            self.webViewCompletion = completion
+            
+            self.willPresentExternalView?()
+            Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                DispatchQueue.main.async {
+                    self.didPresentExternalView?()
+                }
+            })
+        }
     }
     
     private func createKlarnaCustomerToken(authorizationToken: String) -> Promise<KlarnaCustomerTokenAPIResponse> {
@@ -402,14 +420,14 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private func createKlarnaCustomerToken(authorizationToken: String, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
-              let sessionId = state.sessionId else {
+        guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
+              let sessionId = self.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
@@ -423,7 +441,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.klarnaCreateCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
+        api.klarnaCreateCustomerToken(clientToken: decodedClientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -449,12 +467,12 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private func finalizePaymentSession(completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(KlarnaException.noToken))
         }
 
-        guard let configId = state.paymentMethodConfig?.getConfigId(for: .klarna),
-              let sessionId = state.sessionId else {
+        guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
+              let sessionId = self.sessionId else {
             return completion(.failure(KlarnaException.noPaymentMethodConfigId))
         }
 
@@ -464,7 +482,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.klarnaFinalizePaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
+        api.klarnaFinalizePaymentSession(clientToken: decodedClientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -566,12 +584,31 @@ extension KlarnaTokenizationViewModel: WKNavigationDelegate {
 extension KlarnaTokenizationViewModel {
     
     override func handle(error: Error) {
+        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
         self.completion = nil
     }
     
     override func handle(newClientToken clientToken: String) {
-        try? ClientTokenService.storeClientToken(clientToken)
+        do {
+            try ClientTokenService.storeClientToken(clientToken)
+            
+            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+            
+            firstly {
+                configService.fetchConfig()
+            }
+            .done {
+                self.continueTokenizationFlow()
+            }
+            .catch { err in
+                self.handle(error: err)
+            }
+            
+        } catch {
+            Primer.shared.delegate?.checkoutFailed?(with: error)
+            self.handle(error: error)
+        }
     }
     
     override func handleSuccess() {

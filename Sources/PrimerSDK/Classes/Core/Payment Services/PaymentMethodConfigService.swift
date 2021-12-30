@@ -4,6 +4,7 @@ import UIKit
 
 internal protocol PaymentMethodConfigServiceProtocol {
     func fetchConfig(_ completion: @escaping (Error?) -> Void)
+    func fetchConfig() -> Promise<Void>
 }
 
 internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
@@ -15,7 +16,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let clientToken = state.decodedClientToken else {
+        guard let clientToken = ClientTokenService.decodedClientToken else {
             return completion(PrimerError.configFetchFailed)
         }
         
@@ -26,8 +27,20 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
             case .failure(let error):
                 completion(error)
             case .success(let config):
-                state.paymentMethodConfig = config
+                state.primerConfiguration = config
                 completion(nil)
+            }
+        }
+    }
+    
+    func fetchConfig() -> Promise<Void> {
+        return Promise { seal in
+            self.fetchConfig { err in
+                if let err = err {
+                    seal.reject(err)
+                } else {
+                    seal.fulfill()
+                }
             }
         }
     }

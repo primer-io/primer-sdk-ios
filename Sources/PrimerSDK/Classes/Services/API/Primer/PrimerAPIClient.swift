@@ -25,11 +25,12 @@ protocol PrimerAPIClientProtocol {
     func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
     func threeDSContinueAuth(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
     func apayaCreateSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest, completion: @escaping (_ result: Result<Apaya.CreateSessionAPIResponse, Error>) -> Void)
+    func adyenBanksList(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (_ result: Result<[Bank], Error>) -> Void)
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
-
+    
     internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
@@ -47,6 +48,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         networkService.request(endpoint) { (result: Result<GetVaultedPaymentMethodsResponse, NetworkServiceError>) in
             switch result {
             case .success(let vaultedPaymentMethodsResponse):
+                let state: AppStateProtocol = DependencyContainer.resolve()
+                state.selectedPaymentMethodToken = vaultedPaymentMethodsResponse.data.first?.token
                 completion(.success(vaultedPaymentMethodsResponse))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
@@ -72,8 +75,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken)
         networkService.request(endpoint) { (result: Result<PrimerConfiguration, NetworkServiceError>) in
             switch result {
-            case .success(let paymentMethodConfig):
-                completion(.success(paymentMethodConfig))
+            case .success(let primerConfiguration):
+                completion(.success(primerConfiguration))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.configFetchFailed))
@@ -85,8 +88,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.directDebitCreateMandate(clientToken: clientToken, mandateRequest: mandateRequest)
         networkService.request(endpoint) { (result: Result<DirectDebitCreateMandateResponse, NetworkServiceError>) in
             switch result {
-            case .success(let paymentMethodConfig):
-                completion(.success(paymentMethodConfig))
+            case .success(let primerConfiguration):
+                completion(.success(primerConfiguration))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.configFetchFailed))
@@ -202,6 +205,21 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
+    func adyenBanksList(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
+        let endpoint = PrimerAPI.adyenBanksList(clientToken: clientToken, request: request)
+        networkService.request(endpoint) { (result: Result<BanksListSessionResponse, NetworkServiceError>) in
+            switch result {
+            case .success(let res):
+                let banks = res.result
+                print(banks)
+                completion(.success(banks))
+            case .failure(let error):
+                _ = ErrorHandler.shared.handle(error: error)
+                completion(.failure(PrimerError.tokenizationRequestFailed))
+            }
+        }
+    }
+    
     func poll(
         clientToken: DecodedClientToken?,
         url: String,
@@ -223,7 +241,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
 internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     var response: Data?
-    let throwsError: Bool
+    var throwsError: Bool
     var isCalled: Bool = false
 
     init(with response: Data? = nil, throwsError: Bool = false) {
@@ -404,6 +422,10 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         } catch {
             completion(.failure(error))
         }
+    }
+    
+    func adyenBanksList(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
+        
     }
     
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (Result<PollingResponse, Error>) -> Void) {

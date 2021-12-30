@@ -10,16 +10,18 @@
 @testable import PrimerSDK
 import XCTest
 
-var mockClientToken = DecodedClientToken(
-    accessToken: "bla",
-    configurationUrl: "bla",
-    paymentFlow: "bla",
-    threeDSecureInitUrl: "bla",
-    threeDSecureToken: "bla",
-    coreUrl: "https://primer.io",
-    pciUrl: "https://primer.io",
-    env: "bla"
-)
+var mockClientToken = DecodedClientToken(accessToken: "bla", exp: 2000000000, configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io")
+
+//(
+//    accessToken: "bla",
+//    configurationUrl: "bla",
+//    paymentFlow: "bla",
+//    threeDSecureInitUrl: "bla",
+//    threeDSecureToken: "bla",
+//    coreUrl: "https://primer.io",
+//    pciUrl: "https://primer.io",
+//    env: "bla"
+//)
 
 var mockSettings = PrimerSettings(
     merchantIdentifier: "mid",
@@ -80,6 +82,7 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
+    
     var debugOptions: PrimerDebugOptions
         
     var orderId: String?
@@ -100,7 +103,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     
     var klarnaSessionType: KlarnaSessionType?
     
-    var orderItems: [OrderItem] = []
+    var orderItems: [OrderItem]? = []
 
     var isFullScreenOnly: Bool {
         return false
@@ -155,68 +158,50 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         self.is3DSOnVaultingEnabled = true
         self.debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
     }
+    
+    func modify(withClientSession clientSession: ClientSession) {
+        
+    }
 }
 
 let mockPaymentMethodConfig = PrimerConfiguration(
     coreUrl: "url",
     pciUrl: "url",
+    clientSession: nil,
     paymentMethods: [
         PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
         PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
         PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
     ],
+    checkoutModules: nil,
     keys: nil
 )
 
 class MockAppState: AppStateProtocol {
     
-    var customerToken: String? = "customerToken"
-
-    var authorizationToken: String? = "authToken"
-
-    var sessionId: String? = "klarnaSessionId123"
-
-    var cardData: CardData = CardData(name: "", number: "", expiryYear: "", expiryMonth: "", cvc: "")
-
-    var directDebitMandate: DirectDebitMandate = DirectDebitMandate(firstName: "", lastName: "", email: "", iban: "", accountNumber: "", sortCode: "", address: nil)
-
-    var directDebitFormCompleted: Bool = false
-
-    var mandateId: String?
-
+    var clientToken: String?
+    var primerConfiguration: PrimerConfiguration?
     var paymentMethods: [PaymentMethodToken] = []
-
-    var selectedPaymentMethod: String = ""
-
-    var decodedClientToken: DecodedClientToken? = mockClientToken
-
-    var paymentMethodConfig: PrimerConfiguration?
-
-    var accessToken: String? = "accessToken"
-
-    var billingAgreementToken: String? = "token"
-
-    var orderId: String? = "oid"
-
-    var confirmedBillingAgreement: PayPalConfirmBillingAgreementResponse?
-
-    var approveURL: String? = "approveUrl"
+    var selectedPaymentMethodToken: String?
+    var selectedPaymentMethod: PaymentMethodToken?
 
     init(
         decodedClientToken: DecodedClientToken? = mockClientToken,
-        paymentMethodConfig: PrimerConfiguration? = PrimerConfiguration(
+        primerConfiguration: PrimerConfiguration? = PrimerConfiguration(
             coreUrl: "url",
             pciUrl: "url",
+            clientSession: nil,
             paymentMethods: [
                 PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
                 PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
                 PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
             ],
+            checkoutModules: nil,
             keys: nil
         )
     ) {
-        self.decodedClientToken = decodedClientToken
-        self.paymentMethodConfig = paymentMethodConfig
+        self.clientToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjI2MzQzMTcwODgsImFjY2Vzc1Rva2VuIjoiOTUxODRhNWYtMWMxNS00OGQ0LTk4MzYtYmM4ZWFkZmYzMzFiIiwiYW5hbHl0aWNzVXJsIjoiaHR0cHM6Ly9hbmFseXRpY3MuYXBpLnN0YWdpbmcuY29yZS5wcmltZXIuaW8vbWl4cGFuZWwiLCJpbnRlbnQiOiJDSEVDS09VVCIsImNvbmZpZ3VyYXRpb25VcmwiOiJodHRwczovL2FwaS5zdGFnaW5nLnByaW1lci5pby9jbGllbnQtc2RrL2NvbmZpZ3VyYXRpb24iLCJjb3JlVXJsIjoiaHR0cHM6Ly9hcGkuc3RhZ2luZy5wcmltZXIuaW8iLCJwY2lVcmwiOiJodHRwczovL3Nkay5hcGkuc3RhZ2luZy5wcmltZXIuaW8iLCJlbnYiOiJTVEFHSU5HIiwicGF5bWVudEZsb3ciOiJQUkVGRVJfVkFVTFQifQ.aybIRUso7r9LJcL3pg8_Rg2aVMHDUikcooA3KcCX43g"
+        self.primerConfiguration = primerConfiguration
     }
 }
 
@@ -225,7 +210,7 @@ let mockPayPalBillingAgreement = PayPalConfirmBillingAgreementResponse(billingAg
 class MockLocator {
     static func registerDependencies() {
         let state: AppStateProtocol = MockAppState()
-        state.paymentMethodConfig = mockPaymentMethodConfig
+        state.primerConfiguration = mockPaymentMethodConfig
         DependencyContainer.register(state as AppStateProtocol)
         // register dependencies
         DependencyContainer.register(mockSettings as PrimerSettingsProtocol)
@@ -245,7 +230,7 @@ class MockLocator {
 }
 
 class MockDirectDebitService: DirectDebitServiceProtocol {
-    func createMandate(_ completion: @escaping (Error?) -> Void) {
+    func createMandate(_ directDebitMandate: DirectDebitMandate, completion: @escaping (Error?) -> Void) {
 
     }
 }

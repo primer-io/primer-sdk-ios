@@ -13,11 +13,23 @@ import XCTest
 class PaymentMethodConfigServiceTests: XCTestCase {
 
     func test_fetchConfig_updates_paymentMethodConfig_and_viewModels() throws {
+        let config = PrimerConfiguration(
+            coreUrl: "coreUrl",
+            pciUrl: "pciUrl",
+            clientSession: nil,
+            paymentMethods: [
+                PaymentMethodConfig(id: "id123", options: nil, processorConfigId: "config_id", type: .paymentCard)
+            ],
+            checkoutModules: nil,
+            keys: nil
+        )
+
+        let state = MockAppState(decodedClientToken: nil, primerConfiguration: config)
+
         MockLocator.registerDependencies()
         Primer.shared.showUniversalCheckout(on: UIViewController(), clientToken: nil)
 
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        XCTAssertEqual(state.paymentMethodConfig?.coreUrl, "url")
+        XCTAssertEqual(state.primerConfiguration?.coreUrl, "coreUrl")
         XCTAssertEqual(PrimerConfiguration.paymentMethodConfigViewModels.count, 1)
     }
 }

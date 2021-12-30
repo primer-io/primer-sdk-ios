@@ -264,9 +264,7 @@ public enum CardNetwork: String, CaseIterable {
         }
     }
     
-    var directoryServerId: String? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
+    var directoryServerId: String? {        
         switch self {
         case .visa:
             return "A000000003"
@@ -281,8 +279,8 @@ public enum CardNetwork: String, CaseIterable {
         case .unionpay:
             return "A000000333"
         default:
-            if let clientToken = state.decodedClientToken,
-               let env = clientToken.env {
+            if let decodedClientToken = ClientTokenService.decodedClientToken,
+               let env = decodedClientToken.env {
                 if env.uppercased() == "PRODUCTION" {
                     return nil
                 } else {
@@ -292,6 +290,21 @@ public enum CardNetwork: String, CaseIterable {
                 return nil
             }
         }
+    }
+    
+    var surcharge: Int? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        guard let options = state.primerConfiguration?.clientSession?.paymentMethod?.options, !options.isEmpty else { return nil }
+        
+        for paymentMethodOption in options {
+            guard let type = paymentMethodOption["type"] as? String, type == "PAYMENT_CARD" else { continue }
+            guard let networks = paymentMethodOption["networks"] as? [[String: Any]] else { continue }
+            guard let tmpNetwork = networks.filter({ $0["type"] as? String == self.rawValue.uppercased() }).first else { continue }
+            guard let surcharge = tmpNetwork["surcharge"] as? Int else { continue }
+            return surcharge
+        }
+        
+        return nil
     }
     
     static func cardNumber(_ cardnumber: String, matchesPatterns patterns: [[Int]]) -> Bool {
@@ -319,7 +332,8 @@ public enum CardNetwork: String, CaseIterable {
         
         for cardNetwork in CardNetwork.allCases {
             if let patterns = cardNetwork.validation?.patterns,
-               CardNetwork.cardNumber(cardNumber.withoutNonNumericCharacters, matchesPatterns: patterns) {
+               CardNetwork.cardNumber(cardNumber.withoutNonNumericCharacters, matchesPatterns: patterns),
+               cardNetwork != .unknown {
                 self = cardNetwork
                 break
             }

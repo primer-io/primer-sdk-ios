@@ -10,7 +10,10 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
+    
     private var session: Any!
+    private var orderId: String?
+    private var confirmBillingAgreementResponse: PayPalConfirmBillingAgreementResponse?
     
     override lazy var title: String = {
         return "PayPal"
@@ -29,7 +32,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     override lazy var buttonImage: UIImage? = {
         switch config.type {
         case .payPal:
-            return UIImage(named: "paypal3", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -39,7 +42,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     override lazy var buttonColor: UIColor? = {
         switch config.type {
         case .payPal:
-            return UIColor(red: 0.745, green: 0.894, blue: 0.996, alpha: 1)
+            return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -99,30 +102,23 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-//        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PaymentException.missingClientToken
-            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
             let err = PrimerError.tokenizationPreRequestFailed
-            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard config.id != nil else {
             let err = PaymentException.missingConfigurationId
-            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.coreUrl != nil else {
             let err = PrimerError.invalidValue(key: "coreUrl")
-            _ = ErrorHandler.shared.handle(error: err)
             throw err
         }
     }
@@ -131,42 +127,56 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        
+        if Primer.shared.delegate?.onClientSessionActions != nil {
+            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+        } else {
+            continueTokenizationFlow()
+        }
+    }
+    
+    fileprivate func continueTokenizationFlow() {
         do {
-            try validate()
+            try self.validate()
         } catch {
             DispatchQueue.main.async {
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
         }
         
+        let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+        
         firstly {
+            configService.fetchConfig()
+        }
+        .then {
             self.tokenize()
         }
         .done { paymentMethod in
             self.paymentMethod = paymentMethod
             
-            DispatchQueue.main.async {
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                }
-
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
-                    if let err = err {
-                        self.handleFailedTokenizationFlow(error: err)
-                    } else {
-                        self.handleSuccessfulTokenizationFlow()
-                    }
-                })
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
             }
+
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
+                if let err = err {
+                    self.handleFailedTokenizationFlow(error: err)
+                } else {
+                    self.handleSuccessfulTokenizationFlow()
+                }
+            })
         }
         .catch { err in
-            DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: err)
-                self.handleFailedTokenizationFlow(error: err)
-            }
+            ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            self.handleFailedTokenizationFlow(error: err)
         }
     }
     
@@ -202,12 +212,13 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             case .CHECKOUT:
                 paypalService.startOrderSession { result in
                     switch result {
-                    case .success(let urlStr):
-                        guard let url = URL(string: urlStr) else {
+                    case .success(let res):
+                        guard let url = URL(string: res.approvalUrl) else {
                             seal.reject(PrimerError.failedToLoadSession)
                             return
                         }
                         
+                        self.orderId = res.orderId
                         seal.fulfill(url)
                         
                     case .failure(let err):
@@ -242,7 +253,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             }
             
             if #available(iOS 13, *) {
-                session =  ASWebAuthenticationSession(
+                let webAuthSession =  ASWebAuthenticationSession(
                     url: url,
                     callbackURLScheme: urlScheme,
                     completionHandler: { (url, error) in
@@ -252,11 +263,14 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                         } else if let url = url {
                             seal.fulfill(url)
                         }
+
+                        (self.session as! ASWebAuthenticationSession).cancel()
                     }
                 )
+                session = webAuthSession
                 
-                (session as! ASWebAuthenticationSession).presentationContextProvider = self
-                (session as! ASWebAuthenticationSession).start()
+                webAuthSession.presentationContextProvider = self
+                webAuthSession.start()
                 
             } else if #available(iOS 11, *) {
                 session = SFAuthenticationSession(
@@ -295,8 +309,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private func generatePaypalPaymentInstrument(_ completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
-            let orderId: AppStateProtocol = DependencyContainer.resolve()
-            guard let orderId = orderId.orderId else {
+            guard let orderId = orderId else {
                 completion(.failure(PrimerError.orderIdMissing))
                 return
             }
@@ -305,8 +318,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             completion(.success(paymentInstrument))
             
         case .VAULT:
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let confirmedBillingAgreement = state.confirmedBillingAgreement else {
+            guard let confirmedBillingAgreement = self.confirmBillingAgreementResponse else {
                 generateBillingAgreementConfirmation { [weak self] err in
                     if let err = err {
                         completion(.failure(err))
@@ -333,7 +345,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             case .failure(let error):
                 log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
                 completion(PrimerError.payPalSessionFailed)
-            case .success:
+            case .success(let res):
+                self.confirmBillingAgreementResponse = res
                 completion(nil)
             }
         })
@@ -345,7 +358,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
             
             let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
-            tokenizationService.tokenize(request: request) { [weak self] result in
+            tokenizationService.tokenize(request: request) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -362,12 +375,22 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
 extension PayPalTokenizationViewModel {
     
     override func handle(error: Error) {
+        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
         self.completion = nil
     }
     
     override func handle(newClientToken clientToken: String) {
-        try? ClientTokenService.storeClientToken(clientToken)
+        do {
+            try ClientTokenService.storeClientToken(clientToken)
+            self.continueTokenizationFlow()
+            
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+            }
+            self.handle(error: error)
+        }
     }
     
     override func handleSuccess() {

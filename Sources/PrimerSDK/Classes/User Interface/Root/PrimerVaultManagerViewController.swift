@@ -28,15 +28,12 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                                   bundle: Bundle.primerResources,
                                   value: "Add payment method",
                                   comment: "Add payment method - Vault Navigation Bar Title")
-        
-        view.backgroundColor = theme.colorTheme.main1
-        
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-        let availablePaymentMethods = checkoutViewModel.availablePaymentOptions
+
+        view.backgroundColor = theme.view.backgroundColor
         
         verticalStackView.spacing = 14.0
-        
-        if !availablePaymentMethods.isEmpty {
+
+        if !paymentMethodConfigViewModels.isEmpty {
             renderAvailablePaymentMethods()
         }
     }
@@ -44,7 +41,6 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
     private func renderAvailablePaymentMethods() {
         PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
     }
-    
 }
 
 #endif

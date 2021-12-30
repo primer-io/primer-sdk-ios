@@ -264,7 +264,7 @@ class PrimerCustomFieldView: UIView {
 
         topPlaceholderLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         topPlaceholderLabel.text = placeholderText
-        topPlaceholderLabel.textColor = theme.colorTheme.text3
+        topPlaceholderLabel.textColor = theme.text.system.color
         topPlaceholderLabel.textAlignment = .left
         stackView.addArrangedSubview(topPlaceholderLabel)
         
@@ -298,12 +298,12 @@ class PrimerCustomFieldView: UIView {
         rightImageView1.trailingAnchor.constraint(equalTo: rightImageView1Container.trailingAnchor, constant: 0).isActive = true
         rightImageView1.widthAnchor.constraint(equalTo: rightImageView1.heightAnchor, multiplier: 1.0).isActive = true
         
-        bottomLine.backgroundColor = theme.colorTheme.text3
+        bottomLine.backgroundColor = theme.colors.primary
         bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
         stackView.addArrangedSubview(textFieldStackView)
         stackView.addArrangedSubview(bottomLine)
 
-        errorLabel.textColor = theme.colorTheme.error1
+        errorLabel.textColor = theme.text.error.color
         errorLabel.heightAnchor.constraint(equalToConstant: 12.0).isActive = true
         errorLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         errorLabel.text = nil

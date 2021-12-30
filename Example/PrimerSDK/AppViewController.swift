@@ -21,17 +21,18 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        environmentControl.selectedSegmentIndex = 1
+        environmentControl.selectedSegmentIndex = 3
         environmentControl.accessibilityIdentifier = "env_control"
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.gb.rawValue
+        countryCodeTextField.text = CountryCode.sg.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
-        currencyTextField.text = Currency.GBP.rawValue
+        currencyTextField.text = Currency.SGD.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
-        amountTextField.text = "0.01"
+        amountTextField.placeholder = "In minor units (type 100 for 1.00)"
+        amountTextField.text = "17111"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
@@ -51,29 +52,35 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         currencyPicker.delegate = self
     }
     
+    @IBAction func viewTapped(_ sender: Any) {
+        view.endEditing(true)
+    }
+    
     @IBAction func initializePrimerButtonTapped(_ sender: Any) {
         var env: Environment!
         switch environmentControl.selectedSegmentIndex {
         case 0:
-            env = .dev
+            env = .local
         case 1:
-            env = .sandbox
+            env = .dev
         case 2:
-            env = .staging
+            env = .sandbox
         case 3:
+            env = .staging
+        case 4:
             env = .production
         default:
             break
         }
         
         var amount: Int?
-        if let amountStr = amountTextField.text, let amountDbl = Double(amountStr) {
-            amount = Int(amountDbl * 100)
+        if let amountStr = amountTextField.text {
+            amount = Int(amountStr)
         }
         
         let mcvc = MerchantCheckoutViewController.instantiate(
             environment: env,
-            customerId: customerIdTextField.text,
+            customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
             phoneNumber: phoneNumberTextField.text,
             countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
             currency: Currency(rawValue: currencyTextField.text ?? ""),
@@ -97,17 +104,17 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if pickerView.tag == 0 {
-            return CountryCode.allCases[row].rawValue
+            return CountryCode.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         } else {
-            return Currency.allCases[row].rawValue
+            return Currency.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         }
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView.tag == 0 {
-            countryCodeTextField.text = CountryCode.allCases[row].rawValue
+            countryCodeTextField.text = CountryCode.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         } else {
-            currencyTextField.text = Currency.allCases[row].rawValue
+            currencyTextField.text = Currency.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         }
     }
 }

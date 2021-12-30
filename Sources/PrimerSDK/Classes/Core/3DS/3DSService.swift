@@ -63,7 +63,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
     private var threeDSSDKWindow: UIWindow?
     
     deinit {
-        
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     static func validate3DSParameters() throws {
@@ -93,8 +93,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         if settings.customer?.billingAddress?.countryCode == nil {
             errors.append(PrimerError.userDetailsCountryCodeMissing)
-        } else if CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!) == nil {
-            errors.append(PrimerError.userDetailsCountryCodeMissing)
         }
         
         if (settings.customer?.billingAddress?.postalCode ?? "").isEmpty {
@@ -103,7 +101,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         if (settings.customer?.firstName ?? "").isEmpty ||
             (settings.customer?.lastName ?? "").isEmpty ||
-            (settings.customer?.email ?? "").isEmpty
+            (settings.customer?.emailAddress ?? "").isEmpty
         {
             errors.append(PrimerError.userDetailsMissing)
         }
@@ -128,16 +126,16 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
-                                        email: settings.customer!.email!,
-                                        homePhone: settings.customer!.homePhoneNumber,
+                                        email: settings.customer!.emailAddress!,
+                                        homePhone: nil,
                                         mobilePhone: settings.customer!.mobilePhoneNumber,
-                                        workPhone: settings.customer!.workPhoneNumber)
+                                        workPhone: nil)
         
         let threeDSAddress = ThreeDS.Address(title: nil,
                                              firstName: settings.customer!.firstName,
                                              lastName: settings.customer!.lastName,
-                                             email: settings.customer!.email,
-                                             phoneNumber: settings.customer!.mobilePhoneNumber ?? settings.customer!.homePhoneNumber ?? settings.customer!.workPhoneNumber,
+                                             email: settings.customer!.emailAddress,
+                                             phoneNumber: settings.customer!.mobilePhoneNumber,
                                              addressLine1: settings.customer!.billingAddress!.addressLine1!,
                                              addressLine2: settings.customer!.billingAddress!.addressLine2,
                                              addressLine3: nil,
@@ -168,19 +166,19 @@ class ThreeDSService: ThreeDSServiceProtocol {
     ) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             completion(.failure(PrimerError.clientTokenNull))
             return
         }
         
         let env = Environment(rawValue: decodedClientToken.env ?? "")
         
-        guard let paymentMethodConfig = state.paymentMethodConfig else {
+        guard let primerConfiguration = state.primerConfiguration else {
             completion(.failure(PrimerError.configFetchFailed))
             return
         }
         
-        guard let licenseKey = paymentMethodConfig.keys?.netceteraLicenseKey else {
+        guard let licenseKey = primerConfiguration.keys?.netceteraLicenseKey else {
             completion(.failure(PrimerError.threeDSSDKKeyMissing))
             return
         }
@@ -202,7 +200,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
         
         var certs: [Primer3DSCertificate] = []
-        for certificate in paymentMethodConfig.keys?.threeDSecureIoCertificates ?? [] {
+        for certificate in primerConfiguration.keys?.threeDSecureIoCertificates ?? [] {
             let cer = ThreeDS.Cer(cardScheme: certificate.cardNetwork, rootCertificate: certificate.rootCertificate, encryptionKey: certificate.encryptionKey)
             certs.append(cer)
         }
@@ -237,44 +235,39 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                                                     shippingAddress: nil,
                                                                     customerAccount: nil)
         
-        if let beginAuthExtraData = beginAuthExtraData {
-            do {
-                try ThreeDSService.validate3DSParameters()
-            } catch {
-                completion(.failure(error))
-                return
-            }
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
-                                            email: settings.customer!.email!,
-                                            homePhone: settings.customer!.homePhoneNumber,
-                                            mobilePhone: settings.customer!.mobilePhoneNumber,
-                                            workPhone: settings.customer!.workPhoneNumber)
-            
-            let threeDSAddress = ThreeDS.Address(title: nil,
-                                                 firstName: settings.customer!.firstName,
-                                                 lastName: settings.customer!.lastName,
-                                                 email: settings.customer!.email,
-                                                 phoneNumber: settings.customer!.mobilePhoneNumber ?? settings.customer!.homePhoneNumber ?? settings.customer!.workPhoneNumber,
-                                                 addressLine1: settings.customer!.billingAddress!.addressLine1!,
-                                                 addressLine2: settings.customer!.billingAddress!.addressLine2,
-                                                 addressLine3: nil,
-                                                 city: settings.customer!.billingAddress!.city!,
-                                                 state: nil,
-                                                 countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!)!,
-                                                 postalCode: settings.customer!.billingAddress!.postalCode!)
-            
-            threeDSecureBeginAuthRequest.amount = beginAuthExtraData.amount
-            threeDSecureBeginAuthRequest.currencyCode = beginAuthExtraData.currencyCode
-            threeDSecureBeginAuthRequest.orderId = beginAuthExtraData.orderId
-            threeDSecureBeginAuthRequest.customer = beginAuthExtraData.customer
-            threeDSecureBeginAuthRequest.billingAddress = beginAuthExtraData.billingAddress
-            threeDSecureBeginAuthRequest.shippingAddress = beginAuthExtraData.shippingAddress
-            threeDSecureBeginAuthRequest.customerAccount = beginAuthExtraData.customerAccount
+        do {
+            try ThreeDSService.validate3DSParameters()
+        } catch {
+            completion(.failure(error))
+            return
         }
         
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        let customer = ThreeDS.Customer(name: "\(settings.customer!.firstName) \(settings.customer!.lastName)",
+                                        email: settings.customer!.emailAddress!,
+                                        homePhone: nil,
+                                        mobilePhone: settings.customer!.mobilePhoneNumber,
+                                        workPhone: nil)
+        
+        let threeDSAddress = ThreeDS.Address(title: nil,
+                                             firstName: settings.customer!.firstName,
+                                             lastName: settings.customer!.lastName,
+                                             email: settings.customer!.emailAddress,
+                                             phoneNumber: settings.customer!.mobilePhoneNumber,
+                                             addressLine1: settings.customer!.billingAddress!.addressLine1!,
+                                             addressLine2: settings.customer!.billingAddress!.addressLine2,
+                                             addressLine3: nil,
+                                             city: settings.customer!.billingAddress!.city!,
+                                             state: nil,
+                                             countryCode: CountryCode(rawValue: settings.customer!.billingAddress!.countryCode!)!,
+                                             postalCode: settings.customer!.billingAddress!.postalCode!)
+        
+        threeDSecureBeginAuthRequest.amount = settings.amount
+        threeDSecureBeginAuthRequest.currencyCode = settings.currency
+        threeDSecureBeginAuthRequest.orderId = settings.orderId
+        threeDSecureBeginAuthRequest.customer = customer
+        threeDSecureBeginAuthRequest.billingAddress = threeDSAddress
         
         firstly {
             self.beginRemoteAuth(paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
@@ -306,11 +299,22 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 break
             }
             
-            self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
-            self.threeDSSDKWindow?.rootViewController = ClearViewController()
-            self.threeDSSDKWindow?.backgroundColor = UIColor.clear
-            self.threeDSSDKWindow?.windowLevel = UIWindow.Level.normal
-            self.threeDSSDKWindow?.makeKeyAndVisible()
+            if #available(iOS 13.0, *) {
+                if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                    self.threeDSSDKWindow = UIWindow(windowScene: windowScene)
+                } else {
+                    // Not opted-in in UISceneDelegate
+                    self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
+                }
+            } else {
+                // Fallback on earlier versions
+                self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
+            }
+
+            self.threeDSSDKWindow!.rootViewController = ClearViewController()
+            self.threeDSSDKWindow!.backgroundColor = UIColor.clear
+            self.threeDSSDKWindow!.windowLevel = UIWindow.Level.normal
+            self.threeDSSDKWindow!.makeKeyAndVisible()
             
             let serverAuthData = ThreeDS.ServerAuthData(acsReferenceNumber: beginAuthResponse.authentication.acsReferenceNumber,
                                              acsSignedContent: beginAuthResponse.authentication.acsSignedContent,
@@ -369,15 +373,13 @@ class ThreeDSService: ThreeDSServiceProtocol {
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
                          threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
                          completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         
-        api.threeDSBeginAuth(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
+        api.threeDSBeginAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -388,14 +390,12 @@ class ThreeDSService: ThreeDSServiceProtocol {
     }
     
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        api.threeDSContinueAuth(clientToken: clientToken, threeDSTokenId: threeDSTokenId) { result in
+        api.threeDSContinueAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId) { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -428,9 +428,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
     }
     
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
@@ -438,13 +436,11 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         api.response = response
         
-        api.threeDSBeginAuth(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
+        api.threeDSBeginAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
     }
     
-    func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let clientToken = state.decodedClientToken else {
+    func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return completion(.failure(PrimerError.vaultFetchFailed))
         }
         
@@ -452,7 +448,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         api.response = response
         
-        api.threeDSContinueAuth(clientToken: clientToken, threeDSTokenId: threeDSTokenId, completion: completion)
+        api.threeDSContinueAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId, completion: completion)
     }
 }
 

@@ -11,7 +11,7 @@ import UIKit
 
 class MerchantCheckoutViewController: UIViewController {
     
-    class func instantiate(environment: Environment, customerId: String?, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
+    class func instantiate(environment: Environment, customerId: String, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
         let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
         mcvc.environment = environment
         mcvc.customerId = customerId
@@ -32,13 +32,22 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var zipLabel: UILabel!
     
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
         didSet {
             self.tableView.reloadData()
         }
     }
-    let endpoint = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
+    lazy var endpoint: String = {
+        if environment == .local {
+            return "https://primer-mock-back-end.herokuapp.com"
+        } else {
+            return "https://us-central1-primerdemo-8741b.cloudfunctions.net"
+        }
+    }()
+    
+    var clientToken: String?
     
     var vaultApayaSettings: PrimerSettings!
     var vaultPayPalSettings: PrimerSettings!
@@ -48,97 +57,46 @@ class MerchantCheckoutViewController: UIViewController {
     var amount = 200
     var currency: Currency = .EUR
     var environment = Environment.staging
-    var customerId: String?
+    var customerId: String!
     var phoneNumber: String?
     var countryCode: CountryCode = .gb
     var threeDSAlert: UIAlertController?
     var transactionResponse: TransactionResponse?
     var performPayment: Bool = false
     
+    var customer: PrimerSDK.Customer?
+    var address: PrimerSDK.Address?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer [\(environment.rawValue)]"
         
         generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
-            customerId: customerId,
-            amount: amount,
-            currency: currency,
-            countryCode: .se,
+            merchantIdentifier: "merchant.dx.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "primer",
             urlSchemeIdentifier: "primer",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
-            businessDetails: nil,
             directDebitHasNoAmount: false,
-            orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
-            ],
             isInitialLoadingHidden: false,
             is3DSOnVaultingEnabled: true,
-            billingAddress: PrimerSDK.Address(
-                addressLine1: "Line 1",
-                addressLine2: "Line 2",
-                city: "City",
-                state: "State",
-                countryCode: "SE",
-                postalCode: "15236"),
-            orderId: "order id",
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
-            customer: PrimerSDK.Customer(
-                firstName: "John",
-                lastName: "Smith",
-                email: "john.smith@primer.io",
-                homePhoneNumber: nil,
-                mobilePhoneNumber: nil,
-                workPhoneNumber: nil,
-                billingAddress: PrimerSDK.Address(
-                    addressLine1: "1 Rue",
-                    addressLine2: "",
-                    city: "Paris",
-                    state: "",
-                    countryCode: "FR",
-                    postalCode: "75001"
-                )
-            )
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
 
-        Primer.shared.delegate = self
-        self.configurePrimer()
-        self.fetchPaymentMethods()
-    }
-    
-    func configurePrimer() {
+        
         Primer.shared.configure(settings: generalSettings)
+        Primer.shared.configure(theme: CheckoutTheme.primer)
+        Primer.shared.delegate = self
         
-        let theme = generatePrimerTheme()
-        Primer.shared.configure(theme: theme)
-        
-        Primer.shared.setDirectDebitDetails(
-            firstName: "John",
-            lastName: "Doe",
-            email: "test@mail.com",
-            iban: "FR1420041010050500013M02606",
-            address: PrimerSDK.Address(
-                addressLine1: "1 Rue",
-                addressLine2: "",
-                city: "Paris",
-                state: "",
-                countryCode: "FR",
-                postalCode: "75001"
-            )
-        )
+        self.fetchPaymentMethods()
     }
     
     // MARK: - ACTIONS
     
     @IBAction func addApayaButtonTapped(_ sender: Any) {
         vaultApayaSettings = PrimerSettings(
-            currency: .GBP,
             isFullScreenOnly: true,
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
@@ -151,10 +109,6 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func addCardButtonTapped(_ sender: Any) {
         let cardSettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
-            customerId: customerId,
-            amount: amount,
-            currency: currency,
-            countryCode: .se,
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "primer",
@@ -163,38 +117,9 @@ class MerchantCheckoutViewController: UIViewController {
             hasDisabledSuccessScreen: false,
             businessDetails: nil,
             directDebitHasNoAmount: false,
-            orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
-            ],
             isInitialLoadingHidden: true,
             is3DSOnVaultingEnabled: true,
-            billingAddress: PrimerSDK.Address(
-                addressLine1: "Line 1",
-                addressLine2: "Line 2",
-                city: "City",
-                state: "State",
-                countryCode: "SE",
-                postalCode: "15236"),
-            orderId: "order id",
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
-            customer: PrimerSDK.Customer(
-                firstName: "John",
-                lastName: "Smith",
-                email: "john.smith@primer.io",
-                homePhoneNumber: nil,
-                mobilePhoneNumber: nil,
-                workPhoneNumber: nil,
-                billingAddress: PrimerSDK.Address(
-                    addressLine1: "1 Rue",
-                    addressLine2: "",
-                    city: "Paris",
-                    state: "",
-                    countryCode: "FR",
-                    postalCode: "75001"
-                )
-            )
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
         
         Primer.shared.configure(settings: cardSettings)
@@ -203,9 +128,6 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {
         vaultPayPalSettings = PrimerSettings(
-            customerId: customerId,
-            currency: currency,
-            countryCode: .se,
             urlScheme: "primer",
             urlSchemeIdentifier: "primer",
             hasDisabledSuccessScreen: true,
@@ -213,7 +135,7 @@ class MerchantCheckoutViewController: UIViewController {
         )
         
         Primer.shared.configure(settings: vaultPayPalSettings)
-        Primer.shared.showPaymentMethod(.payPal, withIntent: .vault, on: self)
+        Primer.shared.showPaymentMethod(.payPal, withIntent: .checkout, on: self)
     }
     
     @IBAction func addKlarnaButtonTapped(_ sender: Any) {
@@ -230,26 +152,7 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
         applePaySettings = PrimerSettings(
             merchantIdentifier: "merchant.checkout.team",
-            customerId: customerId,
-            currency: currency,
-            countryCode: .se,
             hasDisabledSuccessScreen: true,
-            businessDetails: BusinessDetails(
-                name: "My Business",
-                address: PrimerSDK.Address(
-                    addressLine1: "107 Rue",
-                    addressLine2: nil,
-                    city: "Paris",
-                    state: nil,
-                    countryCode: "FR",
-                    postalCode: "75001"
-                )
-            ),
-            orderItems: [
-                try! OrderItem(name: "Shoes", unitAmount: 1, quantity: 2, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: 2, quantity: 1, isPending: false),
-                try! OrderItem(name: "Shoes", unitAmount: nil, quantity: 3, isPending: true)
-            ],
             isInitialLoadingHidden: true
         )
         
@@ -267,92 +170,176 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showUniversalCheckout(on: self)
     }
     
-    // MARK: - Helpers
-    
-    func requestClientToken(_ completion: @escaping (String?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/clientToken") else {
+    func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
+        guard let url = URL(string: "\(endpoint)/api/client-session") else {
             return completion(nil, NetworkError.missingParams)
         }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = CreateClientTokenRequest(
-            customerId: (customerId ?? "").isEmpty ? "customer_id" : customerId!,
-            customerCountryCode: countryCode,
-            environment: environment)
+        let bodyData: Data!
         
         do {
-            request.httpBody = try JSONEncoder().encode(body)
+            if let requestBodyJson = requestBody.dictionaryValue {
+                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
+            } else {
+                completion(nil, NetworkError.serializationError)
+                return
+            }
         } catch {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        let networking = Networking()
+        networking.request(
+            environment: environment,
+            apiVersion: .v3,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                            self.clientToken = token
+                            completion(token, nil)
+                        } else {
+                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                            completion(nil, err)
+                        }
+                        
+                    } catch {
+                        completion(nil, error)
+                    }
+                case .failure(let err):
+                    completion(nil, err)
+                }
+            }
+    }
+    
+    func requestClientSessionWithActions(_ actions: [PrimerSDK.ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
+        guard let clientToken = clientToken else {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        guard let url = URL(string: "\(endpoint)/api/client-session/actions") else {
             return completion(nil, NetworkError.missingParams)
         }
         
-        callApi(request, completion: { result in
-            switch result {
-            case .success(let data):
-                do {
-                    if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
-                        completion(token, nil)
-                        print("🔥 token: \(token)")
+        var merchantActions: [ClientSession.Action] = []
+        for action in actions {
+            if action.type == "SET_SURCHARGE_FEE" {
+                let newAction = ClientSession.Action(
+                    type: "SET_SURCHARGE_FEE",
+                    params: [
+                        "amount": 456
+                    ])
+                merchantActions.append(newAction)
+            } else if action.type == "SET_ZIP_CODE" {
+                // do something with zip code.
+                if let zipCode = (action.params?["zipCode"] as? String), zipCode.count > 4 {
+                    zipLabel.text = "Zip code: \(zipCode)"
+                }
+            } else {
+                merchantActions.append(action)
+            }
+        }
+                
+        var bodyData: Data!
+        
+        do {
+            let bodyJson = ClientSessionActionsRequest(clientToken: clientToken, actions: merchantActions)
+            bodyData = try JSONEncoder().encode(bodyJson)
+        } catch {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        let networking = Networking()
+        networking.request(
+            environment: environment,
+            apiVersion: nil,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        guard let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
+                            completion(nil, NetworkError.missingParams)
+                            return
+                        }
+                        
+                        print("Client Token Response:\n\(json)")
+                        
+                        guard let clientToken = json["clientToken"] as? String else {
+                            completion(nil, NetworkError.missingParams)
+                            return
+                        }
+
+                        print("Client Token:\n\(clientToken)")
+                        completion(clientToken, nil)
+
+                    } catch {
+                        completion(nil, error)
+                    }
+                case .failure(let err):
+                    completion(nil, err)
+                }
+            }
+    }
+    
+    var paymentResponsesData: [Data] = []
+    
+    func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
+        guard let url = URL(string: "\(endpoint)/api/payments/") else {
+            return completion(nil, NetworkError.missingParams)
+        }
+                
+        let body = Payment.Request(paymentMethodToken: paymentMethod.token)
+        
+        var bodyData: Data!
+        
+        do {
+            bodyData = try JSONEncoder().encode(body)
+        } catch {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        let networking = Networking()
+        networking.request(
+            environment: environment,
+            apiVersion: .v2,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    if let dic = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                        completion(dic, nil)
                     } else {
-                        let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                        let err = NetworkError.invalidResponse
                         completion(nil, err)
                     }
                     
-                } catch {
-                    completion(nil, error)
-                }
-            case .failure(let err):
-                completion(nil, err)
-            }
-        })
-    }
-    
-    func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/payments") else {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-        
-        let type = paymentMethod.paymentInstrumentType
-        
-        var request = URLRequest(url: url)
-        
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let body = PaymentRequest(
-            environment: environment,
-            paymentMethod: paymentMethod.token,
-            amount: amount,
-            type: type.rawValue,
-            currencyCode: currency,
-            countryCode: countryCode)
-        
-        do {
-            request.httpBody = try JSONEncoder().encode(body)
-        } catch {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-        
-        callApi(request) { (result) in
-            switch result {
-            case .success(let data):
-                if let dic = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                    completion(dic, nil)
-                } else {
-                    let err = NetworkError.invalidResponse
+                    let paymentResponse = try? JSONDecoder().decode(Payment.Response.self, from: data)
+                    if paymentResponse != nil {
+                        self.paymentResponsesData.append(data)
+                    }
+                    
+                case .failure(let err):
                     completion(nil, err)
                 }
-                
-            case .failure(let err):
-                completion(nil, err)
             }
-        }
     }
-    
+
 }
 
 // MARK: - PRIMER DELEGATE
@@ -360,7 +347,114 @@ class MerchantCheckoutViewController: UIViewController {
 extension MerchantCheckoutViewController: PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
-        requestClientToken(completion)
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
+        
+        let clientSessionRequestBody = ClientSessionRequestBody(
+            customerId: customerId,
+            orderId: "ios_order_id",
+            currencyCode: currency,
+            amount: nil,
+            metadata: ["key": "val"],
+            customer: ClientSessionRequestBody.Customer(
+                firstName: "John",
+                lastName: "Smith",
+                emailAddress: "john@primer.io",
+                mobileNumber: "+4478888888888",
+                billingAddress: Address(
+                    firstName: "John",
+                    lastName: "Smith",
+                    addressLine1: "65 York Road",
+                    addressLine2: nil,
+                    city: "London",
+                    state: nil,
+                    countryCode: "GB",
+                    postalCode: "NW06 4OM"),
+                shippingAddress: Address(
+                    firstName: "John",
+                    lastName: "Smith",
+                    addressLine1: "9446 Richmond Road",
+                    addressLine2: nil,
+                    city: "London",
+                    state: nil,
+                    countryCode: "GB",
+                    postalCode: "EC53 8BT")
+            ),
+            order: ClientSessionRequestBody.Order(
+                countryCode: countryCode,
+                lineItems: [
+                    ClientSessionRequestBody.Order.LineItem(
+                        itemId: "_item_id_0",
+                        description: "Item",
+                        amount: amount,
+                        quantity: 1)
+                ]),
+            paymentMethod: ClientSessionRequestBody.PaymentMethod(
+                vaultOnSuccess: true,
+                options: [
+                    "APPLE_PAY": [
+                        "surcharge": [
+                            "amount": 19
+                        ]
+                    ],
+                    "PAY_NL_IDEAL": [
+                        "surcharge": [
+                            "amount": 39
+                        ]
+                    ],
+                    "PAYPAL": [
+                        "surcharge": [
+                            "amount": 49
+                        ]
+                    ],
+                    "ADYEN_TWINT": [
+                        "surcharge": [
+                            "amount": 59
+                        ]
+                    ],
+                    "ADYEN_IDEAL": [
+                        "surcharge": [
+                            "amount": 69
+                        ]
+                    ],
+                    "ADYEN_GIROPAY": [
+                        "surcharge": [
+                            "amount": 79
+                        ]
+                    ],
+                    "BUCKAROO_BANCONTACT": [
+                        "surcharge": [
+                            "amount": 89
+                        ]
+                    ],
+                    "PAYMENT_CARD": [
+                        "networks": [
+                            "VISA": [
+                                "surcharge": [
+                                    "amount": 109
+                                ]
+                            ],
+                            "MASTERCARD": [
+                                "surcharge": [
+                                    "amount": 129
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            )
+        )
+        
+        requestClientSession(requestBody: clientSessionRequestBody, completion: completion)
+    }
+    
+    func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
+        requestClientSessionWithActions(actions) { (clientToken, err) in
+            if let err = err {
+                resumeHandler?.handle(error: err)
+            } else if let clientToken = clientToken {
+                resumeHandler?.handle(newClientToken: clientToken)
+            }
+        }
     }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol) {
@@ -391,37 +485,37 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
         
         createPayment(with: paymentMethodToken) { (res, err) in
+//            resumeHandler.handle(error: NetworkError.missingParams)
+//            return
             if let err = err {
                 resumeHandler.handle(error: err)
             } else if let res = res {
-                if let requiredActionDic = res["requiredAction"] as? [String: Any] {
-                    
-                    if let amount = res["amount"] as? Int,
-                       let id = res["id"] as? String,
-                       let date = res["date"] as? String,
-                       let status = res["status"] as? String {
-                        
-                        self.transactionResponse = TransactionResponse(id: id, date: date, status: status, requiredAction: requiredActionDic)
-                        
-                        if let requiredActionName = requiredActionDic["name"] as? String,
-                           let clientToken = requiredActionDic["clientToken"] as? String {
-                            
-                            if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
-                                resumeHandler.handle(newClientToken: clientToken)
-                                return
-                            } else if requiredActionName == "USE_PRIMER_SDK", status == "PENDING" {
-                                resumeHandler.handle(newClientToken: clientToken)
-                                return
-                            }
-                        }
-                    }
-
+                guard let requiredActionDic = res["requiredAction"] as? [String: Any] else {
+                    resumeHandler.handleSuccess()
+                    return
                 }
                 
-                resumeHandler.handleSuccess()
+                guard let id = res["id"] as? String,
+                      let date = res["date"] as? String,
+                      let status = res["status"] as? String,
+                      let requiredActionName = requiredActionDic["name"] as? String,
+                      let clientToken = requiredActionDic["clientToken"] as? String else {
+                          resumeHandler.handleSuccess()
+                          return
+                      }
+                
+                self.transactionResponse = TransactionResponse(id: id, date: date, status: status, requiredAction: requiredActionDic)
+                
+                if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
+                    resumeHandler.handle(newClientToken: clientToken)
+                } else if requiredActionName == "USE_PRIMER_SDK", status == "PENDING" {
+                    resumeHandler.handle(newClientToken: clientToken)
+                } else {
+                    resumeHandler.handleSuccess()
+                }
                 
             } else {
-                fatalError()
+                assert(true)
             }
         }
     }
@@ -438,6 +532,13 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         if let threeDSAlert = threeDSAlert {
             present(threeDSAlert, animated: true, completion: nil)
         }
+        
+        DispatchQueue.main.async {
+            if !self.paymentResponsesData.isEmpty {
+                let rvc = ResultViewController.instantiate(data: self.paymentResponsesData)
+                self.navigationController?.pushViewController(rvc, animated: true)
+            }
+        }
     }
     
     func checkoutFailed(with error: Error) {
@@ -447,39 +548,54 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken)")
         
-        guard let url = URL(string: "\(endpoint)/resume"),
-              let transactionResponse = transactionResponse else {
-                  resumeHandler.handle(error: NetworkError.missingParams)
-                  return
-              }
+        guard let transactionResponse = transactionResponse,
+              let url = URL(string: "\(endpoint)/api/payments/\(transactionResponse.id)/resume")
+        else {
+            resumeHandler.handle(error: NetworkError.missingParams)
+            return
+        }
         
         var request = URLRequest(url: url)
-
+        
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         let bodyDic: [String: Any] = [
-            "id": transactionResponse.id,
-            "resumeToken": clientToken,
-            "environment": environment.rawValue
+            //            "id": transactionResponse.id,
+            "resumeToken": clientToken
         ]
-
+        
+        var bodyData: Data!
+        
         do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: bodyDic, options: .fragmentsAllowed)
+            bodyData = try JSONSerialization.data(withJSONObject: bodyDic, options: .fragmentsAllowed)
         } catch {
             resumeHandler.handle(error: NetworkError.missingParams)
             return
         }
+        
+        let networking = Networking()
+        networking.request(
+            environment: environment,
+            apiVersion: .v2,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    let paymentResponse = try? JSONDecoder().decode(Payment.Response.self, from: data)
+                    if paymentResponse != nil {
+                        self.paymentResponsesData.append(data)
+                    }
+                    
+                    resumeHandler.handleSuccess()
 
-        callApi(request) { (result) in
-            switch result {
-            case .success(let data):
-                resumeHandler.handleSuccess()
-
-            case .failure(let err):
-                resumeHandler.handle(error: err)
+                case .failure(let err):
+                    resumeHandler.handle(error: err)
+                }
             }
-        }
     }
     
     func onResumeError(_ error: Error) {

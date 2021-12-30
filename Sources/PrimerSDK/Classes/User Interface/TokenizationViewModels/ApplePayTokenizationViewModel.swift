@@ -122,10 +122,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let decodedClientToken = state.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PaymentException.missingClientToken
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -161,7 +160,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             throw err
         }
         
-        guard !settings.orderItems.isEmpty else {
+        guard !(settings.orderItems ?? []).isEmpty else {
             let err = PaymentException.missingOrderItems
             _ = ErrorHandler.shared.handle(error: err)
             throw err
@@ -172,23 +171,31 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        
+        if Primer.shared.delegate?.onClientSessionActions != nil {
+            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+        } else {
+            continueTokenizationFlow()
+        }
+    }
+    
+    fileprivate func continueTokenizationFlow() {
         do {
-            try validate()
+            try self.validate()
         } catch {
-            DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: error)
-                self.handleFailedTokenizationFlow(error: error)
-            }
+            self.handle(error: error)
             return
         }
-        
+                
         firstly {
-            tokenize()
+            self.tokenize()
         }
         .done { [unowned self] paymentMethod in
-            self.paymentMethod = paymentMethod
-            
             DispatchQueue.main.async {
+                self.paymentMethod = paymentMethod
+                
                 if Primer.shared.flow.internalSessionFlow.vaulted {
                     Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
                 }
@@ -208,6 +215,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         }
         .catch { err in
             DispatchQueue.main.async {
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
@@ -232,26 +240,30 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             }
         }
     }
+
     
     private func payWithApple(completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        let decodedClientToken = state.decodedClientToken!
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            completion(nil, PrimerError.clientTokenNull)
+            return
+        }
+        
         let countryCode = settings.countryCode!
         let currency = settings.currency!
         let merchantIdentifier = settings.merchantIdentifier!
-        let orderItems = settings.orderItems
+        let orderItems = [
+            try! OrderItem(
+                name: "Total", unitAmount: settings.amount ?? 0, quantity: 1)
+        ]
         
         let applePayRequest = ApplePayRequest(
             currency: currency,
             merchantIdentifier: merchantIdentifier,
             countryCode: countryCode,
-//            supportedNetworks: supportedNetworks,
-            items: orderItems
-//            merchantCapabilities: merchantCapabilities
+            items: (orderItems ?? [])
         )
-        
         
         let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
         if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
@@ -266,6 +278,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
                 let err = AppleException.unableToPresentApplePay
                 _ = ErrorHandler.shared.handle(error: err)
+                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 return completion(nil, err)
             }
@@ -305,10 +318,14 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                 }
             }
             
-            self.willPresentExternalView?()
-            Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
-                self.didPresentExternalView?()
-            })
+            DispatchQueue.main.async {
+                self.willPresentExternalView?()
+                Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
+                    DispatchQueue.main.async {
+                        self.didPresentExternalView?()
+                    }
+                })
+            }
             
         } else {
             log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
@@ -366,13 +383,34 @@ extension ApplePayTokenizationViewModel {
         if #available(iOS 11.0, *) {
             self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
         }
+        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.applePayControllerCompletion = nil
         self.completion?(nil, error)
         self.completion = nil
     }
     
     override func handle(newClientToken clientToken: String) {
-        try? ClientTokenService.storeClientToken(clientToken)
+        do {
+            try ClientTokenService.storeClientToken(clientToken)
+            
+            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+            
+            firstly {
+                configService.fetchConfig()
+            }
+            .done {
+                self.continueTokenizationFlow()
+            }
+            .catch { err in
+                self.handle(error: err)
+            }
+            
+        } catch {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onResumeError?(error)
+            }
+            self.handle(error: error)
+        }
     }
     
     override func handleSuccess() {

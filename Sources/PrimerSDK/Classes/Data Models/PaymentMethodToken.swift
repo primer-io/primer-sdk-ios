@@ -91,8 +91,7 @@ internal extension PaymentMethodToken {
                                           comment: "Expires - Saved card")
                     + " \(expMonth) / \(expYear.suffix(2))",
                 imageName: self.icon,
-                paymentMethodType: self.paymentInstrumentType
-            )
+                paymentMethodType: self.paymentInstrumentType)
         case .payPalBillingAgreement:
             guard let cardholder = self.paymentInstrumentData?.externalPayerInfo?.email else { return nil }
             return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
@@ -105,8 +104,7 @@ internal extension PaymentMethodToken {
                 last4: "",
                 expiry: "",
                 imageName: self.icon,
-                paymentMethodType: self.paymentInstrumentType
-            )
+                paymentMethodType: self.paymentInstrumentType)
         case .apayaToken:
             if let apayaViewModel = Apaya.ViewModel(paymentMethod: self) {
                 return CardButtonViewModel(
@@ -115,8 +113,7 @@ internal extension PaymentMethodToken {
                     last4: "",
                     expiry: "",
                     imageName: self.icon,
-                    paymentMethodType: self.paymentInstrumentType
-                )
+                    paymentMethodType: self.paymentInstrumentType)
             } else {
                 return nil
             }
@@ -131,6 +128,14 @@ struct CardButtonViewModel {
     let network, cardholder, last4, expiry: String
     let imageName: ImageName
     let paymentMethodType: PaymentInstrumentType
+    var surCharge: Int? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        guard let options = state.primerConfiguration?.clientSession?.paymentMethod?.options else { return nil }
+        guard let paymentCardOption = options.filter({ $0["type"] as? String == "PAYMENT_CARD" }).first else { return nil }
+        guard let networks = paymentCardOption["networks"] as? [[String: Any]] else { return nil }
+        guard let tmpNetwork = networks.filter({ ($0["type"] as? String)?.lowercased() == network.lowercased() }).first else { return nil }
+        return tmpNetwork["surcharge"] as? Int
+    }
 }
 
 /**

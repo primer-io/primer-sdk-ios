@@ -17,6 +17,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     
     var config: PaymentMethodConfig { get set }
     var title: String { get }
+    var surcharge: String? { get }
     var position: Int { get set }
     var paymentMethodButton: PrimerButton { get }
     var didStartTokenization: (() -> Void)? { get set }
@@ -27,6 +28,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     func startTokenizationFlow()
     func handleSuccessfulTokenizationFlow()
     func handleFailedTokenizationFlow(error: Error)
+    func presentNativeUI()
 }
 
 internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
@@ -39,10 +41,18 @@ internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
     
     var config: PaymentMethodConfig
-    var completion: TokenizationCompletion?
+    var completion: TokenizationCompletion? {
+        didSet {
+            
+        }
+    }
     var paymentMethod: PaymentMethodToken?
     var didStartTokenization: (() -> Void)?
     internal let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
     
     required init(config: PaymentMethodConfig) {
         self.config = config
@@ -56,6 +66,14 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     @objc
     func startTokenizationFlow() {
         didStartTokenization?()
+        
+        self.completion = { (tok, err) in
+            if let err = err {
+                self.handleFailedTokenizationFlow(error: err)
+            } else {
+                self.handleSuccessfulTokenizationFlow()
+            }
+        }
     }
     
     lazy var title: String = {
@@ -72,105 +90,63 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         }
     }()
     
+    lazy var surcharge: String? = {
+        switch config.type {
+        case .paymentCard:
+            return NSLocalizedString("surcharge-additional-fee",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Additional fee may apply",
+                                     comment: "Additional fee may apply - Surcharge (Label)")
+        default:
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            guard let currency = settings.currency else { return nil }
+            
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            guard let availablePaymentMethods = state.primerConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
+            
+            guard let str = availablePaymentMethods.filter({ $0.type == config.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
+            
+            return "+\(str)"
+        }
+    }()
+    
     var position: Int = 0
     
     lazy var buttonTitle: String? = {
-        switch config.type {
-        case .goCardlessMandate:
-            return NSLocalizedString("payment-method-type-go-cardless",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Bank account",
-                                     comment: "Bank account - Payment Method Type (Go Cardless)")
-        case .googlePay:
-            return nil
-        case .other:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
+        assert(true, "Should be overriden")
+        return nil
     }()
     
     lazy var buttonImage: UIImage? = {
-        switch config.type {
-        case .googlePay:
-            return nil
-        case .goCardlessMandate:
-            return UIImage(named: "rightArrow", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .other:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
+        assert(true, "Should be overriden")
+        return nil
     }()
     
     lazy var buttonColor: UIColor? = {
-        switch config.type {
-        case .googlePay:
-            return nil
-        case .goCardlessMandate:
-            return .white
-        case .other:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
+        assert(true, "Should be overriden")
+        return UIColor.white
     }()
     
     lazy var buttonTitleColor: UIColor? = {
-        switch config.type {
-        case .goCardlessMandate:
-            return theme.colorTheme.text1
-        case .googlePay,
-                .other:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
+        assert(true, "Should be overriden")
+        return UIColor.black
     }()
     
     lazy var buttonBorderWidth: CGFloat = {
-        switch config.type {
-        case .goCardlessMandate:
-            return 1.0
-        case .googlePay,
-                .other:
-            return 0.0
-        default:
-            assert(true, "Shouldn't end up in here")
-            return 0.0
-        }
+        assert(true, "Should be overriden")
+        return 0.0
     }()
     
     lazy var buttonBorderColor: UIColor? = {
-        switch config.type {
-        case .goCardlessMandate:
-            return theme.colorTheme.text1
-        case .googlePay,
-                .other:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
+        assert(true, "Should be overriden")
+        return UIColor.black
     }()
     
-    lazy var buttonTintColor: UIColor? = {
-        switch config.type {
-        case .goCardlessMandate:
-            return theme.colorTheme.text1
-        case .googlePay,
-                .other:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
+    var buttonTintColor: UIColor? {
+        assert(true, "Should be overriden")
+        return nil
+    }
     
     lazy var buttonFont: UIFont? = {
         return UIFont.systemFont(ofSize: 17.0, weight: .medium)
@@ -182,6 +158,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     lazy var paymentMethodButton: PrimerButton = {
         let paymentMethodButton = PrimerButton()
+        paymentMethodButton.accessibilityIdentifier = config.type.rawValue
         paymentMethodButton.clipsToBounds = true
         paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
@@ -199,6 +176,11 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         paymentMethodButton.addTarget(self, action: #selector(startTokenizationFlow), for: .touchUpInside)
         return paymentMethodButton
     }()
+    
+    @objc
+    func presentNativeUI() {
+        assert(true, "Should be overriden")
+    }
     
     func handleSuccessfulTokenizationFlow() {
         Primer.shared.primerRootVC?.handleSuccess()
@@ -221,6 +203,39 @@ extension PaymentMethodTokenizationViewModel {
     
     func handleSuccess() {
         assert(true, "\(self.self).\(#function) should be overriden")
+    }
+}
+
+private extension UIColor {
+    var hex: String? {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        let multiplier = CGFloat(255.999999)
+
+        guard self.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+            return nil
+        }
+
+        if alpha == 1.0 {
+            return String(
+                format: "#%02lX%02lX%02lX",
+                Int(red * multiplier),
+                Int(green * multiplier),
+                Int(blue * multiplier)
+            )
+        }
+        else {
+            return String(
+                format: "#%02lX%02lX%02lX%02lX",
+                Int(red * multiplier),
+                Int(green * multiplier),
+                Int(blue * multiplier),
+                Int(alpha * multiplier)
+            )
+        }
     }
 }
 

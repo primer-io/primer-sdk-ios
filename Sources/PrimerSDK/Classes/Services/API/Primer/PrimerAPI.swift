@@ -23,6 +23,7 @@ enum PrimerAPI: Endpoint {
     case klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
     case apayaCreateSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest)
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest)
+    case adyenBanksList(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest)
     
     // 3DS
     case threeDSBeginRemoteAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
@@ -50,7 +51,8 @@ internal extension PrimerAPI {
              .klarnaCreatePaymentSession(let clientToken, _),
              .klarnaCreateCustomerToken(let clientToken, _),
              .klarnaFinalizePaymentSession(let clientToken, _),
-             .apayaCreateSession(let clientToken, _):
+             .apayaCreateSession(let clientToken, _),
+             .adyenBanksList(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .vaultDeletePaymentMethod(let clientToken, _),
@@ -99,6 +101,8 @@ internal extension PrimerAPI {
             return "/3ds/\(threeDSTokenId)/continue"
         case .apayaCreateSession:
             return "/session-token"
+        case .adyenBanksList:
+            return "/adyen/checkout"
         case .poll:
             return ""
         }
@@ -130,7 +134,8 @@ internal extension PrimerAPI {
              .tokenizePaymentMethod,
              .threeDSBeginRemoteAuth,
              .threeDSContinueRemoteAuth,
-             .apayaCreateSession:
+             .apayaCreateSession,
+             .adyenBanksList:
             return .post
         case .poll(_, let url):
             return .get
@@ -145,7 +150,6 @@ internal extension PrimerAPI {
         switch self {
         case .directDebitCreateMandate(let clientToken, _),
              .vaultDeletePaymentMethod(let clientToken, _),
-             .fetchConfiguration(let clientToken),
              .vaultFetchPaymentMethods(let clientToken),
              .payPalStartOrderSession(let clientToken, _),
              .payPalStartBillingAgreementSession(let clientToken, _),
@@ -156,14 +160,29 @@ internal extension PrimerAPI {
              .tokenizePaymentMethod(let clientToken, _),
              .threeDSBeginRemoteAuth(let clientToken, _, _),
              .threeDSContinueRemoteAuth(let clientToken, _),
-             .apayaCreateSession(let clientToken, _):
+             .apayaCreateSession(let clientToken, _),
+             .adyenBanksList(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
+        case .fetchConfiguration(let clientToken):
+            tmpHeaders["X-Api-Version"] = "2021-10-19"
+            
+            if let token = clientToken.accessToken {
+                tmpHeaders["Primer-Client-Token"] = token
+            }
+            
         case .poll(let clientToken, _):
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
+        }
+        
+        switch self {
+        case .fetchConfiguration:
+            tmpHeaders["X-Api-Version"] = "2021-10-19"
+        default:
+            break
         }
 
         return tmpHeaders
@@ -203,11 +222,15 @@ internal extension PrimerAPI {
                 return try? JSONEncoder().encode(request)
             } else if let request = paymentMethodTokenizationRequest as? AsyncPaymentMethodTokenizationRequest {
                 return try? JSONEncoder().encode(request)
+            } else if let request = paymentMethodTokenizationRequest as? BankSelectorTokenizationRequest {
+                return try? JSONEncoder().encode(request)
             } else {
                 return nil
             }
         case .threeDSBeginRemoteAuth(_, _, let threeDSecureBeginAuthRequest):
             return try? JSONEncoder().encode(threeDSecureBeginAuthRequest)
+        case .adyenBanksList(_, let request):
+            return try? JSONEncoder().encode(request)
         case .vaultDeletePaymentMethod,
              .fetchConfiguration,
              .vaultFetchPaymentMethods,

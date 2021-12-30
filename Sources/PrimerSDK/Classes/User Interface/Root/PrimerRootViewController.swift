@@ -13,7 +13,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     var backgroundView = PrimerView()
-    var childView: UIView = UIView()
+    var childView: PrimerView = PrimerView()
     var childViewHeightConstraint: NSLayoutConstraint!
     var childViewBottomConstraint: NSLayoutConstraint!
     
@@ -26,6 +26,8 @@ internal class PrimerRootViewController: PrimerViewController {
     private lazy var availableScreenHeight: CGFloat = {
         return UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
     }()
+    
+    internal var swipeGesture: UISwipeGestureRecognizer?
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -45,7 +47,11 @@ internal class PrimerRootViewController: PrimerViewController {
         
         NotificationCenter.default.addObserver(self,
                selector: #selector(self.keyboardNotification(notification:)),
-               name: UIResponder.keyboardWillChangeFrameNotification,
+               name: UIResponder.keyboardWillShowNotification,
+               object: nil)
+        NotificationCenter.default.addObserver(self,
+               selector: #selector(self.keyboardNotification(notification:)),
+               name: UIResponder.keyboardWillHideNotification,
                object: nil)
         
         if #available(iOS 13.0, *) {
@@ -68,9 +74,9 @@ internal class PrimerRootViewController: PrimerViewController {
         
         view.addSubview(childView)
         
-        childView.backgroundColor = theme.colorTheme.main1
+        childView.backgroundColor = theme.view.backgroundColor
         childView.isUserInteractionEnabled = true
-        nc.view.backgroundColor = theme.colorTheme.main1
+        nc.view.backgroundColor = theme.view.backgroundColor
         
         childView.translatesAutoresizingMaskIntoConstraints = false
         childView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -82,21 +88,20 @@ internal class PrimerRootViewController: PrimerViewController {
         childViewBottomConstraint.isActive = true
         view.layoutIfNeeded()
         
-        
-
         let tapGesture = UITapGestureRecognizer(
             target: self,
             action: #selector(dismissGestureRecognizerAction))
         tapGesture.delegate = self
         backgroundView.addGestureRecognizer(tapGesture)
         
-        let swipeGesture = UISwipeGestureRecognizer(
+        let swipDown = UISwipeGestureRecognizer(
             target: self,
             action: #selector(dismissGestureRecognizerAction)
         )
-        swipeGesture.delegate = self
-        swipeGesture.direction = .down
-        childView.addGestureRecognizer(swipeGesture)
+        swipDown.delegate = self
+        swipDown.direction = .down
+        swipeGesture = swipDown
+        childView.addGestureRecognizer(swipDown)
         
         render()
     }
@@ -107,7 +112,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     func blurBackground() {
         UIView.animate(withDuration: presentationDuration) {
-            self.backgroundView.backgroundColor = .black.withAlphaComponent(0.4)
+            self.backgroundView.backgroundColor = self.theme.blurView.backgroundColor
         }
     }
     
@@ -134,7 +139,6 @@ internal class PrimerRootViewController: PrimerViewController {
                     let pvmvc = PrimerVaultManagerViewController()
                     self?.show(viewController: pvmvc)
 
-                    
                 case .completeDirectCheckout:
                     self?.blurBackground()
                     self?.presentPaymentMethod(type: .paymentCard)
@@ -153,7 +157,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     
                 case .addDirectDebitToVault:
                     break
-                    
+
                 case .addKlarnaToVault:
                     self?.presentPaymentMethod(type: .klarna)
                     
@@ -178,6 +182,9 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .checkoutWithAsyncPaymentMethod(let paymentMethodType):
                     self?.presentPaymentMethod(type: paymentMethodType)
                     
+                case .checkoutWithAdyenBank:
+                    self?.presentPaymentMethod(type: .adyenDotPay)
+                    
                 case .none:
                     break
 
@@ -195,20 +202,44 @@ internal class PrimerRootViewController: PrimerViewController {
         view.layoutIfNeeded()
     }
     
+    var originalChildViewHeight: CGFloat?
+    
     @objc func keyboardNotification(notification: NSNotification) {
         guard let userInfo = notification.userInfo else { return }
         
         let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
         let endFrameY = endFrame?.origin.y ?? 0
-        let duration:TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
+        let duration: TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
         let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
         let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
         let animationCurve:UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
         
-        if endFrameY >= UIScreen.main.bounds.size.height {
+        let childViewHeight = childView.frame.size.height
+        
+        
+        switch notification.name {
+        case UIResponder.keyboardWillHideNotification:
             childViewBottomConstraint.constant = 0.0
-        } else {
-            childViewBottomConstraint.constant = -(endFrame?.size.height ?? 0.0)
+            
+            if let originalChildViewHeight = originalChildViewHeight {
+                childViewHeightConstraint.constant = originalChildViewHeight
+            }
+            
+        case UIResponder.keyboardWillShowNotification:
+            if endFrameY >= availableScreenHeight {
+                childViewBottomConstraint.constant = 0.0
+            } else {
+                childViewBottomConstraint.constant = -(endFrame?.size.height ?? 0.0)
+            }
+            
+            if childViewHeight > (availableScreenHeight - (endFrame?.height ?? 0)) {
+                originalChildViewHeight = childViewHeight
+                childViewHeightConstraint.constant = (availableScreenHeight - (endFrame?.height ?? 0))
+                
+            }
+            
+        default:
+            return
         }
         
         UIView.animate(
@@ -216,7 +247,9 @@ internal class PrimerRootViewController: PrimerViewController {
             delay: TimeInterval(0),
             options: animationCurve,
             animations: { self.view.layoutIfNeeded() },
-            completion: nil)
+            completion: { finished in
+                
+            })
     }
     
     @objc
@@ -248,7 +281,7 @@ internal class PrimerRootViewController: PrimerViewController {
         let isPresented: Bool = self.nc.viewControllers.isEmpty
         
         let cvc = PrimerContainerViewController(childViewController: viewController)
-        cvc.view.backgroundColor = self.theme.colorTheme.main1
+        cvc.view.backgroundColor = self.theme.view.backgroundColor
         
         // Hide back button on some cases
         if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
@@ -335,10 +368,27 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
     
+    func resetConstraint(for viewController: UIViewController) {
+        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height) > self.availableScreenHeight ? self.availableScreenHeight : (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height)
+        self.childViewHeightConstraint.isActive = false
+        self.childViewHeightConstraint?.constant = navigationControllerHeight + self.bottomPadding
+        self.childViewHeightConstraint.isActive = true
+        
+        UIView.animate(withDuration: self.presentationDuration, delay: 0, options: .curveEaseInOut) {
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+
+        }
+    }
+    
     internal func popViewController() {
         guard nc.viewControllers.count > 1,
               let viewController = (nc.viewControllers[nc.viewControllers.count-2] as? PrimerContainerViewController)?.childViewController else {
             return
+        }
+        
+        if self.nc.viewControllers.count == 2 {
+            (self.nc.viewControllers.last as? PrimerContainerViewController)?.mockedNavigationBar.hidesBackButton = true
         }
         
         let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc.navigationBar.bounds.height)
@@ -373,8 +423,10 @@ internal class PrimerRootViewController: PrimerViewController {
                 show = false
             }
             
+            let height = self.nc.viewControllers.first?.view.bounds.height ?? 300
+            
             if show {
-                let lvc = PrimerLoadingViewController(withHeight: 300)
+                let lvc = PrimerLoadingViewController(withHeight: height)
                 self.show(viewController: lvc)
             }
         }
@@ -385,7 +437,12 @@ internal class PrimerRootViewController: PrimerViewController {
 extension PrimerRootViewController {
     
     func presentPaymentMethod(type: PaymentMethodConfigType) {
-        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else { return }
+        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
+            let err = PrimerError.misconfiguredPaymentMethod
+            Primer.shared.delegate?.checkoutFailed?(with: err)
+            return
+        }
+        
         paymentMethodTokenizationViewModel.didStartTokenization = {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         }
@@ -452,7 +509,6 @@ extension PrimerRootViewController {
             })
         }
     }
-    
 }
 
 extension PrimerRootViewController: UIGestureRecognizerDelegate {
