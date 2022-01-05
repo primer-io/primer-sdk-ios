@@ -57,6 +57,8 @@ struct PrimerConfiguration: Codable {
         self.checkoutModules = moduleThrowables.compactMap({ $0.value })
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
         
+        var hasSetCardPaymentSurcharge: Bool = false
+        
         if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
             for paymentMethodOption in options {
                 if let type = paymentMethodOption["type"] as? String {
@@ -68,7 +70,7 @@ struct PrimerConfiguration: Codable {
                             guard let type = network["type"] as? String,
                             let surcharge = network["surcharge"] as? Int
                             else { continue }
-                            
+                            hasSetCardPaymentSurcharge = true
                         }
                     } else if let surcharge = paymentMethodOption["surcharge"] as? Int,
                               let paymentMethod = self.paymentMethods?.filter({ $0.type.rawValue == type }).first
@@ -81,7 +83,7 @@ struct PrimerConfiguration: Codable {
         }
         
         if let paymentMethod = self.paymentMethods?.filter({ $0.type == PaymentMethodConfigType.paymentCard }).first {
-            paymentMethod.hasUnknownSurcharge = true
+            paymentMethod.hasUnknownSurcharge = hasSetCardPaymentSurcharge
             paymentMethod.surcharge = nil
         }
     }
