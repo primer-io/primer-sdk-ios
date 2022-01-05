@@ -157,6 +157,11 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = NSLocalizedString("vaulted-payment-methods-screen-title",
+                                       tableName: nil,
+                                       bundle: Bundle.primerResources,
+                                       value: "Saved payment methods",
+                                       comment: "Saved payment methods - Title on vaulted payment methods screen")
         
         let uiEvent = Analytics.Event(
             eventType: .ui,
