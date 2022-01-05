@@ -49,7 +49,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var expiryDateField: PrimerExpiryDateFieldView
     public var cvvField: PrimerCVVFieldView
     public var cardholderField: PrimerCardholderNameFieldView?
-    public var zipCodeField: PrimerZipCodeFieldView?
+    public var postalCodeField: PrimerPostalCodeFieldView?
     
     private(set) public var flow: PaymentFlow
     public var delegate: CardComponentsManagerDelegate?
@@ -76,13 +76,13 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
         cardholderNameField: PrimerCardholderNameFieldView?,
-        zipCodeField: PrimerZipCodeFieldView?
+        postalCodeField: PrimerPostalCodeFieldView?
     ) {
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
-        self.zipCodeField = zipCodeField
+        self.postalCodeField = postalCodeField
         
         super.init()
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
@@ -220,9 +220,9 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             }
         }
         
-        if let zipCodeField = zipCodeField {
-            if !zipCodeField.zipCode.isValidZipCode {
-                errors.append(PrimerError.invalidZipCode)
+        if let postalCodeField = postalCodeField {
+            if !postalCodeField.postalCode.isValidPostalCode {
+                errors.append(PrimerError.invalidPostalCode)
             }
         }
         
@@ -365,7 +365,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var cardholderField: PrimerCardholderNameFieldView?
     
-    var zipCodeField: PrimerZipCodeFieldView?
+    var postalCodeField: PrimerPostalCodeFieldView?
     
     var flow: PaymentFlow
     
@@ -392,7 +392,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
         cardholderNameField: PrimerCardholderNameFieldView?,
-        zipCodeField: PrimerZipCodeFieldView
+        postalCodeField: PrimerPostalCodeFieldView
     ) {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         self.flow = flow
@@ -400,7 +400,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
         self.cardholderField = cardholderNameField
-        self.zipCodeField = zipCodeField
+        self.postalCodeField = postalCodeField
         
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
@@ -420,7 +420,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
             expiryDateField: PrimerExpiryDateFieldView(),
             cvvField: PrimerCVVFieldView(),
             cardholderNameField: PrimerCardholderNameFieldView(),
-            zipCodeField: PrimerZipCodeFieldView()
+            postalCodeField: PrimerPostalCodeFieldView()
         )
         
         try? ClientTokenService.storeClientToken(clientToken)

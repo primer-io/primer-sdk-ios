@@ -40,7 +40,7 @@ struct PrimerConfiguration: Codable {
         return clientSession != nil
     }
     
-    var requireZipCode: Bool {
+    var requirePostalCode: Bool {
         checkoutModules?
             .first { $0.type == "BILLING_ADDRESS" }?
             .options?["postalCode"] ?? false

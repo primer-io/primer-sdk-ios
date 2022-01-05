@@ -399,7 +399,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case directDebitSessionFailed
     case intentNotSupported(intent: PrimerSessionIntent, paymentMethodType: PaymentMethodConfigType)
     
-    case invalidCardnumber, invalidExpiryDate, invalidCVV, invalidCardholderName, invalidZipCode
+    case invalidCardnumber, invalidExpiryDate, invalidCVV, invalidCardholderName, invalidPostalCode
 
     public static var errorDomain: String = "primer"
 
@@ -513,7 +513,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return 3102
         case .invalidCardholderName:
             return 3103
-        case .invalidZipCode:
+        case .invalidPostalCode:
             return 3104
 
         case .intentNotSupported:
@@ -852,12 +852,12 @@ public enum PrimerError: PrimerErrorProtocol {
                                      value: "Invalid cardholder name",
                                      comment: "Invalid cardholder name - Primer error message")
             
-        case .invalidZipCode:
-             return NSLocalizedString("primer-error-message-invalid-zip-code",
+        case .invalidPostalCode:
+             return NSLocalizedString("primer-error-message-invalid-postal-code",
                                       tableName: nil,
                                       bundle: Bundle.primerResources,
-                                      value: "Invalid zip code",
-                                      comment: "Invalid zip code - Primer error message")
+                                      value: "Invalid postal code",
+                                      comment: "Invalid postal code - Primer error message")
 
             
         case .currencyMissing:
