@@ -57,7 +57,7 @@ internal extension PrimerNibView {
             nibName = "PrimerTextFieldView"
         } else if nibName == "PrimerCardholderNameFieldView" {
            nibName = "PrimerTextFieldView"
-        } else if nibName == "PrimerZipCodeFieldView" {
+        } else if nibName == "PrimerPostalCodeFieldView" {
             nibName = "PrimerTextFieldView"
         }
         
