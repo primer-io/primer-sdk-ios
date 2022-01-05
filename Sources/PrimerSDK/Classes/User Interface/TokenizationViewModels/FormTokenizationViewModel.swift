@@ -111,6 +111,15 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return 4.0
     }()
     
+    private var isCardholderNameFieldEnabled: Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        if (state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName == false {
+            return false
+        } else {
+            return true
+        }
+    }
+    
     lazy var cardNumberField: PrimerCardNumberFieldView = {
         let cardNumberField = PrimerCardNumberFieldView()
         cardNumberField.placeholder = "4242 4242 4242 4242"
@@ -145,7 +154,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return cvvField
     }()
     
-    lazy var cardholderNameField: PrimerCardholderNameFieldView = {
+    lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
+        if !isCardholderNameFieldEnabled { return nil }
         let cardholderNameField = PrimerCardholderNameFieldView()
         cardholderNameField.placeholder = "John Smith"
         cardholderNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
@@ -195,8 +205,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cvvContainerView.tintColor = theme.input.border.color(for: .selected)
         return cvvContainerView
     }()
-    
-    internal lazy var cardholderNameContainerView: PrimerCustomFieldView = {
+    internal lazy var cardholderNameContainerView: PrimerCustomFieldView? = {
+        if !isCardholderNameFieldEnabled { return nil }
         let cardholderNameContainerView = PrimerCustomFieldView()
         cardholderNameContainerView.fieldView = cardholderNameField
         cardholderNameContainerView.placeholderText = "Name"
@@ -500,7 +510,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
             } else if primerTextFieldView is PrimerExpiryDateFieldView {
                 _ = cvvField.becomeFirstResponder()
             } else if primerTextFieldView is PrimerCVVFieldView {
-                _ = cardholderNameField.becomeFirstResponder()
+                _ = cardholderNameField?.becomeFirstResponder()
             }
         }
     }
@@ -515,7 +525,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
             } else if primerTextFieldView is PrimerCVVFieldView {
                 cvvContainerView.errorText = "Invalid CVV"
             } else if primerTextFieldView is PrimerCardholderNameFieldView {
-                cardholderNameContainerView.errorText = "Invalid name"
+                cardholderNameContainerView?.errorText = "Invalid name"
             } else if primerTextFieldView is PrimerPostalCodeFieldView {
                 postalCodeContainerView.errorText = "\(localPostalCodeTitle) is required" // todo: localise if UK, etc.
             }
@@ -528,7 +538,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
             } else if primerTextFieldView is PrimerCVVFieldView {
                 cvvContainerView.errorText = nil
             } else if primerTextFieldView is PrimerCardholderNameFieldView {
-                cardholderNameContainerView.errorText = nil
+                cardholderNameContainerView?.errorText = nil
             } else if primerTextFieldView is PrimerPostalCodeFieldView {
                 postalCodeContainerView.errorText = nil
             }
@@ -540,7 +550,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
             cardNumberField.isTextValid,
             expiryDateField.isTextValid,
             cvvField.isTextValid,
-            cardholderNameField.isTextValid,
+            cardholderNameField?.isTextValid,
         ]
 
         if requirePostalCode { validations.append(postalCodeField.isTextValid) }
