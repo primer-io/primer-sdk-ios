@@ -46,7 +46,7 @@ internal class ErrorHandler {
                     severity: .error))
         }
         
-        Analytics.Service.record(event: event)
+//        Analytics.Service.record(event: event)
 
         return false
     }
