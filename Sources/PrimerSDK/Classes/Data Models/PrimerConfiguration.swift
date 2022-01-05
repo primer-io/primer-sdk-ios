@@ -66,7 +66,6 @@ struct PrimerConfiguration: Codable {
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
         let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
         self.checkoutModules = moduleThrowables.compactMap({ $0.value })
-
         
         if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
             for paymentMethodOption in options {
@@ -144,10 +143,75 @@ extension PrimerConfiguration {
         struct CardInformationOptions: CheckoutModuleOptions {
             let cardHolderName: Bool?
             let saveCardCheckbox: Bool?
+            
+            private enum CodingKeys: String, CodingKey {
+                case cardHolderName
+                case saveCardCheckbox
+            }
+            
+            init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                self.cardHolderName = (try? container.decode(Bool?.self, forKey: .cardHolderName)) ?? nil
+                self.saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
+                
+                if self.cardHolderName == nil && self.saveCardCheckbox == nil {
+                    let err = ParserError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    throw err
+                }
+            }
         }
         
         struct PostalCodeOptions: CheckoutModuleOptions {
-            let postalCode: Bool
+            let firstName: Bool?
+            let lastName: Bool?
+            let city: Bool?
+            let postalCode: Bool?
+            let addressLine1: Bool?
+            let addressLine2: Bool?
+            let countryCode: Bool?
+            let phoneNumber: Bool?
+            let state: Bool?
+            
+            private enum CodingKeys: String, CodingKey {
+                case firstName
+                case lastName
+                case city
+                case postalCode
+                case addressLine1
+                case addressLine2
+                case countryCode
+                case phoneNumber
+                case state
+            }
+            
+            init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                self.firstName = (try? container.decode(Bool?.self, forKey: .firstName)) ?? nil
+                self.lastName = (try? container.decode(Bool?.self, forKey: .lastName)) ?? nil
+                self.city = (try? container.decode(Bool?.self, forKey: .city)) ?? nil
+                self.postalCode = (try? container.decode(Bool?.self, forKey: .postalCode)) ?? nil
+                self.addressLine1 = (try? container.decode(Bool?.self, forKey: .addressLine1)) ?? nil
+                self.addressLine2 = (try? container.decode(Bool?.self, forKey: .addressLine2)) ?? nil
+                self.countryCode = (try? container.decode(Bool?.self, forKey: .countryCode)) ?? nil
+                self.phoneNumber = (try? container.decode(Bool?.self, forKey: .phoneNumber)) ?? nil
+                self.state = (try? container.decode(Bool?.self, forKey: .state)) ?? nil
+                
+                if self.firstName == nil &&
+                    self.lastName == nil &&
+                    self.city == nil &&
+                    self.postalCode == nil &&
+                    self.addressLine1 == nil &&
+                    self.addressLine2 == nil &&
+                    self.countryCode == nil &&
+                    self.phoneNumber == nil &&
+                    self.state == nil
+                {
+                    let err = ParserError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    throw err
+                }
+            }
         }
         
         init(from decoder: Decoder) throws {
@@ -155,9 +219,9 @@ extension PrimerConfiguration {
             self.type = try container.decode(String.self, forKey: .type)
             self.requestUrlStr = (try? container.decode(String?.self, forKey: .requestUrlStr)) ?? nil
             
-            if let options = (try? container.decode(CardInformationOptions?.self, forKey: .options)) {
+            if let options = (try? container.decode(CardInformationOptions.self, forKey: .options)) {
                 self.options = options
-            } else if let options = (try? container.decode(PostalCodeOptions?.self, forKey: .options)) {
+            } else if let options = (try? container.decode(PostalCodeOptions.self, forKey: .options)) {
                 self.options = options
             } else {
                 self.options = nil
