@@ -41,7 +41,9 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            validation = .invalid(PrimerError.invalidPostalCode)
+            let err = ValidationError.invalidPostalCode(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            validation = .invalid(err)
         default:
             validation = .notAvailable
         }

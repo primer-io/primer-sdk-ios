@@ -44,17 +44,31 @@ class PrimerCardFormViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.formPaymentMethodTokenizationViewModel.config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+        
         formPaymentMethodTokenizationViewModel.onConfigurationFetched = onConfigurationFetched
         
         title = Content.PrimerCardFormView.title
         view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
         
-        configureExpiryAndCvvRow()
-        
+        renderCardnumberRow()
+        renderExpiryAndCvvRow()
         if (formPaymentMethodTokenizationViewModel.requirePostalCode) {
-            configurePostalCodeFieldRow()
+            renderPostalCodeFieldRow()
         }
         
         // separator view
@@ -64,11 +78,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
         verticalStackView.addArrangedSubview(separatorView)
         
         // submit button
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
-        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
-        
-        _ = formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
-        
+        renderSubmitButton()
+                
         formPaymentMethodTokenizationViewModel.completion = { (paymentMethodToken, err) in
             if let err = err {
                 Primer.shared.primerRootVC?.handle(error: err)
@@ -80,11 +91,14 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
+        _ = formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
+    }
+    
+    private func renderCardnumberRow() {
+        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
     }
 
-    private func configureExpiryAndCvvRow() {
-        
+    private func renderExpiryAndCvvRow() {
         expiryAndCvvRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.expiryDateContainerView)
         expiryAndCvvRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.cvvContainerView)
         verticalStackView.addArrangedSubview(expiryAndCvvRow)
@@ -113,10 +127,15 @@ class PrimerCardFormViewController: PrimerFormViewController {
         }
     }
     
-    private func configurePostalCodeFieldRow() {
+    private func renderPostalCodeFieldRow() {
         postalCodeFieldRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.postalCodeContainerView)
         postalCodeFieldRow.addArrangedSubview(PrimerView())
         verticalStackView.addArrangedSubview(postalCodeFieldRow)
+    }
+    
+    private func renderSubmitButton() {
+        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
+        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
     }
     
     private func onConfigurationFetched() {

@@ -12,15 +12,23 @@ private let _Primer = Primer()
 public class Primer {
     
     // MARK: - PROPERTIES
-    
+    private var primerWindow: UIWindow?
     public var delegate: PrimerDelegate? // TODO: should this be weak?
     private(set) var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
+    internal var primerRootVC: PrimerRootViewController?
+    internal let sdkSessionId = UUID().uuidString
+    internal var checkoutSessionId: String?
+    private var timingEventId: String?
 
     // MARK: - INITIALIZATION
 
     public static var shared: Primer {
         return _Primer
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     fileprivate init() {
@@ -30,12 +38,15 @@ public class Primer {
         print("Failed to import Primer3DS")
         #endif
         
+        NotificationCenter.default.removeObserver(self)
+        NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
+        
         DispatchQueue.main.async { [weak self] in
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
+            try! Analytics.Service.deleteEvents()
         }
-        
-        
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -56,16 +67,9 @@ public class Primer {
         return false
     }
     
-    var primerRootVC: PrimerRootViewController?
-    
-    private var primerWindow: UIWindow?
-    
-    public func testAutolayout() {
-        primerWindow = UIWindow(frame: UIScreen.main.bounds)
-        primerWindow!.rootViewController = primerRootVC
-        primerWindow!.backgroundColor = UIColor.clear
-        primerWindow!.windowLevel = UIWindow.Level.normal
-        primerWindow!.makeKeyAndVisible()
+    @objc
+    private func onAppStateChange() {
+        Analytics.Service.sync()
     }
     
     /**
@@ -91,6 +95,11 @@ public class Primer {
         DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
+        
+        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        ErrorHandler.handle(error: err)
+        let nsErr = err as NSError
+        print("\(nsErr.domain) \(nsErr.code) \(nsErr.localizedDescription)\n\(err.localizedDescription)")
     }
 
     // MARK: - CONFIGURATION
@@ -114,6 +123,13 @@ public class Primer {
                 DependencyContainer.register(theme as PrimerThemeProtocol)
                 DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
             }
+            
+            let event = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: nil))
+            Analytics.Service.record(event: event)
         }
     }
 
@@ -126,6 +142,16 @@ public class Primer {
      1.4.0
      */
     public func setFormTopTitle(_ text: String, for formType: PrimerFormType) {
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "title": text,
+                    "formType": formType.rawValue
+                ]))
+        Analytics.Service.record(event: event)
+        
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
             let theme = themeProtocol as! PrimerTheme
@@ -142,6 +168,16 @@ public class Primer {
      1.4.0
      */
     public func setFormMainTitle(_ text: String, for formType: PrimerFormType) {
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "title": text,
+                    "formType": formType.rawValue
+                ]))
+        Analytics.Service.record(event: event)
+        
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
             let theme = themeProtocol as! PrimerTheme
@@ -178,10 +214,43 @@ public class Primer {
      */
     @available(*, deprecated, message: "Use showUniversalCheckout or showVaultManager instead.")
     public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "flow": flow.internalSessionFlow.rawValue
+                ]))
+        Analytics.Service.record(event: event)
+        
         show(flow: flow)
     }
     
     public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil) {
+        checkoutSessionId = UUID().uuidString
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "flow": PrimerInternalSessionFlow.checkout.rawValue
+                ]))
+        
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        
+        self.timingEventId = UUID().uuidString
+        let timingEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: self.timingEventId!))
+        
+        Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
+        
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
         }
@@ -191,6 +260,30 @@ public class Primer {
     }
     
     public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
+        checkoutSessionId = UUID().uuidString
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "flow": PrimerInternalSessionFlow.vault.rawValue
+                ]))
+        
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        
+        self.timingEventId = UUID().uuidString
+        let timingEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: self.timingEventId!))
+        
+        Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
+        
         if let clientToken = clientToken {
             try? ClientTokenService.storeClientToken(clientToken)
         }
@@ -201,6 +294,8 @@ public class Primer {
     
     // swiftlint:disable cyclomatic_complexity
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
+        checkoutSessionId = UUID().uuidString
+        
         switch (paymentMethod, intent) {
         case (.adyenAlipay, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenAlipay)
@@ -319,10 +414,32 @@ public class Primer {
             (.payNLPayconiq, .vault),
             (.payNLGiropay, .vault),
             (.other, _):
-            let err = PrimerError.intentNotSupported(intent: intent, paymentMethodType: paymentMethod)
+            let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             return
         }
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "flow": PrimerInternalSessionFlow.vault.rawValue
+                ]))
+        
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        
+        self.timingEventId = UUID().uuidString
+        let timingEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: self.timingEventId!))
+        Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
         presentingViewController = viewController
         show(flow: flow!)
@@ -338,6 +455,13 @@ public class Primer {
      1.4.0
      */
     public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: nil))
+        Analytics.Service.record(event: event)
+        
         DispatchQueue.main.async {
             let externalViewModel: ExternalViewModelProtocol = DependencyContainer.resolve()
             externalViewModel.fetchVaultedPaymentMethods(completion)
@@ -346,6 +470,23 @@ public class Primer {
 
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: nil))
+        
+        let timingEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .end,
+                id: self.timingEventId))
+        
+        Analytics.Service.record(events: [sdkEvent, timingEvent])
+        
+        Analytics.Service.sync()
+        
+        checkoutSessionId = nil
         flow = nil
         ClientTokenService.resetClientToken()
         
@@ -361,6 +502,15 @@ public class Primer {
     
     public func show(flow: PrimerSessionFlow) {
         self.flow = flow
+        
+        let event = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "flow": flow.internalSessionFlow.rawValue
+                ]))
+        Analytics.Service.record(event: event)
         
         DispatchQueue.main.async {
             if self.primerRootVC == nil {

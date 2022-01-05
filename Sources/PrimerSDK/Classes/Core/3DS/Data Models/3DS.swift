@@ -248,7 +248,8 @@ public struct ThreeDS {
             } else if let threeDSMethodAPIResponse = try? container.decode(ThreeDS.MethodAPIResponse.self, forKey: .authentication) {
                 authentication = threeDSMethodAPIResponse
             }  else {
-                let err = ThreeDSError.failedToParseResponse
+                let err = ParserError.failedToDecode(message: "ThreeDS.BeginAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
                 throw err
             }
             

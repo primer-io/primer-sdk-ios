@@ -575,7 +575,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyDic: [String: Any] = [
-            //            "id": transactionResponse.id,
             "resumeToken": clientToken
         ]
         

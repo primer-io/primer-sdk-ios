@@ -4,22 +4,23 @@ import Foundation
 
 struct DecodedClientToken: Codable {
     var accessToken: String?
+    var analyticsUrl: String?
+    var configurationUrl: String?
+    var coreUrl: String?
+    var env: String?
     var exp: Int?
     var expDate: Date? {
         guard let exp = exp else { return nil }
         return Date(timeIntervalSince1970: TimeInterval(exp))
     }
-    var configurationUrl: String?
+    var intent: String?
     var paymentFlow: String?
+    var pciUrl: String?
+    var redirectUrl: String?
+    var statusUrl: String?
     var threeDSecureInitUrl: String?
     var threeDSecureToken: String?
-    var coreUrl: String?
-    var pciUrl: String?
-    var env: String?
-    var intent: String?
-    var statusUrl: String?
-    var redirectUrl: String?
-    
+
     var isValid: Bool {
         do {
             try validate()
@@ -27,28 +28,6 @@ struct DecodedClientToken: Codable {
         } catch {
             return false
         }
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case accessToken, exp, configurationUrl, paymentFlow, threeDSecureInitUrl, threeDSecureToken, coreUrl, pciUrl,
-             env, intent, statusUrl, redirectUrl
-    }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        accessToken = (try? container.decode(String.self, forKey: .accessToken)) ?? nil
-        configurationUrl = (try? container.decode(String.self, forKey: .configurationUrl)) ?? nil
-        paymentFlow = (try? container.decode(String.self, forKey: .paymentFlow)) ?? nil
-        threeDSecureInitUrl = (try? container.decode(String.self, forKey: .threeDSecureInitUrl)) ?? nil
-        threeDSecureToken = (try? container.decode(String.self, forKey: .threeDSecureToken)) ?? nil
-        coreUrl = (try? container.decode(String.self, forKey: .coreUrl)) ?? nil
-        pciUrl = (try? container.decode(String.self, forKey: .pciUrl)) ?? nil
-        env = (try? container.decode(String.self, forKey: .env)) ?? nil
-        intent = (try? container.decode(String.self, forKey: .intent)) ?? nil
-        statusUrl = (try? container.decode(String.self, forKey: .statusUrl)) ?? nil
-        redirectUrl = (try? container.decode(String.self, forKey: .redirectUrl)) ?? nil
-        exp = try? container.decode(Int.self, forKey: .exp)
     }
     
     init(
@@ -81,15 +60,21 @@ struct DecodedClientToken: Codable {
     
     func validate() throws {
         if accessToken == nil {
-            throw PrimerError.clientTokenNull
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
         }
         
         guard let expDate = expDate else {
-            throw PrimerError.clientTokenExpirationMissing
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
         }
         
         if expDate < Date() {
-            throw PrimerError.clientTokenExpired
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
         }
     }
 }

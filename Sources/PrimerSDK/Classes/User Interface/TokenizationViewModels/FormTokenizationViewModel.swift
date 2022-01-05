@@ -16,6 +16,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private var cardComponentsManager: CardComponentsManager!
     var onConfigurationFetched: (() -> Void)?
     
+    // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false
     
     override lazy var title: String = {
@@ -287,27 +288,27 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PaymentException.missingClientToken
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
-            let err = PrimerError.tokenizationPreRequestFailed
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
             if settings.amount == nil {
-                let err = PaymentException.missingAmount
-                _ = ErrorHandler.shared.handle(error: err)
+                let err = PrimerError.invalidSetting(name: "amount", value: settings.amount != nil ? "\(settings.amount!)" : nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
                 throw err
             }
             
             if settings.currency == nil {
-                let err = PaymentException.missingCurrency
-                _ = ErrorHandler.shared.handle(error: err)
+                let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
                 throw err
             }
         }
@@ -322,6 +323,21 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     @objc
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
+        
+        let event = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .select,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: event)
         
         do {
             try self.validate()
@@ -391,6 +407,21 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     @objc
     func payButtonTapped(_ sender: UIButton) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .submit,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+        
         isTokenizing = true
         submitButton.showSpinner(true)
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
@@ -483,7 +514,9 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         if let clientToken = state.clientToken {
             completion(clientToken, nil)
         } else {
-            completion(nil, PrimerError.clientTokenNull)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(nil, err)
         }
     }
     
@@ -492,7 +525,8 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         
         DispatchQueue.main.async {
-            let err = PrimerError.containerError(errors: errors)
+            let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             Primer.shared.delegate?.checkoutFailed?(with: err)
             self.handleFailedTokenizationFlow(error: err)
         }
@@ -654,8 +688,10 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 #if canImport(Primer3DS)
                 guard let paymentMethod = paymentMethod else {
                     DispatchQueue.main.async {
-                        let err = PrimerError.threeDSFailed
-                        Primer.shared.delegate?.onResumeError?(err)
+                        let err = PrimerError.generic(message: "Failed to find paymentMethod", userInfo: nil)
+                        let containerErr = PrimerError.failedToPerform3DS(error: err)
+                        ErrorHandler.handle(error: containerErr)
+                        Primer.shared.delegate?.onResumeError?(containerErr)
                     }
                     return
                 }
@@ -668,7 +704,9 @@ extension CardFormPaymentMethodTokenizationViewModel {
                             guard let threeDSPostAuthResponse = paymentMethodToken.1,
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
                                       DispatchQueue.main.async {
-                                          let err = PrimerError.threeDSFailed
+                                          let decodeError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse")
+                                          let err = PrimerError.failedToPerform3DS(error: decodeError)
+                                          ErrorHandler.handle(error: err)
                                           Primer.shared.delegate?.onResumeError?(err)
                                           self.handle(error: err)
                                       }
@@ -680,16 +718,18 @@ extension CardFormPaymentMethodTokenizationViewModel {
                         
                     case .failure(let err):
                         log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
-                        let err = PrimerError.threeDSFailed
+                        let containerErr = PrimerError.failedToPerform3DS(error: err)
+                        ErrorHandler.handle(error: containerErr)
                         DispatchQueue.main.async {
-                            Primer.shared.delegate?.onResumeError?(err)
+                            Primer.shared.delegate?.onResumeError?(containerErr)
                         }
                     }
                 }
                 #else
-                let error = PrimerError.threeDSFailed
+                let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
                 DispatchQueue.main.async {
-                    Primer.shared.delegate?.onResumeError?(error)
+                    Primer.shared.delegate?.onResumeError?(err)
                 }
                 #endif
                 
@@ -715,7 +755,8 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     self.onClientSessionActionCompletion?(err)
                 }
             } else {
-                let err = PrimerError.invalidValue(key: "resumeToken")
+                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
 
                 handle(error: err)
                 DispatchQueue.main.async {

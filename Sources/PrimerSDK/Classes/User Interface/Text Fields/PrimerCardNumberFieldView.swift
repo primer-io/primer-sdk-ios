@@ -28,6 +28,40 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         }
     }
     
+    public override func textFieldDidBeginEditing(_ textField: UITextField) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .focus,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .input,
+                objectId: .cardNumber,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+    }
+    
+    public override func textFieldDidEndEditing(_ textField: UITextField) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .blur,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .input,
+                objectId: .cardNumber,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+    }
+    
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField._text ?? ""
@@ -47,7 +81,13 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
                 }
             }
             
-            self.validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? PrimerTextField.Validation.valid : PrimerTextField.Validation.invalid(PrimerError.invalidCardnumber)
+            if self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false {
+                self.validation = .valid
+            } else {
+                let err = ValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                self.validation = PrimerTextField.Validation.invalid(err)
+            }
             
             DispatchQueue.main.async {
                 switch self.validation {
