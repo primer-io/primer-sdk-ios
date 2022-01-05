@@ -386,7 +386,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
     func performChallenge(with threeDSecureAuthResponse: Primer3DSServerAuthData, urlScheme: String?, presentOn viewController: UIViewController) -> Promise<Primer3DSCompletion> {
         return Promise { seal in
             guard let primer3DS = primer3DS else {
-                let err = PrimerError.generic(message: "Failed to find Primer3DS", userInfo: nil)
+                let err = PrimerError.generic(message: "Failed to find Primer3DS", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
