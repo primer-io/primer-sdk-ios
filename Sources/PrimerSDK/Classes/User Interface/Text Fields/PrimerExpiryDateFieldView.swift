@@ -37,13 +37,6 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         
         validation = (self.isValid?(newText) ?? false) ? .valid : .invalid(PrimerError.invalidExpiryDate)
         
-        switch validation {
-        case .valid:
-            delegate?.primerTextFieldView(self, isValid: true)
-        default:
-            delegate?.primerTextFieldView(self, isValid: nil)
-        }
-        
         if string != "" {   // Typing
             if newText.count == 2 {
                 newText += "/"
@@ -69,6 +62,18 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             expiryMonth = nil
             expiryYear = nil
         }
+        
+        if newText.count == 5, !newText.isValidExpiryDate {
+            delegate?.primerTextFieldView(self, isValid: false)
+        } else {
+            switch validation {
+            case .valid:
+                delegate?.primerTextFieldView(self, isValid: true)
+            default:
+                delegate?.primerTextFieldView(self, isValid: nil)
+            }
+        }
+        
         return false
     }
     

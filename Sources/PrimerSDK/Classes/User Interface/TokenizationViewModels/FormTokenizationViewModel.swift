@@ -252,7 +252,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return submitButton
     }()
     
-    var cardNetwork: CardNetwork?
+    var cardNetwork: CardNetwork? {
+        didSet {
+            cvvField.cardNetwork = cardNetwork ?? .unknown
+        }
+    }
     
     required init(config: PaymentMethodConfig) {
         self.flow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout
@@ -472,43 +476,49 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = !isLoading
     }
     
-}
-
-extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
-    
-    func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
-        if primerTextFieldView is PrimerCardNumberFieldView {
-            cardNumberContainerView.errorText = nil
-        } else if primerTextFieldView is PrimerExpiryDateFieldView {
-            expiryDateContainerView.errorText = nil
-        } else if primerTextFieldView is PrimerCVVFieldView {
-            cvvContainerView.errorText = nil
-        } else if primerTextFieldView is PrimerCardholderNameFieldView {
-            cardholderNameContainerView.errorText = nil
-        } else if primerTextFieldView is PrimerZipCodeFieldView {
-            zipCodeContainerView.errorText = nil
+    fileprivate func autofocusToNextFieldIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
+        if isValid == true {
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                _ = expiryDateField.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                _ = cvvField.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                _ = cardholderNameField.becomeFirstResponder()
+            }
         }
     }
     
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if primerTextFieldView is PrimerCardNumberFieldView, isValid == false {
-            cardNumberContainerView.errorText = "Invalid card number"
-        } else if primerTextFieldView is PrimerExpiryDateFieldView, isValid == false {
-            expiryDateContainerView.errorText = "Invalid date"
-        } else if primerTextFieldView is PrimerCVVFieldView, isValid == false {
-            cvvContainerView.errorText = "Invalid CVV"
-        } else if primerTextFieldView is PrimerCardholderNameFieldView, isValid == false {
-            cardholderNameContainerView.errorText = "Invalid name"
-        } else if primerTextFieldView is PrimerZipCodeFieldView, isValid == false {
-            zipCodeContainerView.errorText = "\(localZipCodeTitle) is required" // todo: localise if UK, etc.
+    fileprivate func showTexfieldViewErrorIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
+        if isValid == false, !primerTextFieldView.isEmpty {
+            // We know for sure that the text is not valid, even if the user hasn't finished typing.
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = "Invalid card number"
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = "Invalid date"
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = "Invalid CVV"
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                cardholderNameContainerView.errorText = "Invalid name"
+            } else if primerTextFieldView is PrimerZipCodeFieldView {
+                zipCodeContainerView.errorText = "\(localZipCodeTitle) is required" // todo: localise if UK, etc.
+            }
+        } else {
+            // We don't know for sure if the text is valid
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                cardholderNameContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerZipCodeFieldView {
+                zipCodeContainerView.errorText = nil
+            }
         }
-        
-        // dispatch zip code action if valid zip code.
-        if let fieldView = (primerTextFieldView as? PrimerZipCodeFieldView), isValid  == true {
-            let params = ["zipCode": fieldView.zipCode]
-            ClientSession.Action.setZipCode(resumeHandler: self, withParameters: params)
-        }
-        
+    }
+    
+    fileprivate func enableSubmitButtonIfNeeded() {
         var validations = [
             cardNumberField.isTextValid,
             expiryDateField.isTextValid,
@@ -527,8 +537,24 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         }
     }
     
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {
-        
+}
+
+extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
+    
+    func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
+        showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: true)
+    }
+    
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
+        // Dispatch zip code action if valid zip code.
+        if let fieldView = (primerTextFieldView as? PrimerZipCodeFieldView), isValid  == true {
+            let params = ["zipCode": fieldView.zipCode]
+            ClientSession.Action.setZipCode(resumeHandler: self, withParameters: params)
+        }
+
+        autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
+        showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: isValid)
+        enableSubmitButtonIfNeeded()
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
