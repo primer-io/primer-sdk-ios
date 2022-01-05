@@ -614,6 +614,8 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
             
             let params = [
+                "firstName": currentBillingAddress?.firstName,
+                "lastName": currentBillingAddress?.lastName,
                 "addressLine1": currentBillingAddress?.addressLine1,
                 "addressLine2": currentBillingAddress?.addressLine2,
                 "city": currentBillingAddress?.city,
