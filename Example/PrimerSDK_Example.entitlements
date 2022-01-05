@@ -3,7 +3,6 @@
 <plist version="1.0">
 <dict>
 <key>com.apple.developer.in-app-payments</key>
-	<key>com.apple.developer.in-app-payments</key>
  	<array>
  		<string>merchant.checkout.team</string>
  		<string>merchant.primer.dev.evangelos</string>
