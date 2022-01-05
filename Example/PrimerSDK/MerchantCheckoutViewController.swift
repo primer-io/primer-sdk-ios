@@ -32,7 +32,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var zipLabel: UILabel!
+    @IBOutlet weak var postalCodeLabel: UILabel!
     
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
         didSet {
@@ -237,10 +237,24 @@ class MerchantCheckoutViewController: UIViewController {
                         "amount": 456
                     ])
                 merchantActions.append(newAction)
-            } else if action.type == "SET_ZIP_CODE" {
-                // do something with zip code.
-                if let zipCode = (action.params?["zipCode"] as? String), zipCode.count > 4 {
-                    zipLabel.text = "Zip code: \(zipCode)"
+            } else if action.type == "SET_BILLING_ADDRESS" {
+                if let postalCode = (action.params?["postalCode"] as? String), postalCode.count > 4 {
+                    postalCodeLabel.text = "Postal code: \(postalCode)"
+                    
+                    var billingAddress: [String: String] = [:]
+                    
+                    action.params?.forEach { entry in
+                        if let value = entry.value as? String {
+                            billingAddress[entry.key] = value
+                        }
+                    }
+                    
+                    let newAction = ClientSession.Action(
+                        type: action.type,
+                        params: [ "billingAddress": billingAddress ]
+                    )
+                    
+                    merchantActions.append(newAction)
                 }
             } else {
                 merchantActions.append(action)

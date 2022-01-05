@@ -19,7 +19,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     // todo: refactor to dynamic form builder
     private lazy var expiryAndCvvRow = row
-    private lazy var zipCodeFieldRow = row
+    private lazy var postalCodeFieldRow = row
     
     private var row: UIStackView {
         let horizontalStackView = UIStackView()
@@ -53,8 +53,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         configureExpiryAndCvvRow()
         
-        if (formPaymentMethodTokenizationViewModel.requireZipCode) {
-            configureZipCodeFieldRow()
+        if (formPaymentMethodTokenizationViewModel.requirePostalCode) {
+            configurePostalCodeFieldRow()
         }
         
         // separator view
@@ -113,29 +113,29 @@ class PrimerCardFormViewController: PrimerFormViewController {
         }
     }
     
-    private func configureZipCodeFieldRow() {
-        zipCodeFieldRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.zipCodeContainerView)
-        zipCodeFieldRow.addArrangedSubview(PrimerView())
-        verticalStackView.addArrangedSubview(zipCodeFieldRow)
+    private func configurePostalCodeFieldRow() {
+        postalCodeFieldRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.postalCodeContainerView)
+        postalCodeFieldRow.addArrangedSubview(PrimerView())
+        verticalStackView.addArrangedSubview(postalCodeFieldRow)
     }
     
     private func onConfigurationFetched() {
-        let zipView = formPaymentMethodTokenizationViewModel.zipCodeContainerView
-        let isZipCodeViewHidden: Bool = !zipCodeFieldRow.arrangedSubviews.contains(zipView)
+        let postalCodeView = formPaymentMethodTokenizationViewModel.postalCodeContainerView
+        let isPostalCodeViewHidden: Bool = !postalCodeFieldRow.arrangedSubviews.contains(postalCodeView)
         let parentVC = parent as? PrimerContainerViewController
         
-        let requireZipCode = formPaymentMethodTokenizationViewModel.requireZipCode
+        let requirePostalCode = formPaymentMethodTokenizationViewModel.requirePostalCode
         
-        if (requireZipCode && isZipCodeViewHidden) {
+        if (requirePostalCode && isPostalCodeViewHidden) {
             parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
-                self?.zipCodeFieldRow.insertArrangedSubview(zipView, at: 0)
+                self?.postalCodeFieldRow.insertArrangedSubview(postalCodeView, at: 0)
             }
         }
         
-        if (!requireZipCode && !isZipCodeViewHidden) {
+        if (!requirePostalCode && !isPostalCodeViewHidden) {
             parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
-                self?.zipCodeFieldRow.removeArrangedSubview(zipView)
-                zipView.removeFromSuperview()
+                self?.postalCodeFieldRow.removeArrangedSubview(postalCodeView)
+                postalCodeView.removeFromSuperview()
             }
         }
         

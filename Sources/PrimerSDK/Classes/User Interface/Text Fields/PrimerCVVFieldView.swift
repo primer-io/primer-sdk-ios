@@ -45,15 +45,26 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
             validation = .notAvailable
         }
         
+        primerTextField._text = newText
+        primerTextField.text = newText
+        
         switch validation {
         case .valid:
-            delegate?.primerTextFieldView(self, isValid: true)
+            if let cvvLength = cardNetwork.validation?.code.length, newText.count == cvvLength {
+                delegate?.primerTextFieldView(self, isValid: true)
+            } else {
+                delegate?.primerTextFieldView(self, isValid: nil)
+            }
+        case .invalid:
+            if let cvvLength = cardNetwork.validation?.code.length, newText.count == cvvLength {
+                delegate?.primerTextFieldView(self, isValid: false)
+            } else {
+                delegate?.primerTextFieldView(self, isValid: nil)
+            }
         default:
             delegate?.primerTextFieldView(self, isValid: nil)
         }
         
-        primerTextField._text = newText
-        primerTextField.text = newText
         return false
     }
     

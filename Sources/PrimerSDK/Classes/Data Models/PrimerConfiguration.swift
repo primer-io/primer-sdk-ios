@@ -51,6 +51,11 @@ struct PrimerConfiguration: Codable {
         return clientSession != nil
     }
     
+    var requirePostalCode: Bool {
+        let billingAddressModule = checkoutModules?.first { $0.type == "BILLING_ADDRESS" }
+        return (billingAddressModule?.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
+    }
+    
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
@@ -59,7 +64,9 @@ struct PrimerConfiguration: Codable {
         let throwables = try container.decode([Throwable<PaymentMethodConfig>].self, forKey: .paymentMethods)
         self.paymentMethods = throwables.compactMap({ $0.value })
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
-        self.checkoutModules = (try? container.decode([CheckoutModule]?.self, forKey: .checkoutModules)) ?? nil
+        let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
+        self.checkoutModules = moduleThrowables.compactMap({ $0.value })
+
         
         if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
             for paymentMethodOption in options {
@@ -139,12 +146,18 @@ extension PrimerConfiguration {
             let saveCardCheckbox: Bool?
         }
         
+        struct PostalCodeOptions: CheckoutModuleOptions {
+            let postalCode: Bool
+        }
+        
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.type = try container.decode(String.self, forKey: .type)
             self.requestUrlStr = (try? container.decode(String?.self, forKey: .requestUrlStr)) ?? nil
             
             if let options = (try? container.decode(CardInformationOptions?.self, forKey: .options)) {
+                self.options = options
+            } else if let options = (try? container.decode(PostalCodeOptions?.self, forKey: .options)) {
                 self.options = options
             } else {
                 self.options = nil
@@ -157,6 +170,8 @@ extension PrimerConfiguration {
             try container.encode(requestUrlStr, forKey: .requestUrlStr)
             
             if let options = options as? CardInformationOptions {
+                try container.encode(options, forKey: .options)
+            } else if let options = options as? PostalCodeOptions {
                 try container.encode(options, forKey: .options)
             }
         }

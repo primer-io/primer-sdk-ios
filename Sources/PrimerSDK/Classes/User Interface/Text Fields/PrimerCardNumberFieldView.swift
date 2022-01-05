@@ -52,7 +52,17 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
             DispatchQueue.main.async {
                 switch self.validation {
                 case .valid:
-                    self.delegate?.primerTextFieldView(self, isValid: true)
+                    if let maxLength = self.cardNetwork.validation?.lengths.max(), newText.withoutWhiteSpace.count == maxLength {
+                        self.delegate?.primerTextFieldView(self, isValid: true)
+                    } else {
+                        self.delegate?.primerTextFieldView(self, isValid: nil)
+                    }
+                case .invalid:
+                    if let maxLength = self.cardNetwork.validation?.lengths.max(), newText.withoutWhiteSpace.count == maxLength {
+                        self.delegate?.primerTextFieldView(self, isValid: false)
+                    } else {
+                        self.delegate?.primerTextFieldView(self, isValid: nil)
+                    }
                 default:
                     self.delegate?.primerTextFieldView(self, isValid: nil)
                 }

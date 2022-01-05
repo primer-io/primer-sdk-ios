@@ -144,7 +144,7 @@ internal extension String {
         return !(self.rangeOfCharacter(from: set.inverted) != nil)
     }
     
-    var isValidZipCode: Bool {
+    var isValidPostalCode: Bool {
         if count < 2 { return false }
         let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-1234567890")
         return !(self.rangeOfCharacter(from: set.inverted) != nil)
