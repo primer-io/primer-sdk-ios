@@ -56,9 +56,9 @@ public class ClientSession: Codable {
             }
         }
         
-        static func setZipCode(resumeHandler: ResumeHandlerProtocol, withParameters parameters: [String: Any]) {
+        static func setPostalCode(resumeHandler: ResumeHandlerProtocol, withParameters parameters: [String: Any]) {
             DispatchQueue.main.async {
-                let actions: [ClientSession.Action] = [ClientSession.Action(type: "SET_ZIP_CODE", params: parameters)]
+                let actions: [ClientSession.Action] = [ClientSession.Action(type: "SET_BILLING_ADDRESS", params: parameters)]
                 Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
             }
         }

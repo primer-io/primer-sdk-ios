@@ -183,7 +183,7 @@ internal enum ValidationError: PrimerErrorProtocol {
     case invalidCardnumber(userInfo: [String: String]?)
     case invalidCvv(userInfo: [String: String]?)
     case invalidExpiryDate(userInfo: [String: String]?)
-    case invalidZipCode(userInfo: [String: String]?)
+    case invalidPostalCode(userInfo: [String: String]?)
     
     var errorId: String {
         switch self {
@@ -195,8 +195,8 @@ internal enum ValidationError: PrimerErrorProtocol {
             return "invalid-cvv"
         case .invalidExpiryDate:
             return "invalid-expiry-date"
-        case .invalidZipCode:
-            return "invalid-zip-code"
+        case .invalidPostalCode:
+            return "invalid-postal-code"
         }
     }
     
@@ -210,8 +210,8 @@ internal enum ValidationError: PrimerErrorProtocol {
             return "[\(errorId)] Invalid CVV"
         case .invalidExpiryDate:
             return "[\(errorId)] Invalid expiry date"
-        case .invalidZipCode:
-            return "[\(errorId)] Invalid zip code"
+        case .invalidPostalCode:
+            return "[\(errorId)] Invalid postal code"
         }
     }
     
@@ -223,7 +223,7 @@ internal enum ValidationError: PrimerErrorProtocol {
                 .invalidCardnumber(let userInfo),
                 .invalidCvv(let userInfo),
                 .invalidExpiryDate(let userInfo),
-                .invalidZipCode(let userInfo):
+                .invalidPostalCode(let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
