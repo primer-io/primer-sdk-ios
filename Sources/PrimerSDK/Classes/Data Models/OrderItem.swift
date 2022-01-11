@@ -31,11 +31,15 @@ public struct OrderItem: Codable {
         isPending: Bool = false
     ) throws {
         if isPending && unitAmount != nil {
-            throw PrimerError.amountShouldBeNullForPendingOrderItems
+            let err = PrimerError.generic(message: "amount should be null for pending items", userInfo: nil)
+            ErrorHandler.handle(error: err)
+            throw err
         }
         
         if !isPending && unitAmount == nil {
-            throw PrimerError.amountCannotBeNullForNonPendingOrderItems
+            let err = PrimerError.generic(message: "amount cannot be null for non-pending items", userInfo: nil)
+            ErrorHandler.handle(error: err)
+            throw err
         }
         
         self.name = name

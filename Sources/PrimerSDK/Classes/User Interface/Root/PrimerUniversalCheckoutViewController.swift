@@ -23,6 +23,18 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: nil,
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .universalCheckout))
+        Analytics.Service.record(event: viewEvent)
+        
         title = NSLocalizedString("primer-checkout-nav-bar-title",
                                           tableName: nil,
                                           bundle: Bundle.primerResources,
@@ -213,6 +225,18 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
     @objc
     func seeAllButtonTapped(_ sender: Any) {
+        let uiEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: nil,
+                extra: nil,
+                objectType: .button,
+                objectId: .seeAll,
+                objectClass: "\(Self.self)",
+                place: .universalCheckout))
+        Analytics.Service.record(event: uiEvent)
+        
         let vpivc = VaultedPaymentInstrumentsViewController()
         vpivc.delegate = self
         vpivc.view.translatesAutoresizingMaskIntoConstraints = false
@@ -226,6 +250,21 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         guard let config = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == selectedPaymentMethod.paymentInstrumentType.rawValue }).first else {
             return
         }
+        
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .pay,
+                objectClass: "\(Self.self)",
+                place: .universalCheckout))
+        Analytics.Service.record(event: viewEvent)
         
         enableView(false)
         payButton.showSpinner(true)
@@ -334,7 +373,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
             if !settings.hasDisabledSuccessScreen {
-                let evc = ErrorViewController(message: PrimerError.failedToLoadSession.localizedDescription)
+                let evc = ErrorViewController(message: error.localizedDescription)
                 evc.view.translatesAutoresizingMaskIntoConstraints = false
                 evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                 Primer.shared.primerRootVC?.show(viewController: evc)
@@ -359,7 +398,8 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 guard let paymentMethod = selectedPaymentMethod else {
                     DispatchQueue.main.async {
                         self.onClientSessionActionCompletion = nil
-                        let err = PrimerError.threeDSFailed
+                        let err = PrimerError.invalid3DSKey
+                        ErrorHandler.handle(error: err)
                         Primer.shared.delegate?.onResumeError?(err)
                         self.handle(error: err)
                     }
@@ -375,7 +415,9 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
                                       DispatchQueue.main.async {
                                           self.onClientSessionActionCompletion = nil
-                                          let err = PrimerError.threeDSFailed
+                                          let decodeError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse")
+                                          let err = PrimerError.failedToPerform3DS(error: decodeError)
+                                          ErrorHandler.handle(error: err)
                                           Primer.shared.delegate?.onResumeError?(err)
                                           self.handle(error: err)
                                       }
@@ -390,8 +432,9 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                         
                         DispatchQueue.main.async {
                             self.onClientSessionActionCompletion = nil
-                            let err = PrimerError.threeDSFailed
-                            Primer.shared.delegate?.onResumeError?(err)
+                            let containerErr = PrimerError.failedToPerform3DS(error: err)
+                            ErrorHandler.handle(error: containerErr)
+                            Primer.shared.delegate?.onResumeError?(containerErr)
                             self.handle(error: err)
                         }
                     }
@@ -400,7 +443,8 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 
                 DispatchQueue.main.async {
                     self.onClientSessionActionCompletion = nil
-                    let err = PrimerError.threeDSFailed
+                    let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
                     Primer.shared.delegate?.onResumeError?(err)
                     self.handle(error: err)
                 }
@@ -419,7 +463,8 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                     self.handle(error: err)
                 }
             } else {
-                let err = PrimerError.invalidValue(key: "resumeToken")
+                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
                 handle(error: err)
                 DispatchQueue.main.async {
                     Primer.shared.delegate?.onResumeError?(err)

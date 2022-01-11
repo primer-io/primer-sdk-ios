@@ -57,6 +57,8 @@ internal extension PrimerNibView {
             nibName = "PrimerTextFieldView"
         } else if nibName == "PrimerCardholderNameFieldView" {
            nibName = "PrimerTextFieldView"
+        } else if nibName == "PrimerPostalCodeFieldView" {
+            nibName = "PrimerTextFieldView"
         }
         
         let nib = UINib(nibName: nibName, bundle: bundle)

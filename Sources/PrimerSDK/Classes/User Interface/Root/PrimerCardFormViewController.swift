@@ -17,6 +17,19 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let cardholderNameContainerView = PrimerCustomFieldView()
     private let submitButton = PrimerOldButton()
     
+    // todo: refactor to dynamic form builder
+    private lazy var expiryAndCvvRow = row
+    private lazy var postalCodeFieldRow = row
+    
+    private var row: UIStackView {
+        let horizontalStackView = UIStackView()
+        horizontalStackView.axis = .horizontal
+        horizontalStackView.alignment = .fill
+        horizontalStackView.distribution = .fillEqually
+        horizontalStackView.spacing = 16
+        return horizontalStackView
+    }
+    
     private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
     
     init(viewModel: CardFormPaymentMethodTokenizationViewModel) {
@@ -30,13 +43,43 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.formPaymentMethodTokenizationViewModel.config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+        
+        formPaymentMethodTokenizationViewModel.onConfigurationFetched = onConfigurationFetched
+        
         title = Content.PrimerCardFormView.title
         view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
-        configureExpiryAndCvvRow()
-        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
         
+        renderCardnumberRow()
+        renderExpiryAndCvvRow()
+        if (formPaymentMethodTokenizationViewModel.requirePostalCode) {
+            renderPostalCodeFieldRow()
+        }
+        
+        // separator view
+        let separatorView = PrimerView()
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
+        separatorView.heightAnchor.constraint(equalToConstant: 8).isActive = true
+        verticalStackView.addArrangedSubview(separatorView)
+        
+        // submit button
+        renderSubmitButton()
+                
         formPaymentMethodTokenizationViewModel.completion = { (paymentMethodToken, err) in
             if let err = err {
                 Primer.shared.primerRootVC?.handle(error: err)
@@ -48,22 +91,21 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
+        _ = formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
+    }
+    
+    private func renderCardnumberRow() {
+        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
     }
 
-    private func configureExpiryAndCvvRow() {
-        let horizontalStackView = UIStackView()
-        horizontalStackView.axis = .horizontal
-        horizontalStackView.alignment = .fill
-        horizontalStackView.distribution = .fillEqually
+    private func renderExpiryAndCvvRow() {
+        expiryAndCvvRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.expiryDateContainerView)
+        expiryAndCvvRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.cvvContainerView)
+        verticalStackView.addArrangedSubview(expiryAndCvvRow)
         
-        horizontalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.expiryDateContainerView)
-        
-        horizontalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cvvContainerView)
-        horizontalStackView.spacing = 16
-        verticalStackView.addArrangedSubview(horizontalStackView)
-        
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardholderNameContainerView)
+        if let cardholderNameContainerView = formPaymentMethodTokenizationViewModel.cardholderNameContainerView {
+            verticalStackView.addArrangedSubview(cardholderNameContainerView)
+        }
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
             let saveCardSwitchContainerStackView = UIStackView()
@@ -83,13 +125,40 @@ class PrimerCardFormViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(saveCardSwitchContainerStackView)
             saveCardSwitchContainerStackView.isHidden = true
         }
-        
-        let separatorView = UIView()
-        separatorView.translatesAutoresizingMaskIntoConstraints = false
-        separatorView.heightAnchor.constraint(equalToConstant: 8).isActive = true
-        verticalStackView.addArrangedSubview(separatorView)
-        
+    }
+    
+    private func renderPostalCodeFieldRow() {
+        postalCodeFieldRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.postalCodeContainerView)
+        postalCodeFieldRow.addArrangedSubview(PrimerView())
+        verticalStackView.addArrangedSubview(postalCodeFieldRow)
+    }
+    
+    private func renderSubmitButton() {
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
+        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
+    }
+    
+    private func onConfigurationFetched() {
+        let postalCodeView = formPaymentMethodTokenizationViewModel.postalCodeContainerView
+        let isPostalCodeViewHidden: Bool = !postalCodeFieldRow.arrangedSubviews.contains(postalCodeView)
+        let parentVC = parent as? PrimerContainerViewController
+        
+        let requirePostalCode = formPaymentMethodTokenizationViewModel.requirePostalCode
+        
+        if (requirePostalCode && isPostalCodeViewHidden) {
+            parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
+                self?.postalCodeFieldRow.insertArrangedSubview(postalCodeView, at: 0)
+            }
+        }
+        
+        if (!requirePostalCode && !isPostalCodeViewHidden) {
+            parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
+                self?.postalCodeFieldRow.removeArrangedSubview(postalCodeView)
+                postalCodeView.removeFromSuperview()
+            }
+        }
+        
+       view.layoutIfNeeded()
     }
 }
 

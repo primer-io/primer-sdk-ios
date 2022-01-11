@@ -20,7 +20,8 @@ class PaymentMethodConfigServiceTests: XCTestCase {
             paymentMethods: [
                 PaymentMethodConfig(id: "id123", options: nil, processorConfigId: "config_id", type: .paymentCard)
             ],
-            keys: nil
+            keys: nil,
+            checkoutModules: nil
         )
 
         let state = MockAppState(decodedClientToken: nil, primerConfiguration: config)

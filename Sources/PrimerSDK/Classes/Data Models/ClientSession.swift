@@ -56,6 +56,19 @@ public class ClientSession: Codable {
             }
         }
         
+        static func setPostalCode(resumeHandler: ResumeHandlerProtocol, withParameters parameters: [String: Any]) {
+            DispatchQueue.main.async {
+                let actions: [ClientSession.Action] = [ClientSession.Action(type: "SET_BILLING_ADDRESS", params: parameters)]
+                Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+            }
+        }
+        
+        static func dispatchMultiple(resumeHandler: ResumeHandlerProtocol, actions: [ClientSession.Action]) {
+            DispatchQueue.main.async {
+                Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+            }
+        }
+        
         public var type: String
         public var params: [String: Any]?
         

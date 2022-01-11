@@ -125,44 +125,44 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
-            let err = PaymentException.missingClientToken
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
-            let err = PrimerError.tokenizationPreRequestFailed
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard config.id != nil else {
-            let err = PaymentException.missingConfigurationId
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard settings.countryCode != nil else {
-            let err = PaymentException.missingCountryCode
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidSetting(name: "countryCode", value: settings.countryCode?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard settings.currency != nil else {
-            let err = PaymentException.missingCurrency
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidSetting(name: "currency", value: settings.countryCode?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard settings.merchantIdentifier != nil else {
-            let err = AppleException.missingMerchantIdentifier
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: settings.merchantIdentifier, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard !(settings.orderItems ?? []).isEmpty else {
-            let err = PaymentException.missingOrderItems
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
     }
@@ -170,6 +170,21 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     @objc
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
+        
+        let event = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .select,
+                objectClass: "\(Self.self)",
+                place: .paymentMethodPopup))
+        Analytics.Service.record(event: event)
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
@@ -225,7 +240,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             if Primer.shared.flow.internalSessionFlow.vaulted {
-                seal.reject(PrimerError.vaultNotSupported)
+                let err = PrimerError.unsupportedIntent(intent: .vault, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
                 return
             }
             
@@ -246,7 +263,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            completion(nil, PrimerError.clientTokenNull)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(nil, err)
             return
         }
         
@@ -276,8 +295,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
             
             guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
-                let err = AppleException.unableToPresentApplePay
-                _ = ErrorHandler.shared.handle(error: err)
+                let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
                 Primer.shared.delegate?.checkoutFailed?(with: err)
                 return completion(nil, err)
@@ -291,7 +310,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                     let state: AppStateProtocol = DependencyContainer.resolve()
                                         
                     guard let applePayConfigId = self.config.id else {
-                        return completion(nil, PaymentException.missingConfigurationId)
+                        let err = PrimerError.invalidValue(key: "configuration.id", value: self.config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        ErrorHandler.handle(error: err)
+                        completion(nil, err)
+                        return
                     }
 
                     let instrument = PaymentInstrument(
@@ -329,7 +351,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             
         } else {
             log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
-            completion(nil, AppleException.unableToMakePaymentsOnProvidedNetworks)
+            let err = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(nil, err)
         }
     }
     
@@ -339,7 +363,9 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
         controller.dismiss(animated: true, completion: nil)
-        applePayReceiveDataCompletion?(.failure(AppleException.cancelled))
+        let err = PrimerError.cancelled(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        ErrorHandler.handle(error: err)
+        applePayReceiveDataCompletion?(.failure(err))
         applePayReceiveDataCompletion = nil
     }
     

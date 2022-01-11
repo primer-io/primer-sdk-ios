@@ -82,8 +82,8 @@ public enum PrimerSessionFlow: Equatable {
             return .checkoutWithPayPal
         case .checkoutWithAdyenBank:
             return .checkoutWithAdyenBank
-        case .checkoutWithAsyncPaymentMethod:
-            return .checkoutWithAsyncPaymentMethod
+        case .checkoutWithAsyncPaymentMethod(let type):
+            return .checkoutWithExternalPaymentMethod(type: type)
         }
     }
 }
@@ -99,7 +99,7 @@ internal enum PrimerInternalSessionFlow {
     case vaultKlarna
     case checkoutWithApplePay
     case checkoutWithCard
-    case checkoutWithAsyncPaymentMethod
+    case checkoutWithExternalPaymentMethod(type: PaymentMethodConfigType)
     case checkoutWithKlarna
     case checkoutWithPayPal
     case checkoutWithAdyenBank
@@ -115,7 +115,7 @@ internal enum PrimerInternalSessionFlow {
             return true
         case .checkout,
              .checkoutWithCard,
-             .checkoutWithAsyncPaymentMethod,
+             .checkoutWithExternalPaymentMethod,
              .checkoutWithPayPal,
              .checkoutWithKlarna,
              .checkoutWithApplePay,
@@ -135,12 +135,43 @@ internal enum PrimerInternalSessionFlow {
             return .VAULT
         case .checkout,
              .checkoutWithCard,
-             .checkoutWithAsyncPaymentMethod,
+             .checkoutWithExternalPaymentMethod,
              .checkoutWithPayPal,
              .checkoutWithKlarna,
              .checkoutWithApplePay,
              .checkoutWithAdyenBank:
             return .CHECKOUT
+        }
+    }
+    
+    var rawValue: String {
+        switch self {
+        case .vault:
+            return "VAULT_MANAGER"
+        case .checkout:
+            return "UNIVERSAL_CHECKOUT"
+        case .vaultApaya:
+            return "VAULT_APAYA"
+        case .vaultCard:
+            return "VAULT_PAYMENT_CARD"
+        case .vaultDirectDebit:
+            return "VAULT_DIRECT_DEBIT"
+        case .vaultPayPal:
+            return "VAULT_PAYPAL"
+        case .vaultKlarna:
+            return "VAULT_KLARNA"
+        case .checkoutWithApplePay:
+            return "VAULT_APPLE_PAY"
+        case .checkoutWithCard:
+            return "CHECKOUT_PAYMENT_CARD"
+        case .checkoutWithExternalPaymentMethod(type: let type):
+            return "CHECKOUT_\(type.rawValue)"
+        case .checkoutWithKlarna:
+            return "CHECKOUT_KLARNA"
+        case .checkoutWithPayPal:
+            return "CHECKOUT_PAYPAL"
+        case .checkoutWithAdyenBank:
+            return "CHECKOUT_ADYEN_BANK"
         }
     }
 }
