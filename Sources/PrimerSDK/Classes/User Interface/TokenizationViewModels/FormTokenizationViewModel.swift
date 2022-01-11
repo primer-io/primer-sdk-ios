@@ -279,7 +279,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             expiryDateField: expiryDateField,
             cvvField: cvvField,
             cardholderNameField: cardholderNameField,
-            postalCodeField: postalCodeField
+            postalCodeField: requirePostalCode ? postalCodeField : nil
         )
         cardComponentsManager.delegate = self
     }
