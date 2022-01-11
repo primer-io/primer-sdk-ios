@@ -13,6 +13,7 @@ struct Device: Codable {
     
     var batteryLevel: Int
     var batteryStatus: String
+    var locale: String?
     var memoryFootprint: Int?
     var modelIdentifier: String?
     var modelName: String
@@ -31,7 +32,14 @@ struct Device: Codable {
         batteryStatus = batteryLevel == -100 ? "CHARGING" : "NOT_CHARGING"
         UIDevice.current.isBatteryMonitoringEnabled = false
         
-        
+        if let languageCode = Locale.current.languageCode {
+            if let regionCode = Locale.current.regionCode {
+                self.locale = "\(languageCode)-\(regionCode)"
+            } else {
+                self.locale = "\(languageCode)"
+            }
+        }
+        self.locale = Locale.current.languageCode
         self.modelIdentifier = UIDevice.modelIdentifier
         self.modelName = UIDevice.model.rawValue
         self.platformVersion = UIDevice.current.systemVersion
