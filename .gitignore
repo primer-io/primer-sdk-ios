@@ -109,3 +109,6 @@ id_rsa_ios.*
 id_rsa_ios
 
 ThreeDS_SDK.xcframework
+
+node_modules/
+.env

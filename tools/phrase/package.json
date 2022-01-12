@@ -1,0 +1,13 @@
+{
+  "name": "primer-ios-phrase-downloader",
+  "version": "0.0.1",
+  "description": "This script downloads the translation dictionary from Phrase and creates or modifies the localizable strings",
+  "scripts": {
+    "execute": "node ./index.js"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "dotenv": "^10.0.0",
+    "i18n-strings-files": "^1.0.9"
+  }
+}
