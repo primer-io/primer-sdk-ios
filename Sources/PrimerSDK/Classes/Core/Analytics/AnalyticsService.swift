@@ -61,12 +61,12 @@ extension Analytics {
                 function: #function,
                 line: #line)
             
-            Analytics.queue.async {
-                var tmpEvents = Analytics.Service.loadEvents()
-                tmpEvents.append(contentsOf: events)
-                let sortedEvents = tmpEvents.sorted(by: { $0.createdAt < $1.createdAt })
-                try? Analytics.Service.save(events: sortedEvents)
-            }
+            // Analytics.queue.async {
+            //     var tmpEvents = Analytics.Service.loadEvents()
+            //     tmpEvents.append(contentsOf: events)
+            //     let sortedEvents = tmpEvents.sorted(by: { $0.createdAt < $1.createdAt })
+            //     try? Analytics.Service.save(events: sortedEvents)
+            // }
         }
         
         private static func save(events: [Analytics.Event]) throws {
