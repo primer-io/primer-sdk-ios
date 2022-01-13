@@ -462,7 +462,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 
         if paymentMethodToken.paymentInstrumentType == .paymentCard,
            let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
-           threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess {
+           (threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess) {
             var message: String = ""
 
             if let reasonCode = threeDSecureAuthentication.reasonCode {
@@ -485,8 +485,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
         
         createPayment(with: paymentMethodToken) { (res, err) in
-//            resumeHandler.handle(error: NetworkError.missingParams)
-//            return
             if let err = err {
                 resumeHandler.handle(error: err)
             } else if let res = res {
@@ -527,16 +525,16 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func onCheckoutDismissed() {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nPrimer view dismissed\n")
         
-        fetchPaymentMethods()
-        
-        if let threeDSAlert = threeDSAlert {
-            present(threeDSAlert, animated: true, completion: nil)
-        }
-        
-        DispatchQueue.main.async {
-            if !self.paymentResponsesData.isEmpty {
-                let rvc = ResultViewController.instantiate(data: self.paymentResponsesData)
-                self.navigationController?.pushViewController(rvc, animated: true)
+        DispatchQueue.main.async { [weak self] in
+            self?.fetchPaymentMethods()
+            
+            if let threeDSAlert = self?.threeDSAlert {
+                self?.present(threeDSAlert, animated: true, completion: nil)
+            }
+            
+            if let paymentResponsesData = self?.paymentResponsesData, !paymentResponsesData.isEmpty {
+                let rvc = ResultViewController.instantiate(data: paymentResponsesData)
+                self?.navigationController?.pushViewController(rvc, animated: true)
             }
         }
     }
