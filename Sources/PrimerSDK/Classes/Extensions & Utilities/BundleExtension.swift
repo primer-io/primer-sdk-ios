@@ -26,7 +26,11 @@ internal extension Bundle {
     }
 
     static var primerFrameworkIdentifier: String {
-        return Bundle.primerFramework.bundleIdentifier!
+        if Bundle.primerFramework.bundleIdentifier == Bundle.main.bundleIdentifier {
+            return "primer-io-react-native"
+        } else {
+            return Bundle.primerFramework.bundleIdentifier!
+        }
     }
     
     var releaseVersionNumber: String? {
