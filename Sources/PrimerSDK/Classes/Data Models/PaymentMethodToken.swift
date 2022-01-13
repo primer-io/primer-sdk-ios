@@ -25,7 +25,7 @@ public class PaymentMethodToken: NSObject, Codable {
     public var paymentInstrumentData: PaymentInstrumentData?
     public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
     public var token: String?
-    public var tokenType: TokenType
+    public var tokenType: TokenType?
     public var vaultData: VaultData?
     
 //    public override var description: String {
