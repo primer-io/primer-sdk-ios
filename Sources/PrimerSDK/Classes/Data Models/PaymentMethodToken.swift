@@ -20,7 +20,7 @@ public class PaymentMethodToken: NSObject, Codable {
     
     public var analyticsId: String?
     public var id: String?
-    public var isVaulted: Bool
+    public var isVaulted: Bool?
     public var paymentInstrumentType: PaymentInstrumentType
     public var paymentInstrumentData: PaymentInstrumentData?
     public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
