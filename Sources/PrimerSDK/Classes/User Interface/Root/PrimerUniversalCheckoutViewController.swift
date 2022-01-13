@@ -19,6 +19,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
     private var onClientSessionActionCompletion: ((Error?) -> Void)?
+    private var singleUsePaymentMethod: PaymentMethodToken?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -269,8 +270,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         client.exchangePaymentMethodToken(clientToken: decodedClientToken, paymentMethodId: paymentMethodToken.id!) { result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let exchangedPaymentMethod):
-                    Primer.shared.delegate?.onTokenizeSuccess?(exchangedPaymentMethod, { err in
+                case .success(let singleUsePaymentMethod):
+                    self.singleUsePaymentMethod = singleUsePaymentMethod
+                    Primer.shared.delegate?.onTokenizeSuccess?(singleUsePaymentMethod, { err in
                         DispatchQueue.main.async { [weak self] in
                             self?.payButton.showSpinner(false)
                             self?.enableView(true)
@@ -279,6 +281,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
                             if settings.hasDisabledSuccessScreen {
                                 Primer.shared.dismiss()
+                                self.singleUsePaymentMethod = nil
                             } else {
                                 if let err = err {
                                     let evc = ErrorViewController(message: err.localizedDescription)
@@ -291,11 +294,12 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                     svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
                                     Primer.shared.primerRootVC?.show(viewController: svc)
                                 }
+                                self.singleUsePaymentMethod = nil
                             }
                         }
                     })
                     
-                    Primer.shared.delegate?.onTokenizeSuccess?(exchangedPaymentMethod, resumeHandler: self)
+                    Primer.shared.delegate?.onTokenizeSuccess?(singleUsePaymentMethod, resumeHandler: self)
                 case .failure(let err):
                     Primer.shared.delegate?.checkoutFailed?(with: err)
                     let evc = ErrorViewController(message: err.localizedDescription)
@@ -355,6 +359,8 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
             } else {
                 Primer.shared.dismiss()
             }
+            
+            self.singleUsePaymentMethod = nil
         }
     }
     
@@ -370,7 +376,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
             
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 #if canImport(Primer3DS)
-                guard let paymentMethod = selectedPaymentMethod else {
+                guard let paymentMethod = singleUsePaymentMethod else {
                     DispatchQueue.main.async {
                         self.onClientSessionActionCompletion = nil
                         let err = PrimerError.threeDSFailed
@@ -463,6 +469,8 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                 Primer.shared.primerRootVC?.show(viewController: svc)
             }
+            
+            self.singleUsePaymentMethod = nil
         }
     }
 }
