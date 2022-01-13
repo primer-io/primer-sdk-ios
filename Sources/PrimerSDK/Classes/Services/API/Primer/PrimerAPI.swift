@@ -151,7 +151,7 @@ internal extension PrimerAPI {
         case .tokenizePaymentMethod:
             return "/payment-instruments"
         case .begin3DSRemoteAuth(_, let paymentMethodToken, _):
-            return "/3ds/\(paymentMethodToken.token)/auth"
+            return "/3ds/\(paymentMethodToken.token ?? "")/auth"
         case .continue3DSRemoteAuth(_, let threeDSTokenId):
             return "/3ds/\(threeDSTokenId)/continue"
         case .createApayaSession:
