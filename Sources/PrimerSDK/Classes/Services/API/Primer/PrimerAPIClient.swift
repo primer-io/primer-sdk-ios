@@ -13,7 +13,7 @@ protocol PrimerAPIClientProtocol {
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<GetVaultedPaymentMethodsResponse, Error>) -> Void)
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse>
     func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
-    func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Data, Error>) -> Void)
+    func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Void, Error>) -> Void)
     func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void)
     func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void)
@@ -72,12 +72,12 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Data, Error>) -> Void) {
+    func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Void, Error>) -> Void) {
         let endpoint = PrimerAPI.deleteVaultedPaymentMethod(clientToken: clientToken, id: id)
-        networkService.request(endpoint) { (result: Result<Data, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<DummySuccess, NetworkServiceError>) in
             switch result {
-            case .success(let vaultedPaymentMethodsResponse):
-                completion(.success(vaultedPaymentMethodsResponse))
+            case .success:
+                completion(.success(()))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
                 completion(.failure(PrimerError.vaultDeleteFailed))
@@ -253,7 +253,6 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
 }
 
 internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
-
     
     var response: Data?
     var throwsError: Bool
@@ -291,13 +290,12 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (Result<Data, Error>) -> Void) {
+    func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (Result<Void, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(Data.self, from: response)
-            completion(.success(value))
+            completion(.success(()))
         } catch {
             completion(.failure(error))
         }

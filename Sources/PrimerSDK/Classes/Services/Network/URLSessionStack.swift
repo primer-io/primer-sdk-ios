@@ -62,6 +62,8 @@ internal class URLSessionStack: NetworkService {
         #endif
 
         let dataTask = session.dataTask(with: request) { data, response, error in
+            let httpResponse = response as? HTTPURLResponse
+            
             #if DEBUG
             msg = ""
 
@@ -103,8 +105,13 @@ internal class URLSessionStack: NetworkService {
                 log(logLevel: .debug, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                 #endif
 
-                let result = try self.parser.parse(T.self, from: data)
-                DispatchQueue.main.async { completion(.success(result)) }
+                if endpoint.method == .delete, httpResponse?.statusCode == 200 {
+                    let dummyRes: T = DummySuccess(success: true) as! T
+                    DispatchQueue.main.async { completion(.success(dummyRes)) }
+                } else {
+                    let result = try self.parser.parse(T.self, from: data)
+                    DispatchQueue.main.async { completion(.success(result)) }
+                }
             } catch {
                 if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), let jsonDic = json as? [String: Any?],
                    let primerErrorJSON = jsonDic["error"] as? [String: Any] {
