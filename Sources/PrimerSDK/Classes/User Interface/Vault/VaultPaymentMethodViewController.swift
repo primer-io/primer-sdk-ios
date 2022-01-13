@@ -94,7 +94,7 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
-        isEnabled = viewModel.selectedPaymentMethodToken == paymentMethod.token
+        isEnabled = viewModel.selectedPaymentMethodId == paymentMethod.id
         horizontalStackView.axis = .horizontal
         horizontalStackView.alignment = .fill
         horizontalStackView.spacing = 16
@@ -238,7 +238,7 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
         let paymentMethod = viewModel.paymentMethods[indexPath.row]
 
         if !isDeleting {
-            viewModel.selectedPaymentMethodToken = paymentMethod.token
+            viewModel.selectedPaymentMethodId = paymentMethod.id
             tableView.reloadData()
             // It will reload the payment instrument on the Universal Checkout view.
             delegate?.reload()
@@ -270,7 +270,7 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
                                                          comment: "Delete - Alert button delete"),
                                 style: .destructive,
                                 handler: { [weak self] _ in
-                                    guard let id = paymentMethod.token else { return }
+                                    guard let id = paymentMethod.id else { return }
                                     self?.deletePaymentMethod(id)
                                 }))
 

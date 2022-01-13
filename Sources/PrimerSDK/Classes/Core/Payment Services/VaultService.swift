@@ -28,11 +28,9 @@ internal class VaultService: VaultServiceProtocol {
         .done { paymentMethods in
             state.paymentMethods = paymentMethods.data
 
-            let paymentMethods = state.paymentMethods
-
-            if state.selectedPaymentMethodToken == nil && !paymentMethods.isEmpty {
-                guard let firstPaymentMethodToken = paymentMethods.first?.token else { return }
-                state.selectedPaymentMethodToken = firstPaymentMethodToken
+            if state.selectedPaymentMethodId == nil && !state.paymentMethods.isEmpty {
+                guard let firstPaymentMethodToken = state.paymentMethods.first?.id else { return }
+                state.selectedPaymentMethodId = firstPaymentMethodToken
             }
 
             completion(nil)
