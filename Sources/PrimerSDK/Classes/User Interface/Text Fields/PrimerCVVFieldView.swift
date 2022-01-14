@@ -29,6 +29,40 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         }
     }
     
+    public override func textFieldDidBeginEditing(_ textField: UITextField) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .focus,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .input,
+                objectId: .cvc,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+    }
+    
+    public override func textFieldDidEndEditing(_ textField: UITextField) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .blur,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .input,
+                objectId: .cvc,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+    }
+    
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField._text ?? ""
@@ -40,20 +74,33 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            validation = .invalid(PrimerError.invalidCVV)
+            let err = ValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            validation = .invalid(err)
         default:
             validation = .notAvailable
         }
         
+        primerTextField._text = newText
+        primerTextField.text = newText
+        
         switch validation {
         case .valid:
-            delegate?.primerTextFieldView(self, isValid: true)
+            if let cvvLength = cardNetwork.validation?.code.length, newText.count == cvvLength {
+                delegate?.primerTextFieldView(self, isValid: true)
+            } else {
+                delegate?.primerTextFieldView(self, isValid: nil)
+            }
+        case .invalid:
+            if let cvvLength = cardNetwork.validation?.code.length, newText.count == cvvLength {
+                delegate?.primerTextFieldView(self, isValid: false)
+            } else {
+                delegate?.primerTextFieldView(self, isValid: nil)
+            }
         default:
             delegate?.primerTextFieldView(self, isValid: nil)
         }
         
-        primerTextField._text = newText
-        primerTextField.text = newText
         return false
     }
     

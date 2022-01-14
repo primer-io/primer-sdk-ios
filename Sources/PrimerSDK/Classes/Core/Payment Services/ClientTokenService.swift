@@ -29,11 +29,15 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         guard var currentDecodedToken = clientToken.jwtTokenPayload,
               let expDate = currentDecodedToken.expDate
         else {
-            throw PrimerError.clientTokenNull
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
         }
         
         if expDate < Date() {
-            throw PrimerError.clientTokenExpired
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
         }
         
         let state: AppStateProtocol = DependencyContainer.resolve()
@@ -45,6 +49,10 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         
         if currentDecodedToken.env == nil {
             currentDecodedToken.env = previousDecodedToken?.env
+        }
+
+        if currentDecodedToken.analyticsUrl == nil {
+            currentDecodedToken.analyticsUrl = previousDecodedToken?.analyticsUrl
         }
         
         if currentDecodedToken.configurationUrl == nil {
@@ -92,7 +100,8 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
      */
     func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
         guard let clientTokenCallback = Primer.shared.delegate?.clientTokenCallback else {
-            let err = PrimerError.invalidValue(key: "clientTokenCallback delegate function.")
+            let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             completion(err)
             return
         }

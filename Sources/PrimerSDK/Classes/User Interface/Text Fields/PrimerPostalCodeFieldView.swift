@@ -2,9 +2,9 @@
 
 import UIKit
 
-public final class PrimerZipCodeFieldView: PrimerTextFieldView {
+public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
     
-    internal var zipCode: String {
+    internal var postalCode: String {
         return textField._text ?? ""
     }
     
@@ -13,11 +13,11 @@ public final class PrimerZipCodeFieldView: PrimerTextFieldView {
         
         textField.keyboardType = .namePhonePad
         textField.isAccessibilityElement = true
-        textField.accessibilityIdentifier = "zip_code_txt_fld"
+        textField.accessibilityIdentifier = "postal_code_txt_fld"
         textField.delegate = self
         isValid = { text in
-            // todo: look into more sophisticated zip code validation, ascii check for now
-            return text.isValidZipCode
+            // todo: look into more sophisticated postal code validation, ascii check for now
+            return text.isValidPostalCode
         }
     }
     
@@ -41,7 +41,9 @@ public final class PrimerZipCodeFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            validation = .invalid(PrimerError.invalidZipCode)
+            let err = ValidationError.invalidPostalCode(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            validation = .invalid(err)
         default:
             validation = .notAvailable
         }

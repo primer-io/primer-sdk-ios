@@ -1,6 +1,6 @@
 #if canImport(UIKit)
 
-class ZipCode {
+class PostalCode {
     
     static func sample(for countryCode: CountryCode?) -> String {
         guard let countryCode = countryCode else { return "90210" }

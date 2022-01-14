@@ -67,8 +67,14 @@ class ApayaDataModelTests: XCTestCase {
             XCTFail()
         }
         catch {
-            if let apayaErr = error as? ApayaException, apayaErr == .webViewFlowCancelled {
-                XCTAssertNotNil(apayaErr)
+            if let err = error as? PrimerError {
+                switch err {
+                case .failedOnWebViewFlow:
+                    XCTAssertNotNil(err)
+                default:
+                    break
+                }
+                
             } else {
                 XCTFail("Error should be .webViewFlowCancelled")
             }

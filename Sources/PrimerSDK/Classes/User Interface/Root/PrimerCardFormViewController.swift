@@ -19,7 +19,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     // todo: refactor to dynamic form builder
     private lazy var expiryAndCvvRow = row
-    private lazy var zipCodeFieldRow = row
+    private lazy var postalCodeFieldRow = row
     
     private var row: UIStackView {
         let horizontalStackView = UIStackView()
@@ -44,17 +44,31 @@ class PrimerCardFormViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.formPaymentMethodTokenizationViewModel.config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+        
         formPaymentMethodTokenizationViewModel.onConfigurationFetched = onConfigurationFetched
         
         title = Content.PrimerCardFormView.title
         view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
         
-        configureExpiryAndCvvRow()
-        
-        if (formPaymentMethodTokenizationViewModel.requireZipCode) {
-            configureZipCodeFieldRow()
+        renderCardnumberRow()
+        renderExpiryAndCvvRow()
+        if (formPaymentMethodTokenizationViewModel.requirePostalCode) {
+            renderPostalCodeFieldRow()
         }
         
         // separator view
@@ -64,11 +78,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
         verticalStackView.addArrangedSubview(separatorView)
         
         // submit button
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
-        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
-        
-        _ = formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
-        
+        renderSubmitButton()
+                
         formPaymentMethodTokenizationViewModel.completion = { (paymentMethodToken, err) in
             if let err = err {
                 Primer.shared.primerRootVC?.handle(error: err)
@@ -77,14 +88,24 @@ class PrimerCardFormViewController: PrimerFormViewController {
             }
         }
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        _ = formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
+    }
+    
+    private func renderCardnumberRow() {
+        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
+    }
 
-    private func configureExpiryAndCvvRow() {
-        
+    private func renderExpiryAndCvvRow() {
         expiryAndCvvRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.expiryDateContainerView)
         expiryAndCvvRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.cvvContainerView)
         verticalStackView.addArrangedSubview(expiryAndCvvRow)
         
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardholderNameContainerView)
+        if let cardholderNameContainerView = formPaymentMethodTokenizationViewModel.cardholderNameContainerView {
+            verticalStackView.addArrangedSubview(cardholderNameContainerView)
+        }
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
             let saveCardSwitchContainerStackView = UIStackView()
@@ -106,29 +127,34 @@ class PrimerCardFormViewController: PrimerFormViewController {
         }
     }
     
-    private func configureZipCodeFieldRow() {
-        zipCodeFieldRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.zipCodeContainerView)
-        zipCodeFieldRow.addArrangedSubview(PrimerView())
-        verticalStackView.addArrangedSubview(zipCodeFieldRow)
+    private func renderPostalCodeFieldRow() {
+        postalCodeFieldRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.postalCodeContainerView)
+        postalCodeFieldRow.addArrangedSubview(PrimerView())
+        verticalStackView.addArrangedSubview(postalCodeFieldRow)
+    }
+    
+    private func renderSubmitButton() {
+        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
+        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
     }
     
     private func onConfigurationFetched() {
-        let zipView = formPaymentMethodTokenizationViewModel.zipCodeContainerView
-        let isZipCodeViewHidden: Bool = !zipCodeFieldRow.arrangedSubviews.contains(zipView)
+        let postalCodeView = formPaymentMethodTokenizationViewModel.postalCodeContainerView
+        let isPostalCodeViewHidden: Bool = !postalCodeFieldRow.arrangedSubviews.contains(postalCodeView)
         let parentVC = parent as? PrimerContainerViewController
         
-        let requireZipCode = formPaymentMethodTokenizationViewModel.requireZipCode
+        let requirePostalCode = formPaymentMethodTokenizationViewModel.requirePostalCode
         
-        if (requireZipCode && isZipCodeViewHidden) {
+        if (requirePostalCode && isPostalCodeViewHidden) {
             parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
-                self?.zipCodeFieldRow.insertArrangedSubview(zipView, at: 0)
+                self?.postalCodeFieldRow.insertArrangedSubview(postalCodeView, at: 0)
             }
         }
         
-        if (!requireZipCode && !isZipCodeViewHidden) {
+        if (!requirePostalCode && !isPostalCodeViewHidden) {
             parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
-                self?.zipCodeFieldRow.removeArrangedSubview(zipView)
-                zipView.removeFromSuperview()
+                self?.postalCodeFieldRow.removeArrangedSubview(postalCodeView)
+                postalCodeView.removeFromSuperview()
             }
         }
         
