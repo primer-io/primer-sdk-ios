@@ -25,6 +25,24 @@ public class PaymentMethodToken: NSObject, Codable {
     public var paymentInstrumentData: PaymentInstrumentData?
     public var vaultData: VaultData?
     public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
+    
+    internal init(
+        token: String,
+        analyticsId: String?,
+        tokenType: TokenType,
+        paymentInstrumentType: PaymentInstrumentType,
+        paymentInstrumentData: PaymentInstrumentData?,
+        vaultData: VaultData?,
+        threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
+    ) {
+        self.token = token
+        self.analyticsId = analyticsId
+        self.tokenType = tokenType
+        self.paymentInstrumentType = paymentInstrumentType
+        self.paymentInstrumentData = paymentInstrumentData
+        self.vaultData = vaultData
+        self.threeDSecureAuthentication = threeDSecureAuthentication
+    }
 
     public override var description: String {
         switch self.paymentInstrumentType {
