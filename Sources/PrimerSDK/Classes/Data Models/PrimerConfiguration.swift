@@ -58,8 +58,8 @@ struct PrimerConfiguration: Codable {
     
     var requirePostalCode: Bool {
         let billingAddressModule = checkoutModules?.first { $0.type == "BILLING_ADDRESS" }
-        return false
-        // return (billingAddressModule?.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
+//        return false
+         return (billingAddressModule?.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
     }
     
     public init(from decoder: Decoder) throws {

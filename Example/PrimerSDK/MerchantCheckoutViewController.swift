@@ -238,7 +238,7 @@ class MerchantCheckoutViewController: UIViewController {
                     ])
                 merchantActions.append(newAction)
             } else if action.type == "SET_BILLING_ADDRESS" {
-                if let postalCode = (action.params?["postalCode"] as? String), postalCode.count > 4 {
+                if let postalCode = (action.params?["postalCode"] as? String) {
                     postalCodeLabel.text = "Postal code: \(postalCode)"
                     
                     var billingAddress: [String: String] = [:]
