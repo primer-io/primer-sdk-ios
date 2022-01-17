@@ -358,7 +358,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 self.performChallenge(with: serverAuthData, urlScheme: nil, presentOn: self.threeDSSDKWindow!.rootViewController!)
             }
             .then { primer3DSCompletion -> Promise<ThreeDS.PostAuthResponse> in
-                self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token)
+                self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token!)
             }
             .done { postAuthResponse in
                 completion(.success((postAuthResponse.token, postAuthResponse)))
@@ -420,7 +420,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         
-        api.threeDSBeginAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
+        api.begin3DSAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -439,7 +439,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        api.threeDSContinueAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId) { result in
+        api.continue3DSAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId) { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -485,7 +485,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         api.response = response
         
-        api.threeDSBeginAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
+        api.begin3DSAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
     }
     
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {        
@@ -500,7 +500,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         api.response = response
         
-        api.threeDSContinueAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId, completion: completion)
+        api.continue3DSAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId, completion: completion)
     }
 }
 

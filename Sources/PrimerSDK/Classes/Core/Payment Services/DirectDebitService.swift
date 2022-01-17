@@ -54,7 +54,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.directDebitCreateMandate(clientToken: clientToken, mandateRequest: body) { result in
+        api.createDirectDebitMandate(clientToken: clientToken, mandateRequest: body) { result in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
