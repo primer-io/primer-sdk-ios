@@ -26,16 +26,14 @@ internal class VaultService: VaultServiceProtocol {
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         
         firstly {
-            api.vaultFetchPaymentMethods(clientToken: clientToken)
+            api.fetchVaultedPaymentMethods(clientToken: clientToken)
         }
         .done { paymentMethods in
             state.paymentMethods = paymentMethods.data
 
-            let paymentMethods = state.paymentMethods
-
-            if state.selectedPaymentMethodToken == nil && !paymentMethods.isEmpty {
-                guard let firstPaymentMethodToken = paymentMethods.first?.token else { return }
-                state.selectedPaymentMethodToken = firstPaymentMethodToken
+            if state.selectedPaymentMethodId == nil && !state.paymentMethods.isEmpty {
+                guard let firstPaymentMethodToken = state.paymentMethods.first?.id else { return }
+                state.selectedPaymentMethodId = firstPaymentMethodToken
             }
 
             completion(nil)
@@ -55,7 +53,7 @@ internal class VaultService: VaultServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.vaultDeletePaymentMethod(clientToken: clientToken, id: id) { (result) in
+        api.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { (result) in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])

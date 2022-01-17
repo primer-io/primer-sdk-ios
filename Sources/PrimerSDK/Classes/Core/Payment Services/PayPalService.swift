@@ -92,7 +92,7 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.payPalStartOrderSession(clientToken: decodedClientToken, payPalCreateOrderRequest: body) { result in
+        api.createPayPalOrderSession(clientToken: decodedClientToken, payPalCreateOrderRequest: body) { result in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -142,7 +142,7 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.payPalStartBillingAgreementSession(clientToken: decodedClientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
+        api.createPayPalBillingAgreementSession(clientToken: decodedClientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -183,7 +183,7 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
-        api.payPalConfirmBillingAgreement(clientToken: decodedClientToken, payPalConfirmBillingAgreementRequest: body) { result in
+        api.confirmPayPalBillingAgreement(clientToken: decodedClientToken, payPalConfirmBillingAgreementRequest: body) { result in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
