@@ -333,6 +333,9 @@ public class Primer {
         case (.atome, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .atome)
             
+        case (.blik, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .blik)
+            
         case (.buckarooBancontact, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooEps)
             
@@ -356,6 +359,9 @@ public class Primer {
             
         case (.klarna, .checkout):
             flow = .checkoutWithKlarna
+            
+        case (.mbWay, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .mbWay)
             
         case (.mollieBankcontact, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .mollieBankcontact)
@@ -396,12 +402,14 @@ public class Primer {
             (.adyenGiropay, .vault),
             (.adyenIDeal, .vault),
             (.atome, .vault),
+            (.blik, .vault),
             (.buckarooBancontact, .vault),
             (.buckarooEps, .vault),
             (.buckarooGiropay, .vault),
             (.buckarooIdeal, .vault),
             (.buckarooSofort, .vault),
             (.hoolah, .vault),
+            (.mbWay, .vault),
             (.payNLIdeal, .vault),
             (.adyenSofort, .vault),
             (.adyenTrustly, .vault),

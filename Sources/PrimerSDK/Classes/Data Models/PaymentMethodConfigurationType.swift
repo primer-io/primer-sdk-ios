@@ -16,6 +16,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case apaya
     case applePay
     case atome
+    case blik
     case buckarooBancontact
     case buckarooEps
     case buckarooGiropay
@@ -25,6 +26,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case googlePay
     case hoolah
     case klarna
+    case mbWay
     case mollieBankcontact
     case mollieIdeal
     case payNLBancontact
@@ -62,6 +64,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .applePay
         case "ATOME":
             self = .atome
+        case "BLIK":
+            self = .blik
         case "BUCKAROO_BANCONTACT":
             self = .buckarooBancontact
         case "BUCKAROO_EPS":
@@ -80,6 +84,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .hoolah
         case "KLARNA":
             self = .klarna
+        case "MBWAY":
+            self = .mbWay
         case "MOLLIE_BANCONTACT":
             self = .mollieBankcontact
         case "MOLLIE_IDEAL":
@@ -127,6 +133,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "APPLE_PAY"
         case .atome:
             return "ATOME"
+        case .blik:
+            return "BLIK"
         case .buckarooBancontact:
             return "BUCKAROO_BANCONTACT"
         case .buckarooEps:
@@ -145,6 +153,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "HOOLAH"
         case .klarna:
             return "KLARNA"
+        case .mbWay:
+            return "MBWAY"
         case .mollieBankcontact:
             return "MOLLIE_BANCONTACT"
         case .mollieIdeal:
@@ -179,12 +189,14 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .adyenVipps,
                 .applePay,
                 .atome,
+                .blik,
                 .buckarooBancontact,
                 .buckarooEps,
                 .buckarooGiropay,
                 .buckarooIdeal,
                 .buckarooSofort,
                 .hoolah,
+                .mbWay,
                 .mollieBankcontact,
                 .mollieIdeal,
                 .payNLBancontact,
@@ -226,6 +238,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case apaya
         case applePay
         case atome
+        case blik
         case buckarooBancontact
         case buckarooEps
         case buckarooGiropay
@@ -235,6 +248,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case googlePay
         case hoolah
         case klarna
+        case mbWay
         case mollieBankcontact
         case mollieIdeal
         case payNLBancontact

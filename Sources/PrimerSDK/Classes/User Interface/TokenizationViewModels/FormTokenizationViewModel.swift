@@ -38,6 +38,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                                 bundle: Bundle.primerResources,
                                 value: "Pay with card",
                                 comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+        case .blik,
+                .mbWay:
+            return nil
+            
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -48,6 +52,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .paymentCard:
             return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .blik:
+            return UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .mbWay:
+            return UIImage(named: "mbway-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -56,7 +64,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonColor: UIColor? = {
         switch config.type {
-        case .paymentCard:
+        case .paymentCard,
+                .blik,
+                .mbWay:
             return theme.paymentMethodButton.color(for: .enabled)
         default:
             assert(true, "Shouldn't end up in here")
@@ -68,6 +78,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .paymentCard:
             return theme.paymentMethodButton.text.color
+        case .blik,
+                .mbWay:
+            return nil
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -76,7 +89,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonBorderWidth: CGFloat = {
         switch config.type {
-        case .paymentCard:
+        case .paymentCard,
+                .blik,
+                .mbWay:
             return theme.paymentMethodButton.border.width
         default:
             assert(true, "Shouldn't end up in here")
@@ -86,7 +101,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
-        case .paymentCard:
+        case .paymentCard,
+                .blik,
+                .mbWay:
             return theme.paymentMethodButton.border.color(for: .enabled)
         default:
             assert(true, "Shouldn't end up in here")
@@ -98,6 +115,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .paymentCard:
             return theme.paymentMethodButton.iconColor
+        case .blik,
+                .mbWay:
+            return nil
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -229,7 +249,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         postalCodeContainerView.setup()
         postalCodeContainerView.tintColor = theme.input.border.color(for: .selected)
         return postalCodeContainerView
-     }()
+    }()
     
     lazy var submitButton: PrimerOldButton = {
         var buttonTitle: String = ""
@@ -350,8 +370,48 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
         
         DispatchQueue.main.async {
-            let pcfvc = PrimerCardFormViewController(viewModel: self)
-            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+            switch self.config.type {
+            case .paymentCard:
+                let pcfvc = PrimerCardFormViewController(viewModel: self)
+                Primer.shared.primerRootVC?.show(viewController: pcfvc)
+            case .blik,
+                    .mbWay:
+                let input1 = Input()
+                input1.name = "OTP"
+                input1.topPlaceholder = "6 digit code"
+                input1.textFieldPlaceholder = "Enter your one time password"
+                input1.keyboardType = .numberPad
+                input1.descriptor = "Get the code from your banking app."
+                input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
+                input1.maxCharactersAllowed = 6
+                input1.isValid = { text in
+                    return text.isNumeric && text.count >= 6
+                }
+                
+                let input2 = Input()
+                input2.name = "Phonenumber"
+                input2.topPlaceholder = "Phone number"
+                input2.textFieldPlaceholder = "Enter your phonenumber"
+                input2.keyboardType = .phonePad
+                //            input2.isValid = { text in
+                //                return text.isNumeric && text.count >= 6
+                //            }
+                //            input2.descriptor = "Get the code from your banking app."
+                
+                switch self.config.type {
+                case .blik:
+                    let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil), inputs: [input1])
+                    Primer.shared.primerRootVC?.show(viewController: pcfvc)
+                case .mbWay:
+                    let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "mbway-logo", in: Bundle.primerResources, compatibleWith: nil), inputs: [input1])
+                    Primer.shared.primerRootVC?.show(viewController: pcfvc)
+                default:
+                    break
+                }
+                
+            default:
+                break
+            }
         }
     }
     
@@ -366,42 +426,56 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return
         }
         
-        DispatchQueue.main.async {
-            let input1 = Input()
-            input1.name = "OTP"
-            input1.topPlaceholder = "6 digit code"
-            input1.textFieldPlaceholder = "Enter your one time password"
-            input1.keyboardType = .numberPad
-            input1.descriptor = "Get the code from your banking app."
-            input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
-            input1.maxCharactersAllowed = 6
-            input1.isValid = { text in
-                return text.isNumeric && text.count >= 6
+        switch config.type {
+        case .blik,
+                .mbWay:
+            DispatchQueue.main.async {
+                let input1 = Input()
+                input1.name = "OTP"
+                input1.topPlaceholder = "6 digit code"
+                input1.textFieldPlaceholder = "Enter your one time password"
+                input1.keyboardType = .numberPad
+                input1.descriptor = "Get the code from your banking app."
+                input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
+                input1.maxCharactersAllowed = 6
+                input1.isValid = { text in
+                    return text.isNumeric && text.count >= 6
+                }
+                
+                let input2 = Input()
+                input2.name = "Phonenumber"
+                input2.topPlaceholder = "Phone number"
+                input2.textFieldPlaceholder = "Enter your phonenumber"
+                input2.keyboardType = .phonePad
+                //            input2.isValid = { text in
+                //                return text.isNumeric && text.count >= 6
+                //            }
+                //            input2.descriptor = "Get the code from your banking app."
+                
+                switch self.config.type {
+                case .blik:
+                    let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil), inputs: [input1])
+                    Primer.shared.primerRootVC?.show(viewController: pcfvc)
+                case .mbWay:
+                    let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "mbway-logo", in: Bundle.primerResources, compatibleWith: nil), inputs: [input1])
+                    Primer.shared.primerRootVC?.show(viewController: pcfvc)
+                default:
+                    break
+                }
             }
-            
-            let input2 = Input()
-            input2.name = "Phonenumber"
-            input2.topPlaceholder = "Phone number"
-            input2.textFieldPlaceholder = "Enter your phonenumber"
-            input2.keyboardType = .phonePad
-//            input2.isValid = { text in
-//                return text.isNumeric && text.count >= 6
-//            }
-//            input2.descriptor = "Get the code from your banking app."
-            
-            let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil), inputs: [input1])
-            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+        default:
+            break
         }
     }
     
     func configurePayButton(cardNetwork: CardNetwork?) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         var amount: Int = settings.amount ?? 0
-
+        
         if let surcharge = cardNetwork?.surcharge {
             amount += surcharge
         }
-
+        
         configurePayButton(amount: amount)
     }
     
@@ -460,7 +534,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     "network": network,
                 ]
             ]
-    
+            
             onClientSessionActionCompletion = { err in
                 if let err = err {
                     DispatchQueue.main.async {
@@ -608,9 +682,9 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
             cvvField.isTextValid,
             cardholderNameField?.isTextValid,
         ]
-
+        
         if requirePostalCode { validations.append(postalCodeField.isTextValid) }
-
+        
         if validations.allSatisfy({ $0 == true }) {
             submitButton.isEnabled = true
             submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
@@ -645,10 +719,10 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 "state": currentBillingAddress?.state,
                 "countryCode": currentBillingAddress?.countryCode
             ] as [String: Any]
-
+            
             ClientSession.Action.setPostalCode(resumeHandler: self, withParameters: params)
         }
-
+        
         autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
         showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: isValid)
         enableSubmitButtonIfNeeded()
@@ -709,7 +783,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             let decodedClientToken = ClientTokenService.decodedClientToken!
             
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                #if canImport(Primer3DS)
+#if canImport(Primer3DS)
                 guard let paymentMethod = paymentMethod else {
                     DispatchQueue.main.async {
                         let err = PrimerError.generic(message: "Failed to find paymentMethod", userInfo: nil)
@@ -749,13 +823,13 @@ extension CardFormPaymentMethodTokenizationViewModel {
                         }
                     }
                 }
-                #else
+#else
                 let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 DispatchQueue.main.async {
                     Primer.shared.delegate?.onResumeError?(err)
                 }
-                #endif
+#endif
                 
             } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
                 let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
@@ -769,7 +843,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     if let amount = settings.amount, !self.isTokenizing {
                         self.configurePayButton(amount: amount)
                     }
-                        
+                    
                     // determine postal code textfield visibility
                     self.onConfigurationFetched?()
                     
@@ -781,7 +855,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
-
+                
                 handle(error: err)
                 DispatchQueue.main.async {
                     Primer.shared.delegate?.onResumeError?(err)

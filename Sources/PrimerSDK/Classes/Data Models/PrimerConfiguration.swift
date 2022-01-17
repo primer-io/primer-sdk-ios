@@ -16,9 +16,14 @@ struct PrimerConfiguration: Codable {
     static var paymentMethodConfigs: [PaymentMethodConfig]? {
         if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
-        return state
-            .primerConfiguration?
-            .paymentMethods
+        
+        var paymentMethods = state.primerConfiguration?.paymentMethods
+        
+        let blik = PaymentMethodConfig(id: "blik", options: nil, processorConfigId: "test1", type: .blik)
+        let mbWay = PaymentMethodConfig(id: "mbWay", options: nil, processorConfigId: "test2", type: .mbWay)
+        paymentMethods?.append(contentsOf: [blik, mbWay])
+        
+        return paymentMethods
     }
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {

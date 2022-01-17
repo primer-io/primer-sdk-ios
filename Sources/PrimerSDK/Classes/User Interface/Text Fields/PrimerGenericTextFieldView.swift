@@ -51,7 +51,7 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
         
         primerTextField._text = newText
         
-        validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? PrimerTextField.Validation.valid : PrimerTextField.Validation.invalid(PrimerError.invalidCardnumber)
+        validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? PrimerTextField.Validation.valid : PrimerTextField.Validation.invalid(ValidationError.invalidCardnumber(userInfo: nil))
         
         switch validation {
         case .valid:
