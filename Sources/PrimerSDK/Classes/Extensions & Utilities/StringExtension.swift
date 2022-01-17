@@ -59,7 +59,19 @@ internal extension String {
             }
         }
         
-        return clearedCardNumber.count >= 13 && clearedCardNumber.count <= 19 && clearedCardNumber.isValidLuhn
+        let isValid = clearedCardNumber.count >= 13 && clearedCardNumber.count <= 19 && clearedCardNumber.isValidLuhn
+        
+        if !isValid {
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Invalid cardnumber",
+                    messageType: .validationFailed,
+                    severity: .warning))
+            Analytics.Service.record(event: event)
+        }
+        
+        return isValid
     }
     
     var withoutNonNumericCharacters: String {
@@ -114,7 +126,19 @@ internal extension String {
         }
         
         guard let date = _self.toDate(withFormat: "MMyy") else { return false }
-        return date.endOfMonth > Date()
+        let isValid = date.endOfMonth > Date()
+        
+        if !isValid {
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Invalid expiry date",
+                    messageType: .validationFailed,
+                    severity: .error))
+            Analytics.Service.record(event: event)
+        }
+        
+        return isValid
     }
     
     func isTypingValidCVV(cardNetwork: CardNetwork?) -> Bool? {
@@ -130,7 +154,19 @@ internal extension String {
             return count == numberOfDigits
         }
         
-        return count > 2 && count < 5
+        let isValid = count > 2 && count < 5
+        
+        if !isValid {
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Invalid CVV",
+                    messageType: .validationFailed,
+                    severity: .warning))
+            Analytics.Service.record(event: event)
+        }
+        
+        return isValid
     }
     
     var isTypingValidCardholderName: Bool? {
@@ -141,6 +177,12 @@ internal extension String {
     var isValidCardholderName: Bool {
         if isEmpty { return false }
         let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-")
+        return !(self.rangeOfCharacter(from: set.inverted) != nil)
+    }
+    
+    var isValidPostalCode: Bool {
+        if count < 1 { return false }
+        let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-1234567890")
         return !(self.rangeOfCharacter(from: set.inverted) != nil)
     }
 

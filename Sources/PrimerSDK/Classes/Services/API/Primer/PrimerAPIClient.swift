@@ -28,6 +28,8 @@ protocol PrimerAPIClientProtocol {
     func createApayaSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest, completion: @escaping (_ result: Result<Apaya.CreateSessionAPIResponse, Error>) -> Void)
     func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (_ result: Result<[Bank], Error>) -> Void)
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
+    
+    func sendAnalyticsEvent(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -46,158 +48,148 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<GetVaultedPaymentMethodsResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.fetchVaultedPaymentMethods(clientToken: clientToken)
-        networkService.request(endpoint) { (result: Result<GetVaultedPaymentMethodsResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<GetVaultedPaymentMethodsResponse, Error>) in
             switch result {
             case .success(let vaultedPaymentMethodsResponse):
                 let state: AppStateProtocol = DependencyContainer.resolve()
                 state.selectedPaymentMethodId = vaultedPaymentMethodsResponse.data.first?.id
                 completion(.success(vaultedPaymentMethodsResponse))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(PrimerError.vaultFetchFailed))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
     
     func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void) {
         let endpoint = PrimerAPI.exchangePaymentMethodToken(clientToken: clientToken, paymentMethodId: paymentMethodId)
-        networkService.request(endpoint) { (result: Result<PaymentMethodToken, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethodToken, Error>) in
             switch result {
             case .success(let paymentInstrument):
                 completion(.success(paymentInstrument))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
-                completion(.failure(PrimerError.vaultFetchFailed))
+                completion(.failure(error))
             }
         }
     }
 
     func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Void, Error>) -> Void) {
         let endpoint = PrimerAPI.deleteVaultedPaymentMethod(clientToken: clientToken, id: id)
-        networkService.request(endpoint) { (result: Result<DummySuccess, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<DummySuccess, Error>) in
             switch result {
             case .success:
                 completion(.success(()))
             case .failure(let error):
                 ErrorHandler.shared.handle(error: error)
-                completion(.failure(PrimerError.vaultDeleteFailed))
+                completion(.failure(error))
             }
         }
     }
 
     func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void) {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken)
-        networkService.request(endpoint) { (result: Result<PrimerConfiguration, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<PrimerConfiguration, Error>) in
             switch result {
             case .success(let primerConfiguration):
                 completion(.success(primerConfiguration))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(PrimerError.configFetchFailed))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
 
     func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.createDirectDebitMandate(clientToken: clientToken, mandateRequest: mandateRequest)
-        networkService.request(endpoint) { (result: Result<DirectDebitCreateMandateResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<DirectDebitCreateMandateResponse, Error>) in
             switch result {
             case .success(let primerConfiguration):
                 completion(.success(primerConfiguration))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(PrimerError.configFetchFailed))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
 
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.createPayPalOrderSession(clientToken: clientToken, payPalCreateOrderRequest: payPalCreateOrderRequest)
-        networkService.request(endpoint) { (result: Result<PayPalCreateOrderResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<PayPalCreateOrderResponse, Error>) in
             switch result {
             case .success(let payPalCreateOrderResponse):
                 completion(.success(payPalCreateOrderResponse))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(PrimerError.payPalSessionFailed))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
 
     func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalCreateBillingAgreementResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.createPayPalSBillingAgreementSession(clientToken: clientToken, payPalCreateBillingAgreementRequest: payPalCreateBillingAgreementRequest)
-        networkService.request(endpoint) { (result: Result<PayPalCreateBillingAgreementResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<PayPalCreateBillingAgreementResponse, Error>) in
             switch result {
             case .success(let payPalCreateOrderResponse):
                 completion(.success(payPalCreateOrderResponse))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(PrimerError.payPalSessionFailed))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
 
     func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.confirmPayPalBillingAgreement(clientToken: clientToken, payPalConfirmBillingAgreementRequest: payPalConfirmBillingAgreementRequest)
-        networkService.request(endpoint) { (result: Result<PayPalConfirmBillingAgreementResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<PayPalConfirmBillingAgreementResponse, Error>) in
             switch result {
             case .success(let payPalCreateOrderResponse):
                 completion(.success(payPalCreateOrderResponse))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(PrimerError.payPalSessionFailed))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
 
     func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (_ result: Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.createKlarnaPaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest)
-        networkService.request(endpoint) { (result: Result<KlarnaCreatePaymentSessionAPIResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<KlarnaCreatePaymentSessionAPIResponse, Error>) in
             switch result {
             case .success(let klarnaCreatePaymentSessionAPIResponse):
                 completion(.success(klarnaCreatePaymentSessionAPIResponse))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(KlarnaException.failedApiCall))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
 
     func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.createKlarnaCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: klarnaCreateCustomerTokenAPIRequest)
-        networkService.request(endpoint) { (result: Result<KlarnaCustomerTokenAPIResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<KlarnaCustomerTokenAPIResponse, Error>) in
             switch result {
             case .success(let klarnaCreateCustomerTokenAPIRequest):
                 completion(.success(klarnaCreateCustomerTokenAPIRequest))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(KlarnaException.failedApiCall))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
 
     func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.finalizeKlarnaPaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: klarnaFinalizePaymentSessionRequest)
-        networkService.request(endpoint) { (result: Result<KlarnaCustomerTokenAPIResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<KlarnaCustomerTokenAPIResponse, Error>) in
             switch result {
             case .success(let klarnaFinalizePaymentSessionResponse):
                 completion(.success(klarnaFinalizePaymentSessionResponse))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(KlarnaException.failedApiCall))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
 
     func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void) {
         let endpoint = PrimerAPI.tokenizePaymentMethod(clientToken: clientToken, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest)
-        networkService.request(endpoint) { (result: Result<PaymentMethodToken, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethodToken, Error>) in
             switch result {
             case .success(let paymentMethodToken):
                 completion(.success(paymentMethodToken))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(PrimerError.tokenizationRequestFailed))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
@@ -208,28 +200,25 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
     ) {
         let endpoint = PrimerAPI.createApayaSession(clientToken: clientToken, request: request)
-        networkService.request(endpoint) { (result: Result<Apaya.CreateSessionAPIResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<Apaya.CreateSessionAPIResponse, Error>) in
             switch result {
             case .success(let response):
                 completion(.success(response))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(ApayaException.failedApiCall))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
     
     func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
         let endpoint = PrimerAPI.listAdyenBanks(clientToken: clientToken, request: request)
-        networkService.request(endpoint) { (result: Result<BanksListSessionResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<BanksListSessionResponse, Error>) in
             switch result {
             case .success(let res):
                 let banks = res.result
-                print(banks)
                 completion(.success(banks))
-            case .failure(let error):
-                _ = ErrorHandler.shared.handle(error: error)
-                completion(.failure(PrimerError.tokenizationRequestFailed))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
@@ -240,215 +229,19 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void
     ) {
         let endpoint = PrimerAPI.poll(clientToken: clientToken, url: url)
-        networkService.request(endpoint) { (result: Result<PollingResponse, NetworkServiceError>) in
+        networkService.request(endpoint) { (result: Result<PollingResponse, Error>) in
             switch result {
             case .success(let response):
                 completion(.success(response))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(error))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
-}
-
-internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
-    var response: Data?
-    var throwsError: Bool
-    var isCalled: Bool = false
-
-    init(with response: Data? = nil, throwsError: Bool = false) {
-        self.response = response
-        self.throwsError = throwsError
-    }
-
-    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (Result<GetVaultedPaymentMethodsResponse, Error>) -> Void) {
-        isCalled = true
-        guard let response = response else { return }
-
-        do {
-            let value = try JSONDecoder().decode(GetVaultedPaymentMethodsResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-
-    func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+    func sendAnalyticsEvent(url: URL, body: Analytics.Service.Request?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
         
     }
-    
-    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse> {
-        return Promise { [weak self] seal in
-            do {
-                let value = try JSONDecoder().decode(GetVaultedPaymentMethodsResponse.self, from: response!)
-                seal.fulfill(value)
-            } catch {
-                seal.reject(error)
-            }
-        }
-    }
-
-    func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        isCalled = true
-        guard let response = response else { return }
-
-        do {
-            completion(.success(()))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (Result<PrimerConfiguration, Error>) -> Void) {
-        isCalled = true
-        guard let response = response else { return }
-
-        do {
-            let value = try JSONDecoder().decode(PrimerConfiguration.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-
-    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (Result<DirectDebitCreateMandateResponse, Error>) -> Void) {
-        isCalled = true
-        guard let response = response else { return }
-
-        do {
-            let value = try JSONDecoder().decode(DirectDebitCreateMandateResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-
-    func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
-        isCalled = true
-        guard let response = response else { return }
-
-        do {
-            let value = try JSONDecoder().decode(PayPalCreateOrderResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-
-    func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (Result<PayPalCreateBillingAgreementResponse, Error>) -> Void) {
-        isCalled = true
-        guard let response = response else { return }
-
-        do {
-            let value = try JSONDecoder().decode(PayPalCreateBillingAgreementResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-
-    func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
-        isCalled = true
-        guard let response = response else { return }
-
-        do {
-            let value = try JSONDecoder().decode(PayPalConfirmBillingAgreementResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-
-    func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void) {
-        isCalled = true
-
-        guard throwsError == false else {
-            completion(.failure(KlarnaException.failedApiCall))
-            return
-        }
-        guard let response = response else { return }
-
-        do {
-            let value = try JSONDecoder().decode(KlarnaCreatePaymentSessionAPIResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-
-    func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
-        isCalled = true
-
-        guard throwsError == false else {
-            completion(.failure(KlarnaException.failedApiCall))
-            return
-        }
-
-        guard let response = response else { return }
-        do {
-            let value = try JSONDecoder().decode(KlarnaCustomerTokenAPIResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-
-    func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
-        isCalled = true
-
-        guard throwsError == false else {
-            completion(.failure(KlarnaException.failedApiCall))
-            return
-        }
-
-        guard let response = response else { return }
-
-        do {
-            let value = try JSONDecoder().decode(KlarnaCustomerTokenAPIResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-
-    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
-        isCalled = true
-        guard let response = response else { return }
-
-        do {
-            let value = try JSONDecoder().decode(PaymentMethodToken.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-    
-    func createApayaSession(
-        clientToken: DecodedClientToken,
-        request: Apaya.CreateSessionAPIRequest,
-        completion: @escaping (Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
-    ) {
-        isCalled = true
-        guard let response = response else { return }
-        
-        do {
-            let value = try JSONDecoder().decode(Apaya.CreateSessionAPIResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-    
-    func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
-        
-    }
-    
-    func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (Result<PollingResponse, Error>) -> Void) {
-        
-    }
-
 }
 
 #endif

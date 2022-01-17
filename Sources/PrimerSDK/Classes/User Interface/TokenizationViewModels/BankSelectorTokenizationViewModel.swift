@@ -126,8 +126,8 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
-            let err = PaymentException.missingClientToken
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
     }
@@ -203,6 +203,21 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     @objc
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
+        
+        let event = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .select,
+                objectClass: "\(Self.self)",
+                place: .bankSelectionList))
+        Analytics.Service.record(event: event)
     }
     
     fileprivate func continueTokenizationFlow() {
@@ -275,7 +290,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     private func fetchBanks() -> Promise<[Bank]> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                seal.reject(PrimerError.clientTokenNull)
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
                 return
             }
             
@@ -346,7 +363,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                 paymentMethodType: config.type.rawValue))
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            completion(nil, PrimerError.clientTokenNull)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(nil, err)
             return
         }
         
@@ -448,7 +467,8 @@ extension BankSelectorTokenizationViewModel {
             // We'll end up in here only for surcharge.
             
             guard let decodedClientToken = clientToken.jwtTokenPayload else {
-                let err = PrimerError.clientTokenNull
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
                 self.handle(error: err)
                 return
             }
@@ -470,7 +490,8 @@ extension BankSelectorTokenizationViewModel {
                     self.handle(error: err)
                 }
             } else {
-                let err = PrimerError.clientTokenNull
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
                 self.handle(error: err)
                 return
             }

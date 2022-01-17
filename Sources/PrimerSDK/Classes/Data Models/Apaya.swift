@@ -49,14 +49,19 @@ public struct Apaya {
                 url.queryParameterValue(for: "success") != nil,
                 let status = url.queryParameterValue(for: "status")
             else {
-                throw ApayaException.invalidWebViewResult
+                let err = PrimerError.generic(message: "Failed to find query parameters: [status, success]", userInfo: nil)
+                ErrorHandler.handle(error: err)
+                throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             }
             
-            if (status == "SETUP_ERROR") {
-                throw ApayaException.webViewFlowError
-            }
-            if (status == "SETUP_ABANDONED") {
-                throw ApayaException.webViewFlowCancelled
+            if status == "SETUP_ERROR" {
+                let err = PrimerError.generic(message: "Apaya status is SETUP_ERROR", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            } else if status == "SETUP_ABANDONED" {
+                let err = PrimerError.cancelled(paymentMethodType: .apaya, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                throw err
             }
             
             guard
@@ -66,14 +71,22 @@ public struct Apaya {
                 let mnc = url.queryParameterValue(for: "MNC"),
                 let success = url.queryParameterValue(for: "success")
             else {
-                throw ApayaException.invalidWebViewResult
+                let err = PrimerError.invalidValue(key: "apaya-params", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+            
+            guard ClientTokenService.decodedClientToken != nil else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                throw err
             }
             
             let state: AppStateProtocol = DependencyContainer.resolve()
-            guard ClientTokenService.decodedClientToken != nil,
-                  let merchantAccountId = state.primerConfiguration?.getProductId(for: .apaya)
-            else {
-                throw ApayaException.invalidWebViewResult
+            guard let merchantAccountId = state.primerConfiguration?.getProductId(for: .apaya) else {
+                let err = PrimerError.invalidValue(key: "apaya-merchantAccountId", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                throw err
             }
     
             self.hashedIdentifier = hashedIdentifier
@@ -87,7 +100,6 @@ public struct Apaya {
     }
     
     class ViewModel {
-        
         var carrier: Apaya.Carrier
         var hashedIdentifier: String?
         

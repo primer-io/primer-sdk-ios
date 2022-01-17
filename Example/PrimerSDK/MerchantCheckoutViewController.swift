@@ -32,6 +32,7 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var postalCodeLabel: UILabel!
     
     var paymentMethodsDataSource: [PaymentMethodToken] = [] {
         didSet {
@@ -236,6 +237,25 @@ class MerchantCheckoutViewController: UIViewController {
                         "amount": 456
                     ])
                 merchantActions.append(newAction)
+            } else if action.type == "SET_BILLING_ADDRESS" {
+                if let postalCode = (action.params?["postalCode"] as? String) {
+                    postalCodeLabel.text = "Postal code: \(postalCode)"
+                    
+                    var billingAddress: [String: String] = [:]
+                    
+                    action.params?.forEach { entry in
+                        if let value = entry.value as? String {
+                            billingAddress[entry.key] = value
+                        }
+                    }
+                    
+                    let newAction = ClientSession.Action(
+                        type: action.type,
+                        params: [ "billingAddress": billingAddress ]
+                    )
+                    
+                    merchantActions.append(newAction)
+                }
             } else {
                 merchantActions.append(action)
             }
@@ -559,7 +579,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyDic: [String: Any] = [
-            //            "id": transactionResponse.id,
             "resumeToken": clientToken
         ]
         

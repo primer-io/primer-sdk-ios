@@ -19,6 +19,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Adyen Ali Pay"
         case .adyenGiropay:
             return "Giropay"
+        case .atome:
+            return "Atome"
         case .buckarooBancontact:
             return "Buckaroo Bancontact"
         case .buckarooEps:
@@ -63,6 +65,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
+                .atome,
                 .buckarooBancontact,
                 .buckarooEps,
                 .buckarooGiropay,
@@ -91,6 +94,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay:
             return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .atome:
+            return UIImage(named: "atome-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .buckarooBancontact,
                 .mollieBankcontact,
                 .payNLBancontact:
@@ -145,6 +150,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return .black
         case .adyenVipps:
             return UIColor(red: 255.0/255, green: 91.0/255, blue: 36.0/255, alpha: 1.0)
+        case .atome:
+            return UIColor(red: 240.0/255, green: 255.0/255, blue: 95.0/255, alpha: 1.0)
         case .buckarooEps:
             return .white
         case .hoolah:
@@ -175,6 +182,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
+                .atome,
                 .buckarooBancontact,
                 .buckarooEps,
                 .buckarooIdeal,
@@ -202,6 +210,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
+                .atome,
                 .buckarooIdeal,
                 .buckarooGiropay,
                 .buckarooSofort,
@@ -230,6 +239,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
+                .atome,
                 .buckarooIdeal,
                 .buckarooGiropay,
                 .buckarooSofort,
@@ -253,6 +263,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
         case .adyenAlipay,
+                .atome,
                 .buckarooBancontact,
                 .buckarooEps,
                 .buckarooIdeal,
@@ -305,13 +316,30 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override func validate() throws {        
         if ClientTokenService.decodedClientToken?.isValid != true {
-            throw PrimerError.clientTokenNull
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
         }
     }
     
     @objc
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
+        
+        let event = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .select,
+                objectClass: "\(Self.self)",
+                place: .paymentMethodPopup))
+        Analytics.Service.record(event: event)
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
@@ -401,14 +429,18 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 pollingURLs = pollingURLsResponse
                 
                 guard let redirectUrl = pollingURLs.redirectUrl else {
-                    throw PrimerError.invalidValue(key: "redirectUrl")
+                    let err = PrimerError.invalidValue(key: "redirectUrl", value: pollingURLs.redirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    throw err
                 }
                 
                 return self.presentAsyncPaymentMethod(with: redirectUrl)
             }
             .then { () -> Promise<String> in
                 guard let statusUrl = pollingURLs.statusUrl else {
-                    throw PrimerError.invalidValue(key: "statusUrl")
+                    let err = PrimerError.invalidValue(key: "statusUrl", value: pollingURLs.redirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    throw err
                 }
                 
                 return self.startPolling(on: statusUrl)
@@ -436,7 +468,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     fileprivate func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             guard let configId = config.id else {
-                seal.reject(PrimerError.configFetchFailed)
+                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
                 return
             }
             
@@ -489,7 +523,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         
                     }
                     
-                    let err = PrimerError.invalidValue(key: "polling params")
+                    let err = PrimerError.invalidValue(key: "polling params", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
                     seal.reject(err)
                 } else {
                     assert(true, "Should have received one parameter")
@@ -545,7 +580,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
         client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
             if self.webViewCompletion == nil {
-                completion(nil, PrimerError.userCancelled)
+                let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                completion(nil, err)
                 return
             }
             switch result {
@@ -595,7 +632,9 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
             // Cancelled
-            webViewCompletion(nil, PrimerError.userCancelled)
+            let err = PrimerError.cancelled(paymentMethodType: config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            webViewCompletion(nil, err)
         }
         
         webViewCompletion = nil
@@ -709,7 +748,9 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
     fileprivate override func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             guard let _ = config.id else {
-                seal.reject(PrimerError.configFetchFailed)
+                let err = PrimerError.invalidValue(key: "configuration.\(config.type.rawValue.lowercased()).id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
                 return
             }
 
@@ -718,7 +759,9 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
                 let paymentMethod = try? JSONDecoder().decode(PaymentMethodToken.self, from: returnedPaymentMethodData) {
                 seal.fulfill(paymentMethod)
             } else {
-                seal.reject(PrimerError.tokenizationRequestFailed)
+                let err = ParserError.failedToDecode(message: "Failed to decode tokenization response.", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
             }
         }
     }

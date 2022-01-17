@@ -2,14 +2,14 @@
 //  DataExtension.swift
 //  PrimerSDK
 //
-//  Created by Evangelos on 21/12/21.
+//  Created by Evangelos on 13/12/21.
 //
 
 #if canImport(UIKit)
 
 import Foundation
 
-extension Data {
+internal extension Data {
     var prettyPrintedJSONString: NSString? { /// NSString gives us a nice sanitized debugDescription
         guard let object = try? JSONSerialization.jsonObject(with: self, options: []),
               let data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),

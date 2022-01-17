@@ -35,6 +35,21 @@ internal class BankSelectorViewController: PrimerFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.viewModel.config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .bankSelectionList))
+        Analytics.Service.record(event: viewEvent)
 
         view.backgroundColor = theme.view.backgroundColor
         view.translatesAutoresizingMaskIntoConstraints = false

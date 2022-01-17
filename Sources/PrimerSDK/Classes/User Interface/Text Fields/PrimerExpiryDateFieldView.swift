@@ -27,6 +27,40 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         }
     }
     
+    public override func textFieldDidBeginEditing(_ textField: UITextField) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .focus,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .input,
+                objectId: .expiry,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+    }
+    
+    public override func textFieldDidEndEditing(_ textField: UITextField) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .blur,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .input,
+                objectId: .expiry,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+    }
+    
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField._text ?? ""
@@ -35,13 +69,12 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         if !(newText.isNumeric || newText.isEmpty) { return false }
         if string != "" && newText.withoutWhiteSpace.count >= 5 { return false }
         
-        validation = (self.isValid?(newText) ?? false) ? .valid : .invalid(PrimerError.invalidExpiryDate)
-        
-        switch validation {
-        case .valid:
-            delegate?.primerTextFieldView(self, isValid: true)
-        default:
-            delegate?.primerTextFieldView(self, isValid: nil)
+        if (self.isValid?(newText) ?? false) {
+            validation = .valid
+        } else {
+            let err = ValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            validation = .invalid(err)
         }
         
         if string != "" {   // Typing
@@ -69,6 +102,18 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             expiryMonth = nil
             expiryYear = nil
         }
+        
+        if newText.count == 5, !newText.isValidExpiryDate {
+            delegate?.primerTextFieldView(self, isValid: false)
+        } else {
+            switch validation {
+            case .valid:
+                delegate?.primerTextFieldView(self, isValid: true)
+            default:
+                delegate?.primerTextFieldView(self, isValid: nil)
+            }
+        }
+        
         return false
     }
     

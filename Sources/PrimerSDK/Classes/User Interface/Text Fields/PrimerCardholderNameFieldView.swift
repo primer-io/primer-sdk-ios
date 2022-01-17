@@ -27,6 +27,40 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
         }
     }
     
+    public override func textFieldDidBeginEditing(_ textField: UITextField) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .focus,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .input,
+                objectId: .cardHolder,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+    }
+    
+    public override func textFieldDidEndEditing(_ textField: UITextField) {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .blur,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .input,
+                objectId: .cardHolder,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+    }
+    
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let positionOriginal = textField.beginningOfDocument
         let cursorLocation = textField.position(from: positionOriginal, offset: (range.location + NSString(string: string).length))
@@ -39,7 +73,9 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            validation = .invalid(PrimerError.invalidCardholderName)
+            let err = ValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            validation = .invalid(err)
         default:
             validation = .notAvailable
         }

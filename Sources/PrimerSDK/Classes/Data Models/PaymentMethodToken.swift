@@ -231,6 +231,7 @@ public enum PaymentInstrumentType: String, Codable {
 
 public struct PaymentInstrumentData: Codable {
     public let paypalBillingAgreementId: String?
+    public let first6Digits: String?
     public let last4Digits: String?
     public let expirationMonth: String?
     public let expirationYear: String?

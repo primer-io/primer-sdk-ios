@@ -23,6 +23,18 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .view,
+                context: nil,
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .vaultManager))
+        Analytics.Service.record(event: viewEvent)
+        
         title = NSLocalizedString("primer-vault-nav-bar-title",
                                   tableName: nil,
                                   bundle: Bundle.primerResources,

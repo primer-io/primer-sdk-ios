@@ -50,7 +50,7 @@ class MockPrimerDelegate: PrimerDelegate {
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         clientTokenCallbackCalled = true
         guard let token = token else {
-            completion(nil, PrimerError.clientTokenNull)
+            completion(nil, PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
             return
         }
         completion(token, nil)
@@ -64,12 +64,12 @@ class MockPrimerDelegate: PrimerDelegate {
 
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
-        if authorizePaymentFails { completion(PrimerError.clientTokenNull) }
+        if authorizePaymentFails { completion(PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])) }
     }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
-        if authorizePaymentFails { completion(PrimerError.clientTokenNull) }
+        if authorizePaymentFails { completion(PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])) }
     }
 
     func onCheckoutDismissed() {
@@ -173,7 +173,8 @@ let mockPaymentMethodConfig = PrimerConfiguration(
         PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
         PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
     ],
-    keys: nil
+    keys: nil,
+    checkoutModules: nil
 )
 
 class MockAppState: AppStateProtocol {
@@ -195,7 +196,8 @@ class MockAppState: AppStateProtocol {
                 PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
                 PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
             ],
-            keys: nil
+            keys: nil,
+            checkoutModules: nil
         )
     ) {
         self.clientToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjI2MzQzMTcwODgsImFjY2Vzc1Rva2VuIjoiOTUxODRhNWYtMWMxNS00OGQ0LTk4MzYtYmM4ZWFkZmYzMzFiIiwiYW5hbHl0aWNzVXJsIjoiaHR0cHM6Ly9hbmFseXRpY3MuYXBpLnN0YWdpbmcuY29yZS5wcmltZXIuaW8vbWl4cGFuZWwiLCJpbnRlbnQiOiJDSEVDS09VVCIsImNvbmZpZ3VyYXRpb25VcmwiOiJodHRwczovL2FwaS5zdGFnaW5nLnByaW1lci5pby9jbGllbnQtc2RrL2NvbmZpZ3VyYXRpb24iLCJjb3JlVXJsIjoiaHR0cHM6Ly9hcGkuc3RhZ2luZy5wcmltZXIuaW8iLCJwY2lVcmwiOiJodHRwczovL3Nkay5hcGkuc3RhZ2luZy5wcmltZXIuaW8iLCJlbnYiOiJTVEFHSU5HIiwicGF5bWVudEZsb3ciOiJQUkVGRVJfVkFVTFQifQ.aybIRUso7r9LJcL3pg8_Rg2aVMHDUikcooA3KcCX43g"

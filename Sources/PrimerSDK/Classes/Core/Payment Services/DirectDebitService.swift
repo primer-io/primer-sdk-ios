@@ -21,16 +21,25 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
-            return completion(PrimerError.directDebitSessionFailed)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(err)
+            return
         }
 
         guard let configId = state.primerConfiguration?.getConfigId(for: .goCardlessMandate) else {
-            return completion(PrimerError.directDebitSessionFailed)
+            let err = PrimerError.invalidValue(key: "configId", value: state.primerConfiguration?.getConfigId(for: .goCardlessMandate), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(err)
+            return
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         guard let customer = settings.customer else {
-            return completion(PrimerError.userDetailsMissing)
+            let err = PrimerError.invalidValue(key: "settings.customer", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(err)
+            return
         }
         
         let bankDetails = BankDetails(
@@ -47,8 +56,10 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
 
         api.createDirectDebitMandate(clientToken: clientToken, mandateRequest: body) { result in
             switch result {
-            case .failure:
-                completion(PrimerError.directDebitSessionFailed)
+            case .failure(let err):
+                let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: containerErr)
+                completion(containerErr)
             case .success(let response):
                 completion(nil)
             }

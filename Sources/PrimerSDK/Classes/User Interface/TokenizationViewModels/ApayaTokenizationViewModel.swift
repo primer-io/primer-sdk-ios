@@ -116,26 +116,33 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
-            let err = PaymentException.missingClientToken
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard decodedClientToken.pciUrl != nil else {
-            let err = PrimerError.tokenizationPreRequestFailed
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
         
-        guard state.primerConfiguration?.getProductId(for: .apaya) != nil else {
-            let err = ApayaException.noToken
-            _ = ErrorHandler.shared.handle(error: err)
+        guard let configuration = state.primerConfiguration else {
+            let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+                
+                
+        guard configuration.getProductId(for: .apaya) != nil else {
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
         
         guard settings.currency != nil else {
-            let err = PaymentException.missingCurrency
-            _ = ErrorHandler.shared.handle(error: err)
+            let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
             throw err
         }
     }
@@ -143,6 +150,21 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     @objc
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
+        
+        let event = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .select,
+                objectClass: "\(Self.self)",
+                place: .paymentMethodPopup))
+        Analytics.Service.record(event: event)
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
         
@@ -214,12 +236,16 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         guard let decodedClientToken = ClientTokenService.decodedClientToken,
               let merchantAccountId = state.primerConfiguration?.getProductId(for: .apaya)
         else {
-            return completion(.failure(ApayaException.noToken))
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            return completion(.failure(err))
         }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         guard let currency = settings.currency else {
-            return completion(.failure(PaymentException.missingCurrency))
+            let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            return completion(.failure(err))
         }
         
         let body = Apaya.CreateSessionAPIRequest(merchantAccountId: merchantAccountId,
@@ -302,7 +328,9 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let currencyStr = settings.currency?.rawValue else {
-            completion(nil, PaymentException.missingCurrency)
+            let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(nil, err)
             return
         }
         
@@ -319,7 +347,9 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         )
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            completion(nil, PrimerError.clientTokenNull)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(nil, err)
             return
         }
         

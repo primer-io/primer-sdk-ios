@@ -32,6 +32,8 @@ enum PrimerAPI: Endpoint {
     
     // Generic
     case poll(clientToken: DecodedClientToken?, url: String)
+    
+    case sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?)
 }
 
 internal extension PrimerAPI {
@@ -76,6 +78,8 @@ internal extension PrimerAPI {
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
+        case .sendAnalyticsEvents:
+            break
         }
         
         switch self {
@@ -120,6 +124,8 @@ internal extension PrimerAPI {
             return urlStr
         case .poll(_, let url):
             return url
+        case .sendAnalyticsEvents(let url, _):
+            return url.absoluteString
         }
     }
     // MARK: Path
@@ -160,6 +166,8 @@ internal extension PrimerAPI {
             return "/adyen/checkout"
         case .poll:
             return ""
+        case .sendAnalyticsEvents:
+            return ""
         }
     }
     
@@ -191,9 +199,10 @@ internal extension PrimerAPI {
                 .begin3DSRemoteAuth,
                 .continue3DSRemoteAuth,
                 .createApayaSession,
-                .listAdyenBanks:
+                .listAdyenBanks,
+             .sendAnalyticsEvents:
             return .post
-        case .poll(_, let url):
+        case .poll:
             return .get
         }
     }
@@ -248,6 +257,8 @@ internal extension PrimerAPI {
                 .continue3DSRemoteAuth,
                 .poll:
             return nil
+        case .sendAnalyticsEvents(_, let body):
+            return try? JSONEncoder().encode(body)
         }
     }
     

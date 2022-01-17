@@ -24,8 +24,30 @@ internal class URLSessionStack: NetworkService {
 
     // swiftlint:disable function_body_length
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) {
+        let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
+        let id = String.randomString(length: 32)
+        
+        let reqEvent = Analytics.Event(
+            eventType: .networkCall,
+            properties: NetworkCallEventProperties(
+                callType: .requestStart,
+                id: id,
+                url: urlStr,
+                method: endpoint.method,
+                errorBody: nil,
+                responseCode: nil))
+        Analytics.Service.record(event: reqEvent)
+        
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        Analytics.Service.record(event: connectivityEvent)
+        
         guard let url = url(for: endpoint) else {
-            completion(.failure(.invalidURL))
+            let err = NetworkError.invalidUrl(url: "Base URL: \(endpoint.baseURL ?? "nil") | Endpoint: \(endpoint.path)", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(.failure(err))
             return
         }
 
@@ -42,12 +64,7 @@ internal class URLSessionStack: NetworkService {
 
         if let data = endpoint.body {
             request.httpBody = data
-            let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-            let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
-            var jsonStr: String?
-            if jsonData != nil {
-                jsonStr = String(data: jsonData!, encoding: .utf8 )
-            }
+            let jsonStr = data.prettyPrintedJSONString
             #if DEBUG
             msg += "\nBody:\n\(jsonStr ?? "Empty body")"
             #endif
@@ -64,6 +81,21 @@ internal class URLSessionStack: NetworkService {
         let dataTask = session.dataTask(with: request) { data, response, error in
             let httpResponse = response as? HTTPURLResponse
             
+            var resEventProperties = NetworkCallEventProperties(
+                callType: .requestEnd,
+                id: id,
+                url: urlStr,
+                method: endpoint.method,
+                errorBody: nil,
+                responseCode: (response as? HTTPURLResponse)?.statusCode
+            )
+            
+            var resEvent = Analytics.Event(
+                eventType: .networkCall,
+                properties: resEventProperties)
+            
+            resEvent.properties = resEventProperties
+            
             #if DEBUG
             msg = ""
 
@@ -73,26 +105,42 @@ internal class URLSessionStack: NetworkService {
             #endif
 
             if let error = error {
+                resEventProperties.errorBody = "\(error)"
+                resEvent.properties = resEventProperties
+                
+                Analytics.Service.record(event: resEvent)
+                
                 #if DEBUG
                 msg += "\nError: \(error)"
                 log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                 #endif
 
-                DispatchQueue.main.async { completion(.failure(.underlyingError(error))) }
+                let err = NetworkError.underlyingErrors(errors: [error], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: error)
+                DispatchQueue.main.async { completion(.failure(err)) }
                 return
             }
 
             guard let data = data else {
+                resEventProperties.errorBody = "No data received"
+                resEvent.properties = resEventProperties
+                Analytics.Service.record(event: resEvent)
+                
                 #if DEBUG
                 msg += "\nNo data received."
                 log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                 #endif
 
-                DispatchQueue.main.async { completion(.failure(.noData)) }
+                let err = NetworkError.noData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                DispatchQueue.main.async { completion(.failure(err)) }
                 return
             }
 
             do {
+                resEvent.properties = resEventProperties
+                Analytics.Service.record(event: resEvent)
+                
                 #if DEBUG
                 let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
                 let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
@@ -114,73 +162,78 @@ internal class URLSessionStack: NetworkService {
                 }
             } catch {
                 if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), let jsonDic = json as? [String: Any?],
-                   let primerErrorJSON = jsonDic["error"] as? [String: Any] {
+                   var primerErrorJSON = jsonDic["error"] as? [String: Any] {
                     let statusCode = (response as! HTTPURLResponse).statusCode
 
-                    let primerErrorResponse = try? self.parser.parse(PrimerErrorResponse.self, from: try! JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed))
+                    let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: try! JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed))
+                    
+                    resEventProperties.errorBody = "\(primerErrorJSON)"
+                    resEvent.properties = resEventProperties
+                    Analytics.Service.record(event: resEvent)
 
                     if statusCode == 401 {
-                        let err = NetworkServiceError.unauthorised(primerErrorResponse)
-
+                        let err = NetworkError.unauthorized(url: urlStr, method: endpoint.method, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        ErrorHandler.handle(error: err)
+                        
                         #if DEBUG
                         msg += "\nError: Status code \(statusCode)\n\(err)"
                         log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                         #endif
 
-                        DispatchQueue.main.async {
-                            ErrorHandler.shared.handle(error: err)
-                            completion(.failure(err))
-                        }
-
-                        return
+                        DispatchQueue.main.async { completion(.failure(err)) }
 
                     } else if (400...499).contains(statusCode) {
-                        let err = NetworkServiceError.clientError(statusCode, info: primerErrorResponse)
+                        let err = NetworkError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        ErrorHandler.handle(error: err)
 
                         #if DEBUG
                         msg += "\nError: Status code \(statusCode)\n\(err)"
                         log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                         #endif
 
-                        DispatchQueue.main.async {
-                            completion(.failure(err))
-                        }
-
-                        return
+                        DispatchQueue.main.async { completion(.failure(err)) }
 
                     } else if (500...599).contains(statusCode) {
-                        let err = NetworkServiceError.serverError(statusCode, info: primerErrorResponse)
+                        let err = NetworkError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        ErrorHandler.handle(error: err)
 
                         #if DEBUG
                         msg += "\nError: Status code \(statusCode)\n\(err)"
                         log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                         #endif
 
-                        DispatchQueue.main.async {
-                            completion(.failure(err))
-                        }
+                        DispatchQueue.main.async { completion(.failure(err)) }
 
-                        return
+                    } else {
+                        let err = NetworkError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        ErrorHandler.handle(error: err)
+                        
+                        resEventProperties.errorBody = err.localizedDescription
+                        resEvent.properties = resEventProperties
+                        Analytics.Service.record(event: resEvent)
 
+                        #if DEBUG
+                        msg += "\nError: Status code \(statusCode)\n\(err.localizedDescription)"
+                        log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+                        #endif
+
+                        DispatchQueue.main.async { completion(.failure(err)) }
                     }
 
-                    let nsErr = NSError(domain: "primer-client-error", code: statusCode, userInfo: primerErrorJSON)
-
-                    #if DEBUG
-                    msg += "\nError: Status code \(statusCode)\n\(nsErr)"
-                    log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                    #endif
-
-                    DispatchQueue.main.async {
-                        completion(.failure(.underlyingError(nsErr)))
-                    }
                 } else {
+                    let err = ParserError.failedToDecode(message: "Failed to decode response from URL: \(urlStr)", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    
+                    resEventProperties.errorBody = err.localizedDescription
+                    resEvent.properties = resEventProperties
+                    Analytics.Service.record(event: resEvent)
+                    
                     #if DEBUG
                     msg += "\nError: Failed to parse."
                     log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                     #endif
 
-                    DispatchQueue.main.async { completion(.failure(.parsing(error, data))) }
+                    DispatchQueue.main.async { completion(.failure(NetworkError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))) }
                 }
 
             }

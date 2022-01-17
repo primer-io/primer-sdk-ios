@@ -28,7 +28,7 @@ class MockTokenizationService: TokenizationServiceProtocol {
         self.tokenType = tokenType
     }
 
-    func tokenize(request: TokenizationRequest, onTokenizeSuccess: @escaping (Result<PaymentMethodToken, PrimerError>) -> Void) {
+    func tokenize(request: TokenizationRequest, onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
         tokenizeCalled = true
         
         let paymentMethodTokenData = try! JSONSerialization.data(withJSONObject: paymentMethodTokenJSON, options: .fragmentsAllowed)
