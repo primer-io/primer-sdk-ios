@@ -20,7 +20,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         self.throwsError = throwsError
     }
 
-    func vaultFetchPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (Result<GetVaultedPaymentMethodsResponse, Error>) -> Void) {
+    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (Result<GetVaultedPaymentMethodsResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
@@ -31,8 +31,12 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
             completion(.failure(error))
         }
     }
+
+    func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+        
+    }
     
-    func vaultFetchPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse> {
+    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse> {
         return Promise { [weak self] seal in
             do {
                 let value = try JSONDecoder().decode(GetVaultedPaymentMethodsResponse.self, from: response!)
@@ -43,13 +47,12 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func vaultDeletePaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (Result<Data, Error>) -> Void) {
+    func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (Result<Void, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(Data.self, from: response)
-            completion(.success(value))
+            completion(.success(()))
         } catch {
             completion(.failure(error))
         }
@@ -67,7 +70,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func directDebitCreateMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (Result<DirectDebitCreateMandateResponse, Error>) -> Void) {
+    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (Result<DirectDebitCreateMandateResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
@@ -79,7 +82,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func payPalStartOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
+    func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
@@ -91,7 +94,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func payPalStartBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (Result<PayPalCreateBillingAgreementResponse, Error>) -> Void) {
+    func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (Result<PayPalCreateBillingAgreementResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
@@ -103,7 +106,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func payPalConfirmBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
+    func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
@@ -115,11 +118,11 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func klarnaCreatePaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void) {
+    func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void) {
         isCalled = true
 
         guard throwsError == false else {
-            completion(.failure(NetworkError.connectivityErrors(errors: [NSError(domain: NSURLErrorDomain, code: -1001, userInfo: nil)], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])))
+            completion(.failure(PrimerError.generic(message: "Mocked error", userInfo: nil)))
             return
         }
         guard let response = response else { return }
@@ -132,11 +135,11 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func klarnaCreateCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+    func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         isCalled = true
 
         guard throwsError == false else {
-            completion(.failure(NetworkError.connectivityErrors(errors: [NSError(domain: NSURLErrorDomain, code: -1001, userInfo: nil)], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])))
+            completion(.failure(PrimerError.generic(message: "Mocked error", userInfo: nil)))
             return
         }
 
@@ -149,11 +152,11 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func klarnaFinalizePaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+    func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
         isCalled = true
 
         guard throwsError == false else {
-            completion(.failure(NetworkError.connectivityErrors(errors: [NSError(domain: NSURLErrorDomain, code: -1001, userInfo: nil)], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])))
+            completion(.failure(PrimerError.generic(message: "Mocked error", userInfo: nil)))
             return
         }
 
@@ -179,7 +182,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func apayaCreateSession(
+    func createApayaSession(
         clientToken: DecodedClientToken,
         request: Apaya.CreateSessionAPIRequest,
         completion: @escaping (Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
@@ -195,7 +198,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func adyenBanksList(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
+    func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
         
     }
     

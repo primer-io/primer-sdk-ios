@@ -786,8 +786,8 @@ extension CardFormPaymentMethodTokenizationViewModel {
 #if canImport(Primer3DS)
                 guard let paymentMethod = paymentMethod else {
                     DispatchQueue.main.async {
-                        let err = PrimerError.generic(message: "Failed to find paymentMethod", userInfo: nil)
-                        let containerErr = PrimerError.failedToPerform3DS(error: err)
+                        let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: containerErr)
                         Primer.shared.delegate?.onResumeError?(containerErr)
                     }
@@ -802,8 +802,8 @@ extension CardFormPaymentMethodTokenizationViewModel {
                             guard let threeDSPostAuthResponse = paymentMethodToken.1,
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
                                       DispatchQueue.main.async {
-                                          let decodeError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse")
-                                          let err = PrimerError.failedToPerform3DS(error: decodeError)
+                                          let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                          let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                                           ErrorHandler.handle(error: err)
                                           Primer.shared.delegate?.onResumeError?(err)
                                           self.handle(error: err)
@@ -816,7 +816,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                         
                     case .failure(let err):
                         log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
-                        let containerErr = PrimerError.failedToPerform3DS(error: err)
+                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: containerErr)
                         DispatchQueue.main.async {
                             Primer.shared.delegate?.onResumeError?(containerErr)

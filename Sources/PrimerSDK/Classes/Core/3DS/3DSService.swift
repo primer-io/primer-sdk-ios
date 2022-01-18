@@ -72,67 +72,67 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if !Primer.shared.flow.internalSessionFlow.vaulted && settings.amount == nil {
-            let err = PrimerError.invalidAmount(amount: settings.amount)
+            let err = PrimerError.invalidValue(key: "settings.amount", value: settings.amount, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if settings.currency == nil {
-            let err = PrimerError.invalidCurrency(currency: settings.currency?.rawValue)
+            let err = PrimerError.invalidValue(key: "settings.currency", value: settings.currency, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if settings.orderId == nil {
-            let err = PrimerError.invalidValue(key: "orderId", value: settings.orderId)
+            let err = PrimerError.invalidValue(key: "settings.orderId", value: settings.orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.billingAddress?.addressLine1 ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.addressLine1", value: settings.customer?.billingAddress?.addressLine1)
+            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.addressLine1", value: settings.customer?.billingAddress?.addressLine1, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.billingAddress?.city ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.city", value: settings.customer?.billingAddress?.city)
+            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.city", value: settings.customer?.billingAddress?.city, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if settings.customer?.billingAddress?.countryCode == nil {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.countryCode", value: settings.customer?.billingAddress?.countryCode)
+            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.countryCode", value: settings.customer?.billingAddress?.countryCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.billingAddress?.postalCode ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.postalCode", value: settings.customer?.billingAddress?.postalCode)
+            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.postalCode", value: settings.customer?.billingAddress?.postalCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.firstName ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.firstName", value: settings.customer?.firstName)
+            let err = PrimerError.invalidValue(key: "settings.customer?.firstName", value: settings.customer?.firstName, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.lastName ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.lastName", value: settings.customer?.lastName)
+            let err = PrimerError.invalidValue(key: "settings.customer?.lastName", value: settings.customer?.lastName, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (settings.customer?.emailAddress ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.emailAddress", value: settings.customer?.emailAddress)
+            let err = PrimerError.invalidValue(key: "settings.customer?.emailAddress", value: settings.customer?.emailAddress, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if !errors.isEmpty {
-            let containerErr = PrimerError.underlyingErrors(errors: errors)
+            let containerErr = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: containerErr)
             throw containerErr
         }
@@ -190,7 +190,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -199,14 +199,14 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let env = Environment(rawValue: decodedClientToken.env ?? "")
         
         guard let primerConfiguration = state.primerConfiguration else {
-            let err = PrimerError.missingPrimerConfiguration
+            let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
         
         guard let licenseKey = primerConfiguration.keys?.netceteraLicenseKey else {
-            let err = PrimerError.invalid3DSKey
+            let err = PrimerError.invalid3DSKey(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -215,7 +215,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodToken.paymentInstrumentData?.network ?? "")
         
         guard let directoryServerId = cardNetwork.directoryServerId else {
-            let err = PrimerError.invalidValue(key: "cardNetwork.directoryServerId", value: cardNetwork.directoryServerId)
+            let err = PrimerError.invalidValue(key: "cardNetwork.directoryServerId", value: cardNetwork.directoryServerId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -358,7 +358,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 self.performChallenge(with: serverAuthData, urlScheme: nil, presentOn: self.threeDSSDKWindow!.rootViewController!)
             }
             .then { primer3DSCompletion -> Promise<ThreeDS.PostAuthResponse> in
-                self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token)
+                self.continueRemoteAuth(threeDSTokenId: paymentMethodToken.token!)
             }
             .done { postAuthResponse in
                 completion(.success((postAuthResponse.token, postAuthResponse)))
@@ -394,13 +394,13 @@ class ThreeDSService: ThreeDSServiceProtocol {
             
             primer3DS.performChallenge(with: threeDSecureAuthResponse, urlScheme: urlScheme, presentOn: viewController) { (primer3DSCompletion, err) in
                 if let err = err {
-                    let containerErr = PrimerError.failedToPerform3DS(error: err)
+                    let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: containerErr)
                     seal.reject(containerErr)
                 } else if let primer3DSCompletion = primer3DSCompletion {
                     seal.fulfill(primer3DSCompletion)
                 } else {
-                    let err = PrimerError.failedToPerform3DS(error: nil)
+                    let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }
@@ -412,7 +412,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                          threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
                          completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -420,7 +420,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         
-        api.threeDSBeginAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
+        api.begin3DSAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -432,14 +432,14 @@ class ThreeDSService: ThreeDSServiceProtocol {
     
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        api.threeDSContinueAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId) { result in
+        api.continue3DSAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId) { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -473,24 +473,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
     
     func beginRemoteAuth(paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                let err = PrimerError.invalidClientToken
-                ErrorHandler.handle(error: err)
-                completion(.failure(err))
-                return
-            }
-        }
-        
-        let api = MockPrimerAPIClient()
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
-        api.response = response
-        
-        api.threeDSBeginAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
-    }
-    
-    func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {        
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -500,7 +483,22 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         api.response = response
         
-        api.threeDSContinueAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId, completion: completion)
+        api.begin3DSAuth(clientToken: decodedClientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
+    }
+    
+    func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(.failure(err))
+            return
+        }
+        
+        let api = MockPrimerAPIClient()
+        DependencyContainer.register(api as PrimerAPIClientProtocol)
+        api.response = response
+        
+        api.continue3DSAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId, completion: completion)
     }
 }
 

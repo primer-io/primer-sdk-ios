@@ -311,7 +311,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                 paymentMethodConfigId: config.id!,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
             
-            client.adyenBanksList(clientToken: decodedClientToken, request: request) { result in
+            client.listAdyenBanks(clientToken: decodedClientToken, request: request) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
