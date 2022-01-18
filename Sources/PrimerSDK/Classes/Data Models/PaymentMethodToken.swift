@@ -18,18 +18,20 @@ struct GetVaultedPaymentMethodsResponse: Decodable {
 
 public class PaymentMethodToken: NSObject, Codable {
     
-    public var token: String
     public var analyticsId: String?
-    public var tokenType: TokenType
+    public var id: String?
+    public var isVaulted: Bool?
     public var paymentInstrumentType: PaymentInstrumentType
     public var paymentInstrumentData: PaymentInstrumentData?
-    public var vaultData: VaultData?
     public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
-    
-    internal init(
-        token: String,
+    public var token: String?
+    public var tokenType: TokenType?
+    public var vaultData: VaultData?
+
+    init(
+        token: String?,
         analyticsId: String?,
-        tokenType: TokenType,
+        tokenType: TokenType?,
         paymentInstrumentType: PaymentInstrumentType,
         paymentInstrumentData: PaymentInstrumentData?,
         vaultData: VaultData?,
@@ -42,26 +44,7 @@ public class PaymentMethodToken: NSObject, Codable {
         self.paymentInstrumentData = paymentInstrumentData
         self.vaultData = vaultData
         self.threeDSecureAuthentication = threeDSecureAuthentication
-    }
-
-    public override var description: String {
-        switch self.paymentInstrumentType {
-        case .paymentCard:
-            let last4 = self.paymentInstrumentData?.last4Digits ?? "••••"
-            return "•••• •••• •••• \(last4)"
-        case .payPalOrder:
-            return "PayPal"
-        case .payPalBillingAgreement:
-            return "PayPal"
-        case .goCardlessMandate:
-            return "Direct Debit"
-        case .klarnaCustomerToken:
-            return paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token"
-        case .klarna:
-            return paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna"
-        default:
-            return "UNKNOWN"
-        }
+        super.init()
     }
 
     public var icon: ImageName {

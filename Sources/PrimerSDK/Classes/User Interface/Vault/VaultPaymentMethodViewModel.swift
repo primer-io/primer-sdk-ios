@@ -2,7 +2,7 @@
 
 internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     var paymentMethods: [PaymentMethodToken] { get }
-    var selectedPaymentMethodToken: String? { get set }
+    var selectedPaymentMethodId: String? { get set }
     func reloadVault(with completion: @escaping (Error?) -> Void)
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void)
 }
@@ -13,14 +13,14 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
         let state: AppStateProtocol = DependencyContainer.resolve()
         return state.paymentMethods
     }
-    var selectedPaymentMethodToken: String? {
+    var selectedPaymentMethodId: String? {
         get {
             let state: AppStateProtocol = DependencyContainer.resolve()
-            return state.selectedPaymentMethodToken
+            return state.selectedPaymentMethodId
         }
         set {
             let state: AppStateProtocol = DependencyContainer.resolve()
-            state.selectedPaymentMethodToken = newValue
+            state.selectedPaymentMethodId = newValue
         }
     }
 
@@ -39,8 +39,8 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
             let state: AppStateProtocol = DependencyContainer.resolve()
             
             // reset selected payment method if that has been deleted
-            if paymentMethodToken == state.selectedPaymentMethodToken {
-                state.selectedPaymentMethodToken = nil
+            if paymentMethodToken == state.selectedPaymentMethodId {
+                state.selectedPaymentMethodId = nil
             }
 
             // reload vaulted payment methods
@@ -53,7 +53,7 @@ internal class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProto
     
     var theme: PrimerTheme { return PrimerTheme() }
     var paymentMethods: [PaymentMethodToken] { return [] }
-    var selectedPaymentMethodToken: String? = "id"
+    var selectedPaymentMethodId: String? = "id"
 
     func reloadVault(with completion: @escaping (Error?) -> Void) {
 

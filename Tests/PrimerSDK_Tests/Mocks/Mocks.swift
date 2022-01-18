@@ -182,7 +182,7 @@ class MockAppState: AppStateProtocol {
     var clientToken: String?
     var primerConfiguration: PrimerConfiguration?
     var paymentMethods: [PaymentMethodToken] = []
-    var selectedPaymentMethodToken: String?
+    var selectedPaymentMethodId: String?
     var selectedPaymentMethod: PaymentMethodToken?
 
     init(
