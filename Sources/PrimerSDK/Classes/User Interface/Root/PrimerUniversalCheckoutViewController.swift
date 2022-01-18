@@ -418,7 +418,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                 guard let paymentMethod = singleUsePaymentMethod else {
                     DispatchQueue.main.async {
                         self.onClientSessionActionCompletion = nil
-                        let err = PrimerError.invalid3DSKey
+                        let err = PrimerError.invalid3DSKey(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: err)
                         Primer.shared.delegate?.onResumeError?(err)
                         self.handle(error: err)
@@ -435,8 +435,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
                                       DispatchQueue.main.async {
                                           self.onClientSessionActionCompletion = nil
-                                          let decodeError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse")
-                                          let err = PrimerError.failedToPerform3DS(error: decodeError)
+                                          let err = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                                           ErrorHandler.handle(error: err)
                                           Primer.shared.delegate?.onResumeError?(err)
                                           self.handle(error: err)
@@ -452,7 +451,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                         
                         DispatchQueue.main.async {
                             self.onClientSessionActionCompletion = nil
-                            let containerErr = PrimerError.failedToPerform3DS(error: err)
+                            let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                             ErrorHandler.handle(error: containerErr)
                             Primer.shared.delegate?.onResumeError?(containerErr)
                             self.handle(error: err)

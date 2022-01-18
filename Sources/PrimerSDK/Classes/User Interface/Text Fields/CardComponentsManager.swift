@@ -310,7 +310,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                             }
                             
                             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                                let err = PrimerError.invalidClientToken
+                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                                 ErrorHandler.handle(error: err)
                                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                                 return
