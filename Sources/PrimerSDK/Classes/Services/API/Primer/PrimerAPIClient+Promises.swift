@@ -11,9 +11,9 @@ import Foundation
 
 extension PrimerAPIClient {
     
-    func vaultFetchPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse> {
+    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse> {
         return Promise { [weak self] seal in
-            self?.vaultFetchPaymentMethods(clientToken: clientToken, completion: { result in
+            self?.fetchVaultedPaymentMethods(clientToken: clientToken, completion: { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response)

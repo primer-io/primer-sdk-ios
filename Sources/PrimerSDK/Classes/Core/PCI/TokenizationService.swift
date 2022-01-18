@@ -91,7 +91,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     }
                     
                     guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                        let err = PrimerError.invalidClientToken
+                        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: err)
                         Primer.shared.delegate?.checkoutFailed?(with: err.exposedError)
                         return

@@ -384,8 +384,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        
-        api.klarnaCreatePaymentSession(clientToken: decodedClientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
+
+        api.createKlarnaPaymentSession(clientToken: decodedClientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -483,8 +483,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         )
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        
-        api.klarnaCreateCustomerToken(clientToken: decodedClientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
+
+        api.createKlarnaCustomerToken(clientToken: decodedClientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -530,8 +530,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        
-        api.klarnaFinalizePaymentSession(clientToken: decodedClientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
+
+        api.finalizeKlarnaPaymentSession(clientToken: decodedClientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
