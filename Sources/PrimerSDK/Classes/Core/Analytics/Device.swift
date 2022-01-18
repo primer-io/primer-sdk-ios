@@ -39,7 +39,7 @@ struct Device: Codable {
                 self.locale = "\(languageCode)"
             }
         }
-        self.locale = Locale.current.languageCode
+
         self.modelIdentifier = UIDevice.modelIdentifier
         self.modelName = UIDevice.model.rawValue
         self.platformVersion = UIDevice.current.systemVersion
