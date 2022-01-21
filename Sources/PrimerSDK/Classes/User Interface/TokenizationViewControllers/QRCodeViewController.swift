@@ -18,7 +18,7 @@ internal class QRCodeViewController: PrimerFormViewController {
     internal private(set) var subtitle: String?
     
     deinit {
-//        viewModel.cancel()
+        viewModel.cancel()
         viewModel = nil
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
@@ -26,8 +26,7 @@ internal class QRCodeViewController: PrimerFormViewController {
     init(viewModel: QRCodeTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.buttonImage!.withRenderingMode(.alwaysTemplate)
-        self.titleImageTintColor = viewModel.buttonColor
+        self.titleImage = viewModel.originalImage
     }
     
     required init?(coder: NSCoder) {
@@ -83,21 +82,21 @@ internal class QRCodeViewController: PrimerFormViewController {
         separatorView.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("qr-code-title-label",
+        titleLabel.text = NSLocalizedString("scanToPay",
                                                 tableName: nil,
                                                 bundle: Bundle.primerResources,
-                                                value: "Scan or save to pay",
-                                                comment: "Scan or save to pay - QR code screen title label")
+                                                value: "Scan to pay or take a screenshot",
+                                                comment: "Scan to pay or take a screenshot - QR code screen title label")
         titleLabel.font = UIFont.systemFont(ofSize: 20)
         titleLabel.textColor = theme.text.title.color
         verticalStackView.addArrangedSubview(titleLabel)
         
         let subtitleLabel = UILabel()
-        subtitleLabel.text = NSLocalizedString("qr-code-subtitle-label",
+        subtitleLabel.text = NSLocalizedString("uploadScreenshot",
                                                 tableName: nil,
                                                 bundle: Bundle.primerResources,
-                                                value: "Scan or screenshot it.\nUse it later on your ibanking app.",
-                                                comment: "Scan or screenshot it.\nUse it later on your ibanking app. - QR code screen subtitle label")
+                                                value: "Upload the screenshot in your banking app.",
+                                                comment: "Upload the screenshot in your banking app. - QR code screen subtitle label")
         subtitleLabel.numberOfLines = 2
         subtitleLabel.font = UIFont.systemFont(ofSize: 15)
         subtitleLabel.textColor = theme.text.title.color
@@ -114,6 +113,12 @@ internal class QRCodeViewController: PrimerFormViewController {
         separatorView.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
         let qrCodeImageView = UIImageView(image: qrImg)
+        qrCodeImageView.accessibilityIdentifier = "qrCode"
+        qrCodeImageView.accessibilityHint = NSLocalizedString("qrCode",
+                                                              tableName: nil,
+                                                              bundle: Bundle.primerResources,
+                                                              value: "QR Code",
+                                                              comment: "QR Code - QR code screen subtitle label")
         qrCodeImageView.translatesAutoresizingMaskIntoConstraints = false
         qrCodeImageView.widthAnchor.constraint(equalToConstant: 270).isActive = true
         qrCodeImageView.heightAnchor.constraint(equalToConstant: 270).isActive = true
