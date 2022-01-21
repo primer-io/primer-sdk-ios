@@ -35,7 +35,17 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     override lazy var buttonImage: UIImage? = {
         switch config.type {
         case .xfers:
-            return UIImage(named: "xfers-logo", in: Bundle.primerResources, compatibleWith: nil)
+            return originalImage?.withRenderingMode(.alwaysTemplate)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    
+    lazy var originalImage: UIImage? = {
+        switch config.type {
+        case .xfers:
+            return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -45,7 +55,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     override lazy var buttonColor: UIColor? = {
         switch config.type {
         case .xfers:
-            return UIColor(red: 2.0/255, green: 139.0/255, blue: 244.0/255, alpha: 1.0)
+            return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -85,7 +95,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     override lazy var buttonTintColor: UIColor? = {
         switch config.type {
         case .xfers:
-            return nil
+            return .white
         default:
             assert(true, "Shouldn't end up in here")
             return nil
