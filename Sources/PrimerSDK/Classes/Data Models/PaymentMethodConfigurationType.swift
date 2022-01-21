@@ -36,7 +36,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case other(rawValue: String)
     
     // swiftlint:disable cyclomatic_complexity
-    init(rawValue: String) {
+    public init(rawValue: String) {
         switch rawValue {
         case "ADYEN_ALIPAY":
             self = .adyenAlipay
@@ -101,7 +101,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         }
     }
     
-    var rawValue: String {
+    public var rawValue: String {
         switch self {
         case .adyenAlipay:
             return "ADYEN_ALIPAY"
