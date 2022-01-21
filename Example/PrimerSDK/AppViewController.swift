@@ -32,7 +32,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         currencyTextField.text = Currency.SGD.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.placeholder = "In minor units (type 100 for 1.00)"
-        amountTextField.text = "1711"
+        amountTextField.text = "1337"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"

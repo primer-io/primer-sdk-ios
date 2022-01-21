@@ -16,12 +16,10 @@ struct PrimerConfiguration: Codable {
     static var paymentMethodConfigs: [PaymentMethodConfig]? {
         if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let xfersConfig = PaymentMethodConfig(id: "xfers", options: nil, processorConfigId: nil, type: .xfers)
         
         var pms = state
             .primerConfiguration?
             .paymentMethods
-        pms?.append(xfersConfig)
         
         return pms
     }

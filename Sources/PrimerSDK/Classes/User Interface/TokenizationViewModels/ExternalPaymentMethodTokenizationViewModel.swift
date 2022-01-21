@@ -409,7 +409,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     internal func continueTokenizationFlow(for tmpPaymentMethod: PaymentMethodToken) -> Promise<PaymentMethodToken> {
         return Promise { seal in
-            var pollingURLs: RedirectPolling!
+            var pollingURLs: PollingURLs!
             
             // Fallback when no **requiredAction** is returned.
             self.onResumeTokenCompletion = { (paymentMethod, err) in
@@ -426,12 +426,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 return self.fetchPollingURLs(for: tmpPaymentMethod)
             }
             .then { pollingURLsResponse -> Promise<Void> in
-                guard let redirectPolling = pollingURLsResponse as? RedirectPolling else {
-                    let err = PrimerError.invalidValue(key: "redirectUrl", value: pollingURLs.redirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
-                    throw err
-                }
-                pollingURLs = redirectPolling
+                pollingURLs = pollingURLsResponse
                 
                 guard let redirectUrl = pollingURLs.redirectUrl else {
                     let err = PrimerError.invalidValue(key: "redirectUrl", value: pollingURLs.redirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -504,7 +499,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    internal func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<ExternalPaymentMethodPolling> {
+    internal func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<PollingURLs> {
         return Promise { seal in
             self.onClientToken = { (clientToken, err) in
                 if let err = err {
@@ -518,12 +513,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     }
                     
                     if let decodedClientToken = ClientTokenService.decodedClientToken {
-                        if decodedClientToken.intent != nil, let statusUrl = decodedClientToken.statusUrl {
-                            if let redirectUrl = decodedClientToken.redirectUrl {
-                                seal.fulfill(RedirectPolling(status: statusUrl, redirect: redirectUrl, complete: nil))
-                                return
-                            } else if let qrCode = decodedClientToken.qrCode {
-                                seal.fulfill(QRCodePolling(status: statusUrl, qrCode: qrCode))
+                        if decodedClientToken.intent != nil {
+                            if let redirectUrl = decodedClientToken.redirectUrl,
+                               let statusUrl = decodedClientToken.statusUrl {
+                                seal.fulfill(PollingURLs(status: statusUrl, redirect: redirectUrl, complete: nil))
                                 return
                             }
                         }
@@ -727,15 +720,11 @@ struct PollingResponse: Decodable {
     let status: PollingStatus
     let id: String
     let source: String
-    let urls: RedirectPolling
+    let urls: PollingURLs
 }
 
-protocol ExternalPaymentMethodPolling: Decodable {
-    var status: String { get set }
-}
-
-struct RedirectPolling: ExternalPaymentMethodPolling {
-    var status: String
+struct PollingURLs: Decodable {
+    let status: String
     lazy var statusUrl: URL? = {
         return URL(string: status)
     }()
@@ -746,12 +735,12 @@ struct RedirectPolling: ExternalPaymentMethodPolling {
     let complete: String?
 }
 
-struct QRCodePolling: ExternalPaymentMethodPolling {
-    var status: String
+struct QRCodePollingURLs: Decodable {
+    let status: String
     lazy var statusUrl: URL? = {
         return URL(string: status)
     }()
-    let qrCode: String
+    let complete: String?
 }
 
 class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {

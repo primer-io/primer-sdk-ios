@@ -105,16 +105,15 @@ internal class QRCodeViewController: PrimerFormViewController {
     }
     
     private func renderQRCode() {
-        let dummyText = "00000101021226500009SG.PAYNOW010120213201411660RXFR0301004142021041012022352040000530370254040.165802SG5914XFERS PTE. LTD6009Singapore62140110DONTSCANME63045205"
-        
-        guard let img = generateQRCode(from: dummyText) else { return }
+        guard let qrCodeStr = viewModel.qrCode else { return }
+        guard let qrImg = convertBase64StringToImage(qrCodeStr) else { return }
         
         let separatorView = PrimerView()
         verticalStackView.addArrangedSubview(separatorView)
         separatorView.translatesAutoresizingMaskIntoConstraints = false
         separatorView.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
-        let qrCodeImageView = UIImageView(image: img)
+        let qrCodeImageView = UIImageView(image: qrImg)
         qrCodeImageView.translatesAutoresizingMaskIntoConstraints = false
         qrCodeImageView.widthAnchor.constraint(equalToConstant: 270).isActive = true
         qrCodeImageView.heightAnchor.constraint(equalToConstant: 270).isActive = true
@@ -159,6 +158,10 @@ internal class QRCodeViewController: PrimerFormViewController {
         return nil
     }
     
+    func convertBase64StringToImage(_ imageBase64String: String) -> UIImage? {
+        guard let imageData = Data(base64Encoded: imageBase64String, options: .init(rawValue: 0)) else { return nil }
+        return UIImage(data: imageData)
+    }
 }
 
 #endif
