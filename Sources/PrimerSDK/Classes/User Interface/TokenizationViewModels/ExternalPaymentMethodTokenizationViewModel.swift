@@ -585,10 +585,13 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 completion(nil, err)
                 return
             }
+            
             switch result {
             case .success(let res):
                 if res.status == .pending {
-                    self.startPolling(on: url, completion: completion)
+                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                        self.startPolling(on: url, completion: completion)
+                    }
                 } else if res.status == .complete {
                     completion(res.id, nil)
                 } else {
@@ -599,7 +602,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 let nsErr = err as NSError
                 if nsErr.domain == NSURLErrorDomain && nsErr.code == -1001 {
                     // Retry
-                    self.startPolling(on: url, completion: completion)
+                    Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+                        self.startPolling(on: url, completion: completion)
+                    }
                 } else {
                     completion(nil, err)
                 }
