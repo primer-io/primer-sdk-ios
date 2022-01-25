@@ -202,8 +202,12 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         }
         .catch { err in
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: err)
-                self.handleFailedTokenizationFlow(error: err)
+                if let primerErr = err as? PrimerError, case PrimerError.cancelled = primerErr {
+                    Primer.shared.delegate?.onResumeError?(err)
+                } else {
+                    Primer.shared.delegate?.checkoutFailed?(with: err)
+                    self.handleFailedTokenizationFlow(error: err)
+                }
             }
         }
     }
