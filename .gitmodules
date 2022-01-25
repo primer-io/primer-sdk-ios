@@ -1,0 +1,3 @@
+[submodule "tools/phrase"]
+	path = tools/phrase
+	url = git@gitlab.com:primer-io/dx/phrase-translator.git
