@@ -34,6 +34,8 @@ enum PrimerAPI: Endpoint {
     case poll(clientToken: DecodedClientToken?, url: String)
     
     case sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?)
+    
+    case fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPalExternalPayerInfoRequestBody)
 }
 
 internal extension PrimerAPI {
@@ -64,7 +66,8 @@ internal extension PrimerAPI {
                 .begin3DSRemoteAuth(let clientToken, _, _),
                 .continue3DSRemoteAuth(let clientToken, _),
                 .createApayaSession(let clientToken, _),
-                .listAdyenBanks(let clientToken, _):
+                .listAdyenBanks(let clientToken, _),
+                .fetchPayPalExternalPayerInfo(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -108,7 +111,8 @@ internal extension PrimerAPI {
                 .createKlarnaCustomerToken(let clientToken, _),
                 .finalizeKlarnaPaymentSession(let clientToken, _),
                 .createApayaSession(let clientToken, _),
-                .listAdyenBanks(let clientToken, _):
+                .listAdyenBanks(let clientToken, _),
+                .fetchPayPalExternalPayerInfo(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .deleteVaultedPaymentMethod(let clientToken, _),
@@ -168,6 +172,8 @@ internal extension PrimerAPI {
             return ""
         case .sendAnalyticsEvents:
             return ""
+        case .fetchPayPalExternalPayerInfo:
+            return "/paypal/orders"
         }
     }
     
@@ -200,7 +206,8 @@ internal extension PrimerAPI {
                 .continue3DSRemoteAuth,
                 .createApayaSession,
                 .listAdyenBanks,
-             .sendAnalyticsEvents:
+                .sendAnalyticsEvents,
+                .fetchPayPalExternalPayerInfo:
             return .post
         case .poll:
             return .get
@@ -259,6 +266,8 @@ internal extension PrimerAPI {
             return nil
         case .sendAnalyticsEvents(_, let body):
             return try? JSONEncoder().encode(body)
+        case .fetchPayPalExternalPayerInfo(_, let payPalExternalPayerInfoRequestBody):
+            return try? JSONEncoder().encode(payPalExternalPayerInfoRequestBody)
         }
     }
     

@@ -30,6 +30,7 @@ protocol PrimerAPIClientProtocol {
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
     
     func sendAnalyticsEvent(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
+    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPalExternalPayerInfoRequestBody, completion: @escaping (Result<ExternalPayerInfo, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -241,6 +242,18 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     
     func sendAnalyticsEvent(url: URL, body: Analytics.Service.Request?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
         
+    }
+    
+    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPalExternalPayerInfoRequestBody, completion: @escaping (Result<ExternalPayerInfo, Error>) -> Void) {
+        let endpoint = PrimerAPI.fetchPayPalExternalPayerInfo(clientToken: clientToken, payPalExternalPayerInfoRequestBody: payPalExternalPayerInfoRequestBody)
+        networkService.request(endpoint) { (result: Result<ExternalPayerInfo, Error>) in
+            switch result {
+            case .success(let res):
+                completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
     }
 }
 

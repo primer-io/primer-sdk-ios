@@ -92,4 +92,12 @@ struct ApplePaySourceConfig: Codable {
     let merchantId: String
 }
 
+struct PayPalExternalPayerInfoRequestBody: Codable {
+    let paymentMethodConfigId: String
+    
+    enum CodingKeys: String, CodingKey {
+        case paymentMethodConfigId = "payment_method_config_id"
+    }
+}
+
 #endif

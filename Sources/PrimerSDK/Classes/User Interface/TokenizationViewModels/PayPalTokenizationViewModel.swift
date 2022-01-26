@@ -318,15 +318,37 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    private func generatePaypalPaymentInstrument() -> Promise<PaymentInstrument> {
+    func fetchPayPalExternalPayerInfo() -> Promise<ExternalPayerInfo> {
         return Promise { seal in
-            generatePaypalPaymentInstrument { result in
+            let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
+            paypalService.fetchPayPalExternalPayerInfo { result in
                 switch result {
-                case .success(let paymentInstrument):
-                    seal.fulfill(paymentInstrument)
+                case .success(let externalPayerInfo):
+                    seal.fulfill(externalPayerInfo)
                 case .failure(let err):
                     seal.reject(err)
                 }
+            }
+        }
+    }
+    
+    private func generatePaypalPaymentInstrument() -> Promise<PaymentInstrument> {
+        return Promise { seal in
+            firstly {
+                self.fetchPayPalExternalPayerInfo()
+            }
+            .done { externalPayerInfo in
+                self.generatePaypalPaymentInstrument { result in
+                    switch result {
+                    case .success(let paymentInstrument):
+                        seal.fulfill(paymentInstrument)
+                    case .failure(let err):
+                        seal.reject(err)
+                    }
+                }
+            }
+            .catch { err in
+                seal.reject(err)
             }
         }
     }
