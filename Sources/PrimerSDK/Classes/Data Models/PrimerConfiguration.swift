@@ -16,9 +16,12 @@ struct PrimerConfiguration: Codable {
     static var paymentMethodConfigs: [PaymentMethodConfig]? {
         if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
-        return state
+        
+        var pms = state
             .primerConfiguration?
             .paymentMethods
+        
+        return pms
     }
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
@@ -36,7 +39,7 @@ struct PrimerConfiguration: Codable {
         for (index, viewModel) in viewModels.enumerated() {
             viewModel.position = index
         }
-        
+                
         return viewModels
     }
     

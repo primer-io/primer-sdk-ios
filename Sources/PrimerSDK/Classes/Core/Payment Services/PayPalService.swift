@@ -6,6 +6,7 @@ internal protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void)
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void)
+    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void)
 }
 
 internal class PayPalService: PayPalServiceProtocol {
@@ -194,7 +195,36 @@ internal class PayPalService: PayPalServiceProtocol {
             }
         }
     }
-
+    
+    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(.failure(err))
+            return
+        }
+        
+        guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
+            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(.failure(err))
+            return
+        }
+        
+        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        api.fetchPayPalExternalPayerInfo(
+            clientToken: decodedClientToken,
+            payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request(paymentMethodConfigId: configId, orderId: orderId)) { result in
+                switch result {
+                case .success(let response):
+                    completion(.success(response))
+                case .failure(let err):
+                    completion(.failure(err))
+                }
+        }
+    }
 }
 
 #endif

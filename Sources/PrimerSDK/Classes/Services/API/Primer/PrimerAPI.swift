@@ -9,7 +9,37 @@
 
 import Foundation
 
-enum PrimerAPI: Endpoint {
+enum PrimerAPI: Endpoint, Equatable {
+    
+    static func == (lhs: PrimerAPI, rhs: PrimerAPI) -> Bool {
+        switch (lhs, rhs) {
+        case (.exchangePaymentMethodToken, .exchangePaymentMethodToken),
+            (.fetchConfiguration, .fetchConfiguration),
+            (.fetchVaultedPaymentMethods, .fetchVaultedPaymentMethods),
+            (.deleteVaultedPaymentMethod, .deleteVaultedPaymentMethod),
+            (.createDirectDebitMandate, .createDirectDebitMandate),
+            (.createPayPalOrderSession, .createPayPalOrderSession),
+            (.createPayPalSBillingAgreementSession, .createPayPalSBillingAgreementSession),
+            
+            (.confirmPayPalBillingAgreement, .confirmPayPalBillingAgreement),
+            (.createKlarnaPaymentSession, .createKlarnaPaymentSession),
+            (.createKlarnaCustomerToken, .createKlarnaCustomerToken),
+            (.finalizeKlarnaPaymentSession, .finalizeKlarnaPaymentSession),
+            (.createApayaSession, .createApayaSession),
+            (.tokenizePaymentMethod, .tokenizePaymentMethod),
+            (.listAdyenBanks, .listAdyenBanks),
+            (.begin3DSRemoteAuth, .begin3DSRemoteAuth),
+            (.continue3DSRemoteAuth, .continue3DSRemoteAuth),
+            (.poll, .poll),
+            (.sendAnalyticsEvents, .sendAnalyticsEvents):
+            return true
+        default:
+            return false
+        }
+    }
+    
+
+    
     case exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String)
     case fetchConfiguration(clientToken: DecodedClientToken)
     case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
@@ -34,6 +64,8 @@ enum PrimerAPI: Endpoint {
     case poll(clientToken: DecodedClientToken?, url: String)
     
     case sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?)
+    
+    case fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request)
 }
 
 internal extension PrimerAPI {
@@ -64,7 +96,8 @@ internal extension PrimerAPI {
                 .begin3DSRemoteAuth(let clientToken, _, _),
                 .continue3DSRemoteAuth(let clientToken, _),
                 .createApayaSession(let clientToken, _),
-                .listAdyenBanks(let clientToken, _):
+                .listAdyenBanks(let clientToken, _),
+                .fetchPayPalExternalPayerInfo(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -108,7 +141,8 @@ internal extension PrimerAPI {
                 .createKlarnaCustomerToken(let clientToken, _),
                 .finalizeKlarnaPaymentSession(let clientToken, _),
                 .createApayaSession(let clientToken, _),
-                .listAdyenBanks(let clientToken, _):
+                .listAdyenBanks(let clientToken, _),
+                .fetchPayPalExternalPayerInfo(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .deleteVaultedPaymentMethod(let clientToken, _),
@@ -168,6 +202,8 @@ internal extension PrimerAPI {
             return ""
         case .sendAnalyticsEvents:
             return ""
+        case .fetchPayPalExternalPayerInfo:
+            return "/paypal/orders"
         }
     }
     
@@ -200,7 +236,8 @@ internal extension PrimerAPI {
                 .continue3DSRemoteAuth,
                 .createApayaSession,
                 .listAdyenBanks,
-             .sendAnalyticsEvents:
+                .sendAnalyticsEvents,
+                .fetchPayPalExternalPayerInfo:
             return .post
         case .poll:
             return .get
@@ -259,6 +296,8 @@ internal extension PrimerAPI {
             return nil
         case .sendAnalyticsEvents(_, let body):
             return try? JSONEncoder().encode(body)
+        case .fetchPayPalExternalPayerInfo(_, let payPalExternalPayerInfoRequestBody):
+            return try? JSONEncoder().encode(payPalExternalPayerInfoRequestBody)
         }
     }
     
