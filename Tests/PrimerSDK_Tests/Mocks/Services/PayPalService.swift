@@ -31,6 +31,10 @@ class MockPayPalService: PayPalServiceProtocol {
         let res = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: "https://primer.io")
         completion(.success(res))
     }
+    
+    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {
+        
+    }
 }
 
 #endif

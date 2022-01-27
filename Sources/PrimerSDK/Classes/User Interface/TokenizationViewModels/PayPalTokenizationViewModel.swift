@@ -318,12 +318,13 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    private func generatePaypalPaymentInstrument() -> Promise<PaymentInstrument> {
+    func fetchPayPalExternalPayerInfo(orderId: String) -> Promise<PayPal.PayerInfo.Response> {
         return Promise { seal in
-            generatePaypalPaymentInstrument { result in
+            let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
+            paypalService.fetchPayPalExternalPayerInfo(orderId: orderId) { result in
                 switch result {
-                case .success(let paymentInstrument):
-                    seal.fulfill(paymentInstrument)
+                case .success(let response):
+                    seal.fulfill(response)
                 case .failure(let err):
                     seal.reject(err)
                 }
@@ -331,7 +332,35 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    private func generatePaypalPaymentInstrument(_ completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
+    private func generatePaypalPaymentInstrument() -> Promise<PaymentInstrument> {
+        return Promise { seal in
+            guard let orderId = orderId else {
+                let err = PrimerError.invalidValue(key: "orderId", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            firstly {
+                self.fetchPayPalExternalPayerInfo(orderId: orderId)
+            }
+            .done { response in
+                self.generatePaypalPaymentInstrument(externalPayerInfo: response.externalPayerInfo) { result in
+                    switch result {
+                    case .success(let paymentInstrument):
+                        seal.fulfill(paymentInstrument)
+                    case .failure(let err):
+                        seal.reject(err)
+                    }
+                }
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo, completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
             guard let orderId = orderId else {
@@ -341,7 +370,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 return
             }
             
-            let paymentInstrument = PaymentInstrument(paypalOrderId: orderId)
+            let paymentInstrument = PaymentInstrument(paypalOrderId: orderId, externalPayerInfo: externalPayerInfo)
             completion(.success(paymentInstrument))
             
         case .VAULT:
@@ -350,7 +379,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                     if let err = err {
                         completion(.failure(err))
                     } else {
-                        self?.generatePaypalPaymentInstrument(completion)
+                        self?.generatePaypalPaymentInstrument(externalPayerInfo: externalPayerInfo, completion: completion)
                     }
                 }
                 return
