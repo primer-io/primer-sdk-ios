@@ -9,7 +9,37 @@
 
 import Foundation
 
-enum PrimerAPI: Endpoint {
+enum PrimerAPI: Endpoint, Equatable {
+    
+    static func == (lhs: PrimerAPI, rhs: PrimerAPI) -> Bool {
+        switch (lhs, rhs) {
+        case (.exchangePaymentMethodToken, .exchangePaymentMethodToken),
+            (.fetchConfiguration, .fetchConfiguration),
+            (.fetchVaultedPaymentMethods, .fetchVaultedPaymentMethods),
+            (.deleteVaultedPaymentMethod, .deleteVaultedPaymentMethod),
+            (.createDirectDebitMandate, .createDirectDebitMandate),
+            (.createPayPalOrderSession, .createPayPalOrderSession),
+            (.createPayPalSBillingAgreementSession, .createPayPalSBillingAgreementSession),
+            
+            (.confirmPayPalBillingAgreement, .confirmPayPalBillingAgreement),
+            (.createKlarnaPaymentSession, .createKlarnaPaymentSession),
+            (.createKlarnaCustomerToken, .createKlarnaCustomerToken),
+            (.finalizeKlarnaPaymentSession, .finalizeKlarnaPaymentSession),
+            (.createApayaSession, .createApayaSession),
+            (.tokenizePaymentMethod, .tokenizePaymentMethod),
+            (.listAdyenBanks, .listAdyenBanks),
+            (.begin3DSRemoteAuth, .begin3DSRemoteAuth),
+            (.continue3DSRemoteAuth, .continue3DSRemoteAuth),
+            (.poll, .poll),
+            (.sendAnalyticsEvents, .sendAnalyticsEvents):
+            return true
+        default:
+            return false
+        }
+    }
+    
+
+    
     case exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String)
     case fetchConfiguration(clientToken: DecodedClientToken)
     case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
