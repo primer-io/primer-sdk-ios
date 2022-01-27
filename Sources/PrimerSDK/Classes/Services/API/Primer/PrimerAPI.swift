@@ -35,7 +35,7 @@ enum PrimerAPI: Endpoint {
     
     case sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?)
     
-    case fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPalExternalPayerInfoRequestBody)
+    case fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request)
 }
 
 internal extension PrimerAPI {

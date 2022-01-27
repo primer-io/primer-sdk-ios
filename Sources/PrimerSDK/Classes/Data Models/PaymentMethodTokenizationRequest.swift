@@ -46,7 +46,7 @@ struct PaymentInstrument: Codable {
     var paypalOrderId: String?
     var paypalBillingAgreementId: String?
     var shippingAddress: ShippingAddress?
-    var externalPayerInfo: PayPalExternalPayerInfo?
+    var externalPayerInfo: ExternalPayerInfo?
     // Apple Pay
     var paymentMethodConfigId: String?
     var token: ApplePayPaymentResponseToken?
@@ -92,12 +92,41 @@ struct ApplePaySourceConfig: Codable {
     let merchantId: String
 }
 
-struct PayPalExternalPayerInfoRequestBody: Codable {
-    let paymentMethodConfigId: String
-    
-    enum CodingKeys: String, CodingKey {
-        case paymentMethodConfigId = "payment_method_config_id"
+struct PayPal {
+    struct PayerInfo {
+        struct Request: Codable {
+            let paymentMethodConfigId: String
+            let orderId: String
+        }
+        
+        struct Response: Codable {
+            let orderId: String
+            let externalPayerInfo: ExternalPayerInfo
+        }
     }
+}
+
+/**
+ Contains information of the payer (if available).
+ 
+ *Values*
+ 
+ `externalPayerId`: ID representing the payer.
+ 
+ `email`: The payer's email.
+ 
+ `firstName`: The payer's firstName.
+ 
+ `lastName`: The payer's lastName.
+ 
+ - Author:
+ Primer
+ - Version:
+ 1.2.2
+ */
+
+public struct ExternalPayerInfo: Codable {
+    public var externalPayerId, email, firstName, lastName: String?
 }
 
 #endif

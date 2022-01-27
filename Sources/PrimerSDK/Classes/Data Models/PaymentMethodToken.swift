@@ -256,29 +256,6 @@ public struct PaymentInstrumentData: Codable {
 }
 
 /**
- Contains information of the payer (if available).
- 
- *Values*
- 
- `externalPayerId`: ID representing the payer.
- 
- `email`: The payer's email.
- 
- `firstName`: The payer's firstName.
- 
- `lastName`: The payer's lastName.
- 
- - Author:
- Primer
- - Version:
- 1.2.2
- */
-
-public struct ExternalPayerInfo: Codable {
-    public var externalPayerId, email, firstName, lastName: String?
-}
-
-/**
  Contains extra information about the payment method.
  
  - Author:

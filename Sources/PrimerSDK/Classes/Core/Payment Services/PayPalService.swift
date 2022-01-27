@@ -6,7 +6,7 @@ internal protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void)
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void)
-    func fetchPayPalExternalPayerInfo(completion: @escaping (Result<ExternalPayerInfo, Error>) -> Void)
+    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void)
 }
 
 internal class PayPalService: PayPalServiceProtocol {
@@ -196,7 +196,7 @@ internal class PayPalService: PayPalServiceProtocol {
         }
     }
     
-    func fetchPayPalExternalPayerInfo(completion: @escaping (Result<ExternalPayerInfo, Error>) -> Void) {
+    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -216,8 +216,13 @@ internal class PayPalService: PayPalServiceProtocol {
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.fetchPayPalExternalPayerInfo(
             clientToken: decodedClientToken,
-            payPalExternalPayerInfoRequestBody: PayPalExternalPayerInfoRequestBody(paymentMethodConfigId: configId)) { result in
-            
+            payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request(paymentMethodConfigId: configId, orderId: orderId)) { result in
+                switch result {
+                case .success(let response):
+                    completion(.success(response))
+                case .failure(let err):
+                    completion(.failure(err))
+                }
         }
     }
 }
