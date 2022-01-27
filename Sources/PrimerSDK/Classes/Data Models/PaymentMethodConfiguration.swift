@@ -57,6 +57,8 @@ class PaymentMethodConfig: Codable {
             return ExternalPaymentMethodTokenizationViewModel(config: self)
         } else if type == .adyenDotPay || type == .adyenIDeal {
             return BankSelectorTokenizationViewModel(config: self)
+        } else if type == .xfers {
+            return QRCodeTokenizationViewModel(config: self)
         }
         
         log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD TYPE", message: type.rawValue, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)

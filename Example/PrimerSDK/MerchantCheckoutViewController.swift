@@ -371,7 +371,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         
         let clientSessionRequestBody = ClientSessionRequestBody(
             customerId: customerId,
-            orderId: "ios_order_id",
+            orderId: "ios_order_id_\(String.randomString(length: 8))",
             currencyCode: currency,
             amount: nil,
             metadata: ["key": "val"],
@@ -505,6 +505,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
         
         createPayment(with: paymentMethodToken) { (res, err) in
+//            resumeHandler.handle(error: NetworkError.missingParams)
+//            return
             if let err = err {
                 resumeHandler.handle(error: err)
             } else if let res = res {
@@ -661,4 +663,11 @@ extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDele
         presentPrimerOptions(indexPath.row)
     }
     
+}
+
+fileprivate extension String {
+    static func randomString(length: Int) -> String {
+        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return String((0..<length).map { _ in letters.randomElement()! })
+    }
 }

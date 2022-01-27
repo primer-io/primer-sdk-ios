@@ -27,26 +27,25 @@ public class PaymentMethodToken: NSObject, Codable {
     public var token: String?
     public var tokenType: TokenType?
     public var vaultData: VaultData?
-    
-//    public override var description: String {
-//        switch self.paymentInstrumentType {
-//        case .paymentCard:
-//            let last4 = self.paymentInstrumentData?.last4Digits ?? "••••"
-//            return "•••• •••• •••• \(last4)"
-//        case .payPalOrder:
-//            return "PayPal"
-//        case .payPalBillingAgreement:
-//            return "PayPal"
-//        case .goCardlessMandate:
-//            return "Direct Debit"
-//        case .klarnaCustomerToken:
-//            return paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token"
-//        case .klarna:
-//            return paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna"
-//        default:
-//            return "UNKNOWN"
-//        }
-//    }
+
+    init(
+        token: String?,
+        analyticsId: String?,
+        tokenType: TokenType?,
+        paymentInstrumentType: PaymentInstrumentType,
+        paymentInstrumentData: PaymentInstrumentData?,
+        vaultData: VaultData?,
+        threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
+    ) {
+        self.token = token
+        self.analyticsId = analyticsId
+        self.tokenType = tokenType
+        self.paymentInstrumentType = paymentInstrumentType
+        self.paymentInstrumentData = paymentInstrumentData
+        self.vaultData = vaultData
+        self.threeDSecureAuthentication = threeDSecureAuthentication
+        super.init()
+    }
 
     public var icon: ImageName {
         switch self.paymentInstrumentType {

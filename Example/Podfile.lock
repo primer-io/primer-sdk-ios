@@ -1,7 +1,7 @@
 PODS:
-  - PrimerSDK (1.22.0):
-    - PrimerSDK/Core (= 1.22.0)
-  - PrimerSDK/Core (1.22.0)
+  - PrimerSDK (1.23.0):
+    - PrimerSDK/Core (= 1.23.0)
+  - PrimerSDK/Core (1.23.0)
 
 DEPENDENCIES:
   - PrimerSDK (from `../`)
@@ -11,7 +11,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  PrimerSDK: f853ba440771ed325d270d031e289aed8f9e9cfa
+  PrimerSDK: 386632799dc6f880a176ca175f870d40a175e9de
 
 PODFILE CHECKSUM: e07773ea6829816adc7ef6189f0b68d17bfb4a85
 
