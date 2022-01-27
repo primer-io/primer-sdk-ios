@@ -17,7 +17,7 @@ struct PaymentMethodTokenizationRequest: TokenizationRequest {
         self.customerId = Primer.shared.flow.internalSessionFlow.vaulted ? settings.customerId : nil
     }
     
-    init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow, customerId: String?) {
+    init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow?, customerId: String?) {
         self.paymentInstrument = paymentInstrument
         self.paymentFlow = paymentFlow
         self.tokenType = (paymentFlow == .vault) ? .multiUse : .singleUse
