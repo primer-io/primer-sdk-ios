@@ -104,6 +104,18 @@ extension Analytics {
         }
         
         internal static func sync(batchSize: UInt = 100) {
+            guard let analyticsUrlStr = ClientTokenService.decodedClientToken?.analyticsUrlV2,
+                  let analyticsUrl = URL(string: analyticsUrlStr) else { return }
+            
+            log(logLevel: .debug,
+                title: "ANALYTICS",
+                message: "📚 Analytics URL: \(analyticsUrlStr)",
+                prefix: "📚",
+                bundle: Bundle.primerFrameworkIdentifier,
+                file: #file, className: "\(Self.self)",
+                function: #function,
+                line: #line)
+            
             Analytics.queue.async {
                 log(logLevel: .debug,
                     title: "ANALYTICS",
@@ -119,87 +131,64 @@ extension Analytics {
                     storedEvents = Array(storedEvents[0..<Int(batchSize)])
                 }
                 
-                let analyticsUrlStrs: [String?] = Array(Set(storedEvents.map({ $0.analyticsUrl })))
+                let requestBody = Analytics.Service.Request(data: storedEvents)
+                
                 log(logLevel: .debug,
                     title: "ANALYTICS",
-                    message: "📚 Analytics URLs: \(analyticsUrlStrs)",
+                    message: "📚 Syncing \(storedEvents.count) events on URL: \(analyticsUrlStr)",
                     prefix: "📚",
                     bundle: Bundle.primerFrameworkIdentifier,
                     file: #file, className: "\(Self.self)",
                     function: #function,
                     line: #line)
                 
-                for analyticsUrlStr in analyticsUrlStrs {
-                    let events = storedEvents.filter({ $0.analyticsUrl == analyticsUrlStr })
-                    // FIXME: Change hardcoded URL
-                    let urlStr = analyticsUrlStr ?? "https://us-central1-primerdemo-8741b.cloudfunctions.net/api/analytics/\(Primer.shared.sdkSessionId)"
-                    guard let url = URL(string: urlStr) else { continue }
-                    
-                    var _events = events
-                    for (i, _) in _events.enumerated() {
-                        _events[i].localId = nil
-                        _events[i].analyticsUrl = nil
-                    }
-                    
-                    let requestBody = Analytics.Service.Request(data: _events)
-                    
-                    log(logLevel: .debug,
-                        title: "ANALYTICS",
-                        message: "📚 Syncing \(events.count) events on URL: \(analyticsUrlStr ?? "nil")",
-                        prefix: "📚",
-                        bundle: Bundle.primerFrameworkIdentifier,
-                        file: #file, className: "\(Self.self)",
-                        function: #function,
-                        line: #line)
-                    
-                    let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
-                    client.sendAnalyticsEvent(url: url, body: requestBody) { result in
-                        switch result {
-                        case .success:
-                            log(logLevel: .debug,
-                                title: "ANALYTICS",
-                                message: "📚 Finished syncing \(events.count) events on URL: \(analyticsUrlStr ?? "nil")",
-                                prefix: "📚",
-                                bundle: Bundle.primerFrameworkIdentifier,
-                                file: #file, className: "\(Self.self)",
-                                function: #function,
-                                line: #line)
-                            
-                            do {
-                                try Analytics.Service.deleteEvents(events)
-                            } catch {
-                                ErrorHandler.handle(error: error)
-                                return
-                            }
-                            
-                            self.lastSyncAt = Date()
-                            
-                            let remainingEvents = Analytics.Service.loadEvents()
-                                .filter({ $0.analyticsUrl == analyticsUrlStr })
-                                .filter({ $0.eventType != Analytics.Event.EventType.networkCall && $0.eventType != Analytics.Event.EventType.networkConnectivity })
-                            if !remainingEvents.isEmpty {
-                                log(logLevel: .debug,
-                                    title: "ANALYTICS",
-                                    message: "📚 \(remainingEvents.count) events remain for URL: \(analyticsUrlStr ?? "nil")",
-                                    prefix: "📚",
-                                    bundle: Bundle.primerFrameworkIdentifier,
-                                    file: #file, className: "\(Self.self)",
-                                    function: #function,
-                                    line: #line)
-                                
-                                Analytics.Service.sync()
-                            }
-                            
-                        case .failure(let err):
-                            log(logLevel: .debug,
-                                title: "ANALYTICS",
-                                message: "📚 Failed to sync \(events.count) events on URL \(analyticsUrlStr ?? "nil") with error \(err)",
-                                prefix: "📚",
-                                bundle: Bundle.primerFrameworkIdentifier,
-                                file: #file, className: "\(Self.self)",
-                                function: #function,
-                                line: #line)
+                let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+                client.sendAnalyticsEvents(url: analyticsUrl, body: requestBody) { result in
+                    switch result {
+                    case .success:
+                        log(logLevel: .debug,
+                            title: "ANALYTICS",
+                            message: "📚 Finished syncing \(storedEvents.count) events on URL: \(analyticsUrlStr)",
+                            prefix: "📚",
+                            bundle: Bundle.primerFrameworkIdentifier,
+                            file: #file, className: "\(Self.self)",
+                            function: #function,
+                            line: #line)
+                        
+                        do {
+                            try Analytics.Service.deleteEvents(storedEvents)
+                        } catch {
+                            ErrorHandler.handle(error: error)
+                            return
                         }
+                        
+                        self.lastSyncAt = Date()
+                        
+                        let remainingEvents = Analytics.Service.loadEvents()
+                            .filter({ $0.analyticsUrl == analyticsUrlStr })
+                            .filter({ $0.eventType != Analytics.Event.EventType.networkCall && $0.eventType != Analytics.Event.EventType.networkConnectivity })
+                        if !remainingEvents.isEmpty {
+                            log(logLevel: .debug,
+                                title: "ANALYTICS",
+                                message: "📚 \(remainingEvents.count) events remain for URL: \(analyticsUrlStr)",
+                                prefix: "📚",
+                                bundle: Bundle.primerFrameworkIdentifier,
+                                file: #file, className: "\(Self.self)",
+                                function: #function,
+                                line: #line)
+                            
+                            Analytics.Service.sync()
+                        }
+                        
+                    case .failure(let err):
+                        log(logLevel: .debug,
+                            title: "ANALYTICS",
+                            message: "📚 Failed to sync \(storedEvents.count) events on URL \(analyticsUrlStr) with error \(err)",
+                            prefix: "📚",
+                            bundle: Bundle.primerFrameworkIdentifier,
+                            file: #file, className: "\(Self.self)",
+                            function: #function,
+                            line: #line)
                     }
                 }
             }
@@ -210,7 +199,8 @@ extension Analytics {
         }
         
         struct Response: Decodable {
-            let success: Bool
+            let id: String?
+            let result: String?
         }
         
     }
