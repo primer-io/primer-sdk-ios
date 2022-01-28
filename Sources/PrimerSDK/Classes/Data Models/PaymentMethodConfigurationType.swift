@@ -33,10 +33,11 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case payNLPayconiq
     case paymentCard
     case payPal
+    case xfers
     case other(rawValue: String)
     
     // swiftlint:disable cyclomatic_complexity
-    init(rawValue: String) {
+    public init(rawValue: String) {
         switch rawValue {
         case "ADYEN_ALIPAY":
             self = .adyenAlipay
@@ -96,12 +97,14 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .paymentCard
         case "PAYPAL":
             self = .payPal
+        case "XFERS_PAYNOW":
+            self = .xfers
         default:
             self = .other(rawValue: rawValue)
         }
     }
     
-    var rawValue: String {
+    public var rawValue: String {
         switch self {
         case .adyenAlipay:
             return "ADYEN_ALIPAY"
@@ -161,6 +164,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "PAYMENT_CARD"
         case .payPal:
             return "PAYPAL"
+        case .xfers:
+            return "XFERS_PAYNOW"
         case .other(let rawValue):
             return rawValue
         }
@@ -190,7 +195,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .payNLBancontact,
                 .payNLGiropay,
                 .payNLIdeal,
-                .payNLPayconiq:
+                .payNLPayconiq,
+                .xfers:
             guard let flow = Primer.shared.flow else { return false }
             return !flow.internalSessionFlow.vaulted
             
@@ -243,6 +249,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case payNLPayconiq
         case paymentCard
         case payPal
+        case xfers
         case other
     }
     
