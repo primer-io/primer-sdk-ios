@@ -75,8 +75,8 @@ class MerchantCheckoutViewController: UIViewController {
             merchantIdentifier: "merchant.dx.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
-            urlScheme: "primer",
-            urlSchemeIdentifier: "primer",
+            urlScheme: "merchant://",
+            urlSchemeIdentifier: "merchant",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
             directDebitHasNoAmount: false,
@@ -111,8 +111,8 @@ class MerchantCheckoutViewController: UIViewController {
             merchantIdentifier: "merchant.checkout.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
-            urlScheme: "primer",
-            urlSchemeIdentifier: "primer",
+            urlScheme: "merchant://",
+            urlSchemeIdentifier: "merchant",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
             businessDetails: nil,
@@ -128,8 +128,8 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {
         vaultPayPalSettings = PrimerSettings(
-            urlScheme: "primer",
-            urlSchemeIdentifier: "primer",
+            urlScheme: "merchant://",
+            urlSchemeIdentifier: "merchant",
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
         )

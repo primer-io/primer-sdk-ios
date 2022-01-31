@@ -72,6 +72,11 @@ public struct PrimerDebugOptions {
  */
 
 public class PrimerSettings: PrimerSettingsProtocol {
+    
+    static var current: PrimerSettingsProtocol {
+        let primerSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return primerSettings
+    }
         
     internal(set) public var amount: Int?
     internal(set) public var currency: Currency?
@@ -148,7 +153,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.customerId = customerId
         self.merchantIdentifier = merchantIdentifier
         self.countryCode = countryCode
-        self.urlScheme = urlScheme
         self.urlSchemeIdentifier = urlSchemeIdentifier
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
@@ -168,6 +172,16 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.billingAddress = billingAddress
         self.orderId = orderId
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
+        
+        if urlScheme != nil {
+            var urlStr: String = urlScheme!
+            if urlScheme!.suffix(3) != "://" {
+                urlStr += "://"
+            }
+            
+            urlStr += "redirect.primer.io"
+            self.urlScheme = urlStr
+        }
     }
     
     public init(
@@ -188,7 +202,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.klarnaSessionType = klarnaSessionType
         self.klarnaPaymentDescription = klarnaPaymentDescription
         self.merchantIdentifier = merchantIdentifier
-        self.urlScheme = urlScheme
         self.urlSchemeIdentifier = urlSchemeIdentifier
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
@@ -198,6 +211,16 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
         self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
+        
+        if urlScheme != nil {
+            var urlStr: String = urlScheme!
+            if urlScheme!.suffix(3) != "://" {
+                urlStr += "://"
+            }
+            
+            urlStr += "redirect.primer.io"
+            self.urlScheme = urlStr
+        }
     }
     
     static func modify(withClientSession clientSession: ClientSession) {
