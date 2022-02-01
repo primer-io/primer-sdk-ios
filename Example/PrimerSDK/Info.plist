@@ -27,7 +27,7 @@
 			<string>primer</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>primer</string>
+				<string>merchant</string>
 			</array>
 		</dict>
 	</array>
