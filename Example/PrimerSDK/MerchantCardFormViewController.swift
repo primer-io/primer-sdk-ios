@@ -22,6 +22,7 @@ class MerchantCardFormViewController: PrimerCheckoutComponents.PaymentMethodView
     var threeDSAlert: UIAlertController?
     var transactionResponse: TransactionResponse?
     var paymentResponsesData: [Data] = []
+    var activityIndicator: UIActivityIndicatorView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,10 +30,12 @@ class MerchantCardFormViewController: PrimerCheckoutComponents.PaymentMethodView
         self.paymentMethodType = .paymentCard
         self.delegate = self
         
-        self.view.backgroundColor = .green
+        self.view.backgroundColor = .white
         
         self.paymentButton = UIButton()
         self.paymentButton.backgroundColor = .black
+        self.paymentButton.setTitle("Pay now", for: .normal)
+        self.paymentButton.setTitleColor(.white, for: .normal)
         self.view.addSubview(self.paymentButton)
         self.stackView = UIStackView()
         self.stackView.axis = .vertical
@@ -55,7 +58,8 @@ class MerchantCardFormViewController: PrimerCheckoutComponents.PaymentMethodView
         
         requiredInputElementTypes.forEach { inputElementType in
             let textField = PrimerCheckoutComponents.TextField(type: inputElementType, frame: .zero)
-            textField.backgroundColor = .red
+            textField.borderStyle = .line
+            textField.layer.borderColor = UIColor.black.cgColor
             textField.inputElementDelegate = self
             self.stackView.addArrangedSubview(textField)
             textField.translatesAutoresizingMaskIntoConstraints = false
@@ -78,10 +82,10 @@ class MerchantCardFormViewController: PrimerCheckoutComponents.PaymentMethodView
         self.cvvTextField?.placeholder = "CVV"
         self.cardHolderNameTextField?.placeholder = "Cardholder"
         
-        self.cardNumberTextField?.text = "4242 4242 4242 4242"
-        self.expiryTextField?.text = "02/23"
-        self.cvvTextField?.text = "123"
-        self.cardHolderNameTextField?.text = "John Smith"
+//        self.cardNumberTextField?.text = "4242 4242 4242 4242"
+//        self.expiryTextField?.text = "02/23"
+//        self.cvvTextField?.text = "123"
+//        self.cardHolderNameTextField?.text = "John Smith"
         
         self.requestClientToken()
     }
@@ -147,7 +151,18 @@ class MerchantCardFormViewController: PrimerCheckoutComponents.PaymentMethodView
             )
         )
         
+        self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
+        self.view.addSubview(self.activityIndicator!)
+        self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
+        self.activityIndicator?.color = .black
+        self.activityIndicator?.startAnimating()
         requestClientSession(requestBody: clientSessionRequestBody, completion: { (token, err) in
+            DispatchQueue.main.async {
+                self.activityIndicator?.stopAnimating()
+                self.activityIndicator?.removeFromSuperview()
+                self.activityIndicator = nil
+            }
+            
             if let token = token {
                 self.clientToken = token
             }
@@ -235,16 +250,16 @@ class MerchantCardFormViewController: PrimerCheckoutComponents.PaymentMethodView
             body: bodyData) { result in
                 switch result {
                 case .success(let data):
+                    let paymentResponse = try? JSONDecoder().decode(Payment.Response.self, from: data)
+                    if paymentResponse != nil {
+                        self.paymentResponsesData.append(data)
+                    }
+                    
                     if let dic = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
                         completion(dic, nil)
                     } else {
                         let err = NetworkError.invalidResponse
                         completion(nil, err)
-                    }
-                    
-                    let paymentResponse = try? JSONDecoder().decode(Payment.Response.self, from: data)
-                    if paymentResponse != nil {
-                        self.paymentResponsesData.append(data)
                     }
                     
                 case .failure(let err):
@@ -278,9 +293,24 @@ extension MerchantCardFormViewController: PrimerCheckoutComponentsDelegate {
                 }))
             }
             
+            self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
+            self.view.addSubview(self.activityIndicator!)
+            self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
+            self.activityIndicator?.color = .black
+            self.activityIndicator?.startAnimating()
+            
             createPayment(with: paymentMethodToken) { (res, err) in
-    //            resumeHandler.handle(error: NetworkError.missingParams)
-    //            return
+                DispatchQueue.main.async {
+                    self.activityIndicator?.stopAnimating()
+                    self.activityIndicator?.removeFromSuperview()
+                    self.activityIndicator = nil
+                    
+                    if !self.paymentResponsesData.isEmpty {
+                        let rvc = ResultViewController.instantiate(data: self.paymentResponsesData)
+                        self.navigationController?.pushViewController(rvc, animated: true)
+                    }
+                }
+                
                 if let err = err {
                     resumeHandler?.handle(error: err)
                 } else if let res = res {
