@@ -13,6 +13,11 @@ protocol CheckoutModuleOptions: Codable {}
 
 struct PrimerConfiguration: Codable {
     
+    static var current: PrimerConfiguration? {
+        let appState: AppStateProtocol = DependencyContainer.resolve()
+        return appState.primerConfiguration
+    }
+    
     static var paymentMethodConfigs: [PaymentMethodConfig]? {
         if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
