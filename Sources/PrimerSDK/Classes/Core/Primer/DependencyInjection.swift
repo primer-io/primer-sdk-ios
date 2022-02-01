@@ -21,6 +21,10 @@ private let _DependencyContainer = DependencyContainer()
 // swiftlint:enable identifier_name
 
 final internal class DependencyContainer {
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
     private var dependencies = [String: AnyObject]()
 
     static var shared: DependencyContainer {
@@ -43,6 +47,35 @@ final internal class DependencyContainer {
     private func resolve<T>() -> T {
         let key = String(describing: T.self)
         let dependency = dependencies[key] as? T
+
+        if dependency == nil {
+            if key == String(describing: ClientTokenServiceProtocol.self) {
+                let clientTokenService: ClientTokenServiceProtocol = ClientTokenService()
+                DependencyContainer.register(clientTokenService)
+                return self.resolve()
+                
+            } else if key == String(describing: AppStateProtocol.self) {
+                let appState: AppStateProtocol = AppState()
+                DependencyContainer.register(appState)
+                return self.resolve()
+                
+            } else if key == String(describing: PrimerSettingsProtocol.self) {
+                let primerSettings: PrimerSettingsProtocol = PrimerSettings()
+                DependencyContainer.register(primerSettings)
+                return self.resolve()
+                
+            } else if key == String(describing: PaymentMethodConfigServiceProtocol.self) {
+                let primerConfiguration: PaymentMethodConfigServiceProtocol = PaymentMethodConfigService()
+                DependencyContainer.register(primerConfiguration)
+                return self.resolve()
+                
+            } else if key == String(describing: PrimerAPIClientProtocol.self) {
+                let primerAPIClient: PrimerAPIClientProtocol = PrimerAPIClient()
+                DependencyContainer.register(primerAPIClient)
+                return self.resolve()
+                
+            }
+        }
 
         precondition(
             dependency != nil,
