@@ -57,6 +57,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         }
     }
     
+    
     private func renderAmount() {
         let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
