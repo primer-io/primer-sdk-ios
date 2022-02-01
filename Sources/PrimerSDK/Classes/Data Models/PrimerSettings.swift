@@ -72,6 +72,11 @@ public struct PrimerDebugOptions {
  */
 
 public class PrimerSettings: PrimerSettingsProtocol {
+    
+    static var current: PrimerSettingsProtocol {
+        let primerSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return primerSettings
+    }
         
     internal(set) public var amount: Int?
     internal(set) public var currency: Currency?
@@ -80,7 +85,26 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var klarnaSessionType: KlarnaSessionType?
     internal(set) public var klarnaPaymentDescription: String?
     internal(set) public var customerId: String?
-    internal(set) public var urlScheme: String?
+    private var _urlScheme: String?
+    internal(set) public var urlScheme: String? {
+        get {
+            return _urlScheme
+        }
+        set {
+            guard newValue != nil else {
+                _urlScheme = nil
+                return
+            }
+            
+            var urlStr: String = newValue!
+            if newValue!.suffix(3) != "://" {
+                urlStr += "://"
+            }
+            
+            urlStr += "redirect.primer.io"
+            self._urlScheme = urlStr
+        }
+    }
     internal(set) public var urlSchemeIdentifier: String?
     internal(set) public var isFullScreenOnly: Bool
     internal(set) public var hasDisabledSuccessScreen: Bool
@@ -148,7 +172,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.customerId = customerId
         self.merchantIdentifier = merchantIdentifier
         self.countryCode = countryCode
-        self.urlScheme = urlScheme
         self.urlSchemeIdentifier = urlSchemeIdentifier
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
@@ -168,6 +191,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.billingAddress = billingAddress
         self.orderId = orderId
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
+        self.urlScheme = urlScheme
     }
     
     public init(
@@ -188,7 +212,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.klarnaSessionType = klarnaSessionType
         self.klarnaPaymentDescription = klarnaPaymentDescription
         self.merchantIdentifier = merchantIdentifier
-        self.urlScheme = urlScheme
         self.urlSchemeIdentifier = urlSchemeIdentifier
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
@@ -198,6 +221,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
         self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
+        self.urlScheme = urlScheme
     }
     
     static func modify(withClientSession clientSession: ClientSession) {
