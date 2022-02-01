@@ -5,6 +5,8 @@ import Foundation
 internal protocol ClientTokenServiceProtocol {
     static func storeClientToken(_ clientToken: String) throws
     func fetchClientToken(_ completion: @escaping (Error?) -> Void)
+    func fetchClientToken() -> Promise<Void>
+    func fetchClientTokenIfNeeded() -> Promise<Void>
 }
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
@@ -119,7 +121,57 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
             }
         })
     }
+    
+    func fetchClientToken() -> Promise<Void> {
+        return Promise { seal in
+            self.fetchClientToken { err in
+                if let err = err {
+                    seal.reject(err)
+                } else {
+                    seal.fulfill()
+                }
+            }
+        }
+    }
 
+    func fetchClientTokenIfNeeded() -> Promise<Void> {
+        return Promise { seal in
+            do {
+                if let decodedClientToken = ClientTokenService.decodedClientToken {
+                    try decodedClientToken.validate()
+                    seal.fulfill()
+                } else {
+                    firstly {
+                        self.fetchClientToken()
+                    }
+                    .done {
+                        seal.fulfill()
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                }
+                
+            } catch {
+                switch error {
+                case PrimerError.invalidClientToken:
+                    firstly {
+                        self.fetchClientToken()
+                    }
+                    .done { decodedClientToken in
+                        seal.fulfill(decodedClientToken)
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                default:
+                    seal.reject(error)
+                }
+            }
+            
+        }
+    }
+    
 }
 
 #endif
