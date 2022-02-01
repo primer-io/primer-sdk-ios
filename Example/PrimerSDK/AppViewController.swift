@@ -90,6 +90,14 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         navigationController?.pushViewController(mcvc, animated: true)
     }
     
+    @IBAction func checkoutComponentsButtonTapped(_ sender: Any) {
+        let mcfvc = MerchantCardFormViewController()
+        mcfvc.view.translatesAutoresizingMaskIntoConstraints = false
+        mcfvc.view.heightAnchor.constraint(equalToConstant: self.view.bounds.height).isActive = true
+        mcfvc.view.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true
+        self.navigationController?.pushViewController(mcfvc, animated: true)
+    }
+    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }

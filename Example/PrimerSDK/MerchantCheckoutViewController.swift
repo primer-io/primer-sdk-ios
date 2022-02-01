@@ -91,6 +91,12 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.delegate = self
         
         self.fetchPaymentMethods()
+        
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+            let vc = MerchantCardFormViewController()
+            vc.view.translatesAutoresizingMaskIntoConstraints = false
+            self.present(vc, animated: true, completion: nil)
+        }
     }
     
     // MARK: - ACTIONS
@@ -665,7 +671,7 @@ extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDele
     
 }
 
-fileprivate extension String {
+internal extension String {
     static func randomString(length: Int) -> String {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         return String((0..<length).map { _ in letters.randomElement()! })

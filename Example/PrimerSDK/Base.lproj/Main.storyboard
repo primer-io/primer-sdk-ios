@@ -75,6 +75,15 @@
                                     <action selector="initializePrimerButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="kia-UZ-chG"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFw-xV-IYR">
+                                <rect key="frame" x="108" y="518" width="200" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Card Checkout Component"/>
+                                <connections>
+                                    <action selector="checkoutComponentsButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="2AF-kX-fGc"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <gestureRecognizers/>
