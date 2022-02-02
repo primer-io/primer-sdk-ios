@@ -138,6 +138,8 @@
 		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* PrimerSDK_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimerSDK_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8451A07C27AA8D3B00F8EC73 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		8451A07D27AA8D3B00F8EC73 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
 		849A28EA275614070037C2D1 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalPaymentMethods.swift; sourceTree = "<group>"; };
 		849AFD13275A725600A1F4CB /* ResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultViewController.swift; sourceTree = "<group>"; };
@@ -532,6 +534,7 @@
 				de,
 				ka,
 				sv,
+				el,
 			);
 			mainGroup = 607FACC71AFB9204008FA782;
 			productRefGroup = 607FACD11AFB9204008FA782 /* Products */;
@@ -724,6 +727,7 @@
 				15ACEA732615C75D004C3EAA /* de */,
 				15ACEA752615C77E004C3EAA /* ka */,
 				15ACEA772615C791004C3EAA /* sv */,
+				8451A07D27AA8D3B00F8EC73 /* el */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -737,6 +741,7 @@
 				15ACEA722615C75D004C3EAA /* de */,
 				15ACEA742615C77E004C3EAA /* ka */,
 				15ACEA762615C791004C3EAA /* sv */,
+				8451A07C27AA8D3B00F8EC73 /* el */,
 			);
 			name = LaunchScreen.xib;
 			sourceTree = "<group>";
