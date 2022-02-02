@@ -98,6 +98,24 @@ public class PrimerCheckoutComponents {
         }
     }
     
+    public static func getButton(for paymentMethodType: PaymentMethodConfigType) -> UIButton? {
+        switch paymentMethodType {
+        case .applePay:
+            guard let tokenizationViewModel = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type == .applePay }).first?.tokenizationViewModel else { return nil }
+            return tokenizationViewModel.paymentMethodButton
+            
+        default:
+            return nil
+        }
+    }
+    
+    public static func showCheckout(for paymentMethod: PaymentMethodConfigType) {
+        PrimerCheckoutComponents.delegate?.onEvent(.configurationStarted)
+        var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        settings.hasDisabledSuccessScreen = true
+        settings.isInitialLoadingHidden = true
+        Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, on: UIViewController())
+    }
 }
 
 extension PrimerCheckoutComponents {
