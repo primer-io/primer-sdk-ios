@@ -179,6 +179,9 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         rightBarButton = UIButton()
         rightBarButton.setTitle(Content.VaultView.editLabel, for: .normal)
         rightBarButton.setTitleColor(theme.text.title.color, for: .normal)
+        rightBarButton.titleLabel?.numberOfLines = 1
+        rightBarButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        rightBarButton.titleLabel?.minimumScaleFactor = 0.5
         rightBarButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
         view.addSubview(tableView)
         tableView.dataSource = self
