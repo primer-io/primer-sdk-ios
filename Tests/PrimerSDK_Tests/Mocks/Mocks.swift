@@ -83,6 +83,8 @@ class MockPrimerDelegate: PrimerDelegate {
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
     
+    var hasDisabledSuccessScreen: Bool = false
+    
     var debugOptions: PrimerDebugOptions
         
     var orderId: String?
@@ -106,10 +108,6 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     var orderItems: [OrderItem]? = []
 
     var isFullScreenOnly: Bool {
-        return false
-    }
-
-    var hasDisabledSuccessScreen: Bool {
         return false
     }
 
