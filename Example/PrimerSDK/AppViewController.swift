@@ -21,7 +21,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        environmentControl.selectedSegmentIndex = 3
+        environmentControl.selectedSegmentIndex = 2
         environmentControl.accessibilityIdentifier = "env_control"
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
@@ -91,7 +91,28 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     }
     
     @IBAction func checkoutComponentsButtonTapped(_ sender: Any) {
-        let mcfvc = MerchantCardFormViewController()
+        var env: Environment!
+        switch environmentControl.selectedSegmentIndex {
+        case 0:
+            env = .local
+        case 1:
+            env = .dev
+        case 2:
+            env = .sandbox
+        case 3:
+            env = .staging
+        case 4:
+            env = .production
+        default:
+            break
+        }
+        
+        var amount: Int?
+        if let amountStr = amountTextField.text {
+            amount = Int(amountStr)
+        }
+        
+        let mcfvc = MerchantPaymentMethodsViewController.instantiate(environment: env, amount: amount ?? 1, currency: Currency(rawValue: currencyTextField.text ?? "")!, countryCode: CountryCode(rawValue: countryCodeTextField.text ?? "")!)
         mcfvc.view.translatesAutoresizingMaskIntoConstraints = false
         mcfvc.view.heightAnchor.constraint(equalToConstant: self.view.bounds.height).isActive = true
         mcfvc.view.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true
