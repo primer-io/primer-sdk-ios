@@ -87,7 +87,7 @@ class MerchantCardFormViewController: PrimerCheckoutComponents.PaymentMethodView
 //        self.cvvTextField?.text = "123"
 //        self.cardHolderNameTextField?.text = "John Smith"
         
-        self.requestClientToken()
+//        self.requestClientToken()
     }
     
     private func requestClientToken() {
@@ -164,7 +164,9 @@ class MerchantCardFormViewController: PrimerCheckoutComponents.PaymentMethodView
             }
             
             if let token = token {
-                self.clientToken = token
+                PrimerCheckoutComponents.listAvailablePaymentMethods(forSession: token) { pms, err in
+                    
+                }
             }
         })
     }
@@ -345,6 +347,10 @@ extension MerchantCardFormViewController: PrimerCheckoutComponentsDelegate {
             
         case .error(let err):
             print(err)
+        case .configurationStarted:
+            break
+        case .paymentMethodPresented:
+            break
         }
     }
 }
