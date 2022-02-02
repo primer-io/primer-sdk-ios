@@ -36,9 +36,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
         
         let settings = PrimerSettings(
             merchantIdentifier: "merchant.dx.team",
-            urlScheme: "",
-            hasDisabledSuccessScreen: false,
-            isInitialLoadingHidden: true)
+            urlScheme: "")
         Primer.shared.configure(settings: settings, theme: nil)
         PrimerCheckoutComponents.delegate = self
         
@@ -214,6 +212,33 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
 
 extension MerchantPaymentMethodsViewController: PrimerCheckoutComponentsDelegate {
     func onEvent(_ event: PrimerCheckoutComponentsEvent) {
+        DispatchQueue.main.async {
+            switch event {
+            case .configurationStarted:
+                self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
+                self.view.addSubview(self.activityIndicator!)
+                self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
+                self.activityIndicator?.color = .black
+                self.activityIndicator?.startAnimating()
+                
+            case .paymentMethodPresented:
+                self.activityIndicator?.stopAnimating()
+                self.activityIndicator?.removeFromSuperview()
+                self.activityIndicator = nil
+                
+            case .tokenizationStarted:
+                break
+            case .tokenizationSuccess(let paymentMethodToken, let resumeHandler):
+                self.activityIndicator?.stopAnimating()
+                self.activityIndicator?.removeFromSuperview()
+                self.activityIndicator = nil
+                
+            case .error(let err):
+                self.activityIndicator?.stopAnimating()
+                self.activityIndicator?.removeFromSuperview()
+                self.activityIndicator = nil
+            }
+        }
         print("MerchantPaymentMethodsViewController.onEvent: \(event)")
     }
 }

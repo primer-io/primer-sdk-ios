@@ -119,7 +119,7 @@ internal class PrimerRootViewController: PrimerViewController {
     private func render() {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        if !settings.isInitialLoadingHidden {
+        if settings.isInitialLoadingHidden == false {
             blurBackground()
             showLoadingScreenIfNeeded()
         }

@@ -75,9 +75,11 @@
                                     <action selector="initializePrimerButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="kia-UZ-chG"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFw-xV-IYR">
-                                <rect key="frame" x="124" y="518" width="168" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFw-xV-IYR">
+                                <rect key="frame" x="16" y="518" width="382" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="BOo-5n-cav"/>
+                                </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="List Payment Methods"/>
                                 <connections>
@@ -93,6 +95,8 @@
                             <constraint firstItem="Ink-cM-1O4" firstAttribute="centerY" secondItem="cFw-qi-n9P" secondAttribute="centerY" id="5Cp-KJ-C7e"/>
                             <constraint firstItem="Q8f-7x-ncT" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" id="6wa-qg-d3E"/>
                             <constraint firstAttribute="trailingMargin" secondItem="OUf-n8-A9K" secondAttribute="trailing" id="8Cu-il-4cN"/>
+                            <constraint firstItem="FFw-xV-IYR" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leading" constant="16" id="HoV-tk-heJ"/>
+                            <constraint firstItem="FFw-xV-IYR" firstAttribute="top" secondItem="Uou-Rn-KOH" secondAttribute="bottom" constant="62" id="Kag-Ry-M4k"/>
                             <constraint firstItem="cFw-qi-n9P" firstAttribute="leading" secondItem="uht-tM-QtC" secondAttribute="leading" id="LTX-Uw-PRi"/>
                             <constraint firstAttribute="trailingMargin" secondItem="qPf-Sa-EQI" secondAttribute="trailing" id="Q8O-hL-E5Q"/>
                             <constraint firstItem="Ink-cM-1O4" firstAttribute="leading" secondItem="cFw-qi-n9P" secondAttribute="trailing" constant="8" id="Qgs-f6-ieK"/>
@@ -109,6 +113,7 @@
                             <constraint firstItem="LRA-Ro-g2N" firstAttribute="top" secondItem="qPf-Sa-EQI" secondAttribute="bottom" constant="20" id="tVd-GJ-tsL"/>
                             <constraint firstItem="LRA-Ro-g2N" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" id="u6E-0K-tkS"/>
                             <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerX" secondItem="P7R-MC-LKq" secondAttribute="centerX" id="uIm-xc-nvN"/>
+                            <constraint firstAttribute="trailing" secondItem="FFw-xV-IYR" secondAttribute="trailing" constant="16" id="uRD-vJ-4oG"/>
                             <constraint firstItem="Q8f-7x-ncT" firstAttribute="top" secondItem="OUf-n8-A9K" secondAttribute="bottom" constant="20" id="vGY-ez-ne3"/>
                             <constraint firstItem="OUf-n8-A9K" firstAttribute="top" secondItem="Hc4-ia-dRw" secondAttribute="bottom" constant="20" id="vi0-rA-mjd"/>
                             <constraint firstItem="uht-tM-QtC" firstAttribute="top" secondItem="LRA-Ro-g2N" secondAttribute="bottom" constant="20" id="zze-kW-625"/>
