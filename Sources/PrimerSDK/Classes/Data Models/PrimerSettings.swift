@@ -23,12 +23,12 @@ internal protocol PrimerSettingsProtocol {
     var urlScheme: String? { get }
     var urlSchemeIdentifier: String? { get }
     var isFullScreenOnly: Bool { get }
-    var hasDisabledSuccessScreen: Bool { get }
+    var hasDisabledSuccessScreen: Bool { get set }
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
     @available(*, deprecated, message: "Set the orderItems in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var orderItems: [OrderItem]? { get }
-    var isInitialLoadingHidden: Bool { get }
+    var isInitialLoadingHidden: Bool { get set }
     var localeData: LocaleData { get }
     var is3DSOnVaultingEnabled: Bool { get }
     @available(*, deprecated, message: "Set the billingAddress in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
