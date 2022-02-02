@@ -11,6 +11,8 @@ import UIKit
 
 public class PrimerCheckoutComponents {
     
+    public static var delegate: PrimerCheckoutComponentsDelegate?
+    
     public static func listAvailablePaymentMethods(forSession clientToken: String, completion: @escaping ([PaymentMethodConfigType]?, Error?) -> Void) {
         do {
             try ClientTokenService.storeClientToken(clientToken)
