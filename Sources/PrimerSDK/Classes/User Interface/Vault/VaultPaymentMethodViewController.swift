@@ -231,7 +231,12 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
             Analytics.Service.record(event: uiEvent)
         }
         
-        let title = isDeleting ? "Cancel" : Content.VaultView.editLabel
+        let cancelText = NSLocalizedString("primer-alert-button-cancel",
+                                           tableName: nil,
+                                           bundle: Bundle.primerResources,
+                                           value: "Cancel",
+                                           comment: "Cancel - Alert button cancel")
+        let title = isDeleting ? cancelText : Content.VaultView.editLabel
         rightBarButton.setTitle(title, for: .normal)
     }
 

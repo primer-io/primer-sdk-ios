@@ -119,7 +119,13 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             let seeAllButton = UIButton()
             seeAllButton.translatesAutoresizingMaskIntoConstraints = false
             seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-            seeAllButton.setTitle("See all", for: .normal)
+            
+            let seeAllButtonTitle = NSLocalizedString("see-all",
+                                                      tableName: nil,
+                                                      bundle: Bundle.primerResources,
+                                                      value: "See all",
+                                                      comment: "See all - Universal checkout")
+            seeAllButton.setTitle(seeAllButtonTitle, for: .normal)
             seeAllButton.contentHorizontalAlignment = .right
             seeAllButton.setTitleColor(theme.text.system.color, for: .normal)
             seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
