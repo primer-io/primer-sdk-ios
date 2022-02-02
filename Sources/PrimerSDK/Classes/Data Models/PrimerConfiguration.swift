@@ -19,10 +19,9 @@ struct PrimerConfiguration: Codable {
     }
     
     static var paymentMethodConfigs: [PaymentMethodConfig]? {
-        if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        var pms = state
+        let pms = state
             .primerConfiguration?
             .paymentMethods
         
