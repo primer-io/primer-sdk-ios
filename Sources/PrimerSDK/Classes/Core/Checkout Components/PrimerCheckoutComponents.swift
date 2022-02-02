@@ -11,6 +11,26 @@ import UIKit
 
 public class PrimerCheckoutComponents {
     
+    public static func listAvailablePaymentMethods(forSession clientToken: String, completion: @escaping ([PaymentMethodConfigType]?, Error?) -> Void) {
+        do {
+            try ClientTokenService.storeClientToken(clientToken)
+        } catch {
+            completion(nil, error)
+        }
+        
+        let primerConfigurationService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+        firstly {
+            primerConfigurationService.fetchConfig()
+        }
+        .done {
+            let availablePaymentMethodTypes = PrimerConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
+            completion(availablePaymentMethodTypes, nil)
+        }
+        .catch { err in
+            completion(nil, err)
+        }
+    }
+    
     public static func listInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType] {
         switch paymentMethodType {
         case .adyenAlipay:
