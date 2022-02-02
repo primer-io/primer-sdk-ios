@@ -25,6 +25,21 @@ extension PrimerCheckoutComponents {
         open var clientToken: String?
         private let appState: AppStateProtocol = DependencyContainer.resolve()
         
+        public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+            super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+            self.initialize()
+        }
+        
+        required public init?(coder: NSCoder) {
+            super.init(coder: coder)
+            self.initialize()
+        }
+        
+        private func initialize() {
+            let appState: AppStateProtocol = DependencyContainer.resolve()
+            self.clientToken = appState.clientToken
+        }
+        
         open override func viewDidLoad() {
             super.viewDidLoad()
         }
