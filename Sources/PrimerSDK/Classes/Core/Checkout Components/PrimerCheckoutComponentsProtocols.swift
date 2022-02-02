@@ -167,3 +167,4 @@ public enum PrimerCheckoutComponentsEvent {
     case tokenizationSuccess(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?)
     case error(err: Error)
 }
+
