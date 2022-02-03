@@ -111,6 +111,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                                                       bundle: Bundle.primerResources,
                                                                       value: "SAVED PAYMENT METHOD",
                                                                       comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
+            savedPaymentMethodLabel.adjustsFontSizeToFitWidth = true
+            savedPaymentMethodLabel.minimumScaleFactor = 0.8
             savedPaymentMethodLabel.textColor = theme.text.subtitle.color
             savedPaymentMethodLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
             savedPaymentMethodLabel.textAlignment = .left
@@ -126,6 +128,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                                       value: "See all",
                                                       comment: "See all - Universal checkout")
             seeAllButton.setTitle(seeAllButtonTitle, for: .normal)
+            seeAllButton.titleLabel?.adjustsFontSizeToFitWidth = true
+            seeAllButton.titleLabel?.minimumScaleFactor = 0.7
             seeAllButton.contentHorizontalAlignment = .right
             seeAllButton.setTitleColor(theme.text.system.color, for: .normal)
             seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
