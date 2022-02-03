@@ -42,7 +42,13 @@ internal class SuccessViewController: PrimerViewController {
         view.addSubview(reference)
                 
         rightBarButton = UIButton()
-        rightBarButton.setTitle("Done", for: .normal)
+        
+        let rightBarButtonTitle = NSLocalizedString("success-done",
+                                                    tableName: nil,
+                                                    bundle: Bundle.primerResources,
+                                                    value: "Done",
+                                                    comment: "Success View - Right Bar Button Title")
+        rightBarButton.setTitle(rightBarButtonTitle, for: .normal)
         rightBarButton.setTitleColor(theme.colors.primary, for: .normal)
         rightBarButton.addTarget(self, action: #selector(close), for: .touchUpInside)
         icon.tintColor = theme.colors.primary
