@@ -208,7 +208,7 @@ struct CardFormViewContent {
     var cvcTextFieldPlaceholder: String { return NSLocalizedString("primer-card-form-cvv",
                                                                    tableName: nil,
                                                                    bundle: Bundle.primerResources,
-                                                                   value: "CVV/CVC",
+                                                                   value: "CVV",
                                                                    comment: "CVV - Card Form (CVV text field placeholder text)") }
 }
 

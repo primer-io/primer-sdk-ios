@@ -216,7 +216,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cvvContainerView.placeholderText = NSLocalizedString("primer-card-form-cvv",
                                                              tableName: nil,
                                                              bundle: Bundle.primerResources,
-                                                             value: "CVV/CVC",
+                                                             value: "CVV",
                                                              comment: "CVV - Card Form (CVV text field placeholder text)")
         cvvContainerView.setup()
         cvvContainerView.tintColor = theme.input.border.color(for: .selected)
