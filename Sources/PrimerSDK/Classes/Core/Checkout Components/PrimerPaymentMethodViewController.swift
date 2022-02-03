@@ -14,7 +14,6 @@ extension PrimerCheckoutComponents {
     open class PaymentMethodViewController: UIViewController, PrimerPaymentMethodViewControllerProtocol {
         
         open var paymentMethodType: PaymentMethodConfigType!
-        open var delegate: PrimerCheckoutComponentsDelegate!
         open var resumeHandler: ResumeHandlerProtocol?
         open var inputElements: [PrimerInputElement] = []
         open var paymentButton: UIButton! {
@@ -211,12 +210,12 @@ extension PrimerCheckoutComponents {
                                     }, completion: { result in
                                         switch result {
                                         case .success(let res):
-                                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: res.0)
+                                            PrimerCheckoutComponents.delegate?.onEvent(.tokenizationSuccess(paymentMethodToken: res.0, resumeHandler: self))
 
                                         case .failure(let err):
                                             // Even if 3DS fails, continue...
                                             log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
-                                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                                            PrimerCheckoutComponents.delegate?.onEvent(.error(err: err))
 
                                         }
                                     })
@@ -241,7 +240,7 @@ extension PrimerCheckoutComponents {
         
         @objc
         private func startTokenization() {
-            self.delegate.onEvent(.tokenizationStarted)
+            PrimerCheckoutComponents.delegate?.onEvent(.configurationStarted)
 
             firstly {
                 self.validateUI()
@@ -260,10 +259,10 @@ extension PrimerCheckoutComponents {
                 return self.tokenize(request: requestbody)
             }
             .done { paymentMethodToken in
-                self.delegate.onEvent(.tokenizationSuccess(paymentMethodToken: paymentMethodToken, resumeHandler: self.resumeHandler))
+                PrimerCheckoutComponents.delegate?.onEvent(.tokenizationSuccess(paymentMethodToken: paymentMethodToken, resumeHandler: nil))
             }
             .catch { err in
-                self.delegate.onEvent(.error(err: err))
+                PrimerCheckoutComponents.delegate?.onEvent(.error(err: err))
             }
         }
     }

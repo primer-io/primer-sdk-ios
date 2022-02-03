@@ -153,7 +153,6 @@ public protocol PrimerInputElementDelegate {
 
 public protocol PrimerPaymentMethodViewControllerProtocol where Self: UIViewController {
     var paymentMethodType: PaymentMethodConfigType! { get set }
-    var delegate: PrimerCheckoutComponentsDelegate! { get set }
     var inputElements: [PrimerInputElement] { get set }
     var paymentButton: UIButton! { get set }
 }

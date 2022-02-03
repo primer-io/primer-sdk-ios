@@ -28,7 +28,6 @@ class MerchantCardFormViewController: PrimerCheckoutComponents.PaymentMethodView
         super.viewDidLoad()
         
         self.paymentMethodType = .paymentCard
-        self.delegate = self
         
         self.view.backgroundColor = .white
         
