@@ -94,10 +94,6 @@ internal class PrimerResultViewController: PrimerViewController {
         (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
     }
 
-//    @objc func close() {
-//        Primer.shared.dismiss()
-//    }
-
 }
 
 #endif

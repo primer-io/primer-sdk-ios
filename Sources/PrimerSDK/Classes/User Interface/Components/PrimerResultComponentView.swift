@@ -66,42 +66,6 @@ class PrimerResultComponentView: PrimerView {
         self.loadingIndicator = loadingIndicator
         self.initialize()
     }
-
-//    convenience init(frame: CGRect = .zero, title: String?, paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]) {
-//        self.init(frame: frame)
-//        self.title = title
-//        self.paymentMethodTokenizationViewModels = paymentMethodTokenizationViewModels
-//        render()
-//    }
-    
-//    func render() {
-//        backgroundColor = UIColor.black.withAlphaComponent(0.05)
-//        translatesAutoresizingMaskIntoConstraints = false
-//        layer.cornerRadius = 4.0
-//        clipsToBounds = true
-//
-//        addSubview(stackView)
-//        stackView.translatesAutoresizingMaskIntoConstraints = false
-//        stackView.axis = .vertical
-//        stackView.alignment = .fill
-//        stackView.distribution = .fill
-//        stackView.spacing = 7.0
-//        stackView.pin(view: self, leading: 10, top: 10, trailing: -10, bottom: -10)
-//
-//        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-//
-//        if let title = title {
-//            titleLabel = UILabel()
-//            titleLabel!.text = title
-//            titleLabel!.textAlignment = .right
-//            titleLabel!.textColor = theme.text.title.color
-//            stackView.addArrangedSubview(titleLabel!)
-//        }
-//
-//        for viewModel in paymentMethodTokenizationViewModels {
-//            stackView.addArrangedSubview(viewModel.paymentMethodButton)
-//        }
-//    }
     
 }
 
