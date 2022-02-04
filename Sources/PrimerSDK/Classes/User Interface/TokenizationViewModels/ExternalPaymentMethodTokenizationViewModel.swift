@@ -599,14 +599,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     fatalError()
                 }
             case .failure(let err):
-                let nsErr = err as NSError
-                if nsErr.domain == NSURLErrorDomain && nsErr.code == -1001 {
-                    // Retry
-                    Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-                        self.startPolling(on: url, completion: completion)
-                    }
-                } else {
-                    completion(nil, err)
+                ErrorHandler.handle(error: err)
+                // Retry
+                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+                    self.startPolling(on: url, completion: completion)
                 }
             }
         }
