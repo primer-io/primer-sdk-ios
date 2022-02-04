@@ -60,7 +60,7 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: containerErr)
                 completion(containerErr)
-            case .success(let response):
+            case .success:
                 completion(nil)
             }
         }

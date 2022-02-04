@@ -41,7 +41,7 @@ class ApayaDataModelTests: XCTestCase {
         
         let url = URL(string: rootUrl + "pt=ExamplePTValue&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91")
         do {
-            try Apaya.WebViewResponse(url: url!)
+            _ = try Apaya.WebViewResponse(url: url!)
             XCTFail()
         }
         catch {
@@ -52,7 +52,7 @@ class ApayaDataModelTests: XCTestCase {
     func test_apaya_web_view_result_fails_on_error_url() throws {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ERROR")
         do {
-            let apayaWebViewResponse = try Apaya.WebViewResponse(url: url!)
+            _ = try Apaya.WebViewResponse(url: url!)
             XCTFail()
         }
         catch {

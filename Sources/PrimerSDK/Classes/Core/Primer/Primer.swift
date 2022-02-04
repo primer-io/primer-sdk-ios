@@ -154,7 +154,7 @@ public class Primer {
         
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-            let theme = themeProtocol as! PrimerTheme
+            _ = themeProtocol as! PrimerTheme
 //            theme.content.formTopTitles.setTopTitle(text, for: formType)
         }
     }
@@ -180,7 +180,7 @@ public class Primer {
         
         DispatchQueue.main.async {
             let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-            let theme = themeProtocol as! PrimerTheme
+            _ = themeProtocol as! PrimerTheme
 //            theme.content.formMainTitles.setMainTitle(text, for: formType)
         }
     }

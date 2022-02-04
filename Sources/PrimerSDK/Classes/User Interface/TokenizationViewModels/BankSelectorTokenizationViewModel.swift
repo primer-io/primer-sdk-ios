@@ -123,8 +123,6 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     }
     private var tokenizationService: TokenizationServiceProtocol?
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
