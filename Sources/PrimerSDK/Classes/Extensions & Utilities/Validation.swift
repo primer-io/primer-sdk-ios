@@ -69,10 +69,10 @@ final internal class Validation {
         if containsTooFewDigits { return (false, "Card number is too short", false ) }
         return (true, "", false )
 
-        let isNotALuhnNumber = !shared.luhnCheck(number)
-        if isNotALuhnNumber { return (false, "Card number is invalid", false ) }
-
-        return (true, "", false )
+//        let isNotALuhnNumber = !shared.luhnCheck(number)
+//        if isNotALuhnNumber { return (false, "Card number is invalid", false ) }
+//
+//        return (true, "", false )
     }
 
     private func expiryYearIsNotValid(_ year: String.SubSequence) -> (Bool, String, Bool) {
