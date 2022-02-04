@@ -507,9 +507,9 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
         
         createPayment(with: paymentMethodToken) { (res, err) in
-            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
-            resumeHandler.handle(error: merchantErr)
-            return
+//            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
+//            resumeHandler.handle(error: merchantErr)
+//            return
             
             if let err = err {
                 print(err)
