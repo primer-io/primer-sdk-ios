@@ -27,6 +27,9 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     var completion: TokenizationCompletion? { get set }
     var paymentMethod: PaymentMethodToken? { get set }
     
+    func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
+    func makeSquareLogoImageView(withDimension dimension: CGFloat) -> UIImageView?
+    
     func validate() throws
     func startTokenizationFlow()
     func handleSuccessfulTokenizationFlow()
@@ -227,6 +230,34 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         guard let imageName = imageName else { return nil }
         return UIImage(named: "\(imageName)-logo-square", in: Bundle.primerResources, compatibleWith: nil)
     }()
+    
+    func makeLogoImageView(withSize size: CGSize?) -> UIImageView? {
+        guard let logo = self.logo else { return nil }
+        
+        var tmpSize: CGSize! = size
+        if size == nil {
+            tmpSize = CGSize(width: logo.size.width, height: logo.size.height)
+        }
+        
+        let imgView = UIImageView()
+        imgView.image = logo
+        imgView.contentMode = .scaleAspectFit
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        imgView.heightAnchor.constraint(equalToConstant: tmpSize.width).isActive = true
+        imgView.widthAnchor.constraint(equalToConstant: tmpSize.height).isActive = true
+        return imgView
+    }
+    
+    func makeSquareLogoImageView(withDimension dimension: CGFloat) -> UIImageView? {
+        guard let squareLogo = self.squareLogo else { return nil }
+        let imgView = UIImageView()
+        imgView.image = squareLogo
+        imgView.contentMode = .scaleAspectFit
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
+        imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
+        return imgView
+    }
     
     lazy var paymentMethodButton: PrimerButton = {
         let paymentMethodButton = PrimerButton()
