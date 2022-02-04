@@ -156,7 +156,7 @@ internal class URLSessionStack: NetworkService {
                 
                 #if DEBUG
                 let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+                let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
                 var jsonStr: String?
                 if jsonData != nil {
                     jsonStr = String(data: jsonData!, encoding: .utf8 )
