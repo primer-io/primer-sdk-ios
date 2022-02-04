@@ -595,8 +595,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 } else if res.status == .complete {
                     completion(res.id, nil)
                 } else {
-                    // Do what here?
-                    fatalError()
+                    let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
                 }
             case .failure(let err):
                 ErrorHandler.handle(error: err)
