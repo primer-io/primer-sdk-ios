@@ -63,7 +63,7 @@ class ApayaDataModelTests: XCTestCase {
     func test_apaya_web_view_result_nil_on_cancel_url() throws {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ABANDONED")
         do {
-            try Apaya.WebViewResponse(url: url!)
+            _ = try Apaya.WebViewResponse(url: url!)
             XCTFail()
         }
         catch {
