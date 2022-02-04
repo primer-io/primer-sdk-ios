@@ -12,11 +12,16 @@ import UIKit
 /// PrimerLoadingViewController is a loading view controller, with variable height.
 class PrimerLoadingViewController: PrimerViewController {
     
-    private var activityIndicatorView: UIActivityIndicatorView = UIActivityIndicatorView()
     private var height: CGFloat
+    private(set) internal var imageView: UIImageView?
+    private(set) internal var message: String?
+    private(set) internal var activityIndicatorView: UIActivityIndicatorView = UIActivityIndicatorView()
+    private(set) internal var resultView: PrimerResultComponentView!
     
-    init(withHeight height: CGFloat) {
+    init(height: CGFloat, imageView: UIImageView?, message: String?) {
         self.height = height
+        self.imageView = imageView
+        self.message = message
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -44,13 +49,18 @@ class PrimerLoadingViewController: PrimerViewController {
         
         view.heightAnchor.constraint(equalToConstant: height).isActive = true
         
-        view.addSubview(activityIndicatorView)
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         activityIndicatorView.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
         activityIndicatorView.widthAnchor.constraint(equalToConstant: 50.0).isActive = true
-        activityIndicatorView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        activityIndicatorView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         activityIndicatorView.startAnimating()
+        
+        resultView = PrimerResultComponentView(frame: .zero, imageView: self.imageView, message: self.message, loadingIndicator: self.activityIndicatorView)
+        view.addSubview(resultView)
+        resultView.translatesAutoresizingMaskIntoConstraints = false
+        resultView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12).isActive = true
+        resultView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        resultView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 12).isActive = true
+        resultView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
     
 }
