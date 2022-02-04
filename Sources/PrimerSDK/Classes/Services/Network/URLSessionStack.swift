@@ -175,7 +175,7 @@ internal class URLSessionStack: NetworkService {
                 }
             } catch {
                 if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), let jsonDic = json as? [String: Any?],
-                   var primerErrorJSON = jsonDic["error"] as? [String: Any] {
+                   let primerErrorJSON = jsonDic["error"] as? [String: Any] {
                     let statusCode = (response as! HTTPURLResponse).statusCode
 
                     let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: try! JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed))
