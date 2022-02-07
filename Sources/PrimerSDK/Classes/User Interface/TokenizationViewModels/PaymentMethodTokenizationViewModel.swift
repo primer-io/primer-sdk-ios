@@ -19,10 +19,16 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     var title: String { get }
     var surcharge: String? { get }
     var position: Int { get set }
+    var imageName: String? { get }
+    var logo: UIImage? { get }
+    var squareLogo: UIImage? { get }
     var paymentMethodButton: PrimerButton { get }
     var didStartTokenization: (() -> Void)? { get set }
     var completion: TokenizationCompletion? { get set }
     var paymentMethod: PaymentMethodToken? { get set }
+    
+    func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
+    func makeSquareLogoImageView(withDimension dimension: CGFloat) -> UIImageView?
     
     func validate() throws
     func startTokenizationFlow()
@@ -155,6 +161,103 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     lazy var buttonCornerRadius: CGFloat? = {
         return 4.0
     }()
+    
+    lazy var imageName: String? = {
+        switch self.config.type {
+        case .adyenAlipay:
+            return "alipay"
+        case .adyenDotPay:
+            return "dot-pay"
+        case .adyenGiropay,
+                .buckarooGiropay,
+                .payNLGiropay:
+            return "giropay"
+        case .adyenIDeal,
+                .buckarooIdeal,
+                .mollieIdeal,
+                .payNLIdeal:
+            return "ideal"
+        case .adyenMobilePay:
+            return "mobile-pay"
+        case .adyenSofort,
+                .buckarooSofort:
+            return "sofort"
+        case .adyenTrustly:
+            return "trustly"
+        case .adyenTwint:
+            return "twint"
+        case .adyenVipps:
+            return "vipps"
+        case .apaya:
+            return "apaya"
+        case .applePay:
+            return "apple-pay"
+        case .atome:
+            return "atome"
+        case .buckarooBancontact,
+                .mollieBankcontact,
+                .payNLBancontact:
+            return "bancontact"
+        case .buckarooEps:
+            return "eps"
+        case .goCardlessMandate:
+            return "go-cardless"
+        case .googlePay:
+            return "google-pay"
+        case .hoolah:
+            return "hoolah"
+        case .klarna:
+            return "klarna"
+        case .payNLPayconiq:
+            return "payconiq"
+        case .paymentCard:
+            return "card"
+        case .payPal:
+            return "paypal"
+        case .xfers:
+            return "xfers"
+        case .other(rawValue: let rawValue):
+            return rawValue
+        }
+    }()
+    
+    lazy var logo: UIImage? = {
+        guard let imageName = imageName else { return nil }
+        return UIImage(named: "\(imageName)-logo", in: Bundle.primerResources, compatibleWith: nil)
+    }()
+    
+    lazy var squareLogo: UIImage? = {
+        guard let imageName = imageName else { return nil }
+        return UIImage(named: "\(imageName)-logo-square", in: Bundle.primerResources, compatibleWith: nil)
+    }()
+    
+    func makeLogoImageView(withSize size: CGSize?) -> UIImageView? {
+        guard let logo = self.logo else { return nil }
+        
+        var tmpSize: CGSize! = size
+        if size == nil {
+            tmpSize = CGSize(width: logo.size.width, height: logo.size.height)
+        }
+        
+        let imgView = UIImageView()
+        imgView.image = logo
+        imgView.contentMode = .scaleAspectFit
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        imgView.heightAnchor.constraint(equalToConstant: tmpSize.width).isActive = true
+        imgView.widthAnchor.constraint(equalToConstant: tmpSize.height).isActive = true
+        return imgView
+    }
+    
+    func makeSquareLogoImageView(withDimension dimension: CGFloat) -> UIImageView? {
+        guard let squareLogo = self.squareLogo else { return nil }
+        let imgView = UIImageView()
+        imgView.image = squareLogo
+        imgView.contentMode = .scaleAspectFit
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
+        imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
+        return imgView
+    }
     
     lazy var paymentMethodButton: PrimerButton = {
         let paymentMethodButton = PrimerButton()

@@ -341,7 +341,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
         if Primer.shared.delegate?.onClientSessionActions != nil {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
@@ -447,7 +447,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             .then { resumeToken -> Promise<PaymentMethodToken> in
                 DispatchQueue.main.async {
-                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
                     
                     self.willDismissExternalView?()
                     self.webViewController?.dismiss(animated: true, completion: {
