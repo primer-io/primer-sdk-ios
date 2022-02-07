@@ -163,7 +163,7 @@ class MerchantCardFormViewController: PrimerCheckoutComponents.PaymentMethodView
             }
             
             if let token = token {
-                PrimerCheckoutComponents.listAvailablePaymentMethods(forSession: token) { pms, err in
+                PrimerCheckoutComponents.listAvailablePaymentMethodsTypes(forSession: token) { pms, err in
                     
                 }
             }

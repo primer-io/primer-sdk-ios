@@ -13,7 +13,7 @@ public class PrimerCheckoutComponents {
     
     public static var delegate: PrimerCheckoutComponentsDelegate?
     
-    public static func listAvailablePaymentMethods(forSession clientToken: String, completion: @escaping ([PaymentMethodConfigType]?, Error?) -> Void) {
+    public static func listAvailablePaymentMethodsTypes(forSession clientToken: String, completion: @escaping ([PaymentMethodConfigType]?, Error?) -> Void) {
         do {
             try ClientTokenService.storeClientToken(clientToken)
         } catch {

@@ -53,7 +53,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
                     self.activityIndicator = nil
                 }
             } else if let clientToken = clientToken {
-                PrimerCheckoutComponents.listAvailablePaymentMethods(forSession: clientToken) { pms, err in
+                PrimerCheckoutComponents.listAvailablePaymentMethodsTypes(forSession: clientToken) { pms, err in
                     DispatchQueue.main.async {
                         self.activityIndicator?.stopAnimating()
                         self.activityIndicator?.removeFromSuperview()
