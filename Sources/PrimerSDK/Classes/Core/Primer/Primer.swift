@@ -84,7 +84,6 @@ public class Primer {
     internal func setDependencies(settings: PrimerSettings, theme: PrimerTheme) {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         DependencyContainer.register(theme as PrimerThemeProtocol)
-        DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         DependencyContainer.register(VaultService() as VaultServiceProtocol)
@@ -121,7 +120,6 @@ public class Primer {
 
             if let theme = theme {
                 DependencyContainer.register(theme as PrimerThemeProtocol)
-                DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
             }
             
             let event = Analytics.Event(
