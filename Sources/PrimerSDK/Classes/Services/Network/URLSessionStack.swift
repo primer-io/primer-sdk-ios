@@ -156,7 +156,7 @@ internal class URLSessionStack: NetworkService {
                 
                 #if DEBUG
                 let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+                let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
                 var jsonStr: String?
                 if jsonData != nil {
                     jsonStr = String(data: jsonData!, encoding: .utf8 )
@@ -175,7 +175,7 @@ internal class URLSessionStack: NetworkService {
                 }
             } catch {
                 if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), let jsonDic = json as? [String: Any?],
-                   var primerErrorJSON = jsonDic["error"] as? [String: Any] {
+                   let primerErrorJSON = jsonDic["error"] as? [String: Any] {
                     let statusCode = (response as! HTTPURLResponse).statusCode
 
                     let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: try! JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed))
