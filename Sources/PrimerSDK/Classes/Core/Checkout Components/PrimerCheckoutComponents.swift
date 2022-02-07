@@ -111,12 +111,69 @@ public class PrimerCheckoutComponents {
         }
     }
     
+    public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType) -> UIImage? {
+        var imageName = brand.rawValue
+        
+        switch assetType {
+        case .logo:
+            imageName += "-logo"
+        case .icon:
+            imageName += "-icon"
+        }
+        
+//        switch assetColor {
+//        case .original:
+//            break
+//        case .light:
+//            imageName += "-light"
+//        case .dark:
+//            imageName += "-dark"
+//        }
+        
+        guard let image = UIImage(named: imageName, in: Bundle.primerResources, compatibleWith: nil) else { return nil }
+        return image
+    }
+    
     public static func showCheckout(for paymentMethod: PaymentMethodConfigType) {
         PrimerCheckoutComponents.delegate?.onEvent(.configurationStarted)
         var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.hasDisabledSuccessScreen = true
         settings.isInitialLoadingHidden = true
         Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, on: UIViewController())
+    }
+}
+
+
+
+public struct PrimerAsset {
+    public enum Brand: String, CaseIterable {
+        case adyen, afterPay = "after-pay", aliPay = "ali-pay", alma, amazonPay = "amazon-pay", amex, apaya, applePay = "apple-pay", atome
+        case bankcontact, banked, bizum, blik, bolt, boost, braintree, bridge, buckaroo
+        case change, checkoutCom = "checkout", clearPay = "clear-pay", coinBase = "coinbase", coinPayments = "coinpayments"
+        case dLocal = "d-local", directDebit = "direct-debit", discover, dotPay = "dotpay", eMerchantPay = "emerchantpay", eps, fintecture, fonoa, forter, fpx
+        case gCash = "gcash", giroPay = "giropay", globalPayments = "global-payments", goCardless = "go-cardless", googlePay = "google-pay", grabPay = "grab-pay"
+        case hoolah
+        case iDeal = "ideal"
+        case ingenico
+        case jcb
+        case klarna, kount
+        case layBuy = "lay-buy", looker
+        case masterCard = "master-card", mbWay = "mb-way", mercadoPago = "mercado-pago", metamask, mobilePay = "mobile-pay", mollie
+        case neonomics, netSuite = "netsuite", nexi, nuvei
+        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, ravelin, riskified
+        case seon, sepa, sift, signifyd, sofort, stitch, stripe, swish
+        case tableau, taxjar, telserv, tink, trilo, trueLayer = "truelayer", trueMoney = "truemoney", trustly, twillio, twint
+        case vipps, visa, volt, voucherify, vyne
+        case wordline, worldPay = "worldpay"
+        case xfers
+    }
+    
+    public enum ImageType {
+        case logo, icon
+    }
+    
+    public enum ImageColor {
+        case original, light, dark
     }
 }
 
