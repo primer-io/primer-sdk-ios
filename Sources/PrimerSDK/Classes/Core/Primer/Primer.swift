@@ -149,12 +149,6 @@ public class Primer {
                     "formType": formType.rawValue
                 ]))
         Analytics.Service.record(event: event)
-        
-        DispatchQueue.main.async {
-            let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-            _ = themeProtocol as! PrimerTheme
-//            theme.content.formTopTitles.setTopTitle(text, for: formType)
-        }
     }
 
     /**
