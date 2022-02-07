@@ -121,7 +121,7 @@ internal class PrimerRootViewController: PrimerViewController {
         
         if settings.isInitialLoadingHidden == false {
             blurBackground()
-            showLoadingScreenIfNeeded()
+            showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
         
         let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
@@ -288,9 +288,7 @@ internal class PrimerRootViewController: PrimerViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is PrimerLoadingViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
-        } else if viewController is SuccessViewController {
-            cvc.mockedNavigationBar.hidesBackButton = true
-        } else if viewController is ErrorViewController {
+        } else if viewController is PrimerResultViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         }
         
@@ -328,9 +326,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     cvc.mockedNavigationBar.hidesBackButton = true
                 } else if viewController is PrimerLoadingViewController {
                     cvc.mockedNavigationBar.hidesBackButton = true
-                } else if viewController is SuccessViewController {
-                    cvc.mockedNavigationBar.hidesBackButton = true
-                } else if viewController is ErrorViewController {
+                } else if viewController is PrimerResultViewController {
                     cvc.mockedNavigationBar.hidesBackButton = true
                 } else if viewControllers.count == 1 {
                     cvc.mockedNavigationBar.hidesBackButton = true
@@ -404,11 +400,10 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
     
-    internal func showLoadingScreenIfNeeded() {
+    internal func showLoadingScreenIfNeeded(imageView: UIImageView?, message: String?) {
         if let lastViewController = (nc.viewControllers.last as? PrimerContainerViewController)?.childViewController {
             if lastViewController is PrimerLoadingViewController ||
-                lastViewController is SuccessViewController ||
-                lastViewController is ErrorViewController {
+                lastViewController is PrimerResultViewController {
                 return
             }
         }
@@ -426,7 +421,7 @@ internal class PrimerRootViewController: PrimerViewController {
             let height = self.nc.viewControllers.first?.view.bounds.height ?? 300
             
             if show {
-                let lvc = PrimerLoadingViewController(withHeight: height)
+                let lvc = PrimerLoadingViewController(height: height, imageView: imageView, message: message)
                 self.show(viewController: lvc)
             }
         }
@@ -444,13 +439,23 @@ extension PrimerRootViewController {
             return
         }
         
+        var imgView: UIImageView?
+        if let squareLogo = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.squareLogo {
+            imgView = UIImageView()
+            imgView?.image = squareLogo
+            imgView?.contentMode = .scaleAspectFit
+            imgView?.translatesAutoresizingMaskIntoConstraints = false
+            imgView?.heightAnchor.constraint(equalToConstant: 24.0).isActive = true
+            imgView?.widthAnchor.constraint(equalToConstant: 24.0).isActive = true
+        }
+        
         paymentMethodTokenizationViewModel.didStartTokenization = {
-            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
         if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? ExternalPaymentMethodTokenizationViewModelProtocol {
             asyncPaymentMethodViewModel.willPresentExternalView = {
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
             }
             
             asyncPaymentMethodViewModel.didPresentExternalView = {
@@ -458,7 +463,7 @@ extension PrimerRootViewController {
             }
             
             asyncPaymentMethodViewModel.willDismissExternalView = {
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
             }
         }
         
@@ -490,7 +495,7 @@ extension PrimerRootViewController {
             }
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
-            strongSelf.showLoadingScreenIfNeeded()
+            strongSelf.showLoadingScreenIfNeeded(imageView: nil, message: nil)
             
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: strongSelf)
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
@@ -511,12 +516,12 @@ extension PrimerRootViewController {
                     
                     if !settings.hasDisabledSuccessScreen {
                         if let err = err {
-                            let evc = ErrorViewController(message: err.localizedDescription)
+                            let evc = PrimerResultViewController(screenType: .failure, message: err.localizedDescription)
                             evc.view.translatesAutoresizingMaskIntoConstraints = false
                             evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                             strongSelf.show(viewController: evc)
                         } else {
-                            let svc = SuccessViewController()
+                            let svc = PrimerResultViewController(screenType: .success, message: nil)
                             svc.view.translatesAutoresizingMaskIntoConstraints = false
                             svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                             strongSelf.show(viewController: svc)
@@ -545,7 +550,7 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
             if settings.hasDisabledSuccessScreen {
                 Primer.shared.dismiss()
             } else {
-                let evc = ErrorViewController(message: error.localizedDescription)
+                let evc = PrimerResultViewController(screenType: .failure, message: error.localizedDescription)
                 evc.view.translatesAutoresizingMaskIntoConstraints = false
                 evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                 Primer.shared.primerRootVC?.show(viewController: evc)
@@ -564,7 +569,7 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
             if settings.hasDisabledSuccessScreen {
                 Primer.shared.dismiss()
             } else {
-                let svc = SuccessViewController()
+                let svc = PrimerResultViewController(screenType: .success, message: nil)
                 svc.view.translatesAutoresizingMaskIntoConstraints = false
                 svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                 Primer.shared.primerRootVC?.show(viewController: svc)

@@ -47,7 +47,7 @@ class PrimerFormViewController: PrimerViewController {
                                                                tableName: nil,
                                                                bundle: Bundle.primerResources,
                                                                value: "Available payment methods",
-                                                               comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased()
+                                                               comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased().folding(options: .diacriticInsensitive, locale: .current)
         otherPaymentMethodsTitleLabel.textColor = theme.text.subtitle.color
         otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         otherPaymentMethodsTitleLabel.textAlignment = .left
@@ -122,12 +122,12 @@ class PrimerFormViewController: PrimerViewController {
     
     static func handleCallbacks(for paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol) {
         paymentMethodTokenizationViewModel.didStartTokenization = {
-            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: paymentMethodTokenizationViewModel.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         }
         
         if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? ExternalPaymentMethodTokenizationViewModelProtocol {
             asyncPaymentMethodViewModel.willPresentExternalView = {
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: paymentMethodTokenizationViewModel.makeSquareLogoImageView(withDimension: 24.0), message: nil)
             }
             
             asyncPaymentMethodViewModel.didPresentExternalView = {
@@ -135,7 +135,7 @@ class PrimerFormViewController: PrimerViewController {
             }
             
             asyncPaymentMethodViewModel.willDismissExternalView = {
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: paymentMethodTokenizationViewModel.makeSquareLogoImageView(withDimension: 24.0), message: nil)
             }
         }
         

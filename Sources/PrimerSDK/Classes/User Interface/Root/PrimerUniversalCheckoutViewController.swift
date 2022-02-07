@@ -111,6 +111,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                                                       bundle: Bundle.primerResources,
                                                                       value: "SAVED PAYMENT METHOD",
                                                                       comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
+            savedPaymentMethodLabel.adjustsFontSizeToFitWidth = true
+            savedPaymentMethodLabel.minimumScaleFactor = 0.8
             savedPaymentMethodLabel.textColor = theme.text.subtitle.color
             savedPaymentMethodLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
             savedPaymentMethodLabel.textAlignment = .left
@@ -119,7 +121,15 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             let seeAllButton = UIButton()
             seeAllButton.translatesAutoresizingMaskIntoConstraints = false
             seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-            seeAllButton.setTitle("See all", for: .normal)
+            
+            let seeAllButtonTitle = NSLocalizedString("see-all",
+                                                      tableName: nil,
+                                                      bundle: Bundle.primerResources,
+                                                      value: "See all",
+                                                      comment: "See all - Universal checkout")
+            seeAllButton.setTitle(seeAllButtonTitle, for: .normal)
+            seeAllButton.titleLabel?.adjustsFontSizeToFitWidth = true
+            seeAllButton.titleLabel?.minimumScaleFactor = 0.7
             seeAllButton.contentHorizontalAlignment = .right
             seeAllButton.setTitleColor(theme.text.system.color, for: .normal)
             seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
@@ -323,12 +333,12 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                 self?.singleUsePaymentMethod = nil
                             } else {
                                 if let err = err {
-                                    let evc = ErrorViewController(message: err.localizedDescription)
+                                    let evc = PrimerResultViewController(screenType: .failure, message: err.localizedDescription) //ErrorViewController(message: err.localizedDescription)
                                     evc.view.translatesAutoresizingMaskIntoConstraints = false
                                     evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
                                     Primer.shared.primerRootVC?.show(viewController: evc)
                                 } else {
-                                    let svc = SuccessViewController()
+                                    let svc = PrimerResultViewController(screenType: .success, message: nil)
                                     svc.view.translatesAutoresizingMaskIntoConstraints = false
                                     svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
                                     Primer.shared.primerRootVC?.show(viewController: svc)
@@ -341,7 +351,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     Primer.shared.delegate?.onTokenizeSuccess?(singleUsePaymentMethod, resumeHandler: self)
                 case .failure(let err):
                     Primer.shared.delegate?.checkoutFailed?(with: err)
-                    let evc = ErrorViewController(message: err.localizedDescription)
+                    let evc = PrimerResultViewController(screenType: .failure, message: err.localizedDescription)
                     evc.view.translatesAutoresizingMaskIntoConstraints = false
                     evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
                     Primer.shared.primerRootVC?.show(viewController: evc)
@@ -391,7 +401,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
             if !settings.hasDisabledSuccessScreen {
-                let evc = ErrorViewController(message: error.localizedDescription)
+                let evc = PrimerResultViewController(screenType: .failure, message: error.localizedDescription)
                 evc.view.translatesAutoresizingMaskIntoConstraints = false
                 evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                 Primer.shared.primerRootVC?.show(viewController: evc)
@@ -508,7 +518,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
             if settings.hasDisabledSuccessScreen {
                 Primer.shared.dismiss()
             } else {
-                let svc = SuccessViewController()
+                let svc = PrimerResultViewController(screenType: .success, message: nil)
                 svc.view.translatesAutoresizingMaskIntoConstraints = false
                 svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                 Primer.shared.primerRootVC?.show(viewController: svc)

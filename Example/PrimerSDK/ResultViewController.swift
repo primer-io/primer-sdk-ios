@@ -43,7 +43,7 @@ class ResultViewController: UIViewController {
         }
         
         var requiredActionsNames = ""
-        requiredActionsNames = paymentResponses.filter({ $0.requiredAction != nil }).compactMap({ $0.requiredAction!.name }).joined(separator: ", ").uppercased()
+        requiredActionsNames = paymentResponses.filter({ $0.requiredAction != nil }).compactMap({ $0.requiredAction!.name }).joined(separator: ", ").uppercased().folding(options: .diacriticInsensitive, locale: .current)
         requiredActionsLabel.text = requiredActionsNames
         
         var responsesStr = ""
