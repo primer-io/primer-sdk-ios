@@ -251,7 +251,7 @@ class MerchantPaymentMethodCell: UITableViewCell {
     func configure(paymentMethodConfigType: PaymentMethodConfigType) {
         paymentMethodLabel.text = paymentMethodConfigType.rawValue
         
-        if let button = PrimerCheckoutComponents.getButton(for: paymentMethodConfigType) {
+        if let button = PrimerCheckoutComponents.makeButton(for: paymentMethodConfigType) {
             buttonContainerView.addSubview(button)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true

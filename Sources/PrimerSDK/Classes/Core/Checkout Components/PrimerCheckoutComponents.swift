@@ -100,7 +100,7 @@ public class PrimerCheckoutComponents {
         }
     }
     
-    public static func getButton(for paymentMethodType: PaymentMethodConfigType) -> UIButton? {
+    public static func makeButton(for paymentMethodType: PaymentMethodConfigType) -> UIButton? {
         switch paymentMethodType {
         case .applePay:
             guard let tokenizationViewModel = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type == .applePay }).first?.tokenizationViewModel else { return nil }
