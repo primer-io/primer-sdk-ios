@@ -1,5 +1,7 @@
 // MARK: Light
 
+#if canImport(UIKit)
+
 import UIKit
 
 public struct PrimerColors {
@@ -36,3 +38,5 @@ public struct PrimerColors {
     static let klarnaPink = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
     static let blurredBackground = UIColor.black.withAlphaComponent(0.4)
 }
+
+#endif
