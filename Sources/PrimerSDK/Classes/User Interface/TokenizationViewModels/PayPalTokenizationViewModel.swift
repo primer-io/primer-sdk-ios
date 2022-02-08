@@ -146,7 +146,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
         if Primer.shared.delegate?.onClientSessionActions != nil {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
@@ -270,11 +270,15 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private func createOAuthSession(_ url: URL) -> Promise<URL> {
         return Promise { seal in
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            guard let urlScheme = settings.urlScheme else {
+            guard var urlScheme = settings.urlScheme else {
                 let err = PrimerError.invalidValue(key: "settings.urlScheme", value: settings.urlScheme, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
+            }
+            
+            if urlScheme.contains("://")  {
+                urlScheme = urlScheme.components(separatedBy: "://").first!
             }
             
             if #available(iOS 13, *) {

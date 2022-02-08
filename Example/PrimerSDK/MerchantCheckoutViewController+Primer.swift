@@ -30,7 +30,7 @@ extension MerchantCheckoutViewController {
                 switch result {
                 case .success(let data):
                     let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                    print(json)
+                    print(json as Any)
 
                 case .failure(let err):
                     print(err)

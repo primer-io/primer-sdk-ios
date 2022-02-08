@@ -17,7 +17,7 @@ struct PrimerConfiguration: Codable {
         if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        var pms = state
+        let pms = state
             .primerConfiguration?
             .paymentMethods
         
@@ -79,8 +79,8 @@ struct PrimerConfiguration: Codable {
                        !networks.isEmpty
                     {
                         for network in networks {
-                            guard let type = network["type"] as? String,
-                            let surcharge = network["surcharge"] as? Int
+                            guard network["type"] is String,
+                            network["surcharge"] is Int
                             else { continue }
                             
                         }
