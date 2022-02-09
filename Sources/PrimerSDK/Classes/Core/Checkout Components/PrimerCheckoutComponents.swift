@@ -13,11 +13,49 @@ public class PrimerCheckoutComponents {
     
     public static var delegate: PrimerCheckoutComponentsDelegate?
     
-    public static func listAvailablePaymentMethodsTypes(forSession clientToken: String, completion: @escaping ([PaymentMethodConfigType]?, Error?) -> Void) {
+    internal static func validateSession() throws {
+        let appState: AppStateProtocol = DependencyContainer.resolve()
+        
+        guard let clientToken = appState.clientToken else {
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token is nil"])
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+        
+        guard let decodedClientToken = clientToken.jwtTokenPayload else {
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"])
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+        
+        do {
+            try decodedClientToken.validate()
+        } catch {
+            throw error
+        }
+        
+        if appState.primerConfiguration == nil {
+            let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+    }
+    
+    public static func configure(withClientToken clientToken: String, andSetings settings: PrimerSettings? = nil) throws {
+        guard PrimerCheckoutComponents.delegate != nil else {
+            let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+        
         do {
             try ClientTokenService.storeClientToken(clientToken)
         } catch {
-            completion(nil, error)
+            PrimerCheckoutComponents.delegate?.onEvent(.failure(error: error))
+        }
+        
+        if let settings = settings {
+            DependencyContainer.register(settings as PrimerSettingsProtocol)
         }
         
         let primerConfigurationService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
