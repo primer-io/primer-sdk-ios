@@ -133,8 +133,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     var requirePostalCode: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let paymentMethodConfig = state.primerConfiguration else { return false }
-        return paymentMethodConfig.requirePostalCode
+        guard let billingAddressModule = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
+        return (billingAddressModule.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
+    }
+    
+    var requireCardHolderName: Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        guard let cardHolderNameModule = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first else { return false }
+        return (cardHolderNameModule.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName ?? false
     }
     
     lazy var expiryDateField: PrimerExpiryDateFieldView = {
@@ -603,11 +609,11 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         var validations = [
             cardNumberField.isTextValid,
             expiryDateField.isTextValid,
-            cvvField.isTextValid,
-            cardholderNameField?.isTextValid,
+            cvvField.isTextValid
         ]
 
         if requirePostalCode { validations.append(postalCodeField.isTextValid) }
+        if let cardholderNameField = cardholderNameField, requireCardHolderName { validations.append(cardholderNameField.isTextValid) }
 
         if validations.allSatisfy({ $0 == true }) {
             submitButton.isEnabled = true

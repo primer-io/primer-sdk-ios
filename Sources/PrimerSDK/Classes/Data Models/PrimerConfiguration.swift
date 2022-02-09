@@ -58,12 +58,6 @@ struct PrimerConfiguration: Codable {
         return clientSession != nil
     }
     
-    var requirePostalCode: Bool {
-        let billingAddressModule = checkoutModules?.first { $0.type == "BILLING_ADDRESS" }
-//        return false
-         return (billingAddressModule?.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
-    }
-    
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
