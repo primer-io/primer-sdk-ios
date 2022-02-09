@@ -11,9 +11,8 @@ import UIKit
 
 class MerchantPaymentMethodsViewController: UIViewController {
     
-    static func instantiate(environment: Environment, amount: Int, currency: Currency, countryCode: CountryCode) -> MerchantPaymentMethodsViewController {
+    static func instantiate(amount: Int, currency: Currency, countryCode: CountryCode) -> MerchantPaymentMethodsViewController {
         let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantPaymentMethodsViewController") as! MerchantPaymentMethodsViewController
-        mpmvc.environment = environment
         mpmvc.amount = amount
         mpmvc.currency = currency
         mpmvc.countryCode = countryCode
@@ -159,7 +158,6 @@ class MerchantPaymentMethodsViewController: UIViewController {
         
         let networking = Networking()
         networking.request(
-            environment: environment,
             apiVersion: .v3,
             url: url,
             method: .post,

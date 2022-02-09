@@ -77,7 +77,6 @@ enum NetworkError: Error {
 class Networking {
     
     func request(
-        environment: Environment,
         apiVersion: APIVersion?,
         url: URL,
         method: HTTPMethod,

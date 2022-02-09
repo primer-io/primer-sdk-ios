@@ -20,7 +20,6 @@ extension MerchantCheckoutViewController {
         
         let networking = Networking()
         networking.request(
-            environment: environment,
             apiVersion: .v2,
             url: url,
             method: .get,

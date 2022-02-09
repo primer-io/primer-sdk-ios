@@ -11,6 +11,48 @@ import PrimerSDK
 
 enum Environment: String, Codable {
     case local, dev, sandbox, staging, production
+    
+    init(intValue: Int) {
+        switch intValue {
+        case 0:
+            self = .local
+        case 1:
+            self = .dev
+        case 2:
+            self = .sandbox
+        case 3:
+            self = .staging
+        case 4:
+            self = .production
+        default:
+            fatalError()
+        }
+    }
+    
+    var intValue: Int {
+        switch self {
+        case .local:
+            return 0
+        case .dev:
+            return 1
+        case .sandbox:
+            return 2
+        case .staging:
+            return 3
+        case .production:
+            return 4
+        }
+    }
+    
+    var baseUrl: URL {
+        switch self {
+        case .local:
+            return URL(string: "https://primer-mock-back-end.herokuapp.com")!
+        default:
+            return URL(string: "https://us-central1-primerdemo-8741b.cloudfunctions.net")!
+        }
+    }
+    
 }
 
 struct CreateClientTokenRequest: Codable {

@@ -11,9 +11,8 @@ import UIKit
 
 class MerchantCheckoutViewController: UIViewController {
     
-    class func instantiate(environment: Environment, customerId: String, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
+    class func instantiate(customerId: String, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
         let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
-        mcvc.environment = environment
         mcvc.customerId = customerId
         mcvc.phoneNumber = phoneNumber
         mcvc.performPayment = performPayment
@@ -197,7 +196,6 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         networking.request(
-            environment: environment,
             apiVersion: .v3,
             url: url,
             method: .post,
@@ -279,7 +277,6 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         networking.request(
-            environment: environment,
             apiVersion: nil,
             url: url,
             method: .post,
@@ -339,7 +336,6 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         networking.request(
-            environment: environment,
             apiVersion: .v2,
             url: url,
             method: .post,
@@ -609,7 +605,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         
         let networking = Networking()
         networking.request(
-            environment: environment,
             apiVersion: .v2,
             url: url,
             method: .post,
