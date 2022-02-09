@@ -12,9 +12,18 @@ import UIKit
 public class PrimerCheckoutComponents {
     
     public static var delegate: PrimerCheckoutComponentsDelegate?
+    private(set) public static var clientToken: String?
     
     internal static func validateSession() throws {
         let appState: AppStateProtocol = DependencyContainer.resolve()
+        
+        if appState.clientToken == nil, PrimerCheckoutComponents.clientToken != nil {
+            do {
+                try ClientTokenService.storeClientToken(PrimerCheckoutComponents.clientToken!)
+            } catch {
+                throw error
+            }
+        }
         
         guard let clientToken = appState.clientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token is nil"])
@@ -50,6 +59,7 @@ public class PrimerCheckoutComponents {
         
         do {
             try ClientTokenService.storeClientToken(clientToken)
+            PrimerCheckoutComponents.clientToken = clientToken
         } catch {
             PrimerCheckoutComponents.delegate?.onEvent(.failure(error: error))
         }
@@ -206,8 +216,14 @@ public class PrimerCheckoutComponents {
     
     public static func showCheckout(for paymentMethod: PaymentMethodConfigType) {
         DispatchQueue.main.async {
+            do {
+                try PrimerCheckoutComponents.validateSession()
+            } catch {
+                PrimerCheckoutComponents.delegate?.onEvent(.failure(error: error))
+                return
+            }
+            
             var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            print(settings.urlScheme)
             settings.hasDisabledSuccessScreen = true
             settings.isInitialLoadingHidden = true
             
