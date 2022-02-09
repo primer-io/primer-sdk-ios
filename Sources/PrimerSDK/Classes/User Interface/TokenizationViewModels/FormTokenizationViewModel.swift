@@ -487,14 +487,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
                 
                 let billingAddressParams = [
-                    "firstName": currentBillingAddress?.firstName,
-                    "lastName": currentBillingAddress?.lastName,
-                    "addressLine1": currentBillingAddress?.addressLine1,
-                    "addressLine2": currentBillingAddress?.addressLine2,
-                    "city": currentBillingAddress?.city,
+                    "firstName": currentBillingAddress?.firstName as Any,
+                    "lastName": currentBillingAddress?.lastName as Any,
+                    "addressLine1": currentBillingAddress?.addressLine1 as Any,
+                    "addressLine2": currentBillingAddress?.addressLine2 as Any,
+                    "city": currentBillingAddress?.city as Any,
                     "postalCode": postalCodeField.postalCode,
-                    "state": currentBillingAddress?.state,
-                    "countryCode": currentBillingAddress?.countryCode
+                    "state": currentBillingAddress?.state as Any,
+                    "countryCode": currentBillingAddress?.countryCode as Any
                 ] as [String: Any]
                 
                 let billingAddressAction = ClientSession.Action(
@@ -636,14 +636,14 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
             
             let params = [
-                "firstName": currentBillingAddress?.firstName,
-                "lastName": currentBillingAddress?.lastName,
-                "addressLine1": currentBillingAddress?.addressLine1,
-                "addressLine2": currentBillingAddress?.addressLine2,
-                "city": currentBillingAddress?.city,
+                "firstName": currentBillingAddress?.firstName as Any,
+                "lastName": currentBillingAddress?.lastName as Any,
+                "addressLine1": currentBillingAddress?.addressLine1 as Any,
+                "addressLine2": currentBillingAddress?.addressLine2 as Any,
+                "city": currentBillingAddress?.city as Any,
                 "postalCode": fieldView.postalCode,
-                "state": currentBillingAddress?.state,
-                "countryCode": currentBillingAddress?.countryCode
+                "state": currentBillingAddress?.state as Any,
+                "countryCode": currentBillingAddress?.countryCode as Any
             ] as [String: Any]
 
             ClientSession.Action.setPostalCode(resumeHandler: self, withParameters: params)

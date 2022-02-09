@@ -591,18 +591,14 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 } else if res.status == .complete {
                     completion(res.id, nil)
                 } else {
-                    // Do what here?
-                    fatalError()
+                    let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
                 }
             case .failure(let err):
-                let nsErr = err as NSError
-                if nsErr.domain == NSURLErrorDomain && nsErr.code == -1001 {
-                    // Retry
-                    Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-                        self.startPolling(on: url, completion: completion)
-                    }
-                } else {
-                    completion(nil, err)
+                ErrorHandler.handle(error: err)
+                // Retry
+                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+                    self.startPolling(on: url, completion: completion)
                 }
             }
         }

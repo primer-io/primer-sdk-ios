@@ -499,8 +499,6 @@ public enum Currency: String, Codable, CaseIterable {
             return "R"
         case .ZMW:
             return "ZK"
-        default:
-            return nil
         }
     }
     

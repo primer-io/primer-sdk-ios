@@ -277,7 +277,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             currency: currency,
             merchantIdentifier: merchantIdentifier,
             countryCode: countryCode,
-            items: (orderItems ?? [])
+            items: orderItems
         )
         
         let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks

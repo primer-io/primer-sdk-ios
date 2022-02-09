@@ -42,10 +42,13 @@ public class Primer {
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
         
-        DispatchQueue.main.async { [weak self] in
-            DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
-            try! Analytics.Service.deleteEvents()
+        #if DEBUG
+        do {
+            try Analytics.Service.deleteEvents()
+        } catch {
+            fatalError(error.localizedDescription)
         }
+        #endif
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -70,21 +73,6 @@ public class Primer {
     private func onAppStateChange() {
         Analytics.Service.sync()
     }
-    
-    /**
-     Set or reload all SDK dependencies.
-     
-     - Parameter settings: Primer settings object
-     
-     - Author: Primer
-    
-     - Version: 1.2.2
-     */
-    internal func setDependencies(settings: PrimerSettings, theme: PrimerTheme) {
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
-        DependencyContainer.register(theme as PrimerThemeProtocol)
-        DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
-    }
 
     // MARK: - CONFIGURATION
 
@@ -105,7 +93,6 @@ public class Primer {
 
             if let theme = theme {
                 DependencyContainer.register(theme as PrimerThemeProtocol)
-                DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
             }
             
             let event = Analytics.Event(
@@ -135,12 +122,6 @@ public class Primer {
                     "formType": formType.rawValue
                 ]))
         Analytics.Service.record(event: event)
-        
-        DispatchQueue.main.async {
-            let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-            let theme = themeProtocol as! PrimerTheme
-//            theme.content.formTopTitles.setTopTitle(text, for: formType)
-        }
     }
 
     /**
@@ -161,12 +142,6 @@ public class Primer {
                     "formType": formType.rawValue
                 ]))
         Analytics.Service.record(event: event)
-        
-        DispatchQueue.main.async {
-            let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-            let theme = themeProtocol as! PrimerTheme
-//            theme.content.formMainTitles.setMainTitle(text, for: formType)
-        }
     }
 
     /**

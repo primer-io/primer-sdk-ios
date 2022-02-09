@@ -336,7 +336,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     }
     
     internal override func startPolling(on url: URL) -> Promise<String> {
-        var p: Promise? = Promise<String> { seal in
+        let p: Promise? = Promise<String> { seal in
             self.didCancel = {
                 let err = PrimerError.cancelled(paymentMethodType: .xfers, userInfo: nil)
                 ErrorHandler.handle(error: err)

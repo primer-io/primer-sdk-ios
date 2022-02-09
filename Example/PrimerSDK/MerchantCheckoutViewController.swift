@@ -55,7 +55,6 @@ class MerchantCheckoutViewController: UIViewController {
     var generalSettings: PrimerSettings!
     var amount = 200
     var currency: Currency = .EUR
-    var environment = Environment.staging
     var customerId: String!
     var phoneNumber: String?
     var countryCode: CountryCode = .gb

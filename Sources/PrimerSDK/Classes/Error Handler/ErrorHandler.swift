@@ -17,35 +17,35 @@ internal class ErrorHandler {
 
     static var shared = ErrorHandler()
 
-    // swiftlint:disable cyclomatic_complexity function_body_length
+    @discardableResult
     func handle(error: Error) -> Bool {
         log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
 
-        var event: Analytics.Event!
-        
-        if let error = error as? PrimerErrorProtocol {
-            event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: error.localizedDescription,
-                    messageType: .error,
-                    severity: .error))
-            
-            switch error {
-            default:
-                break
-            }
-
-        } else {
-            let nsError = error as NSError
-            event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: nsError.localizedDescription,
-                    messageType: .error,
-                    severity: .error))
-        }
-        
+//        var event: Analytics.Event!
+//
+//        if let error = error as? PrimerErrorProtocol {
+//            event = Analytics.Event(
+//                eventType: .message,
+//                properties: MessageEventProperties(
+//                    message: error.localizedDescription,
+//                    messageType: .error,
+//                    severity: .error))
+//
+//            switch error {
+//            default:
+//                break
+//            }
+//
+//        } else {
+//            let nsError = error as NSError
+//            event = Analytics.Event(
+//                eventType: .message,
+//                properties: MessageEventProperties(
+//                    message: nsError.localizedDescription,
+//                    messageType: .error,
+//                    severity: .error))
+//        }
+//
 //        Analytics.Service.record(event: event)
 
         return false

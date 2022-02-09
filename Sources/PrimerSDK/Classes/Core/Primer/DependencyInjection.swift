@@ -104,6 +104,11 @@ final internal class DependencyContainer {
                 DependencyContainer.register(externalViewModel)
                 return self.resolve()
                 
+            } else if key == String(describing: PrimerThemeProtocol.self) {
+                let primerTheme: PrimerThemeProtocol = PrimerTheme()
+                DependencyContainer.register(primerTheme)
+                return self.resolve()
+                
             }
         }
 

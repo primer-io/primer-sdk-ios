@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 4/10/21.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 protocol PaymentMethodsGroupViewDelegate {
@@ -65,3 +67,5 @@ class PaymentMethodsGroupView: PrimerView {
     }
     
 }
+
+#endif
