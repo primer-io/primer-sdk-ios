@@ -455,6 +455,11 @@ public class Primer {
         
         DispatchQueue.main.async { [weak self] in
             self?.primerRootVC?.dismissPrimerRootViewController(animated: true, completion: {
+                self?.primerWindow?.isHidden = true
+                if #available(iOS 13, *) {
+                    self?.primerWindow?.windowScene = nil
+                }
+                self?.primerWindow?.rootViewController = nil
                 self?.primerRootVC = nil
                 self?.primerWindow?.resignKey()
                 self?.primerWindow = nil
