@@ -437,5 +437,5 @@ struct TransactionResponse {
     var id: String
     var date: String
     var status: String
-    var requiredAction: [String: Any]
+    var requiredAction: Payment.Response.RequiredAction?
 }

@@ -499,36 +499,33 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             return
         }
         
-        createPayment(with: paymentMethodToken) { (res, err) in
-//            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
-//            resumeHandler.handle(error: merchantErr)
-//            return
+        let networking = Networking()
+        networking.createPayment(with: paymentMethodToken) { res, err in
+            //            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
+            //            resumeHandler.handle(error: merchantErr)
+            //            return
             
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
                 resumeHandler.handle(error: merchantErr)
             } else if let res = res {
-                guard let requiredActionDic = res["requiredAction"] as? [String: Any] else {
+                guard let requiredAction = res.requiredAction else {
                     resumeHandler.handleSuccess()
                     return
                 }
                 
-                guard let id = res["id"] as? String,
-                      let date = res["date"] as? String,
-                      let status = res["status"] as? String,
-                      let requiredActionName = requiredActionDic["name"] as? String,
-                      let clientToken = requiredActionDic["clientToken"] as? String else {
-                          resumeHandler.handleSuccess()
-                          return
-                      }
+                guard let dateStr = res.dateStr else {
+                    resumeHandler.handleSuccess()
+                    return
+                }
                 
-                self.transactionResponse = TransactionResponse(id: id, date: date, status: status, requiredAction: requiredActionDic)
+                self.transactionResponse = TransactionResponse(id: res.id, date: dateStr, status: res.status.rawValue, requiredAction: requiredAction)
                 
-                if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
-                    resumeHandler.handle(newClientToken: clientToken)
-                } else if requiredActionName == "USE_PRIMER_SDK", status == "PENDING" {
-                    resumeHandler.handle(newClientToken: clientToken)
+                if requiredAction.name == "3DS_AUTHENTICATION", res.status == .pending {
+                    resumeHandler.handle(newClientToken: requiredAction.clientToken)
+                } else if requiredAction.name == "USE_PRIMER_SDK", res.status == .pending {
+                    resumeHandler.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     resumeHandler.handleSuccess()
                 }

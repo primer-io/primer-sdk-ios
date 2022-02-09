@@ -191,6 +191,48 @@ class Networking {
         }).resume()
     }
     
+    func createPayment(with paymentMethod: PaymentMethodToken, completion: @escaping (Payment.Response?, Error?) -> Void) {
+        guard let paymentMethodToken = paymentMethod.token else {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        let url = environment.baseUrl.appendingPathComponent("/api/payments/")
+
+        let body = Payment.Request(paymentMethodToken: paymentMethodToken)
+
+        var bodyData: Data!
+
+        do {
+            bodyData = try JSONEncoder().encode(body)
+        } catch {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+
+        let networking = Networking()
+        networking.request(
+            apiVersion: .v2,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        let paymentResponse = try JSONDecoder().decode(Payment.Response.self, from: data)
+                        completion(paymentResponse, nil)
+                    } catch {
+                        completion(nil, error)
+                    }
+
+                case .failure(let err):
+                    completion(nil, err)
+                }
+            }
+    }
+    
 }
 
 internal extension String {
