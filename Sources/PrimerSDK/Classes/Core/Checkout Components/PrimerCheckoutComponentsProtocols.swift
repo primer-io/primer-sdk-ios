@@ -162,9 +162,10 @@ public protocol PrimerCheckoutComponentsDelegate {
 }
 
 public enum PrimerCheckoutComponentsEvent {
-    case configurationStarted
+    case clientSessionSetupSuccessfully
+    case preparationStarted
     case paymentMethodPresented
     case tokenizationStarted
-    case tokenizationSuccess(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?)
-    case error(err: Error)
+    case tokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?)
+    case failure(error: Error)
 }
