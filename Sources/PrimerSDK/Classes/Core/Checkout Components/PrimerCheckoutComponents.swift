@@ -138,7 +138,29 @@ public class PrimerCheckoutComponents {
         case .payNLPayconiq:
             return []
         case .paymentCard:
-            return [.cardNumber, .expiryDate, .cvv, .cardholderName]
+            let appState: AppStateProtocol = DependencyContainer.resolve()
+            
+            guard let primerConfiguration = appState.primerConfiguration else {
+                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
+                return nil
+            }
+            
+            if (PrimerConfiguration.paymentMethodConfigs ?? []).isEmpty {
+                return nil
+            }
+            
+            var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
+            
+            if let checkoutModule = primerConfiguration.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
+               let options = checkoutModule.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions {
+                if options.cardHolderName == true {
+                    requiredFields.append(.cardholderName)
+                }
+            }
+            
+            return requiredFields
         case .payPal:
             return []
         case .xfers:
