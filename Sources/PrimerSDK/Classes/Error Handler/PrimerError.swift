@@ -249,6 +249,8 @@ internal enum PrimerError: PrimerErrorProtocol {
     case invalidClientToken(userInfo: [String: String]?)
     case missingPrimerConfiguration(userInfo: [String: String]?)
     case missingPrimerDelegate(userInfo: [String: String]?)
+    case missingPrimerCheckoutComponentsDelegate(userInfo: [String: String]?)
+    case misconfiguredPaymentMethods(userInfo: [String: String]?)
     case cancelled(paymentMethodType: PaymentMethodConfigType, userInfo: [String: String]?)
     case failedToCreateSession(error: Error?, userInfo: [String: String]?)
     case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?)
@@ -258,6 +260,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case invalidClientSessionSetting(name: String, value: String?, userInfo: [String: String]?)
     case invalidMerchantCapabilities(userInfo: [String: String]?)
     case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?)
+    case invalidUrlScheme(urlScheme: String?, userInfo: [String: String]?)
     case invalidSetting(name: String, value: String?, userInfo: [String: String]?)
     case invalidSupportedPaymentNetworks(userInfo: [String: String]?)
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?)
@@ -265,6 +268,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case unableToPresentPaymentMethod(paymentMethodType: PaymentMethodConfigType, userInfo: [String: String]?)
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?)
+    case missingCustomUI(paymentMethod: PaymentMethodConfigType, userInfo: [String: String]?)
     
     var errorId: String {
         switch self {
@@ -276,6 +280,10 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "missing-configuration"
         case .missingPrimerDelegate:
             return "missing-primer-delegate"
+        case .missingPrimerCheckoutComponentsDelegate:
+            return "missing-primer-checkout-components-delegate"
+        case .misconfiguredPaymentMethods:
+            return "misconfigured-payment-methods"
         case .cancelled:
             return "payment-cancelled"
         case .failedToCreateSession:
@@ -294,6 +302,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "invalid-merchant-capabilities"
         case .invalidMerchantIdentifier:
             return "invalid-merchant-identifier"
+        case .invalidUrlScheme:
+            return "invalid-url-scheme"
         case .invalidSetting:
             return "invalid-setting"
         case .invalidSupportedPaymentNetworks:
@@ -308,6 +318,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "unsupported-session-intent"
         case .underlyingErrors:
             return "generic-underlying-errors"
+        case .missingCustomUI:
+            return "missing-custom-ui"
         }
     }
     
@@ -327,6 +339,10 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Missing SDK configuration"
         case .missingPrimerDelegate:
             return "[\(errorId)] Primer delegate has not been set"
+        case .missingPrimerCheckoutComponentsDelegate:
+            return "[\(errorId)] Primer Checkout Components delegate has not been set"
+        case .misconfiguredPaymentMethods:
+            return "[\(errorId)] Payment methods haven't been set up correctly"
         case .cancelled(let paymentMethodType, _):
             return "[\(errorId)] Payment method \(paymentMethodType.rawValue) cancelled"
         case .failedToCreateSession(error: let error, _):
@@ -343,8 +359,10 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Invalid URL: \(url ?? "nil")"
         case .invalidMerchantCapabilities:
             return "[\(errorId)] Invalid merchant capabilities"
-        case .invalidMerchantIdentifier(merchantIdentifier: let merchantIdentifier, _):
+        case .invalidMerchantIdentifier(let merchantIdentifier, _):
             return "[\(errorId)] Invalid merchant identifier: \(merchantIdentifier == nil ? "nil" : "\(merchantIdentifier!)")"
+        case .invalidUrlScheme(let urlScheme, _):
+            return "[\(errorId)] Invalid URL scheme: \(urlScheme == nil ? "nil" : "\(urlScheme!)")"
         case .invalidSetting(let name, let value, _):
             return "[\(errorId)] Invalid setting for \(name) (provided value is \(value ?? "nil"))"
         case .invalidSupportedPaymentNetworks:
@@ -359,6 +377,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Unsupported session intent \(intent.rawValue)"
         case .underlyingErrors(let errors, _):
             return "[\(errorId)] Multiple errors occured: \(errors.combinedDescription)"
+        case .missingCustomUI(let paymentMethod, _):
+            return "[\(errorId)] Missing custom user interface for \(paymentMethod.rawValue)"
         }
     }
     
@@ -370,6 +390,8 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .invalidClientToken(let userInfo),
                 .missingPrimerConfiguration(let userInfo),
                 .missingPrimerDelegate(let userInfo),
+                .missingPrimerCheckoutComponentsDelegate(let userInfo),
+                .misconfiguredPaymentMethods(let userInfo),
                 .cancelled(_, let userInfo),
                 .failedToCreateSession(_, let userInfo),
                 .failedOnWebViewFlow(_, let userInfo),
@@ -379,13 +401,15 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .invalidClientSessionSetting(_, _, let userInfo),
                 .invalidMerchantCapabilities(let userInfo),
                 .invalidMerchantIdentifier(_, let userInfo),
+                .invalidUrlScheme(_, let userInfo),
                 .invalidSetting(_, _, let userInfo),
                 .invalidSupportedPaymentNetworks(let userInfo),
                 .invalidValue(_, _, let userInfo),
                 .unableToMakePaymentsOnProvidedNetworks(let userInfo),
                 .unableToPresentPaymentMethod(_, let userInfo),
                 .unsupportedIntent(_, let userInfo),
-                .underlyingErrors(_, let userInfo):
+                .underlyingErrors(_, let userInfo),
+                .missingCustomUI(_, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -406,6 +430,10 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "Check if you have an active internet connection."
         case .missingPrimerDelegate:
             return "Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self on the view controller you wish to present Primer's SDK."
+        case .missingPrimerCheckoutComponentsDelegate:
+            return "Primer Checkout Components' delegate has not been set. Ensure that you have added PrimerCheckoutComponents.delegate = self on the view controller you wish to implement the components."
+        case .misconfiguredPaymentMethods:
+            return "Payment Methods are not configured correctly. Ensure that you have configured them in the Connection, and/or that they are set up for the specified conditions on your dashboard https://dashboard.primer.io/"
         case .cancelled:
             return nil
         case .failedToCreateSession:
@@ -428,6 +456,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return nil
         case .invalidMerchantIdentifier:
             return "Check if you have provided a valid merchant identifier in the SDK settings."
+        case .invalidUrlScheme:
+            return "Check if you have provided a valid URL scheme in the SDK settings."
         case .invalidSetting(let name, _, _):
             return "Check if you have provided a value for \(name) in the SDK settings."
         case .invalidSupportedPaymentNetworks:
@@ -437,7 +467,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .unableToMakePaymentsOnProvidedNetworks:
             return nil
         case .unableToPresentPaymentMethod:
-            return "Check if all necessary values have been provided on your client session. You can find the necessary values on our documentation (website)"
+            return "Check if all necessary values have been provided on your client session. You can find the necessary values on our documentation (website)."
         case .unsupportedIntent(let intent, _):
             if intent == .checkout {
                 return "Change the intent to .vault"
@@ -446,6 +476,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             }
         case .underlyingErrors:
             return "Check underlying errors for more information."
+        case .missingCustomUI(let paymentMethod, _):
+            return "You have to built your UI for \(paymentMethod.rawValue) and utilize PrimerCheckoutComponents.UIManager's functionality."
         }
     }
     
