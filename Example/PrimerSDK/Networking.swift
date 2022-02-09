@@ -29,7 +29,7 @@ struct Payment {
         let paymentMethodToken: String
     }
 
-    struct Response: Decodable {
+    struct Response: Codable {
         let id: String
         let amount: Int?
         let currencyCode: String?
@@ -49,7 +49,7 @@ struct Payment {
             case dateStr = "date"
         }
         
-        struct RequiredAction: Decodable {
+        struct RequiredAction: Codable {
             let clientToken: String
             let name: String
             let description: String?
@@ -233,6 +233,128 @@ class Networking {
             }
     }
     
+    func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
+        let url = environment.baseUrl.appendingPathComponent("/api/client-session")
+
+        let bodyData: Data!
+        
+        do {
+            if let requestBodyJson = requestBody.dictionaryValue {
+                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
+            } else {
+                completion(nil, NetworkError.serializationError)
+                return
+            }
+        } catch {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        let networking = Networking()
+        networking.request(
+            apiVersion: .v3,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                            completion(token, nil)
+                        } else {
+                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                            completion(nil, err)
+                        }
+                        
+                    } catch {
+                        completion(nil, error)
+                    }
+                case .failure(let err):
+                    completion(nil, err)
+                }
+            }
+    }
+    
+    func requestClientSessionWithActions(clientToken: String, actions: [PrimerSDK.ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
+        let url = environment.baseUrl.appendingPathComponent("/api/client-session/actions")
+
+        var merchantActions: [ClientSession.Action] = []
+        for action in actions {
+            if action.type == "SET_SURCHARGE_FEE" {
+                let newAction = ClientSession.Action(
+                    type: "SET_SURCHARGE_FEE",
+                    params: [
+                        "amount": 456
+                    ])
+                merchantActions.append(newAction)
+            } else if action.type == "SET_BILLING_ADDRESS" {
+                if let postalCode = (action.params?["postalCode"] as? String) {
+                    var billingAddress: [String: String] = [:]
+                    
+                    action.params?.forEach { entry in
+                        if let value = entry.value as? String {
+                            billingAddress[entry.key] = value
+                        }
+                    }
+                    
+                    let newAction = ClientSession.Action(
+                        type: action.type,
+                        params: [ "billingAddress": billingAddress ]
+                    )
+                    
+                    merchantActions.append(newAction)
+                }
+            } else {
+                merchantActions.append(action)
+            }
+        }
+                
+        var bodyData: Data!
+        
+        do {
+            let bodyJson = ClientSessionActionsRequest(clientToken: clientToken, actions: merchantActions)
+            bodyData = try JSONEncoder().encode(bodyJson)
+        } catch {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        let networking = Networking()
+        networking.request(
+            apiVersion: nil,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        guard let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
+                            completion(nil, NetworkError.missingParams)
+                            return
+                        }
+                        
+                        print("Client Token Response:\n\(json)")
+                        
+                        guard let clientToken = json["clientToken"] as? String else {
+                            completion(nil, NetworkError.missingParams)
+                            return
+                        }
+
+                        print("Client Token:\n\(clientToken)")
+                        completion(clientToken, nil)
+
+                    } catch {
+                        completion(nil, error)
+                    }
+                case .failure(let err):
+                    completion(nil, err)
+                }
+            }
+    }
 }
 
 internal extension String {
