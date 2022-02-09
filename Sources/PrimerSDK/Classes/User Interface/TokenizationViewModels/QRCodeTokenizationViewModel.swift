@@ -158,7 +158,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         } catch {
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -175,10 +175,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                }
-                
+
                 self.completion?(self.paymentMethod, nil)
                 self.handleSuccessfulTokenizationFlow()
             }
@@ -203,9 +200,9 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         .catch { err in
             DispatchQueue.main.async {
                 if let primerErr = err as? PrimerError, case PrimerError.cancelled = primerErr {
-                    Primer.shared.delegate?.onResumeError?(err)
+                    PrimerDelegateProxy.onResumeError(err)
                 } else {
-                    Primer.shared.delegate?.checkoutFailed?(with: err)
+                    PrimerDelegateProxy.checkoutFailed(with: err)
                     self.handleFailedTokenizationFlow(error: err)
                 }
             }
@@ -325,7 +322,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             }
             
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
             }
         }
     }
@@ -411,7 +408,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             }
             
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
+                PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
             }
         }
     }
@@ -468,7 +465,7 @@ extension QRCodeTokenizationViewModel {
             }
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(error)
+                PrimerDelegateProxy.onResumeError(error)
                 self.handle(error: error)
             }
         }

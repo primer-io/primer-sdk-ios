@@ -343,7 +343,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        if Primer.shared.delegate?.onClientSessionActions != nil {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
@@ -356,7 +356,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
                 self.completion?(nil, error)
             }
@@ -374,10 +374,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                }
-                
                 self.completion?(self.paymentMethod, nil)
                 self.handleSuccessfulTokenizationFlow()
             }
@@ -401,7 +397,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
         .catch { err in
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: err)
+                PrimerDelegateProxy.checkoutFailed(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
         }
@@ -532,7 +528,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
             }
         }
     }
@@ -625,7 +621,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
+                PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
             }
         }
     }
@@ -691,7 +687,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 }
                 .catch { err in
                     DispatchQueue.main.async {
-                        Primer.shared.delegate?.onResumeError?(err)
+                        PrimerDelegateProxy.onResumeError(err)
                     }
                     self.handle(error: err)
                 }
@@ -699,7 +695,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
             
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(error)
+                PrimerDelegateProxy.onResumeError(error)
             }
             
             handle(error: error)

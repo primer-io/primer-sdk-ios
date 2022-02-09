@@ -148,7 +148,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        if Primer.shared.delegate?.onClientSessionActions != nil {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
@@ -162,7 +162,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         } catch {
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -178,13 +178,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         .done { paymentMethod in
             self.paymentMethod = paymentMethod
-            
-            if Primer.shared.flow.internalSessionFlow.vaulted {
-                Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-            }
 
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { [unowned self] err in
                 if let err = err {
                     self.handleFailedTokenizationFlow(error: err)
                 } else {
@@ -194,7 +190,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         .catch { err in
             ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
-            Primer.shared.delegate?.checkoutFailed?(with: err)
+            PrimerDelegateProxy.checkoutFailed(with: err)
             self.handleFailedTokenizationFlow(error: err)
         }
     }
@@ -448,7 +444,7 @@ extension PayPalTokenizationViewModel {
             
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(error)
+                PrimerDelegateProxy.onResumeError(error)
             }
             self.handle(error: error)
         }

@@ -62,7 +62,7 @@ public protocol PrimerDelegate {
 
 internal class PrimerDelegateProxy {
     
-    static func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void) {
+    static func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void) {4
         Primer.shared.delegate?.clientTokenCallback(completion)
     }
     
@@ -71,11 +71,18 @@ internal class PrimerDelegateProxy {
     }
     
     static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) {
+        if Primer.shared.flow.internalSessionFlow.vaulted {
+            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+        }
         Primer.shared.delegate?.authorizePayment?(paymentMethodToken, completion)
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, completion)
     }
     
     static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol) {
+        if Primer.shared.flow.internalSessionFlow.vaulted {
+            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+        }
+        
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: resumeHandler)
         PrimerCheckoutComponents.delegate?.onEvent(.tokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: resumeHandler))
     }
@@ -97,8 +104,17 @@ internal class PrimerDelegateProxy {
         PrimerCheckoutComponents.delegate?.onEvent(.failure(error: error))
     }
     
-    static func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
-        Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+    static var isClientSessionActionsImplemented: Bool {
+        return Primer.shared.delegate?.onClientSessionActions != nil
+    }
+    
+    static func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) -> Bool {
+        if Primer.shared.delegate?.onClientSessionActions != nil {
+            Primer.shared.delegate!.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+            return true
+        } else {
+            return false
+        }
     }
     
     static func onEvent(_ event: PrimerCheckoutComponentsEvent) {

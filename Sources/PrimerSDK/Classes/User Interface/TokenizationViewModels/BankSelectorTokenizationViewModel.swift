@@ -226,7 +226,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         } catch {
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -253,10 +253,6 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                }
-                
                 self.completion?(self.paymentMethod, nil)
                 self.handleSuccessfulTokenizationFlow()
             }
@@ -281,7 +277,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         .catch { err in
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
-                Primer.shared.delegate?.checkoutFailed?(with: err)
+                PrimerDelegateProxy.checkoutFailed(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
         }
@@ -327,12 +323,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         return Promise { seal in
             self.tmpTokenizationCallback = { (paymentMethod, err) in
                 if let err = err {
-//                    self.handleFailedTokenizationFlow(error: err)
                     seal.reject(err)
                 } else if let paymentMethod = paymentMethod {
                     seal.fulfill(paymentMethod)
-//                    Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-    //                self.handleSuccessfulTokenizationFlow()
                 } else {
                     assert(true, "Should never get in here.")
                 }
@@ -497,7 +490,7 @@ extension BankSelectorTokenizationViewModel {
             }
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(error)
+                PrimerDelegateProxy.onResumeError(error)
                 self.handle(error: error)
             }
         }

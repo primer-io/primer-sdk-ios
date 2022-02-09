@@ -435,7 +435,7 @@ extension PrimerRootViewController {
         guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
             let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            Primer.shared.delegate?.checkoutFailed?(with: err)
+            PrimerDelegateProxy.checkoutFailed(with: err)
             return
         }
         
@@ -490,15 +490,15 @@ extension PrimerRootViewController {
                         "line": "\(#line)"]
                 )
                 ErrorHandler.handle(error: err)
-                Primer.shared.delegate?.checkoutFailed?(with: err)
+                PrimerDelegateProxy.checkoutFailed(with: err)
                 return
             }
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
             strongSelf.showLoadingScreenIfNeeded(imageView: nil, message: nil)
             
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: strongSelf)
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: strongSelf)
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
                 DispatchQueue.main.async { [weak self] in
                     guard let strongSelf = self else {
                         let err = PrimerError.generic(
@@ -510,7 +510,7 @@ extension PrimerRootViewController {
                                 "line": "\(#line)"]
                         )
                         ErrorHandler.handle(error: err)
-                        Primer.shared.delegate?.checkoutFailed?(with: err)
+                        PrimerDelegateProxy.checkoutFailed(with: err)
                         return
                     }
                     

@@ -404,7 +404,7 @@ public class Primer {
             (.other, _):
             let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            Primer.shared.delegate?.checkoutFailed?(with: err)
+            PrimerDelegateProxy.checkoutFailed(with: err)
             return
         }
         
@@ -483,7 +483,7 @@ public class Primer {
                 self?.primerRootVC = nil
                 self?.primerWindow?.resignKey()
                 self?.primerWindow = nil
-                Primer.shared.delegate?.onCheckoutDismissed?()
+                PrimerDelegateProxy.onCheckoutDismissed()
             })
         }
     }
