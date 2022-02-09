@@ -74,6 +74,36 @@ final internal class DependencyContainer {
                 DependencyContainer.register(primerAPIClient)
                 return self.resolve()
                 
+            } else if key == String(describing: VaultCheckoutViewModelProtocol.self) {
+                let vaultCheckoutViewModel: VaultCheckoutViewModelProtocol = VaultCheckoutViewModel()
+                DependencyContainer.register(vaultCheckoutViewModel)
+                return self.resolve()
+                
+            } else if key == String(describing: VaultServiceProtocol.self) {
+                let vaultService: VaultServiceProtocol = VaultService()
+                DependencyContainer.register(vaultService)
+                return self.resolve()
+                
+            } else if key == String(describing: PayPalServiceProtocol.self) {
+                let payPalService: PayPalServiceProtocol = PayPalService()
+                DependencyContainer.register(payPalService)
+                return self.resolve()
+                
+            } else if key == String(describing: TokenizationServiceProtocol.self) {
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                DependencyContainer.register(tokenizationService)
+                return self.resolve()
+                
+            } else if key == String(describing: VaultPaymentMethodViewModelProtocol.self) {
+                let vaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
+                DependencyContainer.register(vaultPaymentMethodViewModel)
+                return self.resolve()
+                
+            } else if key == String(describing: ExternalViewModelProtocol.self) {
+                let externalViewModel: ExternalViewModelProtocol = ExternalViewModel()
+                DependencyContainer.register(externalViewModel)
+                return self.resolve()
+                
             }
         }
 

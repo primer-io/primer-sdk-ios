@@ -43,8 +43,7 @@ public class Primer {
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
         
         DispatchQueue.main.async { [weak self] in
-            let settings = PrimerSettings()
-            self?.setDependencies(settings: settings, theme: PrimerTheme())
+            DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
             try! Analytics.Service.deleteEvents()
         }
     }
@@ -85,17 +84,6 @@ public class Primer {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         DependencyContainer.register(theme as PrimerThemeProtocol)
         DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
-        DependencyContainer.register(VaultService() as VaultServiceProtocol)
-        DependencyContainer.register(PayPalService() as PayPalServiceProtocol)
-        DependencyContainer.register(TokenizationService() as TokenizationServiceProtocol)
-        DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
-        DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
-        DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
-        
-        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-        ErrorHandler.handle(error: err)
-        let nsErr = err as NSError
-        print("\(nsErr.domain) \(nsErr.code) \(nsErr.localizedDescription)\n\(err.localizedDescription)")
     }
 
     // MARK: - CONFIGURATION
