@@ -85,17 +85,8 @@ class MerchantCheckoutViewController: UIViewController {
         )
 
         
-        Primer.shared.configure(settings: generalSettings)
-        Primer.shared.configure(theme: CheckoutTheme.primer)
+        Primer.shared.configure(settings: generalSettings, theme: CheckoutTheme.primer)
         Primer.shared.delegate = self
-        
-        self.fetchPaymentMethods()
-        
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-            let vc = MerchantCardFormViewController()
-            vc.view.translatesAutoresizingMaskIntoConstraints = false
-            self.present(vc, animated: true, completion: nil)
-        }
     }
     
     // MARK: - ACTIONS
