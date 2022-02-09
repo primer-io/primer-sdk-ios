@@ -88,6 +88,9 @@ public class PrimerSettings: PrimerSettingsProtocol {
     private var _urlScheme: String?
     internal(set) public var urlScheme: String? {
         get {
+            if _urlScheme == "://redirect.primer.io" {
+                return nil
+            }
             return _urlScheme
         }
         set {
