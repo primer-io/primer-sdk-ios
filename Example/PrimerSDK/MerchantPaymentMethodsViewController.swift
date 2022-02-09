@@ -33,10 +33,6 @@ class MerchantPaymentMethodsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let settings = PrimerSettings(
-            merchantIdentifier: "merchant.dx.team",
-            urlScheme: "")
-        Primer.shared.configure(settings: settings, theme: nil)
         PrimerCheckoutComponents.delegate = self
         
         self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
@@ -52,20 +48,26 @@ class MerchantPaymentMethodsViewController: UIViewController {
                     self.activityIndicator = nil
                 }
             } else if let clientToken = clientToken {
-                PrimerCheckoutComponents.listAvailablePaymentMethodsTypes(forSession: clientToken) { pms, err in
-                    DispatchQueue.main.async {
-                        self.activityIndicator?.stopAnimating()
-                        self.activityIndicator?.removeFromSuperview()
-                        self.activityIndicator = nil
-                    }
-                    
-                    if let err = err {
-                        
-                    } else if let pms = pms {
-                        self.availablePaymentMethods = pms
-                        self.tableView.reloadData()
-                    }
-                }
+                let settings = PrimerSettings(
+                    merchantIdentifier: "merchant.dx.team",
+                    urlScheme: "merchant://")
+                try! PrimerCheckoutComponents.configure(withClientToken: clientToken, andSetings: settings)
+                
+                
+//                PrimerCheckoutComponents.listAvailablePaymentMethodsTypes(forSession: clientToken) { pms, err in
+//                    DispatchQueue.main.async {
+//                        self.activityIndicator?.stopAnimating()
+//                        self.activityIndicator?.removeFromSuperview()
+//                        self.activityIndicator = nil
+//                    }
+//
+//                    if let err = err {
+//
+//                    } else if let pms = pms {
+//                        self.availablePaymentMethods = pms
+//                        self.tableView.reloadData()
+//                    }
+//                }
             }
         }
     }
@@ -212,7 +214,7 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutComponentsDelegate
     func onEvent(_ event: PrimerCheckoutComponentsEvent) {
         DispatchQueue.main.async {
             switch event {
-            case .configurationStarted:
+            case .preparationStarted:
                 self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
                 self.view.addSubview(self.activityIndicator!)
                 self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
@@ -226,15 +228,25 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutComponentsDelegate
                 
             case .tokenizationStarted:
                 break
-            case .tokenizationSuccess(let paymentMethodToken, let resumeHandler):
+            case .tokenizationSucceeded(let paymentMethodToken, let resumeHandler):
                 self.activityIndicator?.stopAnimating()
                 self.activityIndicator?.removeFromSuperview()
                 self.activityIndicator = nil
                 
-            case .error(let err):
+            case .failure(let err):
                 self.activityIndicator?.stopAnimating()
                 self.activityIndicator?.removeFromSuperview()
                 self.activityIndicator = nil
+            case .clientSessionSetupSuccessfully:
+                let pms = PrimerCheckoutComponents.listAvailablePaymentMethodsTypes()
+                DispatchQueue.main.async {
+                    self.activityIndicator?.stopAnimating()
+                    self.activityIndicator?.removeFromSuperview()
+                    self.activityIndicator = nil
+                }
+                
+                self.availablePaymentMethods = PrimerCheckoutComponents.listAvailablePaymentMethodsTypes() ?? []
+                self.tableView.reloadData()
             }
         }
         print("MerchantPaymentMethodsViewController.onEvent: \(event)")

@@ -48,6 +48,9 @@
                                     <segment title="Staging"/>
                                     <segment title="Production"/>
                                 </segments>
+                                <connections>
+                                    <action selector="environmentValueChanged:" destination="Hsc-Wl-Q65" eventType="valueChanged" id="Kj3-RL-pQg"/>
+                                </connections>
                             </segmentedControl>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Customer ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Q8f-7x-ncT">
                                 <rect key="frame" x="20" y="159" width="374" height="34"/>
