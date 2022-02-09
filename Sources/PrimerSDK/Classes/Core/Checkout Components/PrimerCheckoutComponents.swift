@@ -205,11 +205,42 @@ public class PrimerCheckoutComponents {
     }
     
     public static func showCheckout(for paymentMethod: PaymentMethodConfigType) {
-        PrimerCheckoutComponents.delegate?.onEvent(.configurationStarted)
-        var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        settings.hasDisabledSuccessScreen = true
-        settings.isInitialLoadingHidden = true
-        Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, on: UIViewController())
+        DispatchQueue.main.async {
+            var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            print(settings.urlScheme)
+            settings.hasDisabledSuccessScreen = true
+            settings.isInitialLoadingHidden = true
+            
+            switch paymentMethod {
+            case .goCardlessMandate,
+                    .paymentCard,
+                    .other:
+                let err = PrimerError.missingCustomUI(paymentMethod: paymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
+                return
+            case .applePay:
+                if settings.merchantIdentifier == nil {
+                    let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
+                    return
+                }
+            case .payPal:
+                if settings.urlScheme == nil {
+                    let err = PrimerError.invalidUrlScheme(urlScheme: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
+                    return
+                }
+            default:
+                break
+            }
+            
+            PrimerCheckoutComponents.delegate?.onEvent(.preparationStarted)
+            
+            Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, on: UIViewController())
+        }
     }
 }
 
@@ -344,6 +375,7 @@ extension PrimerCheckoutComponents {
             return false
         }
     }
+    
 }
 
 #endif
