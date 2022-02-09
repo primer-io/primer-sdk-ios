@@ -11,6 +11,7 @@
 import UIKit
 
 extension PrimerCheckoutComponents {
+    
     open class PaymentMethodViewController: UIViewController, PrimerPaymentMethodViewControllerProtocol {
         
         open var paymentMethodType: PaymentMethodConfigType!
@@ -45,7 +46,7 @@ extension PrimerCheckoutComponents {
         
         public func listInputElementTypes() -> [PrimerInputElementType] {
             if paymentMethodType == nil { return [] }
-            return PrimerCheckoutComponents.listInputElementTypes(for: paymentMethodType!)
+            return PrimerCheckoutComponents.listInputElementTypes(for: paymentMethodType!)!
         }
         
         internal func validateUI() -> Promise<Void> {
@@ -240,7 +241,7 @@ extension PrimerCheckoutComponents {
         
         @objc
         private func startTokenization() {
-            PrimerCheckoutComponents.delegate?.onEvent(.configurationStarted)
+            PrimerCheckoutComponents.delegate?.onEvent(.preparationStarted)
 
             firstly {
                 self.validateUI()
@@ -259,10 +260,10 @@ extension PrimerCheckoutComponents {
                 return self.tokenize(request: requestbody)
             }
             .done { paymentMethodToken in
-                PrimerCheckoutComponents.delegate?.onEvent(.tokenizationSuccess(paymentMethodToken: paymentMethodToken, resumeHandler: nil))
+                PrimerCheckoutComponents.delegate?.onEvent(.tokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: nil))
             }
             .catch { err in
-                PrimerCheckoutComponents.delegate?.onEvent(.error(err: err))
+                PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
             }
         }
     }
