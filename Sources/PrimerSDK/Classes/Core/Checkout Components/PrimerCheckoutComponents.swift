@@ -63,15 +63,25 @@ public class PrimerCheckoutComponents {
             primerConfigurationService.fetchConfig()
         }
         .done {
-            let availablePaymentMethodTypes = PrimerConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
-            completion(availablePaymentMethodTypes, nil)
+            PrimerCheckoutComponents.delegate?.onEvent(.clientSessionSetupSuccessfully)
         }
         .catch { err in
-            completion(nil, err)
+            PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
         }
     }
     
-    public static func listInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType] {
+    public static func listAvailablePaymentMethodsTypes() -> [PaymentMethodConfigType]? {
+        guard let paymentMethodConfigurations = PrimerConfiguration.paymentMethodConfigs else {
+            let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
+            return nil
+        }
+        
+        return paymentMethodConfigurations.compactMap({ $0.type })
+    }
+    
+    public static func listInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType]? {
         switch paymentMethodType {
         case .adyenAlipay:
             return []
