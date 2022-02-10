@@ -341,7 +341,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
         if Primer.shared.delegate?.onClientSessionActions != nil {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
@@ -447,7 +447,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             .then { resumeToken -> Promise<PaymentMethodToken> in
                 DispatchQueue.main.async {
-                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
                     
                     self.willDismissExternalView?()
                     self.webViewController?.dismiss(animated: true, completion: {
@@ -585,23 +585,24 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 completion(nil, err)
                 return
             }
+            
             switch result {
             case .success(let res):
                 if res.status == .pending {
-                    self.startPolling(on: url, completion: completion)
+                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                        self.startPolling(on: url, completion: completion)
+                    }
                 } else if res.status == .complete {
                     completion(res.id, nil)
                 } else {
-                    // Do what here?
-                    fatalError()
+                    let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
                 }
             case .failure(let err):
-                let nsErr = err as NSError
-                if nsErr.domain == NSURLErrorDomain && nsErr.code == -1001 {
-                    // Retry
+                ErrorHandler.handle(error: err)
+                // Retry
+                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
                     self.startPolling(on: url, completion: completion)
-                } else {
-                    completion(nil, err)
                 }
             }
         }
@@ -731,6 +732,14 @@ struct PollingURLs: Decodable {
     let redirect: String
     lazy var redirectUrl: URL? = {
         return URL(string: redirect)
+    }()
+    let complete: String?
+}
+
+struct QRCodePollingURLs: Decodable {
+    let status: String
+    lazy var statusUrl: URL? = {
+        return URL(string: status)
     }()
     let complete: String?
 }

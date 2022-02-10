@@ -27,22 +27,24 @@ internal class URLSessionStack: NetworkService {
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
         
-        let reqEvent = Analytics.Event(
-            eventType: .networkCall,
-            properties: NetworkCallEventProperties(
-                callType: .requestStart,
-                id: id,
-                url: urlStr,
-                method: endpoint.method,
-                errorBody: nil,
-                responseCode: nil))
-        Analytics.Service.record(event: reqEvent)
-        
-        let connectivityEvent = Analytics.Event(
-            eventType: .networkConnectivity,
-            properties: NetworkConnectivityEventProperties(
-                networkType: Connectivity.networkType))
-        Analytics.Service.record(event: connectivityEvent)
+        if let primerAPI = endpoint as? PrimerAPI, primerAPI != PrimerAPI.poll(clientToken: nil, url: "") {
+            let reqEvent = Analytics.Event(
+                eventType: .networkCall,
+                properties: NetworkCallEventProperties(
+                    callType: .requestStart,
+                    id: id,
+                    url: urlStr,
+                    method: endpoint.method,
+                    errorBody: nil,
+                    responseCode: nil))
+            Analytics.Service.record(event: reqEvent)
+            
+            let connectivityEvent = Analytics.Event(
+                eventType: .networkConnectivity,
+                properties: NetworkConnectivityEventProperties(
+                    networkType: Connectivity.networkType))
+            Analytics.Service.record(event: connectivityEvent)
+        }
         
         guard let url = url(for: endpoint) else {
             let err = NetworkError.invalidUrl(url: "Base URL: \(endpoint.baseURL ?? "nil") | Endpoint: \(endpoint.path)", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -81,20 +83,24 @@ internal class URLSessionStack: NetworkService {
         let dataTask = session.dataTask(with: request) { data, response, error in
             let httpResponse = response as? HTTPURLResponse
             
-            var resEventProperties = NetworkCallEventProperties(
-                callType: .requestEnd,
-                id: id,
-                url: urlStr,
-                method: endpoint.method,
-                errorBody: nil,
-                responseCode: (response as? HTTPURLResponse)?.statusCode
-            )
-            
-            var resEvent = Analytics.Event(
-                eventType: .networkCall,
-                properties: resEventProperties)
-            
-            resEvent.properties = resEventProperties
+            var resEventProperties: NetworkCallEventProperties?
+            var resEvent: Analytics.Event?
+            if !endpoint.path.isEmpty {
+                resEventProperties = NetworkCallEventProperties(
+                    callType: .requestEnd,
+                    id: id,
+                    url: urlStr,
+                    method: endpoint.method,
+                    errorBody: nil,
+                    responseCode: (response as? HTTPURLResponse)?.statusCode
+                )
+                
+                resEvent = Analytics.Event(
+                    eventType: .networkCall,
+                    properties: resEventProperties)
+                
+                resEvent!.properties = resEventProperties
+            }
             
             #if DEBUG
             msg = ""
@@ -105,10 +111,11 @@ internal class URLSessionStack: NetworkService {
             #endif
 
             if let error = error {
-                resEventProperties.errorBody = "\(error)"
-                resEvent.properties = resEventProperties
-                
-                Analytics.Service.record(event: resEvent)
+                if resEvent != nil {
+                    resEventProperties!.errorBody = "\(error)"
+                    resEvent!.properties = resEventProperties
+                    Analytics.Service.record(event: resEvent!)
+                }
                 
                 #if DEBUG
                 msg += "\nError: \(error)"
@@ -122,9 +129,11 @@ internal class URLSessionStack: NetworkService {
             }
 
             guard let data = data else {
-                resEventProperties.errorBody = "No data received"
-                resEvent.properties = resEventProperties
-                Analytics.Service.record(event: resEvent)
+                if resEvent != nil {
+                    resEventProperties?.errorBody = "No data received"
+                    resEvent!.properties = resEventProperties
+                    Analytics.Service.record(event: resEvent!)
+                }
                 
                 #if DEBUG
                 msg += "\nNo data received."
@@ -138,12 +147,14 @@ internal class URLSessionStack: NetworkService {
             }
 
             do {
-                resEvent.properties = resEventProperties
-                Analytics.Service.record(event: resEvent)
+                if resEvent != nil {
+                    resEvent?.properties = resEventProperties
+                    Analytics.Service.record(event: resEvent!)
+                }
                 
                 #if DEBUG
                 let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+                let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
                 var jsonStr: String?
                 if jsonData != nil {
                     jsonStr = String(data: jsonData!, encoding: .utf8 )
@@ -162,14 +173,16 @@ internal class URLSessionStack: NetworkService {
                 }
             } catch {
                 if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), let jsonDic = json as? [String: Any?],
-                   var primerErrorJSON = jsonDic["error"] as? [String: Any] {
+                   let primerErrorJSON = jsonDic["error"] as? [String: Any] {
                     let statusCode = (response as! HTTPURLResponse).statusCode
 
                     let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: try! JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed))
                     
-                    resEventProperties.errorBody = "\(primerErrorJSON)"
-                    resEvent.properties = resEventProperties
-                    Analytics.Service.record(event: resEvent)
+                    if resEvent != nil {
+                        resEventProperties?.errorBody = "\(primerErrorJSON)"
+                        resEvent!.properties = resEventProperties
+                        Analytics.Service.record(event: resEvent!)
+                    }
 
                     if statusCode == 401 {
                         let err = NetworkError.unauthorized(url: urlStr, method: endpoint.method, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -208,9 +221,11 @@ internal class URLSessionStack: NetworkService {
                         let err = NetworkError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: err)
                         
-                        resEventProperties.errorBody = err.localizedDescription
-                        resEvent.properties = resEventProperties
-                        Analytics.Service.record(event: resEvent)
+                        if resEvent != nil {
+                            resEventProperties?.errorBody = err.localizedDescription
+                            resEvent!.properties = resEventProperties
+                            Analytics.Service.record(event: resEvent!)
+                        }
 
                         #if DEBUG
                         msg += "\nError: Status code \(statusCode)\n\(err.localizedDescription)"
@@ -224,9 +239,11 @@ internal class URLSessionStack: NetworkService {
                     let err = ParserError.failedToDecode(message: "Failed to decode response from URL: \(urlStr)", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     
-                    resEventProperties.errorBody = err.localizedDescription
-                    resEvent.properties = resEventProperties
-                    Analytics.Service.record(event: resEvent)
+                    if resEvent != nil {
+                        resEventProperties?.errorBody = err.localizedDescription
+                        resEvent!.properties = resEventProperties
+                        Analytics.Service.record(event: resEvent!)
+                    }
                     
                     #if DEBUG
                     msg += "\nError: Failed to parse."

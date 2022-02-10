@@ -414,10 +414,10 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .failedOnWebViewFlow:
             // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
             return nil
-        case .failedToPerform3DS(let error):
+        case .failedToPerform3DS:
             // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
             return nil
-        case .invalidUrl(let url):
+        case .invalidUrl:
             // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
             return nil
         case .invalid3DSKey:

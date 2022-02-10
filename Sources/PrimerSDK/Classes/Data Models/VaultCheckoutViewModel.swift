@@ -121,7 +121,7 @@ extension VaultCheckoutViewModel: ResumeHandlerProtocol {
             if settings.hasDisabledSuccessScreen {
                 Primer.shared.dismiss()
             } else {
-                let evc = ErrorViewController(message: error.localizedDescription)
+                let evc = PrimerResultViewController(screenType: .failure, message: error.localizedDescription)
                 evc.view.translatesAutoresizingMaskIntoConstraints = false
                 evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                 Primer.shared.primerRootVC?.show(viewController: evc)
@@ -140,7 +140,7 @@ extension VaultCheckoutViewModel: ResumeHandlerProtocol {
             if settings.hasDisabledSuccessScreen {
                 Primer.shared.dismiss()
             } else {
-                let svc = SuccessViewController()
+                let svc = PrimerResultViewController(screenType: .success, message: nil)
                 svc.view.translatesAutoresizingMaskIntoConstraints = false
                 svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
                 Primer.shared.primerRootVC?.show(viewController: svc)

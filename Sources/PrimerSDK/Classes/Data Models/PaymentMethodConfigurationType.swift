@@ -26,7 +26,6 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case googlePay
     case hoolah
     case klarna
-    case mbWay
     case mollieBankcontact
     case mollieIdeal
     case payNLBancontact
@@ -35,10 +34,11 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case payNLPayconiq
     case paymentCard
     case payPal
+    case xfers
     case other(rawValue: String)
     
     // swiftlint:disable cyclomatic_complexity
-    init(rawValue: String) {
+    public init(rawValue: String) {
         switch rawValue {
         case "ADYEN_ALIPAY":
             self = .adyenAlipay
@@ -64,7 +64,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .applePay
         case "ATOME":
             self = .atome
-        case "BLIK":
+        case "ADYEN_BLIK":
             self = .blik
         case "BUCKAROO_BANCONTACT":
             self = .buckarooBancontact
@@ -84,8 +84,6 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .hoolah
         case "KLARNA":
             self = .klarna
-        case "MBWAY":
-            self = .mbWay
         case "MOLLIE_BANCONTACT":
             self = .mollieBankcontact
         case "MOLLIE_IDEAL":
@@ -102,12 +100,14 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .paymentCard
         case "PAYPAL":
             self = .payPal
+        case "XFERS_PAYNOW":
+            self = .xfers
         default:
             self = .other(rawValue: rawValue)
         }
     }
     
-    var rawValue: String {
+    public var rawValue: String {
         switch self {
         case .adyenAlipay:
             return "ADYEN_ALIPAY"
@@ -134,7 +134,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case .atome:
             return "ATOME"
         case .blik:
-            return "BLIK"
+            return "ADYEN_BLIK"
         case .buckarooBancontact:
             return "BUCKAROO_BANCONTACT"
         case .buckarooEps:
@@ -153,8 +153,6 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "HOOLAH"
         case .klarna:
             return "KLARNA"
-        case .mbWay:
-            return "MBWAY"
         case .mollieBankcontact:
             return "MOLLIE_BANCONTACT"
         case .mollieIdeal:
@@ -171,6 +169,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "PAYMENT_CARD"
         case .payPal:
             return "PAYPAL"
+        case .xfers:
+            return "XFERS_PAYNOW"
         case .other(let rawValue):
             return rawValue
         }
@@ -196,13 +196,13 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .buckarooIdeal,
                 .buckarooSofort,
                 .hoolah,
-                .mbWay,
                 .mollieBankcontact,
                 .mollieIdeal,
                 .payNLBancontact,
                 .payNLGiropay,
                 .payNLIdeal,
-                .payNLPayconiq:
+                .payNLPayconiq,
+                .xfers:
             guard let flow = Primer.shared.flow else { return false }
             return !flow.internalSessionFlow.vaulted
             
@@ -257,6 +257,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case payNLPayconiq
         case paymentCard
         case payPal
+        case xfers
         case other
     }
     

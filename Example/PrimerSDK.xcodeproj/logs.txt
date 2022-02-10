@@ -1,0 +1,287 @@
+
+🐛 [DEBUG] @ 2022-02-10T18:25:35
+🐛 NETWORK REQUEST [POST] https://sdk.api.staging.primer.io/payment-instruments
+🐛 
+Headers: ["Primer-Client-Token": "8fc51a6a-7737-4ed3-a22a-fee4d895a5f4", "Primer-SDK-Client": "IOS_NATIVE", "X-Api-Version": "2021-12-10", "Content-Type": "application/json", "Primer-SDK-Version": "1.27.1"]
+Body:
+{
+  "paymentInstrument" : {
+    "paymentMethodType" : "ADYEN_BLIK",
+    "type" : "OFF_SESSION_PAYMENT",
+    "paymentMethodConfigId" : "81c202a5-7508-4c77-ada3-0ce01cf4b66f",
+    "sessionInfo" : {
+      "locale" : "en-US",
+      "blikCode" : "777777",
+      "redirectionUrl" : "merchant:\/\/redirect.primer.io",
+      "platform" : "IOS"
+    }
+  }
+}
+
+🐛 [DEBUG] @ 2022-02-10T18:25:36
+🐛 NETWORK RESPONSE [POST] https://sdk.api.staging.primer.io/payment-instruments
+🐛 
+Status: 200
+Headers: ["x-amzn-remapped-content-length": "506", "x-amzn-remapped-connection": "keep-alive", "Content-Encoding": "gzip", "x-content-type-options": "nosniff", "cf-cache-status": "DYNAMIC", "x-amzn-requestid": "348b5c6f-63a8-4552-aa40-df471c730142", "expect-ct": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"", "x-primer-version": "6cdc2b63c750d2d88280426ee8fb8e4677de891e", "x-primer-diagnostics-id": "488766506414490470", "x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:36 GMT", "Server": "cloudflare", "cf-ray": "6db6b1c12d536f3e-ATH", "Content-Type": "application/json", "Date": "Thu, 10 Feb 2022 16:25:36 GMT", "x-amz-apigw-id": "NVZkGHQVDoEFRzQ=", "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload"]
+Body:
+{
+  "paymentInstrumentData" : {
+    "paymentMethodConfigId" : "81c202a5-7508-4c77-ada3-0ce01cf4b66f",
+    "paymentMethodType" : "ADYEN_BLIK",
+    "sessionInfo" : {
+      "locale" : "en-US",
+      "platform" : "IOS",
+      "redirectionUrl" : "merchant:\/\/redirect.primer.io",
+      "blikCode" : "777777"
+    }
+  },
+  "isAlreadyVaulted" : false,
+  "threeDSecureAuthentication" : {
+    "responseCode" : "NOT_PERFORMED"
+  },
+  "tokenType" : "SINGLE_USE",
+  "isVaulted" : false,
+  "token" : "TTbiyRdbQvqsPqcinXQHmHwxNjQ0NTEwMzM2",
+  "analyticsId" : "XYmFt8gLVqe2-TA1HNqXP01i",
+  "paymentInstrumentType" : "OFF_SESSION_PAYMENT"
+}
+
+
+MERCHANT CHECKOUT VIEW CONTROLLER
+onTokenizeSuccess(_:resumeHandler:)
+Payment Method: <PrimerSDK.PaymentMethodToken: 0x7f888104a000>
+
+REQUEST
+URL: https://us-central1-primerdemo-8741b.cloudfunctions.net/api/payments/
+Headers:
+["environment": "staging", "x-api-key": "ccee2be8-df08-4c79-856d-40085349e9da", "x-api-version": "2021-09-27", "Content-Type": "application/json"]
+Body:
+{
+    paymentMethodToken = TTbiyRdbQvqsPqcinXQHmHwxNjQ0NTEwMzM2;
+}
+
+
+Status code: 200
+RESPONSE
+URL: https://us-central1-primerdemo-8741b.cloudfunctions.net/api/payments/
+Status code: 200
+Body:
+["amount": 1337, "id": FuNE0sD7, "metadata": {
+    key = val;
+}, "status": PENDING, "customerId": ios_customer_id, "requiredAction": {
+    clientToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDQ1OTY3MzksImFjY2Vzc1Rva2VuIjoiODExNDhkMmQtYTU4Ny00YjNiLWI2NzctMDViMjZkZmZkOWQ1IiwiYW5hbHl0aWNzVXJsIjoiaHR0cHM6Ly9hbmFseXRpY3MuYXBpLnN0YWdpbmcuY29yZS5wcmltZXIuaW8vbWl4cGFuZWwiLCJhbmFseXRpY3NVcmxWMiI6Imh0dHBzOi8vYW5hbHl0aWNzLnN0YWdpbmcuZGF0YS5wcmltZXIuaW8vY2hlY2tvdXQvdHJhY2siLCJpbnRlbnQiOiJBRFlFTl9CTElLX1JFRElSRUNUSU9OIiwic3RhdHVzVXJsIjoiaHR0cHM6Ly9hcGkuc3RhZ2luZy5wcmltZXIuaW8vcmVzdW1lLXRva2Vucy8xYjAyOGJkMS1kMzJiLTQ0OTctOTcxYy04ODVkNzAxZTdjZDkifQ.H299bEIx5OpatWc74R5sUbD2Mi-c1o6G2hw8Y1NVU14";
+    description = "Use the Primer client SDK to complete the payment.";
+    name = "USE_PRIMER_SDK";
+}, "customer": {
+    billingAddress =     {
+        addressLine1 = "65 York Road";
+        city = London;
+        countryCode = GB;
+        firstName = John;
+        lastName = Smith;
+        postalCode = "NW06 4OM";
+    };
+    emailAddress = "john@primer.io";
+    mobileNumber = "+4478888888888";
+    shippingAddress =     {
+        addressLine1 = "9446 Richmond Road";
+        city = London;
+        countryCode = GB;
+        firstName = John;
+        lastName = Smith;
+        postalCode = "EC53 8BT";
+    };
+}, "order": {
+    countryCode = PL;
+    fees =     (
+    );
+    lineItems =     (
+                {
+            amount = 1337;
+            description = Item;
+            itemId = "_item_id_0";
+            quantity = 1;
+        }
+    );
+}, "currencyCode": PLN, "transactions": <__NSSingleObjectArrayI 0x600001eae360>(
+{
+    processorMerchantId = PrimerJbTestECOM;
+    processorName = ADYEN;
+    processorStatus = PENDING;
+    transactionType = SALE;
+}
+)
+, "date": 2022-02-10T16:25:37.423222, "paymentMethod": {
+    analyticsId = "XYmFt8gLVqe2-TA1HNqXP01i";
+    paymentMethodData =     {
+        paymentMethodConfigId = "81c202a5-7508-4c77-ada3-0ce01cf4b66f";
+        paymentMethodType = "ADYEN_BLIK";
+        sessionInfo =         {
+            blikCode = 777777;
+            locale = "en-US";
+            platform = IOS;
+            redirectionUrl = "merchant://redirect.primer.io";
+        };
+    };
+    paymentMethodToken = TTbiyRdbQvqsPqcinXQHmHwxNjQ0NTEwMzM2;
+    paymentMethodType = "OFF_SESSION_PAYMENT";
+    threeDSecureAuthentication =     {
+        responseCode = "NOT_PERFORMED";
+    };
+}, "processor": {
+    amountCaptured = 0;
+    amountRefunded = 0;
+    name = ADYEN;
+    processorMerchantId = PrimerJbTestECOM;
+}, "orderId": ios_order_id_q93c8zfn]
+
+
+🐛 [DEBUG] @ 2022-02-10T18:25:39
+🐛 NETWORK REQUEST [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Headers: ["Primer-Client-Token": "81148d2d-a587-4b3b-b677-05b26dffd9d5", "Primer-SDK-Version": "1.27.1", "Content-Type": "application/json", "Primer-SDK-Client": "IOS_NATIVE"]
+
+🐛 [DEBUG] @ 2022-02-10T18:25:39
+🐛 NETWORK RESPONSE [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Status: 200
+Headers: ["cf-ray": "6db6b1d51f156f68-ATH", "Content-Type": "application/json", "Server": "cloudflare", "x-primer-version": "6cdc2b63c750d2d88280426ee8fb8e4677de891e", "x-amzn-remapped-x-amzn-remapped-connection": "keep-alive", "Content-Encoding": "gzip", "cf-cache-status": "DYNAMIC", "x-amzn-remapped-x-amzn-remapped-content-length": "480", "Content-Length": "219", "expect-ct": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"", "x-primer-diagnostics-id": "11501017251659619427", "x-amz-apigw-id": "NVZkkH4pDoEFj0Q=", "x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:39 GMT", "x-amzn-remapped-server": "cloudflare", "x-amzn-remapped-connection": "keep-alive", "x-amzn-remapped-x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:39 GMT", "x-content-type-options": "nosniff", "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload", "x-amzn-remapped-x-amzn-requestid": "251e7161-aa76-448f-ac2b-cecd89208b22", "x-amzn-requestid": "c5f2723d-98b6-42b8-af90-c3ccab6410ae", "Date": "Thu, 10 Feb 2022 16:25:39 GMT"]
+Body:
+{
+  "status" : "PENDING",
+  "id" : "1b028bd1-d32b-4497-971c-885d701e7cd9",
+  "source" : "WEBHOOK",
+  "urls" : {
+    "status" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9",
+    "redirect" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab",
+    "complete" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab"
+  }
+}
+
+
+
+🐛 [DEBUG] @ 2022-02-10T18:25:40
+🐛 NETWORK REQUEST [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Headers: ["Primer-SDK-Client": "IOS_NATIVE", "Primer-Client-Token": "81148d2d-a587-4b3b-b677-05b26dffd9d5", "Primer-SDK-Version": "1.27.1", "Content-Type": "application/json"]
+
+🐛 [DEBUG] @ 2022-02-10T18:25:40
+🐛 NETWORK RESPONSE [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Status: 200
+Headers: ["Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload", "Date": "Thu, 10 Feb 2022 16:25:40 GMT", "x-amzn-remapped-x-amzn-requestid": "0bb1bdf3-41fd-4edb-9441-00ab7edd7c09", "x-content-type-options": "nosniff", "x-amzn-remapped-x-amzn-remapped-content-length": "480", "expect-ct": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"", "cf-cache-status": "DYNAMIC", "x-amzn-remapped-server": "cloudflare", "Content-Encoding": "gzip", "x-amz-apigw-id": "NVZkxGduDoEFeqw=", "x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:40 GMT", "x-amzn-remapped-x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:40 GMT", "x-amzn-remapped-connection": "keep-alive", "x-primer-version": "6cdc2b63c750d2d88280426ee8fb8e4677de891e", "cf-ray": "6db6b1dd6a8b6f68-ATH", "x-amzn-requestid": "7898287f-eda8-457b-bcc6-48ef07f5e09e", "x-primer-diagnostics-id": "15266536712772932972", "Content-Length": "219", "x-amzn-remapped-x-amzn-remapped-connection": "keep-alive", "Content-Type": "application/json", "Server": "cloudflare"]
+Body:
+{
+  "status" : "PENDING",
+  "id" : "1b028bd1-d32b-4497-971c-885d701e7cd9",
+  "source" : "WEBHOOK",
+  "urls" : {
+    "status" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9",
+    "redirect" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab",
+    "complete" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab"
+  }
+}
+
+
+
+🐛 [DEBUG] @ 2022-02-10T18:25:41
+🐛 NETWORK REQUEST [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Headers: ["Primer-SDK-Client": "IOS_NATIVE", "Primer-SDK-Version": "1.27.1", "Content-Type": "application/json", "Primer-Client-Token": "81148d2d-a587-4b3b-b677-05b26dffd9d5"]
+
+
+
+🐛 [DEBUG] @ 2022-02-10T18:25:41
+🐛 NETWORK RESPONSE [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Status: 200
+Headers: ["cf-ray": "6db6b1e55e8b6f68-ATH", "Content-Type": "application/json", "Server": "cloudflare", "x-primer-version": "6cdc2b63c750d2d88280426ee8fb8e4677de891e", "x-amzn-remapped-x-amzn-remapped-connection": "keep-alive", "Content-Encoding": "gzip", "cf-cache-status": "DYNAMIC", "x-amzn-remapped-x-amzn-remapped-content-length": "480", "Content-Length": "219", "expect-ct": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"", "x-primer-diagnostics-id": "11304042993572929174", "x-amz-apigw-id": "NVZk-Em1joEFu-Q=", "x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:42 GMT", "x-amzn-remapped-server": "cloudflare", "x-amzn-remapped-connection": "keep-alive", "x-amzn-remapped-x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:42 GMT", "x-content-type-options": "nosniff", "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload", "x-amzn-remapped-x-amzn-requestid": "f0f601cd-3fb3-4dd7-a6cd-5d878427f7e3", "x-amzn-requestid": "ace9a6eb-57cf-4430-81ab-4f06444e27c8", "Date": "Thu, 10 Feb 2022 16:25:42 GMT"]
+Body:
+{
+  "status" : "PENDING",
+  "id" : "1b028bd1-d32b-4497-971c-885d701e7cd9",
+  "source" : "WEBHOOK",
+  "urls" : {
+    "status" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9",
+    "redirect" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab",
+    "complete" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab"
+  }
+}
+
+
+
+🐛 [DEBUG] @ 2022-02-10T18:25:42
+🐛 NETWORK REQUEST [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Headers: ["Content-Type": "application/json", "Primer-SDK-Client": "IOS_NATIVE", "Primer-Client-Token": "81148d2d-a587-4b3b-b677-05b26dffd9d5", "Primer-SDK-Version": "1.27.1"]
+
+
+
+🐛 [DEBUG] @ 2022-02-10T18:25:43
+🐛 NETWORK RESPONSE [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Status: 200
+Headers: ["cf-ray": "6db6b1ed29dd6f68-ATH", "Content-Type": "application/json", "Server": "cloudflare", "x-primer-version": "6cdc2b63c750d2d88280426ee8fb8e4677de891e", "x-amzn-remapped-x-amzn-remapped-connection": "keep-alive", "Content-Encoding": "gzip", "cf-cache-status": "DYNAMIC", "x-amzn-remapped-x-amzn-remapped-content-length": "480", "Content-Length": "219", "expect-ct": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"", "x-primer-diagnostics-id": "16422498877445655328", "x-amz-apigw-id": "NVZlKFRYDoEFXGQ=", "x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:43 GMT", "x-amzn-remapped-server": "cloudflare", "x-amzn-remapped-connection": "keep-alive", "x-amzn-remapped-x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:43 GMT", "x-content-type-options": "nosniff", "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload", "x-amzn-remapped-x-amzn-requestid": "0474fe42-3f23-4400-90c7-8bb12367c632", "x-amzn-requestid": "bdb4e549-c10c-42a4-b2f6-2fe011ca400f", "Date": "Thu, 10 Feb 2022 16:25:43 GMT"]
+Body:
+{
+  "status" : "PENDING",
+  "id" : "1b028bd1-d32b-4497-971c-885d701e7cd9",
+  "source" : "WEBHOOK",
+  "urls" : {
+    "status" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9",
+    "redirect" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab",
+    "complete" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab"
+  }
+}
+
+
+
+🐛 [DEBUG] @ 2022-02-10T18:25:44
+🐛 NETWORK REQUEST [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Headers: ["Content-Type": "application/json", "Primer-SDK-Client": "IOS_NATIVE", "Primer-Client-Token": "81148d2d-a587-4b3b-b677-05b26dffd9d5", "Primer-SDK-Version": "1.27.1"]
+
+
+
+🐛 [DEBUG] @ 2022-02-10T18:25:44
+🐛 NETWORK RESPONSE [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Status: 200
+Headers: ["Date": "Thu, 10 Feb 2022 16:25:44 GMT", "Server": "cloudflare", "Content-Type": "application/json", "x-content-type-options": "nosniff", "x-amzn-remapped-x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:44 GMT", "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload", "x-amzn-remapped-server": "cloudflare", "x-primer-diagnostics-id": "874888565158917580", "Content-Length": "219", "x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:44 GMT", "x-amz-apigw-id": "NVZlXGn5joEFyPw=", "x-primer-version": "6cdc2b63c750d2d88280426ee8fb8e4677de891e", "cf-cache-status": "DYNAMIC", "Content-Encoding": "gzip", "x-amzn-remapped-connection": "keep-alive", "cf-ray": "6db6b1f4dcd36f68-ATH", "expect-ct": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"", "x-amzn-requestid": "e9ebfeab-8579-4988-b45b-f09d995f12a5", "x-amzn-remapped-x-amzn-requestid": "534e4849-2665-4867-a036-44f9e26c0b05", "x-amzn-remapped-x-amzn-remapped-connection": "keep-alive", "x-amzn-remapped-x-amzn-remapped-content-length": "480"]
+Body:
+{
+  "status" : "PENDING",
+  "id" : "1b028bd1-d32b-4497-971c-885d701e7cd9",
+  "source" : "WEBHOOK",
+  "urls" : {
+    "status" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9",
+    "redirect" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab",
+    "complete" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab"
+  }
+}
+
+
+
+🐛 [DEBUG] @ 2022-02-10T18:25:45
+🐛 NETWORK REQUEST [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Headers: ["Content-Type": "application/json", "Primer-SDK-Client": "IOS_NATIVE", "Primer-Client-Token": "81148d2d-a587-4b3b-b677-05b26dffd9d5", "Primer-SDK-Version": "1.27.1"]
+
+
+
+🐛 [DEBUG] @ 2022-02-10T18:25:45
+🐛 NETWORK RESPONSE [GET] https://api.staging.primer.io/resume-tokens/1b028bd1-d32b-4497-971c-885d701e7cd9/
+🐛 
+Status: 200
+Headers: ["Content-Encoding": "gzip", "x-amzn-remapped-x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:45 GMT", "x-amzn-remapped-x-amzn-requestid": "eac0ce0d-2833-4320-89cf-a5d72c64a72a", "Content-Length": "219", "expect-ct": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"", "x-primer-diagnostics-id": "8759218716882914157", "x-amzn-remapped-x-amzn-remapped-connection": "keep-alive", "x-amzn-remapped-connection": "keep-alive", "cf-cache-status": "DYNAMIC", "x-amzn-remapped-date": "Thu, 10 Feb 2022 16:25:45 GMT", "Content-Type": "application/json", "Server": "cloudflare", "cf-ray": "6db6b1fc6fdb6f68-ATH", "x-content-type-options": "nosniff", "x-amzn-remapped-x-amzn-remapped-content-length": "480", "Date": "Thu, 10 Feb 2022 16:25:45 GMT", "x-amzn-remapped-server": "cloudflare", "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload", "x-amzn-requestid": "5bfafb2d-8df4-432c-8a8f-92d5bddc4bb7", "x-amz-apigw-id": "NVZljH75joEFypw=", "x-primer-version": "6cdc2b63c750d2d88280426ee8fb8e4677de891e"]
+Body:
+{
+  "status" : "PENDING",
+  "id" : "1b028bd1-d32b-4497-971c-885d701e7cd9",
+  "source" : "WEBHOOK",
+  "urls" : {
+    "status" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9",
+    "redirect" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab",
+    "complete" : "https:\/\/api.staging.primer.io\/resume-tokens\/1b028bd1-d32b-4497-971c-885d701e7cd9\/complete?api_key=09f53c39-f07e-4654-80c9-ba83c0aeceab"
+  }
+}

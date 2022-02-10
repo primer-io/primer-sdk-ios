@@ -65,12 +65,8 @@ struct PayPalConfirmBillingAgreementRequest: Encodable {
 
 struct PayPalConfirmBillingAgreementResponse: Codable {
     let billingAgreementId: String
-    let externalPayerInfo: PayPalExternalPayerInfo
+    let externalPayerInfo: ExternalPayerInfo
     let shippingAddress: ShippingAddress
-}
-
-struct PayPalExternalPayerInfo: Codable {
-    let externalPayerId, email, firstName, lastName: String?
 }
 
 /**

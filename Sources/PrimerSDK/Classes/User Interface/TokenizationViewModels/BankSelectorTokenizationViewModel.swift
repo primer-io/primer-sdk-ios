@@ -123,8 +123,6 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     }
     private var tokenizationService: TokenizationServiceProtocol?
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -398,7 +396,7 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
         let bank = self.dataSource[indexPath.row]
         self.tokenize(bank: bank) { (paymentMethod, err) in

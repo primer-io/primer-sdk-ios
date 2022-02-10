@@ -17,13 +17,11 @@ struct PrimerConfiguration: Codable {
         if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
         
-        var paymentMethods = state.primerConfiguration?.paymentMethods
+        let pms = state
+            .primerConfiguration?
+            .paymentMethods
         
-        let blik = PaymentMethodConfig(id: "blik", options: nil, processorConfigId: "test1", type: .blik)
-        let mbWay = PaymentMethodConfig(id: "mbWay", options: nil, processorConfigId: "test2", type: .mbWay)
-        paymentMethods?.append(contentsOf: [blik, mbWay])
-        
-        return paymentMethods
+        return pms
     }
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
@@ -41,7 +39,7 @@ struct PrimerConfiguration: Codable {
         for (index, viewModel) in viewModels.enumerated() {
             viewModel.position = index
         }
-        
+                
         return viewModels
     }
     
@@ -81,8 +79,8 @@ struct PrimerConfiguration: Codable {
                        !networks.isEmpty
                     {
                         for network in networks {
-                            guard let type = network["type"] as? String,
-                            let surcharge = network["surcharge"] as? Int
+                            guard network["type"] is String,
+                            network["surcharge"] is Int
                             else { continue }
                             
                         }

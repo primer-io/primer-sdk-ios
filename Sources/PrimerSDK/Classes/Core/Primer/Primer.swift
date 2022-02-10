@@ -84,7 +84,6 @@ public class Primer {
     internal func setDependencies(settings: PrimerSettings, theme: PrimerTheme) {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         DependencyContainer.register(theme as PrimerThemeProtocol)
-        DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
         DependencyContainer.register(AppState() as AppStateProtocol)
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         DependencyContainer.register(VaultService() as VaultServiceProtocol)
@@ -121,7 +120,6 @@ public class Primer {
 
             if let theme = theme {
                 DependencyContainer.register(theme as PrimerThemeProtocol)
-                DependencyContainer.register(FormType.cardForm(theme: theme) as FormType)
             }
             
             let event = Analytics.Event(
@@ -151,12 +149,6 @@ public class Primer {
                     "formType": formType.rawValue
                 ]))
         Analytics.Service.record(event: event)
-        
-        DispatchQueue.main.async {
-            let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-            let theme = themeProtocol as! PrimerTheme
-//            theme.content.formTopTitles.setTopTitle(text, for: formType)
-        }
     }
 
     /**
@@ -177,12 +169,6 @@ public class Primer {
                     "formType": formType.rawValue
                 ]))
         Analytics.Service.record(event: event)
-        
-        DispatchQueue.main.async {
-            let themeProtocol: PrimerThemeProtocol = DependencyContainer.resolve()
-            let theme = themeProtocol as! PrimerTheme
-//            theme.content.formMainTitles.setMainTitle(text, for: formType)
-        }
     }
 
     /**
@@ -360,9 +346,6 @@ public class Primer {
         case (.klarna, .checkout):
             flow = .checkoutWithKlarna
             
-        case (.mbWay, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .mbWay)
-            
         case (.mollieBankcontact, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .mollieBankcontact)
             
@@ -382,6 +365,9 @@ public class Primer {
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLPayconiq)
             
         case (.paymentCard, .checkout):
+            flow = .completeDirectCheckout
+            
+        case (.xfers, .checkout):
             flow = .completeDirectCheckout
             
         case (.paymentCard, .vault):
@@ -409,7 +395,6 @@ public class Primer {
             (.buckarooIdeal, .vault),
             (.buckarooSofort, .vault),
             (.hoolah, .vault),
-            (.mbWay, .vault),
             (.payNLIdeal, .vault),
             (.adyenSofort, .vault),
             (.adyenTrustly, .vault),
@@ -421,6 +406,7 @@ public class Primer {
             (.payNLBancontact, .vault),
             (.payNLPayconiq, .vault),
             (.payNLGiropay, .vault),
+            (.xfers, .vault),
             (.other, _):
             let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
