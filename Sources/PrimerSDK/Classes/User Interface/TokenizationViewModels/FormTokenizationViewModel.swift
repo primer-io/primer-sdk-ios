@@ -44,7 +44,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     override lazy var buttonImage: UIImage? = {
         switch config.type {
-        case .blik:
+        case .adyenBlik:
             return UIImage(named: "blik-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
@@ -54,7 +54,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     override lazy var buttonColor: UIColor? = {
         switch config.type {
-        case .blik:
+        case .adyenBlik:
             return .black
         default:
             assert(true, "Shouldn't end up in here")
@@ -174,7 +174,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         super.init(config: config)
         
         switch config.type {
-        case .blik:
+        case .adyenBlik:
             let input1 = Input()
             input1.name = "OTP"
             input1.topPlaceholder = "6 digit code"
@@ -279,7 +279,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         
         DispatchQueue.main.async {
             switch self.config.type {
-            case .blik:
+            case .adyenBlik:
                 let input1 = Input()
                 input1.name = "OTP"
                 input1.topPlaceholder = "6 digit code"
@@ -328,7 +328,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         
         switch config.type {
-        case .blik:
+        case .adyenBlik:
             self.submitButton.showSpinner(true)
             
             firstly {

@@ -38,7 +38,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                                 bundle: Bundle.primerResources,
                                 value: "Pay with card",
                                 comment: "Pay with card - Payment Method Type (Card Not vaulted)")
-        case .blik:
+        case .adyenBlik:
             return nil
             
         default:
@@ -51,7 +51,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .paymentCard:
             return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .blik:
+        case .adyenBlik:
             return UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
@@ -62,7 +62,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonColor: UIColor? = {
         switch config.type {
         case .paymentCard,
-                .blik:
+                .adyenBlik:
             return theme.paymentMethodButton.color(for: .enabled)
         default:
             assert(true, "Shouldn't end up in here")
@@ -74,7 +74,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .paymentCard:
             return theme.paymentMethodButton.text.color
-        case .blik:
+        case .adyenBlik:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -85,7 +85,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonBorderWidth: CGFloat = {
         switch config.type {
         case .paymentCard,
-                .blik:
+                .adyenBlik:
             return theme.paymentMethodButton.border.width
         default:
             assert(true, "Shouldn't end up in here")
@@ -96,7 +96,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override lazy var buttonBorderColor: UIColor? = {
         switch config.type {
         case .paymentCard,
-                .blik:
+                .adyenBlik:
             return theme.paymentMethodButton.border.color(for: .enabled)
         default:
             assert(true, "Shouldn't end up in here")
@@ -108,7 +108,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .paymentCard:
             return theme.paymentMethodButton.iconColor
-        case .blik:
+        case .adyenBlik:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -405,7 +405,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
         
         switch config.type {
-        case .blik:
+        case .adyenBlik:
             DispatchQueue.main.async {
                 
             }

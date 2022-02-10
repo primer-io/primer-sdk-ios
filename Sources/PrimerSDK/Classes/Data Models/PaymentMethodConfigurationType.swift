@@ -5,6 +5,7 @@ import Foundation
 public enum PaymentMethodConfigType: Codable, Equatable {
     
     case adyenAlipay
+    case adyenBlik
     case adyenDotPay
     case adyenGiropay
     case adyenIDeal
@@ -16,7 +17,6 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case apaya
     case applePay
     case atome
-    case blik
     case buckarooBancontact
     case buckarooEps
     case buckarooGiropay
@@ -42,6 +42,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         switch rawValue {
         case "ADYEN_ALIPAY":
             self = .adyenAlipay
+        case "ADYEN_BLIK":
+            self = .adyenBlik
         case "ADYEN_DOTPAY":
             self = .adyenDotPay
         case "ADYEN_GIROPAY":
@@ -64,8 +66,6 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .applePay
         case "ATOME":
             self = .atome
-        case "ADYEN_BLIK":
-            self = .blik
         case "BUCKAROO_BANCONTACT":
             self = .buckarooBancontact
         case "BUCKAROO_EPS":
@@ -111,6 +111,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         switch self {
         case .adyenAlipay:
             return "ADYEN_ALIPAY"
+        case .adyenBlik:
+            return "ADYEN_BLIK"
         case .adyenDotPay:
             return "ADYEN_DOTPAY"
         case .adyenGiropay:
@@ -133,8 +135,6 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "APPLE_PAY"
         case .atome:
             return "ATOME"
-        case .blik:
-            return "ADYEN_BLIK"
         case .buckarooBancontact:
             return "BUCKAROO_BANCONTACT"
         case .buckarooEps:
@@ -179,6 +179,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     var isEnabled: Bool {
         switch self {
         case .adyenAlipay,
+                .adyenBlik,
                 .adyenDotPay,
                 .adyenGiropay,
                 .adyenIDeal,
@@ -189,7 +190,6 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .adyenVipps,
                 .applePay,
                 .atome,
-                .blik,
                 .buckarooBancontact,
                 .buckarooEps,
                 .buckarooGiropay,
@@ -227,6 +227,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     
     private enum CodingKeys: String, CodingKey {
         case adyenAlipay
+        case adyenBlik
         case adyenDotPay
         case adyenGiropay
         case adyenIDeal
@@ -238,7 +239,6 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case apaya
         case applePay
         case atome
-        case blik
         case buckarooBancontact
         case buckarooEps
         case buckarooGiropay
