@@ -195,7 +195,7 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
 }
 
 extension MerchantPaymentMethodsViewController: PrimerCheckoutComponentsDelegate {
-    func onEvent(_ event: PrimerCheckoutComponentsEvent) {
+    func onEvent(_ event: PrimerCheckoutComponents.Event) {
         print("\n\n\n🖖🖖🖖 Event: \(event)\n\n\n")
         DispatchQueue.main.async {
             switch event {

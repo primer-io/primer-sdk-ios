@@ -96,7 +96,7 @@ class MerchantCardFormViewController: UIViewController {
 }
 
 extension MerchantCardFormViewController: PrimerCheckoutComponentsDelegate {
-    func onEvent(_ event: PrimerCheckoutComponentsEvent) {
+    func onEvent(_ event: PrimerCheckoutComponents.Event) {
         print("🖖🖖🖖\nEvent: \(event)\n\n")
         switch event {
         case .tokenizationStarted:
