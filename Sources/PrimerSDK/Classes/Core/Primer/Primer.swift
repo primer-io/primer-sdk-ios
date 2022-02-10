@@ -12,7 +12,7 @@ private let _Primer = Primer()
 public class Primer {
     
     // MARK: - PROPERTIES
-    private var primerWindow: UIWindow?
+    internal var primerWindow: UIWindow?
     public var delegate: PrimerDelegate? // TODO: should this be weak?
     private(set) var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
