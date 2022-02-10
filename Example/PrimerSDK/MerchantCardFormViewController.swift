@@ -143,6 +143,13 @@ extension MerchantCardFormViewController: PrimerCheckoutComponentsDelegate {
                 if let err = err {
                     resumeHandler?.handle(error: err)
                 } else if let res = res {
+                    if let data = try? JSONEncoder().encode(res) {
+                        DispatchQueue.main.async {
+                            let rvc = ResultViewController.instantiate(data: [data])
+                            self.navigationController?.pushViewController(rvc, animated: true)
+                        }
+                    }
+                    
                     guard let requiredAction = res.requiredAction else {
                         resumeHandler?.handleSuccess()
                         return
@@ -171,7 +178,18 @@ extension MerchantCardFormViewController: PrimerCheckoutComponentsDelegate {
             }
 
         case .failure(let err):
+            DispatchQueue.main.async {
+                self.activityIndicator?.stopAnimating()
+                self.activityIndicator?.removeFromSuperview()
+                self.activityIndicator = nil
+
+                if !self.paymentResponsesData.isEmpty {
+                    let rvc = ResultViewController.instantiate(data: self.paymentResponsesData)
+                    self.navigationController?.pushViewController(rvc, animated: true)
+                }
+            }
             print(err)
+            
         case .preparationStarted:
             break
         case .paymentMethodPresented:

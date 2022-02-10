@@ -52,22 +52,6 @@ class MerchantPaymentMethodsViewController: UIViewController {
                     merchantIdentifier: "merchant.dx.team",
                     urlScheme: "merchant://")
                 try! PrimerCheckoutComponents.configure(withClientToken: clientToken, andSetings: settings)
-                
-                
-//                PrimerCheckoutComponents.listAvailablePaymentMethodsTypes(forSession: clientToken) { pms, err in
-//                    DispatchQueue.main.async {
-//                        self.activityIndicator?.stopAnimating()
-//                        self.activityIndicator?.removeFromSuperview()
-//                        self.activityIndicator = nil
-//                    }
-//
-//                    if let err = err {
-//
-//                    } else if let pms = pms {
-//                        self.availablePaymentMethods = pms
-//                        self.tableView.reloadData()
-//                    }
-//                }
             }
         }
     }
@@ -212,6 +196,7 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
 
 extension MerchantPaymentMethodsViewController: PrimerCheckoutComponentsDelegate {
     func onEvent(_ event: PrimerCheckoutComponentsEvent) {
+        print("\n\n\n🖖🖖🖖 Event: \(event)\n\n\n")
         DispatchQueue.main.async {
             switch event {
             case .preparationStarted:
@@ -229,9 +214,28 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutComponentsDelegate
             case .tokenizationStarted:
                 break
             case .tokenizationSucceeded(let paymentMethodToken, let resumeHandler):
-                self.activityIndicator?.stopAnimating()
-                self.activityIndicator?.removeFromSuperview()
-                self.activityIndicator = nil
+                let networking = Networking()
+                networking.createPayment(with: paymentMethodToken) { (res, err) in
+                    DispatchQueue.main.async {
+                        self.activityIndicator?.stopAnimating()
+                        self.activityIndicator?.removeFromSuperview()
+                        self.activityIndicator = nil
+                    }
+
+                    if let err = err {
+                        
+                    } else if let res = res {
+                        if let data = try? JSONEncoder().encode(res) {
+                            DispatchQueue.main.async {
+                                let rvc = ResultViewController.instantiate(data: [data])
+                                self.navigationController?.pushViewController(rvc, animated: true)
+                            }
+                        }
+
+                    } else {
+                        assert(true)
+                    }
+                }
                 
             case .failure(let err):
                 self.activityIndicator?.stopAnimating()
