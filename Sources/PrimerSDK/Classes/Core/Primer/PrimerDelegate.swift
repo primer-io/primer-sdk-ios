@@ -117,7 +117,7 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func onEvent(_ event: PrimerCheckoutComponentsEvent) {
+    static func onEvent(_ event: PrimerCheckoutComponents.Event) {
         switch event {
         case .clientSessionSetupSuccessfully,
                 .preparationStarted,

@@ -91,7 +91,7 @@ public class PrimerCheckoutComponents {
         return paymentMethodConfigurations.compactMap({ $0.type })
     }
     
-    public static func listInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType]? {
+    public static func listRequiredInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType]? {
         switch paymentMethodType {
         case .adyenAlipay:
             return []

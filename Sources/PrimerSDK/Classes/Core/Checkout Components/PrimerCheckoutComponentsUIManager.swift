@@ -88,7 +88,7 @@ extension PrimerCheckoutComponents {
         
         public override init(paymentMethodType: PaymentMethodConfigType) throws {
             try super.init(paymentMethodType: paymentMethodType)
-            self.requiredInputElementTypes = PrimerCheckoutComponents.listInputElementTypes(for: paymentMethodType) ?? []
+            self.requiredInputElementTypes = PrimerCheckoutComponents.listRequiredInputElementTypes(for: paymentMethodType) ?? []
         }
         
         public override func startTokenization(withData data: PrimerCheckoutComponentsInputData? = nil) {
@@ -103,7 +103,7 @@ extension PrimerCheckoutComponents {
             PrimerCheckoutComponents.delegate?.onEvent(.preparationStarted)
 
             firstly {
-                self.validateUI()
+                self.validateInputData()
             }
             .then { () -> Promise<PaymentMethodTokenizationRequest> in
                 return self.buildRequestBody()
@@ -119,7 +119,7 @@ extension PrimerCheckoutComponents {
             }
         }
         
-        internal func validateUI() -> Promise<Void> {
+        internal func validateInputData() -> Promise<Void> {
             return Promise { seal in
                 for inputElementType in self.requiredInputElementTypes {
                     if self.inputElements.filter({ $0.type == inputElementType }).isEmpty {

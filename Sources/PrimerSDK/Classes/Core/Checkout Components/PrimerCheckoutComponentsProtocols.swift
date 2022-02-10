@@ -147,25 +147,20 @@ public protocol PrimerInputElementDelegate {
     @objc optional func inputElementDidBlur(_ sender: PrimerInputElement)
     @objc optional func inputElementValueDidChange(_ sender: PrimerInputElement)
     @objc optional func inputElementValueIsValid(_ sender: PrimerInputElement, isValid: Bool)
-    
     @objc optional func inputElementDidDetectType(_ sender: PrimerInputElement, type: Any?)
 }
 
-public protocol PrimerPaymentMethodViewControllerProtocol where Self: UIViewController {
-    var paymentMethodType: PaymentMethodConfigType! { get set }
-    var inputElements: [PrimerInputElement] { get set }
-    var paymentButton: UIButton! { get set }
-}
-
 public protocol PrimerCheckoutComponentsDelegate {
-    func onEvent(_ event: PrimerCheckoutComponentsEvent)
+    func onEvent(_ event: PrimerCheckoutComponents.Event)
 }
 
-public enum PrimerCheckoutComponentsEvent {
-    case clientSessionSetupSuccessfully
-    case preparationStarted
-    case paymentMethodPresented
-    case tokenizationStarted
-    case tokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?)
-    case failure(error: Error)
+extension PrimerCheckoutComponents {
+    public enum Event {
+        case clientSessionSetupSuccessfully
+        case preparationStarted
+        case paymentMethodPresented
+        case tokenizationStarted
+        case tokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?)
+        case failure(error: Error)
+    }
 }
