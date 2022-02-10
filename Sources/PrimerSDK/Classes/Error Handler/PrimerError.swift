@@ -251,6 +251,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case missingPrimerDelegate(userInfo: [String: String]?)
     case missingPrimerCheckoutComponentsDelegate(userInfo: [String: String]?)
     case misconfiguredPaymentMethods(userInfo: [String: String]?)
+    case missingPrimerInputElement(inputElementType: PrimerInputElementType, userInfo: [String: String]?)
     case cancelled(paymentMethodType: PaymentMethodConfigType, userInfo: [String: String]?)
     case failedToCreateSession(error: Error?, userInfo: [String: String]?)
     case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?)
@@ -284,6 +285,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "missing-primer-checkout-components-delegate"
         case .misconfiguredPaymentMethods:
             return "misconfigured-payment-methods"
+        case .missingPrimerInputElement:
+            return "missing-primer-input-element"
         case .cancelled:
             return "payment-cancelled"
         case .failedToCreateSession:
@@ -341,6 +344,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Primer delegate has not been set"
         case .missingPrimerCheckoutComponentsDelegate:
             return "[\(errorId)] Primer Checkout Components delegate has not been set"
+        case .missingPrimerInputElement(let inputElementType, _):
+            return "[\(errorId)] Missing primer input element for \(inputElementType)"
         case .misconfiguredPaymentMethods:
             return "[\(errorId)] Payment methods haven't been set up correctly"
         case .cancelled(let paymentMethodType, _):
@@ -391,6 +396,7 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .missingPrimerConfiguration(let userInfo),
                 .missingPrimerDelegate(let userInfo),
                 .missingPrimerCheckoutComponentsDelegate(let userInfo),
+                .missingPrimerInputElement(_, let userInfo),
                 .misconfiguredPaymentMethods(let userInfo),
                 .cancelled(_, let userInfo),
                 .failedToCreateSession(_, let userInfo),
@@ -432,6 +438,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self on the view controller you wish to present Primer's SDK."
         case .missingPrimerCheckoutComponentsDelegate:
             return "Primer Checkout Components' delegate has not been set. Ensure that you have added PrimerCheckoutComponents.delegate = self on the view controller you wish to implement the components."
+        case .missingPrimerInputElement(let inputElementtype, _):
+            return "A PrimerInputElement for \(inputElementtype) has to be provided."
         case .misconfiguredPaymentMethods:
             return "Payment Methods are not configured correctly. Ensure that you have configured them in the Connection, and/or that they are set up for the specified conditions on your dashboard https://dashboard.primer.io/"
         case .cancelled:

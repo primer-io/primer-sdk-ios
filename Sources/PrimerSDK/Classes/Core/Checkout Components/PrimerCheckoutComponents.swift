@@ -37,7 +37,13 @@ public class PrimerCheckoutComponents {
             primerConfigurationService.fetchConfig()
         }
         .done {
-            PrimerCheckoutComponents.delegate?.onEvent(.clientSessionSetupSuccessfully)
+            if (PrimerConfiguration.paymentMethodConfigs ?? []).isEmpty {
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
+            } else {
+                PrimerCheckoutComponents.delegate?.onEvent(.clientSessionSetupSuccessfully)
+            }
         }
         .catch { err in
             PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
@@ -63,7 +69,6 @@ public class PrimerCheckoutComponents {
         
         guard let decodedClientToken = clientToken.jwtTokenPayload else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"])
-            ErrorHandler.handle(error: err)
             throw err
         }
         
@@ -73,22 +78,26 @@ public class PrimerCheckoutComponents {
             throw error
         }
         
-        if appState.primerConfiguration == nil {
+        guard let primerConfiguration = appState.primerConfiguration else {
             let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
+            throw err
+        }
+        
+        guard let paymentMethods = primerConfiguration.paymentMethods, !paymentMethods.isEmpty else {
+            let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             throw err
         }
     }
     
     public static func listAvailablePaymentMethodsTypes() -> [PaymentMethodConfigType]? {
-        guard let paymentMethodConfigurations = PrimerConfiguration.paymentMethodConfigs else {
-            let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
+        do {
+            try PrimerCheckoutComponents.validateSession()
+        } catch {
+            PrimerCheckoutComponents.delegate?.onEvent(.failure(error: error))
             return nil
         }
         
-        return paymentMethodConfigurations.compactMap({ $0.type })
+        return PrimerConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
     }
     
     public static func listRequiredInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType]? {
@@ -148,22 +157,18 @@ public class PrimerCheckoutComponents {
         case .payNLPayconiq:
             return []
         case .paymentCard:
+            do {
+                try PrimerCheckoutComponents.validateSession()
+            } catch {
+                PrimerCheckoutComponents.delegate?.onEvent(.failure(error: error))
+                return nil
+            }
+            
             let appState: AppStateProtocol = DependencyContainer.resolve()
-            
-            guard let primerConfiguration = appState.primerConfiguration else {
-                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
-                return nil
-            }
-            
-            if (PrimerConfiguration.paymentMethodConfigs ?? []).isEmpty {
-                return nil
-            }
-            
+
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
             
-            if let checkoutModule = primerConfiguration.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
+            if let checkoutModule = appState.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
                let options = checkoutModule.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions {
                 if options.cardHolderName == true {
                     requiredFields.append(.cardholderName)
