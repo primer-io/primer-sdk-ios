@@ -1,5 +1,5 @@
 //
-//  PRTextField.swift
+//  PrimerCheckoutComponents.swift
 //  PrimerSDK
 //
 //  Created by Evangelos on 28/1/22.
@@ -181,14 +181,9 @@ public class PrimerCheckoutComponents {
     }
     
     public static func makeButton(for paymentMethodType: PaymentMethodConfigType) -> UIButton? {
-        switch paymentMethodType {
-        case .applePay:
-            guard let tokenizationViewModel = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type == .applePay }).first?.tokenizationViewModel else { return nil }
-            return tokenizationViewModel.paymentMethodButton
-            
-        default:
-            return nil
-        }
+        guard let paymentMethodConfigs = PrimerConfiguration.paymentMethodConfigs else { return nil }
+        guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
+        return paymentMethodConfig.tokenizationViewModel?.paymentMethodButton
     }
     
     public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType) -> UIImage? {
