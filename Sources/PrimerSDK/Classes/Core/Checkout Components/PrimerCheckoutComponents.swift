@@ -14,6 +14,36 @@ public class PrimerCheckoutComponents {
     public static var delegate: PrimerCheckoutComponentsDelegate?
     private(set) public static var clientToken: String?
     
+    public static func configure(withClientToken clientToken: String, andSetings settings: PrimerSettings? = nil) throws {
+        guard PrimerCheckoutComponents.delegate != nil else {
+            let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+        
+        do {
+            try ClientTokenService.storeClientToken(clientToken)
+            PrimerCheckoutComponents.clientToken = clientToken
+        } catch {
+            PrimerCheckoutComponents.delegate?.onEvent(.failure(error: error))
+        }
+        
+        if let settings = settings {
+            DependencyContainer.register(settings as PrimerSettingsProtocol)
+        }
+        
+        let primerConfigurationService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+        firstly {
+            primerConfigurationService.fetchConfig()
+        }
+        .done {
+            PrimerCheckoutComponents.delegate?.onEvent(.clientSessionSetupSuccessfully)
+        }
+        .catch { err in
+            PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
+        }
+    }
+    
     internal static func validateSession() throws {
         let appState: AppStateProtocol = DependencyContainer.resolve()
         
@@ -47,36 +77,6 @@ public class PrimerCheckoutComponents {
             let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             throw err
-        }
-    }
-    
-    public static func configure(withClientToken clientToken: String, andSetings settings: PrimerSettings? = nil) throws {
-        guard PrimerCheckoutComponents.delegate != nil else {
-            let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-        
-        do {
-            try ClientTokenService.storeClientToken(clientToken)
-            PrimerCheckoutComponents.clientToken = clientToken
-        } catch {
-            PrimerCheckoutComponents.delegate?.onEvent(.failure(error: error))
-        }
-        
-        if let settings = settings {
-            DependencyContainer.register(settings as PrimerSettingsProtocol)
-        }
-        
-        let primerConfigurationService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-        firstly {
-            primerConfigurationService.fetchConfig()
-        }
-        .done {
-            PrimerCheckoutComponents.delegate?.onEvent(.clientSessionSetupSuccessfully)
-        }
-        .catch { err in
-            PrimerCheckoutComponents.delegate?.onEvent(.failure(error: err))
         }
     }
     
