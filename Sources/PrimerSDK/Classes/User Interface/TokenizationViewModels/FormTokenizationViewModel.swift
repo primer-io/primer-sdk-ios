@@ -177,10 +177,25 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         case .adyenBlik:
             let input1 = Input()
             input1.name = "OTP"
-            input1.topPlaceholder = "6 digit code"
-            input1.textFieldPlaceholder = "Enter your one time password"
+            input1.topPlaceholder = NSLocalizedString(
+                "input_hint_form_blik_otp",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "6 digit code",
+                comment: "6 digit code - Text field top placeholder")
+            input1.textFieldPlaceholder = NSLocalizedString(
+                "payment_method_blik_loading_placeholder",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Enter your one time password",
+                comment: "Enter your one time password - Text field placeholder")
             input1.keyboardType = .numberPad
-            input1.descriptor = "Get the code from your banking app."
+            input1.descriptor = NSLocalizedString(
+                "input_description_otp",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Get the code from your banking app.",
+                comment: "Get the code from your banking app - Blik descriptor")
             input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
             input1.maxCharactersAllowed = 6
             input1.isValid = { text in
@@ -280,18 +295,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         DispatchQueue.main.async {
             switch self.config.type {
             case .adyenBlik:
-                let input1 = Input()
-                input1.name = "OTP"
-                input1.topPlaceholder = "6 digit code"
-                input1.textFieldPlaceholder = "Enter your one time password"
-                input1.keyboardType = .numberPad
-                input1.descriptor = "Get the code from your banking app."
-                input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
-                input1.maxCharactersAllowed = 6
-                input1.isValid = { text in
-                    return text.isNumeric && text.count >= 6
-                }
-                
+                let input = self.inputs.first!
                 let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil), formPaymentMethodTokenizationViewModel: self)
                 Primer.shared.primerRootVC?.show(viewController: pcfvc)
                 
