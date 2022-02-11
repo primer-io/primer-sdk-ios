@@ -73,8 +73,8 @@ struct PaymentInstrument: Codable {
 
 internal struct BankSelectorSessionInfo: Codable {
     var issuer: String?
-    let locale: String = "en_US"
-    let platform: String = "IOS"
+    var locale: String = "en_US"
+    var platform: String = "IOS"
 }
 
 public enum TokenType: String, Codable {

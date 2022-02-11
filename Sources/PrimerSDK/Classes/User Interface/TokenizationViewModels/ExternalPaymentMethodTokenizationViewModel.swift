@@ -13,7 +13,7 @@ import UIKit
 
 class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
-    override lazy var title: String = {
+    private lazy var _title: String = {
         switch config.type {
         case .adyenAlipay:
             return "Adyen Ali Pay"
@@ -60,8 +60,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return ""
         }
     }()
+    override var title: String {
+        get { return _title }
+        set { _title = newValue }
+    }
     
-    override lazy var buttonTitle: String? = {
+    private lazy var _buttonTitle: String? = {
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
@@ -89,8 +93,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonTitle: String? {
+        get { return _buttonTitle }
+        set { _buttonTitle = newValue }
+    }
     
-    override lazy var buttonImage: UIImage? = {
+    private lazy var _buttonImage: UIImage? = {
         switch config.type {
         case .adyenAlipay:
             return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
@@ -131,8 +139,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonImage: UIImage? {
+        get { return _buttonImage }
+        set { _buttonImage = newValue }
+    }
     
-    override lazy var buttonColor: UIColor? = {
+    private lazy var _buttonColor: UIColor? = {
         switch config.type {
         case .adyenAlipay:
             return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
@@ -173,8 +185,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonColor: UIColor? {
+        get { return _buttonColor }
+        set { _buttonColor = newValue }
+    }
     
-    override lazy var buttonTitleColor: UIColor? = {
+    private lazy var _buttonTitleColor: UIColor? = {
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
@@ -201,8 +217,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonTitleColor: UIColor? {
+        get { return _buttonTitleColor }
+        set { _buttonTitleColor = newValue }
+    }
     
-    override lazy var buttonBorderWidth: CGFloat = {
+    private lazy var _buttonBorderWidth: CGFloat = {
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
@@ -230,8 +250,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return 0.0
         }
     }()
+    override var buttonBorderWidth: CGFloat {
+        get { return _buttonBorderWidth }
+        set { _buttonBorderWidth = newValue }
+    }
     
-    override lazy var buttonBorderColor: UIColor? = {
+    private lazy var _buttonBorderColor: UIColor? = {
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
@@ -259,8 +283,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonBorderColor: UIColor? {
+        get { return _buttonBorderColor }
+        set { _buttonBorderColor = newValue }
+    }
     
-    override lazy var buttonTintColor: UIColor? = {
+    private lazy var _buttonTintColor: UIColor? = {
         switch config.type {
         case .adyenAlipay,
                 .atome,
@@ -288,14 +316,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
-    
-    override lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
-    }()
-    
-    override lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
-    }()
+    override var buttonTintColor: UIColor? {
+        get { return _buttonTintColor }
+        set { _buttonTintColor = newValue }
+    }
     
     var willPresentExternalView: (() -> Void)?
     var didPresentExternalView: (() -> Void)?

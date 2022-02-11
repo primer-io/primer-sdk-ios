@@ -12,7 +12,7 @@ import UIKit
 
 class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     
-    override lazy var title: String = {
+    private lazy var _title: String = {
         switch config.type {
         case .adyenDotPay:
             return "Dot Pay"
@@ -23,19 +23,12 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             return ""
         }
     }()
+    override var title: String {
+        get { return _title }
+        set { _title = newValue }
+    }
     
-    override lazy var buttonTitle: String? = {
-        switch config.type {
-        case .adyenDotPay,
-                .adyenIDeal:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonImage: UIImage? = {
+    private lazy var _buttonImage: UIImage? = {
         switch config.type {
         case .adyenDotPay:
             return UIImage(named: "dot-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
@@ -46,8 +39,12 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             return nil
         }
     }()
+    override var buttonImage: UIImage? {
+        get { return _buttonImage }
+        set { _buttonImage = newValue }
+    }
     
-    override lazy var buttonColor: UIColor? = {
+    private lazy var _buttonColor: UIColor? = {
         switch config.type {
         case .adyenDotPay:
             return .white
@@ -58,20 +55,12 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             return nil
         }
     }()
+    override var buttonColor: UIColor? {
+        get { return _buttonColor }
+        set { _buttonColor = newValue }
+    }
     
-    override lazy var buttonTitleColor: UIColor? = {
-        switch config.type {
-        case .adyenDotPay:
-            return nil
-        case .adyenIDeal:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonBorderWidth: CGFloat = {
+    private lazy var _buttonBorderWidth: CGFloat = {
         switch config.type {
         case .adyenDotPay:
             return 1.0
@@ -82,8 +71,12 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             return 0.0
         }
     }()
+    override var buttonBorderWidth: CGFloat {
+        get { return _buttonBorderWidth }
+        set { _buttonBorderWidth = newValue }
+    }
     
-    override lazy var buttonBorderColor: UIColor? = {
+    private lazy var _buttonBorderColor: UIColor? = {
         switch config.type {
         case .adyenDotPay:
             return .black
@@ -94,8 +87,12 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             return nil
         }
     }()
+    override var buttonBorderColor: UIColor? {
+        get { return _buttonBorderColor }
+        set { _buttonBorderColor = newValue }
+    }
     
-    override lazy var buttonTintColor: UIColor? = {
+    private lazy var _buttonTintColor: UIColor? = {
         switch config.type {
         case .adyenDotPay:
             return nil
@@ -106,14 +103,10 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             return nil
         }
     }()
-    
-    override lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
-    }()
-    
-    override lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
-    }()
+    override var buttonTintColor: UIColor? {
+        get { return _buttonTintColor }
+        set { _buttonTintColor = newValue }
+    }
     
     internal private(set) var banks: [Bank] = []
     internal private(set) var dataSource: [Bank] = [] {

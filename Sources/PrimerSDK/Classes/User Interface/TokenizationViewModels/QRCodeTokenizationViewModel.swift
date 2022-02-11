@@ -12,7 +12,7 @@ import UIKit
 
 class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     
-    override lazy var title: String = {
+    private lazy var _title: String = {
         switch config.type {
         case .xfers:
             return "XFers"
@@ -21,28 +21,12 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             return ""
         }
     }()
+    override var title: String  {
+        get { return _title }
+        set { _title = newValue }
+    }
     
-    override lazy var buttonTitle: String? = {
-        switch config.type {
-        case .xfers:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonImage: UIImage? = {
-        switch config.type {
-        case .xfers:
-            return originalImage?.withRenderingMode(.alwaysTemplate)
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    lazy var originalImage: UIImage? = {
+    private lazy var _originalImage: UIImage? = {
         switch config.type {
         case .xfers:
             return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)
@@ -51,8 +35,26 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             return nil
         }
     }()
+    override var originalImage: UIImage? {
+        get { return _originalImage }
+        set { _originalImage = newValue }
+    }
     
-    override lazy var buttonColor: UIColor? = {
+    private lazy var _buttonImage: UIImage? = {
+        switch config.type {
+        case .xfers:
+            return originalImage?.withRenderingMode(.alwaysTemplate)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    override var buttonImage: UIImage? {
+        get { return _buttonImage }
+        set { _buttonImage = newValue }
+    }
+    
+    private lazy var _buttonColor: UIColor? = {
         switch config.type {
         case .xfers:
             return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
@@ -61,54 +63,10 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             return nil
         }
     }()
-    
-    override lazy var buttonTitleColor: UIColor? = {
-        switch config.type {
-        case .xfers:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonBorderWidth: CGFloat = {
-        switch config.type {
-        case .xfers:
-            return 0.0
-        default:
-            assert(true, "Shouldn't end up in here")
-            return 0.0
-        }
-    }()
-    
-    override lazy var buttonBorderColor: UIColor? = {
-        switch config.type {
-        case .xfers:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonTintColor: UIColor? = {
-        switch config.type {
-        case .xfers:
-            return .white
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
-    }()
-    
-    override lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
-    }()
+    override var buttonColor: UIColor? {
+        get { return _buttonColor }
+        set { _buttonColor = newValue }
+    }
     
     private var tokenizationService: TokenizationServiceProtocol?
     internal var qrCode: String?
