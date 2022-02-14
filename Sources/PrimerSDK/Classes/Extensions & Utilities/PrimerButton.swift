@@ -13,59 +13,187 @@ import UIKit
 /// Reserve the name for all primer buttons. If you need to extend UIButton, extend and use this one instead, so we
 /// don't expose unnecessary functionality.
 ///
-internal class PrimerButton: UIButton {
-    var id: String?
-}
-
-internal class PrimerOldButton: PrimerButton {
+@IBDesignable public class PrimerButton: UIButton, Identifiable {
     
-    var spinner: UIActivityIndicatorView!
-    var titleCopy: String?
-
-    func toggleValidity(_ isValid: Bool, validColor: UIColor, defaultColor: UIColor) {
-        self.backgroundColor = isValid ? validColor : defaultColor
-        self.isEnabled = isValid
-    }
-    
-    func showSpinner(_ flag: Bool, color: UIColor = .white) {
-        DispatchQueue.main.async {
-            if self.titleCopy == nil {
-                self.titleCopy = self.titleLabel?.text
-            }
-            
-            self.isUserInteractionEnabled = !flag
-            
-            if self.spinner == nil {
-                self.spinner = UIActivityIndicatorView()
-                self.addSubview(self.spinner)
-                self.spinner.translatesAutoresizingMaskIntoConstraints = false
-                self.spinner.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-                self.spinner.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-                self.spinner.widthAnchor.constraint(equalToConstant: 20).isActive = true
-                self.spinner.heightAnchor.constraint(equalToConstant: 20).isActive = true
-            }
-            
-            self.spinner.color = color
-            
-            flag ? self.spinner.startAnimating() : self.spinner.stopAnimating()
-            flag ? self.setTitle(nil, for: .normal) : self.setTitle(self.titleCopy, for: .normal)
-            self.spinner.isHidden = !flag
+    //MARK: @IBInspectable Properties
+        
+    @IBInspectable var cornerRadius: CGFloat = 0 {
+        didSet {
+            let maxRadius = min(frame.width, frame.height) / 2
+            layer.cornerRadius = cornerRadius > maxRadius ? maxRadius : cornerRadius
+            layer.masksToBounds = cornerRadius > 0
         }
     }
+    
+    @IBInspectable var borderWidth: CGFloat = 0 {
+        didSet {
+            layer.borderWidth = borderWidth
+        }
+    }
+    
+    @IBInspectable var borderColor: UIColor? {
+        didSet {
+            layer.borderColor = borderColor?.cgColor
+        }
+    }
+    
+    @IBInspectable var backgroundNormalStateColor: UIColor? {
+        didSet {
+            backgroundColor = backgroundNormalStateColor
+        }
+    }
+    
+    @IBInspectable var backgroundHighlightedStateColor: UIColor?
+    
+    //MARK: Properties
 
-    func pin(
-        to view: UIView,
-        leading: CGFloat = 0,
-        top: CGFloat = 0,
-        trailing: CGFloat = 0,
-        bottom: CGFloat = 0
-    ) {
-        topAnchor.constraint(equalTo: view.topAnchor, constant: top).isActive = true
-        bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: bottom).isActive = true
-        leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: leading).isActive = true
-        trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: trailing).isActive = true
+    var id: String?
+
+    private var theme: ButtonTheme?
+    private let defaultPrimerButtonTheme = PrimerTheme().mainButton
+    
+    var imageLogo: UIImage? {
+        didSet {
+            if let image = imageLogo {
+                setImage(image, for: .normal)
+            }
+        }
+    }
+    
+    var title: String? {
+        didSet {
+            setTitle(title, for: .normal)
+        }
+    }
+    
+    var onPressed: Action?
+    
+    override open var isHighlighted: Bool {
+        didSet {
+            if !oldValue {
+                backgroundNormalStateColor = backgroundColor ?? .clear
+            }
+            if let backgroundHighlightedColor = backgroundHighlightedStateColor {
+                backgroundColor = isHighlighted ? backgroundHighlightedColor : backgroundHighlightedStateColor
+            }
+        }
+    }
+    
+    //MARK: - Button States for Activity Indicator
+    
+    struct ActivityIndicatorButtonState {
+        var state: UIControl.State
+        var title: String?
+        var image: UIImage?
     }
 
+    private(set) var activityIndicatorButtonStates: [ActivityIndicatorButtonState] = []
+    
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = theme?.colorStates.color(for: .selected)
+        self.addSubview(activityIndicator)
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        let xCenterConstraint = NSLayoutConstraint(item: self, attribute: .centerX, relatedBy: .equal, toItem: activityIndicator, attribute: .centerX, multiplier: 1, constant: 0)
+        let yCenterConstraint = NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: activityIndicator, attribute: .centerY, multiplier: 1, constant: 0)
+        self.addConstraints([xCenterConstraint, yCenterConstraint])
+        return activityIndicator
+    }()
+
+    
+    //MARK: - Initializers
+    
+    convenience init(theme: ButtonTheme? = nil,
+                     title: String? = nil,
+                     imageLogo: UIImage? = nil) {
+        self.init()
+        self.setupView(theme: theme, title: title, imageLogo: imageLogo)
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        addTarget(self, action: #selector(onButtonPressed), for: .touchUpInside)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        addTarget(self, action: #selector(onButtonPressed), for: .touchUpInside)
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        setupStyleBasedOnCustomThemeIfNeeded()
+    }
+}
+
+//MARK: - Setup
+
+extension PrimerButton {
+    
+    private func setupView(theme: ButtonTheme?,
+                           title: String?,
+                           imageLogo: UIImage?) {
+        self.theme = theme
+        self.title = title ?? Strings.PrimerButton.title
+        self.imageLogo = imageLogo
+    }
+    
+    private func setupStyleBasedOnCustomThemeIfNeeded() {
+        
+        if self.theme == nil {
+            self.theme = defaultPrimerButtonTheme
+        }
+
+        setTitleColor(theme?.color(for: .enabled), for: .normal)
+        backgroundNormalStateColor = theme?.colorStates.color(for: .enabled)
+        backgroundHighlightedStateColor = theme?.colorStates.color(for: .selected)
+        borderColor = theme?.border.color(for: .enabled)
+        if let themeCornerRadius = theme?.cornerRadius {
+            cornerRadius = themeCornerRadius
+        }
+        if let themeBorderWidth = theme?.border.width {
+            borderWidth = themeBorderWidth
+        }
+    }
+}
+
+//MARK: - Action
+
+extension PrimerButton {
+    
+    @objc
+    private func onButtonPressed() {
+        onPressed?()
+    }
+    
+}
+
+// MARK: Activity Indicator
+
+extension PrimerButton {
+    
+    func startAnimating() {
+        activityIndicator.startAnimating()
+        var buttonStates: [ActivityIndicatorButtonState] = []
+        for state in [UIControl.State.disabled] {
+            let buttonState = ActivityIndicatorButtonState(state: state, title: title(for: state), image: image(for: state))
+            buttonStates.append(buttonState)
+            setTitle("", for: state)
+            setImage(UIImage(), for: state)
+        }
+        self.activityIndicatorButtonStates = buttonStates
+        isEnabled = false
+    }
+
+    func stopAnimating() {
+        activityIndicator.stopAnimating()
+        for buttonState in activityIndicatorButtonStates {
+            setTitle(buttonState.title, for: buttonState.state)
+            setImage(buttonState.image, for: buttonState.state)
+        }
+        isEnabled = true
+    }
 }
 
 #endif

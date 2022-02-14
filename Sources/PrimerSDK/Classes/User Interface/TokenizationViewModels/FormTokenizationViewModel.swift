@@ -279,7 +279,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return postalCodeContainerView
      }()
     
-    lazy var submitButton: PrimerOldButton = {
+    lazy var submitButton: PrimerButton = {
         var buttonTitle: String = ""
         if flow == .checkout {
             let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
@@ -296,7 +296,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                                             comment: "Add card - Card Form (Vault title text)")
         }
         
-        let submitButton = PrimerOldButton()
+        let submitButton = PrimerButton()
         submitButton.translatesAutoresizingMaskIntoConstraints = false
         submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         submitButton.isAccessibilityElement = true
@@ -475,7 +475,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         Analytics.Service.record(event: viewEvent)
         
         isTokenizing = true
-        submitButton.showSpinner(true)
+        submitButton.startAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
@@ -494,7 +494,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             onClientSessionActionCompletion = { err in
                 if let err = err {
                     DispatchQueue.main.async {
-                        self.submitButton.showSpinner(false)
+                        self.submitButton.stopAnimating()
                         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
                         PrimerDelegateProxy.onResumeError(err)
                     }
@@ -569,7 +569,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
-        submitButton.showSpinner(false)
+        submitButton.stopAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         
         DispatchQueue.main.async {
@@ -581,7 +581,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
-        submitButton.showSpinner(isLoading)
+        isLoading ? submitButton.startAnimating() : submitButton.stopAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = !isLoading
     }
     
@@ -717,7 +717,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             }
             
             self.handleFailedTokenizationFlow(error: error)
-            self.submitButton.showSpinner(false)
+            self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
         
@@ -824,7 +824,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
     
     override func handleSuccess() {
         DispatchQueue.main.async {
-            self.submitButton.showSpinner(false)
+            self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
         completion?(paymentMethod, nil)
