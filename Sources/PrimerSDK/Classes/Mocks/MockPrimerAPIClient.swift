@@ -50,12 +50,13 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (Result<Void, Error>) -> Void) {
         isCalled = true
         guard response != nil else { return }
-
+        
         do {
             completion(.success(()))
-        } catch {
-            completion(.failure(error))
         }
+//        catch {
+//            completion(.failure(error))
+//        }
     }
 
     func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (Result<PrimerConfiguration, Error>) -> Void) {
