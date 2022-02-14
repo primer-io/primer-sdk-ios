@@ -55,13 +55,13 @@ internal class PrimerRootViewController: PrimerViewController {
                object: nil)
         
         if #available(iOS 13.0, *) {
-            let window = UIApplication.shared.windows[0]
+            let window = Primer.shared.primerWindow ?? UIApplication.shared.windows[0]
             topPadding = window.safeAreaInsets.top
             bottomPadding = window.safeAreaInsets.bottom
         } else if #available(iOS 11.0, *) {
-            let window = UIApplication.shared.keyWindow
-            topPadding = window?.safeAreaInsets.top ?? 0
-            bottomPadding = window?.safeAreaInsets.bottom ?? 0
+            let window = Primer.shared.primerWindow ?? UIApplication.shared.windows[0]
+            topPadding = window.safeAreaInsets.top ?? 0
+            bottomPadding = window.safeAreaInsets.bottom ?? 0
         } else {
             topPadding = 20.0
             bottomPadding = 0.0
