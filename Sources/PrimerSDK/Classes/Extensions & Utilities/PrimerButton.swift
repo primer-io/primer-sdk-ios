@@ -17,7 +17,7 @@ import UIKit
     
     //MARK: @IBInspectable Properties
         
-    @IBInspectable var cornerRadius: CGFloat = 0 {
+    @IBInspectable public var cornerRadius: CGFloat = 0 {
         didSet {
             let maxRadius = min(frame.width, frame.height) / 2
             layer.cornerRadius = cornerRadius > maxRadius ? maxRadius : cornerRadius
@@ -25,34 +25,34 @@ import UIKit
         }
     }
     
-    @IBInspectable var borderWidth: CGFloat = 0 {
+    @IBInspectable public var borderWidth: CGFloat = 0 {
         didSet {
             layer.borderWidth = borderWidth
         }
     }
     
-    @IBInspectable var borderColor: UIColor? {
+    @IBInspectable public var borderColor: UIColor? {
         didSet {
             layer.borderColor = borderColor?.cgColor
         }
     }
     
-    @IBInspectable var backgroundNormalStateColor: UIColor? {
+    @IBInspectable public var backgroundNormalStateColor: UIColor? {
         didSet {
             backgroundColor = backgroundNormalStateColor
         }
     }
     
-    @IBInspectable var backgroundHighlightedStateColor: UIColor?
+    @IBInspectable public var backgroundHighlightedStateColor: UIColor?
     
     //MARK: Properties
 
-    var id: String?
+    public var id: String?
 
     private var theme: ButtonTheme?
     private let defaultPrimerButtonTheme = PrimerTheme().mainButton
     
-    var imageLogo: UIImage? {
+    internal var imageLogo: UIImage? {
         didSet {
             if let image = imageLogo {
                 setImage(image, for: .normal)
@@ -60,13 +60,13 @@ import UIKit
         }
     }
     
-    var title: String? {
+    internal var title: String? {
         didSet {
             setTitle(title, for: .normal)
         }
     }
     
-    var onPressed: Action?
+    public var onPressed: Action?
     
     override open var isHighlighted: Bool {
         didSet {
@@ -81,7 +81,7 @@ import UIKit
     
     //MARK: - Button States for Activity Indicator
     
-    struct ActivityIndicatorButtonState {
+    internal struct ActivityIndicatorButtonState {
         var state: UIControl.State
         var title: String?
         var image: UIImage?
