@@ -68,6 +68,20 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         get { return _buttonColor }
         set { _buttonColor = newValue }
     }
+    
+    private lazy var _buttonTintColor: UIColor? = {
+        switch config.type {
+        case .applePay:
+            return .white
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    override var buttonTintColor: UIColor? {
+        get { return _buttonTintColor }
+        set { _buttonTintColor = newValue }
+    }
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
