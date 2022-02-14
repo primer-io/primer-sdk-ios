@@ -37,7 +37,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse> {
-        return Promise { [weak self] seal in
+        return Promise { seal in
             do {
                 let value = try JSONDecoder().decode(GetVaultedPaymentMethodsResponse.self, from: response!)
                 seal.fulfill(value)
@@ -49,7 +49,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
     func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (Result<Void, Error>) -> Void) {
         isCalled = true
-        guard let response = response else { return }
+        guard response != nil else { return }
 
         do {
             completion(.success(()))

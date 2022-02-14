@@ -28,7 +28,8 @@ let package = Package(
             dependencies: [],
             path: "Sources/PrimerSDK",
             resources: [
-                .process("Resources")
+                .process("Resources"),
+                .copy("Classes/Third Party/PromiseKit/LICENSE")
             ]
         )
     ],

@@ -158,7 +158,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
         if !isCardholderNameFieldEnabled { return nil }
         let cardholderNameField = PrimerCardholderNameFieldView()
-        cardholderNameField.placeholder = "John Smith"
+        cardholderNameField.placeholder = NSLocalizedString("primer-form-text-field-placeholder-cardholder",
+                                                            tableName: nil,
+                                                            bundle: Bundle.primerResources,
+                                                            value: "e.g. John Doe",
+                                                            comment: "e.g. John Doe - Form Text Field Placeholder (Cardholder name)")
         cardholderNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         cardholderNameField.textColor = theme.input.text.color
         cardholderNameField.delegate = self
@@ -183,7 +187,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     internal lazy var cardNumberContainerView: PrimerCustomFieldView = {
         let cardNumberContainerView = PrimerCustomFieldView()
         cardNumberContainerView.fieldView = cardNumberField
-        cardNumberContainerView.placeholderText = "Card number"
+        cardNumberContainerView.placeholderText = NSLocalizedString("primer-form-text-field-title-card-number",
+                                                                    tableName: nil,
+                                                                    bundle: Bundle.primerResources,
+                                                                    value: "Card number",
+                                                                    comment: "Card number - Form Text Field Title (Card number)")
         cardNumberContainerView.setup()
         cardNumberContainerView.tintColor = theme.input.border.color(for: .selected)
         return cardNumberContainerView
@@ -192,7 +200,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     internal lazy var expiryDateContainerView: PrimerCustomFieldView = {
         let expiryDateContainerView = PrimerCustomFieldView()
         expiryDateContainerView.fieldView = expiryDateField
-        expiryDateContainerView.placeholderText = "Expiry"
+        expiryDateContainerView.placeholderText = NSLocalizedString("primer-form-text-field-title-expiry-date",
+                                                                    tableName: nil,
+                                                                    bundle: Bundle.primerResources,
+                                                                    value: "Expiry date",
+                                                                    comment: "Expiry date - Form Text Field Title (Expiry date)")
         expiryDateContainerView.setup()
         expiryDateContainerView.tintColor = theme.input.border.color(for: .selected)
         return expiryDateContainerView
@@ -201,7 +213,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     internal lazy var cvvContainerView: PrimerCustomFieldView = {
         let cvvContainerView = PrimerCustomFieldView()
         cvvContainerView.fieldView = cvvField
-        cvvContainerView.placeholderText = "CVV/CVC"
+        cvvContainerView.placeholderText = NSLocalizedString("primer-card-form-cvv",
+                                                             tableName: nil,
+                                                             bundle: Bundle.primerResources,
+                                                             value: "CVV",
+                                                             comment: "CVV - Card Form (CVV text field placeholder text)")
         cvvContainerView.setup()
         cvvContainerView.tintColor = theme.input.border.color(for: .selected)
         return cvvContainerView
@@ -210,7 +226,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         if !isCardholderNameFieldEnabled { return nil }
         let cardholderNameContainerView = PrimerCustomFieldView()
         cardholderNameContainerView.fieldView = cardholderNameField
-        cardholderNameContainerView.placeholderText = "Name"
+        cardholderNameContainerView.placeholderText = NSLocalizedString("primer-card-form-name",
+                                                                        tableName: nil,
+                                                                        bundle: Bundle.primerResources,
+                                                                        value: "Name",
+                                                                        comment: "Cardholder name")
         cardholderNameContainerView.setup()
         cardholderNameContainerView.tintColor = theme.input.border.color(for: .selected)
         return cardholderNameContainerView
@@ -461,14 +481,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
                 
                 let billingAddressParams = [
-                    "firstName": currentBillingAddress?.firstName,
-                    "lastName": currentBillingAddress?.lastName,
-                    "addressLine1": currentBillingAddress?.addressLine1,
-                    "addressLine2": currentBillingAddress?.addressLine2,
-                    "city": currentBillingAddress?.city,
+                    "firstName": currentBillingAddress?.firstName as Any,
+                    "lastName": currentBillingAddress?.lastName as Any,
+                    "addressLine1": currentBillingAddress?.addressLine1 as Any,
+                    "addressLine2": currentBillingAddress?.addressLine2 as Any,
+                    "city": currentBillingAddress?.city as Any,
                     "postalCode": postalCodeField.postalCode,
-                    "state": currentBillingAddress?.state,
-                    "countryCode": currentBillingAddress?.countryCode
+                    "state": currentBillingAddress?.state as Any,
+                    "countryCode": currentBillingAddress?.countryCode as Any
                 ] as [String: Any]
                 
                 let billingAddressAction = ClientSession.Action(
@@ -614,14 +634,14 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
             
             let params = [
-                "firstName": currentBillingAddress?.firstName,
-                "lastName": currentBillingAddress?.lastName,
-                "addressLine1": currentBillingAddress?.addressLine1,
-                "addressLine2": currentBillingAddress?.addressLine2,
-                "city": currentBillingAddress?.city,
+                "firstName": currentBillingAddress?.firstName as Any,
+                "lastName": currentBillingAddress?.lastName as Any,
+                "addressLine1": currentBillingAddress?.addressLine1 as Any,
+                "addressLine2": currentBillingAddress?.addressLine2 as Any,
+                "city": currentBillingAddress?.city as Any,
                 "postalCode": fieldView.postalCode,
-                "state": currentBillingAddress?.state,
-                "countryCode": currentBillingAddress?.countryCode
+                "state": currentBillingAddress?.state as Any,
+                "countryCode": currentBillingAddress?.countryCode as Any
             ] as [String: Any]
 
             ClientSession.Action.setPostalCode(resumeHandler: self, withParameters: params)
