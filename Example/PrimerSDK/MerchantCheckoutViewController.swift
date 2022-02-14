@@ -75,8 +75,8 @@ class MerchantCheckoutViewController: UIViewController {
             merchantIdentifier: "merchant.dx.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
-            urlScheme: "primer",
-            urlSchemeIdentifier: "primer",
+            urlScheme: "merchant://",
+            urlSchemeIdentifier: "merchant",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
             directDebitHasNoAmount: false,
@@ -111,8 +111,8 @@ class MerchantCheckoutViewController: UIViewController {
             merchantIdentifier: "merchant.checkout.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
-            urlScheme: "primer",
-            urlSchemeIdentifier: "primer",
+            urlScheme: "merchant://",
+            urlSchemeIdentifier: "merchant",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
             businessDetails: nil,
@@ -128,8 +128,8 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addPayPalButtonTapped(_ sender: Any) {
         vaultPayPalSettings = PrimerSettings(
-            urlScheme: "primer",
-            urlSchemeIdentifier: "primer",
+            urlScheme: "merchant://",
+            urlSchemeIdentifier: "merchant",
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
         )
@@ -470,7 +470,9 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
         requestClientSessionWithActions(actions) { (clientToken, err) in
             if let err = err {
-                resumeHandler?.handle(error: err)
+                print(err)
+                let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong setting the actions..."])
+                resumeHandler?.handle(error: merchantErr)
             } else if let clientToken = clientToken {
                 resumeHandler?.handle(newClientToken: clientToken)
             }
@@ -505,10 +507,14 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
         
         createPayment(with: paymentMethodToken) { (res, err) in
-//            resumeHandler.handle(error: NetworkError.missingParams)
+//            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
+//            resumeHandler.handle(error: merchantErr)
 //            return
+            
             if let err = err {
-                resumeHandler.handle(error: err)
+                print(err)
+                let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
+                resumeHandler.handle(error: merchantErr)
             } else if let res = res {
                 guard let requiredActionDic = res["requiredAction"] as? [String: Any] else {
                     resumeHandler.handleSuccess()
@@ -571,7 +577,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         guard let transactionResponse = transactionResponse,
               let url = URL(string: "\(endpoint)/api/payments/\(transactionResponse.id)/resume")
         else {
-            resumeHandler.handle(error: NetworkError.missingParams)
+            let merchantErr = NSError(domain: "merchant-domain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong parsing the response..."])
+            resumeHandler.handle(error: merchantErr)
             return
         }
         
@@ -589,7 +596,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         do {
             bodyData = try JSONSerialization.data(withJSONObject: bodyDic, options: .fragmentsAllowed)
         } catch {
-            resumeHandler.handle(error: NetworkError.missingParams)
+            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the request..."])
+            resumeHandler.handle(error: merchantErr)
             return
         }
         
@@ -612,7 +620,9 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     resumeHandler.handleSuccess()
 
                 case .failure(let err):
-                    resumeHandler.handle(error: err)
+                    print(err)
+                    let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong resuming the payment..."])
+                    resumeHandler.handle(error: merchantErr)
                 }
             }
     }

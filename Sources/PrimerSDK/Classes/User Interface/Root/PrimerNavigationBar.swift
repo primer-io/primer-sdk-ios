@@ -170,6 +170,8 @@ class PrimerNavigationBar: PrimerView {
             titleLabel!.textAlignment = .center
             titleLabel!.textColor = theme.text.title.color
             titleLabel!.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+            titleLabel!.adjustsFontSizeToFitWidth = true
+            titleLabel!.minimumScaleFactor = 0.65
             centerStackView!.addArrangedSubview(titleLabel!)
         }
         

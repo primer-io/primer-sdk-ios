@@ -279,7 +279,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             }
             .then { resumeToken -> Promise<PaymentMethodToken> in
                 DispatchQueue.main.async {
-                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded()
+                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
                     self.willDismissExternalView?()
                 }
                 return self.passResumeToken(resumeToken)
@@ -339,7 +339,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     }
     
     internal override func startPolling(on url: URL) -> Promise<String> {
-        var p: Promise? = Promise<String> { seal in
+        let p: Promise? = Promise<String> { seal in
             self.didCancel = {
                 let err = PrimerError.cancelled(paymentMethodType: .xfers, userInfo: nil)
                 ErrorHandler.handle(error: err)

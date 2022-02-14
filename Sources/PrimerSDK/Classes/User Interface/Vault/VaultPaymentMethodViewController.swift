@@ -179,6 +179,9 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         rightBarButton = UIButton()
         rightBarButton.setTitle(Content.VaultView.editLabel, for: .normal)
         rightBarButton.setTitleColor(theme.text.title.color, for: .normal)
+        rightBarButton.titleLabel?.numberOfLines = 1
+        rightBarButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        rightBarButton.titleLabel?.minimumScaleFactor = 0.5
         rightBarButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
         view.addSubview(tableView)
         tableView.dataSource = self
@@ -231,7 +234,12 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
             Analytics.Service.record(event: uiEvent)
         }
         
-        let title = isDeleting ? "Cancel" : Content.VaultView.editLabel
+        let cancelText = NSLocalizedString("primer-alert-button-cancel",
+                                           tableName: nil,
+                                           bundle: Bundle.primerResources,
+                                           value: "Cancel",
+                                           comment: "Cancel - Alert button cancel")
+        let title = isDeleting ? cancelText : Content.VaultView.editLabel
         rightBarButton.setTitle(title, for: .normal)
     }
 

@@ -100,7 +100,7 @@ class CardComponentManagerTests: XCTestCase {
         let threeDigitCVV = "123"
         let fourDigitCVV = "1234"
         
-        for (cardNetwork, cardnumbers) in testCardNumbers {
+        for (_, cardnumbers) in testCardNumbers {
             for cardnumber in cardnumbers {
                 let cardNetwork = CardNetwork(cardNumber: cardnumber)
                 let cvvDigits = cardNetwork.validation?.code.length ?? 4
