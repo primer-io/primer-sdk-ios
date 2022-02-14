@@ -45,6 +45,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonTitle: String? {
+        get { return _buttonTitle }
+        set { _buttonTitle = newValue }
+    }
     
     private lazy var _buttonImage: UIImage? = {
         switch config.type {
