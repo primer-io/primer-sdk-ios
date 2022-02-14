@@ -165,7 +165,6 @@ extension Analytics {
                         self.lastSyncAt = Date()
                         
                         let remainingEvents = Analytics.Service.loadEvents()
-                            .filter({ $0.analyticsUrl == analyticsUrlStr })
                             .filter({ $0.eventType != Analytics.Event.EventType.networkCall && $0.eventType != Analytics.Event.EventType.networkConnectivity })
                         if !remainingEvents.isEmpty {
                             log(logLevel: .debug,

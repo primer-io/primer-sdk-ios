@@ -45,7 +45,6 @@ public class Primer {
         DispatchQueue.main.async { [weak self] in
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
-            try! Analytics.Service.deleteEvents()
         }
     }
     
