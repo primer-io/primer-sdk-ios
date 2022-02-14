@@ -206,7 +206,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         
     }
     
-    func sendAnalyticsEvent(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void) {
+    func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void) {
         
     }
     
