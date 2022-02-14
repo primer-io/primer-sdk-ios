@@ -21,31 +21,13 @@ public class PaymentMethodToken: NSObject, Codable {
     public var analyticsId: String?
     public var id: String?
     public var isVaulted: Bool?
+    private var isAlreadyVaulted: Bool?
     public var paymentInstrumentType: PaymentInstrumentType
     public var paymentInstrumentData: PaymentInstrumentData?
     public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
     public var token: String?
     public var tokenType: TokenType?
     public var vaultData: VaultData?
-
-    init(
-        token: String?,
-        analyticsId: String?,
-        tokenType: TokenType?,
-        paymentInstrumentType: PaymentInstrumentType,
-        paymentInstrumentData: PaymentInstrumentData?,
-        vaultData: VaultData?,
-        threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
-    ) {
-        self.token = token
-        self.analyticsId = analyticsId
-        self.tokenType = tokenType
-        self.paymentInstrumentType = paymentInstrumentType
-        self.paymentInstrumentData = paymentInstrumentData
-        self.vaultData = vaultData
-        self.threeDSecureAuthentication = threeDSecureAuthentication
-        super.init()
-    }
 
     public var icon: ImageName {
         switch self.paymentInstrumentType {
@@ -63,13 +45,6 @@ public class PaymentMethodToken: NSObject, Codable {
         default: return .creditCard
         }
     }
-    
-//    public convenience init(token: String, paymentInstrumentType: PaymentInstrumentType, vaultData: VaultData) {
-//        self.init(from: <#Decoder#>)
-//        self.token = token
-//        self.paymentInstrumentType = paymentInstrumentType
-//        self.vaultData = vaultData
-//    }
 }
 
 internal extension PaymentMethodToken {
