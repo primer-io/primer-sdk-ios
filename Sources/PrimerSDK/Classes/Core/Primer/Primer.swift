@@ -12,7 +12,7 @@ private let _Primer = Primer()
 public class Primer {
     
     // MARK: - PROPERTIES
-    private var primerWindow: UIWindow?
+    internal var primerWindow: UIWindow?
     public var delegate: PrimerDelegate? // TODO: should this be weak?
     private(set) var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
@@ -45,7 +45,6 @@ public class Primer {
         DispatchQueue.main.async { [weak self] in
             let settings = PrimerSettings()
             self?.setDependencies(settings: settings, theme: PrimerTheme())
-            try! Analytics.Service.deleteEvents()
         }
     }
     
@@ -482,6 +481,11 @@ public class Primer {
         
         DispatchQueue.main.async { [weak self] in
             self?.primerRootVC?.dismissPrimerRootViewController(animated: true, completion: {
+                self?.primerWindow?.isHidden = true
+                if #available(iOS 13, *) {
+                    self?.primerWindow?.windowScene = nil
+                }
+                self?.primerWindow?.rootViewController = nil
                 self?.primerRootVC = nil
                 self?.primerWindow?.resignKey()
                 self?.primerWindow = nil

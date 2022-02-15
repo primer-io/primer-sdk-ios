@@ -572,7 +572,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken)")
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken as String)")
         
         guard let transactionResponse = transactionResponse,
               let url = URL(string: "\(endpoint)/api/payments/\(transactionResponse.id)/resume")
