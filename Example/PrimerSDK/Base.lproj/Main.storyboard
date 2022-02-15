@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="ORN-tn-RVh">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ORN-tn-RVh">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -13,10 +14,6 @@
         <scene sceneID="8CA-lH-fba">
             <objects>
                 <viewController id="Hsc-Wl-Q65" customClass="AppViewController" customModule="PrimerSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Hc4-ia-dRw"/>
-                        <viewControllerLayoutGuide type="bottom" id="MWG-lh-a11"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="P7R-MC-LKq">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -99,6 +96,7 @@
                                 </connections>
                             </button>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="ikJ-Hu-dH6"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <gestureRecognizers/>
                         <constraints>
@@ -128,10 +126,9 @@
                             <constraint firstItem="OUf-n8-A9K" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" id="sU2-mK-DlC"/>
                             <constraint firstItem="LRA-Ro-g2N" firstAttribute="top" secondItem="qPf-Sa-EQI" secondAttribute="bottom" constant="20" id="tVd-GJ-tsL"/>
                             <constraint firstItem="LRA-Ro-g2N" firstAttribute="leading" secondItem="P7R-MC-LKq" secondAttribute="leadingMargin" id="u6E-0K-tkS"/>
-                            <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerX" secondItem="P7R-MC-LKq" secondAttribute="centerX" id="uIm-xc-nvN"/>
-                            <constraint firstAttribute="trailing" secondItem="FFw-xV-IYR" secondAttribute="trailing" constant="16" id="uRD-vJ-4oG"/>
+                            <constraint firstItem="Uou-Rn-KOH" firstAttribute="centerX" secondItem="ikJ-Hu-dH6" secondAttribute="centerX" id="uIm-xc-nvN"/>
                             <constraint firstItem="Q8f-7x-ncT" firstAttribute="top" secondItem="OUf-n8-A9K" secondAttribute="bottom" constant="20" id="vGY-ez-ne3"/>
-                            <constraint firstItem="OUf-n8-A9K" firstAttribute="top" secondItem="Hc4-ia-dRw" secondAttribute="bottom" constant="20" id="vi0-rA-mjd"/>
+                            <constraint firstItem="OUf-n8-A9K" firstAttribute="top" secondItem="ikJ-Hu-dH6" secondAttribute="top" constant="20" id="vi0-rA-mjd"/>
                             <constraint firstItem="uht-tM-QtC" firstAttribute="top" secondItem="LRA-Ro-g2N" secondAttribute="bottom" constant="20" id="zze-kW-625"/>
                         </constraints>
                         <connections>
@@ -162,16 +159,18 @@
         <scene sceneID="Hnl-Pi-aw2">
             <objects>
                 <viewController storyboardIdentifier="MerchantCheckoutViewController" id="rv5-RJ-1cA" customClass="MerchantCheckoutViewController" customModule="PrimerSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Ih5-6I-Tgq"/>
-                        <viewControllerLayoutGuide type="bottom" id="Y9U-da-1f0"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="1AU-v5-4lz">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Postal code:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BgZ-b0-ef8">
+                                <rect key="frame" x="20" y="52" width="374" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="40" estimatedRowHeight="40" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="5Bg-Yz-vOr">
-                                <rect key="frame" x="20" y="120" width="374" height="362"/>
+                                <rect key="frame" x="20" y="80.5" width="374" height="413.5"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="PaymentMethodCell" rowHeight="40" id="hfT-yD-Z4D" customClass="PaymentMethodCell" customModule="PrimerSDK_Example" customModuleProvider="target">
@@ -215,7 +214,7 @@
                                 </connections>
                             </tableView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Fpg-xO-ASt">
-                                <rect key="frame" x="40" y="490" width="334" height="352"/>
+                                <rect key="frame" x="40" y="502" width="334" height="352"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a9R-Y4-8Wy">
                                         <rect key="frame" x="0.0" y="0.0" width="334" height="40"/>
@@ -235,9 +234,6 @@
                                         <rect key="frame" x="0.0" y="52" width="334" height="40"/>
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="add_card_button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="nXQ-l4-dta"/>
-                                        </constraints>
                                         <state key="normal" title="Add Card">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
@@ -249,9 +245,6 @@
                                         <rect key="frame" x="0.0" y="104" width="334" height="40"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="add_klarna_button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="9OY-3P-D9G"/>
-                                        </constraints>
                                         <state key="normal" title="Vault Klarna">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
@@ -263,9 +256,6 @@
                                         <rect key="frame" x="0.0" y="156" width="334" height="40"/>
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="add_paypal_button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="QCD-dO-9qb"/>
-                                        </constraints>
                                         <state key="normal" title="PayPal Checkout">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
@@ -288,9 +278,6 @@
                                         <rect key="frame" x="0.0" y="208" width="334" height="40"/>
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="apple_pay_checkout_button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="0PY-qq-diV"/>
-                                        </constraints>
                                         <state key="normal" title="ApplePay Checkout">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
@@ -302,9 +289,6 @@
                                         <rect key="frame" x="0.0" y="260" width="334" height="40"/>
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="vault_button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="95Q-oB-p6m"/>
-                                        </constraints>
                                         <state key="normal" title="Vault">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
@@ -316,9 +300,6 @@
                                         <rect key="frame" x="0.0" y="312" width="334" height="40"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <accessibility key="accessibilityConfiguration" identifier="universal_checkout_button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="9Ss-wu-T5y"/>
-                                        </constraints>
                                         <state key="normal" title="Universal Checkout">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
@@ -327,29 +308,35 @@
                                         </connections>
                                     </button>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstItem="a9R-Y4-8Wy" firstAttribute="height" secondItem="xhR-QE-h6v" secondAttribute="height" id="0Vi-qx-0qX"/>
+                                    <constraint firstItem="a9R-Y4-8Wy" firstAttribute="height" secondItem="JQF-YC-d6g" secondAttribute="height" id="7O2-BU-cAg"/>
+                                    <constraint firstItem="a9R-Y4-8Wy" firstAttribute="height" secondItem="gK5-e0-3v4" secondAttribute="height" id="9kd-bL-kN1"/>
+                                    <constraint firstItem="a9R-Y4-8Wy" firstAttribute="height" secondItem="g8Q-ku-LZj" secondAttribute="height" id="DWX-lc-QMH"/>
+                                    <constraint firstItem="a9R-Y4-8Wy" firstAttribute="height" secondItem="but-Bs-no4" secondAttribute="height" id="aIc-Qv-b9G"/>
+                                    <constraint firstItem="a9R-Y4-8Wy" firstAttribute="height" secondItem="Pnm-Mo-3XH" secondAttribute="height" id="wmD-Hn-BTj"/>
+                                </constraints>
                             </stackView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Postal code:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Zgj-Y0-gEw">
-                                <rect key="frame" x="20" y="52" width="374" height="60"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="K0J-MK-6Eu"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="leading" secondItem="1AU-v5-4lz" secondAttribute="leadingMargin" constant="20" id="7ft-US-D2G"/>
-                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="trailing" secondItem="1AU-v5-4lz" secondAttribute="trailingMargin" id="CxG-K3-tC7"/>
-                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="leading" secondItem="1AU-v5-4lz" secondAttribute="leadingMargin" id="Inn-hY-E34"/>
-                            <constraint firstItem="Y9U-da-1f0" firstAttribute="top" secondItem="Fpg-xO-ASt" secondAttribute="bottom" constant="20" id="J3Q-UE-2ox"/>
-                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="top" secondItem="Zgj-Y0-gEw" secondAttribute="bottom" constant="8" symbolic="YES" id="LVc-3i-k8w"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="Fpg-xO-ASt" secondAttribute="trailing" constant="20" id="Zwa-lM-9Fh"/>
-                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="top" secondItem="5Bg-Yz-vOr" secondAttribute="bottom" constant="8" symbolic="YES" id="ehg-2v-zep"/>
+                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="leading" secondItem="K0J-MK-6Eu" secondAttribute="leading" constant="40" id="H03-zd-nUh"/>
+                            <constraint firstItem="BgZ-b0-ef8" firstAttribute="leading" secondItem="K0J-MK-6Eu" secondAttribute="leading" constant="20" id="J0n-GT-nik"/>
+                            <constraint firstItem="K0J-MK-6Eu" firstAttribute="trailing" secondItem="BgZ-b0-ef8" secondAttribute="trailing" constant="20" id="NqU-pI-T6u"/>
+                            <constraint firstItem="K0J-MK-6Eu" firstAttribute="trailing" secondItem="Fpg-xO-ASt" secondAttribute="trailing" constant="40" id="Ozp-KD-xTb"/>
+                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="leading" secondItem="K0J-MK-6Eu" secondAttribute="leading" constant="20" id="Q4S-kT-c1m"/>
+                            <constraint firstItem="5Bg-Yz-vOr" firstAttribute="top" secondItem="BgZ-b0-ef8" secondAttribute="bottom" constant="8" id="QPN-qe-fOY"/>
+                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="top" secondItem="5Bg-Yz-vOr" secondAttribute="bottom" constant="8" id="R7h-fT-2mc"/>
+                            <constraint firstItem="K0J-MK-6Eu" firstAttribute="bottom" secondItem="Fpg-xO-ASt" secondAttribute="bottom" constant="8" id="UN3-iy-daZ"/>
+                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="top" secondItem="5Bg-Yz-vOr" secondAttribute="bottom" constant="8" id="lPs-l8-fdQ"/>
+                            <constraint firstItem="BgZ-b0-ef8" firstAttribute="top" secondItem="K0J-MK-6Eu" secondAttribute="top" constant="8" id="vu0-gh-Lzj"/>
+                            <constraint firstItem="K0J-MK-6Eu" firstAttribute="trailing" secondItem="5Bg-Yz-vOr" secondAttribute="trailing" constant="20" id="z9w-f5-se8"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="0lO-Kc-k9w"/>
                     <connections>
-                        <outlet property="postalCodeLabel" destination="Zgj-Y0-gEw" id="9go-fS-gYS"/>
+                        <outlet property="postalCodeLabel" destination="BgZ-b0-ef8" id="lFh-8e-tqn"/>
                         <outlet property="tableView" destination="5Bg-Yz-vOr" id="BdS-K3-eOb"/>
                     </connections>
                 </viewController>
@@ -542,10 +529,6 @@
         <scene sceneID="Tkv-cI-sz4">
             <objects>
                 <viewController storyboardIdentifier="ResultViewController" id="T6d-fS-wFQ" customClass="ResultViewController" customModule="PrimerSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Efv-88-lTO"/>
-                        <viewControllerLayoutGuide type="bottom" id="Lgo-Kc-nv1"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8sw-1v-qHI">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -621,10 +604,11 @@
                                 </subviews>
                             </stackView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="Xt9-e4-DFx"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="ecM-hU-tn4" firstAttribute="top" secondItem="Efv-88-lTO" secondAttribute="bottom" id="5Oi-Qd-Wq5"/>
-                            <constraint firstItem="Lgo-Kc-nv1" firstAttribute="top" secondItem="ecM-hU-tn4" secondAttribute="bottom" id="GNk-yX-zzf"/>
+                            <constraint firstItem="ecM-hU-tn4" firstAttribute="top" secondItem="Xt9-e4-DFx" secondAttribute="top" id="5Oi-Qd-Wq5"/>
+                            <constraint firstItem="Xt9-e4-DFx" firstAttribute="bottom" secondItem="ecM-hU-tn4" secondAttribute="bottom" id="GNk-yX-zzf"/>
                             <constraint firstAttribute="trailingMargin" secondItem="ecM-hU-tn4" secondAttribute="trailing" id="Z5X-ZA-72c"/>
                             <constraint firstItem="ecM-hU-tn4" firstAttribute="leading" secondItem="8sw-1v-qHI" secondAttribute="leadingMargin" id="l8v-HJ-yhd"/>
                         </constraints>
