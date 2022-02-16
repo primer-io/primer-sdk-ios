@@ -101,7 +101,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             let titleHorizontalStackView = UIStackView()
             titleHorizontalStackView.axis = .horizontal
             titleHorizontalStackView.alignment = .fill
-            titleHorizontalStackView.distribution = .fillProportionally
+            titleHorizontalStackView.distribution = .fill
             titleHorizontalStackView.spacing = 8.0
             
             let savedPaymentMethodLabel = UILabel()
