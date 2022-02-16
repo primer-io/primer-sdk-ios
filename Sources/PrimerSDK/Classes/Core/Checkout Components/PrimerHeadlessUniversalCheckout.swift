@@ -9,16 +9,21 @@
 
 import UIKit
 
+public struct PrimerPaymentMethodType {
+    let id: String
+}
+
 public class PrimerHeadlessUniversalCheckout {
     
     public static var delegate: PrimerHeadlessUniversalCheckoutDelegate?
     private(set) public static var clientToken: String?
     
-    public static func configure(withClientToken clientToken: String, andSetings settings: PrimerSettings? = nil) throws {
+    public static func configure(withClientToken clientToken: String, andSetings settings: PrimerSettings? = nil, completion: @escaping (_ paymentMethodTypes: [PaymentMethodConfigType]?, _ err: Error?) -> Void) {
         guard PrimerHeadlessUniversalCheckout.delegate != nil else {
             let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            throw err
+            completion(nil, err)
+            return
         }
         
         do {
@@ -37,16 +42,17 @@ public class PrimerHeadlessUniversalCheckout {
             primerConfigurationService.fetchConfig()
         }
         .done {
-            if (PrimerConfiguration.paymentMethodConfigs ?? []).isEmpty {
+            let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.listAvailablePaymentMethodsTypes()
+            if (availablePaymentMethodsTypes ?? []).isEmpty {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
-                PrimerHeadlessUniversalCheckout.delegate?.onEvent(.failure(error: err))
+                completion(nil, err)
             } else {
-                PrimerHeadlessUniversalCheckout.delegate?.onEvent(.clientSessionSetupSuccessfully)
+                completion(availablePaymentMethodsTypes, nil)
             }
         }
         .catch { err in
-            PrimerHeadlessUniversalCheckout.delegate?.onEvent(.failure(error: err))
+            completion(nil, err)
         }
     }
     

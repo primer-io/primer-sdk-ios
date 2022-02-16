@@ -1,0 +1,33 @@
+PODS:
+  - PrimerSDK (1.27.1):
+    - PrimerSDK/Core (= 1.27.1)
+  - PrimerSDK/Core (1.27.1)
+  - PromiseKit (6.16.3):
+    - PromiseKit/CorePromise (= 6.16.3)
+    - PromiseKit/Foundation (= 6.16.3)
+    - PromiseKit/UIKit (= 6.16.3)
+  - PromiseKit/CorePromise (6.16.3)
+  - PromiseKit/Foundation (6.16.3):
+    - PromiseKit/CorePromise
+  - PromiseKit/UIKit (6.16.3):
+    - PromiseKit/CorePromise
+
+DEPENDENCIES:
+  - PrimerSDK (from `../`)
+  - PromiseKit
+
+SPEC REPOS:
+  trunk:
+    - PromiseKit
+
+EXTERNAL SOURCES:
+  PrimerSDK:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  PrimerSDK: 8fed61c4b7f01a507d5b18a371d01d440cce1432
+  PromiseKit: ed0e2a8e3f3cd59d5d98ca0a6de481a2c5c59c0b
+
+PODFILE CHECKSUM: e5717e75d0fa5c382e511466c97afdb59be35a0a
+
+COCOAPODS: 1.11.2

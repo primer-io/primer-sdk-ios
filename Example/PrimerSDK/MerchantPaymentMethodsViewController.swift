@@ -51,7 +51,9 @@ class MerchantPaymentMethodsViewController: UIViewController {
                 let settings = PrimerSettings(
                     merchantIdentifier: "merchant.dx.team",
                     urlScheme: "merchant://")
-                try! PrimerHeadlessUniversalCheckout.configure(withClientToken: clientToken, andSetings: settings)
+                PrimerHeadlessUniversalCheckout.configure(withClientToken: clientToken, andSetings: settings, completion: { (pms, err) in
+                    
+                })
             }
         }
     }
