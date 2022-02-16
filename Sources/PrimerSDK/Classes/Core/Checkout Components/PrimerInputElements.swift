@@ -9,13 +9,13 @@
 
 import UIKit
 
-extension PrimerCheckoutComponents {
+extension PrimerHeadlessUniversalCheckout {
     
     @IBDesignable
     public class TextField: UITextField, PrimerInputElement {
         public var inputElementDelegate: PrimerInputElementDelegate! {
             didSet {
-                self.checkoutModulesTextFieldDelegate = PrimerCheckoutComponents.Delegate(inputElement: self, inputElementDelegate: inputElementDelegate)
+                self.checkoutModulesTextFieldDelegate = PrimerHeadlessUniversalCheckout.Delegate(inputElement: self, inputElementDelegate: inputElementDelegate)
                 self.delegate = self.checkoutModulesTextFieldDelegate
             }
         }
@@ -29,7 +29,7 @@ extension PrimerCheckoutComponents {
                 return nil
             }
             set {
-                if newValue is PrimerCheckoutComponents.Delegate {
+                if newValue is PrimerHeadlessUniversalCheckout.Delegate {
                     super.delegate = newValue
                 }
             }
@@ -44,8 +44,15 @@ extension PrimerCheckoutComponents {
             }
         }
         
-        private var checkoutModulesTextFieldDelegate: PrimerCheckoutComponents.Delegate?
+        private var checkoutModulesTextFieldDelegate: PrimerHeadlessUniversalCheckout.Delegate?
         internal var _text: String?
+        private lazy var _keyboardType: UIKeyboardType = {
+            return self.type.keyboardType
+        }()
+        public override var keyboardType: UIKeyboardType {
+            get { return _keyboardType }
+            set { self._keyboardType = newValue }
+        }
         
         required init?(coder aDecoder: NSCoder) {
             super.init(coder: aDecoder)

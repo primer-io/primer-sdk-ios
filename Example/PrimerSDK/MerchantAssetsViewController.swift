@@ -34,7 +34,7 @@ class MerchantAssetsViewController: UIViewController {
         var tmpAssets: [(name: String, image: UIImage?)] = []
         let brands = PrimerAsset.Brand.allCases
         for brand in brands {
-            tmpAssets.append((brand.rawValue, PrimerCheckoutComponents.getAsset(for: brand, assetType: self.assetType)))
+            tmpAssets.append((brand.rawValue, PrimerHeadlessUniversalCheckout.getAsset(for: brand, assetType: self.assetType)))
         }
         self.assets = tmpAssets
     }

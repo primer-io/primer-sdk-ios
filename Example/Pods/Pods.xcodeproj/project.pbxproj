@@ -59,7 +59,7 @@
 		42AEE7623DEFE253CC11EA69D91BE9EE /* CardScannerViewController+SimpleScanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9980D00F8F3C703E1E61B3122D00D5 /* CardScannerViewController+SimpleScanDelegate.swift */; };
 		4300EED770E4DC25F64DE4AB0145F084 /* PrimerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A42BCAC363937F2454EFBC106DCD7E8 /* PrimerConfiguration.swift */; };
 		431E242662A100F38410524B90BF3E0F /* CardScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 398CE87C33D400AD62F2044C8D5960A2 /* CardScannerViewController.swift */; };
-		444BADAC3C9A63B9A4A42F22DF11126A /* PrimerCheckoutComponentsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5BEACEBE466CFF7926917BA2E05A1E /* PrimerCheckoutComponentsProtocols.swift */; };
+		444BADAC3C9A63B9A4A42F22DF11126A /* PrimerHeadlessUniversalCheckoutProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5BEACEBE466CFF7926917BA2E05A1E /* PrimerHeadlessUniversalCheckoutProtocols.swift */; };
 		4499B87F7FA890638A05B2B3A900E078 /* PrimerViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A38136B76546A4819B5EE2ABC8E4BC /* PrimerViewExtensions.swift */; };
 		44DCB81676A25841F518C7DF3E1882D9 /* PrimerTheme+Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69769AF7A16B161225B9977CFB04B099 /* PrimerTheme+Buttons.swift */; };
 		4510E0CB109032D47CC7E898B3657817 /* PrimerTheme+TextStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 476B2A0D6425C85BC38772DFE97A8586 /* PrimerTheme+TextStyles.swift */; };
@@ -165,7 +165,7 @@
 		B5F997D7D4A0A140EA3FCF8A33247C2A /* PrimerThemeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DFB46C30F197B9B97A45A970FF34BD /* PrimerThemeData.swift */; };
 		B8623C80BDA70247AF99EF1FAC41FB07 /* ImageName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D093ACCE1D3586F7172B1A637FCA19BC /* ImageName.swift */; };
 		B8AD1B0744B0930F7E8CD1738C548562 /* PrimerLoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0826A096B3D9CB6815BD921E6AEC158 /* PrimerLoadingViewController.swift */; };
-		B8E207627B6138084D103C1CDCEC5BCA /* PrimerCheckoutComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94DFE545DC309948037CF4E9001AB64 /* PrimerCheckoutComponents.swift */; };
+		B8E207627B6138084D103C1CDCEC5BCA /* PrimerHeadlessUniversalCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94DFE545DC309948037CF4E9001AB64 /* PrimerHeadlessUniversalCheckout.swift */; };
 		BAC078D59A5A176E744BCE71ADA32251 /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = E254356DE1A159B84AA27A15849C18D4 /* fr.lproj */; };
 		BB3EB8D86DB8887D802FD3BAC438DCDD /* PrimerRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD545DF7F2D218DBBE9D22887F9775C /* PrimerRootViewController.swift */; };
 		BB70756934915A1F2D952003C5940813 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BAEB380A557E04A3FD8CF17C9C8B5A /* NetworkService.swift */; };
@@ -183,7 +183,7 @@
 		CE8C219D4A54A9EC2BE22A51FC706AD2 /* AnyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF70890ACE6D6404C6F9295A264463C /* AnyDecodable.swift */; };
 		CEEDB7E062779A49D2A5B17157A97167 /* PrimerSearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DCA73C560F0C649C00A8EDCC2FB7A8 /* PrimerSearchTextField.swift */; };
 		D02148AE336B474C5CABF95D66EDF62F /* DirectDebitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AB23F66FDD48264F6D79619F86DE75 /* DirectDebitService.swift */; };
-		D368FD6013600D87ADE50660B0C618A4 /* PrimerCheckoutComponentsUIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF46E19D5F5D87E8FCC374FE324E4A /* PrimerCheckoutComponentsUIManager.swift */; };
+		D368FD6013600D87ADE50660B0C618A4 /* PrimerHeadlessUniversalCheckoutUIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF46E19D5F5D87E8FCC374FE324E4A /* PrimerHeadlessUniversalCheckoutUIManager.swift */; };
 		D4FCE52628DAA3625BA62D2E434605DB /* AlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACC4F8BD5F395BCFD321A758ECA530A /* AlertController.swift */; };
 		D5047DF9A0043EB36DDAA6A26E8C8F2F /* PrimerVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E8FC38A3AEC4004522D1A5BA0AC3E43 /* PrimerVaultManagerViewController.swift */; };
 		D518F8737CD2B5C4F43D8C45A6FFCAE6 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EADFEACD5667715D1788A7564419BA /* Promise.swift */; };
@@ -317,7 +317,7 @@
 		4D3869E0A461E802A5916AA6523517A4 /* Pods-PrimerSDK_Example */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-PrimerSDK_Example"; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DCCAFBC69EFAAC89CD06512BE9D02CE /* Box.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		4E113B64EBFC280C3D1E39915F11967C /* AdyenDotPay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdyenDotPay.swift; sourceTree = "<group>"; };
-		4F5BEACEBE466CFF7926917BA2E05A1E /* PrimerCheckoutComponentsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerCheckoutComponentsProtocols.swift; sourceTree = "<group>"; };
+		4F5BEACEBE466CFF7926917BA2E05A1E /* PrimerHeadlessUniversalCheckoutProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessUniversalCheckoutProtocols.swift; sourceTree = "<group>"; };
 		4FC65F72BB7549F71FE79F95CBA82816 /* PrimerTheme+Views.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PrimerTheme+Views.swift"; sourceTree = "<group>"; };
 		543715AE2658152659DCD069AEB93B3F /* PrimerAPIClient+Promises.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PrimerAPIClient+Promises.swift"; sourceTree = "<group>"; };
 		5564BD82D9B4573A7ACB573FF09D910A /* VaultPaymentMethodView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodView.swift; sourceTree = "<group>"; };
@@ -419,7 +419,7 @@
 		BE1842622A258ACCC9797D8993EDB231 /* Mask.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Mask.swift; sourceTree = "<group>"; };
 		BE8CE6ADA969CCCC47B8AFC19FE791B2 /* PrimerNavigationController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerNavigationController.swift; sourceTree = "<group>"; };
 		BEA5EF55D4BC59B1EE340F1CC1C59EBC /* BankSelectorTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BankSelectorTokenizationViewModel.swift; sourceTree = "<group>"; };
-		BEEF46E19D5F5D87E8FCC374FE324E4A /* PrimerCheckoutComponentsUIManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerCheckoutComponentsUIManager.swift; sourceTree = "<group>"; };
+		BEEF46E19D5F5D87E8FCC374FE324E4A /* PrimerHeadlessUniversalCheckoutUIManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessUniversalCheckoutUIManager.swift; sourceTree = "<group>"; };
 		C013C82CBF93B312AEC44D7067EC3884 /* pl.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = pl.lproj; sourceTree = "<group>"; };
 		C0F313FA90475F9EFD67B279E8E87625 /* PrimerFlowEnums.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerFlowEnums.swift; sourceTree = "<group>"; };
 		C1DCA73C560F0C649C00A8EDCC2FB7A8 /* PrimerSearchTextField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerSearchTextField.swift; sourceTree = "<group>"; };
@@ -478,7 +478,7 @@
 		F719E52F37B6CC0DF04F17F43582381E /* Error.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		F7B48CC82297D62E27EA98AE7A13D3DA /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		F7D9B8A3E26AF5AF45468E8184A761DB /* Dimensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Dimensions.swift; sourceTree = "<group>"; };
-		F94DFE545DC309948037CF4E9001AB64 /* PrimerCheckoutComponents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerCheckoutComponents.swift; sourceTree = "<group>"; };
+		F94DFE545DC309948037CF4E9001AB64 /* PrimerHeadlessUniversalCheckout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessUniversalCheckout.swift; sourceTree = "<group>"; };
 		F9D19C3B11FA18E2798BB79D71ABCA2E /* IntExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntExtension.swift; sourceTree = "<group>"; };
 		F9EED0116CD8C54754D4817AED6F022B /* PaymentResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentResponse.swift; sourceTree = "<group>"; };
 		FA7E0C71E990EA356B7555B58CE2DB58 /* PrimerButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerButton.swift; sourceTree = "<group>"; };
@@ -1199,9 +1199,9 @@
 		E19A7AB5E5480561F5C5EBA035AF091F /* Checkout Components */ = {
 			isa = PBXGroup;
 			children = (
-				F94DFE545DC309948037CF4E9001AB64 /* PrimerCheckoutComponents.swift */,
-				4F5BEACEBE466CFF7926917BA2E05A1E /* PrimerCheckoutComponentsProtocols.swift */,
-				BEEF46E19D5F5D87E8FCC374FE324E4A /* PrimerCheckoutComponentsUIManager.swift */,
+				F94DFE545DC309948037CF4E9001AB64 /* PrimerHeadlessUniversalCheckout.swift */,
+				4F5BEACEBE466CFF7926917BA2E05A1E /* PrimerHeadlessUniversalCheckoutProtocols.swift */,
+				BEEF46E19D5F5D87E8FCC374FE324E4A /* PrimerHeadlessUniversalCheckoutUIManager.swift */,
 				0AE03F84784679D6BF8574E52A233B3D /* PrimerInputElements.swift */,
 			);
 			path = "Checkout Components";
@@ -1574,9 +1574,9 @@
 				6369A151E508055DF3008E5F71272FBE /* PrimerCardFormViewController.swift in Sources */,
 				DE900D46CA6C677044A522C7D8C5D755 /* PrimerCardholderNameFieldView.swift in Sources */,
 				2DA226F6F3019EC0B93C6EBF0C765242 /* PrimerCardNumberFieldView.swift in Sources */,
-				B8E207627B6138084D103C1CDCEC5BCA /* PrimerCheckoutComponents.swift in Sources */,
-				444BADAC3C9A63B9A4A42F22DF11126A /* PrimerCheckoutComponentsProtocols.swift in Sources */,
-				D368FD6013600D87ADE50660B0C618A4 /* PrimerCheckoutComponentsUIManager.swift in Sources */,
+				B8E207627B6138084D103C1CDCEC5BCA /* PrimerHeadlessUniversalCheckout.swift in Sources */,
+				444BADAC3C9A63B9A4A42F22DF11126A /* PrimerHeadlessUniversalCheckoutProtocols.swift in Sources */,
+				D368FD6013600D87ADE50660B0C618A4 /* PrimerHeadlessUniversalCheckoutUIManager.swift in Sources */,
 				4300EED770E4DC25F64DE4AB0145F084 /* PrimerConfiguration.swift in Sources */,
 				A54385C5DD54FA237755FB0F35A87F70 /* PrimerContainerViewController.swift in Sources */,
 				734E8195611C80873183ACF3D468BEF7 /* PrimerContent.swift in Sources */,

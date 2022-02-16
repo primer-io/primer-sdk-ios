@@ -14,10 +14,10 @@ class MerchantCardFormViewController: UIViewController {
     var stackView: UIStackView!
     lazy var endpoint: String = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     
-    var cardNumberTextField: PrimerCheckoutComponents.TextField?
-    var expiryTextField: PrimerCheckoutComponents.TextField?
-    var cvvTextField: PrimerCheckoutComponents.TextField?
-    var cardHolderNameTextField: PrimerCheckoutComponents.TextField?
+    var cardNumberTextField: PrimerHeadlessUniversalCheckout.TextField?
+    var expiryTextField: PrimerHeadlessUniversalCheckout.TextField?
+    var cvvTextField: PrimerHeadlessUniversalCheckout.TextField?
+    var cardHolderNameTextField: PrimerHeadlessUniversalCheckout.TextField?
     var environment: Environment = .staging
     var threeDSAlert: UIAlertController?
     var transactionResponse: TransactionResponse?
@@ -25,7 +25,7 @@ class MerchantCardFormViewController: UIViewController {
     var activityIndicator: UIActivityIndicatorView?
     var paymentButton: UIButton!
     
-    var cardFormUIManager: PrimerCheckoutComponents.CardFormUIManager?
+    var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,13 +55,13 @@ class MerchantCardFormViewController: UIViewController {
         self.stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         self.stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
 
-        PrimerCheckoutComponents.delegate = self
+        PrimerHeadlessUniversalCheckout.delegate = self
 
-        self.cardFormUIManager = try! PrimerCheckoutComponents.CardFormUIManager()
+        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardFormUIManager()
 
         var tmpInputElements: [PrimerInputElement] = []
         for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {
-            let textField = PrimerCheckoutComponents.TextField(type: inputElementType, frame: .zero)
+            let textField = PrimerHeadlessUniversalCheckout.TextField(type: inputElementType, frame: .zero)
             textField.borderStyle = .line
             textField.layer.borderColor = UIColor.black.cgColor
             textField.inputElementDelegate = self
@@ -95,8 +95,8 @@ class MerchantCardFormViewController: UIViewController {
     }
 }
 
-extension MerchantCardFormViewController: PrimerCheckoutComponentsDelegate {
-    func onEvent(_ event: PrimerCheckoutComponents.Event) {
+extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegate {
+    func onEvent(_ event: PrimerHeadlessUniversalCheckout.Event) {
         print("🖖🖖🖖\nEvent: \(event)\n\n")
         switch event {
         case .tokenizationStarted:

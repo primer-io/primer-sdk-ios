@@ -9,7 +9,7 @@ import Foundation
 
 @objc
 public enum PrimerInputElementType: Int {
-    case cardNumber, expiryDate, cvv, cardholderName, otp, unknown
+    case cardNumber, expiryDate, cvv, cardholderName, otp, postalCode, unknown
     
     internal func validate(value: Any, detectedValueType: Any?) -> Bool {
         switch self {
@@ -36,6 +36,10 @@ public enum PrimerInputElementType: Int {
         case .otp:
             guard let text = value as? String else { return false }
             return text.isNumeric
+            
+        case .postalCode:
+            guard let text = value as? String else { return false }
+            return text.count >= 2
 
         default:
             return true
@@ -100,6 +104,8 @@ public enum PrimerInputElementType: Int {
             return 4
         case .cvv:
             return nil
+        case .postalCode:
+            return 10
         default:
             return nil
         }
@@ -127,8 +133,29 @@ public enum PrimerInputElementType: Int {
         }
     }
     
-    internal var keyboardType: UIKeyboardType? {
-        return nil
+    internal var keyboardType: UIKeyboardType {
+        switch self {
+        case .cardNumber:
+            return UIKeyboardType.numberPad
+            
+        case .expiryDate:
+            return UIKeyboardType.numberPad
+            
+        case .cvv:
+            return UIKeyboardType.numberPad
+            
+        case .cardholderName:
+            return UIKeyboardType.alphabet
+            
+        case .otp:
+            return UIKeyboardType.numberPad
+            
+        case .postalCode:
+            return UIKeyboardType.alphabet
+
+        default:
+            return UIKeyboardType.default
+        }
     }
 }
 
@@ -150,11 +177,11 @@ public protocol PrimerInputElementDelegate {
     @objc optional func inputElementDidDetectType(_ sender: PrimerInputElement, type: Any?)
 }
 
-public protocol PrimerCheckoutComponentsDelegate {
-    func onEvent(_ event: PrimerCheckoutComponents.Event)
+public protocol PrimerHeadlessUniversalCheckoutDelegate {
+    func onEvent(_ event: PrimerHeadlessUniversalCheckout.Event)
 }
 
-extension PrimerCheckoutComponents {
+extension PrimerHeadlessUniversalCheckout {
     public enum Event {
         case clientSessionSetupSuccessfully
         case preparationStarted

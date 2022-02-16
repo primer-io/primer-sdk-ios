@@ -33,7 +33,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        PrimerCheckoutComponents.delegate = self
+        PrimerHeadlessUniversalCheckout.delegate = self
         
         self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
         self.view.addSubview(self.activityIndicator!)
@@ -51,7 +51,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
                 let settings = PrimerSettings(
                     merchantIdentifier: "merchant.dx.team",
                     urlScheme: "merchant://")
-                try! PrimerCheckoutComponents.configure(withClientToken: clientToken, andSetings: settings)
+                try! PrimerHeadlessUniversalCheckout.configure(withClientToken: clientToken, andSetings: settings)
             }
         }
     }
@@ -189,13 +189,13 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            PrimerCheckoutComponents.showCheckout(for: paymentMethod)
+            PrimerHeadlessUniversalCheckout.showCheckout(for: paymentMethod)
         }
     }
 }
 
-extension MerchantPaymentMethodsViewController: PrimerCheckoutComponentsDelegate {
-    func onEvent(_ event: PrimerCheckoutComponents.Event) {
+extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutDelegate {
+    func onEvent(_ event: PrimerHeadlessUniversalCheckout.Event) {
         print("\n\n\n🖖🖖🖖 Event: \(event)\n\n\n")
         DispatchQueue.main.async {
             switch event {
@@ -242,14 +242,14 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutComponentsDelegate
                 self.activityIndicator?.removeFromSuperview()
                 self.activityIndicator = nil
             case .clientSessionSetupSuccessfully:
-                let pms = PrimerCheckoutComponents.listAvailablePaymentMethodsTypes()
+                let pms = PrimerHeadlessUniversalCheckout.listAvailablePaymentMethodsTypes()
                 DispatchQueue.main.async {
                     self.activityIndicator?.stopAnimating()
                     self.activityIndicator?.removeFromSuperview()
                     self.activityIndicator = nil
                 }
                 
-                self.availablePaymentMethods = PrimerCheckoutComponents.listAvailablePaymentMethodsTypes() ?? []
+                self.availablePaymentMethods = PrimerHeadlessUniversalCheckout.listAvailablePaymentMethodsTypes() ?? []
                 self.tableView.reloadData()
             }
         }
@@ -265,7 +265,7 @@ class MerchantPaymentMethodCell: UITableViewCell {
     func configure(paymentMethodConfigType: PaymentMethodConfigType) {
         paymentMethodLabel.text = paymentMethodConfigType.rawValue
         
-        if let button = PrimerCheckoutComponents.makeButton(for: paymentMethodConfigType) {
+        if let button = PrimerHeadlessUniversalCheckout.makeButton(for: paymentMethodConfigType) {
             buttonContainerView.addSubview(button)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
