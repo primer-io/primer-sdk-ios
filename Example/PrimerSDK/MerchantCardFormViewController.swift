@@ -96,88 +96,33 @@ class MerchantCardFormViewController: UIViewController {
 }
 
 extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegate {
-    func onEvent(_ event: PrimerHeadlessUniversalCheckout.Event) {
-        print("🖖🖖🖖\nEvent: \(event)\n\n")
-        switch event {
-        case .tokenizationStarted:
-            break
-            
-        case .tokenizationSucceeded(let paymentMethodToken, let resumeHandler):
-            if let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
-               (threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess) {
-                var message: String = ""
+    func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
+        if let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
+           (threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess) {
+            var message: String = ""
 
-                if let reasonCode = threeDSecureAuthentication.reasonCode {
-                    message += "[\(reasonCode)] "
-                }
-
-                if let reasonText = threeDSecureAuthentication.reasonText {
-                    message += reasonText
-                }
-
-                threeDSAlert = UIAlertController(title: "3DS Error", message: message, preferredStyle: .alert)
-                threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-                    self?.threeDSAlert = nil
-                }))
+            if let reasonCode = threeDSecureAuthentication.reasonCode {
+                message += "[\(reasonCode)] "
             }
 
-            self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
-            self.view.addSubview(self.activityIndicator!)
-            self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
-            self.activityIndicator?.color = .black
-            self.activityIndicator?.startAnimating()
-
-            let networking = Networking()
-            networking.createPayment(with: paymentMethodToken) { (res, err) in
-                DispatchQueue.main.async {
-                    self.activityIndicator?.stopAnimating()
-                    self.activityIndicator?.removeFromSuperview()
-                    self.activityIndicator = nil
-
-                    if !self.paymentResponsesData.isEmpty {
-                        let rvc = ResultViewController.instantiate(data: self.paymentResponsesData)
-                        self.navigationController?.pushViewController(rvc, animated: true)
-                    }
-                }
-
-                if let err = err {
-                    resumeHandler?.handle(error: err)
-                } else if let res = res {
-                    if let data = try? JSONEncoder().encode(res) {
-                        DispatchQueue.main.async {
-                            let rvc = ResultViewController.instantiate(data: [data])
-                            self.navigationController?.pushViewController(rvc, animated: true)
-                        }
-                    }
-                    
-                    guard let requiredAction = res.requiredAction else {
-                        resumeHandler?.handleSuccess()
-                        return
-                    }
-                    
-                    guard let dateStr = res.dateStr else {
-                        resumeHandler?.handleSuccess()
-                        return
-                    }
-                    
-                    self.transactionResponse = TransactionResponse(
-                        id: res.id,
-                        date: dateStr,
-                        status: res.status.rawValue,
-                        requiredAction: requiredAction)
-                    
-                    if requiredAction.name == "3DS_AUTHENTICATION", res.status == .pending {
-                        resumeHandler?.handle(newClientToken: requiredAction.clientToken)
-                    } else {
-                        resumeHandler?.handleSuccess()
-                    }
-
-                } else {
-                    assert(true)
-                }
+            if let reasonText = threeDSecureAuthentication.reasonText {
+                message += reasonText
             }
 
-        case .failure(let err):
+            threeDSAlert = UIAlertController(title: "3DS Error", message: message, preferredStyle: .alert)
+            threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
+                self?.threeDSAlert = nil
+            }))
+        }
+
+        self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
+        self.view.addSubview(self.activityIndicator!)
+        self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
+        self.activityIndicator?.color = .black
+        self.activityIndicator?.startAnimating()
+
+        let networking = Networking()
+        networking.createPayment(with: paymentMethodToken) { (res, err) in
             DispatchQueue.main.async {
                 self.activityIndicator?.stopAnimating()
                 self.activityIndicator?.removeFromSuperview()
@@ -188,15 +133,77 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
                     self.navigationController?.pushViewController(rvc, animated: true)
                 }
             }
-            print(err)
-            
-        case .preparationStarted:
-            break
-        case .paymentMethodPresented:
-            break
-        case .clientSessionSetupSuccessfully:
-            break
+
+            if let err = err {
+                resumeHandler?.handle(error: err)
+            } else if let res = res {
+                if let data = try? JSONEncoder().encode(res) {
+                    DispatchQueue.main.async {
+                        let rvc = ResultViewController.instantiate(data: [data])
+                        self.navigationController?.pushViewController(rvc, animated: true)
+                    }
+                }
+                
+                guard let requiredAction = res.requiredAction else {
+                    resumeHandler?.handleSuccess()
+                    return
+                }
+                
+                guard let dateStr = res.dateStr else {
+                    resumeHandler?.handleSuccess()
+                    return
+                }
+                
+                self.transactionResponse = TransactionResponse(
+                    id: res.id,
+                    date: dateStr,
+                    status: res.status.rawValue,
+                    requiredAction: requiredAction)
+                
+                if requiredAction.name == "3DS_AUTHENTICATION", res.status == .pending {
+                    resumeHandler?.handle(newClientToken: requiredAction.clientToken)
+                } else {
+                    resumeHandler?.handleSuccess()
+                }
+
+            } else {
+                assert(true)
+            }
         }
+    }
+    
+    func primerHeadlessUniversalCheckoutPreparationStarted() {
+        
+    }
+    
+    func primerHeadlessUniversalCheckoutTokenizationStarted() {
+        
+    }
+    
+    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully() {
+        
+    }
+    
+    func primerHeadlessUniversalCheckoutPaymentMethodPresented() {
+        
+    }
+    
+    func primerHeadlessUniversalCheckoutTokenizationSucceededTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
+        
+    }
+    
+    func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error) {
+        DispatchQueue.main.async {
+            self.activityIndicator?.stopAnimating()
+            self.activityIndicator?.removeFromSuperview()
+            self.activityIndicator = nil
+
+            if !self.paymentResponsesData.isEmpty {
+                let rvc = ResultViewController.instantiate(data: self.paymentResponsesData)
+                self.navigationController?.pushViewController(rvc, animated: true)
+            }
+        }
+        print(err)
     }
  
 }

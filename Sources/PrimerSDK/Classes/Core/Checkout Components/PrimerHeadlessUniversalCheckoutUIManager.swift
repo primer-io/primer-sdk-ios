@@ -113,11 +113,11 @@ extension PrimerHeadlessUniversalCheckout {
                 try PrimerHeadlessUniversalCheckout.validateSession()
             } catch {
                 ErrorHandler.handle(error: error)
-                PrimerHeadlessUniversalCheckout.delegate?.onEvent(.failure(error: error))
+                PrimerHeadlessUniversalCheckout.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
                 return
             }
             
-            PrimerHeadlessUniversalCheckout.delegate?.onEvent(.preparationStarted)
+            PrimerHeadlessUniversalCheckout.delegate?.primerHeadlessUniversalCheckoutTokenizationStarted()
 
             firstly {
                 self.validateInputData()
@@ -129,10 +129,10 @@ extension PrimerHeadlessUniversalCheckout {
                 return self.tokenize(request: requestbody)
             }
             .done { paymentMethodToken in
-                PrimerHeadlessUniversalCheckout.delegate?.onEvent(.tokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: nil))
+                PrimerHeadlessUniversalCheckout.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: nil)
             }
             .catch { err in
-                PrimerHeadlessUniversalCheckout.delegate?.onEvent(.failure(error: err))
+                PrimerHeadlessUniversalCheckout.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
             }
         }
         

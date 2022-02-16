@@ -340,7 +340,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                 self.willPresentExternalView?()
                 Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
                     DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.delegate?.onEvent(.paymentMethodPresented)
+                        PrimerHeadlessUniversalCheckout.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented()
                         self.didPresentExternalView?()
                     }
                 })

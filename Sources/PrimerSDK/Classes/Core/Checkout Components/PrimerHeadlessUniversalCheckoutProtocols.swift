@@ -178,16 +178,10 @@ public protocol PrimerInputElementDelegate {
 }
 
 public protocol PrimerHeadlessUniversalCheckoutDelegate {
-    func onEvent(_ event: PrimerHeadlessUniversalCheckout.Event)
-}
-
-extension PrimerHeadlessUniversalCheckout {
-    public enum Event {
-        case clientSessionSetupSuccessfully
-        case preparationStarted
-        case paymentMethodPresented
-        case tokenizationStarted
-        case tokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?)
-        case failure(error: Error)
-    }
+    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully()
+    func primerHeadlessUniversalCheckoutPreparationStarted()
+    func primerHeadlessUniversalCheckoutTokenizationStarted()
+    func primerHeadlessUniversalCheckoutPaymentMethodPresented()
+    func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?)
+    func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error)
 }

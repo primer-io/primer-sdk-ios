@@ -124,6 +124,51 @@ enum NetworkError: Error {
 
 class Networking {
     
+    static func buildClientSessionRequestBody(amount: Int, currency: Currency, countryCode: CountryCode) -> ClientSessionRequestBody {
+        let clientSessionRequestBody = ClientSessionRequestBody(
+            customerId: "customer_id",
+            orderId: "ios_order_id_\(String.randomString(length: 8))",
+            currencyCode: currency,
+            amount: nil,
+            metadata: nil,
+            customer: ClientSessionRequestBody.Customer(
+                firstName: "John",
+                lastName: "Smith",
+                emailAddress: "john@primer.io",
+                mobileNumber: "+4478888888888",
+                billingAddress: Address(
+                    firstName: "John",
+                    lastName: "Smith",
+                    addressLine1: "65 York Road",
+                    addressLine2: nil,
+                    city: "London",
+                    state: nil,
+                    countryCode: "GB",
+                    postalCode: "NW06 4OM"),
+                shippingAddress: Address(
+                    firstName: "John",
+                    lastName: "Smith",
+                    addressLine1: "9446 Richmond Road",
+                    addressLine2: nil,
+                    city: "London",
+                    state: nil,
+                    countryCode: "GB",
+                    postalCode: "EC53 8BT")
+            ),
+            order: ClientSessionRequestBody.Order(
+                countryCode: countryCode,
+                lineItems: [
+                    ClientSessionRequestBody.Order.LineItem(
+                        itemId: "_item_id_0",
+                        description: "Item",
+                        amount: amount,
+                        quantity: 1)
+                ]),
+            paymentMethod: nil)
+        
+        return clientSessionRequestBody
+    }
+    
     func request(
         apiVersion: APIVersion?,
         url: URL,
