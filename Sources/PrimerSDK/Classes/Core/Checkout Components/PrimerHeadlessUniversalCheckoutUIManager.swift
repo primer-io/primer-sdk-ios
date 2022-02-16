@@ -56,7 +56,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw err
             }
             
-            if !availablePaymentMethodTypes.contains(paymentMethodType) {
+            if availablePaymentMethodTypes.filter({ $0.id == paymentMethodType.rawValue }).isEmpty {
                 let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 throw err

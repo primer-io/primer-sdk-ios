@@ -24,7 +24,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
     var amount: Int!
     var currency: Currency!
     var countryCode: CountryCode!
-    var availablePaymentMethods: [PaymentMethodConfigType] = []
+    var availablePaymentMethods: [PrimerPaymentMethodType] = []
     
 
     @IBOutlet weak var tableView: UITableView!
@@ -188,17 +188,18 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let paymentMethod = self.availablePaymentMethods[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "MerchantPaymentMethodCell", for: indexPath) as! MerchantPaymentMethodCell
-        cell.configure(paymentMethodConfigType: paymentMethod)
+        cell.configure(paymentMethodType: paymentMethod)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let paymentMethod = self.availablePaymentMethods[indexPath.row]
-        if paymentMethod == .paymentCard {
+        if paymentMethod.id == PaymentMethodConfigType.paymentCard.rawValue {
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            PrimerHeadlessUniversalCheckout.current.showCheckout(for: paymentMethod)
+            let paymentMethodConfigType = PaymentMethodConfigType(rawValue: paymentMethod.id)
+            PrimerHeadlessUniversalCheckout.current.showCheckout(for: paymentMethodConfigType)
         }
     }
 }
@@ -267,10 +268,10 @@ class MerchantPaymentMethodCell: UITableViewCell {
     @IBOutlet weak var paymentMethodLabel: UILabel!
     @IBOutlet weak var buttonContainerView: UIView!
     
-    func configure(paymentMethodConfigType: PaymentMethodConfigType) {
-        paymentMethodLabel.text = paymentMethodConfigType.rawValue
+    func configure(paymentMethodType: PrimerPaymentMethodType) {
+        paymentMethodLabel.text = paymentMethodType.id
         
-        if let button = PrimerHeadlessUniversalCheckout.makeButton(for: paymentMethodConfigType) {
+        if let button = PrimerHeadlessUniversalCheckout.makeButton(for: paymentMethodType) {
             buttonContainerView.addSubview(button)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true

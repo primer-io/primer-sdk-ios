@@ -10,7 +10,7 @@
 import UIKit
 
 public struct PrimerPaymentMethodType {
-    let id: String
+    public let id: String
 }
 
 public class PrimerHeadlessUniversalCheckout {
@@ -21,7 +21,7 @@ public class PrimerHeadlessUniversalCheckout {
     
     fileprivate init() {}
     
-    public func start(withClientToken clientToken: String, andSetings settings: PrimerSettings? = nil, completion: @escaping (_ paymentMethodTypes: [PaymentMethodConfigType]?, _ err: Error?) -> Void) {
+    public func start(withClientToken clientToken: String, andSetings settings: PrimerSettings? = nil, completion: @escaping (_ paymentMethodTypes: [PrimerPaymentMethodType]?, _ err: Error?) -> Void) {
         guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
             let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -106,7 +106,7 @@ public class PrimerHeadlessUniversalCheckout {
         }
     }
     
-    internal func listAvailablePaymentMethodsTypes() -> [PaymentMethodConfigType]? {
+    internal func listAvailablePaymentMethodsTypes() -> [PrimerPaymentMethodType]? {
         do {
             try PrimerHeadlessUniversalCheckout.current.validateSession()
         } catch {
@@ -114,7 +114,7 @@ public class PrimerHeadlessUniversalCheckout {
             return nil
         }
         
-        return PrimerConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
+        return PrimerConfiguration.paymentMethodConfigs?.compactMap({ PrimerPaymentMethodType(id: $0.type.rawValue) })
     }
     
     public func listRequiredInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType]? {
@@ -202,9 +202,10 @@ public class PrimerHeadlessUniversalCheckout {
         }
     }
     
-    public static func makeButton(for paymentMethodType: PaymentMethodConfigType) -> UIButton? {
+    public static func makeButton(for paymentMethodType: PrimerPaymentMethodType) -> UIButton? {
         guard let paymentMethodConfigs = PrimerConfiguration.paymentMethodConfigs else { return nil }
-        guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
+        let paymentMethodConfigType = PaymentMethodConfigType(rawValue: paymentMethodType.id)
+        guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodConfigType }).first else { return nil }
         return paymentMethodConfig.tokenizationViewModel?.paymentMethodButton
     }
     
