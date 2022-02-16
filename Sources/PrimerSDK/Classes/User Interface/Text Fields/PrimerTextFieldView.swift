@@ -254,7 +254,6 @@ class PrimerCustomFieldView: UIView {
         topPlaceholderLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         topPlaceholderLabel.text = placeholderText
         topPlaceholderLabel.textColor = theme.text.system.color
-        topPlaceholderLabel.textAlignment = .left
         stackView.addArrangedSubview(topPlaceholderLabel)
         
         rightImageView1.contentMode = .scaleAspectFit
