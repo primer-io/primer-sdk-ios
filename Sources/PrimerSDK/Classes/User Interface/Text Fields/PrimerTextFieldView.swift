@@ -295,7 +295,6 @@ class PrimerCustomFieldView: UIView {
         errorLabel.heightAnchor.constraint(equalToConstant: 12.0).isActive = true
         errorLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         errorLabel.text = nil
-        errorLabel.textAlignment = .right
         
         stackView.addArrangedSubview(errorLabel)
 
