@@ -9,9 +9,8 @@
 
 import UIKit
 
-public struct PrimerPaymentMethodType {
-    public let id: String
-}
+
+public typealias PrimerPaymentMethodType = PaymentMethodConfigType
 
 public class PrimerHeadlessUniversalCheckout {
     
@@ -21,7 +20,8 @@ public class PrimerHeadlessUniversalCheckout {
     
     fileprivate init() {}
     
-    public func start(withClientToken clientToken: String, andSetings settings: PrimerSettings? = nil, completion: @escaping (_ paymentMethodTypes: [PrimerPaymentMethodType]?, _ err: Error?) -> Void) {
+    public func start(withClientToken clientToken: String, settings: PrimerSettings? = nil, delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil, completion: @escaping (_ paymentMethodTypes: [PrimerPaymentMethodType]?, _ err: Error?) -> Void) {
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
         guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
             let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -114,7 +114,7 @@ public class PrimerHeadlessUniversalCheckout {
             return nil
         }
         
-        return PrimerConfiguration.paymentMethodConfigs?.compactMap({ PrimerPaymentMethodType(id: $0.type.rawValue) })
+        return PrimerConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
     }
     
     public func listRequiredInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType]? {
@@ -204,8 +204,7 @@ public class PrimerHeadlessUniversalCheckout {
     
     public static func makeButton(for paymentMethodType: PrimerPaymentMethodType) -> UIButton? {
         guard let paymentMethodConfigs = PrimerConfiguration.paymentMethodConfigs else { return nil }
-        let paymentMethodConfigType = PaymentMethodConfigType(rawValue: paymentMethodType.id)
-        guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodConfigType }).first else { return nil }
+        guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
         return paymentMethodConfig.tokenizationViewModel?.paymentMethodButton
     }
     
@@ -343,7 +342,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            guard let primerCheckoutComponentsTextField = textField as? PrimerHeadlessUniversalCheckout.TextField else { return false }
+            guard let primerCheckoutComponentsTextField = textField as? PrimerInputTextField else { return false }
             if !string.isEmpty {
                 // Characters aren't in the allowed character set
                 if let allowedCharacterSet = self.inputElement.type.allowedCharacterSet, string.rangeOfCharacter(from: allowedCharacterSet.inverted) != nil {

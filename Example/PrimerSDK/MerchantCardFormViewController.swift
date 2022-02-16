@@ -14,10 +14,10 @@ class MerchantCardFormViewController: UIViewController {
     var stackView: UIStackView!
     lazy var endpoint: String = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     
-    var cardNumberTextField: PrimerHeadlessUniversalCheckout.TextField?
-    var expiryTextField: PrimerHeadlessUniversalCheckout.TextField?
-    var cvvTextField: PrimerHeadlessUniversalCheckout.TextField?
-    var cardHolderNameTextField: PrimerHeadlessUniversalCheckout.TextField?
+    var cardNumberTextField: PrimerInputTextField?
+    var expiryTextField: PrimerInputTextField?
+    var cvvTextField: PrimerInputTextField?
+    var cardHolderNameTextField: PrimerInputTextField?
     var environment: Environment = .staging
     var threeDSAlert: UIAlertController?
     var transactionResponse: TransactionResponse?
@@ -61,7 +61,7 @@ class MerchantCardFormViewController: UIViewController {
 
         var tmpInputElements: [PrimerInputElement] = []
         for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {
-            let textField = PrimerHeadlessUniversalCheckout.TextField(type: inputElementType, frame: .zero)
+            let textField = PrimerInputTextField(type: inputElementType, frame: .zero)
             textField.borderStyle = .line
             textField.layer.borderColor = UIColor.black.cgColor
             textField.inputElementDelegate = self

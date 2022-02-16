@@ -9,23 +9,23 @@ import PrimerSDK
 import PromiseKit
 import UIKit
 
-class ViewController: MyViewController {
+class PayViewController: MyViewController, PrimerInputElementDelegate {
     
     @IBOutlet var stackView: UIStackView!
+    @IBOutlet weak var amountLabel: UILabel!
     let amount = 1000
     let currency = Currency.EUR
     let countryCode = CountryCode.fr
     
-    var availablePaymentMethodsTypes: [PaymentMethodConfigType]?
+    var availablePaymentMethodsTypes: [PrimerPaymentMethodType]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.amountLabel.text = amount.toCurrencyString(currencySymbol: currency.rawValue)
         self.configurePrimerHeadlessCheckout()
     }
     
     func configurePrimerHeadlessCheckout() {
-        PrimerHeadlessUniversalCheckout.delegate = self
-        
         self.showLoading()
         self.fetchClientToken { (clientToken, err) in
             if let err = err {
@@ -38,7 +38,7 @@ class ViewController: MyViewController {
                     merchantIdentifier: "merchant.dx.team",  // 👈 Entitlement added in Xcode's settings, required for Apple Pay
                     urlScheme: "merchant://")                // 👈 URL Scheme added in Xcode's settings, required for PayPal
                 
-                PrimerHeadlessUniversalCheckout.configure(withClientToken: clientToken, andSetings: settings) { paymentMethodTypes, err in
+                PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, delegate: self) { paymentMethodTypes, err in
                     self.stopLoading()
                     
                     if let err = err {
@@ -77,11 +77,13 @@ class ViewController: MyViewController {
         
         if availablePaymentMethodsTypes.contains(.applePay) {
             guard let applePayButton = PrimerHeadlessUniversalCheckout.makeButton(for: .applePay) else { return }
+            applePayButton.addTarget(self, action: #selector(payWithApplePayButtonTapped(_:)), for: .touchUpInside)
             self.stackView.addArrangedSubview(applePayButton)
         }
         
         if availablePaymentMethodsTypes.contains(.payPal) {
             guard let payPalButton = PrimerHeadlessUniversalCheckout.makeButton(for: .payPal) else { return }
+            payPalButton.addTarget(self, action: #selector(payWithPayPalButtonTapped(_:)), for: .touchUpInside)
             self.stackView.addArrangedSubview(payPalButton)
         }
     }
@@ -90,17 +92,53 @@ class ViewController: MyViewController {
         let cfvc = CardFormViewController.instantiate()
         self.navigationController?.pushViewController(cfvc, animated: true)
     }
+    
+    @IBAction func payWithApplePayButtonTapped(_ sender: Any) {
+        PrimerHeadlessUniversalCheckout.current.showCheckout(for: .applePay)
+    }
+    
+    @IBAction func payWithPayPalButtonTapped(_ sender: Any) {
+        PrimerHeadlessUniversalCheckout.current.showCheckout(for: .payPal)
+    }
 }
 
-extension ViewController: PrimerHeadlessUniversalCheckoutDelegate {
-    func onEvent(_ event: PrimerHeadlessUniversalCheckout.Event) {
-        switch event {
-        case .failure(let err):
-            self.showError(withMessage: err.localizedDescription)
-        default:
-            break
+extension PayViewController: PrimerHeadlessUniversalCheckoutDelegate {
+    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully() {
+        
+    }
+    
+    func primerHeadlessUniversalCheckoutPreparationStarted() {
+        self.showLoading()
+    }
+    
+    func primerHeadlessUniversalCheckoutTokenizationStarted() {
+        self.showLoading()
+    }
+    
+    func primerHeadlessUniversalCheckoutPaymentMethodPresented() {
+        
+    }
+    
+    func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
+        self.showLoading()
+        
+        let networking = Networking()
+        networking.createPayment(with: paymentMethodToken) { res, err in
+            self.stopLoading()
+            
+            if let err = err {
+                self.showError(withMessage: err.localizedDescription)
+            } else {
+                
+            }
         }
     }
+    
+    func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error) {
+        self.stopLoading()
+        self.showError(withMessage: err.localizedDescription)
+    }
+    
 }
 
 

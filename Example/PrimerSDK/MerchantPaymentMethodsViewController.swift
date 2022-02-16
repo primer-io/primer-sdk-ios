@@ -51,7 +51,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
                 let settings = PrimerSettings(
                     merchantIdentifier: "merchant.dx.team",
                     urlScheme: "merchant://")
-                PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, andSetings: settings, completion: { (pms, err) in
+                PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, completion: { (pms, err) in
                     DispatchQueue.main.async {
                         self.activityIndicator?.stopAnimating()
                         self.activityIndicator?.removeFromSuperview()
@@ -193,13 +193,12 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let paymentMethod = self.availablePaymentMethods[indexPath.row]
-        if paymentMethod.id == PaymentMethodConfigType.paymentCard.rawValue {
+        let paymentMethodType = self.availablePaymentMethods[indexPath.row]
+        if paymentMethodType == PaymentMethodConfigType.paymentCard {
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            let paymentMethodConfigType = PaymentMethodConfigType(rawValue: paymentMethod.id)
-            PrimerHeadlessUniversalCheckout.current.showCheckout(for: paymentMethodConfigType)
+            PrimerHeadlessUniversalCheckout.current.showCheckout(for: paymentMethodType)
         }
     }
 }
@@ -269,7 +268,7 @@ class MerchantPaymentMethodCell: UITableViewCell {
     @IBOutlet weak var buttonContainerView: UIView!
     
     func configure(paymentMethodType: PrimerPaymentMethodType) {
-        paymentMethodLabel.text = paymentMethodType.id
+        paymentMethodLabel.text = paymentMethodType.rawValue
         
         if let button = PrimerHeadlessUniversalCheckout.makeButton(for: paymentMethodType) {
             buttonContainerView.addSubview(button)

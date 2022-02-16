@@ -31,7 +31,7 @@ extension MyViewController {
             self.activityIndicatorView!.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
             self.activityIndicatorView!.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
             self.activityIndicatorView!.backgroundColor = .lightGray.withAlphaComponent(0.3)
-            self.activityIndicatorView!.color = .white
+            self.activityIndicatorView!.color = .darkGray
             self.activityIndicatorView!.startAnimating()
         }
     }

@@ -8,10 +8,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Pay View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="HeadlessUniversalCheckoutExample" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PayViewController" id="BYZ-38-t0r" customClass="PayViewController" customModule="HeadlessUniversalCheckoutExample" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -20,11 +20,18 @@
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="414" placeholderIntrinsicHeight="1200" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="dMG-15-19z">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="1200"/>
+                                        <rect key="frame" x="10" y="0.0" width="394" height="1200"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sum-pW-HQZ">
-                                                <rect key="frame" x="0.0" y="0.0" width="414" height="1200"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eq8-i0-dr7" customClass="PrimerRedView" customModule="PrimerSDK">
+                                                <rect key="frame" x="0.0" y="0.0" width="394" height="200"/>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="200" id="p9v-bQ-NY3"/>
+                                                </constraints>
+                                            </view>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sum-pW-HQZ">
+                                                <rect key="frame" x="0.0" y="208" width="394" height="992"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="32"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -32,8 +39,8 @@
                                     </stackView>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="dMG-15-19z" secondAttribute="trailing" id="HTu-nY-Y2J"/>
-                                    <constraint firstItem="dMG-15-19z" firstAttribute="leading" secondItem="fAj-FK-bda" secondAttribute="leading" id="eiv-A0-ZwM"/>
+                                    <constraint firstAttribute="trailing" secondItem="dMG-15-19z" secondAttribute="trailing" constant="10" id="HTu-nY-Y2J"/>
+                                    <constraint firstItem="dMG-15-19z" firstAttribute="leading" secondItem="fAj-FK-bda" secondAttribute="leading" constant="10" id="eiv-A0-ZwM"/>
                                     <constraint firstAttribute="bottom" secondItem="dMG-15-19z" secondAttribute="bottom" id="iWc-E4-z8O"/>
                                     <constraint firstItem="dMG-15-19z" firstAttribute="top" secondItem="fAj-FK-bda" secondAttribute="top" id="mSY-5F-AiX"/>
                                 </constraints>
@@ -43,7 +50,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="fAj-FK-bda" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="GbN-yQ-jRa"/>
-                            <constraint firstItem="dMG-15-19z" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="Gj1-Vr-Lzw"/>
+                            <constraint firstItem="dMG-15-19z" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" constant="-20" id="Gj1-Vr-Lzw"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="fAj-FK-bda" secondAttribute="bottom" id="XBR-Nj-Mca"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="fAj-FK-bda" secondAttribute="trailing" id="Y0f-W9-xXx"/>
                             <constraint firstItem="fAj-FK-bda" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="z5e-Lc-r9M"/>
@@ -51,6 +58,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="aJk-eu-Bbf"/>
                     <connections>
+                        <outlet property="amountLabel" destination="sum-pW-HQZ" id="TH9-RM-b3q"/>
                         <outlet property="stackView" destination="dMG-15-19z" id="plc-bV-cei"/>
                     </connections>
                 </viewController>
@@ -66,21 +74,33 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="XaL-vO-1fW">
-                                <rect key="frame" x="20" y="64" width="374" height="778"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="374" placeholderIntrinsicHeight="727" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="XaL-vO-1fW">
+                                <rect key="frame" x="20" y="64" width="374" height="727"/>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jgg-Bg-ngr">
+                                <rect key="frame" x="20" y="811" width="374" height="31"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Pay"/>
+                                <connections>
+                                    <action selector="payButtonTapped:" destination="UsI-6R-tQs" eventType="touchUpInside" id="Ndn-Es-XTp"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Ktd-fH-pNv"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Ktd-fH-pNv" firstAttribute="bottom" secondItem="XaL-vO-1fW" secondAttribute="bottom" constant="20" id="FLO-QG-2IK"/>
                             <constraint firstItem="XaL-vO-1fW" firstAttribute="leading" secondItem="Ktd-fH-pNv" secondAttribute="leading" constant="20" id="Jdv-XH-ZKT"/>
+                            <constraint firstItem="Ktd-fH-pNv" firstAttribute="trailing" secondItem="jgg-Bg-ngr" secondAttribute="trailing" constant="20" id="Txj-4r-egF"/>
+                            <constraint firstItem="jgg-Bg-ngr" firstAttribute="leading" secondItem="Ktd-fH-pNv" secondAttribute="leading" constant="20" id="Ux3-yL-r6m"/>
+                            <constraint firstItem="jgg-Bg-ngr" firstAttribute="top" secondItem="XaL-vO-1fW" secondAttribute="bottom" constant="20" id="YBw-dt-q48"/>
                             <constraint firstItem="Ktd-fH-pNv" firstAttribute="trailing" secondItem="XaL-vO-1fW" secondAttribute="trailing" constant="20" id="s75-X4-3Ui"/>
+                            <constraint firstItem="Ktd-fH-pNv" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="jgg-Bg-ngr" secondAttribute="bottom" constant="20" id="v7M-8O-T2K"/>
                             <constraint firstItem="XaL-vO-1fW" firstAttribute="top" secondItem="Ktd-fH-pNv" secondAttribute="top" constant="20" id="wWY-Pi-swI"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="P9h-JI-GWb"/>
                     <connections>
+                        <outlet property="payButton" destination="jgg-Bg-ngr" id="DQI-pF-qaV"/>
                         <outlet property="stackView" destination="XaL-vO-1fW" id="vSC-cc-DO8"/>
                     </connections>
                 </viewController>
