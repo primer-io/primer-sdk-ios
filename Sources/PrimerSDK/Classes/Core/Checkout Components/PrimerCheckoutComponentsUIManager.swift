@@ -25,6 +25,10 @@ public protocol PrimerCheckoutComponentsUIManager {
     func startTokenization(withData data: PrimerCheckoutComponentsInputData?)
 }
 
+public protocol PrimerCardFormDelegate {
+    func cardFormUIManager(_ cardFormUIManager: PrimerCheckoutComponents.CardFormUIManager, isCardFormValid: Bool)
+}
+
 extension PrimerCheckoutComponents {
     
     public class UIManager: PrimerCheckoutComponentsUIManager {
@@ -88,11 +92,20 @@ extension PrimerCheckoutComponents {
             }
         }
         private var originalInputElementsDelegates: [(PrimerInputElement, PrimerInputElementDelegate)] = []
-        private(set) public var isFormValid: Bool = false
+        public var cardFormUIManagerDelegate: PrimerCardFormDelegate?
+        private(set) public var isCardFormValid: Bool = false {
+            didSet {
+                cardFormUIManagerDelegate?.cardFormUIManager(self, isCardFormValid: isCardFormValid)
+            }
+        }
         
-        public required init(paymentMethodType: PaymentMethodConfigType) throws {
-            try super.init(paymentMethodType: paymentMethodType)
+        public required init() throws {
+            try super.init(paymentMethodType: .paymentCard)
             self.requiredInputElementTypes = PrimerCheckoutComponents.listRequiredInputElementTypes(for: paymentMethodType) ?? []
+        }
+        
+        required public init(paymentMethodType: PaymentMethodConfigType) throws {
+            fatalError("init(paymentMethodType:) has not been implemented")
         }
         
         public override func startTokenization(withData data: PrimerCheckoutComponentsInputData? = nil) {
@@ -317,8 +330,8 @@ extension PrimerCheckoutComponents {
                 let inputElementsValidation = self.inputElements.compactMap({ $0.isValid })
                 tmpIsFormValid = !inputElementsValidation.contains(false)
                 
-                if tmpIsFormValid != self.isFormValid {
-                    self.isFormValid = tmpIsFormValid
+                if tmpIsFormValid != self.isCardFormValid {
+                    self.isCardFormValid = tmpIsFormValid
                 }
             }
         }

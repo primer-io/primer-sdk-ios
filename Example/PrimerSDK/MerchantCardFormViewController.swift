@@ -25,7 +25,7 @@ class MerchantCardFormViewController: UIViewController {
     var activityIndicator: UIActivityIndicatorView?
     var paymentButton: UIButton!
     
-    var checkoutComponentsUIManager: PrimerCheckoutComponents.CardFormUIManager?
+    var cardFormUIManager: PrimerCheckoutComponents.CardFormUIManager?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,10 +57,10 @@ class MerchantCardFormViewController: UIViewController {
 
         PrimerCheckoutComponents.delegate = self
 
-        self.checkoutComponentsUIManager = try! PrimerCheckoutComponents.CardFormUIManager(paymentMethodType: .paymentCard)
+        self.cardFormUIManager = try! PrimerCheckoutComponents.CardFormUIManager()
 
         var tmpInputElements: [PrimerInputElement] = []
-        for inputElementType in self.checkoutComponentsUIManager!.requiredInputElementTypes {
+        for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {
             let textField = PrimerCheckoutComponents.TextField(type: inputElementType, frame: .zero)
             textField.borderStyle = .line
             textField.layer.borderColor = UIColor.black.cgColor
@@ -86,12 +86,12 @@ class MerchantCardFormViewController: UIViewController {
             tmpInputElements.append(textField)
         }
 
-        self.checkoutComponentsUIManager?.inputElements = tmpInputElements
+        self.cardFormUIManager?.inputElements = tmpInputElements
     }
 
     @objc
     func paymentButtonTapped() {
-        self.checkoutComponentsUIManager?.startTokenization()
+        self.cardFormUIManager?.startTokenization()
     }
 }
 
