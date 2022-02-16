@@ -55,7 +55,7 @@ class MerchantCardFormViewController: UIViewController {
         self.stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         self.stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
 
-        PrimerHeadlessUniversalCheckout.delegate = self
+        PrimerHeadlessUniversalCheckout.current.delegate = self
 
         self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardFormUIManager()
 

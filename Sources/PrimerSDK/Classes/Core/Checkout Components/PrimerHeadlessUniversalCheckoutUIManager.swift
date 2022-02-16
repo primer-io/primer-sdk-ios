@@ -44,13 +44,13 @@ extension PrimerHeadlessUniversalCheckout {
             }
             
             do {
-                try PrimerHeadlessUniversalCheckout.validateSession()
+                try PrimerHeadlessUniversalCheckout.current.validateSession()
             } catch {
                 ErrorHandler.handle(error: error)
                 throw error
             }
             
-            guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.listAvailablePaymentMethodsTypes() else {
+            guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 throw err
@@ -101,7 +101,7 @@ extension PrimerHeadlessUniversalCheckout {
         
         public required init() throws {
             try super.init(paymentMethodType: .paymentCard)
-            self.requiredInputElementTypes = PrimerHeadlessUniversalCheckout.listRequiredInputElementTypes(for: paymentMethodType) ?? []
+            self.requiredInputElementTypes = PrimerHeadlessUniversalCheckout.current.listRequiredInputElementTypes(for: paymentMethodType) ?? []
         }
         
         required public init(paymentMethodType: PaymentMethodConfigType) throws {
@@ -110,14 +110,14 @@ extension PrimerHeadlessUniversalCheckout {
         
         public override func startTokenization(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
             do {
-                try PrimerHeadlessUniversalCheckout.validateSession()
+                try PrimerHeadlessUniversalCheckout.current.validateSession()
             } catch {
                 ErrorHandler.handle(error: error)
-                PrimerHeadlessUniversalCheckout.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
                 return
             }
             
-            PrimerHeadlessUniversalCheckout.delegate?.primerHeadlessUniversalCheckoutTokenizationStarted()
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationStarted()
 
             firstly {
                 self.validateInputData()
@@ -129,10 +129,10 @@ extension PrimerHeadlessUniversalCheckout {
                 return self.tokenize(request: requestbody)
             }
             .done { paymentMethodToken in
-                PrimerHeadlessUniversalCheckout.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: nil)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: nil)
             }
             .catch { err in
-                PrimerHeadlessUniversalCheckout.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
             }
         }
         
