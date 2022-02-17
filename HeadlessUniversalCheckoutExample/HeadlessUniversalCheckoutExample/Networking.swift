@@ -311,17 +311,19 @@ class Networking {
             headers: nil,
             queryParameters: nil,
             body: bodyData) { result in
-                switch result {
-                case .success(let data):
-                    do {
-                        let paymentResponse = try JSONDecoder().decode(Payment.Response.self, from: data)
-                        completion(paymentResponse, nil)
-                    } catch {
-                        completion(nil, error)
-                    }
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let data):
+                        do {
+                            let paymentResponse = try JSONDecoder().decode(Payment.Response.self, from: data)
+                            completion(paymentResponse, nil)
+                        } catch {
+                            completion(nil, error)
+                        }
 
-                case .failure(let err):
-                    completion(nil, err)
+                    case .failure(let err):
+                        completion(nil, err)
+                    }
                 }
             }
     }

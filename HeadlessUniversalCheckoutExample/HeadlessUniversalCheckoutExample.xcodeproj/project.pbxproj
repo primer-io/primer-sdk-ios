@@ -14,12 +14,12 @@
 		84FB34E127BD0DC100BA0EDC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84FB34DF27BD0DC100BA0EDC /* Main.storyboard */; };
 		84FB34E327BD0DC200BA0EDC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84FB34E227BD0DC200BA0EDC /* Assets.xcassets */; };
 		84FB34E627BD0DC200BA0EDC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84FB34E427BD0DC200BA0EDC /* LaunchScreen.storyboard */; };
-		84FB34F527BD10A700BA0EDC /* CardFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB34F427BD10A700BA0EDC /* CardFormViewController.swift */; };
 		84FB34F727BD161F00BA0EDC /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB34F627BD161F00BA0EDC /* Networking.swift */; };
 		84FB34F927BD16A900BA0EDC /* ClientSessionRequestBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB34F827BD16A900BA0EDC /* ClientSessionRequestBody.swift */; };
 		84FB34FC27BD231800BA0EDC /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB34FB27BD231800BA0EDC /* UIViewControllerExtension.swift */; };
 		84FB34FE27BD258000BA0EDC /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB34FD27BD258000BA0EDC /* StringExtension.swift */; };
 		84FB350227BD5DFE00BA0EDC /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB350127BD5DFE00BA0EDC /* IntExtension.swift */; };
+		84FB350427BE526800BA0EDC /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB350327BE526800BA0EDC /* DataExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,12 +33,12 @@
 		84FB34E227BD0DC200BA0EDC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		84FB34E527BD0DC200BA0EDC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		84FB34E727BD0DC200BA0EDC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		84FB34F427BD10A700BA0EDC /* CardFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardFormViewController.swift; sourceTree = "<group>"; };
 		84FB34F627BD161F00BA0EDC /* Networking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		84FB34F827BD16A900BA0EDC /* ClientSessionRequestBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientSessionRequestBody.swift; sourceTree = "<group>"; };
 		84FB34FB27BD231800BA0EDC /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
 		84FB34FD27BD258000BA0EDC /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		84FB350127BD5DFE00BA0EDC /* IntExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtension.swift; sourceTree = "<group>"; };
+		84FB350327BE526800BA0EDC /* DataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
 		C2DCEB19716C44984BCD3688 /* Pods_HeadlessUniversalCheckoutExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HeadlessUniversalCheckoutExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -108,9 +108,10 @@
 		84FB34FA27BD22FF00BA0EDC /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				84FB350327BE526800BA0EDC /* DataExtension.swift */,
+				84FB350127BD5DFE00BA0EDC /* IntExtension.swift */,
 				84FB34FD27BD258000BA0EDC /* StringExtension.swift */,
 				84FB34FB27BD231800BA0EDC /* UIViewControllerExtension.swift */,
-				84FB350127BD5DFE00BA0EDC /* IntExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -128,7 +129,6 @@
 			children = (
 				84FB34DF27BD0DC100BA0EDC /* Main.storyboard */,
 				84FB34DD27BD0DC100BA0EDC /* PayViewController.swift */,
-				84FB34F427BD10A700BA0EDC /* CardFormViewController.swift */,
 			);
 			path = "User Interface";
 			sourceTree = "<group>";
@@ -248,9 +248,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84FB34F527BD10A700BA0EDC /* CardFormViewController.swift in Sources */,
 				84FB34F727BD161F00BA0EDC /* Networking.swift in Sources */,
 				84FB34DE27BD0DC100BA0EDC /* PayViewController.swift in Sources */,
+				84FB350427BE526800BA0EDC /* DataExtension.swift in Sources */,
 				84FB34DA27BD0DC100BA0EDC /* AppDelegate.swift in Sources */,
 				84FB34FE27BD258000BA0EDC /* StringExtension.swift in Sources */,
 				84FB350227BD5DFE00BA0EDC /* IntExtension.swift in Sources */,

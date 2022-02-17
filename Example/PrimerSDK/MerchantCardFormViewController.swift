@@ -91,7 +91,7 @@ class MerchantCardFormViewController: UIViewController {
 
     @objc
     func paymentButtonTapped() {
-        self.cardFormUIManager?.startTokenization()
+        self.cardFormUIManager?.tokenize()
     }
 }
 

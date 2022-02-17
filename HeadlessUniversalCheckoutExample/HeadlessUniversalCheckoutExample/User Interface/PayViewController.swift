@@ -6,22 +6,23 @@
 //
 
 import PrimerSDK
-import PromiseKit
 import UIKit
 
-class PayViewController: MyViewController, PrimerInputElementDelegate {
+class PayViewController: MyViewController {
     
     @IBOutlet var stackView: UIStackView!
     @IBOutlet weak var amountLabel: UILabel!
+    var payByCardButton: UIButton!
     let amount = 1000
     let currency = Currency.EUR
     let countryCode = CountryCode.fr
+    var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager!
     
     var availablePaymentMethodsTypes: [PrimerPaymentMethodType]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.amountLabel.text = amount.toCurrencyString(currencySymbol: currency.rawValue)
+        self.amountLabel.text = "PRICE: " + amount.toCurrencyString(currencySymbol: currency.rawValue)
         self.configurePrimerHeadlessCheckout()
     }
     
@@ -64,15 +65,55 @@ class PayViewController: MyViewController, PrimerInputElementDelegate {
             self.showError(withMessage: "Card payments are not available")
             return
         }
+        
+        let separatorView1 = UIView()
+        separatorView1.backgroundColor = .clear
+        self.stackView.addArrangedSubview(separatorView1)
+        separatorView1.translatesAutoresizingMaskIntoConstraints = false
+        separatorView1.heightAnchor.constraint(equalToConstant: 12).isActive = true
 
         if availablePaymentMethodsTypes.contains(.paymentCard) {
-            let payByCardButton = UIButton()
-            payByCardButton.translatesAutoresizingMaskIntoConstraints = false
-            payByCardButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-            payByCardButton.addTarget(self, action: #selector(payWithCardButtonTapped(_:)), for: .touchUpInside)
-            payByCardButton.setTitle("Pay by card", for: .normal)
-            payByCardButton.setTitleColor(.systemBlue, for: .normal)
-            self.stackView.addArrangedSubview(payByCardButton)
+            do {
+                self.cardFormUIManager = try PrimerHeadlessUniversalCheckout.CardFormUIManager()
+                self.cardFormUIManager.cardFormUIManagerDelegate = self
+                self.makeCardForm()
+            } catch {
+                self.stopLoading()
+                self.showError(withMessage: error.localizedDescription)
+                return
+            }
+            
+            self.payByCardButton = UIButton()
+            self.payByCardButton.isEnabled = false
+            
+            self.payByCardButton.translatesAutoresizingMaskIntoConstraints = false
+            self.payByCardButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            self.payByCardButton.addTarget(self, action: #selector(self.payWithCardButtonTapped(_:)), for: .touchUpInside)
+            self.payByCardButton.setTitle("Pay by card", for: .normal)
+            self.payByCardButton.setTitleColor(.systemBlue, for: .normal)
+            self.payByCardButton.setTitleColor(.gray, for: .disabled)
+            self.payByCardButton.layer.borderColor = UIColor.lightGray.cgColor
+            self.payByCardButton.layer.borderWidth = 1.0
+            self.payByCardButton.layer.cornerRadius = 4.0
+            self.stackView.addArrangedSubview(self.payByCardButton)
+            
+            let separatorView2 = UIView()
+            separatorView2.backgroundColor = .clear
+            self.stackView.addArrangedSubview(separatorView2)
+            separatorView2.translatesAutoresizingMaskIntoConstraints = false
+            separatorView2.heightAnchor.constraint(equalToConstant: 12).isActive = true
+            
+            let separatorView3 = UIView()
+            separatorView3.backgroundColor = .lightGray
+            self.stackView.addArrangedSubview(separatorView3)
+            separatorView3.translatesAutoresizingMaskIntoConstraints = false
+            separatorView3.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            
+            let separatorView4 = UIView()
+            separatorView4.backgroundColor = .clear
+            self.stackView.addArrangedSubview(separatorView4)
+            separatorView4.translatesAutoresizingMaskIntoConstraints = false
+            separatorView4.heightAnchor.constraint(equalToConstant: 12).isActive = true
         }
         
         if availablePaymentMethodsTypes.contains(.applePay) {
@@ -88,9 +129,73 @@ class PayViewController: MyViewController, PrimerInputElementDelegate {
         }
     }
     
+    func makeCardForm() {
+        var inputElements: [PrimerInputTextField] = []
+        
+        for requiredInputElementType in self.cardFormUIManager.requiredInputElementTypes {
+            let textField = PrimerInputTextField(type: requiredInputElementType, frame: .zero)
+            textField.inputElementDelegate = self
+            
+            textField.translatesAutoresizingMaskIntoConstraints = false
+            textField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            textField.backgroundColor = .white
+            textField.borderStyle = .none
+            textField.layer.cornerRadius = 4.0
+            textField.layer.borderWidth = 1.0
+            textField.layer.borderColor = UIColor.systemBlue.cgColor
+            textField.layer.sublayerTransform = CATransform3DMakeTranslation(5, 0, 0);
+        
+            switch requiredInputElementType {
+            case .cardNumber:
+                textField.placeholder = "4242 4242 4242 4242"
+            case .expiryDate:
+                textField.placeholder = "02/24"
+            case .cvv:
+                textField.placeholder = "123"
+            case .cardholderName:
+                textField.placeholder = "John Smith"
+            default:
+                break
+            }
+            
+            inputElements.append(textField)
+        }
+        
+        cardFormUIManager.inputElements = inputElements
+        
+        if let cardNumberField = inputElements.filter({ $0.type == .cardNumber }).first {
+            self.stackView.addArrangedSubview(cardNumberField)
+        }
+        
+        if let expiryDateField = inputElements.filter({ $0.type == .expiryDate }).first,
+           let cvvField = inputElements.filter({ $0.type == .cvv }).first {
+            let rowStackView = UIStackView()
+            rowStackView.axis = .horizontal
+            rowStackView.spacing = 6.0
+            rowStackView.distribution = .fillEqually
+            rowStackView.addArrangedSubview(expiryDateField)
+            rowStackView.addArrangedSubview(cvvField)
+            
+            self.stackView.addArrangedSubview(rowStackView)
+            rowStackView.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        if let cardholderNameField = inputElements.filter({ $0.type == .cardholderName }).first {
+            self.stackView.addArrangedSubview(cardholderNameField)
+        }
+        
+        if let postalCodeField = inputElements.filter({ $0.type == .postalCode }).first {
+            self.stackView.addArrangedSubview(postalCodeField)
+        }
+    }
+    
+    func setPayByCardButton(enabled: Bool) {
+        self.payByCardButton.isEnabled = enabled
+        self.payByCardButton.layer.borderColor = enabled ? UIColor.systemBlue.cgColor : UIColor.lightGray.cgColor
+    }
+    
     @IBAction func payWithCardButtonTapped(_ sender: Any) {
-        let cfvc = CardFormViewController.instantiate()
-        self.navigationController?.pushViewController(cfvc, animated: true)
+        self.cardFormUIManager?.tokenize()
     }
     
     @IBAction func payWithApplePayButtonTapped(_ sender: Any) {
@@ -99,6 +204,46 @@ class PayViewController: MyViewController, PrimerInputElementDelegate {
     
     @IBAction func payWithPayPalButtonTapped(_ sender: Any) {
         PrimerHeadlessUniversalCheckout.current.showCheckout(for: .payPal)
+    }
+}
+
+extension PayViewController: PrimerInputElementDelegate {
+    func inputElementDidBlur(_ sender: PrimerInputElement) {
+        
+    }
+    
+    func inputElementDidFocus(_ sender: PrimerInputElement) {
+        
+    }
+    
+    func inputElementValueDidChange(_ sender: PrimerInputElement) {
+        
+    }
+    
+    func inputElementDidDetectType(_ sender: PrimerInputElement, type: Any?) {
+        
+    }
+    
+    func inputElementValueIsValid(_ sender: PrimerInputElement, isValid: Bool) {
+        guard isValid else { return }
+        let invalidInputElements = self.cardFormUIManager.inputElements.filter({ $0.isValid != true })
+        guard !invalidInputElements.isEmpty else { return }
+        
+        if sender.type == .expiryDate {
+            if let invalidCvvInputElement = invalidInputElements.filter({ $0.type == .cvv }).first as? PrimerInputTextField {
+                invalidCvvInputElement.becomeFirstResponder()
+            }
+        } else if sender.type == .cvv {
+            if let invalidCardholderNameInputElement = invalidInputElements.filter({ $0.type == .cardholderName }).first as? PrimerInputTextField {
+                invalidCardholderNameInputElement.becomeFirstResponder()
+            }
+        }
+    }
+}
+
+extension PayViewController: PrimerCardFormDelegate {
+    func cardFormUIManager(_ cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager, isCardFormValid: Bool) {
+        self.setPayByCardButton(enabled: isCardFormValid)
     }
 }
 
@@ -128,8 +273,14 @@ extension PayViewController: PrimerHeadlessUniversalCheckoutDelegate {
             
             if let err = err {
                 self.showError(withMessage: err.localizedDescription)
-            } else {
+            } else if let res = res {
+                let data = try! JSONEncoder().encode(res)
+                let str = data.prettyPrintedJSONString as? String
                 
+                self.stopLoading()
+                let alert = UIAlertController(title: "SUCCESS", message: str, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
             }
         }
     }

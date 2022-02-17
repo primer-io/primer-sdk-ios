@@ -22,7 +22,7 @@ extension PrimerHeadlessUniversalCheckout {
 
 public protocol PrimerHeadlessUniversalCheckoutUIManager {
     init(paymentMethodType: PaymentMethodConfigType) throws
-    func startTokenization(withData data: PrimerHeadlessUniversalCheckoutInputData?)
+    func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData?)
 }
 
 public protocol PrimerCardFormDelegate {
@@ -65,7 +65,7 @@ extension PrimerHeadlessUniversalCheckout {
             self.paymentMethodType = paymentMethodType
         }
         
-        public func startTokenization(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
+        public func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
             guard let data = data else { return }
             
             if let ibanData = data as? IBANData {
@@ -95,7 +95,9 @@ extension PrimerHeadlessUniversalCheckout {
         public var cardFormUIManagerDelegate: PrimerCardFormDelegate?
         private(set) public var isCardFormValid: Bool = false {
             didSet {
-                cardFormUIManagerDelegate?.cardFormUIManager(self, isCardFormValid: isCardFormValid)
+                DispatchQueue.main.async {
+                    self.cardFormUIManagerDelegate?.cardFormUIManager(self, isCardFormValid: self.isCardFormValid)
+                }
             }
         }
         
@@ -108,7 +110,7 @@ extension PrimerHeadlessUniversalCheckout {
             fatalError("init(paymentMethodType:) has not been implemented")
         }
         
-        public override func startTokenization(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
+        public override func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
             do {
                 try PrimerHeadlessUniversalCheckout.current.validateSession()
             } catch {
@@ -269,7 +271,9 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func inputElementShouldFocus(_ sender: PrimerInputElement) -> Bool {
+        // MARK: - INPUT ELEMENTS DELEGATE
+        
+        public func inputElementShouldFocus(_ sender: PrimerInputElement) -> Bool {
             guard let senderTextField = sender as? PrimerInputTextField else { return true }
             guard let inputElementWithOriginalDelegate = originalInputElementsDelegates.filter({ ($0.0 as? PrimerInputTextField) == senderTextField }).first else { return true }
             
@@ -280,13 +284,13 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func inputElementDidFocus(_ sender: PrimerInputElement) {
+        public func inputElementDidFocus(_ sender: PrimerInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
             guard let inputElementWithOriginalDelegate = originalInputElementsDelegates.filter({ ($0.0 as? PrimerInputTextField) == senderTextField }).first else { return }
             inputElementWithOriginalDelegate.1.inputElementDidFocus?(sender)
         }
         
-        private func inputElementShouldBlur(_ sender: PrimerInputElement) -> Bool {
+        public func inputElementShouldBlur(_ sender: PrimerInputElement) -> Bool {
             guard let senderTextField = sender as? PrimerInputTextField else { return true }
             guard let inputElementWithOriginalDelegate = originalInputElementsDelegates.filter({ ($0.0 as? PrimerInputTextField) == senderTextField }).first else { return true }
             
@@ -297,19 +301,19 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func inputElementDidBlur(_ sender: PrimerInputElement) {
+        public func inputElementDidBlur(_ sender: PrimerInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
             guard let inputElementWithOriginalDelegate = originalInputElementsDelegates.filter({ ($0.0 as? PrimerInputTextField) == senderTextField }).first else { return }
             inputElementWithOriginalDelegate.1.inputElementDidBlur?(sender)
         }
         
-        private func inputElementValueDidChange(_ sender: PrimerInputElement) {
+        public func inputElementValueDidChange(_ sender: PrimerInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
             guard let inputElementWithOriginalDelegate = originalInputElementsDelegates.filter({ ($0.0 as? PrimerInputTextField) == senderTextField }).first else { return }
             inputElementWithOriginalDelegate.1.inputElementValueDidChange?(sender)
         }
         
-        private func inputElementDidDetectType(_ sender: PrimerInputElement, type: Any?) {
+        public func inputElementDidDetectType(_ sender: PrimerInputElement, type: Any?) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
             guard let inputElementWithOriginalDelegate = originalInputElementsDelegates.filter({ ($0.0 as? PrimerInputTextField) == senderTextField }).first else { return }
             
@@ -320,7 +324,7 @@ extension PrimerHeadlessUniversalCheckout {
             inputElementWithOriginalDelegate.1.inputElementDidDetectType?(sender, type: type)
         }
         
-        private func inputElementValueIsValid(_ sender: PrimerInputElement, isValid: Bool) {
+        public func inputElementValueIsValid(_ sender: PrimerInputElement, isValid: Bool) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
             guard let inputElementWithOriginalDelegate = originalInputElementsDelegates.filter({ ($0.0 as? PrimerInputTextField) == senderTextField }).first else { return }
             inputElementWithOriginalDelegate.1.inputElementValueIsValid?(sender, isValid: isValid)

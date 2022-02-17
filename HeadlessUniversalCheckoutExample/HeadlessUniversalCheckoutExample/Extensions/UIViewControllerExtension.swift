@@ -23,7 +23,9 @@ extension MyViewController {
 
     func showLoading() {
         DispatchQueue.main.async {
-            self.activityIndicatorView = UIActivityIndicatorView()
+            if self.activityIndicatorView == nil {
+                self.activityIndicatorView = UIActivityIndicatorView()
+            }
             self.view.addSubview(self.activityIndicatorView!)
             self.activityIndicatorView!.translatesAutoresizingMaskIntoConstraints = false
             self.activityIndicatorView!.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true

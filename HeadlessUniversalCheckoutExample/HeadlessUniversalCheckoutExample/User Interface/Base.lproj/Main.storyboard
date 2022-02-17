@@ -22,15 +22,8 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="414" placeholderIntrinsicHeight="1200" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="dMG-15-19z">
                                         <rect key="frame" x="10" y="0.0" width="394" height="1200"/>
                                         <subviews>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eq8-i0-dr7" customClass="PrimerRedView" customModule="PrimerSDK">
-                                                <rect key="frame" x="0.0" y="0.0" width="394" height="200"/>
-                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="200" id="p9v-bQ-NY3"/>
-                                                </constraints>
-                                            </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sum-pW-HQZ">
-                                                <rect key="frame" x="0.0" y="208" width="394" height="992"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="394" height="1200"/>
                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="32"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
