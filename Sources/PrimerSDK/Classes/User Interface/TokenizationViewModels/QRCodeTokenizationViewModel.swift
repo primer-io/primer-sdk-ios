@@ -68,6 +68,20 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         set { _buttonColor = newValue }
     }
     
+    private lazy var _buttonTintColor: UIColor? = {
+        switch config.type {
+        case .xfers:
+            return .white
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    override var buttonTintColor: UIColor? {
+        get { return _buttonTintColor }
+        set { _buttonTintColor = newValue }
+    }
+    
     private var tokenizationService: TokenizationServiceProtocol?
     internal var qrCode: String?
     private var didCancel: (() -> Void)?
