@@ -6,7 +6,7 @@ use_frameworks!
 platform :ios, '10.0'
 
 target 'PrimerSDK_Example' do
-  pod 'PrimerSDK', :path => '../'
+  pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios', :branch => 'beta/headless-universal-checkout'
 #  pod 'Primer3DS'
 
   target 'PrimerSDK_Tests' do
