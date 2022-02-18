@@ -230,8 +230,8 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 6E6525C7043FBA7BB34A249010AF5593;
-			remoteInfo = "PrimerSDK-PrimerResources";
+			remoteGlobalIDString = 6C144A762E9B598392AFFEC8F873746A;
+			remoteInfo = "Pods-PrimerSDK_Example";
 		};
 		22160E0A8EFF6BEC2CD69EBE29EF0A7A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -861,12 +861,17 @@
 			path = Sources/PrimerSDK/Classes/Core;
 			sourceTree = "<group>";
 		};
-		7247ACD97AB79769C7D29E910A7E0D09 /* Development Pods */ = {
+		6AF8B49BEE584099FE7CFAC315062CEC /* Payment Services */ = {
 			isa = PBXGroup;
 			children = (
-				5E9E9BA97FF9664E2E7ED2987F9BD502 /* PrimerSDK */,
+				BED4950645D681C1B0185B16ABA1B81F /* ClientTokenService.swift */,
+				0F0C4923CD9D6AAB39AA40B3320A32B1 /* DirectDebitService.swift */,
+				67A07E58F959F44C8213173D2137FF31 /* PaymentMethodConfigService.swift */,
+				19E817287C378FDF3D6383FBCB4AF096 /* PayPalService.swift */,
+				82E4FB8FA2E2B66A752BBBFCE3A5D904 /* VaultService.swift */,
 			);
-			name = "Development Pods";
+			name = "Payment Services";
+			path = "Payment Services";
 			sourceTree = "<group>";
 		};
 		72C09C260229968B1D32218444062341 /* Crypto */ = {
@@ -1094,6 +1099,15 @@
 			);
 			name = "Pods-PrimerSDK_Tests";
 			path = "Target Support Files/Pods-PrimerSDK_Tests";
+			sourceTree = "<group>";
+		};
+		CA42D7743F6A4BE79BA5F79BD9493131 /* Success */ = {
+			isa = PBXGroup;
+			children = (
+				687A9F516C8F2BE32AA4229B33AED884 /* SuccessViewController.swift */,
+			);
+			name = Success;
+			path = Success;
 			sourceTree = "<group>";
 		};
 		CC5A21B7980238EE34392A5A13727BED /* Support Files */ = {
@@ -1417,6 +1431,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
+				ar,
 				da,
 				de,
 				el,
@@ -1445,10 +1460,26 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		3555CD6FF689702A32A86FF5DA44364D /* Resources */ = {
+		1A629E450EC14C7894A92D7B92810C00 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6A139EB08D4BBADB6EC51E637CACB2F1 /* ar.lproj in Resources */,
+				0269BF4CD4F16409B460B9ABFA0B4707 /* da.lproj in Resources */,
+				1A7C6BCED9E249E1C615AC46D4AC046F /* de.lproj in Resources */,
+				D28118EF1953CBFE4E7A6C7F9E78D0B7 /* el.lproj in Resources */,
+				B325D38610C0F3D76801F199068592E7 /* en.lproj in Resources */,
+				4887BBE1B9E34BB77A469DA24E287653 /* es.lproj in Resources */,
+				6339758522EBA81C06A42C9597F4DF3F /* fr.lproj in Resources */,
+				62287B408CAF83F79B14E2CE211647B3 /* Icons.xcassets in Resources */,
+				593EE75ABE1EFD999D770184B9090270 /* it.lproj in Resources */,
+				FB0C4931AF4651A8817D17BE78FF3706 /* nb.lproj in Resources */,
+				39F6A7DCC3A989DB24708F8F92F75603 /* nl.lproj in Resources */,
+				28048566F9C694762E60C03D0F1F906C /* pl.lproj in Resources */,
+				B587197930FE20DF111B08975C24D3FE /* PrimerTextFieldView.xib in Resources */,
+				72845D77DFF0A6BC35EE491F0D24312B /* pt.lproj in Resources */,
+				929379FEC5218BF5BE7F1DAE19CC2EF2 /* sv.lproj in Resources */,
+				776896EB5B225F726619CE6797A6E349 /* tr.lproj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1496,6 +1527,193 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				613F74EDEBBD3F8A1CC43B22F6E4AAA8 /* 3DS.swift in Sources */,
+				C3BEC960B61D3E97F49E483DB9197731 /* 3DSService.swift in Sources */,
+				828EF7A2596E3DD143B2D45D52A7B7C5 /* 3DSService+Promises.swift in Sources */,
+				0A8C4E35E81129FB63B0F4537F5C2A1A /* AdyenDotPay.swift in Sources */,
+				5B4BE3D270CA7584086768B076F1DFA8 /* AES256.swift in Sources */,
+				38F19AA52FFE699FF6EFF4D40D9F6152 /* after.swift in Sources */,
+				6866ABCB06530397008137736379FC3A /* AlertController.swift in Sources */,
+				0221572F309551B0CABE88942BCFDC2D /* Analytics.swift in Sources */,
+				81285CD1EE441AD979DE39ABB2A64E0B /* AnalyticsEvent.swift in Sources */,
+				6635C2275B3FAFF5EF79269E492F11EC /* AnalyticsService.swift in Sources */,
+				9230D9752988DF38B8802747CB561389 /* AnyCodable.swift in Sources */,
+				1D1C96324ED17D4560076B127746D492 /* AnyDecodable.swift in Sources */,
+				B8812333C30E1E82C5678A94C8A0A274 /* AnyEncodable.swift in Sources */,
+				DCC10A0193245E685C400F38E6E24B94 /* Apaya.swift in Sources */,
+				543D695D1A685F6F0E1930B2BFC3FC3B /* ApayaTokenizationViewModel.swift in Sources */,
+				E99FC3E6A7C4F63558F89F22CDE4028B /* ApplePay.swift in Sources */,
+				F5EE52F1F47EA0B2130C65A1B561186D /* ApplePayTokenizationViewModel.swift in Sources */,
+				63859D04CAA7DDC01A97DB46B2CFA851 /* AppState.swift in Sources */,
+				3E74DFDAE79B7236DC3A31F0427330A2 /* ArrayExtension.swift in Sources */,
+				E7084C879B78D2CFE561827042C49907 /* Bank.swift in Sources */,
+				45F95CC15AA8A85C746538E79AD68646 /* BankSelectorTokenizationViewModel.swift in Sources */,
+				86ABED3FC6822A79DAC3A02C2790567D /* BankSelectorViewController.swift in Sources */,
+				340C5786BFACCF90ACB71E437337C768 /* BankTableViewCell.swift in Sources */,
+				C1159BA0F8DEEAEBED5E9CFE398A52F2 /* Box.swift in Sources */,
+				7B2EC5B00F3296328F48998B21292756 /* BundleExtension.swift in Sources */,
+				DC88E6754A1241E8838799B401FEE332 /* CancelContext.swift in Sources */,
+				7B0EBC5C4376E06A9F8DAB5681CFF969 /* Cancellable.swift in Sources */,
+				15A265DB9989905BBB473510392FBB60 /* CancellableCatchable.swift in Sources */,
+				36CD370D583BB024BD9AED0BFCB00E40 /* CancellablePromise.swift in Sources */,
+				9A37C2F0642D96FA2914B3785D119348 /* CancellableThenable.swift in Sources */,
+				55B5E98F58B78048A1EA7F098D4FF6E1 /* CardButton.swift in Sources */,
+				CBC6BD99A37C57989A4CCDC0F1F817B0 /* CardComponentsManager.swift in Sources */,
+				7EFCE57AD83952F28FEA209391BF8BF7 /* CardNetwork.swift in Sources */,
+				5416F8B9DB61F7FB16A6707091BE5D6F /* CardScannerViewController.swift in Sources */,
+				934726D9666734B9641275A9763A5FE7 /* CardScannerViewController+SimpleScanDelegate.swift in Sources */,
+				45C822A87277D64B5120815B0F99218F /* Catchable.swift in Sources */,
+				086312EB1A44309ED87AE3762628B2F9 /* CatchWrappers.swift in Sources */,
+				FD98775D1268D3B9B2862F6C6A360479 /* CheckoutModule.swift in Sources */,
+				D701AE337AEA6F25E3A8BBE3E20342D8 /* ClientSession.swift in Sources */,
+				58B871C86202B68F3ABE14F917143428 /* ClientToken.swift in Sources */,
+				79466D1138B6DA743FAD8AB878326A73 /* ClientTokenService.swift in Sources */,
+				4BF25BB4D49BE195CEEDBFAEB4F25A32 /* Colors.swift in Sources */,
+				5A2F7B7ECF22946273397BF3F8C620BA /* ConcurrencyLimitedDispatcher.swift in Sources */,
+				91B5CB60292CB2C33B4A1A4CCD08EDC7 /* Configuration.swift in Sources */,
+				76C68502B6D5EC12F0FBE542DF106727 /* Connectivity.swift in Sources */,
+				BA3C4A8CDD3A10A4014311AFC953AE21 /* Consolable.swift in Sources */,
+				1ABD2E9989F93CFC159849902530EDB0 /* Content.swift in Sources */,
+				013EB05386AAF521C987F6B4E7438F92 /* CoreDataDispatcher.swift in Sources */,
+				47D10D3E6D2F2691A34EFFE51C284234 /* CountryCode.swift in Sources */,
+				86157C83220BD56434955C3F074A5F1A /* Currency.swift in Sources */,
+				04F5953B8DDDA0BC28BE43C993EDF393 /* Customer.swift in Sources */,
+				998A92728EBAA902DB803BE59B9F766B /* CustomStringConvertible.swift in Sources */,
+				1427EB33BA9018583860A1DD4567A8C7 /* DataExtension.swift in Sources */,
+				DA32FD8500A2DFFD58C4084E68A31546 /* DateExtension.swift in Sources */,
+				9DE4EE1F190522AA2F117835CDBC5986 /* DependencyInjection.swift in Sources */,
+				6B0DDE8BEFF62679C4A301CC178B77CA /* Device.swift in Sources */,
+				FC89B2FB3DAFB467D385E31C953F8E6C /* Dimensions.swift in Sources */,
+				76758171436848700A4C2C091993D052 /* DirectDebitMandate.swift in Sources */,
+				8EA351F5EF705DB34FD06F1AD190AB70 /* DirectDebitService.swift in Sources */,
+				BE1B3DB7C8980427BC85AC3CA6693A02 /* Dispatcher.swift in Sources */,
+				8D78FC3A01AC69F797B3B92D806A6558 /* Endpoint.swift in Sources */,
+				662F852062CE06427E3FC488FC11BB63 /* EnsureWrappers.swift in Sources */,
+				86436EEA30F05A3F6A191D0AD360119D /* Error.swift in Sources */,
+				07EE3D61ACC3382F7FA2377A9DECD35D /* ErrorHandler.swift in Sources */,
+				A79B594B54941C805E483A62D1929370 /* ExternalPaymentMethodTokenizationViewModel.swift in Sources */,
+				AEED994B5AE799D998B8F6130B8EBB67 /* ExternalViewModel.swift in Sources */,
+				8D98EED6D91976B7246B7B5CB0FAA9BB /* FinallyWrappers.swift in Sources */,
+				A113A996569B24CAB4612C52692D395E /* firstly.swift in Sources */,
+				947FF2A631DD335FC27B82388D8D1540 /* FormTokenizationViewModel.swift in Sources */,
+				F3EF7C4597EDF1E6019E431ED0C871A8 /* FormType.swift in Sources */,
+				753B2D1B2E58D90CFDC7C629BBA8EE37 /* Guarantee.swift in Sources */,
+				4CBBE1F38C202D51AB33E9AD46F7D57F /* GuaranteeWrappers.swift in Sources */,
+				7689520A3ED46EB4EE42AEC804677C4E /* hang.swift in Sources */,
+				2312BA48C09A578C298C42BCC2A040C7 /* ImageName.swift in Sources */,
+				D1FDD8ECDDE6FA99A71F8F6092B07975 /* IntExtension.swift in Sources */,
+				FF043CA09A37EE198D6B9F82FFA6F886 /* JSONParser.swift in Sources */,
+				F4F6A8433A0F99D0283CD0F64CB0ED2F /* Keychain.swift in Sources */,
+				AF9A3773F5EB62A4A8DB6CB4F9CAACDA /* Klarna.swift in Sources */,
+				9075D533018F85B905B40D2E507EFD39 /* KlarnaTokenizationViewModel.swift in Sources */,
+				8D81A21BE997A381EEEBB356B921AB53 /* LogEvent.swift in Sources */,
+				B34E61DA43E874D04F2DAD4D32FCCBA1 /* Logger.swift in Sources */,
+				ED3C1A41235212C314B3A8471A45F653 /* Mask.swift in Sources */,
+				6B01A4F261E91BF4E984DE043B755DF0 /* MockPrimerAPIClient.swift in Sources */,
+				5BFD4E69388128F256744D35D9DB464A /* MockSuccess.swift in Sources */,
+				15CC81E69058D775851EDDA39C66E314 /* NetworkService.swift in Sources */,
+				C13FE88EFA9AC6EF147060CDFD8F9722 /* Optional+Extensions.swift in Sources */,
+				C2920EEA1DEC1F82202B89873EB8378D /* OrderItem.swift in Sources */,
+				E83042CE98CFFD68E6DDAB19E9AB8BBE /* Parser.swift in Sources */,
+				F5C404F064A1BF6262614D6100E545BB /* PaymentMethodComponent.swift in Sources */,
+				FD602C31E9373F60B9FD5CCFEF2F0392 /* PaymentMethodConfigService.swift in Sources */,
+				5DA3658009C4661E650DF78E0CF8C7F2 /* PaymentMethodConfiguration.swift in Sources */,
+				5DF579318AD4FE0F5746616A10876AAC /* PaymentMethodConfigurationOptions.swift in Sources */,
+				1D9C8F161F5D5ED0AE610B2CD8111B5C /* PaymentMethodConfigurationType.swift in Sources */,
+				155232DD649EDBDCFE69D188A3115385 /* PaymentMethodsGroupView.swift in Sources */,
+				EAB16CDEBD2B24EDBBABE497BBC05CE3 /* PaymentMethodToken.swift in Sources */,
+				9EB1CE532ED97A4D4DB1246A7FC13D63 /* PaymentMethodTokenizationRequest.swift in Sources */,
+				3ED29563E64B83ED83772AA6A8A9BE7B /* PaymentMethodTokenizationViewModel.swift in Sources */,
+				11A5CD6FCB299CF2B9C8D1501931DE45 /* PaymentResponse.swift in Sources */,
+				EBF3141C302A09430AD22662043DB3D0 /* PayPal.swift in Sources */,
+				B5F6C5CD88326D21BEAD1B3163826640 /* PayPalService.swift in Sources */,
+				3C9F12BC21186CFDD89FB2C183A666E6 /* PayPalTokenizationViewModel.swift in Sources */,
+				ACC9EAB5BECDB97338CB77F3531DE723 /* PostalCode.swift in Sources */,
+				37E641A8D3C932456324CA7F1955DB20 /* PresentationController.swift in Sources */,
+				BB0D5E4A378EBF4BDD5E9EAE2EFFEF28 /* Primer.swift in Sources */,
+				7E6C8E08D3D9CF8CF09BE089CFE4CF6A /* PrimerAPI.swift in Sources */,
+				BE4AE84210D0A3F3D82819CCA1ABF760 /* PrimerAPIClient.swift in Sources */,
+				1B6BD029DBB11BC550C7322B8BF02C36 /* PrimerAPIClient+3DS.swift in Sources */,
+				64B8D541A19E91804FAF9BF7B5E0713A /* PrimerAPIClient+Promises.swift in Sources */,
+				4862A82FD1E344E2AE0750F8B07145AC /* PrimerButton.swift in Sources */,
+				47F28754C6B802CC42DE56AC9FA50D62 /* PrimerCardFormViewController.swift in Sources */,
+				685DC08DC6FC156CFEAFF4EF1F43D5AB /* PrimerCardholderNameFieldView.swift in Sources */,
+				A56DBBC244928EBFB46C79FD8D1798DB /* PrimerCardNumberFieldView.swift in Sources */,
+				38A0386D87055DA8DF486FB02EC6D78B /* PrimerConfiguration.swift in Sources */,
+				AF22C1002CA1608D04A2AD94625C5A1A /* PrimerContainerViewController.swift in Sources */,
+				E5C06B5F852123BF0C608E8C688E1126 /* PrimerContent.swift in Sources */,
+				8671390B94E252F79A44CE07FA34E431 /* PrimerCustomStyleTextField.swift in Sources */,
+				04AD80ADD96DC87A7207C75BC42EB013 /* PrimerCVVFieldView.swift in Sources */,
+				58564B66D14E52B1F646D2CFB5B18766 /* PrimerDelegate.swift in Sources */,
+				37114EEF910AEE01CDE72ED550D674EC /* PrimerError.swift in Sources */,
+				51C19DFE0A15F83C7F41756C44E2FF6D /* PrimerExpiryDateFieldView.swift in Sources */,
+				FF19F3199FF5BF2B7456E782E5085263 /* PrimerFlowEnums.swift in Sources */,
+				3381FAD71E1B1E63A8B45FA0E2EE6EC1 /* PrimerFormViewController.swift in Sources */,
+				61D7BB29AABF6E9F7A7AC99356A89A5B /* PrimerImage.swift in Sources */,
+				05F0111E7DEAA00B66005C3D6FC710AE /* PrimerLoadingViewController.swift in Sources */,
+				A0DC919FEF71628AF5118219C469B8EF /* PrimerNavigationBar.swift in Sources */,
+				5BACDE69A3520F703C7DFAFCEAA20C7F /* PrimerNavigationController.swift in Sources */,
+				7160AA8EC1115CFFF64ACA4AAC9A73B0 /* PrimerNibView.swift in Sources */,
+				7BAEA3B3241C497623BE327ABA478E61 /* PrimerPostalCodeFieldView.swift in Sources */,
+				CC421E301B809AF07FDC7EA215E40C55 /* PrimerResultComponentView.swift in Sources */,
+				9F80E56C30F3ABECE514305FE6B7C7C2 /* PrimerResultViewController.swift in Sources */,
+				91F988309BCF7F14ACDA90AD977894EC /* PrimerRootViewController.swift in Sources */,
+				ADD89EE47B9A9790F5ED1F1FD6338F58 /* PrimerScrollView.swift in Sources */,
+				DC8352634807F8FF1761280563CC423C /* PrimerSDK-dummy.m in Sources */,
+				BDC4A78232579CCCC3D79BBD14077CEA /* PrimerSearchTextField.swift in Sources */,
+				42A6DC03BA3D9182B3939478958E7E98 /* PrimerSettings.swift in Sources */,
+				2EDF44BD629B2CEE8312E9B789B60AC7 /* PrimerTableViewCell.swift in Sources */,
+				D73813902A37D0A3086004D31692DF64 /* PrimerTextField.swift in Sources */,
+				A1E392340B296CE846D5418E1F7F2F70 /* PrimerTextFieldView.swift in Sources */,
+				8E1599CA8CF36BFF05E0DBC027FB444B /* PrimerTheme.swift in Sources */,
+				8C4C4CA529A0015A0809F36A1FE15875 /* PrimerTheme+Borders.swift in Sources */,
+				E91D6A003FE82E7E88A07953EE34389B /* PrimerTheme+Buttons.swift in Sources */,
+				F3440719DB26D35EC6B2791E9780BD53 /* PrimerTheme+Colors.swift in Sources */,
+				E8FB48BF57A65A83746F2B66827F8DF1 /* PrimerTheme+Inputs.swift in Sources */,
+				79D3E1D852A1088256D5C6299F0A9812 /* PrimerTheme+TextStyles.swift in Sources */,
+				877F5F96DAB35CB8B6216F8EE035C02C /* PrimerTheme+Views.swift in Sources */,
+				C6C4B817A2FFC8B749073CC2AFAA2793 /* PrimerThemeData.swift in Sources */,
+				9ED2626258239D811CA45C01E305B36D /* PrimerThemeData+Deprecated.swift in Sources */,
+				11544354181FB6BB407A38572063829B /* PrimerUniversalCheckoutViewController.swift in Sources */,
+				14700A2A567D97C55234004C4A66D1B6 /* PrimerVaultManagerViewController.swift in Sources */,
+				63DB71A71555DF3851AC92F1DBB496DF /* PrimerViewController.swift in Sources */,
+				03EEC8B35AE451D2A8E9372ABCC7B54E /* PrimerViewExtensions.swift in Sources */,
+				381F207DAFF2674A478397214791A1F7 /* PrimerWebViewController.swift in Sources */,
+				96015531BC630D2748F9645E2C65E21E /* Promise.swift in Sources */,
+				713CD54E553E96868254BC21AD1E3D02 /* QRCodeTokenizationViewModel.swift in Sources */,
+				C5CEE9680E9ADB68E58A7EB31E2BF3B3 /* QRCodeViewController.swift in Sources */,
+				A8EA3A2C00FFDCC17B1D925A76EA53C5 /* Queue.swift in Sources */,
+				39B6417406C05C58E42E44751AC38225 /* race.swift in Sources */,
+				8B5AC95BA4BA1818BF66CF4853FE893B /* RateLimitedDispatcher.swift in Sources */,
+				850CCF0B19C5C9E5E0535E0573A5B4DE /* RateLimitedDispatcherBase.swift in Sources */,
+				944A08DEA924D7662C0EB8FC54D6AF3D /* RecoverWrappers.swift in Sources */,
+				4FFFBB90B34571AB4E90EE6740C63E39 /* ReloadDelegate.swift in Sources */,
+				F973ADC64D900594BDF54905E78AD826 /* Resolver.swift in Sources */,
+				1589B791C9AC27913368C641C73B4CC4 /* ResumeHandlerProtocol.swift in Sources */,
+				1E3F0BB5CF2E3EEAC8AA0D2056B68325 /* SequenceWrappers.swift in Sources */,
+				49587C081E019C3A906AEBD56DB42705 /* StrictRateLimitedDispatcher.swift in Sources */,
+				EB67CE6EE739308A5A0CAAB1A77E76F8 /* StringExtension.swift in Sources */,
+				DDAFDFAFC894007C604C7B2E4A9FDB97 /* SuccessMessage.swift in Sources */,
+				7A59576A3C36049522FB5128FC75B14B /* SuccessViewController.swift in Sources */,
+				DFD031CA8ACD54C7FD8FE4ABF53A86CA /* Thenable.swift in Sources */,
+				3F66CF6FB72DA14CF059436CA5F62072 /* ThenableWrappers.swift in Sources */,
+				F60723A554D53F365DF3E24D907A1CA8 /* Throwable.swift in Sources */,
+				2782DC90A461325DCD7AA36054A97AFB /* TokenizationService.swift in Sources */,
+				086D9186D8D80F550CC49E3AB343272F /* UIColorExtension.swift in Sources */,
+				BE9DA3162057C523702752075DA6DCB0 /* UIDeviceExtension.swift in Sources */,
+				0CAD2D191B6FEEE1A1C734C8785A6BC0 /* UILocalizableUtil.swift in Sources */,
+				C94BCD93FC6430D1464EDF605CB1FC1F /* URLExtension.swift in Sources */,
+				792120651D4ACCD5DD267AD18DDB108F /* URLSessionStack.swift in Sources */,
+				8B80703811B6E785DA2958469D1AC01C /* UserDefaultsExtension.swift in Sources */,
+				548F8E5CE94D61A01328170096492B33 /* UXMode.swift in Sources */,
+				0DE024F0E3D4759937E389D026779035 /* VaultCheckoutViewModel.swift in Sources */,
+				3A7065140FFDE76F09210A5BB11A91E8 /* VaultPaymentMethodView.swift in Sources */,
+				922FEA8E20E8B8C6F9C6EFB21A54ED3E /* VaultPaymentMethodViewController.swift in Sources */,
+				76AE4DC7B5D840141B5650979C781811 /* VaultPaymentMethodViewModel.swift in Sources */,
+				602EE52B8D055EA47F531E80230331A7 /* VaultService.swift in Sources */,
+				E97685AB204778219EF9689F9F38EB2F /* WebViewUtil.swift in Sources */,
+				E8439A99EAB4C5568E3C127AF675AEDC /* when.swift in Sources */,
+				CB4C2E97C9792614AC693BB337903A35 /* WrapperProtocols.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
