@@ -11,7 +11,7 @@ import UIKit
 
 @IBDesignable
 public class PrimerInputTextField: UITextField, PrimerInputElement {
-    public var inputElementDelegate: PrimerInputElementDelegate! {
+    public weak var inputElementDelegate: PrimerInputElementDelegate! {
         didSet {
             self.checkoutModulesTextFieldDelegate = PrimerHeadlessUniversalCheckout.Delegate(inputElement: self, inputElementDelegate: inputElementDelegate)
             self.delegate = self.checkoutModulesTextFieldDelegate

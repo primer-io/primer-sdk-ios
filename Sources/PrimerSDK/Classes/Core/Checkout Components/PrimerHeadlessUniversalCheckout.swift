@@ -318,7 +318,7 @@ extension PrimerHeadlessUniversalCheckout {
     internal class Delegate: NSObject, UITextFieldDelegate {
         
         private var inputElement: PrimerInputElement
-        private var inputElementDelegate: PrimerInputElementDelegate
+        private weak var inputElementDelegate: PrimerInputElementDelegate?
         private var detectedType: Any?
         
         init(inputElement: PrimerInputElement, inputElementDelegate: PrimerInputElementDelegate) {
@@ -327,21 +327,21 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-            guard let inputElementShouldFocus = self.inputElementDelegate.inputElementShouldFocus?(self.inputElement) else { return true }
+            guard let inputElementShouldFocus = self.inputElementDelegate?.inputElementShouldFocus?(self.inputElement) else { return true }
             return inputElementShouldFocus
         }
         
         func textFieldDidBeginEditing(_ textField: UITextField) {
-            self.inputElementDelegate.inputElementDidFocus?(self.inputElement)
+            self.inputElementDelegate?.inputElementDidFocus?(self.inputElement)
         }
         
         func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-            guard let inputElementShouldBlur = self.inputElementDelegate.inputElementShouldBlur?(self.inputElement) else { return true }
+            guard let inputElementShouldBlur = self.inputElementDelegate?.inputElementShouldBlur?(self.inputElement) else { return true }
             return inputElementShouldBlur
         }
         
         func textFieldDidEndEditing(_ textField: UITextField) {
-            self.inputElementDelegate.inputElementDidBlur?(self.inputElement)
+            self.inputElementDelegate?.inputElementDidBlur?(self.inputElement)
         }
         
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -373,15 +373,15 @@ extension PrimerHeadlessUniversalCheckout {
                 if let cardNetwork = self.inputElement.type.detectType(for: newText) as? CardNetwork {
                     if self.detectedType == nil, cardNetwork != .unknown {
                         self.detectedType = cardNetwork
-                        self.inputElementDelegate.inputElementDidDetectType?(self.inputElement, type: self.detectedType)
+                        self.inputElementDelegate?.inputElementDidDetectType?(self.inputElement, type: self.detectedType)
                     } else if self.detectedType != nil, cardNetwork == .unknown {
                         self.detectedType = nil
-                        self.inputElementDelegate.inputElementDidDetectType?(self.inputElement, type: self.detectedType)
+                        self.inputElementDelegate?.inputElementDidDetectType?(self.inputElement, type: self.detectedType)
                     }
                 } else {
                     if self.detectedType != nil {
                         self.detectedType = nil
-                        self.inputElementDelegate.inputElementDidDetectType?(self.inputElement, type: self.detectedType)
+                        self.inputElementDelegate?.inputElementDidDetectType?(self.inputElement, type: self.detectedType)
                     }
                 }
             }
@@ -403,7 +403,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
             
             let isValid = self.inputElement.type.validate(value: newText, detectedValueType: primerCheckoutComponentsTextField.detectedValueType)
-            self.inputElementDelegate.inputElementValueIsValid?(self.inputElement, isValid: isValid)
+            self.inputElementDelegate?.inputElementValueIsValid?(self.inputElement, isValid: isValid)
             
             let formattedText = self.inputElement.type.format(value: newText)
             textField.text = formattedText as? String

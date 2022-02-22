@@ -167,7 +167,7 @@ public protocol PrimerInputElement {
 }
 
 @objc
-public protocol PrimerInputElementDelegate {
+public protocol PrimerInputElementDelegate: AnyObject {
     @objc optional func inputElementShouldFocus(_ sender: PrimerInputElement) -> Bool
     @objc optional func inputElementDidFocus(_ sender: PrimerInputElement)
     @objc optional func inputElementShouldBlur(_ sender: PrimerInputElement) -> Bool
