@@ -204,6 +204,10 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
 }
 
 extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutDelegate {
+    func primerHeadlessUniversalCheckoutResume(withResumeToken resumeToken: String, resumeHandler: ResumeHandlerProtocol?) {
+        
+    }
+
     func primerHeadlessUniversalCheckoutPreparationStarted() {
         
     }

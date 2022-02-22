@@ -1,3 +1,4 @@
 ${PODS_ROOT}/Target Support Files/Pods-HeadlessUniversalCheckoutExample/Pods-HeadlessUniversalCheckoutExample-frameworks.sh
+${BUILT_PRODUCTS_DIR}/Primer3DS/Primer3DS.framework
 ${BUILT_PRODUCTS_DIR}/PrimerSDK/PrimerSDK.framework
-${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/Primer3DS/ThreeDS_SDK.framework/ThreeDS_SDK

@@ -14,7 +14,7 @@ public class Primer {
     // MARK: - PROPERTIES
     internal var primerWindow: UIWindow?
     public var delegate: PrimerDelegate? // TODO: should this be weak?
-    private(set) var flow: PrimerSessionFlow!
+    internal var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
     internal var primerRootVC: PrimerRootViewController?
     internal let sdkSessionId = UUID().uuidString

@@ -93,7 +93,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                         let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: err)
-                        PrimerDelegateProxy.checkoutFailed?(with: err.exposedError)
+                        PrimerDelegateProxy.checkoutFailed(with: err.exposedError)
                         return
                     }
 

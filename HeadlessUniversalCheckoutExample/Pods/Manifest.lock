@@ -1,33 +1,25 @@
 PODS:
+  - Primer3DS (0.1.34)
   - PrimerSDK (1.27.4):
     - PrimerSDK/Core (= 1.27.4)
   - PrimerSDK/Core (1.27.4)
-  - PromiseKit (6.16.3):
-    - PromiseKit/CorePromise (= 6.16.3)
-    - PromiseKit/Foundation (= 6.16.3)
-    - PromiseKit/UIKit (= 6.16.3)
-  - PromiseKit/CorePromise (6.16.3)
-  - PromiseKit/Foundation (6.16.3):
-    - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.16.3):
-    - PromiseKit/CorePromise
 
 DEPENDENCIES:
+  - Primer3DS
   - PrimerSDK (from `../`)
-  - PromiseKit
 
 SPEC REPOS:
-  trunk:
-    - PromiseKit
+  https://github.com/primer-io/primer-podspecs:
+    - Primer3DS
 
 EXTERNAL SOURCES:
   PrimerSDK:
     :path: "../"
 
 SPEC CHECKSUMS:
+  Primer3DS: ca423aef1f25ac72a5be286c2b096b3a323633fc
   PrimerSDK: 0cc16b42f606ca49e8c3ff40fee1948a2926539f
-  PromiseKit: ed0e2a8e3f3cd59d5d98ca0a6de481a2c5c59c0b
 
-PODFILE CHECKSUM: e5717e75d0fa5c382e511466c97afdb59be35a0a
+PODFILE CHECKSUM: 7d7c0bcb53e8d3aec856b3e63edda77b57db50d4
 
 COCOAPODS: 1.11.2

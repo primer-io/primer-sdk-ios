@@ -177,11 +177,12 @@ public protocol PrimerInputElementDelegate {
     @objc optional func inputElementDidDetectType(_ sender: PrimerInputElement, type: Any?)
 }
 
-public protocol PrimerHeadlessUniversalCheckoutDelegate {
+public protocol PrimerHeadlessUniversalCheckoutDelegate: AnyObject {
     func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully()
     func primerHeadlessUniversalCheckoutPreparationStarted()
     func primerHeadlessUniversalCheckoutTokenizationStarted()
     func primerHeadlessUniversalCheckoutPaymentMethodPresented()
     func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?)
+    func primerHeadlessUniversalCheckoutResume(withResumeToken resumeToken: String, resumeHandler: ResumeHandlerProtocol?)
     func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error)
 }

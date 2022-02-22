@@ -113,6 +113,13 @@ struct Payment {
     }
 }
 
+struct TransactionResponse {
+    var id: String
+    var date: String
+    var status: String
+    var requiredAction: Payment.Response.RequiredAction?
+}
+
 enum NetworkError: Error {
     case missingParams
     case unauthorised
@@ -328,6 +335,56 @@ class Networking {
             }
     }
     
+    func resumePayment(_ paymentId: String, withResumeToken resumeToken: String, completion: @escaping (Payment.Response?, Error?) -> Void) {
+        let url = environment.baseUrl.appendingPathComponent("/api/payments/\(paymentId)/resume")
+        
+        var request = URLRequest(url: url)
+        
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let bodyDic: [String: Any] = [
+            "resumeToken": resumeToken
+        ]
+        
+        var bodyData: Data!
+        
+        do {
+            bodyData = try JSONSerialization.data(withJSONObject: bodyDic, options: .fragmentsAllowed)
+        } catch {
+            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the request..."])
+            completion(nil, merchantErr)
+            return
+        }
+        
+        let networking = Networking()
+        networking.request(
+            apiVersion: .v2,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let data):
+                        do {
+                            let paymentResponse = try JSONDecoder().decode(Payment.Response.self, from: data)
+                            completion(paymentResponse, nil)
+                            
+                        } catch {
+                            completion(nil, error)
+                        }
+                        
+                    case .failure(let err):
+                        print(err)
+                        let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong resuming the payment..."])
+                        completion(nil, merchantErr)
+                    }
+                }
+            }
+    }
+    
     func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session")
 
@@ -353,21 +410,23 @@ class Networking {
             headers: nil,
             queryParameters: nil,
             body: bodyData) { result in
-                switch result {
-                case .success(let data):
-                    do {
-                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
-                            completion(token, nil)
-                        } else {
-                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
-                            completion(nil, err)
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let data):
+                        do {
+                            if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                                completion(token, nil)
+                            } else {
+                                let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                                completion(nil, err)
+                            }
+                            
+                        } catch {
+                            completion(nil, error)
                         }
-                        
-                    } catch {
-                        completion(nil, error)
+                    case .failure(let err):
+                        completion(nil, err)
                     }
-                case .failure(let err):
-                    completion(nil, err)
                 }
             }
     }

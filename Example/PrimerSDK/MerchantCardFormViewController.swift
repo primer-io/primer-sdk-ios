@@ -96,6 +96,10 @@ class MerchantCardFormViewController: UIViewController {
 }
 
 extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegate {
+    func primerHeadlessUniversalCheckoutResume(withResumeToken resumeToken: String, resumeHandler: ResumeHandlerProtocol?) {
+        
+    }
+    
     func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
         if let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
            (threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess) {

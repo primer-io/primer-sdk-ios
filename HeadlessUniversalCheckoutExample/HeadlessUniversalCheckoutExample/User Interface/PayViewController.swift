@@ -13,12 +13,19 @@ class PayViewController: MyViewController {
     @IBOutlet var stackView: UIStackView!
     @IBOutlet weak var amountLabel: UILabel!
     var payByCardButton: UIButton!
-    let amount = 1000
+    let amount = 10001
     let currency = Currency.EUR
     let countryCode = CountryCode.fr
     var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager!
     
     var availablePaymentMethodsTypes: [PrimerPaymentMethodType]?
+    var transactionResponse: TransactionResponse?
+    var paymentResponsesData: [Data] = []
+    
+    deinit {
+        print("DEINIT")
+        self.cardFormUIManager = nil
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,7 +46,8 @@ class PayViewController: MyViewController {
                     merchantIdentifier: "merchant.dx.team",  // 👈 Entitlement added in Xcode's settings, required for Apple Pay
                     urlScheme: "merchant://")                // 👈 URL Scheme added in Xcode's settings, required for PayPal
                 
-                PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, delegate: self) { paymentMethodTypes, err in
+                PrimerHeadlessUniversalCheckout.current.delegate = self
+                PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings) { [unowned self] (paymentMethodTypes, err) in
                     self.stopLoading()
                     
                     if let err = err {
@@ -82,10 +90,10 @@ class PayViewController: MyViewController {
                 self.showError(withMessage: error.localizedDescription)
                 return
             }
-            
+
             self.payByCardButton = UIButton()
-            self.payByCardButton.isEnabled = false
-            
+            self.setPayByCardButton(enabled: true)
+
             self.payByCardButton.translatesAutoresizingMaskIntoConstraints = false
             self.payByCardButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
             self.payByCardButton.addTarget(self, action: #selector(self.payWithCardButtonTapped(_:)), for: .touchUpInside)
@@ -96,19 +104,19 @@ class PayViewController: MyViewController {
             self.payByCardButton.layer.borderWidth = 1.0
             self.payByCardButton.layer.cornerRadius = 4.0
             self.stackView.addArrangedSubview(self.payByCardButton)
-            
+
             let separatorView2 = UIView()
             separatorView2.backgroundColor = .clear
             self.stackView.addArrangedSubview(separatorView2)
             separatorView2.translatesAutoresizingMaskIntoConstraints = false
             separatorView2.heightAnchor.constraint(equalToConstant: 12).isActive = true
-            
+
             let separatorView3 = UIView()
             separatorView3.backgroundColor = .lightGray
             self.stackView.addArrangedSubview(separatorView3)
             separatorView3.translatesAutoresizingMaskIntoConstraints = false
             separatorView3.heightAnchor.constraint(equalToConstant: 1).isActive = true
-            
+
             let separatorView4 = UIView()
             separatorView4.backgroundColor = .clear
             self.stackView.addArrangedSubview(separatorView4)
@@ -148,12 +156,16 @@ class PayViewController: MyViewController {
             switch requiredInputElementType {
             case .cardNumber:
                 textField.placeholder = "4242 4242 4242 4242"
+                textField.text = "9120000000000006"
             case .expiryDate:
                 textField.placeholder = "02/24"
+                textField.text = "02/24"
             case .cvv:
                 textField.placeholder = "123"
+                textField.text = "123"
             case .cardholderName:
                 textField.placeholder = "John Smith"
+                textField.text = "John Smith"
             default:
                 break
             }
@@ -269,18 +281,63 @@ extension PayViewController: PrimerHeadlessUniversalCheckoutDelegate {
         
         let networking = Networking()
         networking.createPayment(with: paymentMethodToken) { res, err in
+            if let err = err {
+                self.stopLoading()
+                self.showError(withMessage: err.localizedDescription)
+                
+            } else if let res = res {
+                if let data = try? JSONEncoder().encode(res) {
+                    self.paymentResponsesData.append(data)
+                }
+                
+                guard let requiredAction = res.requiredAction else {
+                    self.stopLoading()
+                    resumeHandler?.handleSuccess()
+                    return
+                }
+                
+                guard let dateStr = res.dateStr else {
+                    self.stopLoading()
+                    resumeHandler?.handleSuccess()
+                    return
+                }
+                
+                self.transactionResponse = TransactionResponse(id: res.id, date: dateStr, status: res.status.rawValue, requiredAction: requiredAction)
+                
+                if requiredAction.name == "3DS_AUTHENTICATION", res.status == .pending {
+                    resumeHandler?.handle(newClientToken: requiredAction.clientToken)
+                } else if requiredAction.name == "USE_PRIMER_SDK", res.status == .pending {
+                    resumeHandler?.handle(newClientToken: requiredAction.clientToken)
+                } else {
+                    let prvc = PaymentResultViewController.instantiate(data: self.paymentResponsesData)
+                    self.navigationController?.pushViewController(prvc, animated: true)
+                }
+            }
+        }
+    }
+    
+    func primerHeadlessUniversalCheckoutResume(withResumeToken resumeToken: String, resumeHandler: ResumeHandlerProtocol?) {
+        guard let transactionResponse = transactionResponse else {
+            let merchantErr = NSError(domain: "merchant-domain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong parsing the response..."])
+            showError(withMessage: merchantErr.localizedDescription)
+            return
+        }
+        
+        let networking = Networking()
+        networking.resumePayment(transactionResponse.id, withResumeToken: resumeToken) { (res, err) in
             self.stopLoading()
             
             if let err = err {
                 self.showError(withMessage: err.localizedDescription)
+                
             } else if let res = res {
                 let data = try! JSONEncoder().encode(res)
-                let str = data.prettyPrintedJSONString as? String
+                self.paymentResponsesData.append(data)
+                let prvc = PaymentResultViewController.instantiate(data: self.paymentResponsesData)
+                self.navigationController?.pushViewController(prvc, animated: true)
                 
-                self.stopLoading()
-                let alert = UIAlertController(title: "SUCCESS", message: str, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
+            } else {
+                fatalError()
             }
         }
     }
@@ -291,6 +348,3 @@ extension PayViewController: PrimerHeadlessUniversalCheckoutDelegate {
     }
     
 }
-
-
-

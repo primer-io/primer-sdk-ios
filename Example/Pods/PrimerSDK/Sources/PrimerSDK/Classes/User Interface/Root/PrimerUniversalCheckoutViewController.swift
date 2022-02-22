@@ -454,7 +454,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
                                       return
                                   }
                             
-                            PrimerDelegateProxy.onResumeSuccess?(resumeToken, resumeHandler: self)
+                            PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
                         }
                         
                     case .failure(let err):

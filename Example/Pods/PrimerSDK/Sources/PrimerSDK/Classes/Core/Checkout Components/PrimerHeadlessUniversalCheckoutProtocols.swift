@@ -184,4 +184,5 @@ public protocol PrimerHeadlessUniversalCheckoutDelegate {
     func primerHeadlessUniversalCheckoutPaymentMethodPresented()
     func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?)
     func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error)
+    func primerHeadlessUniversalCheckoutResume(withResumeToken resumeToken: String, resumeHandler: ResumeHandlerProtocol?)
 }

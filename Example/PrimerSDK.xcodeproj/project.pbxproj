@@ -47,8 +47,8 @@
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
-		8451A07F27AAB1C900F8EC73 /* (null) in Sources */ = {isa = PBXBuildFile; };
-		847C8FC827A3DFCF005D0CBC /* (null) in Sources */ = {isa = PBXBuildFile; };
+		8451A07F27AAB1C900F8EC73 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		847C8FC827A3DFCF005D0CBC /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		849A28EB275614070037C2D1 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EA275614070037C2D1 /* Networking.swift */; };
 		849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */; };
 		849AFD14275A725600A1F4CB /* ResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849AFD13275A725600A1F4CB /* ResultViewController.swift */; };
@@ -635,11 +635,15 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Primer3DS/Primer3DS.framework",
 				"${BUILT_PRODUCTS_DIR}/PrimerSDK/PrimerSDK.framework",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Primer3DS/ThreeDS_SDK.framework/ThreeDS_SDK",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Primer3DS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PrimerSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ThreeDS_SDK.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -695,10 +699,10 @@
 				849A28EB275614070037C2D1 /* Networking.swift in Sources */,
 				15F97C772624718800DCB3BA /* PaymentMethodCell.swift in Sources */,
 				849D5BC427B12E57002953C2 /* MerchantAssetsViewController.swift in Sources */,
-				8451A07F27AAB1C900F8EC73 /* (null) in Sources */,
+				8451A07F27AAB1C900F8EC73 /* BuildFile in Sources */,
 				15B2E64826F8A9EE005B8343 /* Apaya.swift in Sources */,
 				1DE0355C2716E4D1007BADAB /* CheckoutTheme.swift in Sources */,
-				847C8FC827A3DFCF005D0CBC /* (null) in Sources */,
+				847C8FC827A3DFCF005D0CBC /* BuildFile in Sources */,
 				15F97C6D26246FD300DCB3BA /* MerchantCheckoutViewController+Primer.swift in Sources */,
 				1DC7EE0C261FA39200BCBFFC /* SpinnerViewController.swift in Sources */,
 				15F97C72262470CB00DCB3BA /* MerchantCheckoutViewController+Helpers.swift in Sources */,

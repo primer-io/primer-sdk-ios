@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		16E200C61B3867111B35523F /* Pods_HeadlessUniversalCheckoutExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2DCEB19716C44984BCD3688 /* Pods_HeadlessUniversalCheckoutExample.framework */; };
+		23059066539258576708FEA2 /* Pods_HeadlessUniversalCheckoutExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7665B545CDF76D2C8067FBB4 /* Pods_HeadlessUniversalCheckoutExample.framework */; };
+		84247CEE27C4F6BC0085DE16 /* PaymentResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84247CED27C4F6BC0085DE16 /* PaymentResultViewController.swift */; };
+		84247CF027C4F83B0085DE16 /* RangeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84247CEF27C4F83B0085DE16 /* RangeExtension.swift */; };
 		84FB34DA27BD0DC100BA0EDC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB34D927BD0DC100BA0EDC /* AppDelegate.swift */; };
 		84FB34DC27BD0DC100BA0EDC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB34DB27BD0DC100BA0EDC /* SceneDelegate.swift */; };
 		84FB34DE27BD0DC100BA0EDC /* PayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB34DD27BD0DC100BA0EDC /* PayViewController.swift */; };
@@ -23,8 +25,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		60BD45CF4A9E615442A15E00 /* Pods-HeadlessUniversalCheckoutExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HeadlessUniversalCheckoutExample.debug.xcconfig"; path = "Target Support Files/Pods-HeadlessUniversalCheckoutExample/Pods-HeadlessUniversalCheckoutExample.debug.xcconfig"; sourceTree = "<group>"; };
-		64B85E9DA9A5B40B428EA91B /* Pods-HeadlessUniversalCheckoutExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HeadlessUniversalCheckoutExample.release.xcconfig"; path = "Target Support Files/Pods-HeadlessUniversalCheckoutExample/Pods-HeadlessUniversalCheckoutExample.release.xcconfig"; sourceTree = "<group>"; };
+		7665B545CDF76D2C8067FBB4 /* Pods_HeadlessUniversalCheckoutExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HeadlessUniversalCheckoutExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		84247CED27C4F6BC0085DE16 /* PaymentResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentResultViewController.swift; sourceTree = "<group>"; };
+		84247CEF27C4F83B0085DE16 /* RangeExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeExtension.swift; sourceTree = "<group>"; };
 		84FB34D627BD0DC100BA0EDC /* HeadlessUniversalCheckoutExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HeadlessUniversalCheckoutExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84FB34D927BD0DC100BA0EDC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84FB34DB27BD0DC100BA0EDC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -39,7 +42,8 @@
 		84FB34FD27BD258000BA0EDC /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		84FB350127BD5DFE00BA0EDC /* IntExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtension.swift; sourceTree = "<group>"; };
 		84FB350327BE526800BA0EDC /* DataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
-		C2DCEB19716C44984BCD3688 /* Pods_HeadlessUniversalCheckoutExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HeadlessUniversalCheckoutExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C96D2014D92A2A0B88E8E976 /* Pods-HeadlessUniversalCheckoutExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HeadlessUniversalCheckoutExample.debug.xcconfig"; path = "Target Support Files/Pods-HeadlessUniversalCheckoutExample/Pods-HeadlessUniversalCheckoutExample.debug.xcconfig"; sourceTree = "<group>"; };
+		FF7B8861A5FDB430F129C7E0 /* Pods-HeadlessUniversalCheckoutExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HeadlessUniversalCheckoutExample.release.xcconfig"; path = "Target Support Files/Pods-HeadlessUniversalCheckoutExample/Pods-HeadlessUniversalCheckoutExample.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16E200C61B3867111B35523F /* Pods_HeadlessUniversalCheckoutExample.framework in Frameworks */,
+				23059066539258576708FEA2 /* Pods_HeadlessUniversalCheckoutExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -57,16 +61,16 @@
 		12EF53EDC90244B7993C0991 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				60BD45CF4A9E615442A15E00 /* Pods-HeadlessUniversalCheckoutExample.debug.xcconfig */,
-				64B85E9DA9A5B40B428EA91B /* Pods-HeadlessUniversalCheckoutExample.release.xcconfig */,
+				C96D2014D92A2A0B88E8E976 /* Pods-HeadlessUniversalCheckoutExample.debug.xcconfig */,
+				FF7B8861A5FDB430F129C7E0 /* Pods-HeadlessUniversalCheckoutExample.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		1CAA11CBB8127283F398DAA2 /* Frameworks */ = {
+		53C73C4619430ABB2226A5D8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C2DCEB19716C44984BCD3688 /* Pods_HeadlessUniversalCheckoutExample.framework */,
+				7665B545CDF76D2C8067FBB4 /* Pods_HeadlessUniversalCheckoutExample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -77,7 +81,7 @@
 				84FB34D827BD0DC100BA0EDC /* HeadlessUniversalCheckoutExample */,
 				84FB34D727BD0DC100BA0EDC /* Products */,
 				12EF53EDC90244B7993C0991 /* Pods */,
-				1CAA11CBB8127283F398DAA2 /* Frameworks */,
+				53C73C4619430ABB2226A5D8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -112,6 +116,7 @@
 				84FB350127BD5DFE00BA0EDC /* IntExtension.swift */,
 				84FB34FD27BD258000BA0EDC /* StringExtension.swift */,
 				84FB34FB27BD231800BA0EDC /* UIViewControllerExtension.swift */,
+				84247CEF27C4F83B0085DE16 /* RangeExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -129,6 +134,7 @@
 			children = (
 				84FB34DF27BD0DC100BA0EDC /* Main.storyboard */,
 				84FB34DD27BD0DC100BA0EDC /* PayViewController.swift */,
+				84247CED27C4F6BC0085DE16 /* PaymentResultViewController.swift */,
 			);
 			path = "User Interface";
 			sourceTree = "<group>";
@@ -140,11 +146,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 84FB34EA27BD0DC200BA0EDC /* Build configuration list for PBXNativeTarget "HeadlessUniversalCheckoutExample" */;
 			buildPhases = (
-				2CE34DE56818CA0B0D1258C0 /* [CP] Check Pods Manifest.lock */,
+				3C0A4659E396A850479699FB /* [CP] Check Pods Manifest.lock */,
 				84FB34D227BD0DC100BA0EDC /* Sources */,
 				84FB34D327BD0DC100BA0EDC /* Frameworks */,
 				84FB34D427BD0DC100BA0EDC /* Resources */,
-				854A57D6F037EC1FF0C2863B /* [CP] Embed Pods Frameworks */,
+				9D1777EE17648D788A79019C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -202,7 +208,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2CE34DE56818CA0B0D1258C0 /* [CP] Check Pods Manifest.lock */ = {
+		3C0A4659E396A850479699FB /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -224,7 +230,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		854A57D6F037EC1FF0C2863B /* [CP] Embed Pods Frameworks */ = {
+		9D1777EE17648D788A79019C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -250,6 +256,7 @@
 			files = (
 				84FB34F727BD161F00BA0EDC /* Networking.swift in Sources */,
 				84FB34DE27BD0DC100BA0EDC /* PayViewController.swift in Sources */,
+				84247CEE27C4F6BC0085DE16 /* PaymentResultViewController.swift in Sources */,
 				84FB350427BE526800BA0EDC /* DataExtension.swift in Sources */,
 				84FB34DA27BD0DC100BA0EDC /* AppDelegate.swift in Sources */,
 				84FB34FE27BD258000BA0EDC /* StringExtension.swift in Sources */,
@@ -257,6 +264,7 @@
 				84FB34F927BD16A900BA0EDC /* ClientSessionRequestBody.swift in Sources */,
 				84FB34FC27BD231800BA0EDC /* UIViewControllerExtension.swift in Sources */,
 				84FB34DC27BD0DC100BA0EDC /* SceneDelegate.swift in Sources */,
+				84247CF027C4F83B0085DE16 /* RangeExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,7 +408,7 @@
 		};
 		84FB34EB27BD0DC200BA0EDC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 60BD45CF4A9E615442A15E00 /* Pods-HeadlessUniversalCheckoutExample.debug.xcconfig */;
+			baseConfigurationReference = C96D2014D92A2A0B88E8E976 /* Pods-HeadlessUniversalCheckoutExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -429,7 +437,7 @@
 		};
 		84FB34EC27BD0DC200BA0EDC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 64B85E9DA9A5B40B428EA91B /* Pods-HeadlessUniversalCheckoutExample.release.xcconfig */;
+			baseConfigurationReference = FF7B8861A5FDB430F129C7E0 /* Pods-HeadlessUniversalCheckoutExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

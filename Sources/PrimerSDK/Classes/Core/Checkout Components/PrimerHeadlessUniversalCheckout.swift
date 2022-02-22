@@ -14,14 +14,17 @@ public typealias PrimerPaymentMethodType = PaymentMethodConfigType
 
 public class PrimerHeadlessUniversalCheckout {
     
-    public var delegate: PrimerHeadlessUniversalCheckoutDelegate?
+    public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
     private(set) public var clientToken: String?
     public static let current = PrimerHeadlessUniversalCheckout()
     
     fileprivate init() {}
     
     public func start(withClientToken clientToken: String, settings: PrimerSettings? = nil, delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil, completion: @escaping (_ paymentMethodTypes: [PrimerPaymentMethodType]?, _ err: Error?) -> Void) {
-        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        if delegate != nil {
+            PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        }
+        
         guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
             let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
