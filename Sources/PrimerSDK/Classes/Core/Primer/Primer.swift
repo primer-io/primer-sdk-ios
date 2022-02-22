@@ -42,17 +42,11 @@ public class Primer {
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
         
-<<<<<<< HEAD
         #if DEBUG
         do {
             try Analytics.Service.deleteEvents()
         } catch {
             fatalError(error.localizedDescription)
-=======
-        DispatchQueue.main.async { [weak self] in
-            let settings = PrimerSettings()
-            self?.setDependencies(settings: settings, theme: PrimerTheme())
->>>>>>> master
         }
         #endif
     }
