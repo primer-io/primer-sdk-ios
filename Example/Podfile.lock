@@ -4,15 +4,21 @@ PODS:
   - PrimerSDK/Core (1.27.1)
 
 DEPENDENCIES:
-  - PrimerSDK (from `../`)
+  - PrimerSDK (from `https://github.com/primer-io/primer-sdk-ios`, branch `beta/headless-universal-checkout`)
 
 EXTERNAL SOURCES:
   PrimerSDK:
-    :path: "../"
+    :branch: beta/headless-universal-checkout
+    :git: https://github.com/primer-io/primer-sdk-ios
+
+CHECKOUT OPTIONS:
+  PrimerSDK:
+    :commit: d9af7b202a8d38d63688a197b17662c4f09c0d63
+    :git: https://github.com/primer-io/primer-sdk-ios
 
 SPEC CHECKSUMS:
   PrimerSDK: 8fed61c4b7f01a507d5b18a371d01d440cce1432
 
-PODFILE CHECKSUM: e07773ea6829816adc7ef6189f0b68d17bfb4a85
+PODFILE CHECKSUM: a976a57ec273a0e83c5962d947e14ec2e8f36517
 
 COCOAPODS: 1.11.2
