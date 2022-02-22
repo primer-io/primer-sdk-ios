@@ -29,7 +29,7 @@ protocol PrimerAPIClientProtocol {
     func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (_ result: Result<[Bank], Error>) -> Void)
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
     
-    func sendAnalyticsEvent(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
+    func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
     func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void)
 }
 
@@ -240,8 +240,16 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func sendAnalyticsEvent(url: URL, body: Analytics.Service.Request?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
-        
+    func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
+        let endpoint = PrimerAPI.sendAnalyticsEvents(url: url, body: body)
+        networkService.request(endpoint) { (result: Result<Analytics.Service.Response, Error>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
     }
     
     func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {

@@ -15,21 +15,19 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private var orderId: String?
     private var confirmBillingAgreementResponse: PayPalConfirmBillingAgreementResponse?
     
-    override lazy var title: String = {
-        return "PayPal"
-    }()
+    private lazy var _title: String = { return "PayPal" }()
+    override var title: String  {
+        get { return _title }
+        set { _title = newValue }
+    }
     
-    override lazy var buttonTitle: String? = {
-        switch config.type {
-        case .payPal:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
+    private lazy var _buttonTitle: String? = { return nil }()
+    override var buttonTitle: String? {
+        get { return _buttonTitle }
+        set { _buttonTitle = newValue }
+    }
     
-    override lazy var buttonImage: UIImage? = {
+    private lazy var _buttonImage: UIImage? = {
         switch config.type {
         case .payPal:
             return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
@@ -38,8 +36,12 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             return nil
         }
     }()
+    override var buttonImage: UIImage? {
+        get { return _buttonImage }
+        set { _buttonImage = newValue }
+    }
     
-    override lazy var buttonColor: UIColor? = {
+    private lazy var _buttonColor: UIColor? = {
         switch config.type {
         case .payPal:
             return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
@@ -48,8 +50,12 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             return nil
         }
     }()
+    override var buttonColor: UIColor? {
+        get { return _buttonColor }
+        set { _buttonColor = newValue }
+    }
     
-    override lazy var buttonTitleColor: UIColor? = {
+    private lazy var _buttonTitleColor: UIColor? = {
         switch config.type {
         case .payPal:
             return nil
@@ -58,8 +64,12 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             return nil
         }
     }()
+    override var buttonTitleColor: UIColor? {
+        get { return _buttonTitleColor }
+        set { _buttonTitleColor = newValue }
+    }
     
-    override lazy var buttonBorderWidth: CGFloat = {
+    private lazy var _buttonBorderWidth: CGFloat = {
         switch config.type {
         case .payPal:
             return 0.0
@@ -68,8 +78,12 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             return 0.0
         }
     }()
+    override var buttonBorderWidth: CGFloat {
+        get { return _buttonBorderWidth }
+        set { _buttonBorderWidth = newValue }
+    }
     
-    override lazy var buttonBorderColor: UIColor? = {
+    private lazy var _buttonBorderColor: UIColor? = {
         switch config.type {
         case .payPal:
             return nil
@@ -78,8 +92,12 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             return nil
         }
     }()
+    override var buttonBorderColor: UIColor? {
+        get { return _buttonBorderColor }
+        set { _buttonBorderColor = newValue }
+    }
     
-    override lazy var buttonTintColor: UIColor? = {
+    private lazy var _buttonTintColor: UIColor? = {
         switch config.type {
         case .payPal:
             return nil
@@ -88,14 +106,10 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             return nil
         }
     }()
-    
-    override lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
-    }()
-    
-    override lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
-    }()
+    override var buttonTintColor: UIColor? {
+        get { return _buttonTintColor }
+        set { _buttonTintColor = newValue }
+    }
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

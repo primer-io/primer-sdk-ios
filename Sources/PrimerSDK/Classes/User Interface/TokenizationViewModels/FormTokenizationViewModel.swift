@@ -19,11 +19,13 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false
     
-    override lazy var title: String = {
-        return "Payment Card"
-    }()
+    private lazy var _title: String = { return "Payment Card" }()
+    override var title: String  {
+        get { return _title }
+        set { _title = newValue }
+    }
     
-    override lazy var buttonTitle: String? = {
+    private lazy var _buttonTitle: String? = {
         switch config.type {
         case .paymentCard:
             return (Primer.shared.flow?.internalSessionFlow.vaulted == true)
@@ -43,8 +45,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonTitle: String? {
+        get { return _buttonTitle }
+        set { _buttonTitle = newValue }
+    }
     
-    override lazy var buttonImage: UIImage? = {
+    private lazy var _buttonImage: UIImage? = {
         switch config.type {
         case .paymentCard:
             return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
@@ -53,8 +59,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonImage: UIImage? {
+        get { return _buttonImage }
+        set { _buttonImage = newValue }
+    }
     
-    override lazy var buttonColor: UIColor? = {
+    private lazy var _buttonColor: UIColor? = {
         switch config.type {
         case .paymentCard:
             return theme.paymentMethodButton.color(for: .enabled)
@@ -63,8 +73,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
-    
-    override lazy var buttonTitleColor: UIColor? = {
+    override var buttonColor: UIColor? {
+        get { return _buttonColor }
+        set { _buttonColor = newValue }
+    }
+
+    private lazy var _buttonTitleColor: UIColor? = {
         switch config.type {
         case .paymentCard:
             return theme.paymentMethodButton.text.color
@@ -73,8 +87,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonTitleColor: UIColor? {
+        get { return _buttonTitleColor }
+        set { _buttonTitleColor = newValue }
+    }
     
-    override lazy var buttonBorderWidth: CGFloat = {
+    private lazy var _buttonBorderWidth: CGFloat = {
         switch config.type {
         case .paymentCard:
             return theme.paymentMethodButton.border.width
@@ -83,8 +101,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return 0.0
         }
     }()
+    override var buttonBorderWidth: CGFloat {
+        get { return _buttonBorderWidth }
+        set { _buttonBorderWidth = newValue }
+    }
     
-    override lazy var buttonBorderColor: UIColor? = {
+    private lazy var _buttonBorderColor: UIColor? = {
         switch config.type {
         case .paymentCard:
             return theme.paymentMethodButton.border.color(for: .enabled)
@@ -93,8 +115,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonBorderColor: UIColor? {
+        get { return _buttonBorderColor }
+        set { _buttonBorderColor = newValue }
+    }
     
-    override lazy var buttonTintColor: UIColor? = {
+    private lazy var _buttonTintColor: UIColor? = {
         switch config.type {
         case .paymentCard:
             return theme.paymentMethodButton.iconColor
@@ -103,14 +129,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
-    
-    override lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
-    }()
-    
-    override lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
-    }()
+    override var buttonTintColor: UIColor? {
+        get { return _buttonTintColor }
+        set { _buttonTintColor = newValue }
+    }
     
     private var isCardholderNameFieldEnabled: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
