@@ -24,4 +24,10 @@ internal extension Array {
     }
 }
 
+extension Array where Element:Weak<AnyObject> {
+    mutating func reap () {
+        self = self.filter { nil != $0.value }
+    }
+}
+
 #endif
