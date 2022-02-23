@@ -23,7 +23,6 @@ class PayViewController: MyViewController {
     var paymentResponsesData: [Data] = []
     
     deinit {
-        print("DEINIT")
         self.cardFormUIManager = nil
     }
 
