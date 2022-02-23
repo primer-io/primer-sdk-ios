@@ -234,7 +234,7 @@ public class PrimerHeadlessUniversalCheckout {
         return image
     }
     
-    public func showCheckout(for paymentMethod: PaymentMethodConfigType) {
+    public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType) {
         DispatchQueue.main.async {
             do {
                 try PrimerHeadlessUniversalCheckout.current.validateSession()

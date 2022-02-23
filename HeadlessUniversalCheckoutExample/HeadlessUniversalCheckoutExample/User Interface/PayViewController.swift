@@ -210,11 +210,11 @@ class PayViewController: MyViewController {
     }
     
     @IBAction func payWithApplePayButtonTapped(_ sender: Any) {
-        PrimerHeadlessUniversalCheckout.current.showCheckout(for: .applePay)
+        PrimerHeadlessUniversalCheckout.current.showPaymentMethod(.applePay)
     }
     
     @IBAction func payWithPayPalButtonTapped(_ sender: Any) {
-        PrimerHeadlessUniversalCheckout.current.showCheckout(for: .payPal)
+        PrimerHeadlessUniversalCheckout.current.showPaymentMethod(.payPal)
     }
 }
 
