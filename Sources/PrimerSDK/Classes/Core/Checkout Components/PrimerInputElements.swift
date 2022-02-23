@@ -9,6 +9,16 @@
 
 import UIKit
 
+public class PrimerInputElementDelegateContainer {
+    var inputElement: PrimerInputElement
+    var inputElementDelegate: PrimerInputElementDelegate
+    
+    init(inputElement: PrimerInputElement, inputElementDelegate: PrimerInputElementDelegate) {
+        self.inputElement = inputElement
+        self.inputElementDelegate = inputElementDelegate
+    }
+}
+
 @IBDesignable
 public class PrimerInputTextField: UITextField, PrimerInputElement {
     public weak var inputElementDelegate: PrimerInputElementDelegate! {
