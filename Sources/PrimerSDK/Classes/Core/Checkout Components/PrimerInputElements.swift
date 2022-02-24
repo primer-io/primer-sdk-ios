@@ -10,12 +10,12 @@
 import UIKit
 
 public class PrimerInputElementDelegateContainer {
-    var inputElement: PrimerInputElement
-    var inputElementDelegate: PrimerInputElementDelegate
+    var element: PrimerInputElement
+    var delegate: PrimerInputElementDelegate
     
-    init(inputElement: PrimerInputElement, inputElementDelegate: PrimerInputElementDelegate) {
-        self.inputElement = inputElement
-        self.inputElementDelegate = inputElementDelegate
+    init(element: PrimerInputElement, delegate: PrimerInputElementDelegate) {
+        self.element = element
+        self.delegate = delegate
     }
 }
 

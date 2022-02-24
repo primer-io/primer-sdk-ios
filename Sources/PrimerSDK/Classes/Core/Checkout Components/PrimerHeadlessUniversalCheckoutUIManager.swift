@@ -84,7 +84,7 @@ extension PrimerHeadlessUniversalCheckout {
                 var tmpInputElementsContainers: [Weak<PrimerInputElementDelegateContainer>] = []
                 inputElements.forEach { el in
                     if let _ = el.inputElementDelegate {
-                        tmpInputElementsContainers.append(Weak(value: PrimerInputElementDelegateContainer(inputElement: el, inputElementDelegate: el.inputElementDelegate)))
+                        tmpInputElementsContainers.append(Weak(value: PrimerInputElementDelegateContainer(element: el, delegate: el.inputElementDelegate)))
                     }
                 }
                 inputElements.forEach { el in
@@ -283,9 +283,9 @@ extension PrimerHeadlessUniversalCheckout {
         
         public func inputElementShouldFocus(_ sender: PrimerInputElement) -> Bool {
             guard let senderTextField = sender as? PrimerInputTextField else { return true }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.inputElement as? PrimerInputTextField) == senderTextField }).first else { return true }
+            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return true }
             
-            if let shouldFocus = inputElementContainer.value?.inputElementDelegate.inputElementShouldFocus?(sender) {
+            if let shouldFocus = inputElementContainer.value?.delegate.inputElementShouldFocus?(sender) {
                 return shouldFocus
             } else {
                 return true
@@ -294,15 +294,15 @@ extension PrimerHeadlessUniversalCheckout {
         
         public func inputElementDidFocus(_ sender: PrimerInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.inputElement as? PrimerInputTextField) == senderTextField }).first else { return }
-            inputElementContainer.value?.inputElementDelegate.inputElementDidFocus?(sender)
+            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
+            inputElementContainer.value?.delegate.inputElementDidFocus?(sender)
         }
         
         public func inputElementShouldBlur(_ sender: PrimerInputElement) -> Bool {
             guard let senderTextField = sender as? PrimerInputTextField else { return true }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.inputElement as? PrimerInputTextField) == senderTextField }).first else { return true }
+            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return true }
             
-            if let shouldBlur = inputElementContainer.value?.inputElementDelegate.inputElementShouldBlur?(sender) {
+            if let shouldBlur = inputElementContainer.value?.delegate.inputElementShouldBlur?(sender) {
                 return shouldBlur
             } else {
                 return true
@@ -311,31 +311,31 @@ extension PrimerHeadlessUniversalCheckout {
         
         public func inputElementDidBlur(_ sender: PrimerInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.inputElement as? PrimerInputTextField) == senderTextField }).first else { return }
-            inputElementContainer.value?.inputElementDelegate.inputElementDidBlur?(sender)
+            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
+            inputElementContainer.value?.delegate.inputElementDidBlur?(sender)
         }
         
         public func inputElementValueDidChange(_ sender: PrimerInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.inputElement as? PrimerInputTextField) == senderTextField }).first else { return }
-            inputElementContainer.value?.inputElementDelegate.inputElementValueDidChange?(sender)
+            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
+            inputElementContainer.value?.delegate.inputElementValueDidChange?(sender)
         }
         
         public func inputElementDidDetectType(_ sender: PrimerInputElement, type: Any?) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.inputElement as? PrimerInputTextField) == senderTextField }).first else { return }
+            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
             
             if let cvvTextField = self.inputElements.filter({ $0.type == .cvv }).first as? PrimerInputTextField {
                 cvvTextField.detectedValueType = type
             }
             
-            inputElementContainer.value?.inputElementDelegate.inputElementDidDetectType?(sender, type: type)
+            inputElementContainer.value?.delegate.inputElementDidDetectType?(sender, type: type)
         }
         
         public func inputElementValueIsValid(_ sender: PrimerInputElement, isValid: Bool) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.inputElement as? PrimerInputTextField) == senderTextField }).first else { return }
-            inputElementContainer.value?.inputElementDelegate.inputElementValueIsValid?(sender, isValid: isValid)
+            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
+            inputElementContainer.value?.delegate.inputElementValueIsValid?(sender, isValid: isValid)
             
             DispatchQueue.global(qos: .userInitiated).async {
                 var tmpIsFormValid: Bool
