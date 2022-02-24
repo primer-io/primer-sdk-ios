@@ -15,7 +15,7 @@ class PayViewController: MyViewController {
     var payByCardButton: UIButton!
     let amount = 10001
     let currency = Currency.EUR
-    let countryCode = CountryCode.fr
+    let countryCode = CountryCode.de
     var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager!
     
     var availablePaymentMethodsTypes: [PrimerPaymentMethodType]?
@@ -69,7 +69,7 @@ class PayViewController: MyViewController {
     
     func renderPaymentMethodsTypes() {
         guard let availablePaymentMethodsTypes = self.availablePaymentMethodsTypes, !availablePaymentMethodsTypes.isEmpty else {
-            self.showError(withMessage: "Card payments are not available")
+            self.showError(withMessage: "No available payment methods")
             return
         }
         
@@ -133,6 +133,24 @@ class PayViewController: MyViewController {
             guard let payPalButton = PrimerHeadlessUniversalCheckout.makeButton(for: .payPal) else { return }
             payPalButton.addTarget(self, action: #selector(payWithPayPalButtonTapped(_:)), for: .touchUpInside)
             self.stackView.addArrangedSubview(payPalButton)
+        }
+        
+        if availablePaymentMethodsTypes.contains(.xfers) {
+            guard let xfersButton = PrimerHeadlessUniversalCheckout.makeButton(for: .xfers) else { return }
+            xfersButton.addTarget(self, action: #selector(payWithXfersTapped(_:)), for: .touchUpInside)
+            self.stackView.addArrangedSubview(xfersButton)
+        }
+        
+        if availablePaymentMethodsTypes.contains(.atome) {
+            guard let atomeButton = PrimerHeadlessUniversalCheckout.makeButton(for: .atome) else { return }
+            atomeButton.addTarget(self, action: #selector(payWithAtomeTapped(_:)), for: .touchUpInside)
+            self.stackView.addArrangedSubview(atomeButton)
+        }
+        
+        if availablePaymentMethodsTypes.contains(.adyenGiropay) {
+            guard let adyenGiropayButton = PrimerHeadlessUniversalCheckout.makeButton(for: .adyenGiropay) else { return }
+            adyenGiropayButton.addTarget(self, action: #selector(payWithAdyenGiropayTapped(_:)), for: .touchUpInside)
+            self.stackView.addArrangedSubview(adyenGiropayButton)
         }
     }
     
@@ -216,6 +234,19 @@ class PayViewController: MyViewController {
     @IBAction func payWithPayPalButtonTapped(_ sender: Any) {
         PrimerHeadlessUniversalCheckout.current.showPaymentMethod(.payPal)
     }
+    
+    @IBAction func payWithXfersTapped(_ sender: Any) {
+        PrimerHeadlessUniversalCheckout.current.showPaymentMethod(.xfers)
+    }
+    
+    @IBAction func payWithAtomeTapped(_ sender: Any) {
+        PrimerHeadlessUniversalCheckout.current.showPaymentMethod(.atome)
+    }
+    
+    @IBAction func payWithAdyenGiropayTapped(_ sender: Any) {
+        PrimerHeadlessUniversalCheckout.current.showPaymentMethod(.adyenGiropay)
+    }
+
 }
 
 extension PayViewController: PrimerInputElementDelegate {
