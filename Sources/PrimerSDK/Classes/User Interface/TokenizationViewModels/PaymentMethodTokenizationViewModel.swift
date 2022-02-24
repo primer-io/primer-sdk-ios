@@ -47,11 +47,7 @@ internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
     
     var config: PaymentMethodConfig
-    var completion: TokenizationCompletion? {
-        didSet {
-            
-        }
-    }
+    var completion: TokenizationCompletion?
     var paymentMethod: PaymentMethodToken?
     var didStartTokenization: (() -> Void)?
     internal let theme: PrimerThemeProtocol = DependencyContainer.resolve()

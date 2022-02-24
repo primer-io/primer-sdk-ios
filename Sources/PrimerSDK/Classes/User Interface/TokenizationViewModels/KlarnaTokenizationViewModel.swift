@@ -136,7 +136,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        if Primer.shared.delegate?.onClientSessionActions != nil {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
@@ -149,7 +149,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -205,12 +205,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                }
-                
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
                     if let err = err {
                         self.handleFailedTokenizationFlow(error: err)
                     } else {
@@ -224,7 +220,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         .catch { err in
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: err)
+                PrimerDelegateProxy.checkoutFailed(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
         }
@@ -609,7 +605,7 @@ extension KlarnaTokenizationViewModel {
             }
             
         } catch {
-            Primer.shared.delegate?.checkoutFailed?(with: error)
+            PrimerDelegateProxy.checkoutFailed(with: error)
             self.handle(error: error)
         }
     }
