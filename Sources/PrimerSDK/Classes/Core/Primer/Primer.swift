@@ -338,7 +338,7 @@ public class Primer {
             flow = .completeDirectCheckout
             
         case (.xfers, .checkout):
-            flow = .completeDirectCheckout
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .xfers)
             
         case (.paymentCard, .vault):
             flow = .addCardToVault
