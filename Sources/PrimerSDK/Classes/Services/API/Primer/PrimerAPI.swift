@@ -31,6 +31,7 @@ enum PrimerAPI: Endpoint, Equatable {
             (.continue3DSRemoteAuth, .continue3DSRemoteAuth),
             (.poll, .poll),
             (.sendAnalyticsEvents, .sendAnalyticsEvents),
+            (.createPayment, .createPayment):
             (.validateClientToken, .validateClientToken):
             return true
         default:
@@ -65,7 +66,14 @@ enum PrimerAPI: Endpoint, Equatable {
     case sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?)
     
     case fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request)
+
     case validateClientToken(request: ClientTokenValidationRequest)
+    
+    // Create - Resume Payment
+    
+    case createPayment(clientToken: DecodedClientToken, paymentRequest: Payment.CreateRequest)
+    case resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest)
+
 }
 
 internal extension PrimerAPI {
@@ -97,7 +105,9 @@ internal extension PrimerAPI {
                 .continue3DSRemoteAuth(let clientToken, _),
                 .createApayaSession(let clientToken, _),
                 .listAdyenBanks(let clientToken, _),
-                .fetchPayPalExternalPayerInfo(let clientToken, _):
+                .fetchPayPalExternalPayerInfo(let clientToken, _),
+                .createPayment(let clientToken, _),
+                .resumePayment(let clientToken, _, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -155,7 +165,9 @@ internal extension PrimerAPI {
                 .exchangePaymentMethodToken(let clientToken, _),
                 .tokenizePaymentMethod(let clientToken, _),
                 .begin3DSRemoteAuth(let clientToken, _, _),
-                .continue3DSRemoteAuth(let clientToken, _):
+                .continue3DSRemoteAuth(let clientToken, _),
+                .createPayment(let clientToken, _),
+                .resumePayment(let clientToken, _, _):
             guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
         case .fetchConfiguration(let clientToken):
@@ -213,6 +225,10 @@ internal extension PrimerAPI {
             return "/paypal/orders"
         case .validateClientToken:
             return "/client-token/validate"
+        case .createPayment:
+            return "/payments"
+        case .resumePayment(_, let paymentId, _):
+            return "/payments/\(paymentId)/resume"
         }
     }
     
@@ -248,6 +264,8 @@ internal extension PrimerAPI {
                 .sendAnalyticsEvents,
                 .fetchPayPalExternalPayerInfo,
                 .validateClientToken:
+                .createPayment,
+                .resumePayment:
             return .post
         case .poll:
             return .get
@@ -312,6 +330,10 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(payPalExternalPayerInfoRequestBody)
         case .validateClientToken(let clientTokenToValidate):
             return try? JSONEncoder().encode(clientTokenToValidate)
+        case .createPayment(_, let paymentCreateRequestBody):
+            return try? JSONEncoder().encode(paymentCreateRequestBody)
+        case .resumePayment(_, _, let paymentResumeRequestBody):
+            return try? JSONEncoder().encode(paymentResumeRequestBody)
         }
     }
     

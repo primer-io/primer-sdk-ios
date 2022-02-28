@@ -37,10 +37,17 @@ public protocol PrimerDelegate {
     /// - Parameters:
     ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
+    ///
+    @available(*, deprecated, message: "Use SIMPLIFY DX!.")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
+    
+    @available(*, deprecated, message: "Use SIMPLIFY DX!.")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
 
+    @available(*, deprecated, message: "Use SIMPLIFY DX!.")
     @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
+    
+    @available(*, deprecated, message: "Use SIMPLIFY DX!.")
     @objc optional func onResumeError(_ error: Error)
     
     @objc optional func onCheckoutDismissed()
@@ -58,6 +65,21 @@ public protocol PrimerDelegate {
     @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
     @objc optional func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?)
+    
+    // mock payment started
+    // cannot use "strucs" because of ObjectiveC - so fallback to standard types
+    // check FormTokenizationViewModel func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+    @objc optional func onPaymentStarted(_ paymentMethodToken: String)
+    
+    // mock payment pending
+    @objc optional func onPaymentPending(_ payment: [String: Any])
+
+    // mock payment success
+    // check FormTokenizationViewModel func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+    @objc optional func onPaymentSuccess(_ payment: [String: Any])
+    
+    // mock payment error
+    @objc optional func onPaymentError(_ : Error)
 }
 
 internal class PrimerDelegateProxy {
@@ -185,6 +207,7 @@ internal class PrimerDelegateProxy {
 }
 
 internal class MockPrimerDelegate: PrimerDelegate {
+    
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         
     }

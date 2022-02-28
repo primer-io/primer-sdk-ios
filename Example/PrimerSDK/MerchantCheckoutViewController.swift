@@ -165,7 +165,6 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.configure(settings: generalSettings)
         Primer.shared.showUniversalCheckout(on: self)
     }
-    
 }
 
 // MARK: - PRIMER DELEGATE
@@ -333,6 +332,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         
         let networking = Networking()
         networking.createPayment(with: paymentMethodToken) { res, err in
+            
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
