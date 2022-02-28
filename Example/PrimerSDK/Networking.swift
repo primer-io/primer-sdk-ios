@@ -306,7 +306,7 @@ class Networking {
                     ])
                 merchantActions.append(newAction)
             } else if action.type == "SET_BILLING_ADDRESS" {
-                if let postalCode = (action.params?["postalCode"] as? String) {
+                if let _ = (action.params?["postalCode"] as? String) {
                     var billingAddress: [String: String] = [:]
                     
                     action.params?.forEach { entry in

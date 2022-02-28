@@ -165,7 +165,6 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.configure(settings: generalSettings)
         Primer.shared.showUniversalCheckout(on: self)
     }
-    
 }
 
 // MARK: - PRIMER DELEGATE

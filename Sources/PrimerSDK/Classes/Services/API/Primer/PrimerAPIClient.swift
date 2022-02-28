@@ -10,6 +10,7 @@
 import Foundation
 
 protocol PrimerAPIClientProtocol {
+    
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<GetVaultedPaymentMethodsResponse, Error>) -> Void)
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse>
     func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
@@ -31,11 +32,16 @@ protocol PrimerAPIClientProtocol {
     
     func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
     func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void)
+
     func validateClientToken(request: ClientTokenValidationRequest, completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void)
+    // Create - Resume Payment
+    
+    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Payment.CreateRequest, completion: @escaping (_ result: Result<Payment.Response, Error>) -> Void)
+    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (_ result: Result<Payment.Response, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
-    
+        
     internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
@@ -274,6 +280,28 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             case .failure(let error):
                 ErrorHandler.handle(error: error)
                 completion(.failure(error))
+
+    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Payment.CreateRequest, completion: @escaping (Result<Payment.Response, Error>) -> Void) {
+        let endpoint = PrimerAPI.createPayment(clientToken: clientToken, paymentRequest: paymentRequestBody)
+        networkService.request(endpoint) { (result: Result<Payment.Response, Error>) in
+            switch result {
+            case .success(let res):
+                completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    
+    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (Result<Payment.Response, Error>) -> Void) {
+        let endpoint = PrimerAPI.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest)
+        networkService.request(endpoint) { (result: Result<Payment.Response, Error>) in
+            switch result {
+            case .success(let res):
+                completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }
