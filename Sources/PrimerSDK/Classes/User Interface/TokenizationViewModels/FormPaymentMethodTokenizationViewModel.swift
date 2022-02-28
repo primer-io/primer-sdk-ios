@@ -93,7 +93,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         get { return _buttonColor }
         set { _buttonColor = newValue }
     }
-
+    
     private lazy var _buttonTitleColor: UIColor? = {
         switch config.type {
         default:
@@ -227,7 +227,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         postalCodeContainerView.setup()
         postalCodeContainerView.tintColor = theme.input.border.color(for: .selected)
         return postalCodeContainerView
-     }()
+    }()
     
     var inputTextFieldsStackViews: [UIStackView] {
         var stackViews: [UIStackView] = []
@@ -649,11 +649,22 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
 
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+        
+        guard let paymentMethodTokenString = paymentMethodToken.token else {
+            
+            DispatchQueue.main.async {
+                // send error
+            }
+            return
+        }
+        
         self.paymentMethod = paymentMethodToken
         
         DispatchQueue.main.async {
+            
             PrimerDelegateProxy.onTokenizeSuccess(paymentMethodToken, resumeHandler: self)
             PrimerDelegateProxy.onTokenizeSuccess(paymentMethodToken, { err in
+                
                 self.cardComponentsManager.setIsLoading(false)
                 
                 if let err = err {
@@ -661,7 +672,31 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 } else {
                     self.handleSuccessfulTokenizationFlow()
                 }
+                
+                return
             })
+            
+
+            // Raise "payment creation started" event
+            Primer.shared.delegate?.onPaymentStarted?(paymentMethodTokenString)
+
+            // Create payment with Payment method token
+            
+            // FOR POC purposes
+            // This can lead in zombie objecs and leaks
+            CreateResumePaymentService().createPayment(paymentRequest: Payment.CreateRequest(paymentMethodToken: paymentMethodTokenString)) { paymentResponse, error in
+                
+                guard let paymentResponse = paymentResponse,
+                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
+                          if let error = error {
+                              Primer.shared.delegate?.onPaymentError?(error)
+                          }
+                          return
+                      }
+                
+                Primer.shared.delegate?.onPaymentSuccess?(paymentResponseDict)
+                
+            }
         }
     }
 
@@ -790,10 +825,10 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             expiryDateField.isTextValid,
             cvvField.isTextValid
         ]
-
+        
         if requirePostalCode { validations.append(postalCodeField.isTextValid) }
         if let cardholderNameField = cardholderNameField, requireCardHolderName { validations.append(cardholderNameField.isTextValid) }
-
+        
         if validations.allSatisfy({ $0 == true }) {
             submitButton.isEnabled = true
             submitButton.backgroundColor = theme.mainButton.color(for: .enabled)

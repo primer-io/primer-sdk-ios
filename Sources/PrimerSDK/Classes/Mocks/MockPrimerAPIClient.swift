@@ -245,7 +245,89 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {
+        isCalled = true
+        guard let response = response else {
+            let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
+            completion(.failure(nsErr))
+            return
+        }
         
+        do {
+            let value = try JSONDecoder().decode(PayPal.PayerInfo.Response.self, from: response)
+            completion(.success(value))
+        } catch {
+            completion(.failure(error))
+        }
+
+    }
+
+    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Payment.CreateRequest, completion: @escaping (Result<Payment.Response, Error>) -> Void) {
+        isCalled = true
+        guard let response = response else {
+            let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
+            completion(.failure(nsErr))
+            return
+        }
+        
+        do {
+            let value = try JSONDecoder().decode(Payment.Response.self, from: response)
+            completion(.success(value))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (_ result: Result<Payment.Response, Error>) -> Void) {
+        isCalled = true
+        guard let response = response else {
+            let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
+            completion(.failure(nsErr))
+            return
+        }
+        
+        do {
+            let value = try JSONDecoder().decode(Payment.Response.self, from: response)
+            completion(.success(value))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+}
+
+extension MockPrimerAPIClient {
+    
+    func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
+        isCalled = true
+        guard let response = response else {
+            let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
+            completion(.failure(nsErr))
+            return
+        }
+        
+        do {
+            let value = try JSONDecoder().decode(ThreeDS.BeginAuthResponse.self, from: response)
+            completion(.success(value))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    func continue3DSAuth(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
+        isCalled = true
+        
+        guard let response = response else {
+            let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
+            completion(.failure(nsErr))
+            return
+        }
+        
+        do {
+            let value = try JSONDecoder().decode(ThreeDS.PostAuthResponse.self, from: response)
+            completion(.success(value))
+        } catch {
+            completion(.failure(error))
+        }
     }
     
     func validateClientToken(request: ClientTokenValidationRequest, completion: @escaping (Result<SuccessResponse, Error>) -> Void) {
