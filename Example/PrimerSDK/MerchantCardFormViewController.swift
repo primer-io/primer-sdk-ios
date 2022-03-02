@@ -20,7 +20,7 @@ class MerchantCardFormViewController: UIViewController {
     var cardHolderNameTextField: PrimerInputTextField?
     var environment: Environment = .staging
     var threeDSAlert: UIAlertController?
-    var transactionResponse: TransactionResponse?
+    var resumePaymentId: String?
     var paymentResponsesData: [Data] = []
     var activityIndicator: UIActivityIndicatorView?
     var paymentButton: UIButton!
@@ -153,17 +153,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
                     return
                 }
                 
-                guard let dateStr = res.dateStr,
-                      let paymentId = res.id else {
-                    resumeHandler?.handleSuccess()
-                    return
-                }
-                
-                self.transactionResponse = TransactionResponse(
-                    id: paymentId,
-                    date: dateStr,
-                    status: res.status.rawValue,
-                    requiredAction: requiredAction)
+                self.resumePaymentId = res.id
                 
                 if requiredAction.name == .threeDSAuthentication, res.status == .pending {
                     resumeHandler?.handle(newClientToken: requiredAction.clientToken)

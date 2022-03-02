@@ -432,10 +432,3 @@ public struct Address: Codable {
         return dic.keys.count == 0 ? nil : dic
     }
 }
-
-struct TransactionResponse {
-    var id: String
-    var date: String
-    var status: String
-    var requiredAction: Payment.Response.RequiredAction?
-}
