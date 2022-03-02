@@ -23,53 +23,6 @@ enum HTTPMethod: String {
     case delete = "DELETE"
 }
 
-struct Payment {
-    
-    struct PaymentMethod: Encodable {
-        let descriptor: String
-    }
-    
-    struct Request: Encodable {
-        let paymentMethodToken: String
-        let paymentMethod: PaymentMethod?
-    }
-
-    struct Response: Codable {
-        let id: String
-        let amount: Int?
-        let currencyCode: String?
-        let customer: ClientSessionRequestBody.Customer?
-        let customerId: String?
-        let dateStr: String?
-        var date: Date? {
-            return dateStr?.toDate()
-        }
-        let order: ClientSessionRequestBody.Order?
-        let orderId: String?
-        let requiredAction: Payment.Response.RequiredAction?
-        let status: Status
-        
-        enum CodingKeys: String, CodingKey {
-            case id, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status
-            case dateStr = "date"
-        }
-        
-        struct RequiredAction: Codable {
-            let clientToken: String
-            let name: String
-            let description: String?
-        }
-        
-        enum Status: String, Codable {
-            case authorized = "AUTHORIZED"
-            case settled = "SETTLED"
-            case declined = "DECLINED"
-            case failed = "FAILED"
-            case pending = "PENDING"
-        }
-    }
-}
-
 enum NetworkError: Error {
     case missingParams
     case unauthorised
@@ -214,8 +167,7 @@ class Networking {
         
         let url = environment.baseUrl.appendingPathComponent("/api/payments/")
 
-        let body = Payment.Request(paymentMethodToken: paymentMethodToken,
-                                   paymentMethod: Payment.PaymentMethod(descriptor: UUID().uuidString))
+        let body = Payment.CreateRequest(token: paymentMethodToken)
 
         var bodyData: Data!
 
