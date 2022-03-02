@@ -654,7 +654,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         guard let paymentMethodTokenString = paymentMethodToken.token else {
             
             DispatchQueue.main.async {
-                // send error
+                // TODO: Raise appropriate error
             }
             return
         }

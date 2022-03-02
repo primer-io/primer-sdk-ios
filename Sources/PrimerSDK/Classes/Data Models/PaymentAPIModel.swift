@@ -372,7 +372,7 @@ public struct PaymentAPIModelAddress: Codable {
 public struct Payment {
     
     public struct CreateRequest: Encodable {
-        public let paymentMethodToken: String
+        let paymentMethodToken: String
         
         public init(token: String) {
             self.paymentMethodToken = token
@@ -380,7 +380,7 @@ public struct Payment {
     }
     
     public struct ResumeRequest: Encodable {
-        public let resumeToken: String
+        let resumeToken: String
         
         public init(token: String) {
             self.resumeToken = token
