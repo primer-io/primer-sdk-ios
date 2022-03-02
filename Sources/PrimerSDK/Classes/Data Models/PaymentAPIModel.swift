@@ -369,13 +369,6 @@ public struct PaymentAPIModelAddress: Codable {
     }
 }
 
-public struct TransactionResponse {
-    public var id: String
-    public var date: String
-    public var status: String
-    public var requiredAction: Payment.Response.RequiredAction?
-}
-
 public struct Payment {
     
     public struct CreateRequest: Encodable {
