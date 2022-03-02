@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PrimerSDK
 
 class ResultViewController: UIViewController {
     
@@ -43,7 +44,7 @@ class ResultViewController: UIViewController {
         }
         
         var requiredActionsNames = ""
-        requiredActionsNames = paymentResponses.filter({ $0.requiredAction != nil }).compactMap({ $0.requiredAction!.name }).joined(separator: ", ").uppercased().folding(options: .diacriticInsensitive, locale: .current)
+        requiredActionsNames = paymentResponses.filter({ $0.requiredAction != nil }).compactMap({ $0.requiredAction!.name.rawValue }).joined(separator: ", ").uppercased().folding(options: .diacriticInsensitive, locale: .current)
         requiredActionsLabel.text = requiredActionsNames
         
         var responsesStr = ""

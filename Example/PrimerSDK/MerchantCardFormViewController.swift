@@ -153,18 +153,19 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
                     return
                 }
                 
-                guard let dateStr = res.dateStr else {
+                guard let dateStr = res.dateStr,
+                      let paymentId = res.id else {
                     resumeHandler?.handleSuccess()
                     return
                 }
                 
                 self.transactionResponse = TransactionResponse(
-                    id: res.id,
+                    id: paymentId,
                     date: dateStr,
                     status: res.status.rawValue,
                     requiredAction: requiredAction)
                 
-                if requiredAction.name == "3DS_AUTHENTICATION", res.status == .pending {
+                if requiredAction.name == .threeDSAuthentication, res.status == .pending {
                     resumeHandler?.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     resumeHandler?.handleSuccess()
