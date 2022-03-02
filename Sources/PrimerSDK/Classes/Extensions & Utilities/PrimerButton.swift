@@ -50,7 +50,6 @@ import UIKit
     public var id: String?
 
     private var theme: ButtonTheme?
-    private let defaultPrimerButtonTheme = PrimerTheme().mainButton
     
     internal var imageLogo: UIImage? {
         didSet {
@@ -141,20 +140,17 @@ extension PrimerButton {
     
     private func setupStyleBasedOnCustomThemeIfNeeded() {
         
-        if self.theme == nil {
-            self.theme = defaultPrimerButtonTheme
+        guard let theme = theme else {
+            return
         }
+        
 
-        setTitleColor(theme?.color(for: .enabled), for: .normal)
-        backgroundNormalStateColor = theme?.colorStates.color(for: .enabled)
-        backgroundHighlightedStateColor = theme?.colorStates.color(for: .selected)
-        borderColor = theme?.border.color(for: .enabled)
-        if let themeCornerRadius = theme?.cornerRadius {
-            cornerRadius = themeCornerRadius
-        }
-        if let themeBorderWidth = theme?.border.width {
-            borderWidth = themeBorderWidth
-        }
+        setTitleColor(theme.color(for: .enabled), for: .normal)
+        backgroundNormalStateColor = theme.colorStates.color(for: .enabled)
+        backgroundHighlightedStateColor = theme.colorStates.color(for: .selected)
+        borderColor = theme.border.color(for: .enabled)
+        cornerRadius = theme.cornerRadius
+        borderWidth = theme.border.width
     }
 }
 
