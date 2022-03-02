@@ -302,32 +302,11 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 //        }
 //    }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Method: \(paymentMethodToken)\n")
-
-        if paymentMethodToken.paymentInstrumentType == .paymentCard,
-           let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
-           (threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess) {
-            var message: String = ""
-
-            if let reasonCode = threeDSecureAuthentication.reasonCode {
-                message += "[\(reasonCode)] "
-            }
-
-            if let reasonText = threeDSecureAuthentication.reasonText {
-                message += reasonText
-            }
-
-            threeDSAlert = UIAlertController(title: "3DS Error", message: message, preferredStyle: .alert)
-            threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-                self?.threeDSAlert = nil
-            }))
-        }
-
-        if !performPayment {
-            resumeHandler.handleSuccess()
-            return
-        }
+    func onPaymentPending(_ payment: [String: Any]) {
+        //
+    }
+    
+    func onPaymentSuccess(_ payment: [String: Any]) {
         
         let networking = Networking()
         networking.createPayment(with: paymentMethodToken) { res, err in

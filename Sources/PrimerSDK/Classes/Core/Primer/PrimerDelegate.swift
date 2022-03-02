@@ -38,13 +38,13 @@ public protocol PrimerDelegate {
     ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
     ///
-    @available(*, deprecated, message: "Use SIMPLIFY DX!.")
+    @available(*, deprecated, message: "Use onPaymentSuccess(:) function")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
-    @available(*, deprecated, message: "Use SIMPLIFY DX!.")
+    @available(*, deprecated, message: "Use onPaymentSuccess(:) function")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
 
-    @available(*, deprecated, message: "Use SIMPLIFY DX!.")
+    @available(*, deprecated, message: "The resuming is now handled by the SDK internally so that the payment can either succeed or fail.\nSee onPaymentSuccess(:) and onPaymentError(:)")
     @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
     
     @available(*, deprecated, message: "Use SIMPLIFY DX!.")
@@ -69,17 +69,26 @@ public protocol PrimerDelegate {
     // mock payment started
     // cannot use "strucs" because of ObjectiveC - so fallback to standard types
     // check FormTokenizationViewModel func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+    
+    /// This function will be called when the user initiate a payment.
+    /// - Parameters:
+    ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
     @objc optional func onPaymentStarted(_ paymentMethodToken: String)
     
-    // mock payment pending
+    /// This function will be called when the user receives a payment object in a PENDING status.
+    /// - Parameters:
+    ///   - payment: The Payment object containing the current payment status.
     @objc optional func onPaymentPending(_ payment: [String: Any])
 
-    // mock payment success
-    // check FormTokenizationViewModel func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+    /// This function will be called when the payment has been successful.
+    /// - Parameters:
+    ///   - payment: The Payment object containing the completed payment.
     @objc optional func onPaymentSuccess(_ payment: [String: Any])
     
-    // mock payment error
-    @objc optional func onPaymentError(_ : Error)
+    /// This function will be called when the payment encountered an error.
+    /// - Parameters:
+    ///   - error: The Error object containing the error description.
+    @objc optional func onPaymentError(_ error: Error)
 }
 
 internal class PrimerDelegateProxy {

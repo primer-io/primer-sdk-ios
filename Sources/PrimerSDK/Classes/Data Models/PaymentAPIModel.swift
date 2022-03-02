@@ -105,15 +105,15 @@ public struct PaymentMethod: Codable {
     }
 }
 
-struct ClientSessionRequestBody {
-    let customerId: String?
-    let orderId: String?
-    let currencyCode: Currency?
-    let amount: Int?
-    let metadata: [String: Any]?
-    let customer: ClientSessionRequestBody.Customer?
-    let order: ClientSessionRequestBody.Order?
-    let paymentMethod: ClientSessionRequestBody.PaymentMethod?
+public struct ClientSessionRequestBody {
+    public let customerId: String?
+    public let orderId: String?
+    public let currencyCode: Currency?
+    public let amount: Int?
+    public let metadata: [String: Any]?
+    public let customer: ClientSessionRequestBody.Customer?
+    public let order: ClientSessionRequestBody.Order?
+    public let paymentMethod: ClientSessionRequestBody.PaymentMethod?
     
     var dictionaryValue: [String: Any]? {
         var dic: [String: Any] = [:]
@@ -153,13 +153,13 @@ struct ClientSessionRequestBody {
         return dic.keys.count == 0 ? nil : dic
     }
     
-    struct Customer: Codable {
-        let firstName: String?
-        let lastName: String?
-        let emailAddress: String?
-        let mobileNumber: String?
-        let billingAddress: PaymentAPIModelAddress?
-        let shippingAddress: PaymentAPIModelAddress?
+    public struct Customer: Codable {
+        public let firstName: String?
+        public let lastName: String?
+        public let emailAddress: String?
+        public let mobileNumber: String?
+        public let billingAddress: PaymentAPIModelAddress?
+        public let shippingAddress: PaymentAPIModelAddress?
         
         var dictionaryValue: [String: Any]? {
             var dic: [String: Any] = [:]
@@ -196,11 +196,11 @@ struct ClientSessionRequestBody {
         }
     }
     
-    struct Order: Codable {
-        let countryCode: CountryCode?
-        let lineItems: [LineItem]?
+    public struct Order: Codable {
+        public let countryCode: CountryCode?
+        public let lineItems: [LineItem]?
         
-        var dictionaryValue: [String: Any]? {
+        public var dictionaryValue: [String: Any]? {
             var dic: [String: Any] = [:]
             
             if let countryCode = countryCode {
@@ -214,11 +214,11 @@ struct ClientSessionRequestBody {
             return dic.keys.count == 0 ? nil : dic
         }
         
-        struct LineItem: Codable {
-            let itemId: String?
-            let description: String?
-            let amount: Int?
-            let quantity: Int?
+        public struct LineItem: Codable {
+            public let itemId: String?
+            public let description: String?
+            public let amount: Int?
+            public let quantity: Int?
             
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
@@ -244,9 +244,9 @@ struct ClientSessionRequestBody {
         }
     }
     
-    struct PaymentMethod {
-        let vaultOnSuccess: Bool?
-        let options: [String: Any]?
+    public struct PaymentMethod {
+        public let vaultOnSuccess: Bool?
+        public let options: [String: Any]?
         
         var dictionaryValue: [String: Any]? {
             var dic: [String: Any] = [:]
@@ -370,49 +370,58 @@ public struct PaymentAPIModelAddress: Codable {
 }
 
 public struct TransactionResponse {
-    var id: String
-    var date: String
-    var status: String
-    var requiredAction: Payment.Response.RequiredAction?
+    public var id: String
+    public var date: String
+    public var status: String
+    public var requiredAction: Payment.Response.RequiredAction?
 }
 
 public struct Payment {
     
-    struct CreateRequest: Encodable {
-        let paymentMethodToken: String
+    public struct CreateRequest: Encodable {
+        public let paymentMethodToken: String
+        
+        public init(token: String) {
+            self.paymentMethodToken = token
+        }
     }
     
-    struct ResumeRequest: Encodable {
-        let resumeToken: String
+    public struct ResumeRequest: Encodable {
+        public let resumeToken: String
+        
+        public init(token: String) {
+            self.resumeToken = token
+        }
     }
 
-    struct Response: Codable {
-        let id: String
-        let amount: Int?
-        let currencyCode: String?
-        let customer: ClientSessionRequestBody.Customer?
-        let customerId: String?
-        let dateStr: String?
-        var date: Date? {
+    public struct Response: Codable {
+        public let id: String?
+        public let paymentId: String?
+        public let amount: Int?
+        public let currencyCode: String?
+        public let customer: ClientSessionRequestBody.Customer?
+        public let customerId: String?
+        public let dateStr: String?
+        public var date: Date? {
             return dateStr?.toDate()
         }
-        let order: ClientSessionRequestBody.Order?
-        let orderId: String?
-        let requiredAction: Payment.Response.RequiredAction?
-        let status: Status
+        public let order: ClientSessionRequestBody.Order?
+        public let orderId: String?
+        public let requiredAction: Payment.Response.RequiredAction?
+        public let status: Status
         
-        enum CodingKeys: String, CodingKey {
-            case id, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status
+        public enum CodingKeys: String, CodingKey {
+            case id, paymentId, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status
             case dateStr = "date"
         }
         
-        struct RequiredAction: Codable {
-            let clientToken: String
-            let name: String
-            let description: String?
+        public struct RequiredAction: Codable {
+            public let clientToken: String
+            public let name: RequiredActionName
+            public let description: String?
         }
         
-        enum Status: String, Codable {
+        public enum Status: String, Codable {
             case authorized = "AUTHORIZED"
             case settled = "SETTLED"
             case declined = "DECLINED"
