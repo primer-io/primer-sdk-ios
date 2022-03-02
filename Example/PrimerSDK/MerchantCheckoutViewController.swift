@@ -59,7 +59,6 @@ class MerchantCheckoutViewController: UIViewController {
     var phoneNumber: String?
     var countryCode: CountryCode = .gb
     var threeDSAlert: UIAlertController?
-    var transactionResponse: TransactionResponse?
     var performPayment: Bool = false
     
     var customer: PrimerSDK.Customer?

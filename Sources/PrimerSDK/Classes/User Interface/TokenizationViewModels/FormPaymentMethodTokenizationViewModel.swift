@@ -31,6 +31,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     var inputs: [Input] = []
     private var cardComponentsManager: CardComponentsManager!
     var onConfigurationFetched: (() -> Void)?
+    var resumePaymentId: String?
     
     // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false
@@ -676,26 +677,34 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 return
             })
             
-
+            
             // Raise "payment creation started" event
             Primer.shared.delegate?.onPaymentStarted?(paymentMethodTokenString)
-
+            
             // Create payment with Payment method token
             
             // FOR POC purposes
             // This can lead in zombie objecs and leaks
-            CreateResumePaymentService().createPayment(paymentRequest: Payment.CreateRequest(paymentMethodToken: paymentMethodTokenString)) { paymentResponse, error in
+            CreateResumePaymentService().createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
                 
                 guard let paymentResponse = paymentResponse,
                       let paymentResponseDict = try? paymentResponse.asDictionary() else {
                           if let error = error {
                               Primer.shared.delegate?.onPaymentError?(error)
+                              self.handle(error: error)
                           }
                           return
                       }
                 
-                Primer.shared.delegate?.onPaymentSuccess?(paymentResponseDict)
-                
+                self.resumePaymentId = paymentResponse.id
+
+                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
+                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
+                    self.handle(newClientToken: requiredAction.clientToken)
+                } else {
+                    Primer.shared.delegate?.onPaymentSuccess?(paymentResponseDict)
+                    self.handleSuccess()
+                }
             }
         }
     }
