@@ -19,7 +19,6 @@ public class PrimerInputElementDelegateContainer {
     }
 }
 
-@IBDesignable
 public class PrimerInputTextField: UITextField, PrimerInputElement {
     public weak var inputElementDelegate: PrimerInputElementDelegate! {
         didSet {
@@ -69,6 +68,66 @@ public class PrimerInputTextField: UITextField, PrimerInputElement {
     public init(type: PrimerInputElementType, frame: CGRect) {
         self.type = type
         super.init(frame: frame)
+    }
+}
+
+@IBDesignable
+public class PrimerCardNumberInputElement: PrimerInputTextField {
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.type = .cardNumber
+    }
+    
+    override public init(type: PrimerInputElementType, frame: CGRect) {
+        super.init(type: .cardNumber, frame: frame)
+    }
+}
+
+@IBDesignable
+public class PrimerExpiryDateInputElement: PrimerInputTextField {
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.type = .expiryDate
+    }
+    
+    override public init(type: PrimerInputElementType, frame: CGRect) {
+        super.init(type: .expiryDate, frame: frame)
+    }
+}
+
+@IBDesignable
+public class PrimerCVVInputElement: PrimerInputTextField {
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.type = .cvv
+    }
+    
+    override public init(type: PrimerInputElementType, frame: CGRect) {
+        super.init(type: .cvv, frame: frame)
+    }
+}
+
+@IBDesignable
+public class PrimerCardholderNameInputElement: PrimerInputTextField {
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.type = .cardholderName
+    }
+    
+    override public init(type: PrimerInputElementType, frame: CGRect) {
+        super.init(type: .cardholderName, frame: frame)
+    }
+}
+
+@IBDesignable
+public class PrimerPostalCodeInputElement: PrimerInputTextField {
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.type = .postalCode
+    }
+    
+    override public init(type: PrimerInputElementType, frame: CGRect) {
+        super.init(type: .postalCode, frame: frame)
     }
 }
 
