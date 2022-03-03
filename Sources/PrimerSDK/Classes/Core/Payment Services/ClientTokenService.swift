@@ -5,6 +5,8 @@ import Foundation
 internal protocol ClientTokenServiceProtocol {
     static func storeClientToken(_ clientToken: String) throws
     func fetchClientToken(_ completion: @escaping (Error?) -> Void)
+    func fetchClientToken() -> Promise<Void>
+    func fetchClientTokenIfNeeded() -> Promise<Void>
 }
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
@@ -99,14 +101,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
     performs asynchronous call passed in by app developer, decodes the returned Base64 Primer client token string and adds it to shared state.
      */
     func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
-        guard let clientTokenCallback = Primer.shared.delegate?.clientTokenCallback else {
-            let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            completion(err)
-            return
-        }
-        
-        clientTokenCallback({ (token, err) in
+        PrimerDelegateProxy.clientTokenCallback({ (token, err) in
             if let err = err {
                 completion(err)
             } else if let token = token {
@@ -119,7 +114,57 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
             }
         })
     }
+    
+    func fetchClientToken() -> Promise<Void> {
+        return Promise { seal in
+            self.fetchClientToken { err in
+                if let err = err {
+                    seal.reject(err)
+                } else {
+                    seal.fulfill()
+                }
+            }
+        }
+    }
 
+    func fetchClientTokenIfNeeded() -> Promise<Void> {
+        return Promise { seal in
+            do {
+                if let decodedClientToken = ClientTokenService.decodedClientToken {
+                    try decodedClientToken.validate()
+                    seal.fulfill()
+                } else {
+                    firstly {
+                        self.fetchClientToken()
+                    }
+                    .done {
+                        seal.fulfill()
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                }
+                
+            } catch {
+                switch error {
+                case PrimerError.invalidClientToken:
+                    firstly {
+                        self.fetchClientToken()
+                    }
+                    .done { decodedClientToken in
+                        seal.fulfill(decodedClientToken)
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                default:
+                    seal.reject(error)
+                }
+            }
+            
+        }
+    }
+    
 }
 
 #endif

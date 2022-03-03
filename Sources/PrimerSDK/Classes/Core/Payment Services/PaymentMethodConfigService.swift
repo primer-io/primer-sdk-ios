@@ -48,6 +48,38 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
         }
     }
     
+    func fetchPrimerConfigurationIfNeeded() -> Promise<PrimerConfiguration> {
+        return Promise { seal in
+            if let paymentMethodsConfig = PrimerConfiguration.current {
+                seal.fulfill(paymentMethodsConfig)
+            } else {
+                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                do {
+                    try decodedClientToken.validate()
+                } catch {
+                    seal.reject(error)
+                    return
+                }
+                
+                let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
+                apiClient.fetchConfiguration(clientToken: decodedClientToken) { result in
+                    switch result {
+                    case .success(let paymentMethodsConfig):
+                        seal.fulfill(paymentMethodsConfig)
+                    case .failure(let err):
+                        seal.reject(err)
+                    }
+                }
+            }
+        }
+    }
+    
 }
 
 #endif

@@ -83,6 +83,8 @@ class MockPrimerDelegate: PrimerDelegate {
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
     
+    var hasDisabledSuccessScreen: Bool = false
+    
     var debugOptions: PrimerDebugOptions
         
     var orderId: String?
@@ -106,10 +108,6 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     var orderItems: [OrderItem]? = []
 
     var isFullScreenOnly: Bool {
-        return false
-    }
-
-    var hasDisabledSuccessScreen: Bool {
         return false
     }
 
@@ -137,24 +135,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 
     var theme: PrimerTheme { return PrimerTheme() }
 
-    var clientTokenRequestCallback: ClientTokenCallBack
-
-    var authorizePayment: PaymentMethodTokenCallBack
-    
-    var onTokenizeSuccess: TokenizationSuccessCallBack
-    
-    var onCheckoutDismiss: CheckoutDismissalCallback
-
-    init(
-        clientTokenRequestCallback: @escaping ClientTokenCallBack = { _ in },
-        authorizePayment: @escaping PaymentMethodTokenCallBack = { _, _  in },
-        onTokenizeSuccess: @escaping TokenizationSuccessCallBack = { _, _  in },
-        onCheckoutDismiss: @escaping CheckoutDismissalCallback = { }
-    ) {
-        self.clientTokenRequestCallback = clientTokenRequestCallback
-        self.authorizePayment = authorizePayment
-        self.onCheckoutDismiss = onCheckoutDismiss
-        self.onTokenizeSuccess = onTokenizeSuccess
+    init() {
         self.is3DSOnVaultingEnabled = true
         self.debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
     }

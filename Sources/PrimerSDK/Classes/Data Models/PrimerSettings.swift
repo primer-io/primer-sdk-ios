@@ -1,10 +1,5 @@
 #if canImport(UIKit)
 
-public typealias ClientTokenCallBack = (_ completionHandler: @escaping (_ token: String?, _ error: Error?) -> Void) -> Void
-public typealias PaymentMethodTokenCallBack = (_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
-public typealias TokenizationSuccessCallBack = (_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) -> Void
-public typealias CheckoutDismissalCallback = () -> Void
-
 internal protocol PrimerSettingsProtocol {
     @available(*, deprecated, message: "Set the amount in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var amount: Int? { get }
@@ -17,18 +12,15 @@ internal protocol PrimerSettingsProtocol {
     var klarnaPaymentDescription: String? { get }
     @available(*, deprecated, message: "Set the customerId in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var customerId: String? { get }
-    var authorizePayment: PaymentMethodTokenCallBack { get }
-    var onTokenizeSuccess: TokenizationSuccessCallBack { get }
-    var onCheckoutDismiss: CheckoutDismissalCallback { get }
     var urlScheme: String? { get }
     var urlSchemeIdentifier: String? { get }
     var isFullScreenOnly: Bool { get }
-    var hasDisabledSuccessScreen: Bool { get }
+    var hasDisabledSuccessScreen: Bool { get set }
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
     @available(*, deprecated, message: "Set the orderItems in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var orderItems: [OrderItem]? { get }
-    var isInitialLoadingHidden: Bool { get }
+    var isInitialLoadingHidden: Bool { get set }
     var localeData: LocaleData { get }
     var is3DSOnVaultingEnabled: Bool { get }
     @available(*, deprecated, message: "Set the billingAddress in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
@@ -88,6 +80,9 @@ public class PrimerSettings: PrimerSettingsProtocol {
     private var _urlScheme: String?
     internal(set) public var urlScheme: String? {
         get {
+            if _urlScheme == "://redirect.primer.io" {
+                return nil
+            }
             return _urlScheme
         }
         set {
@@ -118,22 +113,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var orderId: String?
     internal(set) public var debugOptions: PrimerDebugOptions = PrimerDebugOptions()
     internal(set) public var customer: Customer?
-
-    public var clientTokenRequestCallback: ClientTokenCallBack {
-        return Primer.shared.delegate?.clientTokenCallback ?? { _ in }
-    }
-
-    internal var authorizePayment: PaymentMethodTokenCallBack {
-        return Primer.shared.delegate?.authorizePayment ?? { _, _ in }
-    }
-    
-    internal var onTokenizeSuccess: TokenizationSuccessCallBack {
-        return Primer.shared.delegate?.onTokenizeSuccess ?? { _, _ in }
-    }
-
-    public var onCheckoutDismiss: CheckoutDismissalCallback {
-        return Primer.shared.delegate?.onCheckoutDismissed ?? {}
-    }
     
     private var isModifiedByClientSession: Bool = false
     
@@ -301,33 +280,6 @@ public struct BusinessDetails: Codable {
         self.name = name
         self.address = address
     }
-}
-
-internal class MockDelegate: PrimerDelegate {
-    func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
-        
-    }
-    
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-        
-    }
-    
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
-            
-    }
-
-    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-
-    }
-
-    func onCheckoutDismissed() {
-
-    }
-    
-    func checkoutFailed(with error: Error) {
-        
-    }
-    
 }
 
 #endif

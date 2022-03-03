@@ -93,7 +93,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                         let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: err)
-                        Primer.shared.delegate?.checkoutFailed?(with: err.exposedError)
+                        PrimerDelegateProxy.checkoutFailed(with: err.exposedError)
                         return
                     }
 
@@ -107,10 +107,6 @@ internal class TokenizationService: TokenizationServiceProtocol {
                                 DispatchQueue.main.async {
                                     switch result {
                                     case .success(let paymentMethodToken):
-                                        if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
-                                            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken.0)
-                                        }
-
                                         onTokenizeSuccess(.success(paymentMethodToken.0))
                                         
                                     case .failure(let err):

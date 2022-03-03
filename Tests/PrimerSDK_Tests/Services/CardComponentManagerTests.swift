@@ -57,7 +57,7 @@ class CardComponentManagerTests: XCTestCase {
     func test_card_component_manager_initialization() throws {
         let mockState = AppState()
         var clientAccessToken = "not_a_valid_jwt_token"
-        DependencyContainer.register(mockState as! AppStateProtocol)
+        DependencyContainer.register(mockState as AppStateProtocol)
         var cardComponentManager = MockCardComponentsManager(clientToken: clientAccessToken, cardnumber: nil)
         XCTAssertEqual(cardComponentManager.decodedClientToken == nil, true)
 

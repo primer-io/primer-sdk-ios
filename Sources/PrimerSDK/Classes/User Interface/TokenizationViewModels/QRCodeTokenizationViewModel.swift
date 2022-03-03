@@ -12,7 +12,7 @@ import UIKit
 
 class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     
-    override lazy var title: String = {
+    private lazy var _title: String = {
         switch config.type {
         case .xfers:
             return "XFers"
@@ -21,28 +21,12 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             return ""
         }
     }()
+    override var title: String  {
+        get { return _title }
+        set { _title = newValue }
+    }
     
-    override lazy var buttonTitle: String? = {
-        switch config.type {
-        case .xfers:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonImage: UIImage? = {
-        switch config.type {
-        case .xfers:
-            return originalImage?.withRenderingMode(.alwaysTemplate)
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    lazy var originalImage: UIImage? = {
+    private lazy var _originalImage: UIImage? = {
         switch config.type {
         case .xfers:
             return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)
@@ -51,8 +35,26 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             return nil
         }
     }()
+    override var originalImage: UIImage? {
+        get { return _originalImage }
+        set { _originalImage = newValue }
+    }
     
-    override lazy var buttonColor: UIColor? = {
+    private lazy var _buttonImage: UIImage? = {
+        switch config.type {
+        case .xfers:
+            return originalImage?.withRenderingMode(.alwaysTemplate)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    override var buttonImage: UIImage? {
+        get { return _buttonImage }
+        set { _buttonImage = newValue }
+    }
+    
+    private lazy var _buttonColor: UIColor? = {
         switch config.type {
         case .xfers:
             return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
@@ -61,38 +63,12 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             return nil
         }
     }()
+    override var buttonColor: UIColor? {
+        get { return _buttonColor }
+        set { _buttonColor = newValue }
+    }
     
-    override lazy var buttonTitleColor: UIColor? = {
-        switch config.type {
-        case .xfers:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonBorderWidth: CGFloat = {
-        switch config.type {
-        case .xfers:
-            return 0.0
-        default:
-            assert(true, "Shouldn't end up in here")
-            return 0.0
-        }
-    }()
-    
-    override lazy var buttonBorderColor: UIColor? = {
-        switch config.type {
-        case .xfers:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonTintColor: UIColor? = {
+    private lazy var _buttonTintColor: UIColor? = {
         switch config.type {
         case .xfers:
             return .white
@@ -101,14 +77,10 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             return nil
         }
     }()
-    
-    override lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
-    }()
-    
-    override lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
-    }()
+    override var buttonTintColor: UIColor? {
+        get { return _buttonTintColor }
+        set { _buttonTintColor = newValue }
+    }
     
     private var tokenizationService: TokenizationServiceProtocol?
     internal var qrCode: String?
@@ -158,7 +130,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         } catch {
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -175,10 +147,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                }
-                
+
                 self.completion?(self.paymentMethod, nil)
                 self.handleSuccessfulTokenizationFlow()
             }
@@ -203,9 +172,9 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         .catch { err in
             DispatchQueue.main.async {
                 if let primerErr = err as? PrimerError, case PrimerError.cancelled = primerErr {
-                    Primer.shared.delegate?.onResumeError?(err)
+                    PrimerDelegateProxy.onResumeError(err)
                 } else {
-                    Primer.shared.delegate?.checkoutFailed?(with: err)
+                    PrimerDelegateProxy.checkoutFailed(with: err)
                     self.handleFailedTokenizationFlow(error: err)
                 }
             }
@@ -325,7 +294,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             }
             
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
             }
         }
     }
@@ -411,7 +380,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             }
             
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
+                PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
             }
         }
     }
@@ -468,7 +437,7 @@ extension QRCodeTokenizationViewModel {
             }
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(error)
+                PrimerDelegateProxy.onResumeError(error)
                 self.handle(error: error)
             }
         }

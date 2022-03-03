@@ -5,6 +5,7 @@ import Foundation
 struct DecodedClientToken: Codable {
     var accessToken: String?
     var analyticsUrl: String?
+    var analyticsUrlV2: String?
     var configurationUrl: String?
     var coreUrl: String?
     var env: String?
@@ -63,19 +64,19 @@ struct DecodedClientToken: Codable {
     
     func validate() throws {
         if accessToken == nil {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Access token is nil"])
             ErrorHandler.handle(error: err)
             throw err
         }
         
         guard let expDate = expDate else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Expiry date missing"])
             ErrorHandler.handle(error: err)
             throw err
         }
         
         if expDate < Date() {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Expiry datetime has passed."])
             ErrorHandler.handle(error: err)
             throw err
         }

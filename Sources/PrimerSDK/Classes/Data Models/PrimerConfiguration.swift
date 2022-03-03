@@ -13,8 +13,12 @@ protocol CheckoutModuleOptions: Codable {}
 
 struct PrimerConfiguration: Codable {
     
+    static var current: PrimerConfiguration? {
+        let appState: AppStateProtocol = DependencyContainer.resolve()
+        return appState.primerConfiguration
+    }
+    
     static var paymentMethodConfigs: [PaymentMethodConfig]? {
-        if Primer.shared.flow == nil { return nil }
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         let pms = state
@@ -52,12 +56,6 @@ struct PrimerConfiguration: Codable {
     
     var isSetByClientSession: Bool {
         return clientSession != nil
-    }
-    
-    var requirePostalCode: Bool {
-        let billingAddressModule = checkoutModules?.first { $0.type == "BILLING_ADDRESS" }
-//        return false
-         return (billingAddressModule?.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
     }
     
     public init(from decoder: Decoder) throws {

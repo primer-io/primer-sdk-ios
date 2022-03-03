@@ -47,11 +47,7 @@ internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
     
     var config: PaymentMethodConfig
-    var completion: TokenizationCompletion? {
-        didSet {
-            
-        }
-    }
+    var completion: TokenizationCompletion?
     var paymentMethod: PaymentMethodToken?
     var didStartTokenization: (() -> Void)?
     internal let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -124,6 +120,11 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         return nil
     }()
     
+    lazy var originalImage: UIImage? = {
+        assert(true, "Should be overriden")
+        return nil
+    }()
+    
     lazy var buttonImage: UIImage? = {
         assert(true, "Should be overriden")
         return nil
@@ -131,12 +132,12 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     lazy var buttonColor: UIColor? = {
         assert(true, "Should be overriden")
-        return UIColor.white
+        return nil
     }()
     
     lazy var buttonTitleColor: UIColor? = {
         assert(true, "Should be overriden")
-        return UIColor.black
+        return nil
     }()
     
     lazy var buttonBorderWidth: CGFloat = {
@@ -146,7 +147,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     lazy var buttonBorderColor: UIColor? = {
         assert(true, "Should be overriden")
-        return UIColor.black
+        return nil
     }()
     
     var buttonTintColor: UIColor? {

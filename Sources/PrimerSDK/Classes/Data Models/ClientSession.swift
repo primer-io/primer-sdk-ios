@@ -45,27 +45,27 @@ public class ClientSession: Codable {
         static func unselectPaymentMethod(resumeHandler: ResumeHandlerProtocol?) {
             DispatchQueue.main.async {
                 let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
-                Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+                PrimerDelegateProxy.onClientSessionActions(actions, resumeHandler: resumeHandler)
             }
         }
         
         static func selectPaymentMethod(resumeHandler: ResumeHandlerProtocol, withParameters parameters: [String: Any]) {
             DispatchQueue.main.async {
                 let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
-                Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+                PrimerDelegateProxy.onClientSessionActions(actions, resumeHandler: resumeHandler)
             }
         }
         
         static func setPostalCode(resumeHandler: ResumeHandlerProtocol, withParameters parameters: [String: Any]) {
             DispatchQueue.main.async {
                 let actions: [ClientSession.Action] = [ClientSession.Action(type: "SET_BILLING_ADDRESS", params: parameters)]
-                Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+                PrimerDelegateProxy.onClientSessionActions(actions, resumeHandler: resumeHandler)
             }
         }
         
         static func dispatchMultiple(resumeHandler: ResumeHandlerProtocol, actions: [ClientSession.Action]) {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+                PrimerDelegateProxy.onClientSessionActions(actions, resumeHandler: resumeHandler)
             }
         }
         
