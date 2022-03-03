@@ -198,7 +198,7 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            PrimerHeadlessUniversalCheckout.current.showCheckout(for: paymentMethodType)
+            PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
         }
     }
 }
