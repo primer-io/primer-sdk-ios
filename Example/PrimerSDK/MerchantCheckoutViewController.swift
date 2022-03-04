@@ -302,44 +302,29 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 //    }
     
     func onPaymentPending(_ payment: [String: Any]) {
-        //
+        
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(payment)\n")
+        
+        guard let paymentData = try? JSONSerialization.data(withJSONObject:payment) else {
+                  return
+              }
+        
+        self.paymentResponsesData.append(paymentData)
     }
     
     func onPaymentSuccess(_ payment: [String: Any]) {
         
-        Networking.createPayment(with: paymentMethodToken) { res, err in
-            if let err = err {
-                print(err)
-                let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
-                resumeHandler.handle(error: merchantErr)
-            } else if let res = res {
-                if let data = try? JSONEncoder().encode(res) {
-                    self.paymentResponsesData.append(data)
-                }
-                
-                if res.status == .declined {
-                    let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, payment was declined :("])
-                    resumeHandler.handle(error: merchantErr)
-                    return
-                }
-                
-                guard let requiredAction = res.requiredAction else {
-                    resumeHandler.handleSuccess()
-                    return
-                }
-                
-                guard let dateStr = res.dateStr else {
-                    resumeHandler.handleSuccess()
-                    return
-                }
-                
-                self.transactionResponse = TransactionResponse(id: res.id, date: dateStr, status: res.status.rawValue, requiredAction: requiredAction)
-                resumeHandler.handle(newClientToken: requiredAction.clientToken)
-                
-            } else {
-                assert(true)
-            }
-        }
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(payment)\n")
+        
+        guard let paymentData = try? JSONSerialization.data(withJSONObject:payment) else {
+                  return
+              }
+        
+        self.paymentResponsesData.append(paymentData)
+    }
+    
+    func onPaymentError(_ error: Error) {
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
     }
     
     func tokenAddedToVault(_ token: PaymentMethodToken) {
