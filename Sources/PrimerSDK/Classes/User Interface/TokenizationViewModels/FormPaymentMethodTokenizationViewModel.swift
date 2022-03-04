@@ -155,6 +155,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     lazy var cardNumberField: PrimerCardNumberFieldView = {
         let cardNumberField = PrimerCardNumberFieldView()
         cardNumberField.placeholder = "4242 4242 4242 4242"
+        cardNumberField.text = "9120000000000006"
         cardNumberField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         cardNumberField.textColor = theme.input.text.color
         cardNumberField.borderStyle = .none
