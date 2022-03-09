@@ -38,7 +38,7 @@ enum PrimerAPI: Endpoint, Equatable {
     }
     
 
-    
+    case validateClientToken(clientToken: DecodedClientToken, clientTokenToValidate: ClientTokenValidationRequest)
     case exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String)
     case fetchConfiguration(clientToken: DecodedClientToken)
     case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
@@ -96,7 +96,8 @@ internal extension PrimerAPI {
                 .continue3DSRemoteAuth(let clientToken, _),
                 .createApayaSession(let clientToken, _),
                 .listAdyenBanks(let clientToken, _),
-                .fetchPayPalExternalPayerInfo(let clientToken, _):
+                .fetchPayPalExternalPayerInfo(let clientToken, _),
+                .validateClientToken(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -141,7 +142,8 @@ internal extension PrimerAPI {
                 .finalizeKlarnaPaymentSession(let clientToken, _),
                 .createApayaSession(let clientToken, _),
                 .listAdyenBanks(let clientToken, _),
-                .fetchPayPalExternalPayerInfo(let clientToken, _):
+                .fetchPayPalExternalPayerInfo(let clientToken, _),
+                .validateClientToken(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .deleteVaultedPaymentMethod(let clientToken, _),
@@ -203,6 +205,9 @@ internal extension PrimerAPI {
             return ""
         case .fetchPayPalExternalPayerInfo:
             return "/paypal/orders"
+        case .validateClientToken:
+            return "/client-token/validate"
+
         }
     }
     
@@ -236,7 +241,8 @@ internal extension PrimerAPI {
                 .createApayaSession,
                 .listAdyenBanks,
                 .sendAnalyticsEvents,
-                .fetchPayPalExternalPayerInfo:
+                .fetchPayPalExternalPayerInfo,
+                .validateClientToken:
             return .post
         case .poll:
             return .get
@@ -299,6 +305,8 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(body)
         case .fetchPayPalExternalPayerInfo(_, let payPalExternalPayerInfoRequestBody):
             return try? JSONEncoder().encode(payPalExternalPayerInfoRequestBody)
+        case .validateClientToken(_, let clientTokenToValidate):
+            return try? JSONEncoder().encode(clientTokenToValidate)
         }
     }
     

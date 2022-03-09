@@ -248,6 +248,10 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         
     }
     
+    func validateClientToken(clientToken: DecodedClientToken, request: ClientTokenValidationRequest, completion: @escaping (Result<Void, Error>) -> Void) {
+        
+    }
+
 }
 
 #endif

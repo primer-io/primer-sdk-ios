@@ -2,6 +2,10 @@
 
 import Foundation
 
+struct ClientTokenValidationRequest: Codable {
+    let clientToken: String
+}
+
 struct DecodedClientToken: Codable {
     var accessToken: String?
     var analyticsUrl: String?
