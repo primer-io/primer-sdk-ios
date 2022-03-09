@@ -34,6 +34,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     private var applePayReceiveDataCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((NSObject) -> Void)?
+    private var isCancelled: Bool = false
     
     private lazy var _title: String = { return "Apple Pay" }()
     override var title: String  {
@@ -304,6 +305,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             
             DispatchQueue.main.async {
                 self.willPresentExternalView?()
+                self.isCancelled = true
                 Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
                     DispatchQueue.main.async {
                         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented()
@@ -325,11 +327,13 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
 extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDelegate {
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
-        controller.dismiss(animated: true, completion: nil)
-        let err = PrimerError.cancelled(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-        ErrorHandler.handle(error: err)
-        applePayReceiveDataCompletion?(.failure(err))
-        applePayReceiveDataCompletion = nil
+        if self.isCancelled {
+            controller.dismiss(animated: true, completion: nil)
+            let err = PrimerError.cancelled(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            applePayReceiveDataCompletion?(.failure(err))
+            applePayReceiveDataCompletion = nil
+        }
     }
     
     @available(iOS 11.0, *)
@@ -338,6 +342,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
+        self.isCancelled = false
         applePayControllerCompletion = { obj in
             completion(obj as! PKPaymentAuthorizationResult)
         }
@@ -355,14 +360,18 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
                     paymentData: tokenPaymentData
                 )
             )
-
+            completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
+            controller.dismiss(animated: true, completion: nil)
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))
             applePayReceiveDataCompletion = nil
         } catch {
+            completion(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
+            controller.dismiss(animated: true, completion: nil)
             applePayReceiveDataCompletion?(.failure(error))
             applePayReceiveDataCompletion = nil
         }
     }
+    
     
 }
 
