@@ -13,11 +13,11 @@ import UIKit
 /// Reserve the name for all primer buttons. If you need to extend UIButton, extend and use this one instead, so we
 /// don't expose unnecessary functionality.
 ///
-@IBDesignable public class PrimerButton: UIButton, Identifiable {
+@IBDesignable internal class PrimerButton: UIButton, Identifiable {
     
     //MARK: @IBInspectable Properties
         
-    @IBInspectable public var cornerRadius: CGFloat = 0 {
+    @IBInspectable internal var cornerRadius: CGFloat = 0 {
         didSet {
             let maxRadius = min(frame.width, frame.height) / 2
             layer.cornerRadius = cornerRadius > maxRadius ? maxRadius : cornerRadius
@@ -25,25 +25,25 @@ import UIKit
         }
     }
     
-    @IBInspectable public var borderWidth: CGFloat = 0 {
+    @IBInspectable internal var borderWidth: CGFloat = 0 {
         didSet {
             layer.borderWidth = borderWidth
         }
     }
     
-    @IBInspectable public var borderColor: UIColor? {
+    @IBInspectable internal var borderColor: UIColor? {
         didSet {
             layer.borderColor = borderColor?.cgColor
         }
     }
     
-    @IBInspectable public var backgroundNormalStateColor: UIColor? {
+    @IBInspectable internal var backgroundNormalStateColor: UIColor? {
         didSet {
             backgroundColor = backgroundNormalStateColor
         }
     }
     
-    @IBInspectable public var backgroundHighlightedStateColor: UIColor?
+    @IBInspectable internal var backgroundHighlightedStateColor: UIColor?
     
     //MARK: Properties
 
@@ -65,7 +65,7 @@ import UIKit
         }
     }
     
-    public var onPressed: Action?
+    internal var onPressed: PrimerAction?
     
     override open var isHighlighted: Bool {
         didSet {
@@ -91,7 +91,7 @@ import UIKit
     private lazy var activityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.hidesWhenStopped = true
-        activityIndicator.color = theme?.colorStates.color(for: .selected)
+        activityIndicator.color = theme?.colorStates.color(for: .selected) ?? .white
         self.addSubview(activityIndicator)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         let xCenterConstraint = NSLayoutConstraint(item: self, attribute: .centerX, relatedBy: .equal, toItem: activityIndicator, attribute: .centerX, multiplier: 1, constant: 0)
