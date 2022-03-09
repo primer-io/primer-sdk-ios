@@ -27,7 +27,16 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         return jwtTokenPayload
     }
     
+    // make the internal validation 40:95
+    // if passes, then API call (both callback and promise functions)
+    // if passes, store it
+    
     static func storeClientToken(_ clientToken: String) throws {
+        
+        // make api request to validate the raw clientToken
+        // if success proceed with the following
+        // otherwise raise error
+        
         guard var currentDecodedToken = clientToken.jwtTokenPayload,
               let expDate = currentDecodedToken.expDate
         else {
