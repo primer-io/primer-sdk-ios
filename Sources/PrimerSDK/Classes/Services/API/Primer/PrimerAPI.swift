@@ -30,7 +30,8 @@ enum PrimerAPI: Endpoint, Equatable {
             (.begin3DSRemoteAuth, .begin3DSRemoteAuth),
             (.continue3DSRemoteAuth, .continue3DSRemoteAuth),
             (.poll, .poll),
-            (.sendAnalyticsEvents, .sendAnalyticsEvents):
+            (.sendAnalyticsEvents, .sendAnalyticsEvents),
+            (.validateClientToken, .validateClientToken):
             return true
         default:
             return false
@@ -142,8 +143,7 @@ internal extension PrimerAPI {
                 .finalizeKlarnaPaymentSession(let clientToken, _),
                 .createApayaSession(let clientToken, _),
                 .listAdyenBanks(let clientToken, _),
-                .fetchPayPalExternalPayerInfo(let clientToken, _),
-                .validateClientToken(let clientToken, _):
+                .fetchPayPalExternalPayerInfo(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .deleteVaultedPaymentMethod(let clientToken, _),
@@ -151,7 +151,8 @@ internal extension PrimerAPI {
                 .exchangePaymentMethodToken(let clientToken, _),
                 .tokenizePaymentMethod(let clientToken, _),
                 .begin3DSRemoteAuth(let clientToken, _, _),
-                .continue3DSRemoteAuth(let clientToken, _):
+                .continue3DSRemoteAuth(let clientToken, _),
+                .validateClientToken(let clientToken, _):
             guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
         case .fetchConfiguration(let clientToken):
