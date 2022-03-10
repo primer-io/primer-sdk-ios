@@ -311,6 +311,18 @@ internal extension PrimerAPI {
         }
     }
     
+    // MARK: Should Return Response Body
+    
+    var shouldParseResponseBody: Bool {
+        switch self {
+        case .validateClientToken(_, _),
+                .deleteVaultedPaymentMethod(_, _):
+            return false
+        default:
+            return true
+        }
+    }
+    
 }
 
 #endif
