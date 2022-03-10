@@ -15,7 +15,7 @@ class PayViewController: MyViewController {
     var payByCardButton: UIButton!
     let amount = 10001
     let currency = Currency.EUR
-    let countryCode = CountryCode.fr
+    let countryCode = CountryCode.nl
     var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager!
     
     var availablePaymentMethodsTypes: [PrimerPaymentMethodType]?
@@ -134,6 +134,12 @@ class PayViewController: MyViewController {
             payPalButton.addTarget(self, action: #selector(payWithPayPalButtonTapped(_:)), for: .touchUpInside)
             self.stackView.addArrangedSubview(payPalButton)
         }
+        
+        if availablePaymentMethodsTypes.contains(.buckarooIdeal) {
+            guard let payPalButton = PrimerHeadlessUniversalCheckout.makeButton(for: .buckarooIdeal) else { return }
+            payPalButton.addTarget(self, action: #selector(payWithBuckarooIdealButtonTapped(_:)), for: .touchUpInside)
+            self.stackView.addArrangedSubview(payPalButton)
+        }
     }
     
     func makeCardForm() {
@@ -215,6 +221,10 @@ class PayViewController: MyViewController {
     
     @IBAction func payWithPayPalButtonTapped(_ sender: Any) {
         PrimerHeadlessUniversalCheckout.current.showPaymentMethod(.payPal)
+    }
+    
+    @IBAction func payWithBuckarooIdealButtonTapped(_ sender: Any) {
+        PrimerHeadlessUniversalCheckout.current.showPaymentMethod(.buckarooIdeal)
     }
 }
 
