@@ -191,13 +191,9 @@ extension ClientTokenService {
             if let err = err {
                 completion(err)
             } else if let token = token {
-                do {
-                    try ClientTokenService.storeClientToken(token)
-                    completion(nil)
-                } catch {
+                ClientTokenService.storeClientToken(token) { error in
                     completion(error)
-                }
-            }
+                }            }
         })
     }
     
