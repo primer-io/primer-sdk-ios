@@ -600,9 +600,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 // Raise "payment creation started" event
                 Primer.shared.delegate?.onPaymentStarted?(paymentMethodTokenString)
                 
-                // FOR POC purposes
-                // This can lead in zombie objecs and leaks
-                CreateResumePaymentService().createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
+                let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+                createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
                     
                     guard let paymentResponse = paymentResponse,
                           let paymentResponseDict = try? paymentResponse.asDictionary() else {
@@ -715,10 +714,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
                 
                 // Resume payment with Payment method token
-                
-                // FOR POC purposes
-                // This can lead in zombie objecs and leaks
-                
+                                
                 guard let resumePaymentId = self.resumePaymentId else {
                     DispatchQueue.main.async {
                         // TODO: Raise appropriate error
@@ -726,7 +722,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     return
                 }
                 
-                CreateResumePaymentService().resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
+                let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+                createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
                     
                     guard let paymentResponse = paymentResponse,
                           let paymentResponseDict = try? paymentResponse.asDictionary() else {
