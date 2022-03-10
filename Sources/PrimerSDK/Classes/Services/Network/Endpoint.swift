@@ -18,6 +18,7 @@ internal protocol Endpoint {
     var headers: [String: String]? { get }
     var queryParameters: [String: String]? { get }
     var body: Data? { get }
+    var shouldParseResponseBody: Bool { get }
 }
 
 // extension Endpoint {
