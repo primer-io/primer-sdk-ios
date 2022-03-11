@@ -265,7 +265,11 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         paymentMethodButton.accessibilityIdentifier = config.type.rawValue
         paymentMethodButton.clipsToBounds = true
         paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 10)
+        let imagePadding: CGFloat = 20
+        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2,
+                                                           left: UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0,
+                                                           bottom: 0,
+                                                           right: UILocalizableUtil.isRightToLeftLocale ? 0 : imagePadding)
         paymentMethodButton.titleLabel?.font = buttonFont
         if let buttonCornerRadius = buttonCornerRadius {
             paymentMethodButton.layer.cornerRadius = buttonCornerRadius

@@ -131,6 +131,8 @@
 		1DE0355B2716E4D1007BADAB /* CheckoutTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutTheme.swift; sourceTree = "<group>"; };
 		1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApayaTests.swift; sourceTree = "<group>"; };
 		1DED53AF2739561800CD9DE6 /* ThemeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemeTests.swift; sourceTree = "<group>"; };
+		2C66AA3927BC1A6300880994 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		2C66AA3A27BC1A6300880994 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main.strings; sourceTree = "<group>"; };
 		3B55FBF1D40BE6B25F29A5D9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		45CA532A34F52954A21835C5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* PrimerSDK_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrimerSDK_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -564,6 +566,7 @@
 				pl,
 				"pt-PT",
 				es,
+				ar,
 			);
 			mainGroup = 607FACC71AFB9204008FA782;
 			productRefGroup = 607FACD11AFB9204008FA782 /* Products */;
@@ -768,6 +771,7 @@
 				9C4EE56627ABEFA4007ED6F3 /* pl */,
 				9C4EE56827ABEFEA007ED6F3 /* pt-PT */,
 				9C4EE56A27ABF01D007ED6F3 /* es */,
+				2C66AA3A27BC1A6300880994 /* ar */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -788,6 +792,7 @@
 				9C4EE56527ABEFA4007ED6F3 /* pl */,
 				9C4EE56727ABEFBD007ED6F3 /* pt-PT */,
 				9C4EE56927ABEFF0007ED6F3 /* es */,
+				2C66AA3927BC1A6300880994 /* ar */,
 			);
 			name = LaunchScreen.xib;
 			sourceTree = "<group>";

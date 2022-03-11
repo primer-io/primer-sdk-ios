@@ -56,7 +56,12 @@ class PaymentMethodsGroupView: PrimerView {
         if let title = title {
             titleLabel = UILabel()
             titleLabel!.text = title
+            
+            // The text alignment here is set to .right by Primer Design
+            // As a right-to-left reader
+            // the default alignment for this label still results into the right hand side
             titleLabel!.textAlignment = .right
+            
             titleLabel!.textColor = theme.text.title.color
             stackView.addArrangedSubview(titleLabel!)
         }
