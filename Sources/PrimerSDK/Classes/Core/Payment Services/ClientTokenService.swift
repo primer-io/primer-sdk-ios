@@ -157,7 +157,7 @@ extension ClientTokenService {
         // 2. Validate the token from the dedicated API
         validateToken(clientToken) { error in
             
-            guard error != nil else {
+            guard error == nil else {
                 completion(error)
                 return
             }
