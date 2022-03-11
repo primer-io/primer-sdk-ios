@@ -50,7 +50,6 @@ class PrimerFormViewController: PrimerViewController {
                                                                comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased().folding(options: .diacriticInsensitive, locale: .current)
         otherPaymentMethodsTitleLabel.textColor = theme.text.subtitle.color
         otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-        otherPaymentMethodsTitleLabel.textAlignment = .left
         availablePaymentMethodsContainerStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
         
         if Primer.shared.flow.internalSessionFlow.vaulted {

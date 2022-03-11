@@ -104,7 +104,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
         let cardSettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
+            merchantIdentifier: "merchant.dx.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "merchant://",
@@ -147,7 +147,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
         applePaySettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
+            merchantIdentifier: "merchant.dx.team",
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
         )

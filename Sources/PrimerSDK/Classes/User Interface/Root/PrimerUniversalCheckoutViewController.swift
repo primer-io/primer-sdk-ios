@@ -14,7 +14,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     var savedCardView: CardButton!
     private var titleLabel: UILabel!
     private var savedPaymentMethodStackView: UIStackView!
-    private var payButton: PrimerOldButton!
+    private var payButton: PrimerButton!
     private var selectedPaymentMethod: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
@@ -66,7 +66,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             titleLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
             titleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
             titleLabel.text = amountStr
-            titleLabel.textAlignment = .left
             titleLabel.textColor = theme.text.amountLabel.color
             verticalStackView.addArrangedSubview(titleLabel)
         }
@@ -102,7 +101,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             let titleHorizontalStackView = UIStackView()
             titleHorizontalStackView.axis = .horizontal
             titleHorizontalStackView.alignment = .fill
-            titleHorizontalStackView.distribution = .fillProportionally
+            titleHorizontalStackView.distribution = .fill
             titleHorizontalStackView.spacing = 8.0
             
             let savedPaymentMethodLabel = UILabel()
@@ -115,7 +114,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             savedPaymentMethodLabel.minimumScaleFactor = 0.8
             savedPaymentMethodLabel.textColor = theme.text.subtitle.color
             savedPaymentMethodLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-            savedPaymentMethodLabel.textAlignment = .left
             titleHorizontalStackView.addArrangedSubview(savedPaymentMethodLabel)
             
             let seeAllButton = UIButton()
@@ -130,7 +128,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             seeAllButton.setTitle(seeAllButtonTitle, for: .normal)
             seeAllButton.titleLabel?.adjustsFontSizeToFitWidth = true
             seeAllButton.titleLabel?.minimumScaleFactor = 0.7
-            seeAllButton.contentHorizontalAlignment = .right
             seeAllButton.setTitleColor(theme.text.system.color, for: .normal)
             seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
             titleHorizontalStackView.addArrangedSubview(seeAllButton)
@@ -160,7 +157,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 let surChargeLabel = UILabel()
                 surChargeLabel.text = "+" + Int(surCharge).toCurrencyString(currency: settings.currency!)
                 surChargeLabel.textColor = theme.text.body.color
-                surChargeLabel.textAlignment = .right
                 surChargeLabel.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                 paymentMethodStackView.addArrangedSubview(surChargeLabel)
                 
@@ -177,7 +173,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             }
             
             if payButton == nil {
-                payButton = PrimerOldButton()
+                payButton = PrimerButton()
             }
 
             var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
@@ -277,7 +273,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         Analytics.Service.record(event: viewEvent)
         
         enableView(false)
-        payButton.showSpinner(true)
+        payButton.startAnimating()
         
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
             var params: [String: Any] = ["paymentMethodType": config.type.rawValue]
@@ -324,7 +320,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     self.singleUsePaymentMethod = singleUsePaymentMethod
                     PrimerDelegateProxy.onTokenizeSuccess(singleUsePaymentMethod, { err in
                         DispatchQueue.main.async { [weak self] in
-                            self?.payButton.showSpinner(false)
+                            self?.payButton.stopAnimating()
                             self?.enableView(true)
 
                             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -396,7 +392,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
         DispatchQueue.main.async {
             self.onClientSessionActionCompletion?(error)
             
-            self.payButton.showSpinner(false)
+            self.payButton.stopAnimating()
             self.enableView(true)
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -511,7 +507,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     
     func handleSuccess() {
         DispatchQueue.main.async {
-            self.payButton.showSpinner(false)
+            self.payButton.stopAnimating()
             self.enableView(true)
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
