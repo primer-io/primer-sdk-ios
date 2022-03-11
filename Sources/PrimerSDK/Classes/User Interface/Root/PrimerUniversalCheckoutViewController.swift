@@ -14,7 +14,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     var savedCardView: CardButton!
     private var titleLabel: UILabel!
     private var savedPaymentMethodStackView: UIStackView!
-    private var payButton: PrimerOldButton!
+    private var payButton: PrimerButton!
     private var selectedPaymentMethod: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
@@ -173,7 +173,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             }
             
             if payButton == nil {
-                payButton = PrimerOldButton()
+                payButton = PrimerButton()
             }
 
             var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
@@ -273,7 +273,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         Analytics.Service.record(event: viewEvent)
         
         enableView(false)
-        payButton.showSpinner(true)
+        payButton.startAnimating()
         
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
             var params: [String: Any] = ["paymentMethodType": config.type.rawValue]
@@ -320,7 +320,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     self.singleUsePaymentMethod = singleUsePaymentMethod
                     PrimerDelegateProxy.onTokenizeSuccess(singleUsePaymentMethod, { err in
                         DispatchQueue.main.async { [weak self] in
-                            self?.payButton.showSpinner(false)
+                            self?.payButton.stopAnimating()
                             self?.enableView(true)
 
                             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -392,7 +392,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
         DispatchQueue.main.async {
             self.onClientSessionActionCompletion?(error)
             
-            self.payButton.showSpinner(false)
+            self.payButton.stopAnimating()
             self.enableView(true)
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -507,7 +507,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     
     func handleSuccess() {
         DispatchQueue.main.async {
-            self.payButton.showSpinner(false)
+            self.payButton.stopAnimating()
             self.enableView(true)
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
