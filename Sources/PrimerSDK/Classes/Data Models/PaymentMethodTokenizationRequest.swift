@@ -19,7 +19,7 @@ struct PaymentMethodTokenizationRequest: TokenizationRequest {
     
     init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow?, customerId: String?) {
         self.paymentInstrument = paymentInstrument
-        self.paymentFlow = paymentFlow
+        self.paymentFlow = (paymentFlow == .vault) ? .vault : nil
         self.tokenType = (paymentFlow == .vault) ? .multiUse : .singleUse
         self.customerId = customerId
     }

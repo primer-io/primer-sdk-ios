@@ -273,7 +273,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     sessionData: nil)
                 
                 let paymentFlow: PaymentFlow? = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
-                let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: paymentFlow, customerId: self.customerId)
+                let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout, customerId: self.customerId)
                 
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                 apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in
