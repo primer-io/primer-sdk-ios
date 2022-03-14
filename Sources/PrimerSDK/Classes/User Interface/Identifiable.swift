@@ -6,7 +6,9 @@
 //  Copyright © 2022 Primer API ltd, Inc. All rights reserved.
 //
 
-import Foundation
+#if canImport(UIKit)
+
+import UIKit
 
 ///
 /// Used to identify a PrimerButton if needed
@@ -17,3 +19,5 @@ protocol Identifiable where Self: UIView {
     /// The identifier
     var id: String? { get set }
 }
+
+#endif

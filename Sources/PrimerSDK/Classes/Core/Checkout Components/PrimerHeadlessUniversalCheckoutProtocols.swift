@@ -5,7 +5,10 @@
 //  Created by Evangelos on 28/1/22.
 //
 
+#if canImport(UIKit)
+
 import Foundation
+import UIKit
 
 @objc
 public enum PrimerInputElementType: Int {
@@ -186,3 +189,5 @@ public protocol PrimerHeadlessUniversalCheckoutDelegate: AnyObject {
     func primerHeadlessUniversalCheckoutResume(withResumeToken resumeToken: String, resumeHandler: ResumeHandlerProtocol?)
     func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error)
 }
+
+#endif
