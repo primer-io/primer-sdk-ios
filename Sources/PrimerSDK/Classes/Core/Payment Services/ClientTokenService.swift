@@ -3,8 +3,8 @@
 import Foundation
 
 internal protocol ClientTokenServiceProtocol {
-    static func storeClientToken(_ clientToken: String) -> Promise<Void>
-    static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void)
+    static func storeClientToken(_ clientToken: String) throws -> Promise<Void>
+    static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void) throws
     func fetchClientToken(_ completion: @escaping (Error?) -> Void)
     func fetchClientToken() -> Promise<Void>
     func fetchClientTokenIfNeeded() -> Promise<Void>
@@ -135,19 +135,23 @@ extension ClientTokenService {
     
     // MARK: Store
     
-    static func storeClientToken(_ clientToken: String) -> Promise<Void> {
+    static func storeClientToken(_ clientToken: String) throws -> Promise<Void> {
         return Promise { seal in
-            storeClientToken(clientToken) { err in
-                if let err = err {
-                    seal.reject(err)
-                } else {
-                    seal.fulfill()
+            do {
+                try storeClientToken(clientToken) { error in
+                    if let error = error {
+                        seal.reject(error)
+                    } else {
+                        seal.fulfill()
+                    }
                 }
+            } catch {
+                seal.reject(error)
             }
         }
     }
     
-    static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void) {
+    static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void) throws {
         
         let state: AppStateProtocol = DependencyContainer.resolve()
         
@@ -187,13 +191,22 @@ extension ClientTokenService {
      performs asynchronous call passed in by app developer, decodes the returned Base64 Primer client token string and adds it to shared state.
      */
     func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
-        PrimerDelegateProxy.clientTokenCallback({ (token, err) in
-            if let err = err {
-                completion(err)
-            } else if let token = token {
-                ClientTokenService.storeClientToken(token) { error in
+        
+        PrimerDelegateProxy.clientTokenCallback({ (token, error) in
+            
+            guard error == nil, let token = token else {
+                completion(error)
+                return
+            }
+            
+            do {
+                try ClientTokenService.storeClientToken(token, completion: { error in
                     completion(error)
-                }            }
+                })
+            } catch {
+                completion(error)
+            }
+            
         })
     }
     

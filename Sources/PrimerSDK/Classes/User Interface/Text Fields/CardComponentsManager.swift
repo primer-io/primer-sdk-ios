@@ -90,7 +90,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         self.cardholderField = cardholderNameField
         
         if let clientToken = clientToken {
-            try? ClientTokenService.storeClientToken(clientToken)
+            let _ = try? ClientTokenService.storeClientToken(clientToken)
         }
     }
     
@@ -110,25 +110,32 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 return
             }
             
-            delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, err in
-                if let err = err {
-                    seal.reject(err)
-                } else if let clientToken = clientToken {
+            delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
+                
+                guard error == nil else {
+                    seal.reject(error!)
+                    return
+                }
+                
+                if let clientToken = clientToken {
+                    
                     do {
-                        try ClientTokenService.storeClientToken(clientToken)
-                        if let decodedClientToken = self.decodedClientToken {
-                            seal.fulfill(decodedClientToken)
-                        } else {
-                            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                        }
+                        
+                        try ClientTokenService.storeClientToken(clientToken, completion: { error in
+                            
+                            guard error == nil else {
+                                seal.reject(error!)
+                                return
+                            }
+
+                            if let decodedClientToken = self.decodedClientToken {
+                                seal.fulfill(decodedClientToken)
+                            }
+                        })
                         
                     } catch {
                         seal.reject(error)
                     }
-                } else {
-                    assert(true, "Should always return token or error")
                 }
             })
         }
@@ -416,7 +423,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         self.postalCodeField = postalCodeField
         
         if let clientToken = clientToken {
-            try? ClientTokenService.storeClientToken(clientToken)
+            let _ = try? ClientTokenService.storeClientToken(clientToken)
         }
     }
     
@@ -436,7 +443,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
             postalCodeField: PrimerPostalCodeFieldView()
         )
         
-        try? ClientTokenService.storeClientToken(clientToken)
+        let _ = try? ClientTokenService.storeClientToken(clientToken)
     }
     
     func tokenize() {

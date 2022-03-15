@@ -20,6 +20,7 @@ public class PrimerHeadlessUniversalCheckout {
     fileprivate init() {}
     
     public func start(withClientToken clientToken: String, settings: PrimerSettings? = nil, delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil, completion: @escaping (_ paymentMethodTypes: [PrimerPaymentMethodType]?, _ err: Error?) -> Void) {
+        
         if delegate != nil {
             PrimerHeadlessUniversalCheckout.current.delegate = delegate
         }
@@ -34,12 +35,12 @@ public class PrimerHeadlessUniversalCheckout {
         }
         
         do {
-            try ClientTokenService.storeClientToken(clientToken)
+            let _ = try ClientTokenService.storeClientToken(clientToken)
             PrimerHeadlessUniversalCheckout.current.clientToken = clientToken
         } catch {
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
         }
-        
+                
         if let settings = settings {
             DependencyContainer.register(settings as PrimerSettingsProtocol)
         }
@@ -74,7 +75,7 @@ public class PrimerHeadlessUniversalCheckout {
         
         if appState.clientToken == nil, PrimerHeadlessUniversalCheckout.current.clientToken != nil {
             do {
-                try ClientTokenService.storeClientToken(PrimerHeadlessUniversalCheckout.current.clientToken!)
+                let _ = try ClientTokenService.storeClientToken(PrimerHeadlessUniversalCheckout.current.clientToken!)
             } catch {
                 throw error
             }

@@ -210,8 +210,10 @@ public class Primer {
         
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
-        if let clientToken = clientToken {
-            try? ClientTokenService.storeClientToken(clientToken)
+        do {
+            if let clientToken = clientToken {
+                let _ = try? ClientTokenService.storeClientToken(clientToken)
+            }
         }
         
         presentingViewController = viewController
@@ -244,11 +246,11 @@ public class Primer {
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
         if let clientToken = clientToken {
-            try? ClientTokenService.storeClientToken(clientToken)
+            let _ = try? ClientTokenService.storeClientToken(clientToken)
         }
         
         presentingViewController = viewController
-        show(flow: .defaultWithVault)
+        show(flow: .default)
     }
     
     // swiftlint:disable cyclomatic_complexity

@@ -453,7 +453,7 @@ extension PayPalTokenizationViewModel {
     
     override func handle(newClientToken clientToken: String) {
         do {
-            try ClientTokenService.storeClientToken(clientToken)
+            let _ = try ClientTokenService.storeClientToken(clientToken)
             self.continueTokenizationFlow()
             
         } catch {

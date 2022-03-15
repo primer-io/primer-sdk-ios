@@ -264,32 +264,29 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     
     fileprivate func fetchQRCodePollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<QRCodePollingURLs> {
         return Promise { seal in
-            self.onClientToken = { (clientToken, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let clientToken = clientToken {
+            self.onClientToken = { (clientToken, error) in
+                
+                guard error == nil else {
+                    seal.reject(error!)
+                    return
+                }
+
+                
+                if let clientToken = clientToken {
+                    
                     do {
-                        try ClientTokenService.storeClientToken(clientToken)
+                        let _ = try ClientTokenService.storeClientToken(clientToken)
                     } catch {
                         seal.reject(error)
                         return
                     }
                     
-                    if let decodedClientToken = ClientTokenService.decodedClientToken {
-                        if decodedClientToken.intent != nil {
-                            if let statusUrl = decodedClientToken.statusUrl {
-                                seal.fulfill(QRCodePollingURLs(status: statusUrl, complete: nil))
-                                return
-                            }
-                        }
-                        
+                    if let decodedClientToken = ClientTokenService.decodedClientToken,
+                        let statusUrl = decodedClientToken.statusUrl,
+                        decodedClientToken.intent != nil {
+                        seal.fulfill(QRCodePollingURLs(status: statusUrl, complete: nil))
+                        return
                     }
-                    
-                    let err = PrimerError.invalidValue(key: "polling params", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                } else {
-                    assert(true, "Should have received one parameter")
                 }
             }
             
@@ -416,7 +413,7 @@ extension QRCodeTokenizationViewModel {
             } else if decodedClientToken.intent?.contains("_REDIRECTION") == true {
                 super.handle(newClientToken: clientToken)
             } else if decodedClientToken.intent == "CHECKOUT" {
-                try ClientTokenService.storeClientToken(clientToken)
+                let _ = try ClientTokenService.storeClientToken(clientToken)
                 
                 let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
                 
