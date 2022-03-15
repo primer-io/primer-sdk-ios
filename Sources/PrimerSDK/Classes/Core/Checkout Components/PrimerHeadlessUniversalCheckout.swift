@@ -398,15 +398,6 @@ public struct PrimerAsset {
                 imageName += "-icon"
             }
             
-    //        switch assetColor {
-    //        case .original:
-    //            break
-    //        case .light:
-    //            imageName += "-light"
-    //        case .dark:
-    //            imageName += "-dark"
-    //        }
-            
             guard let image = UIImage(named: imageName, in: Bundle.primerResources, compatibleWith: nil) else { return nil }
             return image
         }
