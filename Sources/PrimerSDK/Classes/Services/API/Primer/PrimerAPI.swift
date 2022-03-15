@@ -315,8 +315,7 @@ internal extension PrimerAPI {
     
     var shouldParseResponseBody: Bool {
         switch self {
-        case .validateClientToken(_, _),
-                .deleteVaultedPaymentMethod(_, _):
+        case .deleteVaultedPaymentMethod(_, _):
             return false
         default:
             return true

@@ -271,7 +271,6 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                     return
                 }
 
-                
                 if let clientToken = clientToken {
                     
                     do {

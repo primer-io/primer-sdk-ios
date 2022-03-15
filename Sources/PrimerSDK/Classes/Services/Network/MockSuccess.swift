@@ -9,7 +9,9 @@
 
 import Foundation
 
-internal struct DummySuccess: Codable {
+typealias DummySuccess = SuccessResponse
+
+internal struct SuccessResponse: Codable {
     let success: Bool
 }
 
