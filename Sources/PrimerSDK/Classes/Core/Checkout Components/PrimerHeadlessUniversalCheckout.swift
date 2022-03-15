@@ -1,5 +1,5 @@
 //
-//  PrimerCheckoutComponents.swift
+//  PrimerHeadlessUniversalCheckout.swift
 //  PrimerSDK
 //
 //  Created by Evangelos on 28/1/22.
@@ -8,7 +8,6 @@
 #if canImport(UIKit)
 
 import UIKit
-
 
 public typealias PrimerPaymentMethodType = PaymentMethodConfigType
 
@@ -212,26 +211,15 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType) -> UIImage? {
-        var imageName = brand.rawValue
-        
-        switch assetType {
-        case .logo:
-            imageName += "-logo"
-        case .icon:
-            imageName += "-icon"
-        }
-        
-//        switch assetColor {
-//        case .original:
-//            break
-//        case .light:
-//            imageName += "-light"
-//        case .dark:
-//            imageName += "-dark"
-//        }
-        
-        guard let image = UIImage(named: imageName, in: Bundle.primerResources, compatibleWith: nil) else { return nil }
-        return image
+        return brand.getImage(assetType: assetType)
+    }
+    
+    public static func getAsset(for paymentMethodType: PaymentMethodConfigType, assetType: PrimerAsset.ImageType) -> UIImage? {
+        return PrimerAsset.getAsset(for: paymentMethodType, assetType: assetType)
+    }
+    
+    public static func getAsset(for cardNetwork: CardNetwork, assetType: PrimerAsset.ImageType) -> UIImage? {
+        return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType)
     }
     
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType) {
@@ -280,9 +268,105 @@ public class PrimerHeadlessUniversalCheckout {
     }
 }
 
-
-
 public struct PrimerAsset {
+    
+    public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType) -> UIImage? {
+        return brand.getImage(assetType: assetType)
+    }
+    
+    public static func getAsset(for paymentMethodType: PaymentMethodConfigType, assetType: PrimerAsset.ImageType) -> UIImage? {
+        var brand: PrimerAsset.Brand?
+        
+        switch paymentMethodType {
+        case .adyenAlipay:
+            brand = .aliPay
+        case .adyenDotPay:
+            brand = .dotPay
+        case .adyenGiropay,
+                .buckarooGiropay,
+                .payNLGiropay:
+            brand = .giroPay
+        case .adyenIDeal,
+                .buckarooIdeal,
+                .mollieIdeal,
+                .payNLIdeal:
+            brand = .iDeal
+        case .adyenMobilePay:
+            brand = .mobilePay
+        case .adyenSofort,
+                .buckarooSofort:
+            brand = .sofort
+        case .adyenTrustly:
+            brand = .trustly
+        case .adyenTwint:
+            brand = .twint
+        case .adyenVipps:
+            brand = .vipps
+        case .apaya:
+            brand = .apaya
+        case .applePay:
+            brand = .applePay
+        case .atome:
+            brand = .atome
+        case .buckarooBancontact,
+                .mollieBankcontact,
+                .payNLBancontact:
+            brand = .bankcontact
+        case .buckarooEps:
+            brand = .eps
+        case .goCardlessMandate:
+            brand = .goCardless
+        case .googlePay:
+            brand = .googlePay
+        case .hoolah:
+            brand = .hoolah
+        case .klarna:
+            brand = .klarna
+        case .payNLPayconiq:
+            brand = .payconiq
+        case .paymentCard:
+            return nil
+        case .payPal:
+            brand = .payPal
+        case .xfers:
+            brand = .xfers
+        case .other:
+            return nil
+        }
+        
+        return brand?.getImage(assetType: assetType)
+    }
+    
+    public static func getAsset(for cardNetwork: CardNetwork, assetType: PrimerAsset.ImageType) -> UIImage? {
+        var brand: PrimerAsset.Brand?
+        
+        switch cardNetwork {
+        case .amex:
+            brand = .amex
+        case .bancontact:
+            brand = .bankcontact
+        case .discover:
+            brand = .discover
+        case .jcb:
+            brand = .jcb
+        case .masterCard:
+            brand = .masterCard
+        case .visa:
+            brand = .visa
+        case .diners,
+                .elo,
+                .hiper,
+                .hipercard,
+                .maestro,
+                .mir,
+                .unionpay,
+                .unknown:
+            return nil
+        }
+        
+        return brand?.getImage(assetType: assetType)
+    }
+    
     public enum Brand: String, CaseIterable {
         case adyen, afterPay = "after-pay", aliPay = "ali-pay", alma, amazonPay = "amazon-pay", amex, apaya, applePay = "apple-pay", atome
         case bankcontact, banked, bizum, blik, bolt, boost, braintree, bridge, buckaroo
@@ -303,13 +387,36 @@ public struct PrimerAsset {
         case vipps, visa, volt, voucherify, vyne
         case wordline, worldPay = "worldpay"
         case xfers
+        
+        public func getImage(assetType: PrimerAsset.ImageType) -> UIImage? {
+            var imageName = rawValue
+            
+            switch assetType {
+            case .logo:
+                imageName += "-logo"
+            case .icon:
+                imageName += "-icon"
+            }
+            
+    //        switch assetColor {
+    //        case .original:
+    //            break
+    //        case .light:
+    //            imageName += "-light"
+    //        case .dark:
+    //            imageName += "-dark"
+    //        }
+            
+            guard let image = UIImage(named: imageName, in: Bundle.primerResources, compatibleWith: nil) else { return nil }
+            return image
+        }
     }
     
-    public enum ImageType {
+    public enum ImageType: String, CaseIterable, Equatable {
         case logo, icon
     }
     
-    public enum ImageColor {
+    public enum ImageColor: String, CaseIterable, Equatable {
         case original, light, dark
     }
 }
