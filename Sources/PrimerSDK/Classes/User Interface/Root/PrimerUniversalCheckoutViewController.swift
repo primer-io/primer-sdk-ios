@@ -376,7 +376,6 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     func handle(error: Error) {
         DispatchQueue.main.async {
             self.onClientSessionActionCompletion?(error)
-            
             self.payButton.stopAnimating()
             self.enableView(true)
             self.dismissOrShowResultScreen(error)
