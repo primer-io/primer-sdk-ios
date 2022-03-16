@@ -460,7 +460,7 @@ extension BankSelectorTokenizationViewModel {
             if decodedClientToken.intent?.contains("_REDIRECTION") == true {
                 super.handle(newClientToken: clientToken)
             } else if decodedClientToken.intent == "CHECKOUT" {
-                let _ = try ClientTokenService.storeClientToken(clientToken)
+                _ = try ClientTokenService.storeClientToken(clientToken)
                 
                 let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
                 

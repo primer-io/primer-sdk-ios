@@ -590,7 +590,7 @@ extension KlarnaTokenizationViewModel {
     
     override func handle(newClientToken clientToken: String) {
         do {
-            let _ = try ClientTokenService.storeClientToken(clientToken)
+            _ = try ClientTokenService.storeClientToken(clientToken)
             
             let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
             

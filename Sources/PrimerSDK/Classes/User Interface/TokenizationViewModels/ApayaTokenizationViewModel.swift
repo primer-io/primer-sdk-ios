@@ -435,7 +435,7 @@ extension ApayaTokenizationViewModel {
         do {
             // For Apaya there's no redirection URL, once the webview is presented it will get its response from a URL redirection.
             // We'll end up in here only for surcharge.
-            let _ = try ClientTokenService.storeClientToken(clientToken)
+            _ = try ClientTokenService.storeClientToken(clientToken)
 
             let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
             

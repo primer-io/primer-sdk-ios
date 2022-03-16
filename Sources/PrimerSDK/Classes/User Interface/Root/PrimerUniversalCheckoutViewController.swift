@@ -52,8 +52,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         guard ClientTokenService.decodedClientToken.exists else { return }
         let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-        vaultService.loadVaultedPaymentMethods { err in
-            self.renderSelectedPaymentInstrument(insertAt: 1)
+        vaultService.loadVaultedPaymentMethods { [weak self] error in
+            
+            guard error == nil else {
+                self?.dismissOrShowResultScreen(error!)
+                return
+            }
+            
+            self?.renderSelectedPaymentInstrument(insertAt: 1)
         }
     }
     
@@ -318,40 +324,19 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 switch result {
                 case .success(let singleUsePaymentMethod):
                     self.singleUsePaymentMethod = singleUsePaymentMethod
-                    PrimerDelegateProxy.onTokenizeSuccess(singleUsePaymentMethod, { err in
+                    PrimerDelegateProxy.onTokenizeSuccess(singleUsePaymentMethod, { error in
                         DispatchQueue.main.async { [weak self] in
                             self?.payButton.stopAnimating()
                             self?.enableView(true)
-
-                            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-                            if settings.hasDisabledSuccessScreen {
-                                Primer.shared.dismiss()
-                                self?.singleUsePaymentMethod = nil
-                            } else {
-                                if let err = err {
-                                    let evc = PrimerResultViewController(screenType: .failure, message: err.localizedDescription) //ErrorViewController(message: err.localizedDescription)
-                                    evc.view.translatesAutoresizingMaskIntoConstraints = false
-                                    evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                                    Primer.shared.primerRootVC?.show(viewController: evc)
-                                } else {
-                                    let svc = PrimerResultViewController(screenType: .success, message: nil)
-                                    svc.view.translatesAutoresizingMaskIntoConstraints = false
-                                    svc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                                    Primer.shared.primerRootVC?.show(viewController: svc)
-                                }
-                                self?.singleUsePaymentMethod = nil
-                            }
+                            self?.singleUsePaymentMethod = nil
+                            self?.dismissOrShowResultScreen(error)
                         }
                     })
                     
                     PrimerDelegateProxy.onTokenizeSuccess(singleUsePaymentMethod, resumeHandler: self)
-                case .failure(let err):
-                    PrimerDelegateProxy.checkoutFailed(with: err)
-                    let evc = PrimerResultViewController(screenType: .failure, message: err.localizedDescription)
-                    evc.view.translatesAutoresizingMaskIntoConstraints = false
-                    evc.view.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
-                    Primer.shared.primerRootVC?.show(viewController: evc)
+                case .failure(let error):
+                    PrimerDelegateProxy.checkoutFailed(with: error)
+                    self.dismissOrShowResultScreen(error)
                 }
             }
         }
@@ -394,18 +379,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
             
             self.payButton.stopAnimating()
             self.enableView(true)
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            if !settings.hasDisabledSuccessScreen {
-                let evc = PrimerResultViewController(screenType: .failure, message: error.localizedDescription)
-                evc.view.translatesAutoresizingMaskIntoConstraints = false
-                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                Primer.shared.primerRootVC?.show(viewController: evc)
-            } else {
-                Primer.shared.dismiss()
-            }
-            
+            self.dismissOrShowResultScreen(error)
             self.singleUsePaymentMethod = nil
         }
     }
@@ -509,18 +483,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
         DispatchQueue.main.async {
             self.payButton.stopAnimating()
             self.enableView(true)
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-            if settings.hasDisabledSuccessScreen {
-                Primer.shared.dismiss()
-            } else {
-                let svc = PrimerResultViewController(screenType: .success, message: nil)
-                svc.view.translatesAutoresizingMaskIntoConstraints = false
-                svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                Primer.shared.primerRootVC?.show(viewController: svc)
-            }
-            
+            self.dismissOrShowResultScreen()
             self.singleUsePaymentMethod = nil
         }
     }
@@ -529,6 +492,24 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
 extension PrimerUniversalCheckoutViewController: ReloadDelegate {
     func reload() {
         renderSelectedPaymentInstrument(insertAt: 1)
+    }
+}
+
+extension PrimerUniversalCheckoutViewController {
+    
+    func dismissOrShowResultScreen(_ error: Error? = nil) {
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if settings.hasDisabledSuccessScreen {
+            Primer.shared.dismiss()
+        } else {
+            let status: PrimerResultViewController.ScreenType = error == nil ? .success : .failure
+            let resultViewController = PrimerResultViewController(screenType: status, message: error?.localizedDescription)
+            resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
+            resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+            Primer.shared.primerRootVC?.show(viewController: resultViewController)
+        }
     }
 }
 

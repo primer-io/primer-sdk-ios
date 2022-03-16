@@ -531,7 +531,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 if let clientToken = clientToken {
                     
                     do {
-                        let _ = try ClientTokenService.storeClientToken(clientToken)
+                        _ = try ClientTokenService.storeClientToken(clientToken)
                     } catch {
                         seal.reject(error)
                         return
@@ -540,7 +540,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     if let decodedClientToken = ClientTokenService.decodedClientToken,
                         let redirectUrl = decodedClientToken.redirectUrl,
                         let statusUrl = decodedClientToken.statusUrl,
-                        decodedClientToken.intent != nil {                        
+                        decodedClientToken.intent != nil {
                         seal.fulfill(PollingURLs(status: statusUrl, redirect: redirectUrl, complete: nil))
                         return
                     }

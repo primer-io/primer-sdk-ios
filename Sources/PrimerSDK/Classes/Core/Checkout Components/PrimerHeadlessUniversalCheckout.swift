@@ -35,7 +35,7 @@ public class PrimerHeadlessUniversalCheckout {
         }
         
         do {
-            let _ = try ClientTokenService.storeClientToken(clientToken)
+            _ = try ClientTokenService.storeClientToken(clientToken)
             PrimerHeadlessUniversalCheckout.current.clientToken = clientToken
         } catch {
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
@@ -75,7 +75,7 @@ public class PrimerHeadlessUniversalCheckout {
         
         if appState.clientToken == nil, PrimerHeadlessUniversalCheckout.current.clientToken != nil {
             do {
-                let _ = try ClientTokenService.storeClientToken(PrimerHeadlessUniversalCheckout.current.clientToken!)
+                _ = try ClientTokenService.storeClientToken(PrimerHeadlessUniversalCheckout.current.clientToken!)
             } catch {
                 throw error
             }

@@ -274,7 +274,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                 if let clientToken = clientToken {
                     
                     do {
-                        let _ = try ClientTokenService.storeClientToken(clientToken)
+                        _ = try ClientTokenService.storeClientToken(clientToken)
                     } catch {
                         seal.reject(error)
                         return
@@ -412,7 +412,7 @@ extension QRCodeTokenizationViewModel {
             } else if decodedClientToken.intent?.contains("_REDIRECTION") == true {
                 super.handle(newClientToken: clientToken)
             } else if decodedClientToken.intent == "CHECKOUT" {
-                let _ = try ClientTokenService.storeClientToken(clientToken)
+                _ = try ClientTokenService.storeClientToken(clientToken)
                 
                 let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
                 

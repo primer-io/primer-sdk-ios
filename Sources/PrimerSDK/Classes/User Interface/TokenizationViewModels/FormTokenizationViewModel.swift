@@ -879,7 +879,7 @@ extension FormPaymentMethodTokenizationViewModel {
             let state: AppStateProtocol = DependencyContainer.resolve()
             
             if state.clientToken != clientToken {
-                let _ = try ClientTokenService.storeClientToken(clientToken)
+                _ = try ClientTokenService.storeClientToken(clientToken)
             }
             
             let decodedClientToken = ClientTokenService.decodedClientToken!

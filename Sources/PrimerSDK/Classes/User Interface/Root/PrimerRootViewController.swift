@@ -126,8 +126,14 @@ internal class PrimerRootViewController: PrimerViewController {
         
         let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
-        viewModel.loadConfig({ [weak self] _ in
+        viewModel.loadConfig({ [weak self] error in
             DispatchQueue.main.async {
+                
+                guard error == nil else {
+                    Primer.shared.primerRootVC?.handle(error: error!)
+                    return
+                }
+                
                 switch self?.flow {
                 case .`default`:
                     self?.blurBackground()
