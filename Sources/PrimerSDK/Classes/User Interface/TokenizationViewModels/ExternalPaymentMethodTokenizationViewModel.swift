@@ -574,6 +574,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.willPresentExternalView?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
+                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented()
                         self.didPresentExternalView?()
                         seal.fulfill(())
                     }
