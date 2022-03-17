@@ -388,22 +388,18 @@ extension ApplePayTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
-        do {
-            _ = try ClientTokenService.storeClientToken(clientToken)
-            
+        
+        firstly {
+            ClientTokenService.storeClientToken(clientToken)
+        }
+        .then{ () -> Promise<Void> in
             let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            
-            firstly {
-                configService.fetchConfig()
-            }
-            .done {
-                self.continueTokenizationFlow()
-            }
-            .catch { err in
-                self.handle(error: err)
-            }
-            
-        } catch {
+            return configService.fetchConfig()
+        }
+        .done {
+            self.continueTokenizationFlow()
+        }
+        .catch { error in
             DispatchQueue.main.async {
                 PrimerDelegateProxy.onResumeError(error)
             }

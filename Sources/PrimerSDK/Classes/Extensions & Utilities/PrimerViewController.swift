@@ -29,7 +29,24 @@ internal class PrimerViewController: UIViewController {
         view.addSubview(indicator)
         
     }
+}
 
+extension PrimerViewController {
+    
+    func dismissOrShowResultScreen(_ error: Error? = nil) {
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if settings.hasDisabledSuccessScreen {
+            Primer.shared.dismiss()
+        } else {
+            let status: PrimerResultViewController.ScreenType = error == nil ? .success : .failure
+            let resultViewController = PrimerResultViewController(screenType: status, message: error?.localizedDescription)
+            resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
+            resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+            Primer.shared.primerRootVC?.show(viewController: resultViewController)
+        }
+    }
 }
 
 #endif

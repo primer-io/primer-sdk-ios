@@ -486,6 +486,7 @@ extension PrimerRootViewController {
     
     func handleSuccessfulTokenization(paymentMethod: PaymentMethodToken) {
         DispatchQueue.main.async { [weak self] in
+            
             guard let strongSelf = self else {
                 let err = PrimerError.generic(
                     message: "self has been deinitialized",
@@ -499,15 +500,14 @@ extension PrimerRootViewController {
                 PrimerDelegateProxy.checkoutFailed(with: err)
                 return
             }
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
+            
             strongSelf.showLoadingScreenIfNeeded(imageView: nil, message: nil)
             
             PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: strongSelf)
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { error in
                 DispatchQueue.main.async { [weak self] in
-                    guard let strongSelf = self else {
-                        let err = PrimerError.generic(
+                    guard let _ = self else {
+                        let error = PrimerError.generic(
                             message: "self has been deinitialized",
                             userInfo: [
                                 "file": #file,
@@ -515,26 +515,12 @@ extension PrimerRootViewController {
                                 "class": "\(Self.self)",
                                 "line": "\(#line)"]
                         )
-                        ErrorHandler.handle(error: err)
-                        PrimerDelegateProxy.checkoutFailed(with: err)
+                        ErrorHandler.handle(error: error)
+                        PrimerDelegateProxy.checkoutFailed(with: error)
                         return
                     }
                     
-                    if !settings.hasDisabledSuccessScreen {
-                        if let err = err {
-                            let evc = PrimerResultViewController(screenType: .failure, message: err.localizedDescription)
-                            evc.view.translatesAutoresizingMaskIntoConstraints = false
-                            evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                            strongSelf.show(viewController: evc)
-                        } else {
-                            let svc = PrimerResultViewController(screenType: .success, message: nil)
-                            svc.view.translatesAutoresizingMaskIntoConstraints = false
-                            svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                            strongSelf.show(viewController: svc)
-                        }
-                    } else {
-                        Primer.shared.dismiss()
-                    }
+                    self?.dismissOrShowResultScreen(error)
                 }
             })
         }
@@ -549,39 +535,29 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
 }
 
 extension PrimerRootViewController: ResumeHandlerProtocol {
-    func handle(error: Error) {
-        DispatchQueue.main.async {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-            if settings.hasDisabledSuccessScreen {
-                Primer.shared.dismiss()
-            } else {
-                let evc = PrimerResultViewController(screenType: .failure, message: error.localizedDescription)
-                evc.view.translatesAutoresizingMaskIntoConstraints = false
-                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                Primer.shared.primerRootVC?.show(viewController: evc)
+    
+    func handle(newClientToken clientToken: String) {
+        ClientTokenService.storeClientToken(clientToken) { [weak self] error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    ErrorHandler.handle(error: error)
+                    PrimerDelegateProxy.onResumeError(error)
+                    self?.handle(error: error)
+                }
             }
         }
     }
-    
-    func handle(newClientToken clientToken: String) {
-        let _ = try? ClientTokenService.storeClientToken(clientToken)
+
+    func handle(error: Error) {
+        DispatchQueue.main.async {
+            self.dismissOrShowResultScreen(error)
+        }
     }
-    
+        
     func handleSuccess() {
         DispatchQueue.main.async {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-            if settings.hasDisabledSuccessScreen {
-                Primer.shared.dismiss()
-            } else {
-                let svc = PrimerResultViewController(screenType: .success, message: nil)
-                svc.view.translatesAutoresizingMaskIntoConstraints = false
-                svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                Primer.shared.primerRootVC?.show(viewController: svc)
-            }
+            self.dismissOrShowResultScreen()
         }
     }
 }
-
 #endif

@@ -111,40 +111,50 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 }
 
 extension VaultCheckoutViewModel: ResumeHandlerProtocol {
-    func handle(error: Error) {
-        DispatchQueue.main.async {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-            if settings.hasDisabledSuccessScreen {
-                Primer.shared.dismiss()
-            } else {
-                let evc = PrimerResultViewController(screenType: .failure, message: error.localizedDescription)
-                evc.view.translatesAutoresizingMaskIntoConstraints = false
-                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                Primer.shared.primerRootVC?.show(viewController: evc)
+    
+    func handle(newClientToken clientToken: String) {
+        ClientTokenService.storeClientToken(clientToken) { [weak self] error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    ErrorHandler.handle(error: error)
+                    PrimerDelegateProxy.onResumeError(error)
+                    self?.handle(error: error)
+                }
             }
         }
     }
-    
-    func handle(newClientToken clientToken: String) {
-        let _ = try? ClientTokenService.storeClientToken(clientToken)
+
+    func handle(error: Error) {
+        DispatchQueue.main.async {
+            self.dismissOrShowResultScreen(error)
+        }
     }
-    
+        
     func handleSuccess() {
         DispatchQueue.main.async {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-            if settings.hasDisabledSuccessScreen {
-                Primer.shared.dismiss()
-            } else {
-                let svc = PrimerResultViewController(screenType: .success, message: nil)
-                svc.view.translatesAutoresizingMaskIntoConstraints = false
-                svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                Primer.shared.primerRootVC?.show(viewController: svc)
-            }
+            self.dismissOrShowResultScreen()
         }
     }
 }
+
+extension VaultCheckoutViewModel {
+    
+    func dismissOrShowResultScreen(_ error: Error? = nil) {
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if settings.hasDisabledSuccessScreen {
+            Primer.shared.dismiss()
+        } else {
+            let status: PrimerResultViewController.ScreenType = error == nil ? .success : .failure
+            let resultViewController = PrimerResultViewController(screenType: status, message: error?.localizedDescription)
+            resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
+            resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+            Primer.shared.primerRootVC?.show(viewController: resultViewController)
+        }
+    }
+}
+
 
 #endif
 

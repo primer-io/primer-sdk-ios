@@ -185,7 +185,8 @@ public class Primer {
         show(flow: flow)
     }
     
-    public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil) {
+    public func showUniversalCheckout(on viewController: UIViewController) {
+        
         checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
@@ -209,18 +210,12 @@ public class Primer {
                 id: self.timingEventId!))
         
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-        
-        do {
-            if let clientToken = clientToken {
-                let _ = try? ClientTokenService.storeClientToken(clientToken)
-            }
-        }
-        
+                
         presentingViewController = viewController
         show(flow: .default)
     }
     
-    public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
+    public func showVaultManager(on viewController: UIViewController) {
         checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
@@ -244,10 +239,6 @@ public class Primer {
                 id: self.timingEventId!))
         
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-        
-        if let clientToken = clientToken {
-            let _ = try? ClientTokenService.storeClientToken(clientToken)
-        }
         
         presentingViewController = viewController
         show(flow: .default)

@@ -432,28 +432,25 @@ extension ApayaTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
-        do {
-            // For Apaya there's no redirection URL, once the webview is presented it will get its response from a URL redirection.
-            // We'll end up in here only for surcharge.
-            _ = try ClientTokenService.storeClientToken(clientToken)
+        
+        // For Apaya there's no redirection URL, once the webview is presented it will get its response from a URL redirection.
+        // We'll end up in here only for surcharge.
 
+        firstly {
+            ClientTokenService.storeClientToken(clientToken)
+        }
+        .then{ () -> Promise<Void> in
             let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            
-            firstly {
-                configService.fetchConfig()
-            }
-            .done {
-                self.continueTokenizationFlow()
-            }
-            .catch { err in
-                self.handle(error: err)
-            }
-                        
-        } catch {
+            return configService.fetchConfig()
+        }
+        .done {
+            self.continueTokenizationFlow()
+        }
+        .catch { error in
             DispatchQueue.main.async {
                 PrimerDelegateProxy.onResumeError(error)
-                self.handle(error: error)
             }
+            self.handle(error: error)
         }
     }
     

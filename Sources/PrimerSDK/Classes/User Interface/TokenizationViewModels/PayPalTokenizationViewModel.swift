@@ -452,11 +452,14 @@ extension PayPalTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
-        do {
-            _ = try ClientTokenService.storeClientToken(clientToken)
+        
+        firstly {
+            ClientTokenService.storeClientToken(clientToken)
+        }
+        .done {
             self.continueTokenizationFlow()
-            
-        } catch {
+        }
+        .catch { error in
             DispatchQueue.main.async {
                 PrimerDelegateProxy.onResumeError(error)
             }

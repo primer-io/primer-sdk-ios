@@ -529,21 +529,24 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
                 
                 if let clientToken = clientToken {
-                    
-                    do {
-                        _ = try ClientTokenService.storeClientToken(clientToken)
-                    } catch {
-                        seal.reject(error)
-                        return
+                    ClientTokenService.storeClientToken(clientToken) { error in
+                        guard error == nil else {
+                            seal.reject(error!)
+                            return
+                        }
+
+                        if let decodedClientToken = ClientTokenService.decodedClientToken,
+                            let redirectUrl = decodedClientToken.redirectUrl,
+                            let statusUrl = decodedClientToken.statusUrl,
+                            decodedClientToken.intent != nil {
+                            seal.fulfill(PollingURLs(status: statusUrl, redirect: redirectUrl, complete: nil))
+                            return
+                        }
                     }
-                    
-                    if let decodedClientToken = ClientTokenService.decodedClientToken,
-                        let redirectUrl = decodedClientToken.redirectUrl,
-                        let statusUrl = decodedClientToken.statusUrl,
-                        decodedClientToken.intent != nil {
-                        seal.fulfill(PollingURLs(status: statusUrl, redirect: redirectUrl, complete: nil))
-                        return
-                    }
+                } else {
+                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    seal.reject(error)
+                    return
                 }
             }
             
@@ -682,14 +685,21 @@ extension ExternalPaymentMethodTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
-        do {
-            let _ = try ClientTokenService.storeClientToken(clientToken)
+        
+        firstly {
+            ClientTokenService.storeClientToken(clientToken)
+        }
+        .then{ () -> Promise<Void> in
+            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+            return configService.fetchConfig()
+        }
+        .done { [weak self] in
             
             let decodedClientToken = ClientTokenService.decodedClientToken!
             
             if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-                onClientToken?(clientToken, nil)
-                onClientToken = nil
+                self?.onClientToken?(clientToken, nil)
+                self?.onClientToken = nil
                 
             } else {
                 // intent = "CHECKOUT"
@@ -700,24 +710,25 @@ extension ExternalPaymentMethodTokenizationViewModel {
                     configService.fetchConfig()
                 }
                 .done {
-                    self.continueTokenizationFlow()
+                    self?.continueTokenizationFlow()
                 }
                 .catch { err in
                     DispatchQueue.main.async {
                         PrimerDelegateProxy.onResumeError(err)
                     }
-                    self.handle(error: err)
+                    self?.handle(error: err)
                 }
             }
+        }
+        .catch { error in
             
-        } catch {
             DispatchQueue.main.async {
                 PrimerDelegateProxy.onResumeError(error)
             }
             
-            handle(error: error)
-            onClientToken?(nil, error)
-            onClientToken = nil
+            self.handle(error: error)
+            self.onClientToken?(nil, error)
+            self.onClientToken = nil
         }
     }
     

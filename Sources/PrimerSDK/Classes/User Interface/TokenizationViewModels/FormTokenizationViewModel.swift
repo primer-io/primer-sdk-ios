@@ -874,12 +874,29 @@ extension FormPaymentMethodTokenizationViewModel {
         }
     }
     
-    override func handle(newClientToken clientToken: String) {
-        do {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            
-            if state.clientToken != clientToken {
-                _ = try ClientTokenService.storeClientToken(clientToken)
+    private func continueHandleNewClientToken(_ clientToken: String) {
+        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            let error = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: error)
+
+            handle(error: error)
+            DispatchQueue.main.async {
+                PrimerDelegateProxy.onResumeError(error)
+            }
+            return
+        }
+                
+        if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+            #if canImport(Primer3DS)
+            guard let paymentMethod = paymentMethod else {
+                DispatchQueue.main.async {
+                    let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: containerErr)
+                    PrimerDelegateProxy.onResumeError(containerErr)
+                }
+                return
             }
             
             let decodedClientToken = ClientTokenService.decodedClientToken!
@@ -991,12 +1008,16 @@ extension FormPaymentMethodTokenizationViewModel {
                 }
             }
             
-        } catch {
-            handle(error: error)
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeError(error)
-            }
+            self.handleFailedTokenizationFlow(error: error)
+            self.submitButton.stopAnimating()
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
+        
+        completion?(nil, error)
+    }
+    
+    override func handle(newClientToken clientToken: String) {
+        self.handle(clientToken)
     }
     
     override func handleSuccess() {
