@@ -43,7 +43,7 @@ class Base: XCTestCase {
             id: "ADYEN_GIROPAY",
             environment: .sandbox,
             currency: "EUR",
-            countryCode: "CH",
+            countryCode: "DE",
             amount: "100",
             expecations: Payment.Expecations(
                 amount: "€1.00",
@@ -306,36 +306,36 @@ class Base: XCTestCase {
         XCTAssert(paymentMethodSurcharge.exists, "\(paymentMethodId) should have '\(surcharge)' surcharge")
     }
     
-    func testDismissSDK() throws {
+    func dismissSDK() throws {
         let scrollView = app.scrollViews["primer_container_scroll_view"]
         scrollView.swipeDown()
         let expectation = expectation(for: Expectation.doesNotExist, evaluatedWith: scrollView, handler: nil)
         wait(for: [expectation], timeout: 3.0)
     }
     
-    func testSuccessMessageExists() throws {
+    func successMessageExists() throws {
         let successLabel = app.staticTexts["success_screen_message_label"]
         let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
         wait(for: [successLabelExists], timeout: 30)
     }
     
-    func testResultScreenExpectations(for payment: Payment) throws {
+    func resultScreenExpectations(for payment: Payment) throws {
         if let resultScreenTextExpectations = payment.expecations?.resultScreenTexts {
             var expectations: [XCTestExpectation] = []
             
-            if let status = resultScreenTextExpectations["status"] as? String {
+            if let status = resultScreenTextExpectations["status"] {
                 let statusText = app.staticTexts[status]
                 let statusTextExists = expectation(for: Expectation.exists, evaluatedWith: statusText, handler: nil)
                 expectations.append(statusTextExists)
             }
             
-            if let actions = resultScreenTextExpectations["actions"] as? String {
+            if let actions = resultScreenTextExpectations["actions"] {
                 let actionsText = app.staticTexts[actions]
                 let actionsTextExists = expectation(for: Expectation.exists, evaluatedWith: actionsText, handler: nil)
                 expectations.append(actionsTextExists)
             }
             
-            if let amount = resultScreenTextExpectations["amount"] as? String {
+            if let amount = resultScreenTextExpectations["amount"] {
                 let amountText = app.staticTexts[amount]
                 let amountTextExists = expectation(for: Expectation.exists, evaluatedWith: amountText, handler: nil)
                 expectations.append(amountTextExists)
