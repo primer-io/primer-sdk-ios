@@ -241,7 +241,7 @@ public class Primer {
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
         presentingViewController = viewController
-        show(flow: .default)
+        show(flow: .defaultWithVault)
     }
     
     // swiftlint:disable cyclomatic_complexity
