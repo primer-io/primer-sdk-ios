@@ -423,19 +423,19 @@ class Base: XCTestCase {
             if let resultScreenTextExpectations = payment.expecations?.resultScreenTexts {
                 var expectations: [XCTestExpectation] = []
                 
-                if let status = resultScreenTextExpectations["status"] as? String {
+                if let status = resultScreenTextExpectations["status"] {
                     let statusText = app.staticTexts[status]
                     let statusTextExists = expectation(for: Expectation.exists, evaluatedWith: statusText, handler: nil)
                     expectations.append(statusTextExists)
                 }
                 
-                if let actions = resultScreenTextExpectations["actions"] as? String {
+                if let actions = resultScreenTextExpectations["actions"] {
                     let actionsText = app.staticTexts[actions]
                     let actionsTextExists = expectation(for: Expectation.exists, evaluatedWith: actionsText, handler: nil)
                     expectations.append(actionsTextExists)
                 }
                 
-                if let amount = resultScreenTextExpectations["amount"] as? String {
+                if let amount = resultScreenTextExpectations["amount"] {
                     let amountText = app.staticTexts[amount]
                     let amountTextExists = expectation(for: Expectation.exists, evaluatedWith: amountText, handler: nil)
                     expectations.append(amountTextExists)

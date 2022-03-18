@@ -250,8 +250,19 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     func validateClientToken(clientToken: DecodedClientToken, request: ClientTokenValidationRequest, completion: @escaping (Result<SuccessResponse, Error>) -> Void) {
         
+        guard let response = response else {
+            let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
+            completion(.failure(nsErr))
+            return
+        }
+                
+        do {
+            let value = try JSONDecoder().decode(SuccessResponse.self, from: response)
+            completion(.success(value))
+        } catch {
+            completion(.failure(error))
+        }
     }
-
 }
 
 #endif

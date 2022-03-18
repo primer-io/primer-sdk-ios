@@ -18,7 +18,8 @@ class MockClientTokenService: ClientTokenServiceProtocol {
     }
     
     static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void) {
-        
+        completion(nil)
+        return
     }
     
     func fetchClientToken() -> Promise<Void> {
