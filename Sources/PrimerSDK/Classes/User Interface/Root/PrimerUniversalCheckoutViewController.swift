@@ -400,7 +400,6 @@ extension PrimerUniversalCheckoutViewController {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let error = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: error)
-
             handle(error: error)
             DispatchQueue.main.async {
                 PrimerDelegateProxy.onResumeError(error)

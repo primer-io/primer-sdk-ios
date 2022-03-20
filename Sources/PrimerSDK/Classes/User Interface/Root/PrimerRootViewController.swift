@@ -540,8 +540,6 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
         ClientTokenService.storeClientToken(clientToken) { [weak self] error in
             DispatchQueue.main.async {
                 if let error = error {
-                    ErrorHandler.handle(error: error)
-                    PrimerDelegateProxy.onResumeError(error)
                     self?.handle(error: error)
                 }
             }
@@ -550,6 +548,8 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
 
     func handle(error: Error) {
         DispatchQueue.main.async {
+            ErrorHandler.handle(error: error)
+            PrimerDelegateProxy.onResumeError(error)
             self.dismissOrShowResultScreen(error)
         }
     }

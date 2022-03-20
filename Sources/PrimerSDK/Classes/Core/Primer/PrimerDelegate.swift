@@ -163,27 +163,6 @@ internal class PrimerDelegateProxy {
     static func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error) {
 
     }
-    
-//    static func onEvent(_ event: PrimerHeadlessUniversalCheckout.Event) {
-//        switch event {
-//        case .clientSessionSetupSuccessfully,
-//                .preparationStarted,
-//                .paymentMethodPresented,
-//                .tokenizationStarted:
-//            PrimerHeadlessUniversalCheckout.delegate?.onEvent(event)
-//        case .tokenizationSucceeded(let paymentMethodToken, let resumeHandler):
-//            PrimerHeadlessUniversalCheckout.delegate?.onEvent(event)
-//
-//            if let resumeHandler = resumeHandler {
-//                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: resumeHandler)
-//            }
-//        case .failure(let error):
-//            PrimerHeadlessUniversalCheckout.delegate?.onEvent(event)
-//            Primer.shared.delegate?.checkoutFailed?(with: error)
-//        }
-//    }
-    
-    
 }
 
 internal class MockPrimerDelegate: PrimerDelegate {
