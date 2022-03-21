@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ORN-tn-RVh">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ORN-tn-RVh">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -175,7 +175,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="40" estimatedRowHeight="40" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="5Bg-Yz-vOr">
-                                <rect key="frame" x="20" y="120" width="374" height="362"/>
+                                <rect key="frame" x="20" y="80.5" width="374" height="401.5"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="PaymentMethodCell" rowHeight="40" id="hfT-yD-Z4D" customClass="PaymentMethodCell" customModule="PrimerSDK_Example" customModuleProvider="target">
@@ -332,9 +332,8 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Postal code:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Zgj-Y0-gEw">
-                                <rect key="frame" x="20" y="52" width="374" height="60"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Postal code:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zgj-Y0-gEw">
+                                <rect key="frame" x="20" y="52" width="374" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -344,11 +343,14 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="Fpg-xO-ASt" firstAttribute="leading" secondItem="1AU-v5-4lz" secondAttribute="leadingMargin" constant="20" id="7ft-US-D2G"/>
+                            <constraint firstItem="Zgj-Y0-gEw" firstAttribute="leading" secondItem="cmm-Vt-ZdS" secondAttribute="leading" constant="20" id="CWT-Dc-tuE"/>
                             <constraint firstItem="5Bg-Yz-vOr" firstAttribute="trailing" secondItem="1AU-v5-4lz" secondAttribute="trailingMargin" id="CxG-K3-tC7"/>
+                            <constraint firstItem="cmm-Vt-ZdS" firstAttribute="trailing" secondItem="Zgj-Y0-gEw" secondAttribute="trailing" constant="20" id="Fku-pa-zpm"/>
                             <constraint firstItem="5Bg-Yz-vOr" firstAttribute="leading" secondItem="1AU-v5-4lz" secondAttribute="leadingMargin" id="Inn-hY-E34"/>
                             <constraint firstItem="cmm-Vt-ZdS" firstAttribute="bottom" secondItem="Fpg-xO-ASt" secondAttribute="bottom" constant="20" id="J3Q-UE-2ox"/>
                             <constraint firstItem="5Bg-Yz-vOr" firstAttribute="top" secondItem="Zgj-Y0-gEw" secondAttribute="bottom" constant="8" symbolic="YES" id="LVc-3i-k8w"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Fpg-xO-ASt" secondAttribute="trailing" constant="20" id="Zwa-lM-9Fh"/>
+                            <constraint firstItem="Zgj-Y0-gEw" firstAttribute="top" secondItem="cmm-Vt-ZdS" secondAttribute="top" constant="8" id="bFp-eU-Mxo"/>
                             <constraint firstItem="Fpg-xO-ASt" firstAttribute="top" secondItem="5Bg-Yz-vOr" secondAttribute="bottom" constant="8" symbolic="YES" id="ehg-2v-zep"/>
                         </constraints>
                     </view>
