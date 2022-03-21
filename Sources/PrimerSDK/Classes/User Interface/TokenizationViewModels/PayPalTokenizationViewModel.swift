@@ -449,6 +449,7 @@ extension PayPalTokenizationViewModel {
         ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
         self.completion = nil
+        ErrorHandler.handle(error: error, addingHandlers: [SendingOnResumeErrorEventHandler()])
     }
     
     override func handle(newClientToken clientToken: String) {
@@ -461,9 +462,8 @@ extension PayPalTokenizationViewModel {
         }
         .catch { error in
             DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeError(error)
+                self.handle(error: error)
             }
-            self.handle(error: error)
         }
     }
     

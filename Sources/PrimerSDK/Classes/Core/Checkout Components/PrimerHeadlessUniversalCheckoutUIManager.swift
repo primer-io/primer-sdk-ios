@@ -57,14 +57,14 @@ extension PrimerHeadlessUniversalCheckout {
             
             // TODO: Implement data handling
             
-//            guard let data = data else { return }
-//
-//            if let ibanData = data as? IBANData {
-//
-//            } else if let otpData = data as? OTPData {
-//
-//            }
-//
+            //            guard let data = data else { return }
+            //
+            //            if let ibanData = data as? IBANData {
+            //
+            //            } else if let otpData = data as? OTPData {
+            //
+            //            }
+            //
         }
     }
     
@@ -112,7 +112,7 @@ extension PrimerHeadlessUniversalCheckout {
         public override func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
             
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationStarted()
-
+            
             firstly {
                 PrimerHeadlessUniversalCheckout.current.validateSession()
             }
@@ -254,7 +254,7 @@ extension PrimerHeadlessUniversalCheckout {
                     case .success(let paymentMethodToken):
                         self.paymentMethod = paymentMethodToken
                         seal.fulfill(paymentMethodToken)
-
+                        
                     case .failure(let err):
                         let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: containerErr)
@@ -343,7 +343,9 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager: ResumeHandlerProtoc
         self.handle(clientToken)
     }
     
-    public func handle(error: Error) {}
+    public func handle(error: Error) {
+        ErrorHandler.handle(error: error, addingHandlers: [SendingOnResumeErrorEventHandler()])
+    }
     
     public func handleSuccess() {}
 }
@@ -358,11 +360,10 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                 DispatchQueue.main.async {
                     
                     guard error == nil else {
-                        ErrorHandler.handle(error: error!)
-                        PrimerDelegateProxy.onResumeError(error!)
+                        ErrorHandler.handle(error: error, addingHandlers: [SendingOnResumeErrorEventHandler()])
                         return
                     }
-
+                    
                     self.continueHandleNewClientToken(clientToken)
                 }
             }
@@ -376,13 +377,12 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
         if let decodedClientToken = ClientTokenService.decodedClientToken,
            decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
             
-            #if canImport(Primer3DS)
+#if canImport(Primer3DS)
             guard let paymentMethod = paymentMethod else {
                 DispatchQueue.main.async {
                     let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: containerErr)
-                    PrimerDelegateProxy.onResumeError(containerErr)
+                    ErrorHandler.handle(error: containerErr, addingHandlers: [SendingOnResumeErrorEventHandler()])
                 }
                 return
             }
@@ -395,15 +395,13 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                     DispatchQueue.main.async {
                         guard let threeDSPostAuthResponse = paymentMethodToken.1,
                               let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                  DispatchQueue.main.async {
-                                      let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                      let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                      ErrorHandler.handle(error: err)
-                                      PrimerDelegateProxy.onResumeError(err)
-                                      self.handle(error: err)
-                                  }
-                                  return
-                              }
+                            DispatchQueue.main.async {
+                                let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                self.handle(error: err)
+                            }
+                            return
+                        }
                         
                         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutResume(withResumeToken: resumeToken, resumeHandler: nil)
                     }
@@ -417,24 +415,21 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                     }
                 }
             }
-            #else
-            let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
+#else
             DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeError(err)
+                let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err, addingHandlers: [SendingOnResumeErrorEventHandler()])
             }
-            #endif
+#endif
             
         } else {
             let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-
+            
             DispatchQueue.main.async {
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
             }
         }
-
-        
     }
-    
 }
+

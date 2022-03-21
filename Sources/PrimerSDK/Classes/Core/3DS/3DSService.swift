@@ -142,7 +142,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         do {
             try ThreeDSService.validate3DSParameters()
         } catch {
-            ErrorHandler.shared.handle(error: error)
+            ErrorHandler.handle(error: error)
             throw error
         }
         
@@ -244,7 +244,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             try primer3DS!.initializeSDK(licenseKey: licenseKey, certificates: certs)
             data = try primer3DS!.createTransaction(directoryServerId: directoryServerId, protocolVersion: protocolVersion.rawValue)
         } catch {
-            ErrorHandler.shared.handle(error: error)
+            ErrorHandler.handle(error: error)
             return
         }
         
@@ -269,7 +269,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         do {
             try ThreeDSService.validate3DSParameters()
         } catch {
-            ErrorHandler.shared.handle(error: error)
+            ErrorHandler.handle(error: error)
             completion(.failure(error))
             return
         }

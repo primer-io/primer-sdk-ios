@@ -877,12 +877,9 @@ extension FormPaymentMethodTokenizationViewModel {
     private func continueHandleNewClientToken(_ clientToken: String) {
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let error = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: error)
-
-            handle(error: error)
             DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeError(error)
+                let error = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                self.handle(error: error)
             }
             return
         }
@@ -893,8 +890,7 @@ extension FormPaymentMethodTokenizationViewModel {
                 DispatchQueue.main.async {
                     let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: containerErr)
-                    PrimerDelegateProxy.onResumeError(containerErr)
+                    self.handle(error: error)
                 }
                 return
             }
@@ -1012,7 +1008,7 @@ extension FormPaymentMethodTokenizationViewModel {
             self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
-        
+        ErrorHandler.handle(error: error, addingHandlers: [SendingOnResumeErrorEventHandler()])
         completion?(nil, error)
     }
     

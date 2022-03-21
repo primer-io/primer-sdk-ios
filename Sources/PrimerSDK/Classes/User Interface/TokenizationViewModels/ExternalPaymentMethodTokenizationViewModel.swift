@@ -682,6 +682,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
         // onResumeTokenCompletion will be created when we're awaiting the payment response
         onResumeTokenCompletion?(nil, error)
         onResumeTokenCompletion = nil
+        ErrorHandler.handle(error: error, addingHandlers: [SendingOnResumeErrorEventHandler()])
     }
     
     override func handle(newClientToken clientToken: String) {
@@ -714,21 +715,15 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 }
                 .catch { err in
                     DispatchQueue.main.async {
-                        PrimerDelegateProxy.onResumeError(err)
+                        self?.handle(error: err)
                     }
-                    self?.handle(error: err)
                 }
             }
         }
-        .catch { error in
-            
+        .catch { error in            
             DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeError(error)
+                self.handle(error: error)
             }
-            
-            self.handle(error: error)
-            self.onClientToken?(nil, error)
-            self.onClientToken = nil
         }
     }
     

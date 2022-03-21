@@ -55,7 +55,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         vaultService.loadVaultedPaymentMethods { [weak self] error in
             
             guard error == nil else {
-                self?.dismissOrShowResultScreen(error!)
+                ErrorHandler.handle(error: error, addingHandlers: [DismissOrShowingResultScreenErrorHandler()])
                 return
             }
             
@@ -329,14 +329,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                             self?.payButton.stopAnimating()
                             self?.enableView(true)
                             self?.singleUsePaymentMethod = nil
-                            self?.dismissOrShowResultScreen(error)
+                            ErrorHandler.handle(error: error, addingHandlers: [DismissOrShowingResultScreenErrorHandler()])
                         }
                     })
                     
                     PrimerDelegateProxy.onTokenizeSuccess(singleUsePaymentMethod, resumeHandler: self)
                 case .failure(let error):
                     PrimerDelegateProxy.checkoutFailed(with: error)
-                    self.dismissOrShowResultScreen(error)
+                    DismissOrShowingResultScreenErrorHandler().handleSuccessOnly()
                 }
             }
         }
@@ -382,8 +382,7 @@ extension PrimerUniversalCheckoutViewController {
                 DispatchQueue.main.async {
                     
                     guard error == nil else {
-                        ErrorHandler.handle(error: error!)
-                        PrimerDelegateProxy.onResumeError(error!)
+                        ErrorHandler.handle(error: error, addingHandlers: [SendingOnResumeErrorEventHandler()])
                         return
                     }
 
@@ -399,10 +398,8 @@ extension PrimerUniversalCheckoutViewController {
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let error = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: error)
-            handle(error: error)
             DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeError(error)
+                self.handle(error: error)
             }
             return
         }
@@ -414,8 +411,6 @@ extension PrimerUniversalCheckoutViewController {
                 DispatchQueue.main.async {
                     self.onClientSessionActionCompletion = nil
                     let err = PrimerError.invalid3DSKey(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
-                    PrimerDelegateProxy.onResumeError(err)
                     self.handle(error: err)
                 }
                 return
@@ -431,8 +426,6 @@ extension PrimerUniversalCheckoutViewController {
                                   DispatchQueue.main.async {
                                       self.onClientSessionActionCompletion = nil
                                       let err = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                      ErrorHandler.handle(error: err)
-                                      PrimerDelegateProxy.onResumeError(err)
                                       self.handle(error: err)
                                   }
                                   return
@@ -447,9 +440,7 @@ extension PrimerUniversalCheckoutViewController {
                     DispatchQueue.main.async {
                         self.onClientSessionActionCompletion = nil
                         let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        ErrorHandler.handle(error: containerErr)
-                        PrimerDelegateProxy.onResumeError(containerErr)
-                        self.handle(error: err)
+                        self.handle(error: containerErr)
                     }
                 }
             }
@@ -458,8 +449,6 @@ extension PrimerUniversalCheckoutViewController {
             DispatchQueue.main.async {
                 self.onClientSessionActionCompletion = nil
                 let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.onResumeError(err)
                 self.handle(error: err)
             }
             #endif
@@ -477,11 +466,9 @@ extension PrimerUniversalCheckoutViewController {
                 self.handle(error: err)
             }
         } else {
-            let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            handle(error: err)
             DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeError(err)
+                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                self.handle(error: err)
             }
         }
     }
@@ -494,8 +481,8 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
             self.onClientSessionActionCompletion?(error)
             self.payButton.stopAnimating()
             self.enableView(true)
-            self.dismissOrShowResultScreen(error)
             self.singleUsePaymentMethod = nil
+            ErrorHandler.handle(error: error, addingHandlers: [DismissOrShowingResultScreenErrorHandler(), SendingOnResumeErrorEventHandler()])
         }
     }
     
@@ -507,8 +494,8 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
         DispatchQueue.main.async {
             self.payButton.stopAnimating()
             self.enableView(true)
-            self.dismissOrShowResultScreen()
             self.singleUsePaymentMethod = nil
+            DismissOrShowingResultScreenErrorHandler().handleSuccessOnly()
         }
     }
 }

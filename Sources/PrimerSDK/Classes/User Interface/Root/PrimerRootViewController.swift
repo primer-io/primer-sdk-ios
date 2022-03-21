@@ -520,7 +520,7 @@ extension PrimerRootViewController {
                         return
                     }
                     
-                    self?.dismissOrShowResultScreen(error)
+                    ErrorHandler.handle(error: error, addingHandlers: [DismissOrShowingResultScreenErrorHandler()])
                 }
             })
         }
@@ -548,15 +548,17 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
 
     func handle(error: Error) {
         DispatchQueue.main.async {
-            ErrorHandler.handle(error: error)
-            PrimerDelegateProxy.onResumeError(error)
-            self.dismissOrShowResultScreen(error)
+            ErrorHandler.handle(error: error,
+                                addingHandlers: [DismissOrShowingResultScreenErrorHandler(),
+                                                 SendingOnResumeErrorEventHandler()
+                                                ]
+            )
         }
     }
         
     func handleSuccess() {
         DispatchQueue.main.async {
-            self.dismissOrShowResultScreen()
+            DismissOrShowingResultScreenErrorHandler().handleSuccessOnly()
         }
     }
 }

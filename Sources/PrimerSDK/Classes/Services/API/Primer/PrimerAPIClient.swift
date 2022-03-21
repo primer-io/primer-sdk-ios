@@ -68,7 +68,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             case .success(let paymentInstrument):
                 completion(.success(paymentInstrument))
             case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
+                ErrorHandler.handle(error: error)
                 completion(.failure(error))
             }
         }
@@ -81,7 +81,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             case .success:
                 completion(.success(()))
             case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
+                ErrorHandler.handle(error: error)
                 completion(.failure(error))
             }
         }
@@ -271,7 +271,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             case .success(let success):
                 completion(.success(success))
             case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
+                ErrorHandler.handle(error: error)
                 completion(.failure(error))
             }
         }

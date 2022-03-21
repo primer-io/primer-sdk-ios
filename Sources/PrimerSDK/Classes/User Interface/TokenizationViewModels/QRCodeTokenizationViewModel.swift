@@ -95,7 +95,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     override func validate() throws {
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
+            self.handle(error: err)
             throw err
         }
     }
@@ -185,7 +185,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         return Promise { seal in
             guard let configId = config.id else {
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
+                self.handle(error: err)
                 seal.reject(err)
                 return
             }
@@ -240,7 +240,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             .then { () -> Promise<String> in
                 guard let statusUrl = qrCodePollingURLs.statusUrl else {
                     let err = PrimerError.invalidValue(key: "statusUrl", value: qrCodePollingURLs.statusUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
+                    self.handle(error: err)
                     throw err
                 }
                 
@@ -310,7 +310,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         let p: Promise? = Promise<String> { seal in
             self.didCancel = {
                 let err = PrimerError.cancelled(paymentMethodType: .xfers, userInfo: nil)
-                ErrorHandler.handle(error: err)
+                self.handle(error: err)
                 seal.reject(err)
                 self.pollingRetryTimer?.invalidate()
                 self.pollingRetryTimer = nil
@@ -388,6 +388,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
 extension QRCodeTokenizationViewModel {
     
     override func handle(error: Error) {
+        ErrorHandler.handle(error: error)
         ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
         self.completion = nil
@@ -398,7 +399,6 @@ extension QRCodeTokenizationViewModel {
     override func handle(newClientToken clientToken: String) {
         guard let decodedClientToken = clientToken.jwtTokenPayload else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
             self.handle(error: err)
             return
         }
@@ -430,7 +430,6 @@ extension QRCodeTokenizationViewModel {
             }
         } else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
             self.handle(error: err)
             return
         }

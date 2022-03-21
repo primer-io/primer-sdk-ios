@@ -443,6 +443,7 @@ extension BankSelectorTokenizationViewModel {
         ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
         self.completion = nil
+        ErrorHandler.handle(error: error, addingHandlers: [SendingOnResumeErrorEventHandler()])
     }
     
     override func handle(newClientToken clientToken: String) {
@@ -470,9 +471,8 @@ extension BankSelectorTokenizationViewModel {
             }
             .catch { err in
                 DispatchQueue.main.async {
-                    PrimerDelegateProxy.onResumeError(err)
+                    self.handle(error: err)
                 }
-                self.handle(error: err)
             }
         }
     }
