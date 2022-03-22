@@ -62,8 +62,16 @@ public protocol PrimerDelegate {
 
 internal class PrimerDelegateProxy {
     
-    static func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void) {4
+    static var isClientTokenCallbackImplemented: Bool {
+        return Primer.shared.delegate?.clientTokenCallback != nil
+    }
+    
+    static func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void) {
         Primer.shared.delegate?.clientTokenCallback(completion)
+    }
+    
+    static var isTokenAddedToVaultImplemented: Bool {
+        return Primer.shared.delegate?.tokenAddedToVault != nil
     }
     
     static func tokenAddedToVault(_ token: PaymentMethodToken) {
@@ -87,9 +95,17 @@ internal class PrimerDelegateProxy {
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: resumeHandler)
     }
     
+    static var isOnResumeSuccessImplemented: Bool {
+        return Primer.shared.delegate?.onResumeSuccess != nil
+    }
+    
     static func onResumeSuccess(_ resumeToken: String, resumeHandler: ResumeHandlerProtocol) {
         Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: resumeHandler)
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutResume(withResumeToken: resumeToken, resumeHandler: resumeHandler)
+    }
+    
+    static var isOnResumeErrorImplemented: Bool {
+        return Primer.shared.delegate?.onResumeError != nil
     }
     
     static func onResumeError(_ error: Error) {
@@ -97,8 +113,16 @@ internal class PrimerDelegateProxy {
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
     }
     
+    static var isOnCheckoutDismissedImplemented: Bool {
+        return Primer.shared.delegate?.onCheckoutDismissed != nil
+    }
+    
     static func onCheckoutDismissed() {
         Primer.shared.delegate?.onCheckoutDismissed?()
+    }
+    
+    static var isCheckoutFailedImplemented: Bool {
+        return Primer.shared.delegate?.checkoutFailed != nil
     }
     
     static func checkoutFailed(with error: Error) {
