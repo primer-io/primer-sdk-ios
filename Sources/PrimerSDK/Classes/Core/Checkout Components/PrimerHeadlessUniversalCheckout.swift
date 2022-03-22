@@ -129,6 +129,8 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .adyenIDeal:
             return []
+        case .adyenInterac:
+            return []
         case .adyenMobilePay:
             return []
         case .adyenSofort:
@@ -160,8 +162,6 @@ public class PrimerHeadlessUniversalCheckout {
         case .googlePay:
             return []
         case .hoolah:
-            return []
-        case .interac:
             return []
         case .klarna:
             return []
@@ -293,6 +293,8 @@ public struct PrimerAsset {
                 .mollieIdeal,
                 .payNLIdeal:
             brand = .iDeal
+        case .adyenInterac:
+            brand = .adyenInterac
         case .adyenMobilePay:
             brand = .mobilePay
         case .adyenSofort,
@@ -322,8 +324,6 @@ public struct PrimerAsset {
             brand = .googlePay
         case .hoolah:
             brand = .hoolah
-        case .interac:
-            brand = .interac
         case .klarna:
             brand = .klarna
         case .payNLPayconiq:
@@ -378,7 +378,7 @@ public struct PrimerAsset {
         case dLocal = "d-local", directDebit = "direct-debit", discover, dotPay = "dotpay", eMerchantPay = "emerchantpay", eps, fintecture, fonoa, forter, fpx
         case gCash = "gcash", giroPay = "giropay", globalPayments = "global-payments", goCardless = "go-cardless", googlePay = "google-pay", grabPay = "grab-pay"
         case hoolah
-        case iDeal = "ideal", interac
+        case iDeal = "ideal", adyenInterac
         case ingenico
         case jcb
         case klarna, kount

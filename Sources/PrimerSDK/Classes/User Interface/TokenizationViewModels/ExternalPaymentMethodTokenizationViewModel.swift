@@ -33,7 +33,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Buckaroo Sofort"
         case .hoolah:
             return "Hoolah"
-        case .interac:
+        case .adyenInterac:
             return "Interac"
         case .mollieBankcontact:
             return "Mollie Bancontact"
@@ -78,7 +78,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooIdeal,
                 .buckarooSofort,
                 .hoolah,
-                .interac,
                 .mollieBankcontact,
                 .mollieIdeal,
                 .payNLBancontact,
@@ -89,7 +88,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTwint,
                 .adyenTrustly,
                 .adyenMobilePay,
-                .adyenVipps:
+                .adyenVipps,
+                .adyenInterac:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -117,9 +117,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooGiropay,
                 .payNLGiropay:
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .hoolah:
+        case .adyenInterac:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .interac:
+        case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLIdeal,
                 .buckarooIdeal,
@@ -156,6 +156,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenGiropay,
                 .buckarooGiropay:
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
+        case .adyenInterac:
+            return .black
         case .adyenSofort,
                 .buckarooSofort:
             return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
@@ -173,8 +175,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return .white
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
-        case .interac:
-            return .black
         case .buckarooBancontact,
                 .mollieBankcontact,
                 .payNLBancontact:
@@ -201,6 +201,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
+                .adyenInterac,
                 .adyenMobilePay,
                 .adyenTrustly,
                 .adyenTwint,
@@ -212,7 +213,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
-                .interac,
                 .mollieBankcontact,
                 .mollieIdeal,
                 .payNLBancontact,
@@ -234,6 +234,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
+                .adyenInterac,
                 .adyenMobilePay,
                 .adyenTrustly,
                 .adyenTwint,
@@ -243,7 +244,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
-                .interac,
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
@@ -269,6 +269,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .adyenMobilePay,
+                .adyenInterac,
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
@@ -277,7 +278,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
-                .interac,
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
@@ -308,14 +308,14 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
-                .interac,
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
                 .adyenSofort,
                 .adyenMobilePay,
-                .adyenVipps:
+                .adyenVipps,
+                .adyenInterac:
             return .white
         case .adyenTrustly:
             return .black

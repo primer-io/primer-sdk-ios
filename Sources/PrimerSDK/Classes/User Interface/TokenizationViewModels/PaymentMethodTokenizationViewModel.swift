@@ -178,6 +178,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .mollieIdeal,
                 .payNLIdeal:
             return "ideal"
+        case .adyenInterac:
+            return "hoolah"
         case .adyenMobilePay:
             return "mobile-pay"
         case .adyenSofort,
@@ -206,8 +208,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .googlePay:
             return "google-pay"
         case .hoolah:
-            return "hoolah"
-        case .interac:
             return "hoolah"
         case .klarna:
             return "klarna"

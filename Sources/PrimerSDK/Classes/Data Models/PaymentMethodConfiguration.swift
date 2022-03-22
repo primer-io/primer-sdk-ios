@@ -23,21 +23,21 @@ class PaymentMethodConfig: Codable {
             .adyenVipps,
             .adyenAlipay,
             .adyenGiropay,
+            .adyenInterac,
+            .adyenSofort,
+            .adyenTrustly,
+            .adyenTwint,
             .atome,
             .buckarooBancontact,
             .buckarooEps,
             .buckarooGiropay,
             .buckarooIdeal,
             .buckarooSofort,
-            .interac,
             .mollieBankcontact,
             .mollieIdeal,
             .payNLBancontact,
             .payNLGiropay,
             .payNLPayconiq,
-            .adyenSofort,
-            .adyenTrustly,
-            .adyenTwint
         ]
         
         if type == .paymentCard {
