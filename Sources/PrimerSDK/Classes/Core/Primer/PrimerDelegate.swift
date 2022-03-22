@@ -131,6 +131,10 @@ internal class PrimerDelegateProxy {
     }
     
     static var isClientSessionActionsImplemented: Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        if let implementedReactNativeCallbacks = state.implementedReactNativeCallbacks {
+            return implementedReactNativeCallbacks.isClientSessionActionsImplemented
+        }
         return Primer.shared.delegate?.onClientSessionActions != nil
     }
     
