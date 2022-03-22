@@ -29,6 +29,7 @@ class PaymentMethodConfig: Codable {
             .buckarooGiropay,
             .buckarooIdeal,
             .buckarooSofort,
+            .interac,
             .mollieBankcontact,
             .mollieIdeal,
             .payNLBancontact,

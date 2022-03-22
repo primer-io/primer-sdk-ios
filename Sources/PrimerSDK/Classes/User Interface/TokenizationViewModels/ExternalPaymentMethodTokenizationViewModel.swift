@@ -33,6 +33,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Buckaroo Sofort"
         case .hoolah:
             return "Hoolah"
+        case .interac:
+            return "Interac"
         case .mollieBankcontact:
             return "Mollie Bancontact"
         case .mollieIdeal:
@@ -76,6 +78,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooIdeal,
                 .buckarooSofort,
                 .hoolah,
+                .interac,
                 .mollieBankcontact,
                 .mollieIdeal,
                 .payNLBancontact,
@@ -115,6 +118,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLGiropay:
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .hoolah:
+            return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .interac:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLIdeal,
                 .buckarooIdeal,
@@ -168,6 +173,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return .white
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
+        case .interac:
+            return .black
         case .buckarooBancontact,
                 .mollieBankcontact,
                 .payNLBancontact:
@@ -205,6 +212,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
+                .interac,
                 .mollieBankcontact,
                 .mollieIdeal,
                 .payNLBancontact,
@@ -235,6 +243,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
+                .interac,
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
@@ -268,6 +277,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
+                .interac,
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
@@ -298,6 +308,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
+                .interac,
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
