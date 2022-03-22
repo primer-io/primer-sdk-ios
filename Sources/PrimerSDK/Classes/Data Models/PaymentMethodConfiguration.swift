@@ -36,7 +36,8 @@ class PaymentMethodConfig: Codable {
             .payNLPayconiq,
             .adyenSofort,
             .adyenTrustly,
-            .adyenTwint
+            .adyenTwint,
+            .adyenPayTrail
         ]
         
         if type == .paymentCard {
