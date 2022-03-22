@@ -138,12 +138,9 @@ internal class PrimerDelegateProxy {
         return Primer.shared.delegate?.onClientSessionActions != nil
     }
     
-    static func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) -> Bool {
-        if Primer.shared.delegate?.onClientSessionActions != nil {
+    static func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
             Primer.shared.delegate!.onClientSessionActions?(actions, resumeHandler: resumeHandler)
-            return true
-        } else {
-            return false
         }
     }
     
