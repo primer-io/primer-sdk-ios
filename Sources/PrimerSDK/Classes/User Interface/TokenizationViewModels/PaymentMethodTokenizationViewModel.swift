@@ -207,6 +207,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "google-pay"
         case .hoolah:
             return "hoolah"
+        case .interac:
+            return "hoolah"
         case .klarna:
             return "klarna"
         case .payNLPayconiq:
@@ -229,7 +231,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     lazy var squareLogo: UIImage? = {
         guard let imageName = imageName else { return nil }
-        return UIImage(named: "\(imageName)-logo-square", in: Bundle.primerResources, compatibleWith: nil)
+        return UIImage(named: "\(imageName)-icon", in: Bundle.primerResources, compatibleWith: nil)
     }()
     
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView? {

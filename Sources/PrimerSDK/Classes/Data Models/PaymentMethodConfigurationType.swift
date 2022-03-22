@@ -23,6 +23,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case buckarooSofort
     case goCardlessMandate
     case googlePay
+    case interac
     case hoolah
     case klarna
     case mollieBankcontact
@@ -77,6 +78,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .goCardlessMandate
         case "GOOGLE_PAY":
             self = .googlePay
+        case "INTERAC":
+            self = .interac
         case "HOOLAH":
             self = .hoolah
         case "KLARNA":
@@ -144,6 +147,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "GOCARDLESS"
         case .googlePay:
             return "GOOGLE_PAY"
+        case .interac:
+            return "INTERAC"
         case .hoolah:
             return "HOOLAH"
         case .klarna:
@@ -189,6 +194,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .buckarooGiropay,
                 .buckarooIdeal,
                 .buckarooSofort,
+                .interac,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,
@@ -214,7 +220,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return true
         
         case .other:
-            return true
+            return false
         }
     }
     // swiftlint:enable cyclomatic_complexity
