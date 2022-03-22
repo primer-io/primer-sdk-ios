@@ -55,6 +55,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Mobile Pay"
         case .adyenVipps:
             return "Vipps"
+        case .adyenPayTrail:
+            return "Pay Trail"
         default:
             assert(true, "Shouldn't end up in here")
             return ""
@@ -86,7 +88,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTwint,
                 .adyenTrustly,
                 .adyenMobilePay,
-                .adyenVipps:
+                .adyenVipps,
+                .adyenPayTrail:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -122,6 +125,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenMobilePay:
             return UIImage(named: "mobile-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .adyenPayTrail:
+            return UIImage(named: "pay-trail-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLPayconiq:
             return UIImage(named: "payconiq-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .buckarooSofort,
@@ -131,7 +136,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenTwint:
             return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
-        
         case .adyenVipps:
             return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
@@ -195,6 +199,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .adyenMobilePay,
+                .adyenPayTrail,
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
@@ -227,6 +232,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .adyenMobilePay,
+                .adyenPayTrail,
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
@@ -260,6 +266,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .adyenMobilePay,
+                .adyenPayTrail,
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
@@ -304,6 +311,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLPayconiq,
                 .adyenSofort,
                 .adyenMobilePay,
+                .adyenPayTrail,
                 .adyenVipps:
             return .white
         case .adyenTrustly:
