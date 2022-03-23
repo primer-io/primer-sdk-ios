@@ -30,7 +30,7 @@ protocol PrimerAPIClientProtocol {
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
     func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
     func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void)
-    func validateClientToken(clientToken: DecodedClientToken, request: ClientTokenValidationRequest, completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void)
+    func validateClientToken(request: ClientTokenValidationRequest, completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -264,8 +264,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func validateClientToken(clientToken: DecodedClientToken, request: ClientTokenValidationRequest, completion: @escaping (Result<SuccessResponse, Error>) -> Void) {
-        let endpoint = PrimerAPI.validateClientToken(clientToken: clientToken, clientTokenToValidate: request)
+    func validateClientToken(request: ClientTokenValidationRequest, completion: @escaping (Result<SuccessResponse, Error>) -> Void) {
+        let endpoint = PrimerAPI.validateClientToken(request: request)
         networkService.request(endpoint) { (result: Result<SuccessResponse, Error>) in
             switch result {
             case .success(let success):

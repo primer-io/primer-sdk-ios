@@ -128,7 +128,7 @@ extension ClientTokenServiceTests {
         let validTokenResponse = SuccessResponse(success: true)
         let validTokenResponseData = try? JSONEncoder().encode(validTokenResponse)
         client.response = validTokenResponseData
-        client.validateClientToken(clientToken: mockClientToken, request: clientTokenRequest) { result in
+        client.validateClientToken(request: clientTokenRequest) { result in
             switch result {
             case .failure(let error):
                 completion(error)

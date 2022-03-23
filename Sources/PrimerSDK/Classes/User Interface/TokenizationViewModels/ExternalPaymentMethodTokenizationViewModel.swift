@@ -703,12 +703,16 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 self?.onClientToken = nil
                 
             } else {
+                
                 // intent = "CHECKOUT"
                 // if decodedClientToken.intent == RequiredActionName.checkout.rawValue
-                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
                 
                 firstly {
-                    configService.fetchConfig()
+                    ClientTokenService.storeClientToken(clientToken)
+                }
+                .then{ () -> Promise<Void> in
+                    let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    return configService.fetchConfig()
                 }
                 .done {
                     self?.continueTokenizationFlow()

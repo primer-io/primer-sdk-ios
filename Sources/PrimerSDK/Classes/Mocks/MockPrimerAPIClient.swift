@@ -248,7 +248,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         
     }
     
-    func validateClientToken(clientToken: DecodedClientToken, request: ClientTokenValidationRequest, completion: @escaping (Result<SuccessResponse, Error>) -> Void) {
+    func validateClientToken(request: ClientTokenValidationRequest, completion: @escaping (Result<SuccessResponse, Error>) -> Void) {
         
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])

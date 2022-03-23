@@ -39,7 +39,7 @@ enum PrimerAPI: Endpoint, Equatable {
     }
     
 
-    case validateClientToken(clientToken: DecodedClientToken, clientTokenToValidate: ClientTokenValidationRequest)
+    case validateClientToken(request: ClientTokenValidationRequest)
     case exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String)
     case fetchConfiguration(clientToken: DecodedClientToken)
     case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
@@ -98,13 +98,13 @@ internal extension PrimerAPI {
                 .createApayaSession(let clientToken, _),
                 .listAdyenBanks(let clientToken, _),
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
-                .validateClientToken(let clientToken, _):
+                .fetchConfiguration(let clientToken):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
-            
-        case .fetchConfiguration(let clientToken):
-            if let token = clientToken.accessToken {
+        
+        case .validateClientToken(let clientToken):
+            if let token = clientToken.clientToken.jwtTokenPayload?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
             
@@ -112,6 +112,7 @@ internal extension PrimerAPI {
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
+            
         case .sendAnalyticsEvents:
             break
         }
@@ -151,8 +152,7 @@ internal extension PrimerAPI {
                 .exchangePaymentMethodToken(let clientToken, _),
                 .tokenizePaymentMethod(let clientToken, _),
                 .begin3DSRemoteAuth(let clientToken, _, _),
-                .continue3DSRemoteAuth(let clientToken, _),
-                .validateClientToken(let clientToken, _):
+                .continue3DSRemoteAuth(let clientToken, _):
             guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
         case .fetchConfiguration(let clientToken):
@@ -162,6 +162,8 @@ internal extension PrimerAPI {
             return url
         case .sendAnalyticsEvents(let url, _):
             return url.absoluteString
+        case .validateClientToken(let clientToken):
+            return clientToken.clientToken.jwtTokenPayload?.pciUrl
         }
     }
     // MARK: Path
@@ -306,7 +308,7 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(body)
         case .fetchPayPalExternalPayerInfo(_, let payPalExternalPayerInfoRequestBody):
             return try? JSONEncoder().encode(payPalExternalPayerInfoRequestBody)
-        case .validateClientToken(_, let clientTokenToValidate):
+        case .validateClientToken(let clientTokenToValidate):
             return try? JSONEncoder().encode(clientTokenToValidate)
         }
     }

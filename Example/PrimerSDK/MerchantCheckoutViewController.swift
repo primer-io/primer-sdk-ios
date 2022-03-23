@@ -358,9 +358,9 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 
                 self.transactionResponse = TransactionResponse(id: res.id, date: dateStr, status: res.status.rawValue, requiredAction: requiredAction)
                 
-                if requiredAction.name == "3DS_AUTHENTICATION", res.status == .pending {
-                    resumeHandler.handle(newClientToken: requiredAction.clientToken)
-                } else if requiredAction.name == "USE_PRIMER_SDK", res.status == .pending {
+                let allowedRequiredActions = ["3DS_AUTHENTICATION", "USE_PRIMER_SDK"]
+                
+                if res.status == .pending && allowedRequiredActions.contains(requiredAction.name) {
                     resumeHandler.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     resumeHandler.handleSuccess()

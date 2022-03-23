@@ -44,14 +44,9 @@ extension ClientTokenService {
     
     private static func validateToken(_ clientToken: RawJWTToken, completion: @escaping (Error?) -> Void) {
         
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            completion(error)
-            return
-        }
         let clientTokenRequest = ClientTokenValidationRequest(clientToken: clientToken)
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        api.validateClientToken(clientToken: decodedClientToken, request: clientTokenRequest) { result in
+        api.validateClientToken(request: clientTokenRequest) { result in
             switch result {
             case .success:
                 completion(nil)
@@ -73,7 +68,6 @@ extension ClientTokenService {
     // if passes, store it
     
     private static func validateManuallyOrReturnPreviousToken(_ tokenToValidate: RawJWTToken) throws -> RawJWTToken {
-        
         
         guard var currentDecodedToken = tokenToValidate.jwtTokenPayload,
               let expDate = currentDecodedToken.expDate,
@@ -150,7 +144,7 @@ extension ClientTokenService {
         
         // 1. Validate the token manually or return the previous one from current App State
         do {
-            state.clientToken = try validateManuallyOrReturnPreviousToken(clientToken)
+            _ = try validateManuallyOrReturnPreviousToken(clientToken)
         } catch {
             completion(error)
             return

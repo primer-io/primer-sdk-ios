@@ -99,7 +99,7 @@ class Networking {
         
         var request = URLRequest(url: components.url!)
         request.httpMethod = method.rawValue
-        
+                
         request.addValue(environment.rawValue, forHTTPHeaderField: "environment")
         if method != .get {
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
