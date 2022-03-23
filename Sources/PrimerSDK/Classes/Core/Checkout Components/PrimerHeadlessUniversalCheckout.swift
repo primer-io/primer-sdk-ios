@@ -319,14 +319,14 @@ public struct PrimerAsset {
         case gCash = "gcash", giroPay = "giropay", globalPayments = "global-payments", goCardless = "go-cardless", googlePay = "google-pay", grabPay = "grab-pay"
         case hoolah
         case iDeal = "ideal"
-        case payTrail
         case ingenico
         case jcb
         case klarna, kount
         case layBuy = "lay-buy", looker
         case masterCard = "master-card", mbWay = "mb-way", mercadoPago = "mercado-pago", metamask, mobilePay = "mobile-pay", mollie
         case neonomics, netSuite = "netsuite", nexi, nuvei
-        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, ravelin, riskified
+        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail"
+        case ravelin, riskified
         case seon, sepa, sift, signifyd, sofort, stitch, stripe, swish
         case tableau, taxjar, telserv, tink, trilo, trueLayer = "truelayer", trueMoney = "truemoney", trustly, twillio, twint
         case vipps, visa, volt, voucherify, vyne

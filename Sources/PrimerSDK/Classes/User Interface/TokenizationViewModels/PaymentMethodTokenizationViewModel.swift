@@ -181,7 +181,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .adyenMobilePay:
             return "mobile-pay"
         case .adyenPayTrail:
-            return "pay-trail"
+            return "paytrail"
         case .adyenSofort,
                 .buckarooSofort:
             return "sofort"
