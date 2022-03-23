@@ -318,10 +318,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     var onResumeTokenCompletion: ((Error?) -> Void)?
     private var isCanceled: Bool = false
 
-    
-    
-    
-
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
@@ -707,6 +703,20 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 } else if let pollingUrl = pollingUrl {
                     seal.fulfill(pollingUrl)
                 }
+                self.onResumeHandlerCompletion = nil
+                self.onResumeTokenCompletion = nil
+            }
+            
+            self.onResumeTokenCompletion = { err in
+                if let err = err {
+                    seal.reject(err)
+                } else {
+                    let err = PrimerError.invalidValue(key: "Polling URL", value: nil, userInfo: nil)
+                    seal.reject(err)
+                }
+                
+                self.onResumeHandlerCompletion = nil
+                self.onResumeTokenCompletion = nil
             }
             
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
