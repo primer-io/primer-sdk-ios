@@ -13,7 +13,7 @@ import UIKit
 
 class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
-    override lazy var title: String = {
+    private lazy var _title: String = {
         switch config.type {
         case .adyenAlipay:
             return "Adyen Ali Pay"
@@ -60,8 +60,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return ""
         }
     }()
+    override var title: String {
+        get { return _title }
+        set { _title = newValue }
+    }
     
-    override lazy var buttonTitle: String? = {
+    private lazy var _buttonTitle: String? = {
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
@@ -89,8 +93,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonTitle: String? {
+        get { return _buttonTitle }
+        set { _buttonTitle = newValue }
+    }
     
-    override lazy var buttonImage: UIImage? = {
+    private lazy var _buttonImage: UIImage? = {
         switch config.type {
         case .adyenAlipay:
             return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
@@ -131,8 +139,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonImage: UIImage? {
+        get { return _buttonImage }
+        set { _buttonImage = newValue }
+    }
     
-    override lazy var buttonColor: UIColor? = {
+    private lazy var _buttonColor: UIColor? = {
         switch config.type {
         case .adyenAlipay:
             return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
@@ -173,8 +185,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonColor: UIColor? {
+        get { return _buttonColor }
+        set { _buttonColor = newValue }
+    }
     
-    override lazy var buttonTitleColor: UIColor? = {
+    private lazy var _buttonTitleColor: UIColor? = {
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
@@ -201,8 +217,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonTitleColor: UIColor? {
+        get { return _buttonTitleColor }
+        set { _buttonTitleColor = newValue }
+    }
     
-    override lazy var buttonBorderWidth: CGFloat = {
+    private lazy var _buttonBorderWidth: CGFloat = {
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
@@ -230,8 +250,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return 0.0
         }
     }()
+    override var buttonBorderWidth: CGFloat {
+        get { return _buttonBorderWidth }
+        set { _buttonBorderWidth = newValue }
+    }
     
-    override lazy var buttonBorderColor: UIColor? = {
+    private lazy var _buttonBorderColor: UIColor? = {
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
@@ -259,8 +283,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
+    override var buttonBorderColor: UIColor? {
+        get { return _buttonBorderColor }
+        set { _buttonBorderColor = newValue }
+    }
     
-    override lazy var buttonTintColor: UIColor? = {
+    private lazy var _buttonTintColor: UIColor? = {
         switch config.type {
         case .adyenAlipay,
                 .atome,
@@ -288,14 +316,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         }
     }()
-    
-    override lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
-    }()
-    
-    override lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
-    }()
+    override var buttonTintColor: UIColor? {
+        get { return _buttonTintColor }
+        set { _buttonTintColor = newValue }
+    }
     
     var willPresentExternalView: (() -> Void)?
     var didPresentExternalView: (() -> Void)?
@@ -343,7 +367,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        if Primer.shared.delegate?.onClientSessionActions != nil {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
@@ -356,7 +380,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
                 self.completion?(nil, error)
             }
@@ -374,10 +398,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                }
-                
                 self.completion?(self.paymentMethod, nil)
                 self.handleSuccessfulTokenizationFlow()
             }
@@ -401,7 +421,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
         .catch { err in
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: err)
+                PrimerDelegateProxy.checkoutFailed(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
         }
@@ -532,7 +552,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
             }
         }
     }
@@ -554,6 +574,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.willPresentExternalView?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
+                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented()
                         self.didPresentExternalView?()
                         seal.fulfill(())
                     }
@@ -621,7 +642,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
+                PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
             }
         }
     }
@@ -687,7 +708,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 }
                 .catch { err in
                     DispatchQueue.main.async {
-                        Primer.shared.delegate?.onResumeError?(err)
+                        PrimerDelegateProxy.onResumeError(err)
                     }
                     self.handle(error: err)
                 }
@@ -695,7 +716,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
             
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(error)
+                PrimerDelegateProxy.onResumeError(error)
             }
             
             handle(error: error)

@@ -105,10 +105,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
             return
         }
         
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        settings.authorizePayment(selectedPaymentMethod, completion)
-        settings.onTokenizeSuccess(selectedPaymentMethod, completion)
-        Primer.shared.delegate?.onTokenizeSuccess?(selectedPaymentMethod, resumeHandler: self)
+        PrimerDelegateProxy.onTokenizeSuccess(selectedPaymentMethod, resumeHandler: self)
     }
 
 }

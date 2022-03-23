@@ -18,11 +18,13 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     
-    override lazy var title: String = {
-        return "Apaya"
-    }()
+    private lazy var _title: String = { return "Apaya" }()
+    override var title: String  {
+        get { return _title }
+        set { _title = newValue }
+    }
     
-    override lazy var buttonTitle: String? = {
+    private lazy var _buttonTitle: String? = {
         switch config.type {
         case .apaya:
             return NSLocalizedString("payment-method-type-pay-by-mobile",
@@ -35,8 +37,12 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             return nil
         }
     }()
+    override var buttonTitle: String? {
+        get { return _buttonTitle }
+        set { _buttonTitle = newValue }
+    }
     
-    override lazy var buttonImage: UIImage? = {
+    private lazy var _buttonImage: UIImage? = {
         switch config.type {
         case .apaya:
             return UIImage(named: "mobile", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
@@ -45,8 +51,12 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             return nil
         }
     }()
+    override var buttonImage: UIImage? {
+        get { return _buttonImage }
+        set { _buttonImage = newValue }
+    }
     
-    override lazy var buttonColor: UIColor? = {
+    private lazy var _buttonColor: UIColor? = {
         switch config.type {
         case .apaya:
             return theme.paymentMethodButton.color(for: .enabled)
@@ -55,8 +65,12 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             return nil
         }
     }()
+    override var buttonColor: UIColor? {
+        get { return _buttonColor }
+        set { _buttonColor = newValue }
+    }
     
-    override lazy var buttonTitleColor: UIColor? = {
+    private lazy var _buttonTitleColor: UIColor? = {
         switch config.type {
         case .apaya:
             return theme.paymentMethodButton.text.color
@@ -65,8 +79,12 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             return nil
         }
     }()
+    override var buttonTitleColor: UIColor? {
+        get { return _buttonTitleColor }
+        set { _buttonTitleColor = newValue }
+    }
     
-    override lazy var buttonBorderWidth: CGFloat = {
+    private lazy var _buttonBorderWidth: CGFloat = {
         switch config.type {
         case .apaya:
             return 1.0
@@ -75,8 +93,12 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             return 0.0
         }
     }()
+    override var buttonBorderWidth: CGFloat {
+        get { return _buttonBorderWidth }
+        set { _buttonBorderWidth = newValue }
+    }
     
-    override lazy var buttonBorderColor: UIColor? = {
+    private lazy var _buttonBorderColor: UIColor? = {
         switch config.type {
         case .apaya:
             return theme.paymentMethodButton.text.color
@@ -85,8 +107,12 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             return nil
         }
     }()
+    override var buttonBorderColor: UIColor? {
+        get { return _buttonBorderColor }
+        set { _buttonBorderColor = newValue }
+    }
     
-    override lazy var buttonTintColor: UIColor? = {
+    private lazy var _buttonTintColor: UIColor? = {
         switch config.type {
         case .apaya:
             return theme.paymentMethodButton.text.color
@@ -94,14 +120,6 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             assert(true, "Shouldn't end up in here")
             return nil
         }
-    }()
-    
-    override lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
-    }()
-    
-    override lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
     }()
     
     private var webViewController: PrimerWebViewController?
@@ -168,7 +186,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        if Primer.shared.delegate?.onClientSessionActions != nil {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
@@ -182,7 +200,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         } catch {
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -199,8 +217,8 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
         .done { paymentMethod in
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
                     if let err = err {
                         self.handleFailedTokenizationFlow(error: err)
                     } else {
@@ -212,7 +230,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         .catch { err in
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
-                Primer.shared.delegate?.checkoutFailed?(with: err)
+                PrimerDelegateProxy.checkoutFailed(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
         }
@@ -433,7 +451,7 @@ extension ApayaTokenizationViewModel {
                         
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(error)
+                PrimerDelegateProxy.onResumeError(error)
                 self.handle(error: error)
             }
         }

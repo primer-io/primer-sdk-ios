@@ -17,9 +17,9 @@ struct PaymentMethodTokenizationRequest: TokenizationRequest {
         self.customerId = Primer.shared.flow.internalSessionFlow.vaulted ? settings.customerId : nil
     }
     
-    init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow, customerId: String?) {
+    init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow?, customerId: String?) {
         self.paymentInstrument = paymentInstrument
-        self.paymentFlow = paymentFlow
+        self.paymentFlow = (paymentFlow == .vault) ? .vault : nil
         self.tokenType = (paymentFlow == .vault) ? .multiUse : .singleUse
         self.customerId = customerId
     }
@@ -77,8 +77,8 @@ struct PaymentInstrument: Codable {
 
 internal struct BankSelectorSessionInfo: Codable {
     var issuer: String?
-    let locale: String = "en_US"
-    let platform: String = "IOS"
+    var locale: String = "en_US"
+    var platform: String = "IOS"
 }
 
 public enum TokenType: String, Codable {

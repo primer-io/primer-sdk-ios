@@ -11,9 +11,8 @@ import UIKit
 
 class MerchantCheckoutViewController: UIViewController {
     
-    class func instantiate(environment: Environment, customerId: String, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
+    class func instantiate(customerId: String, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
         let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
-        mcvc.environment = environment
         mcvc.customerId = customerId
         mcvc.phoneNumber = phoneNumber
         mcvc.performPayment = performPayment
@@ -56,7 +55,6 @@ class MerchantCheckoutViewController: UIViewController {
     var generalSettings: PrimerSettings!
     var amount = 200
     var currency: Currency = .EUR
-    var environment = Environment.staging
     var customerId: String!
     var phoneNumber: String?
     var countryCode: CountryCode = .gb
@@ -66,6 +64,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     var customer: PrimerSDK.Customer?
     var address: PrimerSDK.Address?
+    var paymentResponsesData: [Data] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,11 +85,8 @@ class MerchantCheckoutViewController: UIViewController {
         )
 
         
-        Primer.shared.configure(settings: generalSettings)
-        Primer.shared.configure(theme: CheckoutTheme.primer)
+        Primer.shared.configure(settings: generalSettings, theme: CheckoutTheme.primer)
         Primer.shared.delegate = self
-        
-        self.fetchPaymentMethods()
     }
     
     // MARK: - ACTIONS
@@ -108,7 +104,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
         let cardSettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
+            merchantIdentifier: "merchant.dx.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "merchant://",
@@ -151,7 +147,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
         applePaySettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
+            merchantIdentifier: "merchant.dx.team",
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
         )
@@ -170,196 +166,6 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showUniversalCheckout(on: self)
     }
     
-    func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/api/client-session") else {
-            return completion(nil, NetworkError.missingParams)
-        }
-        
-        let bodyData: Data!
-        
-        do {
-            if let requestBodyJson = requestBody.dictionaryValue {
-                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
-            } else {
-                completion(nil, NetworkError.serializationError)
-                return
-            }
-        } catch {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-        
-        let networking = Networking()
-        networking.request(
-            environment: environment,
-            apiVersion: .v3,
-            url: url,
-            method: .post,
-            headers: nil,
-            queryParameters: nil,
-            body: bodyData) { result in
-                switch result {
-                case .success(let data):
-                    do {
-                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
-                            self.clientToken = token
-                            completion(token, nil)
-                        } else {
-                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
-                            completion(nil, err)
-                        }
-                        
-                    } catch {
-                        completion(nil, error)
-                    }
-                case .failure(let err):
-                    completion(nil, err)
-                }
-            }
-    }
-    
-    func requestClientSessionWithActions(_ actions: [PrimerSDK.ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
-        guard let clientToken = clientToken else {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-        
-        guard let url = URL(string: "\(endpoint)/api/client-session/actions") else {
-            return completion(nil, NetworkError.missingParams)
-        }
-        
-        var merchantActions: [ClientSession.Action] = []
-        for action in actions {
-            if action.type == "SET_SURCHARGE_FEE" {
-                let newAction = ClientSession.Action(
-                    type: "SET_SURCHARGE_FEE",
-                    params: [
-                        "amount": 456
-                    ])
-                merchantActions.append(newAction)
-            } else if action.type == "SET_BILLING_ADDRESS" {
-                if let postalCode = (action.params?["postalCode"] as? String) {
-                    postalCodeLabel.text = "Postal code: \(postalCode)"
-                    
-                    var billingAddress: [String: String] = [:]
-                    
-                    action.params?.forEach { entry in
-                        if let value = entry.value as? String {
-                            billingAddress[entry.key] = value
-                        }
-                    }
-                    
-                    let newAction = ClientSession.Action(
-                        type: action.type,
-                        params: [ "billingAddress": billingAddress ]
-                    )
-                    
-                    merchantActions.append(newAction)
-                }
-            } else {
-                merchantActions.append(action)
-            }
-        }
-                
-        var bodyData: Data!
-        
-        do {
-            let bodyJson = ClientSessionActionsRequest(clientToken: clientToken, actions: merchantActions)
-            bodyData = try JSONEncoder().encode(bodyJson)
-        } catch {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-        
-        let networking = Networking()
-        networking.request(
-            environment: environment,
-            apiVersion: nil,
-            url: url,
-            method: .post,
-            headers: nil,
-            queryParameters: nil,
-            body: bodyData) { result in
-                switch result {
-                case .success(let data):
-                    do {
-                        guard let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
-                            completion(nil, NetworkError.missingParams)
-                            return
-                        }
-                        
-                        print("Client Token Response:\n\(json)")
-                        
-                        guard let clientToken = json["clientToken"] as? String else {
-                            completion(nil, NetworkError.missingParams)
-                            return
-                        }
-
-                        print("Client Token:\n\(clientToken)")
-                        completion(clientToken, nil)
-
-                    } catch {
-                        completion(nil, error)
-                    }
-                case .failure(let err):
-                    completion(nil, err)
-                }
-            }
-    }
-    
-    var paymentResponsesData: [Data] = []
-    
-    func createPayment(with paymentMethod: PaymentMethodToken, _ completion: @escaping ([String: Any]?, Error?) -> Void) {
-        guard let paymentMethodToken = paymentMethod.token else {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-        
-        guard let url = URL(string: "\(endpoint)/api/payments/") else {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-                
-        let body = Payment.Request(paymentMethodToken: paymentMethodToken)
-        
-        var bodyData: Data!
-        
-        do {
-            bodyData = try JSONEncoder().encode(body)
-        } catch {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-        
-        let networking = Networking()
-        networking.request(
-            environment: environment,
-            apiVersion: .v2,
-            url: url,
-            method: .post,
-            headers: nil,
-            queryParameters: nil,
-            body: bodyData) { result in
-                switch result {
-                case .success(let data):
-                    if let dic = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                        completion(dic, nil)
-                    } else {
-                        let err = NetworkError.invalidResponse
-                        completion(nil, err)
-                    }
-                    
-                    let paymentResponse = try? JSONDecoder().decode(Payment.Response.self, from: data)
-                    if paymentResponse != nil {
-                        self.paymentResponsesData.append(data)
-                    }
-                    
-                case .failure(let err):
-                    completion(nil, err)
-                }
-            }
-    }
-
 }
 
 // MARK: - PRIMER DELEGATE
@@ -464,17 +270,35 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             )
         )
         
-        requestClientSession(requestBody: clientSessionRequestBody, completion: completion)
+        let networking = Networking()
+        networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
+            if let err = err {
+                print(err)
+                let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
+                completion(nil, merchantErr)
+            } else if let clientToken = clientToken {
+                self.clientToken = clientToken
+                completion(clientToken, nil)
+            }
+        }
     }
     
     func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
-        requestClientSessionWithActions(actions) { (clientToken, err) in
+        guard let clientToken = clientToken else {
+            print("Failed to find client token")
+            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong setting the actions..."])
+            resumeHandler?.handle(error: merchantErr)
+            return
+        }
+        
+        let networking = Networking()
+        networking.requestClientSessionWithActions(clientToken: clientToken, actions: actions) { (newClientToken, err) in
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong setting the actions..."])
                 resumeHandler?.handle(error: merchantErr)
-            } else if let clientToken = clientToken {
-                resumeHandler?.handle(newClientToken: clientToken)
+            } else if let newClientToken = newClientToken {
+                resumeHandler?.handle(newClientToken: newClientToken)
             }
         }
     }
@@ -506,36 +330,36 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             return
         }
         
-        createPayment(with: paymentMethodToken) { (res, err) in
-//            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
-//            resumeHandler.handle(error: merchantErr)
-//            return
+        let networking = Networking()
+        networking.createPayment(with: paymentMethodToken) { res, err in
+            //            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
+            //            resumeHandler.handle(error: merchantErr)
+            //            return
             
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
                 resumeHandler.handle(error: merchantErr)
             } else if let res = res {
-                guard let requiredActionDic = res["requiredAction"] as? [String: Any] else {
+                if let data = try? JSONEncoder().encode(res) {
+                    self.paymentResponsesData.append(data)
+                }
+                guard let requiredAction = res.requiredAction else {
                     resumeHandler.handleSuccess()
                     return
                 }
                 
-                guard let id = res["id"] as? String,
-                      let date = res["date"] as? String,
-                      let status = res["status"] as? String,
-                      let requiredActionName = requiredActionDic["name"] as? String,
-                      let clientToken = requiredActionDic["clientToken"] as? String else {
-                          resumeHandler.handleSuccess()
-                          return
-                      }
+                guard let dateStr = res.dateStr else {
+                    resumeHandler.handleSuccess()
+                    return
+                }
                 
-                self.transactionResponse = TransactionResponse(id: id, date: date, status: status, requiredAction: requiredActionDic)
+                self.transactionResponse = TransactionResponse(id: res.id, date: dateStr, status: res.status.rawValue, requiredAction: requiredAction)
                 
-                if requiredActionName == "3DS_AUTHENTICATION", status == "PENDING" {
-                    resumeHandler.handle(newClientToken: clientToken)
-                } else if requiredActionName == "USE_PRIMER_SDK", status == "PENDING" {
-                    resumeHandler.handle(newClientToken: clientToken)
+                if requiredAction.name == "3DS_AUTHENTICATION", res.status == .pending {
+                    resumeHandler.handle(newClientToken: requiredAction.clientToken)
+                } else if requiredAction.name == "USE_PRIMER_SDK", res.status == .pending {
+                    resumeHandler.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     resumeHandler.handleSuccess()
                 }
@@ -572,7 +396,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func onResumeSuccess(_ resumeToken: String, resumeHandler: ResumeHandlerProtocol) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken)")
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(resumeToken as String)")
         
         guard let transactionResponse = transactionResponse,
               let url = URL(string: "\(endpoint)/api/payments/\(transactionResponse.id)/resume")
@@ -603,7 +427,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         
         let networking = Networking()
         networking.request(
-            environment: environment,
             apiVersion: .v2,
             url: url,
             method: .post,
@@ -675,7 +498,7 @@ extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDele
     
 }
 
-fileprivate extension String {
+internal extension String {
     static func randomString(length: Int) -> String {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         return String((0..<length).map { _ in letters.randomElement()! })

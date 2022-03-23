@@ -52,7 +52,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .paymentCard:
             return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .adyenBlik:
-            return UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "blik-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -145,8 +145,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     var requirePostalCode: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let paymentMethodConfig = state.primerConfiguration else { return false }
-        return paymentMethodConfig.requirePostalCode
+        guard let billingAddressModule = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
+        return (billingAddressModule.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
     }
     
     lazy var expiryDateField: PrimerExpiryDateFieldView = {
@@ -264,7 +264,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return postalCodeContainerView
     }()
     
-    lazy var submitButton: PrimerOldButton = {
+    lazy var submitButton: PrimerButton = {
         var buttonTitle: String = ""
         if flow == .checkout {
             let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
@@ -281,7 +281,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                                             comment: "Add card - Card Form (Vault title text)")
         }
         
-        let submitButton = PrimerOldButton()
+        let submitButton = PrimerButton()
         submitButton.translatesAutoresizingMaskIntoConstraints = false
         submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         submitButton.isAccessibilityElement = true
@@ -465,7 +465,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         Analytics.Service.record(event: viewEvent)
         
         isTokenizing = true
-        submitButton.showSpinner(true)
+        submitButton.startAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         
         if Primer.shared.delegate?.onClientSessionActions != nil {
@@ -484,7 +484,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             onClientSessionActionCompletion = { err in
                 if let err = err {
                     DispatchQueue.main.async {
-                        self.submitButton.showSpinner(false)
+                        self.submitButton.stopAnimating()
                         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
                         Primer.shared.delegate?.onResumeError?(err)
                     }
@@ -563,7 +563,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
-        submitButton.showSpinner(false)
+        submitButton.startAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         
         DispatchQueue.main.async {
@@ -575,7 +575,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
-        submitButton.showSpinner(isLoading)
+        isLoading ? submitButton.startAnimating() : submitButton.stopAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = !isLoading
     }
     
@@ -626,10 +626,10 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
             cardNumberField.isTextValid,
             expiryDateField.isTextValid,
             cvvField.isTextValid,
-            cardholderNameField?.isTextValid,
         ]
         
         if requirePostalCode { validations.append(postalCodeField.isTextValid) }
+        if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
         
         if validations.allSatisfy({ $0 == true }) {
             submitButton.isEnabled = true
@@ -711,7 +711,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             }
             
             self.handleFailedTokenizationFlow(error: error)
-            self.submitButton.showSpinner(false)
+            self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
         
@@ -818,7 +818,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
     
     override func handleSuccess() {
         DispatchQueue.main.async {
-            self.submitButton.showSpinner(false)
+            self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
         completion?(paymentMethod, nil)

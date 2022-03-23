@@ -17,21 +17,13 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
     
-    override lazy var title: String = {
-        return "Klarna"
-    }()
+    private lazy var _title: String = { return "Klarna" }()
+    override var title: String  {
+        get { return _title }
+        set { _title = newValue }
+    }
     
-    override lazy var buttonTitle: String? = {
-        switch config.type {
-        case .klarna:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonImage: UIImage? = {
+    private lazy var _buttonImage: UIImage? = {
         switch config.type {
         case .klarna:
             return UIImage(named: "klarna-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
@@ -40,8 +32,12 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             return nil
         }
     }()
+    override var buttonImage: UIImage? {
+        get { return _buttonImage }
+        set { _buttonImage = newValue }
+    }
     
-    override lazy var buttonColor: UIColor? = {
+    private lazy var _buttonColor: UIColor? = {
         switch config.type {
         case .klarna:
             return UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1.0)
@@ -50,54 +46,10 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             return nil
         }
     }()
-    
-    override lazy var buttonTitleColor: UIColor? = {
-        switch config.type {
-        case .klarna:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonBorderWidth: CGFloat = {
-        switch config.type {
-        case .klarna:
-            return 0.0
-        default:
-            assert(true, "Shouldn't end up in here")
-            return 0.0
-        }
-    }()
-    
-    override lazy var buttonBorderColor: UIColor? = {
-        switch config.type {
-        case .klarna:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonTintColor: UIColor? = {
-        switch config.type {
-        case .klarna:
-            return .black
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
-    }()
-    
-    override lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
-    }()
+    override var buttonColor: UIColor? {
+        get { return _buttonColor }
+        set { _buttonColor = newValue }
+    }
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -184,7 +136,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        if Primer.shared.delegate?.onClientSessionActions != nil {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
@@ -197,7 +149,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -253,12 +205,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                }
-                
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { err in
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
                     if let err = err {
                         self.handleFailedTokenizationFlow(error: err)
                     } else {
@@ -272,7 +220,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         .catch { err in
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: err)
+                PrimerDelegateProxy.checkoutFailed(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
         }
@@ -657,7 +605,7 @@ extension KlarnaTokenizationViewModel {
             }
             
         } catch {
-            Primer.shared.delegate?.checkoutFailed?(with: error)
+            PrimerDelegateProxy.checkoutFailed(with: error)
             self.handle(error: error)
         }
     }

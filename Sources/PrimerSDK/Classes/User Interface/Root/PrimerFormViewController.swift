@@ -50,7 +50,6 @@ class PrimerFormViewController: PrimerViewController {
                                                                comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased().folding(options: .diacriticInsensitive, locale: .current)
         otherPaymentMethodsTitleLabel.textColor = theme.text.subtitle.color
         otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-        otherPaymentMethodsTitleLabel.textAlignment = .left
         availablePaymentMethodsContainerStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
         
         if Primer.shared.flow.internalSessionFlow.vaulted {
@@ -85,7 +84,13 @@ class PrimerFormViewController: PrimerViewController {
             
             
             if !noAdditionalFeePaymentMethodsViewModels.isEmpty {
-                let noAdditionalFeesContainerView = PaymentMethodsGroupView(title: "No additional fee", paymentMethodTokenizationViewModels: noAdditionalFeePaymentMethodsViewModels)
+                let noAdditionalFeesContainerView = PaymentMethodsGroupView(
+                    title: NSLocalizedString("no_additional_fee",
+                                             tableName: nil,
+                                             bundle: Bundle.primerResources,
+                                             value: "No additional fee",
+                                             comment: "No additional fee - Universal Checkout section text"),
+                    paymentMethodTokenizationViewModels: noAdditionalFeePaymentMethodsViewModels)
                 noAdditionalFeesContainerView.accessibilityIdentifier = "no_additional_fees_surcharge_group_view"
                 noAdditionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
                 availablePaymentMethodsStackView.addArrangedSubview(noAdditionalFeesContainerView)

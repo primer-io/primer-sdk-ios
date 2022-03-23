@@ -272,7 +272,8 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     klarnaCustomerToken: nil,
                     sessionData: nil)
                 
-                let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: PaymentFlow.vault, customerId: self.customerId)
+                let paymentFlow: PaymentFlow? = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
+                let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout, customerId: self.customerId)
                 
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                 apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in

@@ -34,22 +34,15 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     private var applePayReceiveDataCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((NSObject) -> Void)?
+    private var isCancelled: Bool = false
     
-    override lazy var title: String = {
-        return "Apple Pay"
-    }()
+    private lazy var _title: String = { return "Apple Pay" }()
+    override var title: String  {
+        get { return _title }
+        set { _title = newValue }
+    }
     
-    override lazy var buttonTitle: String? = {
-        switch config.type {
-        case .applePay:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonImage: UIImage? = {
+    private lazy var _buttonImage: UIImage? = {
         switch config.type {
         case .applePay:
             return UIImage(named: "apple-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
@@ -58,8 +51,12 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             return nil
         }
     }()
+    override var buttonImage: UIImage? {
+        get { return _buttonImage }
+        set { _buttonImage = newValue }
+    }
     
-    override lazy var buttonColor: UIColor? = {
+    private lazy var _buttonColor: UIColor? = {
         switch config.type {
         case .applePay:
             return .black
@@ -68,38 +65,12 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             return nil
         }
     }()
+    override var buttonColor: UIColor? {
+        get { return _buttonColor }
+        set { _buttonColor = newValue }
+    }
     
-    override lazy var buttonTitleColor: UIColor? = {
-        switch config.type {
-        case .applePay:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonBorderWidth: CGFloat = {
-        switch config.type {
-        case .applePay:
-            return 0.0
-        default:
-            assert(true, "Shouldn't end up in here")
-            return 0.0
-        }
-    }()
-    
-    override lazy var buttonBorderColor: UIColor? = {
-        switch config.type {
-        case .applePay:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override lazy var buttonTintColor: UIColor? = {
+    private lazy var _buttonTintColor: UIColor? = {
         switch config.type {
         case .applePay:
             return .white
@@ -108,14 +79,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             return nil
         }
     }()
-    
-    override lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
-    }()
-    
-    override lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
-    }()
+    override var buttonTintColor: UIColor? {
+        get { return _buttonTintColor }
+        set { _buttonTintColor = newValue }
+    }
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -188,7 +155,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        if Primer.shared.delegate?.onClientSessionActions != nil {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
             ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
         } else {
@@ -211,12 +178,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             DispatchQueue.main.async {
                 self.paymentMethod = paymentMethod
                 
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
-                }
-                
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, resumeHandler: self)
-                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethod, { [unowned self] err in
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
+                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { [unowned self] err in
                     if let err = err {
                         self.handleFailedTokenizationFlow(error: err)
                     } else {
@@ -231,7 +194,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         .catch { err in
             DispatchQueue.main.async {
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
-                Primer.shared.delegate?.checkoutFailed?(with: err)
+                PrimerDelegateProxy.checkoutFailed(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
         }
@@ -298,7 +261,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                 let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
-                Primer.shared.delegate?.checkoutFailed?(with: err)
+                PrimerDelegateProxy.checkoutFailed(with: err)
                 return completion(nil, err)
             }
             
@@ -342,8 +305,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             
             DispatchQueue.main.async {
                 self.willPresentExternalView?()
+                self.isCancelled = true
                 Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
                     DispatchQueue.main.async {
+                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented()
                         self.didPresentExternalView?()
                     }
                 })
@@ -362,11 +327,13 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
 extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDelegate {
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
-        controller.dismiss(animated: true, completion: nil)
-        let err = PrimerError.cancelled(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-        ErrorHandler.handle(error: err)
-        applePayReceiveDataCompletion?(.failure(err))
-        applePayReceiveDataCompletion = nil
+        if self.isCancelled {
+            controller.dismiss(animated: true, completion: nil)
+            let err = PrimerError.cancelled(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            applePayReceiveDataCompletion?(.failure(err))
+            applePayReceiveDataCompletion = nil
+        }
     }
     
     @available(iOS 11.0, *)
@@ -375,6 +342,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
+        self.isCancelled = false
         applePayControllerCompletion = { obj in
             completion(obj as! PKPaymentAuthorizationResult)
         }
@@ -392,14 +360,18 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
                     paymentData: tokenPaymentData
                 )
             )
-
+            completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
+            controller.dismiss(animated: true, completion: nil)
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))
             applePayReceiveDataCompletion = nil
         } catch {
+            completion(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
+            controller.dismiss(animated: true, completion: nil)
             applePayReceiveDataCompletion?(.failure(error))
             applePayReceiveDataCompletion = nil
         }
     }
+    
     
 }
 
@@ -433,7 +405,7 @@ extension ApplePayTokenizationViewModel {
             
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(error)
+                PrimerDelegateProxy.onResumeError(error)
             }
             self.handle(error: error)
         }

@@ -15,7 +15,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     private let cardholderNameContainerView = PrimerCustomFieldView()
-    private let submitButton = PrimerOldButton()
+    private let submitButton = PrimerButton()
     
     // todo: refactor to dynamic form builder
     private lazy var expiryAndCvvRow = row

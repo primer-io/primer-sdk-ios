@@ -6,7 +6,7 @@ storage_mode("git")
 type("development") # The default type, can be: appstore, adhoc, enterprise or development
 
 app_identifier("com.primerapi.PrimerSDKExample")
-username("carl@primer.io") # Your Apple Developer Portal username
+username("sdk@primer.io") # Your Apple Developer Portal username
 
 shallow_clone true
 force_for_new_devices true

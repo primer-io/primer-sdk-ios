@@ -29,30 +29,58 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     private var flow: PaymentFlow
     var inputs: [Input] = []
-
-    override lazy var title: String = {
-        return "Form"
-    }()
+    private var cardComponentsManager: CardComponentsManager!
+    var onConfigurationFetched: (() -> Void)?
     
-    override lazy var buttonTitle: String? = {
+    // FIXME: Is this the fix for the button's indicator?
+    private var isTokenizing = false
+    
+    private lazy var _title: String = { return "Form" }()
+    override var title: String  {
+        get { return _title }
+        set { _title = newValue }
+    }
+    
+    private lazy var _buttonTitle: String? = {
         switch config.type {
+        case .paymentCard:
+            return (Primer.shared.flow?.internalSessionFlow.vaulted == true)
+            ? NSLocalizedString("payment-method-type-card-vaulted",
+                                tableName: nil,
+                                bundle: Bundle.primerResources,
+                                value: "Add new card",
+                                comment: "Add new card - Payment Method Type (Card Vaulted)")
+            
+            : NSLocalizedString("payment-method-type-card-not-vaulted",
+                                tableName: nil,
+                                bundle: Bundle.primerResources,
+                                value: "Pay with card",
+                                comment: "Pay with card - Payment Method Type (Card Not vaulted)")
         default:
             assert(true, "Shouldn't end up in here")
             return nil
         }
     }()
+    override var buttonTitle: String? {
+        get { return _buttonTitle }
+        set { _buttonTitle = newValue }
+    }
     
-    override lazy var buttonImage: UIImage? = {
+    private lazy var _buttonImage: UIImage? = {
         switch config.type {
         case .adyenBlik:
-            return UIImage(named: "blik-logo", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "blik-logo-white", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
         }
     }()
+    override var buttonImage: UIImage? {
+        get { return _buttonImage }
+        set { _buttonImage = newValue }
+    }
     
-    override lazy var buttonColor: UIColor? = {
+    private lazy var _buttonColor: UIColor? = {
         switch config.type {
         case .adyenBlik:
             return .black
@@ -61,60 +89,145 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             return nil
         }
     }()
-    
-    override lazy var buttonTitleColor: UIColor? = {
+    override var buttonColor: UIColor? {
+        get { return _buttonColor }
+        set { _buttonColor = newValue }
+    }
+
+    private lazy var _buttonTitleColor: UIColor? = {
         switch config.type {
         default:
             assert(true, "Shouldn't end up in here")
             return nil
         }
     }()
+    override var buttonTitleColor: UIColor? {
+        get { return _buttonTitleColor }
+        set { _buttonTitleColor = newValue }
+    }
     
-    override lazy var buttonBorderWidth: CGFloat = {
+    private lazy var _buttonBorderWidth: CGFloat = {
         switch config.type {
         default:
             assert(true, "Shouldn't end up in here")
             return 0.0
         }
     }()
+    override var buttonBorderWidth: CGFloat {
+        get { return _buttonBorderWidth }
+        set { _buttonBorderWidth = newValue }
+    }
     
-    override lazy var buttonBorderColor: UIColor? = {
+    private lazy var _buttonBorderColor: UIColor? = {
         switch config.type {
         default:
             assert(true, "Shouldn't end up in here")
             return nil
         }
     }()
+    override var buttonBorderColor: UIColor? {
+        get { return _buttonBorderColor }
+        set { _buttonBorderColor = newValue }
+    }
     
-    override lazy var buttonTintColor: UIColor? = {
+    private lazy var _buttonTintColor: UIColor? = {
         switch config.type {
         default:
             assert(true, "Shouldn't end up in here")
             return nil
         }
     }()
+    override var buttonTintColor: UIColor? {
+        get { return _buttonTintColor }
+        set { _buttonTintColor = newValue }
+    }
     
-    override lazy var buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
+    private var isCardholderNameFieldEnabled: Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        if (state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName == false {
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    lazy var cardNumberField: PrimerCardNumberFieldView = {
+        let cardNumberField = PrimerCardNumberFieldView()
+        cardNumberField.placeholder = "4242 4242 4242 4242"
+        cardNumberField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        cardNumberField.textColor = theme.input.text.color
+        cardNumberField.borderStyle = .none
+        cardNumberField.delegate = self
+        return cardNumberField
     }()
     
-    override lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
+    var requireCardHolderName: Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        guard let cardHolderNameModule = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first else { return false }
+        return (cardHolderNameModule.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName ?? false
+    }
+    
+    lazy var expiryDateField: PrimerExpiryDateFieldView = {
+        let expiryDateField = PrimerExpiryDateFieldView()
+        expiryDateField.placeholder = "02/22"
+        expiryDateField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        expiryDateField.textColor = theme.input.text.color
+        expiryDateField.delegate = self
+        return expiryDateField
     }()
     
-    lazy var submitButton: PrimerOldButton = {
-        let btn = PrimerOldButton()
-        btn.isEnabled = false
-        btn.clipsToBounds = true
-        btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        btn.layer.cornerRadius = 4
-        btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
-        btn.setTitle("Confirm", for: .normal)
-        btn.setTitleColor(.white, for: .normal)
-        btn.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
-        return btn
+    lazy var cvvField: PrimerCVVFieldView = {
+        let cvvField = PrimerCVVFieldView()
+        cvvField.placeholder = "123"
+        cvvField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        cvvField.textColor = theme.input.text.color
+        cvvField.delegate = self
+        return cvvField
     }()
+    
+    lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
+        if !isCardholderNameFieldEnabled { return nil }
+        let cardholderNameField = PrimerCardholderNameFieldView()
+        cardholderNameField.placeholder = NSLocalizedString("primer-form-text-field-placeholder-cardholder",
+                                                            tableName: nil,
+                                                            bundle: Bundle.primerResources,
+                                                            value: "e.g. John Doe",
+                                                            comment: "e.g. John Doe - Form Text Field Placeholder (Cardholder name)")
+        cardholderNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        cardholderNameField.textColor = theme.input.text.color
+        cardholderNameField.delegate = self
+        return cardholderNameField
+    }()
+    
+    var requirePostalCode: Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        guard let billingAddressModule = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
+        return (billingAddressModule.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
+    }
+    
+    private var localSamplePostalCode: String {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let countryCode = state.primerConfiguration?.clientSession?.order?.countryCode
+        return PostalCode.sample(for: countryCode)
+    }
+    
+    lazy var postalCodeField: PrimerPostalCodeFieldView = {
+        let postalCodeField = PrimerPostalCodeFieldView()
+        postalCodeField.placeholder = localSamplePostalCode
+        postalCodeField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        postalCodeField.textColor = theme.input.text.color
+        postalCodeField.delegate = self
+        return postalCodeField
+    }()
+    
+    internal lazy var postalCodeContainerView: PrimerCustomFieldView = {
+        let postalCodeContainerView = PrimerCustomFieldView()
+        postalCodeContainerView.fieldView = postalCodeField
+        postalCodeContainerView.placeholderText = localSamplePostalCode
+        postalCodeContainerView.setup()
+        postalCodeContainerView.tintColor = theme.input.border.color(for: .selected)
+        return postalCodeContainerView
+     }()
     
     var inputTextFieldsStackViews: [UIStackView] {
         var stackViews: [UIStackView] = []
@@ -155,12 +268,59 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         
         return stackViews
     }
+    
+    lazy var submitButton: PrimerButton = {
+        let btn = PrimerButton()
+        btn.isEnabled = false
+        btn.clipsToBounds = true
+        btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        btn.layer.cornerRadius = 4
+        btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
+        btn.setTitleColor(.white, for: .normal)
+        btn.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
+        
+        switch config.type {
+        case .paymentCard:
+            var buttonTitle: String = ""
+            if flow == .checkout {
+                let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+                buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                                tableName: nil,
+                                                bundle: Bundle.primerResources,
+                                                value: "Pay",
+                                                comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+            } else if flow == .vault {
+                buttonTitle = NSLocalizedString("primer-card-form-add-card",
+                                                tableName: nil,
+                                                bundle: Bundle.primerResources,
+                                                value: "Add card",
+                                                comment: "Add card - Card Form (Vault title text)")
+            }
+            btn.setTitle(buttonTitle, for: .normal)
+            
+        default:
+            btn.setTitle("Confirm", for: .normal)
+        }
+        
+        return btn
+    }()
+
+    var cardNetwork: CardNetwork? {
+        didSet {
+            cvvField.cardNetwork = cardNetwork ?? .unknown
+        }
+    }
 
     
     var onClientSessionActionCompletion: ((Error?) -> Void)?
     var onResumeHandlerCompletion: ((URL?, Error?) -> Void)?
     var onResumeTokenCompletion: ((Error?) -> Void)?
     private var isCanceled: Bool = false
+
+    
+    
+    
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -273,7 +433,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.checkoutFailed?(with: error)
+                PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -291,6 +451,16 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     fileprivate func continueTokenizationFlow() {
         self.onClientSessionActionCompletion = nil
+
+        do {
+            try self.validate()
+        } catch {
+            DispatchQueue.main.async {
+                PrimerDelegateProxy.checkoutFailed(with: error)
+                self.handleFailedTokenizationFlow(error: error)
+            }
+            return
+        }
         
         DispatchQueue.main.async {
             switch self.config.type {
@@ -328,12 +498,12 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 objectClass: "\(Self.self)",
                 place: .cardForm))
         Analytics.Service.record(event: viewEvent)
-        
+
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         
         switch config.type {
         case .adyenBlik:
-            self.submitButton.showSpinner(true)
+            self.submitButton.startAnimating()
             
             firstly {
                 return self.tokenize()
@@ -364,61 +534,171 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             }
             .catch { err in
                 self.handleFailedTokenizationFlow(error: err)
-                self.submitButton.showSpinner(false)
+                self.submitButton.stopAnimating()
                 self.completion?(nil, err)
                 self.completion = nil
             }
-            
         default:
-            break
+            isTokenizing = true
+            submitButton.startAnimating()
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+            
+            if PrimerDelegateProxy.isClientSessionActionsImplemented {
+                var network = self.cardNetwork?.rawValue.uppercased()
+                if network == nil || network == "UNKNOWN" {
+                    network = "OTHER"
+                }
+                
+                let params: [String: Any] = [
+                    "paymentMethodType": "PAYMENT_CARD",
+                    "binData": [
+                        "network": network,
+                    ]
+                ]
+        
+                onClientSessionActionCompletion = { err in
+                    if let err = err {
+                        DispatchQueue.main.async {
+                            self.submitButton.stopAnimating()
+                            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+                            PrimerDelegateProxy.onResumeError(err)
+                        }
+                        self.handle(error: err)
+                    } else {
+                        self.cardComponentsManager.tokenize()
+                    }
+                    self.onClientSessionActionCompletion = nil
+                }
+                
+                var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
+                
+                if (requirePostalCode) {
+                    let state: AppStateProtocol = DependencyContainer.resolve()
+                    
+                    let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
+                    
+                    let billingAddressParams = [
+                        "firstName": currentBillingAddress?.firstName as Any,
+                        "lastName": currentBillingAddress?.lastName as Any,
+                        "addressLine1": currentBillingAddress?.addressLine1 as Any,
+                        "addressLine2": currentBillingAddress?.addressLine2 as Any,
+                        "city": currentBillingAddress?.city as Any,
+                        "postalCode": postalCodeField.postalCode,
+                        "state": currentBillingAddress?.state as Any,
+                        "countryCode": currentBillingAddress?.countryCode as Any
+                    ] as [String: Any]
+                    
+                    let billingAddressAction = ClientSession.Action(
+                        type: "SET_BILLING_ADDRESS",
+                        params: billingAddressParams
+                    )
+                    actions.append(billingAddressAction)
+                }
+                
+                ClientSession.Action.dispatchMultiple(resumeHandler: self, actions: actions)
+            } else {
+                cardComponentsManager.tokenize()
+            }
         }
     }
-    
+
     private func tokenize() -> Promise<PaymentMethodToken> {
-        return Promise { seal in
-            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                let err = PrimerError.invalidClientToken(userInfo: nil)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-            
-            guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-            
-            guard let blikCode = inputs.first?.text else {
-                let err = PrimerError.invalidValue(key: "blikCode", value: nil, userInfo: nil)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            let tokenizationRequest = BlikPaymentMethodTokenizationRequest(
-                paymentInstrument: BlikPaymentMethodOptions(
-                    paymentMethodType: config.type,
-                    paymentMethodConfigId: configId,
-                    sessionInfo: BlikPaymentMethodOptions.SessionInfo(
-                        blikCode: blikCode,
-                        locale: settings.localeData.localeCode ?? "en-UK")))
-
-            let apiClient = PrimerAPIClient()
-            apiClient.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: tokenizationRequest) { result in
-                switch result {
-                case .success(let paymentMethodToken):
-                    seal.fulfill(paymentMethodToken)
-                case .failure(let err):
+        switch config.type {
+        case .adyenBlik:
+            return Promise { seal in
+                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                    let err = PrimerError.invalidClientToken(userInfo: nil)
+                    ErrorHandler.handle(error: err)
                     seal.reject(err)
+                    return
+                }
+                
+                guard let configId = config.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                guard let blikCode = inputs.first?.text else {
+                    let err = PrimerError.invalidValue(key: "blikCode", value: nil, userInfo: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                
+                let tokenizationRequest = BlikPaymentMethodTokenizationRequest(
+                    paymentInstrument: BlikPaymentMethodOptions(
+                        paymentMethodType: config.type,
+                        paymentMethodConfigId: configId,
+                        sessionInfo: BlikPaymentMethodOptions.SessionInfo(
+                            blikCode: blikCode,
+                            locale: settings.localeData.localeCode ?? "en-UK")))
+
+                let apiClient = PrimerAPIClient()
+                apiClient.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: tokenizationRequest) { result in
+                    switch result {
+                    case .success(let paymentMethodToken):
+                        seal.fulfill(paymentMethodToken)
+                    case .failure(let err):
+                        seal.reject(err)
+                    }
                 }
             }
+    
+        default:
+            fatalError("Payment method card should never end here.")
+        }
+    }
+
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+        self.paymentMethod = paymentMethodToken
+        
+        DispatchQueue.main.async {
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethodToken, resumeHandler: self)
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethodToken, { err in
+                self.cardComponentsManager.setIsLoading(false)
+                
+                if let err = err {
+                    self.handleFailedTokenizationFlow(error: err)
+                } else {
+                    self.handleSuccessfulTokenizationFlow()
+                }
+            })
+        }
+    }
+
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
+        submitButton.stopAnimating()
+        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+        
+        DispatchQueue.main.async {
+            let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            PrimerDelegateProxy.checkoutFailed(with: err)
+            self.handleFailedTokenizationFlow(error: err)
         }
     }
     
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
+        isLoading ? submitButton.startAnimating() : submitButton.stopAnimating()
+        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = !isLoading
+    }
+    
+    fileprivate func autofocusToNextFieldIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
+        if isValid == true {
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                _ = expiryDateField.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                _ = cvvField.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                _ = cardholderNameField?.becomeFirstResponder()
+            }
+        }
+    }
+
     private func fetchPollingUrl(for paymentMethodToken: PaymentMethodToken) -> Promise<URL> {
         return Promise { seal in
             self.onResumeHandlerCompletion = { (pollingUrl, err) in
@@ -432,7 +712,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
         }
     }
-    
+
     private func startPolling(on url: URL) -> Promise<String> {
         return Promise { seal in
             self.startPolling(on: url) { (id, err) in
@@ -494,6 +774,25 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             }
         }
     }
+
+    fileprivate func enableSubmitButtonIfNeeded() {
+        var validations = [
+            cardNumberField.isTextValid,
+            expiryDateField.isTextValid,
+            cvvField.isTextValid
+        ]
+
+        if requirePostalCode { validations.append(postalCodeField.isTextValid) }
+        if let cardholderNameField = cardholderNameField, requireCardHolderName { validations.append(cardholderNameField.isTextValid) }
+
+        if validations.allSatisfy({ $0 == true }) {
+            submitButton.isEnabled = true
+            submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
+        } else {
+            submitButton.isEnabled = false
+            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
+        }
+    }
     
 }
 
@@ -545,15 +844,22 @@ extension FormPaymentMethodTokenizationViewModel {
                 self.onClientSessionActionCompletion?(error)
                 self.onClientSessionActionCompletion = nil
             }
-            
-            if self.onResumeHandlerCompletion != nil {
-                self.onResumeHandlerCompletion?(nil, error)
-                self.onResumeHandlerCompletion = nil
-            }
-            
-            if self.onResumeTokenCompletion != nil {
-                self.onResumeTokenCompletion?(error)
-                self.onResumeTokenCompletion = nil
+
+            switch self.config.type {
+            case .adyenBlik:
+                if self.onResumeHandlerCompletion != nil {
+                    self.onResumeHandlerCompletion?(nil, error)
+                    self.onResumeHandlerCompletion = nil
+                }
+                
+                if self.onResumeTokenCompletion != nil {
+                    self.onResumeTokenCompletion?(error)
+                    self.onResumeTokenCompletion = nil
+                }
+            default:
+                self.handleFailedTokenizationFlow(error: error)
+                self.submitButton.stopAnimating()
+                Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
             }
         }
     }
@@ -568,48 +874,124 @@ extension FormPaymentMethodTokenizationViewModel {
             
             let decodedClientToken = ClientTokenService.decodedClientToken!
             
-            if decodedClientToken.intent?.contains("_REDIRECTION") == true,
-               let statusUrlStr = decodedClientToken.statusUrl,
-               let statusUrl = URL(string: statusUrlStr) {
-                self.onResumeHandlerCompletion?(statusUrl, nil)
-                self.onResumeHandlerCompletion
-                
-            } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
-                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                
-                firstly {
-                    configService.fetchConfig()
-                }
-                .done {
-                    self.continueTokenizationFlow()
-                }
-                .catch { err in
-                    DispatchQueue.main.async {
-                        Primer.shared.delegate?.onResumeError?(err)
+            switch config.type {
+            case .adyenBlik:
+                if decodedClientToken.intent?.contains("_REDIRECTION") == true,
+                    let statusUrlStr = decodedClientToken.statusUrl,
+                    let statusUrl = URL(string: statusUrlStr) {
+                    self.onResumeHandlerCompletion?(statusUrl, nil)
+                    self.onResumeHandlerCompletion
+                } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
+                    let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    
+                    firstly {
+                        configService.fetchConfig()
                     }
-                    self.handle(error: err)
+                    .done {
+                        self.continueTokenizationFlow()
+                    }
+                    .catch { err in
+                        DispatchQueue.main.async {
+                            Primer.shared.delegate?.onResumeError?(err)
+                        }
+                        self.handle(error: err)
+                    }
+                } else {
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    
+                    handle(error: err)
+                    DispatchQueue.main.async {
+                        PrimerDelegateProxy.onResumeError(err)
+                    }
                 }
-            } else {
-                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                
-                handle(error: err)
-                DispatchQueue.main.async {
-                    Primer.shared.delegate?.onResumeError?(err)
+            default:
+                if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+                    #if canImport(Primer3DS)
+                    guard let paymentMethod = paymentMethod else {
+                        DispatchQueue.main.async {
+                            let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                            let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                            ErrorHandler.handle(error: containerErr)
+                            PrimerDelegateProxy.onResumeError(containerErr)
+                        }
+                        return
+                    }
+                    
+                    let threeDSService = ThreeDSService()
+                    threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                        switch result {
+                        case .success(let paymentMethodToken):
+                            DispatchQueue.main.async {
+                                guard let threeDSPostAuthResponse = paymentMethodToken.1,
+                                    let resumeToken = threeDSPostAuthResponse.resumeToken else {
+                                        DispatchQueue.main.async {
+                                            let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                            let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                            ErrorHandler.handle(error: err)
+                                            PrimerDelegateProxy.onResumeError(err)
+                                            self.handle(error: err)
+                                        }
+                                        return
+                                    }
+                                
+                                PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
+                            }
+                            
+                        case .failure(let err):
+                            log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
+                            let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                            ErrorHandler.handle(error: containerErr)
+                            DispatchQueue.main.async {
+                                PrimerDelegateProxy.onResumeError(containerErr)
+                            }
+                        }
+                    }
+                    #else
+                    let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    DispatchQueue.main.async {
+                        PrimerDelegateProxy.onResumeError(err)
+                    }
+                    #endif
+                    
+                } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
+                    let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                    
+                    firstly {
+                        configService.fetchConfig()
+                    }
+                    .done {
+                        self.continueTokenizationFlow()
+                    }
+                    .catch { err in
+                        DispatchQueue.main.async {
+                            Primer.shared.delegate?.onResumeError?(err)
+                        }
+                        self.handle(error: err)
+                    }
+                } else {
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    
+                    handle(error: err)
+                    DispatchQueue.main.async {
+                        PrimerDelegateProxy.onResumeError(err)
+                    }
                 }
             }
             
         } catch {
             handle(error: error)
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(error)
+                PrimerDelegateProxy.onResumeError(error)
             }
         }
     }
     
     override func handleSuccess() {
         DispatchQueue.main.async {
-            self.submitButton.showSpinner(false)
+            self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
             
             if self.onResumeTokenCompletion != nil {

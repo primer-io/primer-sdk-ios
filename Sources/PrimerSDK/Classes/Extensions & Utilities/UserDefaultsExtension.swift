@@ -12,7 +12,7 @@ import Foundation
 internal extension UserDefaults {
 
     static var primerFramework: UserDefaults {
-        return UserDefaults(suiteName: Bundle.primerFrameworkIdentifier)!
+        return UserDefaults(suiteName: Bundle.primerFrameworkIdentifier) ?? UserDefaults.standard
     }
 
     func clearPrimerFramework() {

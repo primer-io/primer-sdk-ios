@@ -12,9 +12,9 @@ private let _Primer = Primer()
 public class Primer {
     
     // MARK: - PROPERTIES
-    private var primerWindow: UIWindow?
+    internal var primerWindow: UIWindow?
     public var delegate: PrimerDelegate? // TODO: should this be weak?
-    private(set) var flow: PrimerSessionFlow!
+    internal var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
     internal var primerRootVC: PrimerRootViewController?
     internal let sdkSessionId = UUID().uuidString
@@ -42,11 +42,13 @@ public class Primer {
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
         
-        DispatchQueue.main.async { [weak self] in
-            let settings = PrimerSettings()
-            self?.setDependencies(settings: settings, theme: PrimerTheme())
-            try! Analytics.Service.deleteEvents()
+        #if DEBUG
+        do {
+            try Analytics.Service.deleteEvents()
+        } catch {
+            fatalError(error.localizedDescription)
         }
+        #endif
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -70,35 +72,6 @@ public class Primer {
     @objc
     private func onAppStateChange() {
         Analytics.Service.sync()
-    }
-    
-    /**
-     Set or reload all SDK dependencies.
-     
-     - Parameter settings: Primer settings object
-     
-     - Author: Primer
-    
-     - Version: 1.2.2
-     */
-    internal func setDependencies(settings: PrimerSettings, theme: PrimerTheme) {
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
-        DependencyContainer.register(theme as PrimerThemeProtocol)
-        DependencyContainer.register(AppState() as AppStateProtocol)
-        DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
-        DependencyContainer.register(VaultService() as VaultServiceProtocol)
-        DependencyContainer.register(ClientTokenService() as ClientTokenServiceProtocol)
-        DependencyContainer.register(PaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
-        DependencyContainer.register(PayPalService() as PayPalServiceProtocol)
-        DependencyContainer.register(TokenizationService() as TokenizationServiceProtocol)
-        DependencyContainer.register(VaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
-        DependencyContainer.register(VaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
-        DependencyContainer.register(ExternalViewModel() as ExternalViewModelProtocol)
-        
-        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-        ErrorHandler.handle(error: err)
-        let nsErr = err as NSError
-        print("\(nsErr.domain) \(nsErr.code) \(nsErr.localizedDescription)\n\(err.localizedDescription)")
     }
 
     // MARK: - CONFIGURATION
@@ -368,7 +341,7 @@ public class Primer {
             flow = .completeDirectCheckout
             
         case (.xfers, .checkout):
-            flow = .completeDirectCheckout
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .xfers)
             
         case (.paymentCard, .vault):
             flow = .addCardToVault
@@ -410,7 +383,7 @@ public class Primer {
             (.other, _):
             let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            Primer.shared.delegate?.checkoutFailed?(with: err)
+            PrimerDelegateProxy.checkoutFailed(with: err)
             return
         }
         
@@ -486,10 +459,15 @@ public class Primer {
         
         DispatchQueue.main.async { [weak self] in
             self?.primerRootVC?.dismissPrimerRootViewController(animated: true, completion: {
+                self?.primerWindow?.isHidden = true
+                if #available(iOS 13, *) {
+                    self?.primerWindow?.windowScene = nil
+                }
+                self?.primerWindow?.rootViewController = nil
                 self?.primerRootVC = nil
                 self?.primerWindow?.resignKey()
                 self?.primerWindow = nil
-                Primer.shared.delegate?.onCheckoutDismissed?()
+                PrimerDelegateProxy.onCheckoutDismissed()
             })
         }
     }

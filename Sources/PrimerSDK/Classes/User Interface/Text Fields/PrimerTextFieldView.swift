@@ -161,7 +161,6 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         view.backgroundColor = .clear
         textField.backgroundColor = backgroundColor
         textField.delegate = self
-        validation = .notAvailable
     }
     
     // MARK: - TEXT FIELD DELEGATE
@@ -264,7 +263,6 @@ class PrimerCustomFieldView: UIView {
         topPlaceholderLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         topPlaceholderLabel.text = placeholderText
         topPlaceholderLabel.textColor = theme.text.system.color
-        topPlaceholderLabel.textAlignment = .left
         stackView.addArrangedSubview(topPlaceholderLabel)
         
         rightImageView1.contentMode = .scaleAspectFit
@@ -306,7 +304,6 @@ class PrimerCustomFieldView: UIView {
         errorLabel.heightAnchor.constraint(equalToConstant: 12.0).isActive = true
         errorLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         errorLabel.text = nil
-        errorLabel.textAlignment = .right
         
         stackView.addArrangedSubview(errorLabel)
 

@@ -10,7 +10,7 @@
 import UIKit
 
 internal enum PrimerImage {
-    case amexCardIcon, appleIcon, backIcon, bankcontactCardIcon, bankIcon, cameraIcon,
+    case amexCardIcon, appleIcon, backIcon, bankcontactCardIcon, bankIcon, backIconRTL, cameraIcon,
          checkmarkIcon, creditCardIcon, deleteIcon, discoverCardIcon, errorIcon,
          forwardArrowIcon, genericCardIcon, jcbCardIcon, klarnaLogo, lockIcon,
          masterCardIcon, mobileIcon, payPalLogoCopy, payPalLogo, rightArrowIcon,
@@ -24,6 +24,8 @@ internal enum PrimerImage {
             return UIImage(named: "appleIcon", in: Bundle.primerResources, compatibleWith: nil)
         case .backIcon:
             return UIImage(named: "back", in: Bundle.primerResources, compatibleWith: nil)
+        case .backIconRTL:
+            return UIImage(named: "back-rtl", in: Bundle.primerResources, compatibleWith: nil)
         case .bankcontactCardIcon:
             return UIImage(named: "bancontact-icon", in: Bundle.primerResources, compatibleWith: nil)
         case .bankIcon:
