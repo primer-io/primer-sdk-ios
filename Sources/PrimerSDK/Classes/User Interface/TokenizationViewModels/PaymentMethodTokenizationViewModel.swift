@@ -179,7 +179,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .payNLIdeal:
             return "ideal"
         case .adyenInterac:
-            return "hoolah"
+            return "interac"
         case .adyenMobilePay:
             return "mobile-pay"
         case .adyenSofort,
