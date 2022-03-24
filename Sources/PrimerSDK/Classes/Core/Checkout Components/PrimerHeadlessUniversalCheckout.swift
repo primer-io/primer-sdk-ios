@@ -121,6 +121,62 @@ public class PrimerHeadlessUniversalCheckout {
     
     public func listRequiredInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType]? {
         switch paymentMethodType {
+        case .adyenAlipay:
+            return []
+        case .adyenDotPay:
+            return []
+        case .adyenGiropay:
+            return []
+        case .adyenIDeal:
+            return []
+        case .adyenMobilePay:
+            return []
+        case .adyenPayTrail:
+            return []
+        case .adyenSofort:
+            return []
+        case .adyenTrustly:
+            return []
+        case .adyenTwint:
+            return []
+        case .adyenVipps:
+            return []
+        case .apaya:
+            return []
+        case .applePay:
+            return []
+        case .atome:
+            return []
+        case .buckarooBancontact:
+            return []
+        case .buckarooEps:
+            return []
+        case .buckarooGiropay:
+            return []
+        case .buckarooIdeal:
+            return []
+        case .buckarooSofort:
+            return []
+        case .goCardlessMandate:
+            return []
+        case .googlePay:
+            return []
+        case .hoolah:
+            return []
+        case .klarna:
+            return []
+        case .mollieBankcontact:
+            return []
+        case .mollieIdeal:
+            return []
+        case .payNLBancontact:
+            return []
+        case .payNLGiropay:
+            return []
+        case .payNLIdeal:
+            return []
+        case .payNLPayconiq:
+            return []
         case .paymentCard:
             do {
                 try PrimerHeadlessUniversalCheckout.current.validateSession()
@@ -141,7 +197,11 @@ public class PrimerHeadlessUniversalCheckout {
             }
             
             return requiredFields
-        default:
+        case .payPal:
+            return []
+        case .xfers:
+            return []
+        case .other(let rawValue):
             return []
         }
     }
