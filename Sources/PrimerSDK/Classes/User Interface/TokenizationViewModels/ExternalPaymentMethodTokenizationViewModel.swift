@@ -160,6 +160,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
         case .adyenMobilePay:
             return UIColor(red: 90.0/255, green: 120.0/255, blue: 255.0/255, alpha: 1.0)
+        case .adyenPayTrail:
+            return UIColor(red: 229.0/255, green: 11.0/255, blue: 150.0/255, alpha: 1.0)
         case .adyenTrustly:
             return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
         case .adyenTwint:
