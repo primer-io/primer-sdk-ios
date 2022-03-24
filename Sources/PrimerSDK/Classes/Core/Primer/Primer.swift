@@ -510,6 +510,11 @@ public class Primer {
         }
     }
     
+    public func setImplementedReactNativeCallbacks(_ implementedReactNativeCallbacks: ImplementedReactNativeCallbacks) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        state.implementedReactNativeCallbacks = implementedReactNativeCallbacks
+    }
+    
 }
 
 #endif
