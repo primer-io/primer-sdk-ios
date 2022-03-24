@@ -39,6 +39,7 @@ class PaymentMethodConfig: Codable {
             .payNLBancontact,
             .payNLGiropay,
             .payNLPayconiq,
+            .adyenPayshop
         ]
         
         if type == .paymentCard {
