@@ -57,6 +57,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Mobile Pay"
         case .adyenVipps:
             return "Vipps"
+        case .adyenPayshop:
+            return "Payshop"
         case .adyenPayTrail:
             return "Pay Trail"
         default:
@@ -91,6 +93,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTrustly,
                 .adyenMobilePay,
                 .adyenVipps,
+                .adyenPayshop,
                 .adyenInterac,
                 .adyenPayTrail:
             return nil
@@ -143,6 +146,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenVipps:
             return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .adyenPayshop:
+            return UIImage(named: "payshop-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -167,6 +172,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
         case .adyenMobilePay:
             return UIColor(red: 90.0/255, green: 120.0/255, blue: 255.0/255, alpha: 1.0)
+        case .adyenPayshop:
+            return UIColor(red: 238.0/255, green: 52.0/255, blue: 36.0/255, alpha: 1.0)
         case .adyenPayTrail:
             return UIColor(red: 229.0/255, green: 11.0/255, blue: 150.0/255, alpha: 1.0)
         case .adyenTrustly:
@@ -277,6 +284,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .adyenMobilePay,
+                .adyenPayshop,
                 .adyenInterac,
                 .adyenPayTrail,
                 .adyenTrustly,
@@ -330,7 +338,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenTrustly:
             return .black
         case .adyenGiropay,
-                .adyenTwint:
+                .adyenTwint,
+                .adyenPayshop:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
