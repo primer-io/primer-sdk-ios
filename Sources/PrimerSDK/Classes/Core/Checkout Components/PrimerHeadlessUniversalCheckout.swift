@@ -123,6 +123,8 @@ public class PrimerHeadlessUniversalCheckout {
         switch paymentMethodType {
         case .adyenAlipay:
             return []
+        case .adyenBlik:
+            return []
         case .adyenDotPay:
             return []
         case .adyenGiropay:
@@ -280,6 +282,8 @@ public struct PrimerAsset {
         switch paymentMethodType {
         case .adyenAlipay:
             brand = .aliPay
+        case .adyenBlik:
+            brand = .blik
         case .adyenDotPay:
             brand = .dotPay
         case .adyenGiropay,

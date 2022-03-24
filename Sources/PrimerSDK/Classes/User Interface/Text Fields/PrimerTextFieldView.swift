@@ -25,6 +25,8 @@ public protocol PrimerTextFieldViewDelegate {
     func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool
     
     func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool
+    
+    func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView)
 }
 
 public extension PrimerTextFieldViewDelegate {
@@ -34,6 +36,7 @@ public extension PrimerTextFieldViewDelegate {
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
     func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true }
     func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true}
+    func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView) {}
 }
 
 public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
@@ -44,11 +47,15 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var delegate: PrimerTextFieldViewDelegate?
     internal var validation: PrimerTextField.Validation = .notAvailable {
         didSet {
-            switch validation {
-            case .valid:
+            if isValid == nil {
                 isTextValid = true
-            default:
-                isTextValid = false
+            } else {
+                switch validation {
+                case .valid:
+                    isTextValid = true
+                default:
+                    isTextValid = false
+                }
             }
         }
     }
@@ -190,6 +197,8 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         case .notAvailable:
             delegate?.primerTextFieldView(self, isValid: nil)
         }
+        
+        delegate?.primerTextFieldViewDidEndEditing(self)
     }
     
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

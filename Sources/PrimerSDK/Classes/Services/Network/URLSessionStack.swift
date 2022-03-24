@@ -44,8 +44,6 @@ internal class URLSessionStack: NetworkService {
                 properties: NetworkConnectivityEventProperties(
                     networkType: Connectivity.networkType))
             Analytics.Service.record(event: connectivityEvent)
-        } else {
-            
         }
         
         guard let url = url(for: endpoint) else {

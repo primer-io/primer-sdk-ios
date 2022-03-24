@@ -65,15 +65,7 @@ internal class PrimerResultViewController: PrimerViewController {
                                 value: "Success!",
                                 comment: "Success! - Success Screen Title")
             
-        } else if self.message == nil {
-            self.message = NSLocalizedString("primer-error-screen",
-                              tableName: nil,
-                              bundle: Bundle.primerResources,
-                              value: "Something went wrong, please try again.",
-                              comment: "Something went wrong, please try again. - Error Screen Message")
         }
-        
-        
         
         resultView = PrimerResultComponentView(frame: .zero, imageView: imgView, message: message, loadingIndicator: nil)
         view.addSubview(resultView)
