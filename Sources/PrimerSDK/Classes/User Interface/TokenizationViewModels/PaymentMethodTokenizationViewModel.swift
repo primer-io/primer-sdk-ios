@@ -195,6 +195,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "apple-pay"
         case .atome:
             return "atome"
+        case .adyenBlik:
+            return "blik"
         case .buckarooBancontact,
                 .mollieBankcontact,
                 .payNLBancontact:

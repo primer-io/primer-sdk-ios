@@ -14,6 +14,7 @@ internal protocol AppStateProtocol: AnyObject {
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethodId: String? { get set }
     var selectedPaymentMethod: PaymentMethodToken? { get }
+    var implementedReactNativeCallbacks: ImplementedReactNativeCallbacks? { get set }
 
 }
 
@@ -27,14 +28,21 @@ internal class AppState: AppStateProtocol {
         guard let selectedPaymentMethodToken = selectedPaymentMethodId else { return nil }
         return paymentMethods.first(where: { $0.id == selectedPaymentMethodToken })
     }
+    var implementedReactNativeCallbacks: ImplementedReactNativeCallbacks?
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 }
 
-struct CardData {
-    var name, number, expiryYear, expiryMonth, cvc: String
+public struct ImplementedReactNativeCallbacks: Codable {
+    var isClientTokenCallbackImplemented: Bool
+    var isTokenAddedToVaultImplemented: Bool
+    var isOnResumeSuccessImplemented: Bool
+    var isOnResumeErrorImplemented: Bool
+    var isOnCheckoutDismissedImplemented: Bool
+    var isCheckoutFailedImplemented: Bool
+    var isClientSessionActionsImplemented: Bool
 }
 
 #endif

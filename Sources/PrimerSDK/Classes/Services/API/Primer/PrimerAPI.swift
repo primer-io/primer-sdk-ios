@@ -20,7 +20,6 @@ enum PrimerAPI: Endpoint, Equatable {
             (.createDirectDebitMandate, .createDirectDebitMandate),
             (.createPayPalOrderSession, .createPayPalOrderSession),
             (.createPayPalSBillingAgreementSession, .createPayPalSBillingAgreementSession),
-            
             (.confirmPayPalBillingAgreement, .confirmPayPalBillingAgreement),
             (.createKlarnaPaymentSession, .createKlarnaPaymentSession),
             (.createKlarnaCustomerToken, .createKlarnaCustomerToken),
@@ -279,6 +278,8 @@ internal extension PrimerAPI {
             } else if let request = paymentMethodTokenizationRequest as? AsyncPaymentMethodTokenizationRequest {
                 return try? JSONEncoder().encode(request)
             } else if let request = paymentMethodTokenizationRequest as? BankSelectorTokenizationRequest {
+                return try? JSONEncoder().encode(request)
+            } else if let request = paymentMethodTokenizationRequest as? BlikPaymentMethodTokenizationRequest {
                 return try? JSONEncoder().encode(request)
             } else {
                 return nil

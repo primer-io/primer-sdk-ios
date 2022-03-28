@@ -292,6 +292,9 @@ public class Primer {
         case (.atome, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .atome)
             
+        case (.adyenBlik, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenBlik)
+            
         case (.buckarooBancontact, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooEps)
             
@@ -358,6 +361,7 @@ public class Primer {
             (.adyenGiropay, .vault),
             (.adyenIDeal, .vault),
             (.atome, .vault),
+            (.adyenBlik, .vault),
             (.buckarooBancontact, .vault),
             (.buckarooEps, .vault),
             (.buckarooGiropay, .vault),
@@ -504,6 +508,11 @@ public class Primer {
                 self.primerWindow!.makeKeyAndVisible()
             }
         }
+    }
+    
+    public func setImplementedReactNativeCallbacks(_ implementedReactNativeCallbacks: ImplementedReactNativeCallbacks) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        state.implementedReactNativeCallbacks = implementedReactNativeCallbacks
     }
     
 }
