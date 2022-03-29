@@ -230,8 +230,11 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }()
     
     lazy var squareLogo: UIImage? = {
-        guard let imageName = imageName else { return nil }
-        return UIImage(named: "\(imageName)-icon", in: Bundle.primerResources, compatibleWith: nil)
+        guard let imageName = imageName else { return nil }        
+        // In case we don't have a square icon, we show the icon image
+        let imageLogoSquare = UIImage(named: "\(imageName)-logo-square", in: Bundle.primerResources, compatibleWith: nil)
+        let imageIcon = UIImage(named: "\(imageName)-icon", in: Bundle.primerResources, compatibleWith: nil)
+        return imageLogoSquare ?? imageIcon
     }()
     
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView? {

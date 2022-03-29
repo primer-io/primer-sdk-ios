@@ -118,7 +118,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLGiropay:
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenInterac:
-            return UIImage(named: "interac-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+            return UIImage(named: "interac-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLIdeal,
