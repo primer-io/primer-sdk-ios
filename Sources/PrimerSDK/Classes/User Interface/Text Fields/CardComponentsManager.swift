@@ -266,7 +266,6 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     klarnaCustomerToken: nil,
                     sessionData: nil)
                 
-                let paymentFlow: PaymentFlow? = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
                 let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout, customerId: self.customerId)
                 
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()

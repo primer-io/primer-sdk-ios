@@ -98,8 +98,8 @@ struct BlikPaymentMethodOptions: PaymentMethodOptions {
     struct SessionInfo: Codable {
         let blikCode: String
         let locale: String
-        let platform: String = "IOS"
-        let redirectionUrl: String? = PrimerSettings.current.urlScheme
+        var platform: String = "IOS"
+        var redirectionUrl: String? = PrimerSettings.current.urlScheme
     }
     
 }

@@ -218,7 +218,7 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     
                     let paymentInstrument = PaymentInstrument(
-                        number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as! String,
+                        number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String,
                         cvv: cvv,
                         expirationMonth: expiryMonth,
                         expirationYear: expiryYear,
@@ -237,7 +237,7 @@ extension PrimerHeadlessUniversalCheckout {
                     
                     let primerSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
                     let customerId = primerSettings.customerId
-                    let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil, customerId: nil)
+                    let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil, customerId: customerId)
                     seal.fulfill(request)
                     
                 default:
