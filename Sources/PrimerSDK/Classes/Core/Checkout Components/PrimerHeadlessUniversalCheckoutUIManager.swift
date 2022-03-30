@@ -32,23 +32,11 @@ public protocol PrimerCardFormDelegate: AnyObject  {
 extension PrimerHeadlessUniversalCheckout {
     
     public class UIManager: PrimerHeadlessUniversalCheckoutUIManager {
+        
         private(set) public var paymentMethodType: PaymentMethodConfigType
         private let appState: AppStateProtocol = DependencyContainer.resolve()
         
         required public init(paymentMethodType: PaymentMethodConfigType) throws {
-            switch paymentMethodType {
-            case .paymentCard:
-                break
-            default:
-                break
-            }
-            
-            do {
-                try PrimerHeadlessUniversalCheckout.current.validateSession()
-            } catch {
-                ErrorHandler.handle(error: error)
-                throw error
-            }
             
             guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -66,17 +54,21 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
-            guard let data = data else { return }
             
-            if let ibanData = data as? IBANData {
-                
-            } else if let otpData = data as? OTPData {
-                
-            }
+            // TODO: Implement data handling
+            
+            //            guard let data = data else { return }
+            //
+            //            if let ibanData = data as? IBANData {
+            //
+            //            } else if let otpData = data as? OTPData {
+            //
+            //            }
+            //
         }
     }
     
-    public final class CardFormUIManager: UIManager, PrimerInputElementDelegate, ResumeHandlerProtocol {
+    public final class CardFormUIManager: UIManager, PrimerInputElementDelegate {
         
         private(set) public var requiredInputElementTypes: [PrimerInputElementType] = []
         public var inputElements: [PrimerInputElement] = [] {
@@ -118,30 +110,27 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public override func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
-            do {
-                try PrimerHeadlessUniversalCheckout.current.validateSession()
-            } catch {
-                ErrorHandler.handle(error: error)
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
-                return
-            }
             
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationStarted()
-
+            
             firstly {
+                PrimerHeadlessUniversalCheckout.current.validateSession()
+            }
+            .then { () -> Promise<Void> in
                 self.validateInputData()
             }
             .then { () -> Promise<PaymentMethodTokenizationRequest> in
-                return self.buildRequestBody()
+                self.buildRequestBody()
             }
             .then { requestbody -> Promise<PaymentMethodToken> in
-                return self.tokenize(request: requestbody)
+                self.tokenize(request: requestbody)
             }
             .done { paymentMethodToken in
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: self)
             }
-            .catch { err in
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
+            .catch { error in
+                ErrorHandler.handle(error: error)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
             }
         }
         
@@ -180,83 +169,79 @@ extension PrimerHeadlessUniversalCheckout {
         
         private func buildRequestBody() -> Promise<PaymentMethodTokenizationRequest> {
             return Promise { seal in
-                do {
-                    switch self.paymentMethodType {
-                    case .paymentCard:
-                        guard let cardnumberField = inputElements.filter({ $0.type == .cardNumber }).first as? PrimerInputTextField,
-                              let expiryDateField = inputElements.filter({ $0.type == .expiryDate }).first as? PrimerInputTextField,
-                              let cvvField = inputElements.filter({ $0.type == .cvv }).first as? PrimerInputTextField
-                        else {
-                            let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
-                        }
-                        
-                        guard cardnumberField.isValid,
-                              expiryDateField.isValid,
-                              cvvField.isValid
-                        else {
-                            let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
-                        }
-                        
-                        guard let cardNumber = cardnumberField._text,
-                              let expiryDate = expiryDateField._text,
-                              let cvv = cvvField._text
-                        else {
-                            let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
-                        }
-                        
-                        let expiryArr = expiryDate.components(separatedBy: expiryDateField.type.delimiter!)
-                        let expiryMonth = expiryArr[0]
-                        let expiryYear = "20" + expiryArr[1]
-                        
-                        var cardholderName: String?
-                        if let cardholderNameField = inputElements.filter({ $0.type == .cardholderName }).first as? PrimerInputTextField {
-                            if !cardholderNameField.isValid {
-                                let err = PrimerError.invalidValue(key: "cardholder-name", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                ErrorHandler.handle(error: err)
-                                seal.reject(err)
-                                return
-                            }
-                            
-                            cardholderName = cardholderNameField._text
-                        }
-                        
-                        let paymentInstrument = PaymentInstrument(
-                            number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as! String,
-                            cvv: cvv,
-                            expirationMonth: expiryMonth,
-                            expirationYear: expiryYear,
-                            cardholderName: cardholderName,
-                            paypalOrderId: nil,
-                            paypalBillingAgreementId: nil,
-                            shippingAddress: nil,
-                            externalPayerInfo: nil,
-                            paymentMethodConfigId: nil,
-                            token: nil,
-                            sourceConfig: nil,
-                            gocardlessMandateId: nil,
-                            klarnaAuthorizationToken: nil,
-                            klarnaCustomerToken: nil,
-                            sessionData: nil)
-                        
-                        let primerSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                        let customerId = primerSettings.customerId
-                        let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil, customerId: nil)
-                        seal.fulfill(request)
-                        
-                    default:
-                        fatalError()
+                switch self.paymentMethodType {
+                case .paymentCard:
+                    guard let cardnumberField = inputElements.filter({ $0.type == .cardNumber }).first as? PrimerInputTextField,
+                          let expiryDateField = inputElements.filter({ $0.type == .expiryDate }).first as? PrimerInputTextField,
+                          let cvvField = inputElements.filter({ $0.type == .cvv }).first as? PrimerInputTextField
+                    else {
+                        let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                        return
                     }
-                } catch {
-                    seal.reject(error)
+                    
+                    guard cardnumberField.isValid,
+                          expiryDateField.isValid,
+                          cvvField.isValid
+                    else {
+                        let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                        return
+                    }
+                    
+                    guard let cardNumber = cardnumberField._text,
+                          let expiryDate = expiryDateField._text,
+                          let cvv = cvvField._text
+                    else {
+                        let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                        return
+                    }
+                    
+                    let expiryArr = expiryDate.components(separatedBy: expiryDateField.type.delimiter!)
+                    let expiryMonth = expiryArr[0]
+                    let expiryYear = "20" + expiryArr[1]
+                    
+                    var cardholderName: String?
+                    if let cardholderNameField = inputElements.filter({ $0.type == .cardholderName }).first as? PrimerInputTextField {
+                        if !cardholderNameField.isValid {
+                            let err = PrimerError.invalidValue(key: "cardholder-name", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                            ErrorHandler.handle(error: err)
+                            seal.reject(err)
+                            return
+                        }
+                        
+                        cardholderName = cardholderNameField._text
+                    }
+                    
+                    let paymentInstrument = PaymentInstrument(
+                        number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String,
+                        cvv: cvv,
+                        expirationMonth: expiryMonth,
+                        expirationYear: expiryYear,
+                        cardholderName: cardholderName,
+                        paypalOrderId: nil,
+                        paypalBillingAgreementId: nil,
+                        shippingAddress: nil,
+                        externalPayerInfo: nil,
+                        paymentMethodConfigId: nil,
+                        token: nil,
+                        sourceConfig: nil,
+                        gocardlessMandateId: nil,
+                        klarnaAuthorizationToken: nil,
+                        klarnaCustomerToken: nil,
+                        sessionData: nil)
+                    
+                    let primerSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                    let customerId = primerSettings.customerId
+                    let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil, customerId: customerId)
+                    seal.fulfill(request)
+                    
+                default:
+                    fatalError()
                 }
             }
         }
@@ -269,7 +254,7 @@ extension PrimerHeadlessUniversalCheckout {
                     case .success(let paymentMethodToken):
                         self.paymentMethod = paymentMethodToken
                         seal.fulfill(paymentMethodToken)
-
+                        
                     case .failure(let err):
                         let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: containerErr)
@@ -347,91 +332,104 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
+    }
+}
+
+extension PrimerHeadlessUniversalCheckout.CardFormUIManager: ResumeHandlerProtocol {
+    
+    // MARK: - RESUME HANDLER
+    
+    public func handle(newClientToken clientToken: String) {
+        self.handle(clientToken)
+    }
+    
+    public func handle(error: Error) {
+        ErrorHandler.handle(error: error)
+        Primer.shared.delegate?.onResumeError?(error)
+    }
+    
+    public func handleSuccess() {}
+}
+
+extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
+    
+    private func handle(_ clientToken: String) {
         
-        // MARK: - RESUME HANDLER
-        
-        public func handle(error: Error) {
+        if PrimerHeadlessUniversalCheckout.current.clientToken != clientToken {
             
-        }
-        
-        public func handle(newClientToken clientToken: String) {
-            do {
-                if PrimerHeadlessUniversalCheckout.current.clientToken != clientToken {
-                    try ClientTokenService.storeClientToken(clientToken)
-                }
-                
-                let decodedClientToken = ClientTokenService.decodedClientToken!
-                
-                if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                    #if canImport(Primer3DS)
-                    guard let paymentMethod = paymentMethod else {
-                        DispatchQueue.main.async {
-                            let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                            let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                            ErrorHandler.handle(error: containerErr)
-                            PrimerDelegateProxy.onResumeError(containerErr)
-                        }
+            ClientTokenService.storeClientToken(clientToken) { error in
+                DispatchQueue.main.async {
+                    
+                    guard error == nil else {
+                        ErrorHandler.handle(error: error!)
                         return
                     }
                     
-                    let threeDSService = ThreeDSService()
-                    Primer.shared.flow = .default
-                    threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
-                        switch result {
-                        case .success(let paymentMethodToken):
-                            DispatchQueue.main.async {
-                                guard let threeDSPostAuthResponse = paymentMethodToken.1,
-                                      let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                          DispatchQueue.main.async {
-                                              let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                              let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                              ErrorHandler.handle(error: err)
-                                              PrimerDelegateProxy.onResumeError(err)
-                                              self.handle(error: err)
-                                          }
-                                          return
-                                      }
-                                
-                                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutResume(withResumeToken: resumeToken, resumeHandler: nil)
-                            }
-                            
-                        case .failure(let err):
-                            log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
-                            let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                            ErrorHandler.handle(error: containerErr)
-                            DispatchQueue.main.async {
-                                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: containerErr)
-                            }
-                        }
-                    }
-                    #else
-                    let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
-                    DispatchQueue.main.async {
-                        PrimerDelegateProxy.onResumeError(err)
-                    }
-                    #endif
-                    
-                } else {
-                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
-
-                    DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
-                    }
-                }
-                
-            } catch {
-                handle(error: error)
-                DispatchQueue.main.async {
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
+                    self.continueHandleNewClientToken(clientToken)
                 }
             }
-        }
-        
-        public func handleSuccess() {
-            
+        } else {
+            self.continueHandleNewClientToken(clientToken)
         }
     }
     
+    private func continueHandleNewClientToken(_ clientToken: String) {
+        
+        if let decodedClientToken = ClientTokenService.decodedClientToken,
+           decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+            
+#if canImport(Primer3DS)
+            guard let paymentMethod = paymentMethod else {
+                DispatchQueue.main.async {
+                    let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    self.handle(error: containerErr)
+                }
+                return
+            }
+            
+            let threeDSService = ThreeDSService()
+            Primer.shared.flow = .default
+            threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                switch result {
+                case .success(let paymentMethodToken):
+                    DispatchQueue.main.async {
+                        guard let threeDSPostAuthResponse = paymentMethodToken.1,
+                              let resumeToken = threeDSPostAuthResponse.resumeToken else {
+                            DispatchQueue.main.async {
+                                let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                self.handle(error: err)
+                            }
+                            return
+                        }
+                        
+                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutResume(withResumeToken: resumeToken, resumeHandler: nil)
+                    }
+                    
+                case .failure(let err):
+                    log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
+                    let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: containerErr)
+                    DispatchQueue.main.async {
+                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: containerErr)
+                    }
+                }
+            }
+#else
+            DispatchQueue.main.async {
+                let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+            }
+#endif
+            
+        } else {
+            let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            
+            DispatchQueue.main.async {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
+            }
+        }
+    }
 }
