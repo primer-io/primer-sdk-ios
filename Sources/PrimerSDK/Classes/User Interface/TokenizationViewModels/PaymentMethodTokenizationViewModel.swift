@@ -300,6 +300,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
     
     func handleFailedTokenizationFlow(error: Error) {
+        PrimerDelegateProxy.checkoutFailed(with: error)
         Primer.shared.primerRootVC?.handle(error: error)
     }
     
