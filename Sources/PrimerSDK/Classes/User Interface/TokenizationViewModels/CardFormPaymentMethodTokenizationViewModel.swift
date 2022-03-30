@@ -821,7 +821,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: containerErr)
                     DispatchQueue.main.async {
-                        Primer.shared.delegate?.onResumeError?(containerErr)
+                        PrimerDelegateProxy.onResumeError(containerErr)
                     }
                 }
             }
@@ -829,7 +829,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(err)
+                PrimerDelegateProxy.onResumeError(err)
             }
 #endif
             
@@ -860,7 +860,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             
             handle(error: err)
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeError?(err)
+                PrimerDelegateProxy.onResumeError(err)
             }
         }
     }
