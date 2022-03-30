@@ -10,6 +10,18 @@
 @testable import PrimerSDK
 
 class MockClientTokenService: ClientTokenServiceProtocol {
+    
+    static func storeClientToken(_ clientToken: String) -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void) {
+        completion(nil)
+        return
+    }
+    
     func fetchClientToken() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
@@ -37,10 +49,6 @@ class MockClientTokenService: ClientTokenServiceProtocol {
     }
 
     var loadCheckoutConfigCalled = false
-    
-    static func storeClientToken(_ clientToken: String) throws {
-        
-    }
     
     func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
         loadCheckoutConfigCalled = true
