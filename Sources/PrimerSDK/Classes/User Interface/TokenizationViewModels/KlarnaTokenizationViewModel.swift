@@ -589,23 +589,21 @@ extension KlarnaTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
-        do {
-            try ClientTokenService.storeClientToken(clientToken)
-            
+        
+        firstly {
+            ClientTokenService.storeClientToken(clientToken)
+        }
+        .then{ () -> Promise<Void> in
             let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            
-            firstly {
-                configService.fetchConfig()
+            return configService.fetchConfig()
+        }
+        .done {
+            self.continueTokenizationFlow()
+        }
+        .catch { error in
+            DispatchQueue.main.async {
+                PrimerDelegateProxy.checkoutFailed(with: error)
             }
-            .done {
-                self.continueTokenizationFlow()
-            }
-            .catch { err in
-                self.handle(error: err)
-            }
-            
-        } catch {
-            PrimerDelegateProxy.checkoutFailed(with: error)
             self.handle(error: error)
         }
     }

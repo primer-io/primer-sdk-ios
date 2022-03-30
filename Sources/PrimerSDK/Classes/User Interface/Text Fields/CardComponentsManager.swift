@@ -70,7 +70,6 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     
     /// The CardComponentsManager can be initialized with/out an access token. In the case that is initialized without an access token, the delegate function cardComponentsManager(_:clientTokenCallback:) will be called. You can initialize an instance (representing a session) by providing the flow (checkout or vault) and registering the necessary PrimerTextFieldViews
     public init(
-        clientToken: String? = nil,
         flow: PaymentFlow,
         cardnumberField: PrimerCardNumberFieldView,
         expiryDateField: PrimerExpiryDateFieldView,
@@ -88,10 +87,6 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         
         self.cardholderField = cardholderNameField
-        
-        if let clientToken = clientToken {
-            try? ClientTokenService.storeClientToken(clientToken)
-        }
     }
     
     internal func setIsLoading(_ isLoading: Bool) {
@@ -102,6 +97,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     
     private func fetchClientToken() -> Promise<DecodedClientToken> {
         return Promise { seal in
+            
             guard let delegate = delegate else {
                 print("Warning: Delegate has not been set")
                 let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -110,26 +106,24 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 return
             }
             
-            delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, err in
-                if let err = err {
-                    seal.reject(err)
-                } else if let clientToken = clientToken {
-                    do {
-                        try ClientTokenService.storeClientToken(clientToken)
-                        if let decodedClientToken = self.decodedClientToken {
-                            seal.fulfill(decodedClientToken)
-                        } else {
-                            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                        }
-                        
-                    } catch {
-                        seal.reject(error)
-                    }
-                } else {
-                    assert(true, "Should always return token or error")
+            delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
+                                
+                guard error == nil, let clientToken = clientToken else {
+                    seal.reject(error!)
+                    return
                 }
+                
+                ClientTokenService.storeClientToken(clientToken, completion: { error in
+                    
+                    guard error == nil else {
+                        seal.reject(error!)
+                        return
+                    }
+
+                    if let decodedClientToken = self.decodedClientToken {
+                        seal.fulfill(decodedClientToken)
+                    }
+                })
             })
         }
     }
@@ -365,6 +359,75 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         }
     }
     
+}
+
+
+internal class MockCardComponentsManager: CardComponentsManagerProtocol {
+    
+    var cardnumberField: PrimerCardNumberFieldView
+    
+    var expiryDateField: PrimerExpiryDateFieldView
+    
+    var cvvField: PrimerCVVFieldView
+    
+    var cardholderField: PrimerCardholderNameFieldView?
+    
+    var postalCodeField: PrimerPostalCodeFieldView?
+    
+    var flow: PaymentFlow
+    
+    var delegate: CardComponentsManagerDelegate?
+    
+    var customerId: String?
+    
+    var merchantIdentifier: String?
+    
+    var amount: Int?
+    
+    var currency: Currency?
+    
+    var decodedClientToken: DecodedClientToken? {
+        return ClientTokenService.decodedClientToken
+    }
+    
+    var paymentMethodsConfig: PrimerConfiguration?
+    
+    public init(
+        flow: PaymentFlow,
+        cardnumberField: PrimerCardNumberFieldView,
+        expiryDateField: PrimerExpiryDateFieldView,
+        cvvField: PrimerCVVFieldView,
+        cardholderNameField: PrimerCardholderNameFieldView?,
+        postalCodeField: PrimerPostalCodeFieldView
+    ) {
+        DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
+        self.flow = flow
+        self.cardnumberField = cardnumberField
+        self.expiryDateField = expiryDateField
+        self.cvvField = cvvField
+        self.cardholderField = cardholderNameField
+        self.postalCodeField = postalCodeField
+    }
+    
+    convenience init(
+        cardnumber: String?
+    ) {
+        let cardnumberFieldView = PrimerCardNumberFieldView()
+        cardnumberFieldView.textField._text = cardnumber
+        self.init(
+            flow: .checkout,
+            cardnumberField: cardnumberFieldView,
+            expiryDateField: PrimerExpiryDateFieldView(),
+            cvvField: PrimerCVVFieldView(),
+            cardholderNameField: PrimerCardholderNameFieldView(),
+            postalCodeField: PrimerPostalCodeFieldView()
+        )
+    }
+    
+    func tokenize() {
+        
+    }
+
 }
 
 #endif
