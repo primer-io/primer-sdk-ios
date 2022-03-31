@@ -343,10 +343,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager: ResumeHandlerProtoc
         self.handle(clientToken)
     }
     
-    public func handle(error: Error) {
-        ErrorHandler.handle(error: error)
-        Primer.shared.delegate?.onResumeError?(error)
-    }
+    public func handle(error: Error) {}
     
     public func handleSuccess() {}
 }
@@ -362,6 +359,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                     
                     guard error == nil else {
                         ErrorHandler.handle(error: error!)
+                        PrimerDelegateProxy.onResumeError(error!)
                         return
                     }
                     
@@ -404,7 +402,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                             return
                         }
                         
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutResume(withResumeToken: resumeToken, resumeHandler: nil)
+                        PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: nil)
                     }
                     
                 case .failure(let err):
@@ -412,7 +410,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: containerErr)
                     DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: containerErr)
+                        PrimerDelegateProxy.onResumeError(containerErr)
                     }
                 }
             }
@@ -420,6 +418,9 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
             DispatchQueue.main.async {
                 let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
+                DispatchQueue.main.async {
+                    PrimerDelegateProxy.onResumeError(err)
+                }
             }
 #endif
             

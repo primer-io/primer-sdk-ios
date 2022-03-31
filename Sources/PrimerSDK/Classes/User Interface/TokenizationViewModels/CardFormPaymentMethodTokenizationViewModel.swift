@@ -763,6 +763,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     
                     guard error == nil else {
                         ErrorHandler.handle(error: error!)
+                        PrimerDelegateProxy.onResumeError(error!)
                         return
                     }
                     
@@ -791,7 +792,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: containerErr)
-                    Primer.shared.delegate?.onResumeError?(containerErr)
+                    PrimerDelegateProxy.onResumeError(containerErr)
                 }
                 return
             }
@@ -807,7 +808,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                                       let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                                       let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                                       ErrorHandler.handle(error: err)
-                                      Primer.shared.delegate?.onResumeError?(err)
+                                      PrimerDelegateProxy.onResumeError(containerErr)
                                       self.handle(error: err)
                                   }
                                   return
