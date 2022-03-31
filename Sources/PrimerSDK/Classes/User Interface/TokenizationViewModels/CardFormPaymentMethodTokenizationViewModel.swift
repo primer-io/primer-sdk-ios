@@ -536,7 +536,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     DispatchQueue.main.async {
                         self.submitButton.stopAnimating()
                         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-                        Primer.shared.delegate?.onResumeError?(err)
+                        PrimerDelegateProxy.onResumeError(err)
                     }
                     self.handle(error: err)
                 } else {
