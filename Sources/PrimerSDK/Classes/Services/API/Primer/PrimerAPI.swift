@@ -102,8 +102,8 @@ internal extension PrimerAPI {
                 tmpHeaders["Primer-Client-Token"] = token
             }
         
-        case .validateClientToken(let clientToken):
-            if let token = clientToken.clientToken.jwtTokenPayload?.accessToken {
+        case .validateClientToken(let request):
+            if let token = request.clientToken.jwtTokenPayload?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
 
@@ -165,8 +165,8 @@ internal extension PrimerAPI {
             return url
         case .sendAnalyticsEvents(let url, _):
             return url.absoluteString
-        case .validateClientToken(let clientToken):
-            return clientToken.clientToken.jwtTokenPayload?.pciUrl
+        case .validateClientToken(let request):
+            return request.clientToken.jwtTokenPayload?.pciUrl
         }
     }
     // MARK: Path

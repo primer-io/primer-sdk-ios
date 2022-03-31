@@ -50,11 +50,7 @@ extension ClientTokenServiceTests {
     
     // MARK: Internal Validation
     
-    // make the internal validation 40:95
-    // if passes, then API call (both callback and promise functions)
-    // if passes, store it
-    
-    private static func validateManuallyOrReturnPreviousToken(_ tokenToValidate: String) throws -> String {
+    private static func validateInternally(_ tokenToValidate: String) throws -> String {
         
         guard var currentDecodedToken = tokenToValidate.jwtTokenPayload,
               let expDate = currentDecodedToken.expDate,
@@ -114,9 +110,9 @@ extension ClientTokenServiceTests {
     
     static func storeClientToken(_ clientToken: String, on state: AppState, completion: @escaping (Error?) -> Void) {
                 
-        // 1. Validate the token manually or return the previous one from current App State
+        // 1. Validate the token internally
         do {
-            state.clientToken = try validateManuallyOrReturnPreviousToken(clientToken)
+            state.clientToken = try validateInternally(clientToken)
         } catch {
             completion(error)
             return
