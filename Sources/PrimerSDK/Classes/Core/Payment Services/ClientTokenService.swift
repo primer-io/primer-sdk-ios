@@ -67,7 +67,7 @@ extension ClientTokenService {
     // if passes, then API call (both callback and promise functions)
     // if passes, store it
     
-    private static func validateManuallyOrReturnPreviousToken(_ tokenToValidate: RawJWTToken) throws -> RawJWTToken {
+    private static func validateInternally(_ tokenToValidate: RawJWTToken) throws -> RawJWTToken {
         
         guard var currentDecodedToken = tokenToValidate.jwtTokenPayload,
               let expDate = currentDecodedToken.expDate,
@@ -144,7 +144,7 @@ extension ClientTokenService {
         
         // 1. Validate the token manually or return the previous one from current App State
         do {
-            _ = try validateManuallyOrReturnPreviousToken(clientToken)
+            _ = try validateInternally(clientToken)
         } catch {
             completion(error)
             return
