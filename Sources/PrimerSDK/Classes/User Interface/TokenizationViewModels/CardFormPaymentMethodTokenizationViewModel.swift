@@ -468,7 +468,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         submitButton.startAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         
-        if Primer.shared.delegate?.onClientSessionActions != nil {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
             var network = self.cardNetwork?.rawValue.uppercased()
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
