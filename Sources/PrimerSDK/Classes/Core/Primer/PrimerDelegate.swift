@@ -72,8 +72,8 @@ public protocol PrimerDelegate {
     
     /// This function will be called when the user initiate a payment.
     /// - Parameters:
-    ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
-    @objc optional func onPaymentStarted(_ paymentMethodToken: String)
+    ///   - paymentMethodData: The payment method data containing the token's information.
+    @objc optional func onPaymentWillCreate(_ paymentMethodData: String)
     
     /// This function will be called when the user receives a payment object in a PENDING status.
     /// - Parameters:

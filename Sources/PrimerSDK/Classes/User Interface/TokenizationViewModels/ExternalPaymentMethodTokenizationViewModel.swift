@@ -734,7 +734,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
             
             // Raise "payment creation started" event
             
-            Primer.shared.delegate?.onPaymentStarted?(paymentMethodTokenString)
+            Primer.shared.delegate?.onPaymentWillCreate?(paymentMethodTokenString)
             
             // Create payment with Payment method token
 
