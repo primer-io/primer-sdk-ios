@@ -391,7 +391,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
-                    Primer.shared.delegate?.onPaymentSuccess?(paymentResponseDict)
+                    Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
                     self.handleSuccess()
                 }
             }
@@ -523,7 +523,7 @@ extension PrimerUniversalCheckoutViewController {
                                     Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
                                     self.handle(newClientToken: requiredAction.clientToken)
                                 } else {
-                                    Primer.shared.delegate?.onPaymentSuccess?(paymentResponseDict)
+                                    Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
                                     self.handleSuccess()
                                 }
                             }
