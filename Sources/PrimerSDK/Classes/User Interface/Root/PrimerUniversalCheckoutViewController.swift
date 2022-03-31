@@ -379,7 +379,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 guard let paymentResponse = paymentResponse,
                       let paymentResponseDict = try? paymentResponse.asDictionary() else {
                           if let error = error {
-                              Primer.shared.delegate?.onPaymentError?(error)
+                              Primer.shared.delegate?.checkoutDidFailWithError?(error)
                               self.handle(error: error)
                           }
                           return
@@ -513,7 +513,7 @@ extension PrimerUniversalCheckoutViewController {
                                 guard let paymentResponse = paymentResponse,
                                       let paymentResponseDict = try? paymentResponse.asDictionary() else {
                                           if let error = error {
-                                              Primer.shared.delegate?.onPaymentError?(error)
+                                              Primer.shared.delegate?.checkoutDidFailWithError?(error)
                                               self.handle(error: error)
                                           }
                                           return

@@ -692,7 +692,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     guard let paymentResponse = paymentResponse,
                           let paymentResponseDict = try? paymentResponse.asDictionary() else {
                               if let error = error {
-                                  Primer.shared.delegate?.onPaymentError?(error)
+                                  Primer.shared.delegate?.checkoutDidFailWithError?(error)
                                   self.handle(error: error)
                               }
                               return
@@ -744,7 +744,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 guard let paymentResponse = paymentResponse,
                       let paymentResponseDict = try? paymentResponse.asDictionary() else {
                           if let error = error {
-                              Primer.shared.delegate?.onPaymentError?(error)
+                              Primer.shared.delegate?.checkoutDidFailWithError?(error)
                               self.handle(error: error)
                           }
                           return
@@ -833,7 +833,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 .catch { err in
                     DispatchQueue.main.async {
                         PrimerDelegateProxy.onResumeError(err)
-                        Primer.shared.delegate?.onPaymentError?(err)
+                        Primer.shared.delegate?.checkoutDidFailWithError?(err)
                     }
                     self?.handle(error: err)
                 }
@@ -843,7 +843,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
             
             DispatchQueue.main.async {
                 PrimerDelegateProxy.onResumeError(error)
-                Primer.shared.delegate?.onPaymentError?(error)
+                Primer.shared.delegate?.checkoutDidFailWithError?(error)
             }
             
             self.handle(error: error)

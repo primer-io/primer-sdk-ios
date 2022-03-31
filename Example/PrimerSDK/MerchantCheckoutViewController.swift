@@ -323,7 +323,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         self.paymentResponsesData.append(paymentData)
     }
     
-    func onPaymentError(_ error: Error) {
+    func checkoutDidFail(_ error: Error) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
     }
     
