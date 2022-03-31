@@ -16,6 +16,7 @@ internal protocol PrimerSettingsProtocol {
     var urlSchemeIdentifier: String? { get }
     var isFullScreenOnly: Bool { get }
     var hasDisabledSuccessScreen: Bool { get set }
+    var paymentHandling: PaymentHandling { get set }
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
     @available(*, deprecated, message: "Set the orderItems in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
@@ -31,6 +32,11 @@ internal protocol PrimerSettingsProtocol {
     var customer: Customer? { get set }
     
     func modify(withClientSession clientSession: ClientSession)
+}
+
+public enum PaymentHandling {
+    case auto
+    case manual
 }
 
 public struct PrimerDebugOptions {
@@ -56,6 +62,7 @@ public struct PrimerDebugOptions {
     - urlSchemeIdentifier: The URL scheme identifier that has been set in the *Info.plist*
     - isFullScreenOnly: Drop-in UI opearated in fullscreen only
     - hasDisabledSuccessScreen: Enable/Disable success screen on successful payment.
+    - paymentHandling: Defines the payment integration. If manual (not suggested), the entire payment logic needs to be implemented by the merchant.
     - businessDetails: **BusinessDetails** object containing the details of payer's business.
  
  - Author: Primer
@@ -64,7 +71,7 @@ public struct PrimerDebugOptions {
  */
 
 public class PrimerSettings: PrimerSettingsProtocol {
-    
+        
     static var current: PrimerSettingsProtocol {
         let primerSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
         return primerSettings
@@ -103,6 +110,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var urlSchemeIdentifier: String?
     internal(set) public var isFullScreenOnly: Bool
     internal(set) public var hasDisabledSuccessScreen: Bool
+    internal(set) public var paymentHandling: PaymentHandling
     internal(set) public var businessDetails: BusinessDetails?
     internal(set) public var directDebitHasNoAmount: Bool
     internal(set) public var orderItems: [OrderItem]?
@@ -133,6 +141,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         urlSchemeIdentifier: String? = nil,
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
+        paymentHandling: PaymentHandling = .auto,
         businessDetails: BusinessDetails? = nil,
         directDebitHasNoAmount: Bool = false,
         orderItems: [OrderItem] = [],
@@ -154,6 +163,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.urlSchemeIdentifier = urlSchemeIdentifier
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
+        self.paymentHandling = paymentHandling
         self.businessDetails = businessDetails
         self.directDebitHasNoAmount = directDebitHasNoAmount
         self.orderItems = orderItems
@@ -181,6 +191,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         urlSchemeIdentifier: String? = nil,
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
+        paymentHandling: PaymentHandling = .auto,
         businessDetails: BusinessDetails? = nil,
         directDebitHasNoAmount: Bool = false,
         isInitialLoadingHidden: Bool = false,
@@ -194,6 +205,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.urlSchemeIdentifier = urlSchemeIdentifier
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
+        self.paymentHandling = paymentHandling
         self.businessDetails = businessDetails
         self.directDebitHasNoAmount = directDebitHasNoAmount
         self.isInitialLoadingHidden = isInitialLoadingHidden
