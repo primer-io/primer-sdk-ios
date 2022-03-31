@@ -253,6 +253,15 @@ public class Primer {
     
     // swiftlint:disable cyclomatic_complexity
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
+        if let clientToken = clientToken {
+            do {
+                try ClientTokenService.storeClientToken(clientToken)
+            } catch {
+                PrimerDelegateProxy.checkoutFailed(with: error)
+                return
+            }
+        }
+        
         checkoutSessionId = UUID().uuidString
         
         switch (paymentMethod, intent) {
