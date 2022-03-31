@@ -475,7 +475,11 @@ extension PrimerUniversalCheckoutViewController {
                 self.onClientSessionActionCompletion?(nil)
             }
             .catch { err in
+                ErrorHandler.handle(error: err)
                 self.handle(error: err)
+                DispatchQueue.main.async {
+                    PrimerDelegateProxy.onResumeError(err)
+                }
             }
         } else {
             let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])

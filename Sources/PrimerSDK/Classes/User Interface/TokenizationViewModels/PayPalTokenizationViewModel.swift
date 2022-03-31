@@ -462,6 +462,7 @@ extension PayPalTokenizationViewModel {
         .catch { error in
             DispatchQueue.main.async {
                 self.handle(error: error)
+                PrimerDelegateProxy.onResumeError(error)
             }
         }
     }

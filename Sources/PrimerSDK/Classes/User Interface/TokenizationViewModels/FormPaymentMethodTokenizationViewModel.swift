@@ -852,6 +852,7 @@ extension FormPaymentMethodTokenizationViewModel {
 
                     guard error == nil else {
                         ErrorHandler.handle(error: error!)
+                        PrimerDelegateProxy.onResumeError(error!)
                         return
                     }
 
