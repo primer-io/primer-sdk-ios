@@ -17,6 +17,7 @@ internal protocol PrimerSettingsProtocol {
     var isFullScreenOnly: Bool { get }
     var hasDisabledSuccessScreen: Bool { get set }
     var paymentHandling: PaymentHandling { get set }
+    var isManualPaymentHandlingEnabled: Bool { get }
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
     @available(*, deprecated, message: "Set the orderItems in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
@@ -71,7 +72,7 @@ public struct PrimerDebugOptions {
  */
 
 public class PrimerSettings: PrimerSettingsProtocol {
-        
+            
     static var current: PrimerSettingsProtocol {
         let primerSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
         return primerSettings
@@ -123,6 +124,10 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var customer: Customer?
     
     private var isModifiedByClientSession: Bool = false
+    
+    var isManualPaymentHandlingEnabled: Bool {
+        paymentHandling == .manual
+    }
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
