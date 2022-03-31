@@ -103,7 +103,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
         let cardSettings = PrimerSettings(
-            merchantIdentifier: "merchant.dx.team",
+            merchantIdentifier: "merchant.checkout.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "merchant://",
@@ -146,7 +146,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func addApplePayButtonTapped(_ sender: Any) {
         applePaySettings = PrimerSettings(
-            merchantIdentifier: "merchant.dx.team",
+            merchantIdentifier: "merchant.checkout.team",
             hasDisabledSuccessScreen: true,
             isInitialLoadingHidden: true
         )
@@ -353,66 +353,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func checkoutFailed(with error: Error) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
     }
-    
-    func onResumeSuccess(_ resumeToken: String, resumeHandler: ResumeHandlerProtocol) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(resumeToken as String)")
-        
-        guard let transactionResponse = transactionResponse,
-              let url = URL(string: "\(endpoint)/api/payments/\(transactionResponse.id)/resume")
-        else {
-            let merchantErr = NSError(domain: "merchant-domain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong parsing the response..."])
-            resumeHandler.handle(error: merchantErr)
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let bodyDic: [String: Any] = [
-            "resumeToken": resumeToken
-        ]
-        
-        var bodyData: Data!
-        
-        do {
-            bodyData = try JSONSerialization.data(withJSONObject: bodyDic, options: .fragmentsAllowed)
-        } catch {
-            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the request..."])
-            resumeHandler.handle(error: merchantErr)
-            return
-        }
-        
-        let networking = Networking()
-        networking.request(
-            apiVersion: .v2,
-            url: url,
-            method: .post,
-            headers: nil,
-            queryParameters: nil,
-            body: bodyData) { result in
-                switch result {
-                case .success(let data):
-                    let paymentResponse = try? JSONDecoder().decode(Payment.Response.self, from: data)
-                    if paymentResponse != nil {
-                        self.paymentResponsesData.append(data)
-                    }
-                    
-                    resumeHandler.handleSuccess()
-
-                case .failure(let err):
-                    print(err)
-                    let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong resuming the payment..."])
-                    resumeHandler.handle(error: merchantErr)
-                }
-            }
-    }
-    
-    func onResumeError(_ error: Error) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
-    }
-        
+            
 }
 
 // MARK: - TABLE VIEW DATA SOURCE & DELEGATE
