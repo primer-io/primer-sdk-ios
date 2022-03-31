@@ -38,13 +38,13 @@ public protocol PrimerDelegate {
     ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
     ///
-    @available(*, deprecated, message: "Use onPaymentSuccess(:) function")
+    @available(*, deprecated, message: "Use checkoutDidCompleteWithPayment(:) function")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
-    @available(*, deprecated, message: "Use onPaymentSuccess(:) function")
+    @available(*, deprecated, message: "Use checkoutDidCompleteWithPayment(:) function")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
 
-    @available(*, deprecated, message: "The resuming is now handled by the SDK internally so that the payment can either succeed or fail.\nSee onPaymentSuccess(:) and onPaymentError(:)")
+    @available(*, deprecated, message: "The resuming is now handled by the SDK internally so that the payment can either succeed or fail.\nSee checkoutDidCompleteWithPayment(:) and checkoutDidFail(:)")
     @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
     
     @available(*, deprecated, message: "Use SIMPLIFY DX!.")
@@ -80,10 +80,10 @@ public protocol PrimerDelegate {
     ///   - payment: The Payment object containing the current payment status.
     @objc optional func onPaymentPending(_ payment: [String: Any])
 
-    /// This function will be called when the payment has been successful.
+    /// This function will be called when the checkout has been successful.
     /// - Parameters:
     ///   - payment: The Payment object containing the completed payment.
-    @objc optional func onPaymentSuccess(_ payment: [String: Any])
+    @objc optional func checkoutDidCompleteWithPayment(_ payment: [String: Any])
     
     /// This function will be called when the payment encountered an error.
     /// - Parameters:
