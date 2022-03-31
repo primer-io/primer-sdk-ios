@@ -83,6 +83,8 @@ class MockPrimerDelegate: PrimerDelegate {
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
     
+    var paymentHandling: PaymentHandling = .auto
+    
     var hasDisabledSuccessScreen: Bool = false
     
     var debugOptions: PrimerDebugOptions
