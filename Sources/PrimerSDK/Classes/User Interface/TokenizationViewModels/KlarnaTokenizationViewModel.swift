@@ -220,49 +220,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
-                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
-                    if let err = err {
-                        self.handleFailedTokenizationFlow(error: err)
-                    } else {
-                        self.handleSuccessfulTokenizationFlow()
-                    }
-                })
-                
-                // Create payment with Payment method token
-                
-                guard let paymentMethodTokenString = paymentMethod.token else {
-                    
-                    DispatchQueue.main.async {
-                        // TODO: Raise appropriate error
-                    }
-                    return
-                }
-                
-                // Raise "payment creation started" event
-                Primer.shared.delegate?.onPaymentStarted?(paymentMethodTokenString)
-                
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-                createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
-                    
-                    guard let paymentResponse = paymentResponse,
-                          let paymentResponseDict = try? paymentResponse.asDictionary() else {
-                              if let error = error {
-                                  Primer.shared.delegate?.onPaymentError?(error)
-                                  self.handle(error: error)
-                              }
-                              return
-                          }
-                    
-                    if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                        Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
-                        self.handle(newClientToken: requiredAction.clientToken)
-                    } else {
-                        Primer.shared.delegate?.onPaymentSuccess?(paymentResponseDict)
-                        self.handleSuccess()
-                    }
-                }
-
+                self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
             }
         }
         .ensure {
@@ -663,6 +621,63 @@ extension KlarnaTokenizationViewModel {
         self.completion = nil
     }
     
+}
+
+extension KlarnaTokenizationViewModel {
+    
+    private func handleContinuePaymentFlowWithPaymentMethod(_ paymentMethod: PaymentMethodToken) {
+                
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if settings.isManualPaymentHandlingEnabled {
+            
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
+                if let err = err {
+                    self.handleFailedTokenizationFlow(error: err)
+                } else {
+                    self.handleSuccessfulTokenizationFlow()
+                }
+            })
+
+        } else {
+            
+            guard let paymentMethodTokenString = paymentMethod.token else {
+                
+                DispatchQueue.main.async {
+                    // TODO: Raise appropriate error
+                }
+                return
+            }
+            
+            // Raise "payment creation started" event
+            
+            Primer.shared.delegate?.onPaymentStarted?(paymentMethodTokenString)
+            
+            // Create payment with Payment method token
+
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+            createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
+                
+                guard let paymentResponse = paymentResponse,
+                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
+                          if let error = error {
+                              Primer.shared.delegate?.onPaymentError?(error)
+                              self.handle(error: error)
+                          }
+                          return
+                      }
+                
+                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
+                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
+                    self.handle(newClientToken: requiredAction.clientToken)
+                } else {
+                    Primer.shared.delegate?.onPaymentSuccess?(paymentResponseDict)
+                    self.handleSuccess()
+                }
+            }
+        }
+    }    
 }
 
 #endif

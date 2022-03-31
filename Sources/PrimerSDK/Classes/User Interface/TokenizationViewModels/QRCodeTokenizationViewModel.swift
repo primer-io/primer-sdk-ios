@@ -293,44 +293,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             }
             
             DispatchQueue.main.async {
-                PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
-                
-                guard let paymentMethodTokenString = paymentMethod.token else {
-                    
-                    DispatchQueue.main.async {
-                        // TODO: Raise appropriate error
-                    }
-                    return
-                }
-                
-                // Raise "payment creation started" event
-                Primer.shared.delegate?.onPaymentStarted?(paymentMethodTokenString)
-                
-                // Create payment with Payment method token
-                
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-                createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
-                    
-                    guard let paymentResponse = paymentResponse,
-                          let paymentResponseDict = try? paymentResponse.asDictionary() else {
-                              if let error = error {
-                                  Primer.shared.delegate?.onPaymentError?(error)
-                                  self.handle(error: error)
-                              }
-                              return
-                          }
-                    
-                    self.resumePaymentId = paymentResponse.id
-
-                    if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                        Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
-                        self.handle(newClientToken: requiredAction.clientToken)
-                    } else {
-                        Primer.shared.delegate?.onPaymentSuccess?(paymentResponseDict)
-                        self.handleSuccess()
-                    }
-                }
-
+                self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
             }
         }
     }
@@ -511,6 +474,59 @@ extension QRCodeTokenizationViewModel {
         self.onResumeTokenCompletion = nil
     }
     
+}
+
+
+extension QRCodeTokenizationViewModel {
+    
+    private func handleContinuePaymentFlowWithPaymentMethod(_ paymentMethod: PaymentMethodToken) {
+                
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if settings.isManualPaymentHandlingEnabled {
+            
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
+            
+        } else {
+            
+            guard let paymentMethodTokenString = paymentMethod.token else {
+                
+                DispatchQueue.main.async {
+                    // TODO: Raise appropriate error
+                }
+                return
+            }
+            
+            // Raise "payment creation started" event
+            
+            Primer.shared.delegate?.onPaymentStarted?(paymentMethodTokenString)
+            
+            // Create payment with Payment method token
+            
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+            createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
+                
+                guard let paymentResponse = paymentResponse,
+                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
+                          if let error = error {
+                              Primer.shared.delegate?.onPaymentError?(error)
+                              self.handle(error: error)
+                          }
+                          return
+                      }
+                
+                self.resumePaymentId = paymentResponse.id
+
+                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
+                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
+                    self.handle(newClientToken: requiredAction.clientToken)
+                } else {
+                    Primer.shared.delegate?.onPaymentSuccess?(paymentResponseDict)
+                    self.handleSuccess()
+                }
+            }
+        }
+    }
 }
 
 #endif

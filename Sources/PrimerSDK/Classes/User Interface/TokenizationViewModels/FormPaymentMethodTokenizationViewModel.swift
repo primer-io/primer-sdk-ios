@@ -650,9 +650,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
 
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethod: PaymentMethodToken) {
         
-        guard let paymentMethodTokenString = paymentMethodToken.token else {
+        guard let paymentMethodTokenString = paymentMethod.token else {
             
             DispatchQueue.main.async {
                 // TODO: Raise appropriate error
@@ -660,53 +660,10 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             return
         }
         
-        self.paymentMethod = paymentMethodToken
+        self.paymentMethod = paymentMethod
         
         DispatchQueue.main.async {
-            
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethodToken, resumeHandler: self)
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethodToken, { err in
-                
-                self.cardComponentsManager.setIsLoading(false)
-                
-                if let err = err {
-                    self.handleFailedTokenizationFlow(error: err)
-                } else {
-                    self.handleSuccessfulTokenizationFlow()
-                }
-                
-                return
-            })
-            
-            
-            // Raise "payment creation started" event
-            Primer.shared.delegate?.onPaymentStarted?(paymentMethodTokenString)
-            
-            // Create payment with Payment method token
-            
-            // FOR POC purposes
-            // This can lead in zombie objecs and leaks
-            CreateResumePaymentService().createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
-                
-                guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
-                          if let error = error {
-                              Primer.shared.delegate?.onPaymentError?(error)
-                              self.handle(error: error)
-                          }
-                          return
-                      }
-                
-                self.resumePaymentId = paymentResponse.id
-
-                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
-                    self.handle(newClientToken: requiredAction.clientToken)
-                } else {
-                    Primer.shared.delegate?.onPaymentSuccess?(paymentResponseDict)
-                    self.handleSuccess()
-                }
-            }
+            self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
         }
     }
 
@@ -886,141 +843,62 @@ extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
 
 extension FormPaymentMethodTokenizationViewModel {
     
-    private func handle(_ clientToken: String) {
+    private func handleContinuePaymentFlowWithPaymentMethod(_ paymentMethod: PaymentMethodToken) {
+                
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        if state.clientToken != clientToken {
+        if settings.isManualPaymentHandlingEnabled {
             
-            ClientTokenService.storeClientToken(clientToken) { error in
-                DispatchQueue.main.async {
-
-                    guard error == nil else {
-                        ErrorHandler.handle(error: error!)
-                        PrimerDelegateProxy.onResumeError(error!)
-                        return
-                    }
-
-                    self.continueHandleNewClientToken(clientToken)
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
+                
+                self.cardComponentsManager.setIsLoading(false)
+                
+                if let err = err {
+                    self.handleFailedTokenizationFlow(error: err)
+                } else {
+                    self.handleSuccessfulTokenizationFlow()
                 }
-            }
+                
+                return
+            })
+
         } else {
-            self.continueHandleNewClientToken(clientToken)
-        }
-    }
-    
-    private func continueHandleNewClientToken(_ clientToken: String) {
-        
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            DispatchQueue.main.async {
-                let error = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                self.handle(error: error)
+            
+            guard let paymentMethodTokenString = paymentMethod.token else {
+                
+                DispatchQueue.main.async {
+                    // TODO: Raise appropriate error
+                }
+                return
             }
-            return
-        }
+                                
+            // Raise "payment creation started" event
+            
+            Primer.shared.delegate?.onPaymentStarted?(paymentMethodTokenString)
+            
+            // Create payment with Payment method token
+            
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+            createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
 
-        switch config.type {
-        case .adyenBlik:
-            if decodedClientToken.intent?.contains("_REDIRECTION") == true,
-                let statusUrlStr = decodedClientToken.statusUrl,
-                let statusUrl = URL(string: statusUrlStr) {
-                self.onResumeHandlerCompletion?(statusUrl, nil)
-            } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
-                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                guard let paymentResponse = paymentResponse,
+                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
+                          if let error = error {
+                              Primer.shared.delegate?.onPaymentError?(error)
+                              self.handle(error: error)
+                          }
+                          return
+                      }
                 
-                firstly {
-                    configService.fetchConfig()
-                }
-                .done {
-                    self.continueTokenizationFlow()
-                }
-                .catch { err in
-                    DispatchQueue.main.async {
-                        Primer.shared.delegate?.onResumeError?(err)
-                    }
-                    self.handle(error: err)
-                }
-            } else {
-                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                
-                handle(error: err)
-                DispatchQueue.main.async {
-                    PrimerDelegateProxy.onResumeError(err)
-                }
-            }
-        default:
-            if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                #if canImport(Primer3DS)
-                guard let paymentMethod = paymentMethod else {
-                    DispatchQueue.main.async {
-                        let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        ErrorHandler.handle(error: containerErr)
-                        PrimerDelegateProxy.onResumeError(containerErr)
-                    }
-                    return
-                }
-                
-                let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
-                    switch result {
-                    case .success(let paymentMethodToken):
-                        DispatchQueue.main.async {
-                            guard let threeDSPostAuthResponse = paymentMethodToken.1,
-                                let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                    DispatchQueue.main.async {
-                                        let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                        let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                        ErrorHandler.handle(error: err)
-                                        PrimerDelegateProxy.onResumeError(err)
-                                        self.handle(error: err)
-                                    }
-                                    return
-                                }
-                            
-                            PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
-                        }
-                        
-                    case .failure(let err):
-                        log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
-                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        ErrorHandler.handle(error: containerErr)
-                        DispatchQueue.main.async {
-                            PrimerDelegateProxy.onResumeError(containerErr)
-                        }
-                    }
-                }
-                #else
-                let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                DispatchQueue.main.async {
-                    PrimerDelegateProxy.onResumeError(err)
-                }
-                #endif
-                
-            } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
-                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                
-                firstly {
-                    configService.fetchConfig()
-                }
-                .done {
-                    self.continueTokenizationFlow()
-                }
-                .catch { err in
-                    DispatchQueue.main.async {
-                        Primer.shared.delegate?.onResumeError?(err)
-                    }
-                    self.handle(error: err)
-                }
-            } else {
-                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                
-                handle(error: err)
-                DispatchQueue.main.async {
-                    PrimerDelegateProxy.onResumeError(err)
+                self.resumePaymentId = paymentResponse.id
+
+                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
+                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
+                    self.handle(newClientToken: requiredAction.clientToken)
+                } else {
+                    Primer.shared.delegate?.onPaymentSuccess?(paymentResponseDict)
+                    self.handleSuccess()
                 }
             }
         }
