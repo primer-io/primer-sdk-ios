@@ -321,7 +321,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     func handleFailedTokenizationFlow(error: Error) {
         Primer.shared.primerRootVC?.handle(error: error)
     }
-    
 }
 
 extension PaymentMethodTokenizationViewModel {
@@ -335,6 +334,23 @@ extension PaymentMethodTokenizationViewModel {
     
     func handleSuccess() {
         assert(true, "\(self.self).\(#function) should be overriden")
+    }
+}
+
+extension PaymentMethodTokenizationViewModel {
+    
+    internal func handleErrorBasedOnSDKSettings(_ error: Error) {
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        if settings.isManualPaymentHandlingEnabled {
+            PrimerDelegateProxy.onResumeError(error)
+            handle(error: error)
+        } else {
+            Primer.shared.delegate?.checkoutDidFail?(error: error, payment: nil, completion: { errorMessage in
+                let merchantError = PrimerError.merchantError(message: errorMessage ?? "")
+                self.handle(error: merchantError)
+            })
+        }
     }
 }
 

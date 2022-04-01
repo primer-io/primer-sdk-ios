@@ -85,17 +85,12 @@ public protocol PrimerDelegate {
     ///   - payment: The Payment object containing the completed payment.
     @objc optional func checkoutDidCompleteWithPayment(_ payment: [String: Any])
     
-//    /// This function will be called when the checkout encountered an error.
-//    /// - Parameters:
-//    ///   - error: The Error object containing the error description.
-//    ///   - payment: The additional payment data if present
-//    ///   - completion: The completion handler containing a custom error to optionally pass to the SDK
-//    @objc optional func checkoutDidFail(error: Error, payment: [String: Any]?, completion: @escaping (Error?) -> Void)
-    
     /// This function will be called when the checkout encountered an error.
     /// - Parameters:
     ///   - error: The Error object containing the error description.
-    @objc optional func checkoutDidFailWithError(_ error: Error)
+    ///   - payment: The additional payment data if present
+    ///   - completion: The completion handler containing a custom error to optionally pass to the SDK
+    @objc optional func checkoutDidFail(error: Error, payment: [String: Any]?, completion: @escaping (String?) -> Void)
 }
 
 internal class PrimerDelegateProxy {
