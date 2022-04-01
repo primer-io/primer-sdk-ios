@@ -117,9 +117,9 @@ class UniversalCheckout: XCTestCase {
         wait(for: [payNowButtonExists], timeout: 15)
         payNowButton.tap()
 
-        try base.testSuccessMessageExists()
-        try base.testDismissSDK()
-        try base.testResultScreenExpectations(for: payment)
+        try base.successMessageExists()
+        try base.dismissSDK()
+        try base.resultScreenExpectations(for: payment)
     }
     
     func testAdyenAlipay() throws {
@@ -171,9 +171,9 @@ class UniversalCheckout: XCTestCase {
         let submitButton = app.buttons.matching(NSPredicate(format: "label == 'Absenden'")).firstMatch
         submitButton.tap()
         
-        try base.testSuccessMessageExists()
-        try base.testDismissSDK()
-        try base.testResultScreenExpectations(for: payment)
+        try base.successMessageExists()
+        try base.dismissSDK()
+        try base.resultScreenExpectations(for: payment)
     }
     
     func testAdyenMobilePay() throws {
@@ -256,7 +256,7 @@ class UniversalCheckout: XCTestCase {
         let scrollView = app.scrollViews["primer_container_scroll_view"]
         scrollView.swipeDown()
         
-        try base.testResultScreenExpectations(for: payment)
+        try base.resultScreenExpectations(for: payment)
     }
     
     func testPass3DSChallenge() throws {

@@ -84,7 +84,6 @@ class MerchantCheckoutViewController: UIViewController {
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
 
-        
         Primer.shared.configure(settings: generalSettings, theme: CheckoutTheme.primer)
         Primer.shared.delegate = self
     }
