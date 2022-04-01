@@ -264,32 +264,31 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     
     fileprivate func fetchQRCodePollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<QRCodePollingURLs> {
         return Promise { seal in
-            self.onClientToken = { (clientToken, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let clientToken = clientToken {
-                    do {
-                        try ClientTokenService.storeClientToken(clientToken)
-                    } catch {
-                        seal.reject(error)
-                        return
-                    }
-                    
-                    if let decodedClientToken = ClientTokenService.decodedClientToken {
-                        if decodedClientToken.intent != nil {
-                            if let statusUrl = decodedClientToken.statusUrl {
-                                seal.fulfill(QRCodePollingURLs(status: statusUrl, complete: nil))
-                                return
-                            }
+            self.onClientToken = { (clientToken, error) in
+                
+                guard error == nil else {
+                    seal.reject(error!)
+                    return
+                }
+                
+                if let clientToken = clientToken {
+                    ClientTokenService.storeClientToken(clientToken) { error in
+                        guard error == nil else {
+                            seal.reject(error!)
+                            return
                         }
-                        
+
+                        if let decodedClientToken = ClientTokenService.decodedClientToken,
+                            let statusUrl = decodedClientToken.statusUrl,
+                            decodedClientToken.intent != nil {
+                            seal.fulfill(QRCodePollingURLs(status: statusUrl, complete: nil))
+                            return
+                        }
                     }
-                    
-                    let err = PrimerError.invalidValue(key: "polling params", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
                 } else {
-                    assert(true, "Should have received one parameter")
+                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    seal.reject(error)
+                    return
                 }
             }
             
@@ -397,49 +396,43 @@ extension QRCodeTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
-        do {
-            guard let decodedClientToken = clientToken.jwtTokenPayload else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                self.handle(error: err)
-                return
+        guard let decodedClientToken = clientToken.jwtTokenPayload else {
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            self.handle(error: err)
+            return
+        }
+        
+        if decodedClientToken.intent == "XFERS_PAYNOW_REDIRECTION" {
+            if let qrCode = decodedClientToken.qrCode {
+                self.qrCode = qrCode
+                onClientToken?(clientToken, nil)
+            } else {
+                onClientToken?(clientToken, nil)
             }
             
-            if decodedClientToken.intent == "XFERS_PAYNOW_REDIRECTION" {
-                if let qrCode = decodedClientToken.qrCode {
-                    self.qrCode = qrCode
-                    onClientToken?(clientToken, nil)
-                } else {
-                    onClientToken?(clientToken, nil)
-                }
-                
-            } else if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-                super.handle(newClientToken: clientToken)
-            } else if decodedClientToken.intent == "CHECKOUT" {
-                try ClientTokenService.storeClientToken(clientToken)
-                
+        } else if decodedClientToken.intent?.contains("_REDIRECTION") == true {
+            super.handle(newClientToken: clientToken)
+        } else if decodedClientToken.intent == "CHECKOUT" {
+            
+            firstly {
+                ClientTokenService.storeClientToken(clientToken)
+            }
+            .then{ () -> Promise<Void> in
                 let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                
-                firstly {
-                    configService.fetchConfig()
-                }
-                .done {
-                    self.continueTokenizationFlow()
-                }
-                .catch { err in
-                    self.handle(error: err)
-                }
-            } else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
+                return configService.fetchConfig()
+            }
+            .done {
+                self.continueTokenizationFlow()
+            }
+            .catch { err in
                 self.handle(error: err)
-                return
             }
-        } catch {
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeError(error)
-                self.handle(error: error)
-            }
+        } else {
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            self.handle(error: err)
+            return
         }
     }
     

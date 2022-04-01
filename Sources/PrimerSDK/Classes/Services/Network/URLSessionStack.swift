@@ -153,18 +153,24 @@ internal class URLSessionStack: NetworkService {
                 }
                 
                 #if DEBUG
-                let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
-                var jsonStr: String?
-                if jsonData != nil {
-                    jsonStr = String(data: jsonData!, encoding: .utf8 )
+                
+                if endpoint.shouldParseResponseBody {
+                    
+                    let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                    let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
+                    var jsonStr: String?
+                    if jsonData != nil {
+                        jsonStr = String(data: jsonData!, encoding: .utf8 )
+                    }
+                    
+                    msg += "\nBody:\n\(jsonStr ?? "Empty body")"
+                    log(logLevel: .debug, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+                    
                 }
                 
-                msg += "\nBody:\n\(jsonStr ?? "Empty body")"
-                log(logLevel: .debug, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                 #endif
 
-                if endpoint.method == .delete, httpResponse?.statusCode == 200 {
+                if endpoint.shouldParseResponseBody == false, httpResponse?.statusCode == 200 {
                     let dummyRes: T = DummySuccess(success: true) as! T
                     DispatchQueue.main.async { completion(.success(dummyRes)) }
                 } else {
