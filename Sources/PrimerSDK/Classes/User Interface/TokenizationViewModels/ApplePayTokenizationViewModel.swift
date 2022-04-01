@@ -436,14 +436,12 @@ extension ApplePayTokenizationViewModel {
             createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
                 
                 guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
-                          if let error = error {
-                              Primer.shared.delegate?.checkoutDidFailWithError?(error)
-                              self.handle(error: error)
-                          }
-                          return
-                      }
-                
+                      let paymentResponseDict = try? paymentResponse.asDictionary(),
+                      error == nil else {
+                    self.handleErrorBasedOnSDKSettings(error!)
+                    return
+                }
+
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
                     Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
                     self.handle(newClientToken: requiredAction.clientToken)
@@ -454,9 +452,6 @@ extension ApplePayTokenizationViewModel {
             }
         }
     }
-    
-
-    
 }
 
 extension ApplePayTokenizationViewModel {
@@ -477,16 +472,19 @@ extension ApplePayTokenizationViewModel {
         }
         .then{ () -> Promise<Void> in
             let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            return configService.fetchConfig()
-        }
-        .done {
-            self.continueTokenizationFlow()
-        }
-        .catch { error in
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeError(error)
+            
+            firstly {
+                configService.fetchConfig()
             }
-            self.handle(error: error)
+            .done {
+                self.continueTokenizationFlow()
+            }
+            .catch { error in
+                self.handleErrorBasedOnSDKSettings(error)
+            }
+            
+        } catch {
+            self.handleErrorBasedOnSDKSettings(error)
         }
     }
     

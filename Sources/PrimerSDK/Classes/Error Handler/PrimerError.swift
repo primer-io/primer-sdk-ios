@@ -270,6 +270,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?)
     case missingCustomUI(paymentMethod: PaymentMethodConfigType, userInfo: [String: String]?)
+    case merchantError(message: String)
     case applePayTimedOut(userInfo: [String: String]?)
     
     var errorId: String {
@@ -324,6 +325,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "generic-underlying-errors"
         case .missingCustomUI:
             return "missing-custom-ui"
+        case .merchantError:
+            return "merchant-error"
         case .applePayTimedOut:
             return "apple-pay-timed-out"
         }
@@ -387,6 +390,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Multiple errors occured: \(errors.combinedDescription)"
         case .missingCustomUI(let paymentMethod, _):
             return "[\(errorId)] Missing custom user interface for \(paymentMethod.rawValue)"
+        case .merchantError(let message):
+            return message
         case .applePayTimedOut:
             return "[\(errorId)] Apple Pay timed out"
         }
@@ -423,6 +428,8 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .missingCustomUI(_, let userInfo),
                 .applePayTimedOut(let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .merchantError:
+            return nil
         }
         
         return tmpUserInfo
@@ -492,6 +499,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "Check underlying errors for more information."
         case .missingCustomUI(let paymentMethod, _):
             return "You have to built your UI for \(paymentMethod.rawValue) and utilize PrimerCheckoutComponents.UIManager's functionality."
+        case .merchantError:
+            return nil
         case .applePayTimedOut:
             return "Make sure you have an active internet connection and your Apple Pay configuration is correct."
         }
