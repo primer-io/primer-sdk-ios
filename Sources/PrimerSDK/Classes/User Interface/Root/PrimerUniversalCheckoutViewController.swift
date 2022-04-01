@@ -346,6 +346,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             }
         }
     }
+}
+
+extension PrimerUniversalCheckoutViewController {
     
     // MARK: - Helpers
     
@@ -377,14 +380,12 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
                 
                 guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
-                          if let error = error {
-                              Primer.shared.delegate?.checkoutDidFailWithError?(error)
-                              self.handle(error: error)
-                          }
-                          return
-                      }
-                
+                      let paymentResponseDict = try? paymentResponse.asDictionary(),
+                      error == nil else {
+                    self.handleErrorBasedOnSDKSettings(error!)
+                    return
+                }
+
                 self.resumePaymentId = paymentResponse.id
 
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
@@ -397,6 +398,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             }
         }
     }
+}
+    
+extension PrimerUniversalCheckoutViewController {
     
     private func enableView(_ isEnabled: Bool) {
         DispatchQueue.main.async { [weak self] in
@@ -484,50 +488,20 @@ extension PrimerUniversalCheckoutViewController {
                     switch result {
                     case .success(let paymentMethodToken):
                         DispatchQueue.main.async {
+                            
                             guard let threeDSPostAuthResponse = paymentMethodToken.1,
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
                                       DispatchQueue.main.async {
+                                          
                                           self.onClientSessionActionCompletion = nil
                                           let err = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                                           ErrorHandler.handle(error: err)
-                                          PrimerDelegateProxy.onResumeError(err)
-                                          self.handle(error: err)
+                                          self.handleErrorBasedOnSDKSettings(err)
                                       }
                                       return
                                   }
                             
-                            PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
-                            
-                            // Resume payment with Payment method token
-                                                        
-                            guard let resumePaymentId = self.resumePaymentId else {
-                                DispatchQueue.main.async {
-                                    // TODO: Raise appropriate error
-                                }
-                                return
-                            }
-                            
-                            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-                            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
-                                
-                                guard let paymentResponse = paymentResponse,
-                                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
-                                          if let error = error {
-                                              Primer.shared.delegate?.checkoutDidFailWithError?(error)
-                                              self.handle(error: error)
-                                          }
-                                          return
-                                      }
-                                
-                                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
-                                    self.handle(newClientToken: requiredAction.clientToken)
-                                } else {
-                                    Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
-                                    self.handleSuccess()
-                                }
-                            }
-
+                            self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
                         }
                         
                     case .failure(let err):
@@ -537,8 +511,7 @@ extension PrimerUniversalCheckoutViewController {
                             self.onClientSessionActionCompletion = nil
                             let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                             ErrorHandler.handle(error: containerErr)
-                            PrimerDelegateProxy.onResumeError(containerErr)
-                            self.handle(error: err)
+                            self.handleErrorBasedOnSDKSettings(containerErr)
                         }
                     }
                 }
@@ -548,42 +521,21 @@ extension PrimerUniversalCheckoutViewController {
                     self.onClientSessionActionCompletion = nil
                     let err = PrimerError.invalid3DSKey(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
-                    PrimerDelegateProxy.onResumeError(err)
-                    self.handle(error: err)
+                    self.handleErrorBasedOnSDKSettings(err)
                 }
-                return
-            }
-            
-            let threeDSService = ThreeDSService()
-            threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: ClientTokenService.decodedClientToken?.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
-                switch result {
-                case .success(let paymentMethodToken):
-                    DispatchQueue.main.async {
-                        guard let threeDSPostAuthResponse = paymentMethodToken.1,
-                              let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                  DispatchQueue.main.async {
-                                      self.onClientSessionActionCompletion = nil
-                                      let err = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                      ErrorHandler.handle(error: err)
-                                      PrimerDelegateProxy.onResumeError(err)
-                                      self.handle(error: err)
-                                  }
-                                  return
-                              }
-                        
-                        PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
-                    }
-                    
-                case .failure(let err):
-                    log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
-                    
-                    DispatchQueue.main.async {
-                        self.onClientSessionActionCompletion = nil
-                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        ErrorHandler.handle(error: containerErr)
-                        PrimerDelegateProxy.onResumeError(containerErr)
-                        self.handle(error: err)
-                    }
+                #endif
+                
+            } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
+                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                
+                firstly {
+                    configService.fetchConfig()
+                }
+                .done {
+                    self.onClientSessionActionCompletion?(nil)
+                }
+                .catch { err in
+                    self.handleErrorBasedOnSDKSettings(err)
                 }
             }
             #else
@@ -608,17 +560,14 @@ extension PrimerUniversalCheckoutViewController {
             }
             .catch { err in
                 ErrorHandler.handle(error: err)
-                self.handle(error: err)
                 DispatchQueue.main.async {
-                    PrimerDelegateProxy.onResumeError(err)
+                    self.handleErrorBasedOnSDKSettings(err)
                 }
             }
-        } else {
-            let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            handle(error: err)
+            
+        } catch {
             DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeError(err)
+                self.handleErrorBasedOnSDKSettings(error)
             }
         }
     }
@@ -649,6 +598,66 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
         }
     }
 }
+
+extension PrimerUniversalCheckoutViewController {
+    
+    private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) {
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if settings.isManualPaymentHandlingEnabled {
+            PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
+        } else {
+            
+            // Resume payment with Payment method token
+                            
+            guard let resumePaymentId = self.resumePaymentId else {
+                DispatchQueue.main.async {
+                    // TODO: Raise appropriate error
+                }
+                return
+            }
+            
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
+                
+                guard let paymentResponse = paymentResponse,
+                      let paymentResponseDict = try? paymentResponse.asDictionary(),
+                      error == nil else {
+                    self.handleErrorBasedOnSDKSettings(error!)
+                    return
+                }
+                
+                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
+                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
+                    self.handle(newClientToken: requiredAction.clientToken)
+                } else {
+                    Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
+                    self.handleSuccess()
+                }
+            }
+        }
+    }
+}
+
+
+extension PrimerUniversalCheckoutViewController {
+    
+    private func handleErrorBasedOnSDKSettings(_ error: Error) {
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        if settings.isManualPaymentHandlingEnabled {
+            PrimerDelegateProxy.onResumeError(error)
+            handle(error: error)
+        } else {
+            Primer.shared.delegate?.checkoutDidFail?(error: error, payment: nil, completion: { errorMessage in
+                let merchantError = PrimerError.merchantError(message: errorMessage ?? "")
+                self.handle(error: merchantError)
+            })
+        }
+    }
+}
+
 
 extension PrimerUniversalCheckoutViewController: ReloadDelegate {
     func reload() {

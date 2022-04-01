@@ -883,14 +883,12 @@ extension FormPaymentMethodTokenizationViewModel {
             createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
 
                 guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
-                          if let error = error {
-                              Primer.shared.delegate?.checkoutDidFailWithError?(error)
-                              self.handle(error: error)
-                          }
-                          return
-                      }
-                
+                      let paymentResponseDict = try? paymentResponse.asDictionary(),
+                      error == nil else {
+                    self.handleErrorBasedOnSDKSettings(error!)
+                    return
+                }
+
                 self.resumePaymentId = paymentResponse.id
 
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {

@@ -270,6 +270,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?)
     case missingCustomUI(paymentMethod: PaymentMethodConfigType, userInfo: [String: String]?)
+    case merchantError(message: String)
     
     var errorId: String {
         switch self {
@@ -323,6 +324,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "generic-underlying-errors"
         case .missingCustomUI:
             return "missing-custom-ui"
+        case .merchantError:
+            return "merchant-error"
         }
     }
     
@@ -384,6 +387,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Multiple errors occured: \(errors.combinedDescription)"
         case .missingCustomUI(let paymentMethod, _):
             return "[\(errorId)] Missing custom user interface for \(paymentMethod.rawValue)"
+        case .merchantError(let message):
+            return message
         }
     }
     
@@ -417,6 +422,8 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .underlyingErrors(_, let userInfo),
                 .missingCustomUI(_, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        case .merchantError:
+            return nil
         }
         
         return tmpUserInfo
@@ -486,6 +493,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "Check underlying errors for more information."
         case .missingCustomUI(let paymentMethod, _):
             return "You have to built your UI for \(paymentMethod.rawValue) and utilize PrimerCheckoutComponents.UIManager's functionality."
+        case .merchantError:
+            return nil
         }
     }
     

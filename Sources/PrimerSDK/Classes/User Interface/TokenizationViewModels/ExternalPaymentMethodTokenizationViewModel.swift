@@ -664,6 +664,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     internal func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
         return Promise { seal in
+            
             self.onResumeTokenCompletion = { (paymentMethod, err) in
                 if let err = err {
                     seal.reject(err)
@@ -675,41 +676,51 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
+                self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+            }
+        }
+    }
+}
+
+extension ExternalPaymentMethodTokenizationViewModel {
+    
+    private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) {
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        if settings.isManualPaymentHandlingEnabled {
+            PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
+        } else {
+            
+            // Resume payment with Payment method token
+                            
+            guard let resumePaymentId = self.resumePaymentId else {
+                DispatchQueue.main.async {
+                    // TODO: Raise appropriate error
+                }
+                return
+            }
+            
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
                 
-                // Resume payment with Payment method token
-                                
-                guard let resumePaymentId = self.resumePaymentId else {
-                    DispatchQueue.main.async {
-                        // TODO: Raise appropriate error
-                    }
+                guard let paymentResponse = paymentResponse,
+                      let paymentResponseDict = try? paymentResponse.asDictionary(),
+                      error == nil else {
+                    self.handleErrorBasedOnSDKSettings(error!)
                     return
                 }
                 
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-                createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
-                    
-                    guard let paymentResponse = paymentResponse,
-                          let paymentResponseDict = try? paymentResponse.asDictionary() else {
-                              if let error = error {
-                                  Primer.shared.delegate?.checkoutDidFailWithError?(error)
-                                  self.handle(error: error)
-                              }
-                              return
-                          }
-                    
-                    if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                        Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
-                        self.handle(newClientToken: requiredAction.clientToken)
-                    } else {
-                        Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
-                        self.handleSuccess()
-                    }
+                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
+                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
+                    self.handle(newClientToken: requiredAction.clientToken)
+                } else {
+                    Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
+                    self.handleSuccess()
                 }
             }
         }
     }
-    
 }
 
 extension ExternalPaymentMethodTokenizationViewModel {
@@ -742,14 +753,12 @@ extension ExternalPaymentMethodTokenizationViewModel {
             createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
                 
                 guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
-                          if let error = error {
-                              Primer.shared.delegate?.checkoutDidFailWithError?(error)
-                              self.handle(error: error)
-                          }
-                          return
-                      }
-                
+                      let paymentResponseDict = try? paymentResponse.asDictionary(),
+                      error == nil else {
+                    self.handleErrorBasedOnSDKSettings(error!)
+                    return
+                }
+
                 self.resumePaymentId = paymentResponse.id
 
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
@@ -830,25 +839,21 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 .done {
                     self?.continueTokenizationFlow()
                 }
-                .catch { err in
+                .catch { error in
                     DispatchQueue.main.async {
-                        PrimerDelegateProxy.onResumeError(err)
-                        Primer.shared.delegate?.checkoutDidFailWithError?(err)
+                        self.handleErrorBasedOnSDKSettings(error)
                     }
-                    self?.handle(error: err)
                 }
             }
         }
         .catch { error in
             
             DispatchQueue.main.async {
-                PrimerDelegateProxy.onResumeError(error)
-                Primer.shared.delegate?.checkoutDidFailWithError?(error)
+                self.handleErrorBasedOnSDKSettings(error)
             }
             
-            self.handle(error: error)
-            self.onClientToken?(nil, error)
-            self.onClientToken = nil
+            onClientToken?(nil, error)
+            onClientToken = nil
         }
     }
     
@@ -857,7 +862,6 @@ extension ExternalPaymentMethodTokenizationViewModel {
         onResumeTokenCompletion?(self.paymentMethod, nil)
         onResumeTokenCompletion = nil
     }
-    
 }
 
 enum PollingStatus: String, Codable {
