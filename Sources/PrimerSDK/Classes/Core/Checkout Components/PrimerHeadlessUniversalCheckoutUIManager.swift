@@ -402,7 +402,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                             return
                         }
                         
-                        PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: nil)
+                        PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
                     }
                     
                 case .failure(let err):

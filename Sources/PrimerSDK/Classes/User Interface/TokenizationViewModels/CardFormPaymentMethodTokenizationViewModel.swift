@@ -808,7 +808,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                                       let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                                       let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                                       ErrorHandler.handle(error: err)
-                                      PrimerDelegateProxy.onResumeError(containerErr)
+                                      PrimerDelegateProxy.onResumeError(err)
                                       self.handle(error: err)
                                   }
                                   return
