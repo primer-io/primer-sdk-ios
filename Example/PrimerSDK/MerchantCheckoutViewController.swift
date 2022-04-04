@@ -389,6 +389,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             if let paymentResponsesData = self?.paymentResponsesData, !paymentResponsesData.isEmpty {
                 let rvc = ResultViewController.instantiate(data: paymentResponsesData)
                 self?.navigationController?.pushViewController(rvc, animated: true)
+                self?.paymentResponsesData = []
             }
         }
     }
