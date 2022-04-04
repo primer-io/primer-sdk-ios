@@ -391,10 +391,8 @@ extension QRCodeTokenizationViewModel {
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        if settings.isManualPaymentHandlingEnabled {
-            
+        if settings.isManualPaymentHandlingEnabled {            
             PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
-            
         } else {
             
             // Resume payment with Payment method token
