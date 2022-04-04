@@ -398,6 +398,8 @@ extension ApplePayTokenizationViewModel {
             
             Primer.shared.delegate?.onPaymentWillCreate?(paymentMethodTokenString)
             
+            // Create payment with Payment method token
+            
             let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
             createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
                 
