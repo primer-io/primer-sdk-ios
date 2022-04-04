@@ -384,8 +384,6 @@ extension ApplePayTokenizationViewModel {
 
         } else {
             
-            // Create payment with Payment method token
-            
             guard let paymentMethodTokenString = paymentMethod.token else {
                 
                 DispatchQueue.main.async {
