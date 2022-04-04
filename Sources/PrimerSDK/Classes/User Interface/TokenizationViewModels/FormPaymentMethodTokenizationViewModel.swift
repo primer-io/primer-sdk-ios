@@ -651,15 +651,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
 
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethod: PaymentMethodToken) {
-        
-        guard let paymentMethodTokenString = paymentMethod.token else {
-            
-            DispatchQueue.main.async {
-                // TODO: Raise appropriate error
-            }
-            return
-        }
-        
+                
         self.paymentMethod = paymentMethod
         
         DispatchQueue.main.async {
