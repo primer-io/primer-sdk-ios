@@ -437,61 +437,6 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
 
 extension PayPalTokenizationViewModel {
     
-    private func handleContinuePaymentFlowWithPaymentMethod(_ paymentMethod: PaymentMethodToken) {
-                
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if settings.isManualPaymentHandlingEnabled {
-            
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { [unowned self] err in
-                if let err = err {
-                    self.handleFailedTokenizationFlow(error: err)
-                } else {
-                    self.handleSuccessfulTokenizationFlow()
-                }
-            })
-
-        } else {
-            
-            guard let paymentMethodTokenString = paymentMethod.token else {
-                
-                DispatchQueue.main.async {
-                    // TODO: Raise appropriate error
-                }
-                return
-            }
-            
-            // Raise "payment creation started" event
-            
-            Primer.shared.delegate?.onPaymentWillCreate?(paymentMethodTokenString)
-            
-            // Create payment with Payment method token
-
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
-                
-                guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary(),
-                      error == nil else {
-                    self.handleErrorBasedOnSDKSettings(error!)
-                    return
-                }
-
-                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
-                    self.handle(newClientToken: requiredAction.clientToken)
-                } else {
-                    Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
-                    self.handleSuccess()
-                }
-            }
-        }
-    }
-}
-
-extension PayPalTokenizationViewModel {
-    
     override func handle(error: Error) {
         ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
         self.completion?(nil, error)
