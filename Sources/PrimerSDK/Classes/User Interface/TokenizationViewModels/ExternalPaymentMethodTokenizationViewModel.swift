@@ -379,9 +379,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         get { return _buttonTintColor }
         set { _buttonTintColor = newValue }
     }
-    
-    var resumePaymentId: String?
-    
+        
     var willPresentExternalView: (() -> Void)?
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
@@ -720,99 +718,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 }
 
-extension ExternalPaymentMethodTokenizationViewModel {
-    
-    private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) {
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if settings.isManualPaymentHandlingEnabled {
-            PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
-        } else {
-            
-            // Resume payment with Payment method token
-                            
-            guard let resumePaymentId = self.resumePaymentId else {
-                DispatchQueue.main.async {
-                    // TODO: Raise appropriate error
-                }
-                return
-            }
-            
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
-                
-                guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary(),
-                      error == nil else {
-                    self.handleErrorBasedOnSDKSettings(error!)
-                    return
-                }
-                
-                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
-                    self.handle(newClientToken: requiredAction.clientToken)
-                } else {
-                    Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
-                    self.handleSuccess()
-                }
-            }
-        }
-    }
-}
-
-extension ExternalPaymentMethodTokenizationViewModel {
-    
-    private func handleContinuePaymentFlowWithPaymentMethod(_ paymentMethod: PaymentMethodToken) {
-                
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if settings.isManualPaymentHandlingEnabled {
-            
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
-            
-        } else {
-                        
-            guard let paymentMethodTokenString = paymentMethod.token else {
-                
-                DispatchQueue.main.async {
-                    // TODO: Raise appropriate error
-                }
-                return
-            }
-            
-            // Raise "payment creation started" event
-            
-            Primer.shared.delegate?.onPaymentWillCreate?(paymentMethodTokenString)
-            
-            // Create payment with Payment method token
-
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
-                
-                guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary(),
-                      error == nil else {
-                    self.handleErrorBasedOnSDKSettings(error!)
-                    return
-                }
-
-                self.resumePaymentId = paymentResponse.id
-
-                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
-                    self.handle(newClientToken: requiredAction.clientToken)
-                } else {
-                    Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
-                    self.handleSuccess()
-                }
-            }
-        }
-    }
-
-    
-}
-
 extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
@@ -867,8 +772,6 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 self?.onClientToken = nil
                 
             } else {
-                // intent = "CHECKOUT"
-                // if decodedClientToken.intent == RequiredActionName.checkout.rawValue
                 let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
                 
                 firstly {
@@ -879,7 +782,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 }
                 .catch { error in
                     DispatchQueue.main.async {
-                        self.handleErrorBasedOnSDKSettings(error)
+                        self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
                     }
                 }
             }
@@ -887,7 +790,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
         .catch { error in
             
             DispatchQueue.main.async {
-                self.handleErrorBasedOnSDKSettings(error)
+                self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
             }
             
             onClientToken?(nil, error)
@@ -970,8 +873,6 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
             DispatchQueue.main.async { [unowned self] in
                 self.webViewController = SFSafariViewController(url: url)
                 self.webViewController?.delegate = self
-                //                self.webViewController!.modalPresentationStyle = .fullScreen
-                
                 self.willPresentExternalView?()
                 Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
                     self.didPresentExternalView?()
