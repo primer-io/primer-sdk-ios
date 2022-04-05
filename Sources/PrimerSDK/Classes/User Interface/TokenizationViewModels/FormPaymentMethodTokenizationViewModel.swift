@@ -31,7 +31,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     var inputs: [Input] = []
     private var cardComponentsManager: CardComponentsManager!
     var onConfigurationFetched: (() -> Void)?
-    var resumePaymentId: String?
     
     // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false
@@ -831,68 +830,6 @@ extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
 
     }
     
-}
-
-extension FormPaymentMethodTokenizationViewModel {
-    
-    private func handleContinuePaymentFlowWithPaymentMethod(_ paymentMethod: PaymentMethodToken) {
-                
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if settings.isManualPaymentHandlingEnabled {
-            
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
-                
-                self.cardComponentsManager.setIsLoading(false)
-                
-                if let err = err {
-                    self.handleFailedTokenizationFlow(error: err)
-                } else {
-                    self.handleSuccessfulTokenizationFlow()
-                }
-                
-                return
-            })
-
-        } else {
-            
-            guard let paymentMethodTokenString = paymentMethod.token else {
-                
-                DispatchQueue.main.async {
-                    // TODO: Raise appropriate error
-                }
-                return
-            }
-                                
-            // Raise "payment creation started" event
-            
-            Primer.shared.delegate?.onPaymentWillCreate?(paymentMethodTokenString)
-            
-            // Create payment with Payment method token
-            
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
-
-                guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary(),
-                      error == nil else {
-                    self.handleErrorBasedOnSDKSettings(error!)
-                    return
-                }
-
-                self.resumePaymentId = paymentResponse.id
-
-                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
-                    self.handle(newClientToken: requiredAction.clientToken)
-                } else {
-                    Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
-                    self.handleSuccess()
-                }
-            }
-        }
-    }
 }
 
 extension FormPaymentMethodTokenizationViewModel {
