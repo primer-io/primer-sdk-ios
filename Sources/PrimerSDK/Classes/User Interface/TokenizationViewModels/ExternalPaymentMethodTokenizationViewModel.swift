@@ -348,6 +348,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     @objc
     override func startTokenizationFlow() {
+        DispatchQueue.main.async {
+            UIApplication.shared.beginIgnoringInteractionEvents()
+        }
+        
         super.startTokenizationFlow()
         
         let event = Analytics.Event(
@@ -380,6 +384,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             try self.validate()
         } catch {
             DispatchQueue.main.async {
+                UIApplication.shared.endIgnoringInteractionEvents()
                 PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
                 self.completion?(nil, error)
@@ -402,6 +407,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
         }
         .ensure { [unowned self] in
+            DispatchQueue.main.async {
+                UIApplication.shared.endIgnoringInteractionEvents()
+            }
             DispatchQueue.main.async {
                 self.willDismissExternalView?()
                 self.webViewController?.dismiss(animated: true, completion: {
@@ -451,6 +459,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     let err = PrimerError.invalidValue(key: "redirectUrl", value: pollingURLs.redirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     throw err
+                }
+                
+                DispatchQueue.main.async {
+                    UIApplication.shared.endIgnoringInteractionEvents()
                 }
                 
                 return self.presentAsyncPaymentMethod(with: redirectUrl)
