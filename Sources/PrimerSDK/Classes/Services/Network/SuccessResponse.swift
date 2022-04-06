@@ -1,5 +1,5 @@
 //
-//  MockSuccess.swift
+//  SuccessResponse.swift
 //  PrimerSDK
 //
 //  Created by Evangelos on 13/1/22.
@@ -9,7 +9,9 @@
 
 import Foundation
 
-internal struct DummySuccess: Codable {
+typealias DummySuccess = SuccessResponse
+
+internal struct SuccessResponse: Codable {
     let success: Bool
 }
 

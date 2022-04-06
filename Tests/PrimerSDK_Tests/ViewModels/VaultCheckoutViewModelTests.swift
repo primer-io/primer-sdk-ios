@@ -20,7 +20,7 @@ class VaultCheckoutViewModelTests: XCTestCase {
         DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)
         DependencyContainer.register(state as AppStateProtocol)
 
-        let viewModel = VaultCheckoutViewModel()
+        let viewModel = MockVaultCheckoutViewModel()
 
         viewModel.loadConfig({ _ in })
 

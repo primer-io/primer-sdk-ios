@@ -131,7 +131,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenTwint:
             return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
-        
+            
         case .adyenVipps:
             return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
@@ -338,7 +338,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    override func validate() throws {        
+    override func validate() throws {
         if ClientTokenService.decodedClientToken?.isValid != true {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -348,6 +348,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     @objc
     override func startTokenizationFlow() {
+        DispatchQueue.main.async {
+            UIApplication.shared.beginIgnoringInteractionEvents()
+        }
+        
         super.startTokenizationFlow()
         
         let event = Analytics.Event(
@@ -380,13 +384,14 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             try self.validate()
         } catch {
             DispatchQueue.main.async {
+                UIApplication.shared.endIgnoringInteractionEvents()
                 PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
                 self.completion?(nil, error)
             }
             return
         }
-                
+        
         firstly {
             self.tokenize()
         }
@@ -399,10 +404,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             
             DispatchQueue.main.async {
                 self.completion?(self.paymentMethod, nil)
-                self.handleSuccessfulTokenizationFlow()
             }
         }
         .ensure { [unowned self] in
+            DispatchQueue.main.async {
+                UIApplication.shared.endIgnoringInteractionEvents()
+            }
             DispatchQueue.main.async {
                 self.willDismissExternalView?()
                 self.webViewController?.dismiss(animated: true, completion: {
@@ -452,6 +459,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     let err = PrimerError.invalidValue(key: "redirectUrl", value: pollingURLs.redirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     throw err
+                }
+                
+                DispatchQueue.main.async {
+                    UIApplication.shared.endIgnoringInteractionEvents()
                 }
                 
                 return self.presentAsyncPaymentMethod(with: redirectUrl)
@@ -521,33 +532,32 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     internal func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<PollingURLs> {
         return Promise { seal in
-            self.onClientToken = { (clientToken, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let clientToken = clientToken {
-                    do {
-                        try ClientTokenService.storeClientToken(clientToken)
-                    } catch {
-                        seal.reject(error)
-                        return
-                    }
-                    
-                    if let decodedClientToken = ClientTokenService.decodedClientToken {
-                        if decodedClientToken.intent != nil {
-                            if let redirectUrl = decodedClientToken.redirectUrl,
-                               let statusUrl = decodedClientToken.statusUrl {
-                                seal.fulfill(PollingURLs(status: statusUrl, redirect: redirectUrl, complete: nil))
-                                return
-                            }
+            self.onClientToken = { (clientToken, error) in
+                
+                guard error == nil else {
+                    seal.reject(error!)
+                    return
+                }
+                
+                if let clientToken = clientToken {
+                    ClientTokenService.storeClientToken(clientToken) { error in
+                        guard error == nil else {
+                            seal.reject(error!)
+                            return
                         }
-                        
+
+                        if let decodedClientToken = ClientTokenService.decodedClientToken,
+                            let redirectUrl = decodedClientToken.redirectUrl,
+                            let statusUrl = decodedClientToken.statusUrl,
+                            decodedClientToken.intent != nil {
+                            seal.fulfill(PollingURLs(status: statusUrl, redirect: redirectUrl, complete: nil))
+                            return
+                        }
                     }
-                    
-                    let err = PrimerError.invalidValue(key: "polling params", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
                 } else {
-                    assert(true, "Should have received one parameter")
+                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    seal.reject(error)
+                    return
                 }
             }
             
@@ -667,7 +677,7 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
             self.didPresentExternalView?()
         }
     }
-
+    
 }
 
 extension ExternalPaymentMethodTokenizationViewModel {
@@ -686,14 +696,21 @@ extension ExternalPaymentMethodTokenizationViewModel {
     }
     
     override func handle(newClientToken clientToken: String) {
-        do {
-            try ClientTokenService.storeClientToken(clientToken)
+        
+        firstly {
+            ClientTokenService.storeClientToken(clientToken)
+        }
+        .then{ () -> Promise<Void> in
+            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+            return configService.fetchConfig()
+        }
+        .done { [weak self] in
             
             let decodedClientToken = ClientTokenService.decodedClientToken!
             
             if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-                onClientToken?(clientToken, nil)
-                onClientToken = nil
+                self?.onClientToken?(clientToken, nil)
+                self?.onClientToken = nil
                 
             } else {
                 // intent = "CHECKOUT"
@@ -704,24 +721,25 @@ extension ExternalPaymentMethodTokenizationViewModel {
                     configService.fetchConfig()
                 }
                 .done {
-                    self.continueTokenizationFlow()
+                    self?.continueTokenizationFlow()
                 }
                 .catch { err in
                     DispatchQueue.main.async {
                         PrimerDelegateProxy.onResumeError(err)
                     }
-                    self.handle(error: err)
+                    self?.handle(error: err)
                 }
             }
+        }
+        .catch { error in
             
-        } catch {
             DispatchQueue.main.async {
                 PrimerDelegateProxy.onResumeError(error)
             }
             
-            handle(error: error)
-            onClientToken?(nil, error)
-            onClientToken = nil
+            self.handle(error: error)
+            self.onClientToken?(nil, error)
+            self.onClientToken = nil
         }
     }
     
@@ -783,10 +801,10 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
                 seal.reject(err)
                 return
             }
-
+            
             if let returnedPaymentMethodJson = returnedPaymentMethodJson,
                let returnedPaymentMethodData = returnedPaymentMethodJson.data(using: .utf8),
-                let paymentMethod = try? JSONDecoder().decode(PaymentMethodToken.self, from: returnedPaymentMethodData) {
+               let paymentMethod = try? JSONDecoder().decode(PaymentMethodToken.self, from: returnedPaymentMethodData) {
                 seal.fulfill(paymentMethod)
             } else {
                 let err = ParserError.failedToDecode(message: "Failed to decode tokenization response.", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -801,7 +819,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
             DispatchQueue.main.async { [unowned self] in
                 self.webViewController = SFSafariViewController(url: url)
                 self.webViewController?.delegate = self
-//                self.webViewController!.modalPresentationStyle = .fullScreen
+                //                self.webViewController!.modalPresentationStyle = .fullScreen
                 
                 self.willPresentExternalView?()
                 Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
@@ -813,16 +831,16 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
     }
     
     internal override func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
-//        {
-//          "status" : "COMPLETE",
-//          "id" : "4474848f-721d-4c35-9325-e287196f7016",
-//          "source" : "WEBHOOK",
-//          "urls" : {
-//            "status" : "https:\/\/api.staging.primer.io\/resume-tokens\/4474848f-721d-4c35-9325-e287196f7016",
-//            "redirect" : "https:\/\/api.staging.primer.io\/resume-tokens\/4474848f-721d-4c35-9325-e287196f7016\/complete?api_key=9e66ba99-e154-4e34-9d96-91777859b85b",
-//            "complete" : "https:\/\/api.staging.primer.io\/resume-tokens\/4474848f-721d-4c35-9325-e287196f7016\/complete"
-//          }
-//        }
+        //        {
+        //          "status" : "COMPLETE",
+        //          "id" : "4474848f-721d-4c35-9325-e287196f7016",
+        //          "source" : "WEBHOOK",
+        //          "urls" : {
+        //            "status" : "https:\/\/api.staging.primer.io\/resume-tokens\/4474848f-721d-4c35-9325-e287196f7016",
+        //            "redirect" : "https:\/\/api.staging.primer.io\/resume-tokens\/4474848f-721d-4c35-9325-e287196f7016\/complete?api_key=9e66ba99-e154-4e34-9d96-91777859b85b",
+        //            "complete" : "https:\/\/api.staging.primer.io\/resume-tokens\/4474848f-721d-4c35-9325-e287196f7016\/complete"
+        //          }
+        //        }
         completion("4474848f-721d-4c35-9325-e287196f7016", nil)
     }
     
