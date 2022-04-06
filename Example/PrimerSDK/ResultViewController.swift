@@ -31,15 +31,13 @@ class ResultViewController: UIViewController {
         responseStatus.text = paymentResponses.last?.status.rawValue
         responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
         switch paymentResponses.last?.status {
-        case .declined,
-                .failed:
+        case .failed:
             responseStatus.textColor = .red
-        case .authorized,
-                .settled:
+        case .success:
             responseStatus.textColor = .green
         case .pending:
             responseStatus.textColor = .orange
-        case .none:
+        default:
             break
         }
         
@@ -54,22 +52,14 @@ class ResultViewController: UIViewController {
 
         let responseAttrStr = NSMutableAttributedString(string: responsesStr, attributes: nil)
         
-        let settledRanges = responsesStr.allRanges(of: Payment.Response.Status.settled.rawValue).compactMap({ $0.toNSRange(in: responsesStr) })
-        settledRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemGreen, range: $0) })
-        settledRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
-        
-        let authorizedRanges = responsesStr.allRanges(of: Payment.Response.Status.authorized.rawValue).compactMap({ $0.toNSRange(in: responsesStr) })
-        authorizedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemGreen, range: $0) })
-        authorizedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
-        
-        let declinedRanges = responsesStr.allRanges(of: Payment.Response.Status.declined.rawValue).compactMap({ $0.toNSRange(in: responsesStr) })
-        declinedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemRed, range: $0) })
-        declinedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
-        
+        let successRanges = responsesStr.allRanges(of: Payment.Response.Status.success.rawValue).compactMap({ $0.toNSRange(in: responsesStr) })
+        successRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemGreen, range: $0) })
+        successRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
+                
         let failedRanges = responsesStr.allRanges(of: Payment.Response.Status.failed.rawValue).compactMap({ $0.toNSRange(in: responsesStr) })
         failedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemRed, range: $0) })
         failedRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
-        
+                
         let pendingRanges = responsesStr.allRanges(of: Payment.Response.Status.pending.rawValue).compactMap({ $0.toNSRange(in: responsesStr) })
         pendingRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemOrange, range: $0) })
         pendingRanges.forEach({ responseAttrStr.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 15, weight: .semibold), range: $0) })
