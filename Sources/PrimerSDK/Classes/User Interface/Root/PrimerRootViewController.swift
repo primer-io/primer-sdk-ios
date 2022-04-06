@@ -414,8 +414,6 @@ internal class PrimerRootViewController: PrimerViewController {
             
             if self.nc.viewControllers.isEmpty {
                 show = !settings.isInitialLoadingHidden
-            } else if settings.hasDisabledSuccessScreen {
-                show = false
             }
             
             let height = self.nc.viewControllers.first?.view.bounds.height ?? 300
