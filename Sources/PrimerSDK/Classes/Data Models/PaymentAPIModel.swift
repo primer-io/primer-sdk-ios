@@ -414,12 +414,21 @@ public struct Payment {
             public let description: String?
         }
         
+        /// This enum is giong to be simplified removing the following cases:
+        /// - authorized
+        /// - settled
+        /// - declined
+        /// We are going to have only the following
+        /// - pending
+        /// - success
+        /// - failed
         public enum Status: String, Codable {
             case authorized = "AUTHORIZED"
             case settled = "SETTLED"
             case declined = "DECLINED"
             case failed = "FAILED"
             case pending = "PENDING"
+            case success = "SUCCESS"
         }
     }
 }
