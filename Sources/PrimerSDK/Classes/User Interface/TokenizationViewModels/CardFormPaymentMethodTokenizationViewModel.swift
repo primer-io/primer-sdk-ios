@@ -580,23 +580,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+        
         self.paymentMethod = paymentMethodToken
         
-        DispatchQueue.main.async {
-            if Primer.shared.flow.internalSessionFlow.vaulted {
-                Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
-            }
-            
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, { err in
-                self.cardComponentsManager.setIsLoading(false)
-                
-                if let err = err {
-                    self.handleFailedTokenizationFlow(error: err)
-                } else {
-                    self.handleSuccessfulTokenizationFlow()
-                }
-            })
+        DispatchQueue.main.async {            
+            self.handleContinuePaymentFlowWithPaymentMethod(paymentMethodToken)
         }
     }
     
