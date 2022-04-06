@@ -821,6 +821,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: containerErr)
+                    self.handle(error: err)
                     DispatchQueue.main.async {
                         PrimerDelegateProxy.onResumeError(containerErr)
                     }
