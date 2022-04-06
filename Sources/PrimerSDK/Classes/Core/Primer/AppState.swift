@@ -36,13 +36,13 @@ internal class AppState: AppStateProtocol {
 }
 
 public struct ImplementedReactNativeCallbacks: Codable {
-    public var isClientTokenCallbackImplemented: Bool
-    public var isTokenAddedToVaultImplemented: Bool
-    public var isOnResumeSuccessImplemented: Bool
-    public var isOnResumeErrorImplemented: Bool
-    public var isOnCheckoutDismissedImplemented: Bool
-    public var isCheckoutFailedImplemented: Bool
-    public var isClientSessionActionsImplemented: Bool
+    public var isClientTokenCallbackImplemented: Bool?
+    public var isTokenAddedToVaultImplemented: Bool?
+    public var isOnResumeSuccessImplemented: Bool?
+    public var isOnResumeErrorImplemented: Bool?
+    public var isOnCheckoutDismissedImplemented: Bool?
+    public var isCheckoutFailedImplemented: Bool?
+    public var isClientSessionActionsImplemented: Bool?
 }
 
 #endif
