@@ -9,6 +9,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case adyenDotPay
     case adyenGiropay
     case adyenIDeal
+    case adyenInterac
     case adyenMobilePay
     case adyenSofort
     case adyenTrustly
@@ -50,6 +51,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .adyenGiropay
         case "ADYEN_IDEAL":
             self = .adyenIDeal
+        case "ADYEN_INTERAC":
+            self = .adyenInterac
         case "ADYEN_MOBILEPAY":
             self = .adyenMobilePay
         case "ADYEN_SOFORT":
@@ -119,6 +122,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "ADYEN_GIROPAY"
         case .adyenIDeal:
             return "ADYEN_IDEAL"
+        case .adyenInterac:
+            return "ADYEN_INTERAC"
         case .adyenMobilePay:
             return "ADYEN_MOBILEPAY"
         case .adyenSofort:
@@ -183,6 +188,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .adyenDotPay,
                 .adyenGiropay,
                 .adyenIDeal,
+                .adyenInterac,
                 .adyenMobilePay,
                 .adyenSofort,
                 .adyenTrustly,
@@ -220,7 +226,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return true
         
         case .other:
-            return true
+            return false
         }
     }
     // swiftlint:enable cyclomatic_complexity
@@ -231,6 +237,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case adyenDotPay
         case adyenGiropay
         case adyenIDeal
+        case adyenInterac
         case adyenMobilePay
         case adyenSofort
         case adyenTrustly
