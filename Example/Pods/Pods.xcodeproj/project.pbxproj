@@ -121,7 +121,8 @@
 		834654BCF5A038CD30B8A2459E6D66FC /* VaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A2215AC9262244CFBD4324CEE200994 /* VaultCheckoutViewModel.swift */; };
 		849E90EB27FEFA15004E8F27 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90EA27FEFA15004E8F27 /* PaymentMethod.swift */; };
 		849E90EE27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentParameters.swift */; };
-		849E90F027FF2711004E8F27 /* PaymentMethodType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90EF27FF2711004E8F27 /* PaymentMethodType.swift */; };
+		849E90F027FF2711004E8F27 /* PaymentMethod.Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90EF27FF2711004E8F27 /* PaymentMethod.Type.swift */; };
+		849E90F227FF2B61004E8F27 /* PaymentMethod.Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90F127FF2B61004E8F27 /* PaymentMethod.Configuration.swift */; };
 		84EED8E0FAA69C8337DECB311796A429 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ED121DB41C8CFE40BA0EE9B1E18534 /* Parser.swift */; };
 		88FF2FEF87D235D59DC2EF6F82A7CCAE /* Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088B445AADAB9DB464BE38E5DAEC590A /* Cancellable.swift */; };
 		8AA5BB0C5F53C2B97D1DF18FE38C6BB6 /* CancellablePromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B1B2F815F4A5CDBA5F39E9523AB464 /* CancellablePromise.swift */; };
@@ -409,7 +410,8 @@
 		83FBED6A24CE970CC7E12F90EBAF9560 /* PrimerAPIClient+3DS.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PrimerAPIClient+3DS.swift"; sourceTree = "<group>"; };
 		849E90EA27FEFA15004E8F27 /* PaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethod.swift; sourceTree = "<group>"; };
 		849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodTokenizationInstrumentParameters.swift; sourceTree = "<group>"; };
-		849E90EF27FF2711004E8F27 /* PaymentMethodType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodType.swift; sourceTree = "<group>"; };
+		849E90EF27FF2711004E8F27 /* PaymentMethod.Type.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethod.Type.swift; sourceTree = "<group>"; };
+		849E90F127FF2B61004E8F27 /* PaymentMethod.Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethod.Configuration.swift; sourceTree = "<group>"; };
 		863ED78BC1254836A8CE75F196EC21FC /* CustomStringConvertible.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomStringConvertible.swift; sourceTree = "<group>"; };
 		87556D501EDE22FAD3E42747DD9CDD6A /* PrimerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerViewController.swift; sourceTree = "<group>"; };
 		87B6CECD85108A042B7E9BADC563C3B9 /* SuccessViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SuccessViewController.swift; sourceTree = "<group>"; };
@@ -929,7 +931,8 @@
 			children = (
 				849E90EA27FEFA15004E8F27 /* PaymentMethod.swift */,
 				849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentParameters.swift */,
-				849E90EF27FF2711004E8F27 /* PaymentMethodType.swift */,
+				849E90EF27FF2711004E8F27 /* PaymentMethod.Type.swift */,
+				849E90F127FF2B61004E8F27 /* PaymentMethod.Configuration.swift */,
 			);
 			path = "Payment Method";
 			sourceTree = "<group>";
@@ -1543,7 +1546,7 @@
 				91BF32D855F142E4E1AEF94897FB5ADC /* ClientSession.swift in Sources */,
 				93453A63DCB8B908E8CB5A27026E98E6 /* ClientToken.swift in Sources */,
 				05EAC23BE3BFF26D8F76F67FE63A7E9E /* ClientTokenService.swift in Sources */,
-				849E90F027FF2711004E8F27 /* PaymentMethodType.swift in Sources */,
+				849E90F027FF2711004E8F27 /* PaymentMethod.Type.swift in Sources */,
 				683675E50FF8DAED29638970C88A0C74 /* Colors.swift in Sources */,
 				D5540E5939633AD05F6BB4E40F99DCC2 /* ConcurrencyLimitedDispatcher.swift in Sources */,
 				98ED0C7C9F46662ABF54F42502A11705 /* Configuration.swift in Sources */,
@@ -1573,6 +1576,7 @@
 				34935A96D3F309161BE6EF2DF6FA5E48 /* FinallyWrappers.swift in Sources */,
 				EB1BFC076D3FC01A5EA3008265E64643 /* firstly.swift in Sources */,
 				1DBBDBBCC8358B4DB564838B5E5FC441 /* FormPaymentMethodTokenizationViewModel.swift in Sources */,
+				849E90F227FF2B61004E8F27 /* PaymentMethod.Configuration.swift in Sources */,
 				8D03BA83CB8F446EB545D369B9E6A391 /* FormType.swift in Sources */,
 				76048ABC37E1DBCA091D7C52C0524270 /* Guarantee.swift in Sources */,
 				5A933952637019F5624F38CC270939A8 /* GuaranteeWrappers.swift in Sources */,
