@@ -11,6 +11,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case adyenIDeal
     case adyenInterac
     case adyenMobilePay
+    case adyenPayTrail
     case adyenSofort
     case adyenTrustly
     case adyenTwint
@@ -55,6 +56,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .adyenInterac
         case "ADYEN_MOBILEPAY":
             self = .adyenMobilePay
+        case "ADYEN_PAYTRAIL":
+            self = .adyenPayTrail
         case "ADYEN_SOFORT":
             self = .adyenSofort
         case "ADYEN_TRUSTLY":
@@ -126,6 +129,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "ADYEN_INTERAC"
         case .adyenMobilePay:
             return "ADYEN_MOBILEPAY"
+        case .adyenPayTrail:
+            return "ADYEN_PAYTRAIL"
         case .adyenSofort:
             return "ADYEN_SOFORT"
         case .adyenTrustly:
@@ -190,6 +195,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .adyenIDeal,
                 .adyenInterac,
                 .adyenMobilePay,
+                .adyenPayTrail,
                 .adyenSofort,
                 .adyenTrustly,
                 .adyenTwint,

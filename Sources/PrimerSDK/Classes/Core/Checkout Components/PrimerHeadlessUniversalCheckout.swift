@@ -161,6 +161,8 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .adyenMobilePay:
             return []
+        case .adyenPayTrail:
+            return []
         case .adyenSofort:
             return []
         case .adyenTrustly:
@@ -314,6 +316,8 @@ public struct PrimerAsset {
             brand = .interac
         case .adyenMobilePay:
             brand = .mobilePay
+        case .adyenPayTrail:
+            brand = .payTrail
         case .adyenSofort,
                 .buckarooSofort:
             brand = .sofort
@@ -402,7 +406,8 @@ public struct PrimerAsset {
         case layBuy = "lay-buy", looker
         case masterCard = "master-card", mbWay = "mb-way", mercadoPago = "mercado-pago", metamask, mobilePay = "mobile-pay", mollie
         case neonomics, netSuite = "netsuite", nexi, nuvei
-        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, ravelin, riskified
+        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail"
+        case ravelin, riskified
         case seon, sepa, sift, signifyd, sofort, stitch, stripe, swish
         case tableau, taxjar, telserv, tink, trilo, trueLayer = "truelayer", trueMoney = "truemoney", trustly, twillio, twint
         case vipps, visa, volt, voucherify, vyne
