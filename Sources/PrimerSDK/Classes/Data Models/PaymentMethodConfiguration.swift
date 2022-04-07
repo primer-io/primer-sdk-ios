@@ -24,6 +24,7 @@ class PaymentMethodConfig: Codable {
             .adyenAlipay,
             .adyenGiropay,
             .adyenInterac,
+			.adyenPayTrail,
             .adyenSofort,
             .adyenTrustly,
             .adyenTwint,
