@@ -13,18 +13,6 @@ public typealias PaymentInstrument2 = PaymentMethod.Tokenization.Response
 
 public class PaymentMethod {
     
-    public enum `Type`: Codable {
-        case applePay
-        
-        var logo: UIImage? {
-            return nil
-        }
-        
-        var icon: UIImage? {
-            return nil
-        }
-    }
-    
     public enum Flow: String, Codable {
         case vault = "VAULT"
         case checkout = "CHECKOUT"
@@ -33,10 +21,6 @@ public class PaymentMethod {
     public enum TokenType: String, Codable {
         case multiUse = "MULTI_USE"
         case singleUse = "SINGLE_USE"
-    }
-    
-    internal class Configuration {
-        
     }
     
     public class Tokenization {
@@ -118,6 +102,57 @@ public class PaymentMethod {
             public var token: String?
             public var tokenType: PaymentMethod.TokenType?
             public var vaultData: VaultData?
+        }
+    }
+}
+
+// --
+
+protocol PaymentMethodConfigurationOptions: Codable {}
+
+extension PaymentMethod {
+    struct Configuration: Codable {
+        let id: String? // Will be nil for cards
+        let processorConfigId: String?
+        let type: PaymentMethod.PaymentMethodType
+        let options: PaymentMethodConfigurationOptions?
+        let surcharge: Int?
+        var hasUnknownSurcharge: Bool = false
+        
+        private enum CodingKeys: String, CodingKey {
+            case id, processorConfigId, type, options, surcharge, hasUnknownSurcharge
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.id = (try? container.decode(String?.self, forKey: .id)) ?? nil
+            self.processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
+            self.type = try container.decode(PaymentMethod.PaymentMethodType.self, forKey: .type)
+            self.surcharge = (try? container.decode(Int?.self, forKey: .surcharge)) ?? nil
+            
+            if let applePayOptions = (try? container.decode(ApplePayOptions?.self, forKey: .options)) {
+                self.options = applePayOptions
+            } else {
+                fatalError()
+            }
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try? container.encode(self.id, forKey: .id)
+            try? container.encode(self.processorConfigId, forKey: .processorConfigId)
+            try? container.encode(self.type, forKey: .type)
+            try? container.encode(self.surcharge, forKey: .surcharge)
+            
+            if let applePayOptions = self.options as? ApplePayOptions {
+                try? container.encode(applePayOptions, forKey: .options)
+            } else {
+                fatalError()
+            }
+        }
+        
+        struct ApplePayOptions: PaymentMethodConfigurationOptions {
+            let test: String
         }
     }
 }
