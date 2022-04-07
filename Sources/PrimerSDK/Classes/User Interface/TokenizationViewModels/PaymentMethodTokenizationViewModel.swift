@@ -364,7 +364,14 @@ extension PaymentMethodTokenizationViewModel {
         if settings.isManualPaymentHandlingEnabled {
             
             PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
-            
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
+                if let err = err {
+                    self.handleFailedTokenizationFlow(error: err)
+                } else {
+                    self.handleSuccessfulTokenizationFlow()
+                }
+            })
+
         } else {
                         
             guard let paymentMethodTokenString = paymentMethod.token else {

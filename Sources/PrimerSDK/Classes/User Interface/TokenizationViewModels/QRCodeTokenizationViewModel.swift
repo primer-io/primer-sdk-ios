@@ -172,7 +172,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         .catch { err in
             DispatchQueue.main.async {
                 if let primerErr = err as? PrimerError, case PrimerError.cancelled = primerErr {
-                    PrimerDelegateProxy.onResumeError(err)
+                    self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
                 } else {
                     PrimerDelegateProxy.checkoutFailed(with: err)
                     self.handleFailedTokenizationFlow(error: err)

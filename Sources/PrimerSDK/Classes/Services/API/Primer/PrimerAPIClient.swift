@@ -280,6 +280,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             case .failure(let error):
                 ErrorHandler.handle(error: error)
                 completion(.failure(error))
+            }
+        }
+    }
 
     func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Payment.CreateRequest, completion: @escaping (Result<Payment.Response, Error>) -> Void) {
         let endpoint = PrimerAPI.createPayment(clientToken: clientToken, paymentRequest: paymentRequestBody)

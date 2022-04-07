@@ -557,9 +557,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                         DispatchQueue.main.async {
                             self.submitButton.stopAnimating()
                             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-                            PrimerDelegateProxy.onResumeError(err)
+                            self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
                         }
-                        self.handle(error: err)
                     } else {
                         self.cardComponentsManager.tokenize()
                     }
@@ -711,7 +710,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 self.onResumeTokenCompletion = nil
             }
             
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: self)
+            self.handleContinuePaymentFlowWithPaymentMethod(paymentMethodToken)
         }
     }
 
@@ -772,7 +771,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             }
             
             DispatchQueue.main.async {
-                Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: self)
+                self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
             }
         }
     }
@@ -830,6 +829,142 @@ extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
 
     }
     
+}
+
+extension FormPaymentMethodTokenizationViewModel {
+    
+    private func handle(_ clientToken: String) {
+        
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        
+        if state.clientToken != clientToken {
+            
+            ClientTokenService.storeClientToken(clientToken) { error in
+                DispatchQueue.main.async {
+
+                    guard error == nil else {
+                        ErrorHandler.handle(error: error!)
+                        self.handleErrorBasedOnSDKSettings(error!, isOnResumeFlow: true)
+                        return
+                    }
+
+                    self.continueHandleNewClientToken(clientToken)
+                }
+            }
+        } else {
+            self.continueHandleNewClientToken(clientToken)
+        }
+    }
+    
+    private func continueHandleNewClientToken(_ clientToken: String) {
+        
+        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            DispatchQueue.main.async {
+                let error = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                self.handle(error: error)
+            }
+            return
+        }
+
+        switch config.type {
+        case .adyenBlik:
+            if decodedClientToken.intent?.contains("_REDIRECTION") == true,
+                let statusUrlStr = decodedClientToken.statusUrl,
+                let statusUrl = URL(string: statusUrlStr) {
+                self.onResumeHandlerCompletion?(statusUrl, nil)
+            } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
+                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                
+                firstly {
+                    configService.fetchConfig()
+                }
+                .done {
+                    self.continueTokenizationFlow()
+                }
+                .catch { err in
+                    DispatchQueue.main.async {
+                        self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
+                    }
+                }
+            } else {
+                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                DispatchQueue.main.async {
+                    self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
+                }
+            }
+        default:
+            if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+                #if canImport(Primer3DS)
+                guard let paymentMethod = paymentMethod else {
+                    DispatchQueue.main.async {
+                        let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        ErrorHandler.handle(error: containerErr)
+                        self.handleErrorBasedOnSDKSettings(containerErr, isOnResumeFlow: true)
+                    }
+                    return
+                }
+                
+                let threeDSService = ThreeDSService()
+                threeDSService.perform3DS(paymentMethodToken: paymentMethod, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                    switch result {
+                    case .success(let paymentMethodToken):
+                        DispatchQueue.main.async {
+                            guard let threeDSPostAuthResponse = paymentMethodToken.1,
+                                let resumeToken = threeDSPostAuthResponse.resumeToken else {
+                                    DispatchQueue.main.async {
+                                        let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                        let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                        ErrorHandler.handle(error: err)
+                                        self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
+                                    }
+                                    return
+                                }
+                            
+                            self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+                        }
+                        
+                    case .failure(let err):
+                        log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
+                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        ErrorHandler.handle(error: containerErr)
+                        DispatchQueue.main.async {
+                            self.handleErrorBasedOnSDKSettings(containerErr, isOnResumeFlow: true)
+                        }
+                    }
+                }
+                #else
+                let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                DispatchQueue.main.async {
+                    self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
+                }
+                #endif
+                
+            } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
+                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+                
+                firstly {
+                    configService.fetchConfig()
+                }
+                .done {
+                    self.continueTokenizationFlow()
+                }
+                .catch { err in
+                    DispatchQueue.main.async {
+                        self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
+                    }
+                }
+            } else {
+                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                DispatchQueue.main.async {
+                    self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
+                }
+            }
+        }
+    }
 }
 
 extension FormPaymentMethodTokenizationViewModel {
