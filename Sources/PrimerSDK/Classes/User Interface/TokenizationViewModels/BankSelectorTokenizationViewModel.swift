@@ -474,9 +474,8 @@ extension BankSelectorTokenizationViewModel {
             }
             .catch { err in
                 DispatchQueue.main.async {
-                    PrimerDelegateProxy.onResumeError(err)
+                    self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
                 }
-                self.handle(error: err)
             }
         }
     }
