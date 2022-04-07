@@ -31,7 +31,7 @@ enum PrimerAPI: Endpoint, Equatable {
             (.continue3DSRemoteAuth, .continue3DSRemoteAuth),
             (.poll, .poll),
             (.sendAnalyticsEvents, .sendAnalyticsEvents),
-            (.createPayment, .createPayment):
+            (.createPayment, .createPayment),
             (.validateClientToken, .validateClientToken):
             return true
         default:
@@ -263,7 +263,7 @@ internal extension PrimerAPI {
                 .listAdyenBanks,
                 .sendAnalyticsEvents,
                 .fetchPayPalExternalPayerInfo,
-                .validateClientToken:
+                .validateClientToken,
                 .createPayment,
                 .resumePayment:
             return .post

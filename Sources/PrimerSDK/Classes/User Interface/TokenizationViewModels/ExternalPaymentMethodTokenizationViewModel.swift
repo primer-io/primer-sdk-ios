@@ -744,7 +744,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 }
                 .catch { error in
                     DispatchQueue.main.async {
-                        self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
+                        self?.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
                     }
                 }
             }
@@ -755,8 +755,8 @@ extension ExternalPaymentMethodTokenizationViewModel {
                 self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
             }
             
-            onClientToken?(nil, error)
-            onClientToken = nil
+            self.onClientToken?(nil, error)
+            self.onClientToken = nil
         }
     }
     

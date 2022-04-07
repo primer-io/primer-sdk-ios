@@ -384,22 +384,18 @@ extension ApplePayTokenizationViewModel {
         }
         .then{ () -> Promise<Void> in
             let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            
-            firstly {
-                configService.fetchConfig()
+            return configService.fetchConfig()
+        }
+        .done {
+            self.continueTokenizationFlow()
+        }
+        .catch { error in
+            DispatchQueue.main.async {
+                self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
             }
-            .done {
-                self.continueTokenizationFlow()
-            }
-            .catch { error in
-                self.handleErrorBasedOnSDKSettings(error)
-            }
-            
-        } catch {
-            self.handleErrorBasedOnSDKSettings(error)
         }
     }
-    
+
     override func handleSuccess() {
         if #available(iOS 11.0, *) {
             self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .success, errors: nil))
