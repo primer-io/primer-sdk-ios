@@ -33,6 +33,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Buckaroo Sofort"
         case .hoolah:
             return "Hoolah"
+        case .adyenInterac:
+            return "Interac"
         case .mollieBankcontact:
             return "Mollie Bancontact"
         case .mollieIdeal:
@@ -86,7 +88,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenTwint,
                 .adyenTrustly,
                 .adyenMobilePay,
-                .adyenVipps:
+                .adyenVipps,
+                .adyenInterac:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -114,6 +117,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooGiropay,
                 .payNLGiropay:
             return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenInterac:
+            return UIImage(named: "interac-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLIdeal,
@@ -151,6 +156,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenGiropay,
                 .buckarooGiropay:
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
+        case .adyenInterac:
+            return UIColor(red: 254.0/255, green: 185.0/255, blue: 43.0/255, alpha: 1.0)
         case .adyenSofort,
                 .buckarooSofort:
             return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
@@ -194,6 +201,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
+                .adyenInterac,
                 .adyenMobilePay,
                 .adyenTrustly,
                 .adyenTwint,
@@ -226,6 +234,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch config.type {
         case .adyenAlipay,
                 .adyenGiropay,
+                .adyenInterac,
                 .adyenMobilePay,
                 .adyenTrustly,
                 .adyenTwint,
@@ -260,6 +269,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenAlipay,
                 .adyenGiropay,
                 .adyenMobilePay,
+                .adyenInterac,
                 .adyenTrustly,
                 .adyenTwint,
                 .adyenVipps,
@@ -304,7 +314,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLPayconiq,
                 .adyenSofort,
                 .adyenMobilePay,
-                .adyenVipps:
+                .adyenVipps,
+                .adyenInterac:
             return .white
         case .adyenTrustly:
             return .black
