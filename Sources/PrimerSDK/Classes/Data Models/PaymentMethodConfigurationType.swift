@@ -244,6 +244,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case adyenGiropay
         case adyenIDeal
         case adyenInterac
+        case adyenPayTrail
         case adyenMobilePay
         case adyenSofort
         case adyenTrustly
