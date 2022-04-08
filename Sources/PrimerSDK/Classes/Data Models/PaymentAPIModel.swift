@@ -369,6 +369,10 @@ public struct PaymentAPIModelAddress: Codable {
     }
 }
 
+public struct CheckoutData {
+    public let payment: Payment.Response?
+}
+
 public struct Payment {
     
     public struct CreateRequest: Encodable {
