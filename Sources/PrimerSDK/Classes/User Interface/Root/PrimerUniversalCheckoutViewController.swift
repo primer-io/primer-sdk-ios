@@ -325,17 +325,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 switch result {
                 case .success(let singleUsePaymentMethod):
                     self.singleUsePaymentMethod = singleUsePaymentMethod
-                    PrimerDelegateProxy.onTokenizeSuccess(singleUsePaymentMethod, { error in
-                        DispatchQueue.main.async { [weak self] in
-                            self?.payButton.stopAnimating()
-                            self?.enableView(true)
-                            self?.singleUsePaymentMethod = nil
-                            self?.dismissOrShowResultScreen(error)
-                        }
-                    })
-                    
                     self.handleContinuePaymentFlowWithPaymentMethod(singleUsePaymentMethod)
-
                 case .failure(let error):
                     PrimerDelegateProxy.checkoutFailed(with: error)
                     self.dismissOrShowResultScreen(error)
