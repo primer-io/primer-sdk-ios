@@ -15,11 +15,68 @@ extension PaymentMethod {
         let processorConfigId: String?
         let type: PaymentMethod.PaymentMethodType
         let options: PaymentMethodConfigurationOptions?
-        let surcharge: Int?
+        var surcharge: Int?
         var hasUnknownSurcharge: Bool = false
+        var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
+            let asyncPaymentMethodTypes: [PaymentMethod.PaymentMethodType] = [
+                .adyenMobilePay,
+                .adyenVipps,
+                .adyenAlipay,
+                .adyenGiropay,
+                .atome,
+                .buckarooBancontact,
+                .buckarooEps,
+                .buckarooGiropay,
+                .buckarooIdeal,
+                .buckarooSofort,
+                .mollieBankcontact,
+                .mollieIdeal,
+                .payNLBancontact,
+                .payNLGiropay,
+                .payNLPayconiq,
+                .adyenSofort,
+                .adyenTrustly,
+                .adyenTwint
+            ]
+            
+            if type == .paymentCard {
+                return CardFormPaymentMethodTokenizationViewModel(config: self)
+            } else if type == .applePay {
+                if #available(iOS 11.0, *) {
+                    return ApplePayTokenizationViewModel(config: self)
+                }
+            } else if type == .klarna {
+                return KlarnaTokenizationViewModel(config: self)
+            } else if type == .hoolah || type == .payNLIdeal {
+                return ExternalPaymentMethodTokenizationViewModel(config: self)
+            } else if type == .payPal {
+                return PayPalTokenizationViewModel(config: self)
+            } else if type == .apaya {
+                return ApayaTokenizationViewModel(config: self)
+            } else if asyncPaymentMethodTypes.contains(type) {
+                return ExternalPaymentMethodTokenizationViewModel(config: self)
+            } else if type == .adyenDotPay || type == .adyenIDeal {
+                return BankSelectorTokenizationViewModel(config: self)
+            } else if type == .adyenBlik {
+                return FormPaymentMethodTokenizationViewModel(config: self)
+            } else if type == .xfers {
+                return QRCodeTokenizationViewModel(config: self)
+            }
+            
+            log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD TYPE", message: type.rawValue, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
+
+            return nil
+        }
         
         private enum CodingKeys: String, CodingKey {
             case id, processorConfigId, type, options, surcharge, hasUnknownSurcharge
+        }
+        
+        init(id: String?, options: PaymentMethodConfigurationOptions?, processorConfigId: String?, type: PaymentMethod.PaymentMethodType) {
+            self.id = id
+            self.options = options
+            self.processorConfigId = processorConfigId
+            self.type = type
         }
         
         init(from decoder: Decoder) throws {

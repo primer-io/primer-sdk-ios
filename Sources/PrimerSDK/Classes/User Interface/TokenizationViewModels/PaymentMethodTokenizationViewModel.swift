@@ -13,9 +13,9 @@ import UIKit
 typealias TokenizationCompletion = ((PaymentMethodToken?, Error?) -> Void)
 
 internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHandlerProtocol {
-    init(config: PaymentMethodConfig)
+    init(config: PaymentMethod.Configuration)
     
-    var config: PaymentMethodConfig { get set }
+    var config: PaymentMethod.Configuration { get set }
     var title: String { get }
     var surcharge: String? { get }
     var position: Int { get set }
@@ -46,7 +46,7 @@ internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
     
-    var config: PaymentMethodConfig
+    var config: PaymentMethod.Configuration
     var completion: TokenizationCompletion?
     var paymentMethod: PaymentMethodToken?
     var didStartTokenization: (() -> Void)?
@@ -56,7 +56,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    required init(config: PaymentMethodConfig) {
+    required init(config: PaymentMethod.Configuration) {
         self.config = config
         super.init()
     }

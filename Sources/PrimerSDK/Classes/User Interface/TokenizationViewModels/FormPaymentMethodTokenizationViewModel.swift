@@ -322,7 +322,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    required init(config: PaymentMethodConfig) {
+    required init(config: PaymentMethod.Configuration) {
         self.flow = .checkout
         if let flow = Primer.shared.flow, flow.internalSessionFlow.vaulted {
             self.flow = .vault

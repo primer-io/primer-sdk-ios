@@ -150,9 +150,13 @@ let mockPaymentMethodConfig = PrimerConfiguration(
     pciUrl: "url",
     clientSession: nil,
     paymentMethods: [
-        PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
-        PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
-        PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+        PaymentMethod.Configuration(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
+        PaymentMethod.Configuration(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
+        PaymentMethod.Configuration(
+            id: "Apaya",
+            options: PaymentMethod.Configuration.ApayaOptions(merchantAccountId: "merchant_account_id"),
+            processorConfigId: nil,
+            type: .apaya)
     ],
     keys: nil,
     checkoutModules: nil
@@ -174,9 +178,13 @@ class MockAppState: AppStateProtocol {
             pciUrl: "url",
             clientSession: nil,
             paymentMethods: [
-                PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
-                PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
-                PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+                PaymentMethod.Configuration(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
+                PaymentMethod.Configuration(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
+                PaymentMethod.Configuration(
+                    id: "Apaya",
+                    options: PaymentMethod.Configuration.ApayaOptions(merchantAccountId: "merchant_account_id"),
+                    processorConfigId: nil,
+                    type: .apaya)
             ],
             keys: nil,
             checkoutModules: nil

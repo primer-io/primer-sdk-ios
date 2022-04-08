@@ -18,7 +18,7 @@ struct PrimerConfiguration: Codable {
         return appState.primerConfiguration
     }
     
-    static var paymentMethodConfigs: [PaymentMethodConfig]? {
+    static var paymentMethodConfigs: [PaymentMethod.Configuration]? {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         let pms = state
@@ -50,7 +50,7 @@ struct PrimerConfiguration: Codable {
     let coreUrl: String?
     let pciUrl: String?
     let clientSession: ClientSession?
-    let paymentMethods: [PaymentMethodConfig]?
+    var paymentMethods: [PaymentMethod.Configuration]?
     let keys: ThreeDS.Keys?
     let checkoutModules: [CheckoutModule]?
     
@@ -63,7 +63,7 @@ struct PrimerConfiguration: Codable {
         self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
         self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
         self.clientSession = (try? container.decode(ClientSession?.self, forKey: .clientSession)) ?? nil
-        let throwables = try container.decode([Throwable<PaymentMethodConfig>].self, forKey: .paymentMethods)
+        let throwables = try container.decode([Throwable<PaymentMethod.Configuration>].self, forKey: .paymentMethods)
         self.paymentMethods = throwables.compactMap({ $0.value })
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
         let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
@@ -83,7 +83,7 @@ struct PrimerConfiguration: Codable {
                             
                         }
                     } else if let surcharge = paymentMethodOption["surcharge"] as? Int,
-                              let paymentMethod = self.paymentMethods?.filter({ $0.type.rawValue == type }).first
+                              var paymentMethod = self.paymentMethods?.filter({ $0.type.rawValue == type }).first
                     {
                         paymentMethod.hasUnknownSurcharge = false
                         paymentMethod.surcharge = surcharge
@@ -92,7 +92,7 @@ struct PrimerConfiguration: Codable {
             }
         }
         
-        if let paymentMethod = self.paymentMethods?.filter({ $0.type == PaymentMethod.PaymentMethodType.paymentCard }).first {
+        if var paymentMethod = self.paymentMethods?.filter({ $0.type == PaymentMethod.PaymentMethodType.paymentCard }).first {
             paymentMethod.hasUnknownSurcharge = true
             paymentMethod.surcharge = nil
         }
@@ -102,7 +102,7 @@ struct PrimerConfiguration: Codable {
         coreUrl: String?,
         pciUrl: String?,
         clientSession: ClientSession?,
-        paymentMethods: [PaymentMethodConfig]?,
+        paymentMethods: [PaymentMethod.Configuration]?,
         keys: ThreeDS.Keys?,
         checkoutModules: [PrimerConfiguration.CheckoutModule]?
     ) {
