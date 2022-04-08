@@ -386,7 +386,7 @@ extension PaymentMethodTokenizationViewModel {
             }
             
             firstly {
-                self.handleCheckoutShouldCreatePaymentEvent(paymentMethodTokenString)
+                self.handleCheckoutWillCreatePaymentEvent(paymentMethodTokenString)
             }
             .then { paymentCreateAdditionalValues -> Promise<Payment.Response?> in
                 let clientToken = paymentCreateAdditionalValues?.clientToken ?? paymentMethodTokenString
@@ -417,9 +417,9 @@ extension PaymentMethodTokenizationViewModel {
     
     // Raise "payment creation started" event
     
-    private func handleCheckoutShouldCreatePaymentEvent(_ paymentMethodData: String) -> Promise<PaymentCreateAdditionalValues?> {
+    private func handleCheckoutWillCreatePaymentEvent(_ paymentMethodData: String) -> Promise<PaymentCreateAdditionalValues?> {
         return Promise { seal in
-            Primer.shared.delegate?.checkoutShouldCreatePayment?(paymentMethodData, completion: { paymentCreateAdditionalValues in
+            Primer.shared.delegate?.checkoutWillCreatePayment?(paymentMethodData, completion: { paymentCreateAdditionalValues in
                 // If merchant sents a custom data
                 if let clientToken = paymentCreateAdditionalValues?.clientToken {
                     seal.fulfill(PaymentCreateAdditionalValues(clientToken: clientToken))

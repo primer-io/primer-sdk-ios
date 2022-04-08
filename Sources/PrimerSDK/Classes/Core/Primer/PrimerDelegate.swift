@@ -70,7 +70,7 @@ public protocol PrimerDelegate {
     /// - Parameters:
     ///   - paymentMethodData: The payment method data containing the token's information.
     ///   - completion: The completion handler managing a custom error to optionally pass to the SDK
-    @objc optional func checkoutShouldCreatePayment(_ paymentMethodData: String, completion: @escaping (PaymentCreateAdditionalValues?) -> Void)
+    @objc optional func checkoutWillCreatePayment(_ paymentMethodData: String, completion: @escaping (PaymentCreateAdditionalValues?) -> Void)
     
     /// This function will be called when the user receives a payment object in a PENDING status.
     /// - Parameters:
