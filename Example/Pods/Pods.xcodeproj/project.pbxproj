@@ -165,7 +165,6 @@
 		ACCFEFD6BCA7E8CAF24ECE9328D73F02 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5434431A46F699D6026D052A18F60149 /* StringExtension.swift */; };
 		AD76598C86B1B12D29779207B0AF2B6D /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54A256F1CFD68FDF896AF8BE1956BC5 /* AnalyticsService.swift */; };
 		AFC589966889D06573D263757D655DD0 /* PrimerHeadlessUniversalCheckoutProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78B3FA3EB67427067BAE6790458FF65 /* PrimerHeadlessUniversalCheckoutProtocols.swift */; };
-		B0059E5DDE488EE3B9417A2B713A2746 /* PaymentMethodConfigurationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C59C266C22E1012DF94117DB68DE6 /* PaymentMethodConfigurationType.swift */; };
 		B081CE878E95052F46E60EBF3463E034 /* TokenizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99439A9A244D873DC609BD1858C9C72 /* TokenizationService.swift */; };
 		B18034DF37685B8746A1F9CD68A298A2 /* PrimerAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CE4CAACA8BECF9CADA3E054D6DB858 /* PrimerAPIClient.swift */; };
 		B417DE1ADD59E3378FCF375E12FD8D1D /* CardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86675B9B747C2FACA1CBF4BA2456DA0 /* CardButton.swift */; };
@@ -269,7 +268,6 @@
 		027B7A32A89FA12598F9AC58ADF399BD /* AlertController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		027DFB1717C68B8B38DCE890A6FD60CE /* de.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = de.lproj; sourceTree = "<group>"; };
 		0290EBC449C1BB53F01C8CE2B955B52D /* PrimerViewExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerViewExtensions.swift; sourceTree = "<group>"; };
-		031C59C266C22E1012DF94117DB68DE6 /* PaymentMethodConfigurationType.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigurationType.swift; sourceTree = "<group>"; };
 		03662D6ABDCFE2F2A9F1D8B793FFB252 /* ClientSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClientSession.swift; sourceTree = "<group>"; };
 		03CFA4FFEB6F616D78C5CDF2D89B4B5A /* PrimerError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerError.swift; sourceTree = "<group>"; };
 		07ABAC4A253752E5EFD21CFD15864DBF /* PrimerSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PrimerSDK.debug.xcconfig; sourceTree = "<group>"; };
@@ -1057,7 +1055,6 @@
 				5CF523A2449492CCED8D7016CC2CF8B8 /* OrderItem.swift */,
 				4A336A99E5D85116D26DEEB1340CAF23 /* PaymentMethodConfiguration.swift */,
 				493427E6A1BAB813AC2ED1A8892421D7 /* PaymentMethodConfigurationOptions.swift */,
-				031C59C266C22E1012DF94117DB68DE6 /* PaymentMethodConfigurationType.swift */,
 				7A0FD2D5C5099594D955D8820D2DCBE9 /* PaymentMethodToken.swift */,
 				CE450E0F995D2E4CD0705AFED83546BC /* PaymentMethodTokenizationRequest.swift */,
 				2CB676D10E86F0190EAB3D4D5D739CF5 /* PaymentResponse.swift */,
@@ -1600,7 +1597,6 @@
 				346B6D9A37DB2AEBD618DB190A1FEB00 /* PaymentMethodConfigService.swift in Sources */,
 				B8A90698CDDE1D290239BEE2E5484177 /* PaymentMethodConfiguration.swift in Sources */,
 				0AA43AEF2D1761274B64ADC5AB85570C /* PaymentMethodConfigurationOptions.swift in Sources */,
-				B0059E5DDE488EE3B9417A2B713A2746 /* PaymentMethodConfigurationType.swift in Sources */,
 				EA0FD2B612BB65A7DEC029FDF5F85C4B /* PaymentMethodsGroupView.swift in Sources */,
 				99F5CBCB84F26C60DCC4701C14C0B017 /* PaymentMethodToken.swift in Sources */,
 				CC8FD154FE09F3683DC1B3344B123D3F /* PaymentMethodTokenizationRequest.swift in Sources */,

@@ -9,7 +9,7 @@
 
 import UIKit
 
-public typealias PrimerPaymentMethodType = PaymentMethodConfigType
+public typealias PrimerPaymentMethodType = PaymentMethod.PaymentMethodType
 
 public class PrimerHeadlessUniversalCheckout {
     
@@ -145,7 +145,7 @@ public class PrimerHeadlessUniversalCheckout {
         return PrimerConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
     }
     
-    public func listRequiredInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType]? {
+    public func listRequiredInputElementTypes(for paymentMethodType: PaymentMethod.PaymentMethodType) -> [PrimerInputElementType]? {
         switch paymentMethodType {
         case .adyenAlipay:
             return []
@@ -235,7 +235,7 @@ public class PrimerHeadlessUniversalCheckout {
         return brand.getImage(assetType: assetType)
     }
     
-    public static func getAsset(for paymentMethodType: PaymentMethodConfigType, assetType: PrimerAsset.ImageType) -> UIImage? {
+    public static func getAsset(for paymentMethodType: PaymentMethod.PaymentMethodType, assetType: PrimerAsset.ImageType) -> UIImage? {
         return PrimerAsset.getAsset(for: paymentMethodType, assetType: assetType)
     }
     
@@ -243,7 +243,7 @@ public class PrimerHeadlessUniversalCheckout {
         return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType)
     }
     
-    public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType) {
+    public func showPaymentMethod(_ paymentMethod: PaymentMethod.PaymentMethodType) {
         DispatchQueue.main.async {
             
             var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -289,7 +289,7 @@ public struct PrimerAsset {
         return brand.getImage(assetType: assetType)
     }
     
-    public static func getAsset(for paymentMethodType: PaymentMethodConfigType, assetType: PrimerAsset.ImageType) -> UIImage? {
+    public static func getAsset(for paymentMethodType: PaymentMethod.PaymentMethodType, assetType: PrimerAsset.ImageType) -> UIImage? {
         var brand: PrimerAsset.Brand?
         
         switch paymentMethodType {

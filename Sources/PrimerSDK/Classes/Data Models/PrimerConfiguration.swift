@@ -72,7 +72,7 @@ struct PrimerConfiguration: Codable {
         if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
             for paymentMethodOption in options {
                 if let type = paymentMethodOption["type"] as? String {
-                    if type == PaymentMethodConfigType.paymentCard.rawValue,
+                    if type == PaymentMethod.PaymentMethodType.paymentCard.rawValue,
                         let networks = paymentMethodOption["networks"] as? [[String: Any]],
                        !networks.isEmpty
                     {
@@ -92,7 +92,7 @@ struct PrimerConfiguration: Codable {
             }
         }
         
-        if let paymentMethod = self.paymentMethods?.filter({ $0.type == PaymentMethodConfigType.paymentCard }).first {
+        if let paymentMethod = self.paymentMethods?.filter({ $0.type == PaymentMethod.PaymentMethodType.paymentCard }).first {
             paymentMethod.hasUnknownSurcharge = true
             paymentMethod.surcharge = nil
         }
@@ -114,12 +114,12 @@ struct PrimerConfiguration: Codable {
         self.checkoutModules = checkoutModules
     }
     
-    func getConfigId(for type: PaymentMethodConfigType) -> String? {
+    func getConfigId(for type: PaymentMethod.PaymentMethodType) -> String? {
         guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
         return method.id
     }
     
-    func getProductId(for type: PaymentMethodConfigType) -> String? {
+    func getProductId(for type: PaymentMethod.PaymentMethodType) -> String? {
         guard let method = self.paymentMethods?
                 .first(where: { method in return method.type == type }) else { return nil }
         

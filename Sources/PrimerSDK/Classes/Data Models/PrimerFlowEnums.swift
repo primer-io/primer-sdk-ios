@@ -52,7 +52,7 @@ public enum PrimerSessionFlow: Equatable {
     case checkoutWithApplePay
     case addApayaToVault
     case checkoutWithAdyenBank
-    case checkoutWithAsyncPaymentMethod(paymentMethodType: PaymentMethodConfigType)
+    case checkoutWithAsyncPaymentMethod(paymentMethodType: PaymentMethod.PaymentMethodType)
 
     internal var internalSessionFlow: PrimerInternalSessionFlow {
         switch self {
@@ -99,7 +99,7 @@ internal enum PrimerInternalSessionFlow {
     case vaultKlarna
     case checkoutWithApplePay
     case checkoutWithCard
-    case checkoutWithExternalPaymentMethod(type: PaymentMethodConfigType)
+    case checkoutWithExternalPaymentMethod(type: PaymentMethod.PaymentMethodType)
     case checkoutWithKlarna
     case checkoutWithPayPal
     case checkoutWithAdyenBank

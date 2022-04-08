@@ -76,7 +76,7 @@ extension PaymentMethod.Configuration {
     
     struct RedirectPaymentMethodOptions: PaymentMethodConfigurationOptions {
         let paymentMethodConfigId: String
-        let paymentMethodType: PaymentMethodConfigType
+        let paymentMethodType: PaymentMethod.PaymentMethodType
         let sessionInfo: SessionInfo
         lazy var type: String = {
             "OFF_SESSION_PAYMENT"
@@ -92,7 +92,7 @@ extension PaymentMethod.Configuration {
     
     struct BlikPaymentMethodOptions: PaymentMethodConfigurationOptions {
         let paymentMethodConfigId: String
-        let paymentMethodType: PaymentMethodConfigType
+        let paymentMethodType: PaymentMethod.PaymentMethodType
         let sessionInfo: SessionInfo
         lazy var type: String = {
             "OFF_SESSION_PAYMENT"

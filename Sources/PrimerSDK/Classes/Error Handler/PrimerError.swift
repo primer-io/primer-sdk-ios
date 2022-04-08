@@ -252,7 +252,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case missingPrimerCheckoutComponentsDelegate(userInfo: [String: String]?)
     case misconfiguredPaymentMethods(userInfo: [String: String]?)
     case missingPrimerInputElement(inputElementType: PrimerInputElementType, userInfo: [String: String]?)
-    case cancelled(paymentMethodType: PaymentMethodConfigType, userInfo: [String: String]?)
+    case cancelled(paymentMethodType: PaymentMethod.PaymentMethodType, userInfo: [String: String]?)
     case failedToCreateSession(error: Error?, userInfo: [String: String]?)
     case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?)
     case failedToPerform3DS(error: Error?, userInfo: [String: String]?)
@@ -266,10 +266,10 @@ internal enum PrimerError: PrimerErrorProtocol {
     case invalidSupportedPaymentNetworks(userInfo: [String: String]?)
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?)
     case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?)
-    case unableToPresentPaymentMethod(paymentMethodType: PaymentMethodConfigType, userInfo: [String: String]?)
+    case unableToPresentPaymentMethod(paymentMethodType: PaymentMethod.PaymentMethodType, userInfo: [String: String]?)
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?)
-    case missingCustomUI(paymentMethod: PaymentMethodConfigType, userInfo: [String: String]?)
+    case missingCustomUI(paymentMethod: PaymentMethod.PaymentMethodType, userInfo: [String: String]?)
     
     var errorId: String {
         switch self {

@@ -31,7 +31,7 @@ struct CardOptions: PaymentMethodOptions {
 
 struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     
-    let paymentMethodType: PaymentMethodConfigType
+    let paymentMethodType: PaymentMethod.PaymentMethodType
     let paymentMethodConfigId: String
     let type: String = "OFF_SESSION_PAYMENT"
     let sessionInfo: SessionInfo?
@@ -41,7 +41,7 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     }
     
     init(
-        paymentMethodType: PaymentMethodConfigType,
+        paymentMethodType: PaymentMethod.PaymentMethodType,
         paymentMethodConfigId: String,
         sessionInfo: SessionInfo?
     ) {
@@ -68,7 +68,7 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
 
 struct BlikPaymentMethodOptions: PaymentMethodOptions {
     
-    let paymentMethodType: PaymentMethodConfigType
+    let paymentMethodType: PaymentMethod.PaymentMethodType
     let paymentMethodConfigId: String
     let type: String = "OFF_SESSION_PAYMENT"
     let sessionInfo: SessionInfo?
@@ -78,7 +78,7 @@ struct BlikPaymentMethodOptions: PaymentMethodOptions {
     }
     
     init(
-        paymentMethodType: PaymentMethodConfigType,
+        paymentMethodType: PaymentMethod.PaymentMethodType,
         paymentMethodConfigId: String,
         sessionInfo: SessionInfo?
     ) {

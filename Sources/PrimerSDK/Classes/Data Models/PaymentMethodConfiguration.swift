@@ -13,12 +13,12 @@ class PaymentMethodConfig: Codable {
     
     let id: String? // Will be nil for cards
     let processorConfigId: String?
-    let type: PaymentMethodConfigType
+    let type: PaymentMethod.PaymentMethodType
     let options: PaymentMethodOptions?
     var surcharge: Int?
     var hasUnknownSurcharge: Bool = false
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
-        let asyncPaymentMethodTypes: [PaymentMethodConfigType] = [
+        let asyncPaymentMethodTypes: [PaymentMethod.PaymentMethodType] = [
             .adyenMobilePay,
             .adyenVipps,
             .adyenAlipay,
@@ -72,7 +72,7 @@ class PaymentMethodConfig: Codable {
         case id, options, processorConfigId, type
     }
     
-    init(id: String?, options: PaymentMethodOptions?, processorConfigId: String?, type: PaymentMethodConfigType) {
+    init(id: String?, options: PaymentMethodOptions?, processorConfigId: String?, type: PaymentMethod.PaymentMethodType) {
         self.id = id
         self.options = options
         self.processorConfigId = processorConfigId
@@ -81,7 +81,7 @@ class PaymentMethodConfig: Codable {
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        type = try container.decode(PaymentMethodConfigType.self, forKey: .type)
+        type = try container.decode(PaymentMethod.PaymentMethodType.self, forKey: .type)
         id = (try? container.decode(String?.self, forKey: .id)) ?? nil
         processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
         

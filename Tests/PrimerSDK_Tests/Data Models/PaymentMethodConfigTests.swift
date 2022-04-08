@@ -92,14 +92,14 @@ class PaymentMethodConfigTests: XCTestCase {
         var payPalStr: String
         var unknownPaymentConfigStr: String
         
-        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethodConfigType.applePay.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        apayaStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethodConfigType.apaya.rawValue, processorConfigId: String.randomString(length: 8), options: "{\"merchantAccountId\": \"apaya_account_id\"}")
-        goCardlessStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethodConfigType.goCardlessMandate.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        googlePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethodConfigType.googlePay.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        klarnaStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethodConfigType.klarna.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        paymentCardStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethodConfigType.paymentCard.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        payNLIdealStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethodConfigType.payNLIdeal.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        payPalStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethodConfigType.payPal.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
+        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethod.PaymentMethodType.applePay.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
+        apayaStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethod.PaymentMethodType.apaya.rawValue, processorConfigId: String.randomString(length: 8), options: "{\"merchantAccountId\": \"apaya_account_id\"}")
+        goCardlessStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethod.PaymentMethodType.goCardlessMandate.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
+        googlePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethod.PaymentMethodType.googlePay.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
+        klarnaStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethod.PaymentMethodType.klarna.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
+        paymentCardStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethod.PaymentMethodType.paymentCard.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
+        payNLIdealStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethod.PaymentMethodType.payNLIdeal.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
+        payPalStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PaymentMethod.PaymentMethodType.payPal.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
         unknownPaymentConfigStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "test", processorConfigId: String.randomString(length: 8), options: nil)
         
         
@@ -175,7 +175,7 @@ class PaymentMethodConfigTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
         
-        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: 1, type: PaymentMethodConfigType.applePay.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
+        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: 1, type: PaymentMethod.PaymentMethodType.applePay.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
         
         paymentMethodsArr = [
             applePayStr,
