@@ -10,11 +10,11 @@ internal protocol ClientTokenServiceProtocol {
     func fetchClientTokenIfNeeded() -> Promise<Void>
 }
 
+/// Helper typealias to identify the JWT Token
+public typealias RawJWTToken = String
+
 internal class ClientTokenService: ClientTokenServiceProtocol {
-    
-    /// Helper typealias to identify the JWT Token
-    private typealias RawJWTToken = String
-    
+        
     /// The client token from the DepedencyContainer
     static var decodedClientToken: DecodedClientToken? {
         let state: AppStateProtocol = DependencyContainer.resolve()

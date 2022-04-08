@@ -335,7 +335,7 @@ extension PaymentMethodTokenizationViewModel {
             PrimerDelegateProxy.onResumeError(error)
             handle(error: error)
         } else {
-            Primer.shared.delegate?.checkoutDidFail?(error: error, payment: nil, completion: { errorMessage in
+            Primer.shared.delegate?.checkoutDidFail?(error: error, data: nil, completion: { errorMessage in
                 let merchantError = PrimerError.merchantError(message: errorMessage ?? "")
                 self.handle(error: merchantError)
             })
@@ -373,35 +373,79 @@ extension PaymentMethodTokenizationViewModel {
                 return
             }
             
-            // Raise "payment creation started" event
-            
-            Primer.shared.delegate?.onPaymentWillCreate?(paymentMethodTokenString)
-            
-            // Create payment with Payment method token
-
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodTokenString)) { paymentResponse, error in
+            firstly {
+                self.handleCheckoutShouldCreatePaymentEvent(paymentMethodTokenString)
+            }
+            .then { paymentCreateAdditionalValues -> Promise<Payment.Response?> in
+                let clientToken = paymentCreateAdditionalValues?.clientToken ?? paymentMethodTokenString
+                return self.handleCreatePaymentEvent(clientToken)
+            }
+            .done { paymentResponse -> Void in
                 
                 guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary(),
-                      error == nil else {
-                    self.handleErrorBasedOnSDKSettings(error!)
-                    return
-                }
-
+                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
+                          return
+                      }
+                
                 self.resumePaymentId = paymentResponse.id
-
+                
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
                     Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
-                    Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
+                    Primer.shared.delegate?.checkoutDidComplete?(paymentResponseDict)
                     self.handleSuccess()
                 }
+            }
+            .catch { error in
+                self.handleErrorBasedOnSDKSettings(error)
+            }
+        }
+    }
+    
+    // Raise "payment creation started" event
+    
+    private func handleCheckoutShouldCreatePaymentEvent(_ paymentMethodData: String) -> Promise<PaymentCreateAdditionalValues?> {
+        return Promise { seal in
+            Primer.shared.delegate?.checkoutShouldCreatePayment?(paymentMethodData, completion: { paymentCreateAdditionalValues in
+                // If merchant sents a custom data
+                if let clientToken = paymentCreateAdditionalValues?.clientToken {
+                    seal.fulfill(PaymentCreateAdditionalValues(clientToken: clientToken))
+                }
+                // If merchant sents an error to show
+                // The flow will terminate
+                else if let errorMessage = paymentCreateAdditionalValues?.error {
+                    seal.reject(errorMessage)
+                }
+                // If merchant will continue only with SDK data
+                else {
+                    seal.fulfill(nil)
+                }
+            })
+        }
+    }
+    
+    // Create payment with Payment method token
+
+    private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Payment.Response?> {
+        
+        return Promise { seal in
+        
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+            createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodData)) { paymentResponse, error in
+                
+                guard error == nil else {
+                    seal.reject(error!)
+                    return
+                }
+                
+                seal.fulfill(paymentResponse)
             }
         }
     }
 }
+
+
 
 extension PaymentMethodTokenizationViewModel {
     
@@ -440,7 +484,7 @@ extension PaymentMethodTokenizationViewModel {
                     Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
-                    Primer.shared.delegate?.checkoutDidCompleteWithPayment?(paymentResponseDict)
+                    Primer.shared.delegate?.checkoutDidComplete?(paymentResponseDict)
                     self.handleSuccess()
                 }
             }

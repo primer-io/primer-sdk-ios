@@ -63,4 +63,15 @@ internal protocol RequiredActionProtocol {
     var clientToken: String? { get }
 }
 
+@objc public class PaymentCreateAdditionalValues: NSObject {
+    var clientToken: RawJWTToken?
+    var error: Error?
+    
+    public convenience init(clientToken: RawJWTToken? = nil, error: Error? = nil) {
+        self.init()
+        self.clientToken = clientToken
+        self.error = error
+    }
+}
+
 #endif
