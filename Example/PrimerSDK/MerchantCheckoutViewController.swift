@@ -312,7 +312,11 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         self.paymentResponsesData.append(paymentData)
     }
     
-    func checkoutDidCompleteWithPayment(_ payment: [String: Any]) {
+    func checkoutWillCreatePayment(_ paymentMethodData: String, completion: @escaping (PaymentCreateAdditionalValues?) -> Void) {
+        completion(nil)
+    }
+    
+    func checkoutDidComplete(_ payment: [String: Any]) {
         
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(payment)\n")
         
