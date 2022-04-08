@@ -528,48 +528,6 @@ extension PrimerRootViewController {
         
         paymentMethodTokenizationViewModel.startTokenizationFlow()
     }
-    
-    func handleSuccessfulTokenization(paymentMethod: PaymentMethodToken) {
-        DispatchQueue.main.async { [weak self] in
-            
-            guard let strongSelf = self else {
-                let err = PrimerError.generic(
-                    message: "self has been deinitialized",
-                    userInfo: [
-                        "file": #file,
-                        "function": #function,
-                        "class": "\(Self.self)",
-                        "line": "\(#line)"]
-                )
-                ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.checkoutFailed(with: err)
-                return
-            }
-            
-            strongSelf.showLoadingScreenIfNeeded(imageView: nil, message: nil)
-            
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: strongSelf)
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { error in
-                DispatchQueue.main.async { [weak self] in
-                    guard let _ = self else {
-                        let error = PrimerError.generic(
-                            message: "self has been deinitialized",
-                            userInfo: [
-                                "file": #file,
-                                "function": #function,
-                                "class": "\(Self.self)",
-                                "line": "\(#line)"]
-                        )
-                        ErrorHandler.handle(error: error)
-                        PrimerDelegateProxy.checkoutFailed(with: error)
-                        return
-                    }
-                    
-                    self?.dismissOrShowResultScreen(error)
-                }
-            })
-        }
-    }
 }
 
 extension PrimerRootViewController: UIGestureRecognizerDelegate {
@@ -579,14 +537,31 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
     }
 }
 
+
+extension PrimerRootViewController {
+    
+    private func handleErrorBasedOnSDKSettings(_ error: Error) {
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        if settings.isManualPaymentHandlingEnabled {
+            PrimerDelegateProxy.onResumeError(error)
+            handle(error: error)
+        } else {
+            Primer.shared.delegate?.checkoutDidFail?(error: error, data: nil, completion: { errorMessage in
+                let merchantError = PrimerError.merchantError(message: errorMessage ?? "")
+                self.handle(error: merchantError)
+            })
+        }
+    }
+}
+
 extension PrimerRootViewController: ResumeHandlerProtocol {
     func handle(newClientToken clientToken: String) {
         ClientTokenService.storeClientToken(clientToken) { [weak self] error in
             DispatchQueue.main.async {
                 if let error = error {
                     ErrorHandler.handle(error: error)
-                    PrimerDelegateProxy.onResumeError(error)
-                    self?.handle(error: error)
+                    self?.handleErrorBasedOnSDKSettings(error)
                 }
             }
         }
@@ -604,6 +579,8 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
         }
     }
 }
+
+
 
 extension PrimerRootViewController {
     
