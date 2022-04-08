@@ -65,32 +65,29 @@ public protocol PrimerDelegate {
     @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
     @objc optional func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?)
-    
-    // mock payment started
-    // cannot use "strucs" because of ObjectiveC - so fallback to standard types
-    // check FormTokenizationViewModel func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
-    
-    /// This function will be called when the user initiate a payment.
+        
+    /// This function will be called when the SDK is about to initiate a payment.
     /// - Parameters:
     ///   - paymentMethodData: The payment method data containing the token's information.
-    @objc optional func onPaymentWillCreate(_ paymentMethodData: String)
+    ///   - completion: The completion handler managing a custom error to optionally pass to the SDK
+    @objc optional func checkoutShouldCreatePayment(_ paymentMethodData: String, completion: @escaping (PaymentCreateAdditionalValues?) -> Void)
     
     /// This function will be called when the user receives a payment object in a PENDING status.
     /// - Parameters:
-    ///   - payment: The Payment object containing the current payment status.
-    @objc optional func onPaymentPending(_ payment: [String: Any])
+    ///   - data: The CheckoutData object containing the current payment status.
+    @objc optional func onPaymentPending(_ data: [String: Any])
 
     /// This function will be called when the checkout has been successful.
     /// - Parameters:
     ///   - payment: The Payment object containing the completed payment.
-    @objc optional func checkoutDidCompleteWithPayment(_ payment: [String: Any])
+    @objc optional func checkoutDidComplete(_ data: [String: Any])
     
     /// This function will be called when the checkout encountered an error.
     /// - Parameters:
     ///   - error: The Error object containing the error description.
     ///   - payment: The additional payment data if present
     ///   - completion: The completion handler containing a custom error to optionally pass to the SDK
-    @objc optional func checkoutDidFail(error: Error, payment: [String: Any]?, completion: @escaping (String?) -> Void)
+    @objc optional func checkoutDidFail(error: Error, data: [String: Any]?, completion: @escaping (String?) -> Void)
 }
 
 internal class PrimerDelegateProxy {
