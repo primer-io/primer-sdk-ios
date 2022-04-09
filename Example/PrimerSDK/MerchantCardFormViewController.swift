@@ -100,7 +100,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
         
     }
     
-    func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PrimerSDK.PaymentMethod.Tokenization.Response, resumeHandler: ResumeHandlerProtocol?) {
+    func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodTokenData, resumeHandler: ResumeHandlerProtocol?) {
         if let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
            (threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess) {
             var message: String = ""
@@ -192,7 +192,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
         
     }
     
-    func primerHeadlessUniversalCheckoutTokenizationSucceededTokenizationSucceeded(paymentMethodToken: PrimerSDK.PaymentMethod.Tokenization.Response, resumeHandler: ResumeHandlerProtocol?) {
+    func primerHeadlessUniversalCheckoutTokenizationSucceededTokenizationSucceeded(paymentMethodToken: PaymentMethodTokenData, resumeHandler: ResumeHandlerProtocol?) {
         
     }
     

@@ -9,7 +9,7 @@
 
 import Foundation
 
-public typealias PaymentInstrument2 = PaymentMethod.Tokenization.Response
+public typealias PaymentMethodTokenData = PaymentMethod.Tokenization.Response
 
 public class PaymentMethod {
     

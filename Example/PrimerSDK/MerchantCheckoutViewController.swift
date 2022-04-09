@@ -33,7 +33,7 @@ class MerchantCheckoutViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var postalCodeLabel: UILabel!
     
-    var paymentMethodsDataSource: [PrimerSDK.PaymentMethod.Tokenization.Response] = [] {
+    var paymentMethodsDataSource: [PaymentMethodTokenData] = [] {
         didSet {
             self.tableView.reloadData()
         }
@@ -302,7 +302,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PrimerSDK.PaymentMethod.Tokenization.Response, resumeHandler: ResumeHandlerProtocol) {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, resumeHandler: ResumeHandlerProtocol) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Method: \(paymentMethodToken)\n")
 
         if paymentMethodToken.paymentInstrumentType == .paymentCard,
@@ -372,7 +372,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
     }
     
-    func tokenAddedToVault(_ token: PrimerSDK.PaymentMethod.Tokenization.Response) {
+    func tokenAddedToVault(_ token: PaymentMethodTokenData) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nToken added to vault\nToken: \(token)\n")
     }
     
