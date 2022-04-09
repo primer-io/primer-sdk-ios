@@ -25,7 +25,7 @@ public class PaymentMethod {
     
     public class Tokenization {
         struct Request: Codable {
-            let paymentInstrument: PaymentMethodTokenizationInstrumentParameters
+            let paymentInstrument: PaymentMethodTokenizationInstrumentRequestParameters
             let tokenType: PaymentMethod.TokenType
             let paymentFlow: PaymentMethod.Flow?
             let customerId: String?
@@ -35,7 +35,7 @@ public class PaymentMethod {
             }
             
             init(
-                paymentInstrument: PaymentMethodTokenizationInstrumentParameters,
+                paymentInstrument: PaymentMethodTokenizationInstrumentRequestParameters,
                 tokenType: PaymentMethod.TokenType,
                 paymentFlow: PaymentMethod.Flow?,
                 customerId: String?
@@ -49,23 +49,23 @@ public class PaymentMethod {
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
                 
-                if let paymentCardTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.Tokenization.InstrumentParameters.PaymentCard.self, forKey: .paymentInstrument)) {
+                if let paymentCardTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.PaymentCard.Tokenization.InstrumentRequestParameters.self, forKey: .paymentInstrument)) {
                     self.paymentInstrument = paymentCardTokenizationInstrumentParameters
-                } else if let payPalTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.Tokenization.InstrumentParameters.PayPal.self, forKey: .paymentInstrument)) {
+                } else if let payPalTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.PayPal.Tokenization.InstrumentRequestParameters.self, forKey: .paymentInstrument)) {
                     self.paymentInstrument = payPalTokenizationInstrumentParameters
-                } else if let applePayTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.Tokenization.InstrumentParameters.ApplePay.self, forKey: .paymentInstrument)) {
+                } else if let applePayTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.ApplePay.Tokenization.InstrumentRequestParameters.self, forKey: .paymentInstrument)) {
                     self.paymentInstrument = applePayTokenizationInstrumentParameters
-                } else if let goCardlessTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.Tokenization.InstrumentParameters.GoCardless.self, forKey: .paymentInstrument)) {
+                } else if let goCardlessTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.GoCardless.Tokenization.InstrumentRequestParameters.self, forKey: .paymentInstrument)) {
                     self.paymentInstrument = goCardlessTokenizationInstrumentParameters
-                } else if let klarnaAuthTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.Tokenization.InstrumentParameters.KlarnaAuth.self, forKey: .paymentInstrument)) {
+                } else if let klarnaAuthTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.KlarnaAuth.Tokenization.InstrumentRequestParameters.self, forKey: .paymentInstrument)) {
                     self.paymentInstrument = klarnaAuthTokenizationInstrumentParameters
-                } else if let klarnaCustomerTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.Tokenization.InstrumentParameters.KlarnaCustomer.self, forKey: .paymentInstrument)) {
+                } else if let klarnaCustomerTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.KlarnaCustomer.Tokenization.InstrumentRequestParameters.self, forKey: .paymentInstrument)) {
                     self.paymentInstrument = klarnaCustomerTokenizationInstrumentParameters
-                } else if let apayaTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.Tokenization.InstrumentParameters.Apaya.self, forKey: .paymentInstrument)) {
+                } else if let apayaTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.Apaya.Tokenization.InstrumentRequestParameters.self, forKey: .paymentInstrument)) {
                     self.paymentInstrument = apayaTokenizationInstrumentParameters
-                } else if let dotPayTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.Tokenization.InstrumentParameters.DotPay.self, forKey: .paymentInstrument)) {
+                } else if let dotPayTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.DotPay.Tokenization.InstrumentRequestParameters.self, forKey: .paymentInstrument)) {
                     self.paymentInstrument = dotPayTokenizationInstrumentParameters
-                } else if let redirectTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.Tokenization.InstrumentParameters.Redirect.self, forKey: .paymentInstrument)) {
+                } else if let redirectTokenizationInstrumentParameters = (try? container.decode(PaymentMethod.Redirect.Tokenization.InstrumentRequestParameters.self, forKey: .paymentInstrument)) {
                     self.paymentInstrument = redirectTokenizationInstrumentParameters
                 } else {
                     fatalError()
@@ -79,23 +79,23 @@ public class PaymentMethod {
             func encode(to encoder: Encoder) throws {
                 var container = encoder.container(keyedBy: CodingKeys.self)
                 
-                if let paymentCardTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Tokenization.InstrumentParameters.PaymentCard {
+                if let paymentCardTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.PaymentCard.Tokenization.InstrumentRequestParameters {
                     try container.encode(paymentCardTokenizationInstrumentParameters, forKey: .paymentInstrument)
-                } else if let payPalTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Tokenization.InstrumentParameters.PayPal {
+                } else if let payPalTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.PayPal.Tokenization.InstrumentRequestParameters {
                     try container.encode(payPalTokenizationInstrumentParameters, forKey: .paymentInstrument)
-                } else if let applePayTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Tokenization.InstrumentParameters.ApplePay {
+                } else if let applePayTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.ApplePay.Tokenization.InstrumentRequestParameters {
                     try container.encode(applePayTokenizationInstrumentParameters, forKey: .paymentInstrument)
-                } else if let goCardlessTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Tokenization.InstrumentParameters.GoCardless {
+                } else if let goCardlessTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.GoCardless.Tokenization.InstrumentRequestParameters {
                     try container.encode(goCardlessTokenizationInstrumentParameters, forKey: .paymentInstrument)
-                } else if let klarnaAuthTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Tokenization.InstrumentParameters.KlarnaAuth {
+                } else if let klarnaAuthTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.KlarnaAuth.Tokenization.InstrumentRequestParameters {
                     try container.encode(klarnaAuthTokenizationInstrumentParameters, forKey: .paymentInstrument)
-                } else if let klarnaCustomerTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Tokenization.InstrumentParameters.KlarnaCustomer {
+                } else if let klarnaCustomerTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.KlarnaCustomer.Tokenization.InstrumentRequestParameters {
                     try container.encode(klarnaCustomerTokenizationInstrumentParameters, forKey: .paymentInstrument)
-                } else if let apayaTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Tokenization.InstrumentParameters.Apaya {
+                } else if let apayaTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Apaya.Tokenization.InstrumentRequestParameters {
                     try container.encode(apayaTokenizationInstrumentParameters, forKey: .paymentInstrument)
-                } else if let dotPayTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Tokenization.InstrumentParameters.DotPay {
+                } else if let dotPayTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.DotPay.Tokenization.InstrumentRequestParameters {
                     try container.encode(dotPayTokenizationInstrumentParameters, forKey: .paymentInstrument)
-                } else if let redirectTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Tokenization.InstrumentParameters.Redirect {
+                } else if let redirectTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Redirect.Tokenization.InstrumentRequestParameters {
                     try container.encode(redirectTokenizationInstrumentParameters, forKey: .paymentInstrument)
                 } else {
                     fatalError()

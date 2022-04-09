@@ -123,7 +123,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     }()
     
     private var webViewController: PrimerWebViewController?
-    private var webViewCompletion: ((_ res: Apaya.WebViewResponse?, _ error: Error?) -> Void)?
+    private var webViewCompletion: ((_ res: PaymentMethod.Apaya.WebViewResponse?, _ error: Error?) -> Void)?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -209,7 +209,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         firstly {
             self.generateWebViewUrl()
         }
-        .then { url -> Promise<Apaya.WebViewResponse> in
+        .then { url -> Promise<PaymentMethod.Apaya.WebViewResponse> in
             self.presentApayaController(with: url)
         }
         .then { apayaWebViewResponse -> Promise<PaymentMethod.Tokenization.Response> in
@@ -266,7 +266,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             return completion(.failure(err))
         }
         
-        let body = Apaya.CreateSessionAPIRequest(merchantAccountId: merchantAccountId,
+        let body = PaymentMethod.Apaya.CreateSessionAPIRequest(merchantAccountId: merchantAccountId,
                                                  language: settings.localeData.languageCode ?? "en",
                                                  currencyCode: currency.rawValue,
                                                  phoneNumber: settings.customer?.mobilePhoneNumber)
@@ -289,7 +289,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
     }
     
-    private func presentApayaController(with url: URL) -> Promise<Apaya.WebViewResponse> {
+    private func presentApayaController(with url: URL) -> Promise<PaymentMethod.Apaya.WebViewResponse> {
         return Promise { seal in
             self.presentApayaController(with: url) { (apayaWebViewResponse, err) in
                 if let err = err {
@@ -303,7 +303,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
     }
     
-    private func presentApayaController(with url: URL, completion: @escaping (Apaya.WebViewResponse?, Error?) -> Void) {
+    private func presentApayaController(with url: URL, completion: @escaping (PaymentMethod.Apaya.WebViewResponse?, Error?) -> Void) {
         DispatchQueue.main.async {
             self.webViewController = PrimerWebViewController(with: url)
             self.webViewController!.navigationDelegate = self
@@ -322,7 +322,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
     }
     
-    private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse) -> Promise<PaymentMethod.Tokenization.Response> {
+    private func tokenize(apayaWebViewResponse: PaymentMethod.Apaya.WebViewResponse) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse) { paymentMethod, err in
                 self.willDismissExternalView?()
@@ -341,7 +341,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
     }
     
-    private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PaymentMethod.Tokenization.Response?, _ err: Error?) -> Void) {
+    private func tokenize(apayaWebViewResponse: PaymentMethod.Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PaymentMethod.Tokenization.Response?, _ err: Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
@@ -396,7 +396,7 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
     ) {
         if let host = navigationAction.request.url?.host, WebViewUtil.allowedHostsContain(host) {
             do {
-                let apayaWebViewResponse = try Apaya.WebViewResponse(url: navigationAction.request.url!)
+                let apayaWebViewResponse = try PaymentMethod.Apaya.WebViewResponse(url: navigationAction.request.url!)
                 webViewCompletion?(apayaWebViewResponse, nil)
                 
             } catch {

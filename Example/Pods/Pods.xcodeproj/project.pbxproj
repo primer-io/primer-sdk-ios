@@ -120,7 +120,7 @@
 		82FF33D77E66F12CC5F1D471696C5A64 /* StrictRateLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C917731303B5F29842F738B0F16635A1 /* StrictRateLimitedDispatcher.swift */; };
 		834654BCF5A038CD30B8A2459E6D66FC /* VaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A2215AC9262244CFBD4324CEE200994 /* VaultCheckoutViewModel.swift */; };
 		849E90EB27FEFA15004E8F27 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90EA27FEFA15004E8F27 /* PaymentMethod.swift */; };
-		849E90EE27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentParameters.swift */; };
+		849E90EE27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentRequestParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentRequestParameters.swift */; };
 		849E90F027FF2711004E8F27 /* PaymentMethod.Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90EF27FF2711004E8F27 /* PaymentMethod.Type.swift */; };
 		849E90F227FF2B61004E8F27 /* PaymentMethod.Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90F127FF2B61004E8F27 /* PaymentMethod.Configuration.swift */; };
 		84EED8E0FAA69C8337DECB311796A429 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ED121DB41C8CFE40BA0EE9B1E18534 /* Parser.swift */; };
@@ -405,7 +405,7 @@
 		824C1E51A821960B0AF5ABB63548169B /* WebViewUtil.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebViewUtil.swift; sourceTree = "<group>"; };
 		83FBED6A24CE970CC7E12F90EBAF9560 /* PrimerAPIClient+3DS.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PrimerAPIClient+3DS.swift"; sourceTree = "<group>"; };
 		849E90EA27FEFA15004E8F27 /* PaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethod.swift; sourceTree = "<group>"; };
-		849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodTokenizationInstrumentParameters.swift; sourceTree = "<group>"; };
+		849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentRequestParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodTokenizationInstrumentRequestParameters.swift; sourceTree = "<group>"; };
 		849E90EF27FF2711004E8F27 /* PaymentMethod.Type.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethod.Type.swift; sourceTree = "<group>"; };
 		849E90F127FF2B61004E8F27 /* PaymentMethod.Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethod.Configuration.swift; sourceTree = "<group>"; };
 		863ED78BC1254836A8CE75F196EC21FC /* CustomStringConvertible.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomStringConvertible.swift; sourceTree = "<group>"; };
@@ -926,7 +926,7 @@
 			isa = PBXGroup;
 			children = (
 				849E90EA27FEFA15004E8F27 /* PaymentMethod.swift */,
-				849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentParameters.swift */,
+				849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentRequestParameters.swift */,
 				849E90EF27FF2711004E8F27 /* PaymentMethod.Type.swift */,
 				849E90F127FF2B61004E8F27 /* PaymentMethod.Configuration.swift */,
 			);
@@ -1691,7 +1691,7 @@
 				834654BCF5A038CD30B8A2459E6D66FC /* VaultCheckoutViewModel.swift in Sources */,
 				D61F1B80D0BC391AF33554C2002D3494 /* VaultPaymentMethodView.swift in Sources */,
 				DE2EDC59805CCA5006DD3A6F8FF3FDF0 /* VaultPaymentMethodViewController.swift in Sources */,
-				849E90EE27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentParameters.swift in Sources */,
+				849E90EE27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentRequestParameters.swift in Sources */,
 				BBD4AD647621F3E158AA0BF8BCFF6B84 /* VaultPaymentMethodViewModel.swift in Sources */,
 				3A3269143B1557AAC8D65C80807A66AA /* VaultService.swift in Sources */,
 				67C9DC2A9BCA79458DC445BE425ECB74 /* Weak.swift in Sources */,

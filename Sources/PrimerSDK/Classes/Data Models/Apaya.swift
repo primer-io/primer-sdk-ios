@@ -9,7 +9,7 @@
 
 import Foundation
 
-public struct Apaya {
+extension PaymentMethod.Apaya {
     
     public struct CreateSessionAPIRequest: Encodable {
         let merchantAccountId: String
@@ -100,14 +100,14 @@ public struct Apaya {
     }
     
     class ViewModel {
-        var carrier: Apaya.Carrier
+        var carrier: PaymentMethod.Apaya.Carrier
         var hashedIdentifier: String?
         
         init?(paymentMethod: PaymentMethod.Tokenization.Response) {
             guard paymentMethod.paymentInstrumentType == .apayaToken else { return nil }
             guard let mcc = paymentMethod.paymentInstrumentData?.mcc,
                   let mnc = paymentMethod.paymentInstrumentData?.mnc,
-                  let carrier = Apaya.Carrier(mcc: mcc, mnc: mnc)
+                  let carrier = PaymentMethod.Apaya.Carrier(mcc: mcc, mnc: mnc)
             else { return nil }
             
             self.carrier = carrier

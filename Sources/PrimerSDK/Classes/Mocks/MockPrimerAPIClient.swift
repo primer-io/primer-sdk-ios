@@ -185,14 +185,14 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     func createApayaSession(
         clientToken: DecodedClientToken,
-        request: Apaya.CreateSessionAPIRequest,
-        completion: @escaping (Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
+        request: PaymentMethod.Apaya.CreateSessionAPIRequest,
+        completion: @escaping (Result<PaymentMethod.Apaya.CreateSessionAPIResponse, Error>) -> Void
     ) {
         isCalled = true
         guard let response = response else { return }
         
         do {
-            let value = try JSONDecoder().decode(Apaya.CreateSessionAPIResponse.self, from: response)
+            let value = try JSONDecoder().decode(PaymentMethod.Apaya.CreateSessionAPIResponse.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))

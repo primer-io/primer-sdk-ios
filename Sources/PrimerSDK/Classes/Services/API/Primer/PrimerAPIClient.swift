@@ -25,7 +25,7 @@ protocol PrimerAPIClientProtocol {
     func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (_ result: Result<PaymentMethod.Tokenization.Response, Error>) -> Void)
     func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethod.Tokenization.Response, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
     func continue3DSAuth(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
-    func createApayaSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest, completion: @escaping (_ result: Result<Apaya.CreateSessionAPIResponse, Error>) -> Void)
+    func createApayaSession(clientToken: DecodedClientToken, request: PaymentMethod.Apaya.CreateSessionAPIRequest, completion: @escaping (_ result: Result<PaymentMethod.Apaya.CreateSessionAPIResponse, Error>) -> Void)
     func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (_ result: Result<[Bank], Error>) -> Void)
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
     
@@ -198,11 +198,11 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     
     func createApayaSession(
         clientToken: DecodedClientToken,
-        request: Apaya.CreateSessionAPIRequest,
-        completion: @escaping (Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
+        request: PaymentMethod.Apaya.CreateSessionAPIRequest,
+        completion: @escaping (Result<PaymentMethod.Apaya.CreateSessionAPIResponse, Error>) -> Void
     ) {
         let endpoint = PrimerAPI.createApayaSession(clientToken: clientToken, request: request)
-        networkService.request(endpoint) { (result: Result<Apaya.CreateSessionAPIResponse, Error>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethod.Apaya.CreateSessionAPIResponse, Error>) in
             switch result {
             case .success(let response):
                 completion(.success(response))

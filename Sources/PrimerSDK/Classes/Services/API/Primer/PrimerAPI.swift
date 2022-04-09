@@ -51,7 +51,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest)
     case createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest)
     case finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
-    case createApayaSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest)
+    case createApayaSession(clientToken: DecodedClientToken, request: PaymentMethod.Apaya.CreateSessionAPIRequest)
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest)
     case listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest)
     

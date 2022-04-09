@@ -25,7 +25,7 @@ class ApayaDataModelTests: XCTestCase {
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         
         do {
-            let apayaWebViewResponse = try Apaya.WebViewResponse(url: url!)
+            let apayaWebViewResponse = try PaymentMethod.Apaya.WebViewResponse(url: url!)
             XCTAssertEqual(apayaWebViewResponse.success, "1")
         } catch {
             XCTFail()
@@ -41,7 +41,7 @@ class ApayaDataModelTests: XCTestCase {
         
         let url = URL(string: rootUrl + "pt=ExamplePTValue&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91")
         do {
-            _ = try Apaya.WebViewResponse(url: url!)
+            _ = try PaymentMethod.Apaya.WebViewResponse(url: url!)
             XCTFail()
         }
         catch {
@@ -52,7 +52,7 @@ class ApayaDataModelTests: XCTestCase {
     func test_apaya_web_view_result_fails_on_error_url() throws {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ERROR")
         do {
-            _ = try Apaya.WebViewResponse(url: url!)
+            _ = try PaymentMethod.Apaya.WebViewResponse(url: url!)
             XCTFail()
         }
         catch {
@@ -63,7 +63,7 @@ class ApayaDataModelTests: XCTestCase {
     func test_apaya_web_view_result_nil_on_cancel_url() throws {
         let url = URL(string: rootUrl + "success=0&status=SETUP_ABANDONED")
         do {
-            _ = try Apaya.WebViewResponse(url: url!)
+            _ = try PaymentMethod.Apaya.WebViewResponse(url: url!)
             XCTFail()
         }
         catch {
@@ -82,30 +82,30 @@ class ApayaDataModelTests: XCTestCase {
     }
     
     func test_apaya_carrier() throws {
-        var carrier: Apaya.Carrier!
+        var carrier: PaymentMethod.Apaya.Carrier!
         
-        carrier = Apaya.Carrier(mcc: 234, mnc: 99)
-        if carrier != Apaya.Carrier.EE_UK {
+        carrier = PaymentMethod.Apaya.Carrier(mcc: 234, mnc: 99)
+        if carrier != PaymentMethod.Apaya.Carrier.EE_UK {
             XCTFail("Wrong carrier")
         }
         
-        carrier = Apaya.Carrier(mcc: 234, mnc: 11)
-        if carrier != Apaya.Carrier.O2_UK {
+        carrier = PaymentMethod.Apaya.Carrier(mcc: 234, mnc: 11)
+        if carrier != PaymentMethod.Apaya.Carrier.O2_UK {
             XCTFail("Wrong carrier")
         }
         
-        carrier = Apaya.Carrier(mcc: 234, mnc: 15)
-        if carrier != Apaya.Carrier.Vodafone_UK {
+        carrier = PaymentMethod.Apaya.Carrier(mcc: 234, mnc: 15)
+        if carrier != PaymentMethod.Apaya.Carrier.Vodafone_UK {
             XCTFail("Wrong carrier")
         }
         
-        carrier = Apaya.Carrier(mcc: 234, mnc: 20)
-        if carrier != Apaya.Carrier.Three_UK {
+        carrier = PaymentMethod.Apaya.Carrier(mcc: 234, mnc: 20)
+        if carrier != PaymentMethod.Apaya.Carrier.Three_UK {
             XCTFail("Wrong carrier")
         }
         
-        carrier = Apaya.Carrier(mcc: 242, mnc: 99)
-        if carrier != Apaya.Carrier.Strex_Norway {
+        carrier = PaymentMethod.Apaya.Carrier(mcc: 242, mnc: 99)
+        if carrier != PaymentMethod.Apaya.Carrier.Strex_Norway {
             XCTFail("Wrong carrier")
         }
     }
