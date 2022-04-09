@@ -17,7 +17,7 @@ struct GetVaultedPaymentMethodsResponse: Decodable {
  */
 
 //public class PaymentMethod.Tokenization.Response: NSObject, Codable {
-//    
+//
 //    public var analyticsId: String?
 //    public var id: String?
 //    public var isVaulted: Bool?
@@ -93,7 +93,7 @@ struct GetVaultedPaymentMethodsResponse: Decodable {
 //            } else {
 //                return nil
 //            }
-//            
+//
 //        default:
 //            return nil
 //        }
@@ -216,7 +216,7 @@ public struct PaymentInstrumentData: Codable {
     public let sessionData: KlarnaSessionData?
     public let externalPayerInfo: ExternalPayerInfo?
     public let shippingAddress: ShippingAddress?
-    public let binData: BinData?
+    public let binData: PaymentMethod.PaymentCard.BinData?
     public let threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
     public let gocardlessMandateId: String?
     public let authorizationToken: String?
@@ -238,19 +238,7 @@ public struct PaymentInstrumentData: Codable {
  1.2.2
  */
 
-public struct BinData: Codable {
-    public var network: String?
-    public var issuerCountryCode: String?
-    public var issuerName: String?
-    public var issuerCurrencyCode: String?
-    public var regionalRestriction: String?
-    public var accountNumberType: String?
-    public var accountFundingType: String?
-    public var prepaidReloadableIndicator: String?
-    public var productUsageType: String?
-    public var productCode: String?
-    public var productName: String?
-}
+
 
 public struct VaultData: Codable {
     public var customerId: String

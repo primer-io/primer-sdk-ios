@@ -15,7 +15,7 @@ protocol PaymentMethodTokenizationInstrumentResponseData: Codable {}
 extension PaymentMethod {
     
     // MARK: - Payment Card
-    class PaymentCard {
+    public class PaymentCard {
         class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let number: String
@@ -34,9 +34,23 @@ extension PaymentMethod {
                 public let cardholderName: String?
                 public let network: String?
                 public let isNetworkTokenized: Bool?
-                public let binData: BinData?
+                public let binData: PaymentMethod.PaymentCard.BinData?
                 public let threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
             }
+        }
+        
+        public struct BinData: Codable {
+            public var network: String?
+            public var issuerCountryCode: String?
+            public var issuerName: String?
+            public var issuerCurrencyCode: String?
+            public var regionalRestriction: String?
+            public var accountNumberType: String?
+            public var accountFundingType: String?
+            public var prepaidReloadableIndicator: String?
+            public var productUsageType: String?
+            public var productCode: String?
+            public var productName: String?
         }
     }
     
