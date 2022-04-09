@@ -26,7 +26,7 @@ internal class CardButton: PrimerButton {
 
     var showIcon = true
 
-    func render(model: CardButtonViewModel?, showIcon: Bool = true) {
+    func render(model: PaymentMethod.PaymentCard.ButtonViewModel?, showIcon: Bool = true) {
         guard let model = model else { return }
         accessibilityIdentifier = "saved_payment_method_button"
         
@@ -56,7 +56,7 @@ internal class CardButton: PrimerButton {
 
     }
 
-    func reload(model: CardButtonViewModel?) {
+    func reload(model: PaymentMethod.PaymentCard.ButtonViewModel?) {
         iconView.image = model?.imageName.image
         networkLabel.text = model?.network
         cardholderLabel.text = model?.cardholder

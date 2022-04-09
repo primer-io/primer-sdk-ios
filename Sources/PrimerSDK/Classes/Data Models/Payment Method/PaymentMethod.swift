@@ -233,7 +233,7 @@ public class PaymentMethod {
                 }
             }
             
-            var cardButtonViewModel: CardButtonViewModel? {
+            var cardButtonViewModel: PaymentMethod.PaymentCard.ButtonViewModel? {
                 switch self.paymentInstrumentType {
                 case .paymentCard:
                     guard let ntwrk = (self.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.network else { return nil }
@@ -241,7 +241,7 @@ public class PaymentMethod {
                     guard let last4 = (self.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.last4Digits else { return nil }
                     guard let expMonth = (self.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.expirationMonth else { return nil }
                     guard let expYear = (self.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.expirationYear else { return nil }
-                    return CardButtonViewModel(
+                    return PaymentMethod.PaymentCard.ButtonViewModel(
                         network: ntwrk,
                         cardholder: cardholder,
                         last4: "•••• \(last4)",
@@ -255,11 +255,11 @@ public class PaymentMethod {
                         paymentMethodType: self.paymentInstrumentType)
                 case .payPalBillingAgreement:
                     guard let cardholder = (self.paymentInstrumentData as? PaymentMethod.PayPal.Tokenization.InstrumentResponseData)?.externalPayerInfo?.email else { return nil }
-                    return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+                    return PaymentMethod.PaymentCard.ButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
                 case .goCardlessMandate:
-                    return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+                    return PaymentMethod.PaymentCard.ButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
                 case .klarnaCustomerToken:
-                    return CardButtonViewModel(
+                    return PaymentMethod.PaymentCard.ButtonViewModel(
                         network: (self.paymentInstrumentData as? PaymentMethod.KlarnaCustomer.Tokenization.InstrumentResponseData)?.sessionData?.billingAddress?.email ?? "Klarna Customer Token",
                         cardholder: "",
                         last4: "",
@@ -274,7 +274,7 @@ public class PaymentMethod {
                           let carrier = Apaya.Carrier(mcc: mcc, mnc: mnc)
                     else { return nil }
                     
-                    return CardButtonViewModel(
+                    return PaymentMethod.PaymentCard.ButtonViewModel(
                         network: "[\(carrier.name)] \((self.paymentInstrumentData as? PaymentMethod.Apaya.Tokenization.InstrumentResponseData)?.hashedIdentifier ?? "")",
                         cardholder: "Apaya",
                         last4: "",
