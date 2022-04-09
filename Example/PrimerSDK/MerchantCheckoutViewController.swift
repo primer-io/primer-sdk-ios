@@ -473,16 +473,16 @@ extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDele
         
         switch paymentMethod.paymentInstrumentType {
         case .paymentCard:
-            let title = "•••• •••• •••• \(paymentMethod.paymentInstrumentData?.last4Digits ?? "••••")"
+            let title = "•••• •••• •••• \((paymentMethod.paymentInstrumentData as? PrimerSDK.PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.last4Digits ?? "••••")"
             cell.configure(title: title, image: paymentMethod.icon.image!)
         case .payPalBillingAgreement:
-            let title = paymentMethod.paymentInstrumentData?.externalPayerInfo?.email ?? "PayPal"
+            let title = (paymentMethod.paymentInstrumentData as? PrimerSDK.PaymentMethod.PayPal.Tokenization.InstrumentResponseData)?.externalPayerInfo?.email ?? "PayPal"
             cell.configure(title: title, image: paymentMethod.icon.image!)
         case .goCardlessMandate:
             let title = "Direct Debit"
             cell.configure(title: title, image: paymentMethod.icon.image!)
         case .klarnaCustomerToken:
-            let title = paymentMethod.paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token"
+            let title = (paymentMethod.paymentInstrumentData as? PrimerSDK.PaymentMethod.KlarnaCustomer.Tokenization.InstrumentResponseData)?.sessionData?.billingAddress?.email ?? "Klarna Customer Token"
             cell.configure(title: title, image: paymentMethod.icon.image!)
         case .apayaToken:
             if let apayaViewModel = ApayaViewModel(paymentMethod: paymentMethod) {

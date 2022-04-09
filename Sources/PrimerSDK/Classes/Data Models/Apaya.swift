@@ -105,13 +105,13 @@ extension PaymentMethod.Apaya {
         
         init?(paymentMethod: PaymentMethod.Tokenization.Response) {
             guard paymentMethod.paymentInstrumentType == .apayaToken else { return nil }
-            guard let mcc = paymentMethod.paymentInstrumentData?.mcc,
-                  let mnc = paymentMethod.paymentInstrumentData?.mnc,
+            guard let mcc = (paymentMethod.paymentInstrumentData as? PaymentMethod.Apaya.Tokenization.InstrumentResponseData)?.mcc,
+                  let mnc = (paymentMethod.paymentInstrumentData as? PaymentMethod.Apaya.Tokenization.InstrumentResponseData)?.mnc,
                   let carrier = PaymentMethod.Apaya.Carrier(mcc: mcc, mnc: mnc)
             else { return nil }
             
             self.carrier = carrier
-            self.hashedIdentifier = paymentMethod.paymentInstrumentData?.hashedIdentifier
+            self.hashedIdentifier = (paymentMethod.paymentInstrumentData as? PaymentMethod.Apaya.Tokenization.InstrumentResponseData)?.hashedIdentifier
         }
         
     }

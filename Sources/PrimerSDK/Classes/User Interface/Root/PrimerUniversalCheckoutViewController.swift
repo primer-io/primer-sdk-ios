@@ -284,7 +284,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
             var params: [String: Any] = ["paymentMethodType": config.type.rawValue]
             if config.type == .paymentCard {
-                var network = selectedPaymentMethod.paymentInstrumentData?.network?.uppercased()
+                var network = (selectedPaymentMethod.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.network?.uppercased()
                 if network == nil || network == "UNKNOWN" {
                     network = "OTHER"
                 }

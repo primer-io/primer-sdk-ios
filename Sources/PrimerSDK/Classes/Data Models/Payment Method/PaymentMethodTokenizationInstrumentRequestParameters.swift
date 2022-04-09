@@ -10,13 +10,13 @@
 import Foundation
 
 protocol PaymentMethodTokenizationInstrumentRequestParameters: Codable {}
-protocol PaymentMethodTokenizationInstrumentResponseData: Codable {}
+public protocol PaymentMethodTokenizationInstrumentResponseData: Codable {}
 
 extension PaymentMethod {
     
     // MARK: - Payment Card
     public class PaymentCard {
-        class Tokenization {
+        public class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let number: String
                 let cvv: String
@@ -25,7 +25,7 @@ extension PaymentMethod {
                 let cardholderName: String?
             }
             
-            struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
+            public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
                 public let paypalBillingAgreementId: String?
                 public let first6Digits: String?
                 public let last4Digits: String?
@@ -55,13 +55,17 @@ extension PaymentMethod {
     }
     
     // MARK: - Pay Pal
-    class PayPal: PaymentMethodTokenizationInstrumentRequestParameters {
-        class Tokenization {
+    public class PayPal: PaymentMethodTokenizationInstrumentRequestParameters {
+        public class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let paypalOrderId: String?
                 let paypalBillingAgreementId: String?
                 let shippingAddress: ShippingAddress?
                 let externalPayerInfo: ExternalPayerInfo?
+            }
+            
+            public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
+                public let externalPayerInfo: ExternalPayerInfo?
             }
         }
     }
@@ -117,18 +121,23 @@ extension PaymentMethod {
     }
     
     // MARK: - KlarnaCustomer
-    class KlarnaCustomer {
-        class Tokenization {
+    public class KlarnaCustomer {
+        public class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let klarnaCustomerToken: String
                 let sessionData: KlarnaSessionData
+            }
+            
+            public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
+                public let klarnaCustomerToken: String?
+                public let sessionData: KlarnaSessionData?
             }
         }
     }
     
     // MARK: - Apaya
-    class Apaya {
-        class Tokenization {
+    public class Apaya {
+        public class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let currencyCode: String
                 let hashedIdentifier: String
@@ -137,9 +146,19 @@ extension PaymentMethod {
                 let mx: String
                 let productId: String
             }
+            
+            public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
+                public let hashedIdentifier: String?
+                public let mnc: Int?
+                public let mcc: Int?
+                public let mx: String?
+                public let currencyCode: Currency?
+                public let productId: String?
+            }
         }
     }
     
+    // MARK: - Dot Pay
     class DotPay {
         class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {

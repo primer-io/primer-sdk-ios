@@ -112,17 +112,114 @@ public class PaymentMethod {
             public var id: String?
             public var isVaulted: Bool?
             private var isAlreadyVaulted: Bool?
-            public var paymentInstrumentType: PaymentInstrumentType
-            public var paymentInstrumentData: PaymentInstrumentData?
+            public var paymentInstrumentType: PaymentMethod.Tokenization.Response.InstrumentType
+            public var paymentInstrumentData: PaymentMethodTokenizationInstrumentResponseData?
             public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
             public var token: String?
             public var tokenType: TokenType?
             public var vaultData: VaultData?
             
+            enum CodingKeys: String, CodingKey {
+                case analyticsId, id, isVaulted, isAlreadyVaulted, paymentInstrumentType, paymentInstrumentData, threeDSecureAuthentication, token, tokenType, vaultData
+            }
+            
+            public required init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                analyticsId = (try? container.decode(String?.self, forKey: .analyticsId)) ?? nil
+                id = (try? container.decode(String?.self, forKey: .id)) ?? nil
+                isVaulted = (try? container.decode(Bool?.self, forKey: .isVaulted)) ?? nil
+                isAlreadyVaulted = (try? container.decode(Bool?.self, forKey: .isAlreadyVaulted)) ?? nil
+                paymentInstrumentType = try container.decode(PaymentMethod.Tokenization.Response.InstrumentType.self, forKey: .paymentInstrumentType)
+                
+                if let paymentCardInstrumentResponseData = (try? container.decode(PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData?.self, forKey: .paymentInstrumentData)) {
+                    self.paymentInstrumentData = paymentCardInstrumentResponseData
+                } else if let apayaInstrumentResponseData = (try? container.decode(PaymentMethod.Apaya.Tokenization.InstrumentResponseData?.self, forKey: .paymentInstrumentData)) {
+                    self.paymentInstrumentData = apayaInstrumentResponseData
+                } else {
+                    self.paymentInstrumentData = nil
+                }
+                
+                if paymentInstrumentType == .paymentCard {
+                    threeDSecureAuthentication = (try? container.decode(ThreeDS.AuthenticationDetails?.self, forKey: .threeDSecureAuthentication)) ?? nil
+                }
+                
+                token = (try? container.decode(String?.self, forKey: .token)) ?? nil
+                tokenType = (try? container.decode(TokenType?.self, forKey: .tokenType)) ?? nil
+                vaultData = (try? container.decode(VaultData?.self, forKey: .vaultData)) ?? nil
+            }
+            
+            public func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                
+                try? container.encode(analyticsId, forKey: .analyticsId)
+                try? container.encode(id, forKey: .id)
+                try? container.encode(isVaulted, forKey: .isVaulted)
+                try? container.encode(isAlreadyVaulted, forKey: .isAlreadyVaulted)
+                try? container.encode(paymentInstrumentType, forKey: .paymentInstrumentType)
+                
+                if let paymentCardInstrumentResponseData = self.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData {
+                    try? container.encode(paymentCardInstrumentResponseData, forKey: .paymentInstrumentData)
+                } else if let apayaInstrumentResponseData = self.paymentInstrumentData as? PaymentMethod.Apaya.Tokenization.InstrumentResponseData {
+                    try? container.encode(apayaInstrumentResponseData, forKey: .paymentInstrumentData)
+                }
+                
+                try? container.encode(token, forKey: .token)
+                try? container.encode(tokenType, forKey: .tokenType)
+                try? container.encode(vaultData, forKey: .vaultData)
+            }
+            
+            public enum InstrumentType: String, Codable {
+                case paymentCard = "PAYMENT_CARD"
+                case payPalOrder = "PAYPAL_ORDER"
+                case payPalBillingAgreement = "PAYPAL_BILLING_AGREEMENT"
+                case applePay = "APPLE_PAY"
+                case googlePay = "GOOGLE_PAY"
+                case goCardlessMandate = "GOCARDLESS_MANDATE"
+                case klarna = "KLARNA_AUTHORIZATION_TOKEN"
+                case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
+                case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"
+                case apayaToken = "APAYA"
+                case hoolah = "HOOLAH"
+                case unknown = "UNKNOWN"
+
+                public init(from decoder: Decoder) throws {
+                    self = try PaymentMethod.Tokenization.Response.InstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
+                }
+                
+                var paymentMethodType: PaymentMethod.PaymentMethodType {
+                    switch self {
+                    case .apayaToken:
+                        return .apaya
+                    case .paymentCard:
+                        return .paymentCard
+                    case .payPalOrder:
+                        return .payPal
+                    case .payPalBillingAgreement:
+                        return .payPal
+                    case .applePay:
+                        return .applePay
+                    case .googlePay:
+                        return .googlePay
+                    case .goCardlessMandate:
+                        return .goCardlessMandate
+                    case .klarna:
+                        return .klarna
+                    case .klarnaPaymentSession:
+                        return .klarna
+                    case .klarnaCustomerToken:
+                        return .klarna
+                    case .hoolah:
+                        return .hoolah
+                    case .unknown:
+                        return .other(rawValue: PaymentMethod.Tokenization.Response.InstrumentType.unknown.rawValue)
+                    }
+                }
+            }
+
             public var icon: ImageName {
                 switch self.paymentInstrumentType {
                 case .paymentCard:
-                    guard let network = self.paymentInstrumentData?.network else { return .genericCard }
+                    guard let network = (self.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.network else { return .genericCard }
                     switch network {
                     case "Visa": return .visa
                     case "Mastercard": return .masterCard
@@ -139,11 +236,11 @@ public class PaymentMethod {
             var cardButtonViewModel: CardButtonViewModel? {
                 switch self.paymentInstrumentType {
                 case .paymentCard:
-                    guard let ntwrk = self.paymentInstrumentData?.network else { return nil }
-                    guard let cardholder = self.paymentInstrumentData?.cardholderName else { return nil }
-                    guard let last4 = self.paymentInstrumentData?.last4Digits else { return nil }
-                    guard let expMonth = self.paymentInstrumentData?.expirationMonth else { return nil }
-                    guard let expYear = self.paymentInstrumentData?.expirationYear else { return nil }
+                    guard let ntwrk = (self.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.network else { return nil }
+                    guard let cardholder = (self.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.cardholderName else { return nil }
+                    guard let last4 = (self.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.last4Digits else { return nil }
+                    guard let expMonth = (self.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.expirationMonth else { return nil }
+                    guard let expYear = (self.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.expirationYear else { return nil }
                     return CardButtonViewModel(
                         network: ntwrk,
                         cardholder: cardholder,
@@ -157,13 +254,13 @@ public class PaymentMethod {
                         imageName: self.icon,
                         paymentMethodType: self.paymentInstrumentType)
                 case .payPalBillingAgreement:
-                    guard let cardholder = self.paymentInstrumentData?.externalPayerInfo?.email else { return nil }
+                    guard let cardholder = (self.paymentInstrumentData as? PaymentMethod.PayPal.Tokenization.InstrumentResponseData)?.externalPayerInfo?.email else { return nil }
                     return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
                 case .goCardlessMandate:
                     return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
                 case .klarnaCustomerToken:
                     return CardButtonViewModel(
-                        network: paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token",
+                        network: (self.paymentInstrumentData as? PaymentMethod.KlarnaCustomer.Tokenization.InstrumentResponseData)?.sessionData?.billingAddress?.email ?? "Klarna Customer Token",
                         cardholder: "",
                         last4: "",
                         expiry: "",
@@ -172,13 +269,13 @@ public class PaymentMethod {
                     
                 case .apayaToken:
                     guard self.paymentInstrumentType == .apayaToken else { return nil }
-                    guard let mcc = self.paymentInstrumentData?.mcc,
-                          let mnc = self.paymentInstrumentData?.mnc,
+                    guard let mcc = (self.paymentInstrumentData as? PaymentMethod.Apaya.Tokenization.InstrumentResponseData)?.mcc,
+                          let mnc = (self.paymentInstrumentData as? PaymentMethod.Apaya.Tokenization.InstrumentResponseData)?.mnc,
                           let carrier = Apaya.Carrier(mcc: mcc, mnc: mnc)
                     else { return nil }
                     
                     return CardButtonViewModel(
-                        network: "[\(carrier.name)] \(self.paymentInstrumentData?.hashedIdentifier ?? "")",
+                        network: "[\(carrier.name)] \((self.paymentInstrumentData as? PaymentMethod.Apaya.Tokenization.InstrumentResponseData)?.hashedIdentifier ?? "")",
                         cardholder: "Apaya",
                         last4: "",
                         expiry: "",
