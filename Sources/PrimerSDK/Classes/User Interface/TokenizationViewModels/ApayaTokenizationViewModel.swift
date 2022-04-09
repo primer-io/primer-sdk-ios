@@ -212,7 +212,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         .then { url -> Promise<Apaya.WebViewResponse> in
             self.presentApayaController(with: url)
         }
-        .then { apayaWebViewResponse -> Promise<PaymentMethodToken> in
+        .then { apayaWebViewResponse -> Promise<PaymentMethod.Tokenization.Response> in
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
         }
         .done { paymentMethod in
@@ -322,7 +322,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
     }
     
-    private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse) -> Promise<PaymentMethodToken> {
+    private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse) { paymentMethod, err in
                 self.willDismissExternalView?()
@@ -341,7 +341,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
     }
     
-    private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void) {
+    private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PaymentMethod.Tokenization.Response?, _ err: Error?) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         

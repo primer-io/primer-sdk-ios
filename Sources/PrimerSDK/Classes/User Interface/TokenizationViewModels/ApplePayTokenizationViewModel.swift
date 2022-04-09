@@ -200,7 +200,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         }
     }
     
-    func tokenize() -> Promise<PaymentMethodToken> {
+    func tokenize() -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             if Primer.shared.flow.internalSessionFlow.vaulted {
                 let err = PrimerError.unsupportedIntent(intent: .vault, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -222,7 +222,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     }
 
     
-    private func payWithApple(completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
+    private func payWithApple(completion: @escaping (PaymentMethod.Tokenization.Response?, Error?) -> Void) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {

@@ -209,7 +209,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    func tokenize() -> Promise <PaymentMethodToken> {
+    func tokenize() -> Promise <PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             firstly {
                 self.fetchOAuthURL()
@@ -221,7 +221,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             .then { url -> Promise<PaymentInstrument> in
                 return self.generatePaypalPaymentInstrument()
             }
-            .then { instrument -> Promise<PaymentMethodToken> in
+            .then { instrument -> Promise<PaymentMethod.Tokenization.Response> in
                 return self.tokenize(instrument: instrument)
             }
             .done { token in
@@ -423,7 +423,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         })
     }
     
-    private func tokenize(instrument: PaymentInstrument) -> Promise<PaymentMethodToken> {
+    private func tokenize(instrument: PaymentInstrument) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             let state: AppStateProtocol = DependencyContainer.resolve()
             let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)

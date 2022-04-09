@@ -142,7 +142,7 @@
 		97DAD04722D1712664C5A4273971FE07 /* PrimerCardholderNameFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D045F322B443D22E956429708E8FB84 /* PrimerCardholderNameFieldView.swift */; };
 		98ED0C7C9F46662ABF54F42502A11705 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E742FB3720C51BF95F205B5C92645E04 /* Configuration.swift */; };
 		99033A40BCE9FF760EDFEB30551B02FA /* SuccessMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F1D118978D717B0E0306D60ACD8D11 /* SuccessMessage.swift */; };
-		99F5CBCB84F26C60DCC4701C14C0B017 /* PaymentMethodToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0FD2D5C5099594D955D8820D2DCBE9 /* PaymentMethodToken.swift */; };
+		99F5CBCB84F26C60DCC4701C14C0B017 /* _PaymentMethodToken123.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0FD2D5C5099594D955D8820D2DCBE9 /* _PaymentMethodToken123.swift */; };
 		9A0D70498E447A3AC8058D2DAA3DA0A1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D245E0514AAC1A2B9A6D5EA2F383E90F /* UIKit.framework */; };
 		9B1CCDA6177B9378E6223504B0FFDB96 /* CardFormPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3FB46D948651749E3D568B5402037E1 /* CardFormPaymentMethodTokenizationViewModel.swift */; };
 		9BB3E35287FEB71CE9C4C534924F7AFF /* CountryCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C5537605394E16B7022D8C749C8543 /* CountryCode.swift */; };
@@ -391,7 +391,7 @@
 		74009576B521A42ED5E0E27233521729 /* Strings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Strings.swift; path = Sources/PrimerSDK/Classes/Strings.swift; sourceTree = "<group>"; };
 		76543969EAB2D79EB358D97FD947C006 /* el.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = el.lproj; sourceTree = "<group>"; };
 		7933B9AB199134C8ED6529877C2C8E17 /* PrimerSDK.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = PrimerSDK.modulemap; sourceTree = "<group>"; };
-		7A0FD2D5C5099594D955D8820D2DCBE9 /* PaymentMethodToken.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodToken.swift; sourceTree = "<group>"; };
+		7A0FD2D5C5099594D955D8820D2DCBE9 /* _PaymentMethodToken123.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = _PaymentMethodToken123.swift; sourceTree = "<group>"; };
 		7A217D3E6997BB6E0AE79CEF78CB2D59 /* PrimerHeadlessUniversalCheckoutUIManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessUniversalCheckoutUIManager.swift; sourceTree = "<group>"; };
 		7B142AF224D67788815EC106FE5B5274 /* PrimerExpiryDateFieldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerExpiryDateFieldView.swift; sourceTree = "<group>"; };
 		7E3BE294732FE4F7996949AE728740C4 /* PrimerRootViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerRootViewController.swift; sourceTree = "<group>"; };
@@ -1052,7 +1052,7 @@
 				46F1EEC6E1641A4DBD663A1AA16BD49F /* Klarna.swift */,
 				5CF523A2449492CCED8D7016CC2CF8B8 /* OrderItem.swift */,
 				493427E6A1BAB813AC2ED1A8892421D7 /* PaymentMethodConfigurationOptions.swift */,
-				7A0FD2D5C5099594D955D8820D2DCBE9 /* PaymentMethodToken.swift */,
+				7A0FD2D5C5099594D955D8820D2DCBE9 /* _PaymentMethodToken123.swift */,
 				CE450E0F995D2E4CD0705AFED83546BC /* PaymentMethodTokenizationRequest.swift */,
 				2CB676D10E86F0190EAB3D4D5D739CF5 /* PaymentResponse.swift */,
 				4E06A9EEA532BDA40BD15E650DA2F90E /* PayPal.swift */,
@@ -1594,7 +1594,7 @@
 				346B6D9A37DB2AEBD618DB190A1FEB00 /* PaymentMethodConfigService.swift in Sources */,
 				0AA43AEF2D1761274B64ADC5AB85570C /* PaymentMethodConfigurationOptions.swift in Sources */,
 				EA0FD2B612BB65A7DEC029FDF5F85C4B /* PaymentMethodsGroupView.swift in Sources */,
-				99F5CBCB84F26C60DCC4701C14C0B017 /* PaymentMethodToken.swift in Sources */,
+				99F5CBCB84F26C60DCC4701C14C0B017 /* _PaymentMethodToken123.swift in Sources */,
 				CC8FD154FE09F3683DC1B3344B123D3F /* PaymentMethodTokenizationRequest.swift in Sources */,
 				132DE9F9962484629F40B25891081EED /* PaymentMethodTokenizationViewModel.swift in Sources */,
 				08C52CCBE185096ECE46FA9A3177E2BE /* PaymentResponse.swift in Sources */,

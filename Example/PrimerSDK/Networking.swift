@@ -191,7 +191,7 @@ class Networking {
         }).resume()
     }
     
-    func createPayment(with paymentMethod: PaymentMethodToken, completion: @escaping (Payment.Response?, Error?) -> Void) {
+    func createPayment(with paymentMethod: PrimerSDK.PaymentMethod.Tokenization.Response, completion: @escaping (Payment.Response?, Error?) -> Void) {
         guard let paymentMethodToken = paymentMethod.token else {
             completion(nil, NetworkError.missingParams)
             return

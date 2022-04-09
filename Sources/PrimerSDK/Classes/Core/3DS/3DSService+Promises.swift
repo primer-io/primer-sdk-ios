@@ -11,7 +11,7 @@ import Foundation
 
 extension ThreeDSService {
     
-    func beginRemoteAuth(paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest) -> Promise<ThreeDS.BeginAuthResponse> {
+    func beginRemoteAuth(paymentMethodToken: PaymentMethod.Tokenization.Response, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest) -> Promise<ThreeDS.BeginAuthResponse> {
         return Promise { seal in
             self.beginRemoteAuth(paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
                 switch result {

@@ -11,7 +11,7 @@ import Foundation
 
 extension PrimerAPIClient {
     
-    func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
+    func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethod.Tokenization.Response, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.begin3DSRemoteAuth(clientToken: clientToken, paymentMethodToken: paymentMethodToken, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
         networkService.request(endpoint) { (result: Result<ThreeDS.BeginAuthResponse, Error>) in
             switch result {
@@ -41,7 +41,7 @@ extension PrimerAPIClient {
 
 extension MockPrimerAPIClient {
     
-    func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
+    func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethod.Tokenization.Response, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])

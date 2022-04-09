@@ -170,7 +170,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 return self.finalizePaymentSession()
             }
         }
-        .then { res -> Promise<PaymentMethodToken> in
+        .then { res -> Promise<PaymentMethod.Tokenization.Response> in
             DispatchQueue.main.async {
                 self.willDismissExternalView?()
             }

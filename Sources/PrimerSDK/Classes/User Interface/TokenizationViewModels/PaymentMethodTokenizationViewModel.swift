@@ -10,7 +10,7 @@
 import Foundation
 import UIKit
 
-typealias TokenizationCompletion = ((PaymentMethodToken?, Error?) -> Void)
+typealias TokenizationCompletion = ((PaymentMethod.Tokenization.Response?, Error?) -> Void)
 
 internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHandlerProtocol {
     init(config: PaymentMethod.Configuration)
@@ -25,7 +25,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     var paymentMethodButton: PrimerButton { get }
     var didStartTokenization: (() -> Void)? { get set }
     var completion: TokenizationCompletion? { get set }
-    var paymentMethod: PaymentMethodToken? { get set }
+    var paymentMethod: PaymentMethod.Tokenization.Response? { get set }
     
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
     func makeSquareLogoImageView(withDimension dimension: CGFloat) -> UIImageView?
@@ -48,7 +48,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     var config: PaymentMethod.Configuration
     var completion: TokenizationCompletion?
-    var paymentMethod: PaymentMethodToken?
+    var paymentMethod: PaymentMethod.Tokenization.Response?
     var didStartTokenization: (() -> Void)?
     internal let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     

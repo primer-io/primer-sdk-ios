@@ -107,7 +107,7 @@ public class PaymentMethod {
             }
         }
         
-        public struct Response: Codable {
+        public class Response: NSObject, Codable {
             public var analyticsId: String?
             public var id: String?
             public var isVaulted: Bool?
@@ -116,8 +116,79 @@ public class PaymentMethod {
             public var paymentInstrumentData: PaymentInstrumentData?
             public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
             public var token: String?
-            public var tokenType: PaymentMethod.TokenType?
+            public var tokenType: TokenType?
             public var vaultData: VaultData?
+            
+            public var icon: ImageName {
+                switch self.paymentInstrumentType {
+                case .paymentCard:
+                    guard let network = self.paymentInstrumentData?.network else { return .genericCard }
+                    switch network {
+                    case "Visa": return .visa
+                    case "Mastercard": return .masterCard
+                    default: return .genericCard
+                    }
+                case .payPalOrder: return .paypal2
+                case .payPalBillingAgreement: return .paypal2
+                case .goCardlessMandate: return .bank
+                case .klarnaCustomerToken: return .klarna
+                default: return .creditCard
+                }
+            }
+            
+            var cardButtonViewModel: CardButtonViewModel? {
+                switch self.paymentInstrumentType {
+                case .paymentCard:
+                    guard let ntwrk = self.paymentInstrumentData?.network else { return nil }
+                    guard let cardholder = self.paymentInstrumentData?.cardholderName else { return nil }
+                    guard let last4 = self.paymentInstrumentData?.last4Digits else { return nil }
+                    guard let expMonth = self.paymentInstrumentData?.expirationMonth else { return nil }
+                    guard let expYear = self.paymentInstrumentData?.expirationYear else { return nil }
+                    return CardButtonViewModel(
+                        network: ntwrk,
+                        cardholder: cardholder,
+                        last4: "•••• \(last4)",
+                        expiry: NSLocalizedString("primer-saved-card",
+                                                  tableName: nil,
+                                                  bundle: Bundle.primerResources,
+                                                  value: "Expires",
+                                                  comment: "Expires - Saved card")
+                        + " \(expMonth) / \(expYear.suffix(2))",
+                        imageName: self.icon,
+                        paymentMethodType: self.paymentInstrumentType)
+                case .payPalBillingAgreement:
+                    guard let cardholder = self.paymentInstrumentData?.externalPayerInfo?.email else { return nil }
+                    return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+                case .goCardlessMandate:
+                    return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+                case .klarnaCustomerToken:
+                    return CardButtonViewModel(
+                        network: paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token",
+                        cardholder: "",
+                        last4: "",
+                        expiry: "",
+                        imageName: self.icon,
+                        paymentMethodType: self.paymentInstrumentType)
+                    
+                case .apayaToken:
+                    guard self.paymentInstrumentType == .apayaToken else { return nil }
+                    guard let mcc = self.paymentInstrumentData?.mcc,
+                          let mnc = self.paymentInstrumentData?.mnc,
+                          let carrier = Apaya.Carrier(mcc: mcc, mnc: mnc)
+                    else { return nil }
+                    
+                    return CardButtonViewModel(
+                        network: "[\(carrier.name)] \(self.paymentInstrumentData?.hashedIdentifier ?? "")",
+                        cardholder: "Apaya",
+                        last4: "",
+                        expiry: "",
+                        imageName: self.icon,
+                        paymentMethodType: self.paymentInstrumentType)
+                    
+                default:
+                    return nil
+                }
+            }
         }
     }
 }

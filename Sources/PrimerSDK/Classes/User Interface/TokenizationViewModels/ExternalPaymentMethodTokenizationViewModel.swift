@@ -331,7 +331,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
      must be set before presenting the webview and nullified once polling returns a result. At the same time the webview should be dismissed.
      */
     var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
+    var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethod.Tokenization.Response?, _ error: Error?) -> Void)?
     var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
     
     deinit {
@@ -395,7 +395,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         firstly {
             self.tokenize()
         }
-        .then { tmpPaymentMethod -> Promise<PaymentMethodToken> in
+        .then { tmpPaymentMethod -> Promise<PaymentMethod.Tokenization.Response> in
             self.paymentMethod = tmpPaymentMethod
             return self.continueTokenizationFlow(for: tmpPaymentMethod)
         }
@@ -434,7 +434,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    internal func continueTokenizationFlow(for tmpPaymentMethod: PaymentMethodToken) -> Promise<PaymentMethodToken> {
+    internal func continueTokenizationFlow(for tmpPaymentMethod: PaymentMethod.Tokenization.Response) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             var pollingURLs: PollingURLs!
             
@@ -476,7 +476,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 
                 return self.startPolling(on: statusUrl)
             }
-            .then { resumeToken -> Promise<PaymentMethodToken> in
+            .then { resumeToken -> Promise<PaymentMethod.Tokenization.Response> in
                 DispatchQueue.main.async {
                     Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
                     
@@ -496,7 +496,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    fileprivate func tokenize() -> Promise<PaymentMethodToken> {
+    fileprivate func tokenize() -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             guard let configId = config.id else {
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -530,7 +530,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    internal func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<PollingURLs> {
+    internal func fetchPollingURLs(for paymentMethod: PaymentMethod.Tokenization.Response) -> Promise<PollingURLs> {
         return Promise { seal in
             self.onClientToken = { (clientToken, error) in
                 
@@ -639,7 +639,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    internal func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
+    internal func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             self.onResumeTokenCompletion = { (paymentMethod, err) in
                 if let err = err {
@@ -793,7 +793,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
     }
     var returnedPaymentMethodJson: String?
     
-    fileprivate override func tokenize() -> Promise<PaymentMethodToken> {
+    fileprivate override func tokenize() -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             guard let _ = config.id else {
                 let err = PrimerError.invalidValue(key: "configuration.\(config.type.rawValue.lowercased()).id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -804,7 +804,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
             
             if let returnedPaymentMethodJson = returnedPaymentMethodJson,
                let returnedPaymentMethodData = returnedPaymentMethodJson.data(using: .utf8),
-               let paymentMethod = try? JSONDecoder().decode(PaymentMethodToken.self, from: returnedPaymentMethodData) {
+               let paymentMethod = try? JSONDecoder().decode(PaymentMethod.Tokenization.Response.self, from: returnedPaymentMethodData) {
                 seal.fulfill(paymentMethod)
             } else {
                 let err = ParserError.failedToDecode(message: "Failed to decode tokenization response.", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])

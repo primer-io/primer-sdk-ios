@@ -14,14 +14,14 @@ import UIKit
 
 protocol ThreeDSServiceProtocol {
     func perform3DS(
-        paymentMethodToken: PaymentMethodToken,
+        paymentMethodToken: PaymentMethod.Tokenization.Response,
         protocolVersion: ThreeDS.ProtocolVersion,
         beginAuthExtraData: ThreeDS.BeginAuthExtraData?,
         sdkDismissed: (() -> Void)?,
-        completion: @escaping (_ result: Result<(PaymentMethodToken, ThreeDS.PostAuthResponse?), Error>) -> Void
+        completion: @escaping (_ result: Result<(PaymentMethod.Tokenization.Response, ThreeDS.PostAuthResponse?), Error>) -> Void
     )
     
-    func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
+    func beginRemoteAuth(paymentMethodToken: PaymentMethod.Tokenization.Response,
                          threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
                          completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void)
@@ -181,11 +181,11 @@ class ThreeDSService: ThreeDSServiceProtocol {
     
     // swiftlint:disable function_body_length
     func perform3DS(
-        paymentMethodToken: PaymentMethodToken,
+        paymentMethodToken: PaymentMethod.Tokenization.Response,
         protocolVersion: ThreeDS.ProtocolVersion,
         beginAuthExtraData: ThreeDS.BeginAuthExtraData? = nil,
         sdkDismissed: (() -> Void)?,
-        completion: @escaping (_ result: Result<(PaymentMethodToken, ThreeDS.PostAuthResponse?), Error>) -> Void
+        completion: @escaping (_ result: Result<(PaymentMethod.Tokenization.Response, ThreeDS.PostAuthResponse?), Error>) -> Void
     ) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
@@ -409,7 +409,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
     }
     
-    func beginRemoteAuth(paymentMethodToken: PaymentMethodToken,
+    func beginRemoteAuth(paymentMethodToken: PaymentMethod.Tokenization.Response,
                          threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
                          completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -455,11 +455,11 @@ class ThreeDSService: ThreeDSServiceProtocol {
 class MockThreeDSService: ThreeDSServiceProtocol {
     
     func perform3DS(
-        paymentMethodToken: PaymentMethodToken,
+        paymentMethodToken: PaymentMethod.Tokenization.Response,
         protocolVersion: ThreeDS.ProtocolVersion,
         beginAuthExtraData: ThreeDS.BeginAuthExtraData?,
         sdkDismissed: (() -> Void)?,
-        completion: @escaping (Result<(PaymentMethodToken, ThreeDS.PostAuthResponse?), Error>) -> Void) {
+        completion: @escaping (Result<(PaymentMethod.Tokenization.Response, ThreeDS.PostAuthResponse?), Error>) -> Void) {
         
     }
     
@@ -472,7 +472,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         self.response = response
     }
     
-    func beginRemoteAuth(paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
+    func beginRemoteAuth(paymentMethodToken: PaymentMethod.Tokenization.Response, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)

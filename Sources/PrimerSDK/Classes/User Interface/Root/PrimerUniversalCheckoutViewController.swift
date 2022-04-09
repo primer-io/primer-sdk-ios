@@ -15,11 +15,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var titleLabel: UILabel!
     private var savedPaymentMethodStackView: UIStackView!
     private var payButton: PrimerButton!
-    private var selectedPaymentMethod: PaymentMethodToken?
+    private var selectedPaymentMethod: PaymentMethod.Tokenization.Response?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
     private var onClientSessionActionCompletion: ((Error?) -> Void)?
-    private var singleUsePaymentMethod: PaymentMethodToken?
+    private var singleUsePaymentMethod: PaymentMethod.Tokenization.Response?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -316,7 +316,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         }
     }
     
-    private func continuePayment(withVaultedPaymentMethod paymentMethodToken: PaymentMethodToken) {
+    private func continuePayment(withVaultedPaymentMethod paymentMethodToken: PaymentMethod.Tokenization.Response) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else { return }
         let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
         client.exchangePaymentMethodToken(clientToken: decodedClientToken, paymentMethodId: paymentMethodToken.id!) { result in

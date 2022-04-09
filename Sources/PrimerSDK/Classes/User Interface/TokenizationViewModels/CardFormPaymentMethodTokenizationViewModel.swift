@@ -579,7 +579,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
 extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {
     
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethod.Tokenization.Response) {
         self.paymentMethod = paymentMethodToken
         
         DispatchQueue.main.async {

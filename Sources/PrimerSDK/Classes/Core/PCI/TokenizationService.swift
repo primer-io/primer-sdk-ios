@@ -3,17 +3,17 @@
 import Foundation
 
 internal protocol TokenizationServiceProtocol {
-    var tokenizedPaymentMethodToken: PaymentMethodToken? { get set }
+    var tokenizedPaymentMethodToken: PaymentMethod.Tokenization.Response? { get set }
     func tokenize(
         request: TokenizationRequest,
-        onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void
+        onTokenizeSuccess: @escaping (Result<PaymentMethod.Tokenization.Response, Error>) -> Void
     )
-    func tokenize(request: TokenizationRequest) -> Promise<PaymentMethodToken>
+    func tokenize(request: TokenizationRequest) -> Promise<PaymentMethod.Tokenization.Response>
 }
 
 internal class TokenizationService: TokenizationServiceProtocol {
     
-    var tokenizedPaymentMethodToken: PaymentMethodToken?
+    var tokenizedPaymentMethodToken: PaymentMethod.Tokenization.Response?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -21,7 +21,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
 
     func tokenize(
         request: TokenizationRequest,
-        onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void
+        onTokenizeSuccess: @escaping (Result<PaymentMethod.Tokenization.Response, Error>) -> Void
     ) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -131,7 +131,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
         }
     }
     
-    func tokenize(request: TokenizationRequest) -> Promise<PaymentMethodToken> {
+    func tokenize(request: TokenizationRequest) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             self.tokenize(request: request) { result in
                 switch result {

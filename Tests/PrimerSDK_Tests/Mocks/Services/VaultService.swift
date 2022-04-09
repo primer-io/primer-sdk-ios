@@ -32,7 +32,7 @@ class MockVaultService: VaultServiceProtocol {
 //        ]
 //    }
 
-    var paymentMethodVMs: [PaymentMethodToken] {
+    var paymentMethodVMs: [PaymentMethod.Tokenization.Response] {
         return []
     }
 

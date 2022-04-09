@@ -11,9 +11,9 @@ internal protocol AppStateProtocol: AnyObject {
     
     var clientToken: String? { get set }
     var primerConfiguration: PrimerConfiguration? { get set }
-    var paymentMethods: [PaymentMethodToken] { get set }
+    var paymentMethods: [PaymentMethod.Tokenization.Response] { get set }
     var selectedPaymentMethodId: String? { get set }
-    var selectedPaymentMethod: PaymentMethodToken? { get }
+    var selectedPaymentMethod: PaymentMethod.Tokenization.Response? { get }
     var implementedReactNativeCallbacks: ImplementedReactNativeCallbacks? { get set }
 
 }
@@ -22,9 +22,9 @@ internal class AppState: AppStateProtocol {
     
     var clientToken: String?
     var primerConfiguration: PrimerConfiguration?
-    var paymentMethods: [PaymentMethodToken] = []
+    var paymentMethods: [PaymentMethod.Tokenization.Response] = []
     var selectedPaymentMethodId: String?
-    var selectedPaymentMethod: PaymentMethodToken? {
+    var selectedPaymentMethod: PaymentMethod.Tokenization.Response? {
         guard let selectedPaymentMethodToken = selectedPaymentMethodId else { return nil }
         return paymentMethods.first(where: { $0.id == selectedPaymentMethodToken })
     }

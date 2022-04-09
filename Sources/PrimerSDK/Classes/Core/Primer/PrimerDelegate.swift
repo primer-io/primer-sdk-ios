@@ -29,7 +29,7 @@ public protocol PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
     
-    @objc optional func tokenAddedToVault(_ token: PaymentMethodToken)
+    @objc optional func tokenAddedToVault(_ token: PaymentMethod.Tokenization.Response)
     
     /// This function will be called when the user tries to make a payment. You should make the pay API call to your backend, and
     /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
@@ -37,8 +37,8 @@ public protocol PrimerDelegate {
     /// - Parameters:
     ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
-    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
-    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
+    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod.Tokenization.Response, _ completion:  @escaping (Error?) -> Void)
+    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod.Tokenization.Response, resumeHandler:  ResumeHandlerProtocol)
 
     @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
     @objc optional func onResumeError(_ error: Error)
@@ -55,7 +55,7 @@ public protocol PrimerDelegate {
     ///   - result: The PaymentMethodToken object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
     @available(*, deprecated, renamed: "onTokenizeSuccess")
-    @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
+    @objc optional func authorizePayment(_ result: PaymentMethod.Tokenization.Response, _ completion:  @escaping (Error?) -> Void)
     
     @objc optional func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?)
 }
@@ -74,11 +74,11 @@ internal class PrimerDelegateProxy {
         return Primer.shared.delegate?.tokenAddedToVault != nil
     }
     
-    static func tokenAddedToVault(_ token: PaymentMethodToken) {
+    static func tokenAddedToVault(_ token: PaymentMethod.Tokenization.Response) {
         Primer.shared.delegate?.tokenAddedToVault?(token)
     }
     
-    static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) {
+    static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod.Tokenization.Response, _ completion:  @escaping (Error?) -> Void) {
         if Primer.shared.flow.internalSessionFlow.vaulted {
             Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
         }
@@ -86,7 +86,7 @@ internal class PrimerDelegateProxy {
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, completion)
     }
     
-    static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol) {
+    static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod.Tokenization.Response, resumeHandler:  ResumeHandlerProtocol) {
         if Primer.shared.flow.internalSessionFlow.vaulted {
             Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
         }
@@ -156,7 +156,7 @@ internal class PrimerDelegateProxy {
         
     }
     
-    static func tokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
+    static func tokenizationSucceeded(paymentMethodToken: PaymentMethod.Tokenization.Response, resumeHandler: ResumeHandlerProtocol?) {
         
     }
     
@@ -171,15 +171,15 @@ internal class MockPrimerDelegate: PrimerDelegate {
         
     }
     
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
+    func tokenAddedToVault(_ token: PaymentMethod.Tokenization.Response) {
         
     }
 
-    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func authorizePayment(_ result: PaymentMethod.Tokenization.Response, _ completion: @escaping (Error?) -> Void) {
 
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod.Tokenization.Response, _ completion: @escaping (Error?) -> Void) {
         
     }
 

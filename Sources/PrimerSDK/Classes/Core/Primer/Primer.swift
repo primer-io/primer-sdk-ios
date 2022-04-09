@@ -411,7 +411,7 @@ public class Primer {
      - Version:
      1.4.0
      */
-    public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
+    public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethod.Tokenization.Response], Error>) -> Void) {
         let event = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(

@@ -56,18 +56,18 @@ class MockPrimerDelegate: PrimerDelegate {
         completion(token, nil)
     }
     
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
+    func tokenAddedToVault(_ token: PaymentMethod.Tokenization.Response) {
         
     }
 
     
 
-    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func authorizePayment(_ result: PaymentMethod.Tokenization.Response, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
         if authorizePaymentFails { completion(PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])) }
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethod.Tokenization.Response, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
         if authorizePaymentFails { completion(PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])) }
     }
@@ -166,9 +166,9 @@ class MockAppState: AppStateProtocol {
     
     var clientToken: String?
     var primerConfiguration: PrimerConfiguration?
-    var paymentMethods: [PaymentMethodToken] = []
+    var paymentMethods: [PaymentMethod.Tokenization.Response] = []
     var selectedPaymentMethodId: String?
-    var selectedPaymentMethod: PaymentMethodToken?
+    var selectedPaymentMethod: PaymentMethod.Tokenization.Response?
     var implementedReactNativeCallbacks: ImplementedReactNativeCallbacks?
 
     init(

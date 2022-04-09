@@ -129,7 +129,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
      
      It must be set before the user taps on a cell, and nullified when a **paymentMethod** is returned.
      */
-    fileprivate var tmpTokenizationCallback: ((_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void)?
+    fileprivate var tmpTokenizationCallback: ((_ paymentMethod: PaymentMethod.Tokenization.Response?, _ err: Error?) -> Void)?
     
     internal lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -226,7 +226,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         firstly {
             self.fetchBanks()
         }
-        .then { banks -> Promise<PaymentMethodToken> in
+        .then { banks -> Promise<PaymentMethod.Tokenization.Response> in
             self.banks = banks
             self.dataSource = banks
             let bsvc = BankSelectorViewController(viewModel: self)
@@ -236,7 +236,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             
             return self.fetchPaymentMethodToken()
         }
-        .then { tmpPaymentMethod -> Promise<PaymentMethodToken> in
+        .then { tmpPaymentMethod -> Promise<PaymentMethod.Tokenization.Response> in
             self.paymentMethod = tmpPaymentMethod
             return self.continueTokenizationFlow(for: tmpPaymentMethod)
         }
@@ -310,7 +310,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func fetchPaymentMethodToken() -> Promise<PaymentMethodToken> {
+    private func fetchPaymentMethodToken() -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             self.tmpTokenizationCallback = { (paymentMethod, err) in
                 if let err = err {
@@ -324,7 +324,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func tokenize(bank: Bank) -> Promise<PaymentMethodToken> {
+    private func tokenize(bank: Bank) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             self.tokenize(bank: bank) { paymentMethod, err in
                 if let err = err {
@@ -338,7 +338,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
 
-    private func tokenize(bank: Bank, completion: @escaping (_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void) {
+    private func tokenize(bank: Bank, completion: @escaping (_ paymentMethod: PaymentMethod.Tokenization.Response?, _ err: Error?) -> Void) {
         let req = BankSelectorTokenizationRequest(
             paymentInstrument: PaymentInstrument(
                 paymentMethodConfigId: self.config.id!,

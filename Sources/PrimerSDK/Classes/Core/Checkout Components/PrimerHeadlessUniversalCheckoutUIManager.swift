@@ -94,7 +94,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        private(set) public var paymentMethod: PaymentMethodToken?
+        private(set) public var paymentMethod: PaymentMethod.Tokenization.Response?
         
         deinit {
             log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -122,7 +122,7 @@ extension PrimerHeadlessUniversalCheckout {
             .then { () -> Promise<PaymentMethodTokenizationRequest> in
                 self.buildRequestBody()
             }
-            .then { requestbody -> Promise<PaymentMethodToken> in
+            .then { requestbody -> Promise<PaymentMethod.Tokenization.Response> in
                 self.tokenize(request: requestbody)
             }
             .done { paymentMethodToken in
@@ -246,7 +246,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func tokenize(request: PaymentMethodTokenizationRequest) -> Promise<PaymentMethodToken> {
+        private func tokenize(request: PaymentMethodTokenizationRequest) -> Promise<PaymentMethod.Tokenization.Response> {
             return Promise { seal in
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                 apiClient.tokenizePaymentMethod(clientToken: ClientTokenService.decodedClientToken!, paymentMethodTokenizationRequest: request) { result in

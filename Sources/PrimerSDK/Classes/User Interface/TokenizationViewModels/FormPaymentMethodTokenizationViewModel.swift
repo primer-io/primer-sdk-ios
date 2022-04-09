@@ -597,7 +597,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
 
-    private func tokenize() -> Promise<PaymentMethodToken> {
+    private func tokenize() -> Promise<PaymentMethod.Tokenization.Response> {
         switch config.type {
         case .adyenBlik:
             return Promise { seal in
@@ -648,7 +648,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
 
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethod.Tokenization.Response) {
         self.paymentMethod = paymentMethodToken
         
         DispatchQueue.main.async {
@@ -694,7 +694,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
 
-    private func fetchPollingUrl(for paymentMethodToken: PaymentMethodToken) -> Promise<URL> {
+    private func fetchPollingUrl(for paymentMethodToken: PaymentMethod.Tokenization.Response) -> Promise<URL> {
         return Promise { seal in
             self.onResumeHandlerCompletion = { (pollingUrl, err) in
                 if let err = err {

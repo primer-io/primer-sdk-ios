@@ -56,7 +56,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest)
     
     // 3DS
-    case begin3DSRemoteAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
+    case begin3DSRemoteAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethod.Tokenization.Response, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
     case continue3DSRemoteAuth(clientToken: DecodedClientToken, threeDSTokenId: String)
     
     // Generic

@@ -139,7 +139,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         firstly {
             self.tokenize()
         }
-        .then { tmpPaymentMethod -> Promise<PaymentMethodToken> in
+        .then { tmpPaymentMethod -> Promise<PaymentMethod.Tokenization.Response> in
             self.paymentMethod = tmpPaymentMethod
             return self.continueTokenizationFlow(for: tmpPaymentMethod)
         }
@@ -181,7 +181,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         }
     }
     
-    fileprivate func tokenize() -> Promise<PaymentMethodToken> {
+    fileprivate func tokenize() -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             guard let configId = config.id else {
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -215,7 +215,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         }
     }
     
-    internal override func continueTokenizationFlow(for tmpPaymentMethod: PaymentMethodToken) -> Promise<PaymentMethodToken> {
+    internal override func continueTokenizationFlow(for tmpPaymentMethod: PaymentMethod.Tokenization.Response) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             var qrCodePollingURLs: QRCodePollingURLs!
             
@@ -246,7 +246,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                 
                 return self.startPolling(on: statusUrl)
             }
-            .then { resumeToken -> Promise<PaymentMethodToken> in
+            .then { resumeToken -> Promise<PaymentMethod.Tokenization.Response> in
                 DispatchQueue.main.async {
                     Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
                     self.willDismissExternalView?()
@@ -262,7 +262,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         }
     }
     
-    fileprivate func fetchQRCodePollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<QRCodePollingURLs> {
+    fileprivate func fetchQRCodePollingURLs(for paymentMethod: PaymentMethod.Tokenization.Response) -> Promise<QRCodePollingURLs> {
         return Promise { seal in
             self.onClientToken = { (clientToken, error) in
                 
@@ -366,7 +366,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         }
     }
     
-    override internal func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
+    override internal func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             self.onResumeTokenCompletion = { (paymentMethod, err) in
                 if let err = err {

@@ -32,7 +32,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+    func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (Result<PaymentMethod.Tokenization.Response, Error>) -> Void) {
         
     }
     
@@ -171,12 +171,12 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (Result<PaymentMethod.Tokenization.Response, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(PaymentMethodToken.self, from: response)
+            let value = try JSONDecoder().decode(PaymentMethod.Tokenization.Response.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
@@ -211,7 +211,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         
     }
     
-    func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
+    func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethod.Tokenization.Response, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
