@@ -86,8 +86,22 @@ extension PaymentMethod {
             self.type = try container.decode(PaymentMethod.PaymentMethodType.self, forKey: .type)
             self.surcharge = (try? container.decode(Int?.self, forKey: .surcharge)) ?? nil
             
-            if let applePayOptions = (try? container.decode(ApplePayOptions?.self, forKey: .options)) {
+            if let apayaOptions = (try? container.decode(PaymentMethod.Apaya.Configuration.Options?.self, forKey: .options)) {
+                self.options = apayaOptions
+            } else if let applePayOptions = (try? container.decode(PaymentMethod.ApplePay.Configuration.Options?.self, forKey: .options)) {
                 self.options = applePayOptions
+            } else if let blikPaymentMethodOptions = (try? container.decode(PaymentMethod.Blik.Configuration.Options?.self, forKey: .options)) {
+                self.options = blikPaymentMethodOptions
+            } else if let googlePayOptions = (try? container.decode(PaymentMethod.GooglePay.Configuration.Options?.self, forKey: .options)) {
+                self.options = googlePayOptions
+            } else if let primerTestEComOptions = (try? container.decode(PaymentMethod.PrimerTestECom.Configuration.Options?.self, forKey: .options)) {
+                self.options = primerTestEComOptions
+            } else if let paymentCardOptions = (try? container.decode(PaymentMethod.PaymentCard.Configuration.Options?.self, forKey: .options)) {
+                self.options = paymentCardOptions
+            } else if let payPalOptions = (try? container.decode(PaymentMethod.PayPal.Configuration.Options?.self, forKey: .options)) {
+                self.options = payPalOptions
+            } else if let redirectPaymentMethodOptions = (try? container.decode(PaymentMethod.Redirect.Configuration.Options?.self, forKey: .options)) {
+                self.options = redirectPaymentMethodOptions
             } else {
                 fatalError()
             }
@@ -100,70 +114,26 @@ extension PaymentMethod {
             try? container.encode(self.type, forKey: .type)
             try? container.encode(self.surcharge, forKey: .surcharge)
             
-            if let applePayOptions = self.options as? ApplePayOptions {
+            if let apayaOptions = self.options as? PaymentMethod.Apaya.Configuration.Options {
+                try? container.encode(apayaOptions, forKey: .options)
+            } else if let applePayOptions = self.options as? PaymentMethod.ApplePay.Configuration.Options {
                 try? container.encode(applePayOptions, forKey: .options)
+            } else if let blikPaymentMethodOptions = self.options as? PaymentMethod.Blik.Configuration.Options {
+                try? container.encode(blikPaymentMethodOptions, forKey: .options)
+            } else if let googlePayOptions = self.options as? PaymentMethod.GooglePay.Configuration.Options {
+                try? container.encode(googlePayOptions, forKey: .options)
+            } else if let primerTestEComOptions = self.options as? PaymentMethod.PrimerTestECom.Configuration.Options {
+                try? container.encode(primerTestEComOptions, forKey: .options)
+            } else if let paymentCardOptions = self.options as? PaymentMethod.PaymentCard.Configuration.Options {
+                try? container.encode(paymentCardOptions, forKey: .options)
+            } else if let payPalOptions = self.options as? PaymentMethod.PayPal.Configuration.Options {
+                try? container.encode(payPalOptions, forKey: .options)
+            } else if let redirectPaymentMethodOptions = self.options as? PaymentMethod.Redirect.Configuration.Options {
+                try? container.encode(redirectPaymentMethodOptions, forKey: .options)
             } else {
                 fatalError()
             }
         }
 
-    }
-}
-
-extension PaymentMethod.Configuration {
-    struct ApayaOptions: PaymentMethodConfigurationOptions {
-        let merchantAccountId: String
-    }
-    
-    struct ApplePayOptions: PaymentMethodConfigurationOptions {
-        let test: String
-    }
-    
-    struct CardOptions: PaymentMethodConfigurationOptions {
-        let threeDSecureEnabled: Bool
-        let threeDSecureToken: String?
-        let threeDSecureInitUrl: String?
-        let threeDSecureProvider: String
-        let processorConfigId: String?
-    }
-    
-    struct PayPalOptions: PaymentMethodConfigurationOptions {
-        let clientId: String
-    }
-    
-    struct RedirectPaymentMethodOptions: PaymentMethodConfigurationOptions {
-        let paymentMethodConfigId: String
-        let paymentMethodType: PaymentMethod.PaymentMethodType
-        let sessionInfo: SessionInfo
-        lazy var type: String = {
-            "OFF_SESSION_PAYMENT"
-        }()
-        
-        struct SessionInfo: Codable {
-            var locale: String
-            var platform: String = "IOS"
-            var redirectionUrl: String? = PrimerSettings.current.urlScheme
-        }
-        
-    }
-    
-    struct BlikPaymentMethodOptions: PaymentMethodConfigurationOptions {
-        let paymentMethodConfigId: String
-        let paymentMethodType: PaymentMethod.PaymentMethodType
-        let sessionInfo: SessionInfo
-        lazy var type: String = {
-            "OFF_SESSION_PAYMENT"
-        }()
-    }
-    
-    struct SessionInfo: Codable {
-        let blikCode: String
-        let locale: String
-        lazy var platform: String = {
-            "IOS"
-        }()
-        lazy var redirectionUrl: String? = {
-            PrimerSettings.current.urlScheme
-        }()
     }
 }
