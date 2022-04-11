@@ -258,9 +258,15 @@ public class Primer {
             
         case (.adyenIDeal, .checkout):
             flow = .checkoutWithAdyenBank
-            
+
+        case (.adyenInterac, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenInterac)
+
         case (.adyenMobilePay, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenMobilePay)
+        
+        case (.adyenPayTrail, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenPayTrail)
             
         case (.adyenSofort, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenSofort)
@@ -300,7 +306,7 @@ public class Primer {
             
         case (.buckarooSofort, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooSofort)
-            
+                        
         case (.hoolah, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
             
@@ -351,6 +357,8 @@ public class Primer {
             (.adyenDotPay, .vault),
             (.adyenGiropay, .vault),
             (.adyenIDeal, .vault),
+            (.adyenInterac, .vault),
+            (.adyenPayTrail, .vault),
             (.atome, .vault),
             (.adyenBlik, .vault),
             (.buckarooBancontact, .vault),
