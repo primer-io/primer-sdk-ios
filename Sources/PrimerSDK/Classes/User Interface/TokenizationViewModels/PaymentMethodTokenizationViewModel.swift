@@ -390,7 +390,6 @@ extension PaymentMethodTokenizationViewModel {
                 self.resumePaymentId = paymentResponse.id
                 
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     Primer.shared.delegate?.checkoutDidComplete?(paymentResponseDict)
@@ -481,7 +480,6 @@ extension PaymentMethodTokenizationViewModel {
                 }
                 
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                    Primer.shared.delegate?.onPaymentPending?(paymentResponseDict)
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     Primer.shared.delegate?.checkoutDidComplete?(paymentResponseDict)

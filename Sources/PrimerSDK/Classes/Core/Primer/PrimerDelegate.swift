@@ -72,11 +72,6 @@ public protocol PrimerDelegate {
     ///   - completion: The completion handler managing a custom error to optionally pass to the SDK
     @objc optional func checkoutWillCreatePayment(_ paymentMethodData: String, completion: @escaping (PaymentCreateAdditionalValues?) -> Void)
     
-    /// This function will be called when the user receives a payment object in a PENDING status.
-    /// - Parameters:
-    ///   - data: The CheckoutData object containing the current payment status.
-    @objc optional func onPaymentPending(_ data: [String: Any])
-
     /// This function will be called when the checkout has been successful.
     /// - Parameters:
     ///   - payment: The Payment object containing the completed payment.
