@@ -5,10 +5,13 @@ import Foundation
 public enum PaymentMethodConfigType: Codable, Equatable {
     
     case adyenAlipay
+    case adyenBlik
     case adyenDotPay
     case adyenGiropay
     case adyenIDeal
+    case adyenInterac
     case adyenMobilePay
+    case adyenPayTrail
     case adyenSofort
     case adyenTrustly
     case adyenTwint
@@ -41,14 +44,20 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         switch rawValue {
         case "ADYEN_ALIPAY":
             self = .adyenAlipay
+        case "ADYEN_BLIK":
+            self = .adyenBlik
         case "ADYEN_DOTPAY":
             self = .adyenDotPay
         case "ADYEN_GIROPAY":
             self = .adyenGiropay
         case "ADYEN_IDEAL":
             self = .adyenIDeal
+        case "ADYEN_INTERAC":
+            self = .adyenInterac
         case "ADYEN_MOBILEPAY":
             self = .adyenMobilePay
+        case "ADYEN_PAYTRAIL":
+            self = .adyenPayTrail
         case "ADYEN_SOFORT":
             self = .adyenSofort
         case "ADYEN_TRUSTLY":
@@ -108,14 +117,20 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         switch self {
         case .adyenAlipay:
             return "ADYEN_ALIPAY"
+        case .adyenBlik:
+            return "ADYEN_BLIK"
         case .adyenDotPay:
             return "ADYEN_DOTPAY"
         case .adyenGiropay:
             return "ADYEN_GIROPAY"
         case .adyenIDeal:
             return "ADYEN_IDEAL"
+        case .adyenInterac:
+            return "ADYEN_INTERAC"
         case .adyenMobilePay:
             return "ADYEN_MOBILEPAY"
+        case .adyenPayTrail:
+            return "ADYEN_PAYTRAIL"
         case .adyenSofort:
             return "ADYEN_SOFORT"
         case .adyenTrustly:
@@ -174,10 +189,13 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     var isEnabled: Bool {
         switch self {
         case .adyenAlipay,
+                .adyenBlik,
                 .adyenDotPay,
                 .adyenGiropay,
                 .adyenIDeal,
+                .adyenInterac,
                 .adyenMobilePay,
+                .adyenPayTrail,
                 .adyenSofort,
                 .adyenTrustly,
                 .adyenTwint,
@@ -214,16 +232,19 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return true
         
         case .other:
-            return true
+            return false
         }
     }
     // swiftlint:enable cyclomatic_complexity
     
     private enum CodingKeys: String, CodingKey {
         case adyenAlipay
+        case adyenBlik
         case adyenDotPay
         case adyenGiropay
         case adyenIDeal
+        case adyenInterac
+        case adyenPayTrail
         case adyenMobilePay
         case adyenSofort
         case adyenTrustly
@@ -241,6 +262,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case googlePay
         case hoolah
         case klarna
+        case mbWay
         case mollieBankcontact
         case mollieIdeal
         case payNLBancontact

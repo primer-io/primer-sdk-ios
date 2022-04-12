@@ -75,7 +75,7 @@ class DirectCheckout: XCTestCase {
         wait(for: [payNowButtonExists], timeout: 15)
         payNowButton.tap()
 
-        try base.testResultScreenExpectations(for: payment)
+        try base.resultScreenExpectations(for: payment)
     }
     
     

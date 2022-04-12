@@ -23,6 +23,11 @@ class PaymentMethodConfig: Codable {
             .adyenVipps,
             .adyenAlipay,
             .adyenGiropay,
+            .adyenInterac,
+            .adyenPayTrail,
+            .adyenSofort,
+            .adyenTrustly,
+            .adyenTwint,
             .atome,
             .buckarooBancontact,
             .buckarooEps,
@@ -34,9 +39,6 @@ class PaymentMethodConfig: Codable {
             .payNLBancontact,
             .payNLGiropay,
             .payNLPayconiq,
-            .adyenSofort,
-            .adyenTrustly,
-            .adyenTwint
         ]
         
         if type == .paymentCard {
@@ -57,6 +59,8 @@ class PaymentMethodConfig: Codable {
             return ExternalPaymentMethodTokenizationViewModel(config: self)
         } else if type == .adyenDotPay || type == .adyenIDeal {
             return BankSelectorTokenizationViewModel(config: self)
+        } else if type == .adyenBlik {
+            return FormPaymentMethodTokenizationViewModel(config: self)
         } else if type == .xfers {
             return QRCodeTokenizationViewModel(config: self)
         }

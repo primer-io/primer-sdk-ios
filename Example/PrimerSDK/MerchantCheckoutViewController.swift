@@ -84,7 +84,6 @@ class MerchantCheckoutViewController: UIViewController {
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
 
-        
         Primer.shared.configure(settings: generalSettings, theme: CheckoutTheme.primer)
         Primer.shared.delegate = self
     }
@@ -166,10 +165,6 @@ class MerchantCheckoutViewController: UIViewController {
         Primer.shared.showUniversalCheckout(on: self)
     }
     
-    
-    
-    
-
 }
 
 // MARK: - PRIMER DELEGATE
@@ -336,10 +331,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         
         let networking = Networking()
         networking.createPayment(with: paymentMethodToken) { res, err in
-            //            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
-            //            resumeHandler.handle(error: merchantErr)
-            //            return
-            
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])
@@ -348,6 +339,13 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 if let data = try? JSONEncoder().encode(res) {
                     self.paymentResponsesData.append(data)
                 }
+                
+                if res.status == .declined {
+                    let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, payment was declined :("])
+                    resumeHandler.handle(error: merchantErr)
+                    return
+                }
+                
                 guard let requiredAction = res.requiredAction else {
                     resumeHandler.handleSuccess()
                     return
@@ -391,6 +389,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             if let paymentResponsesData = self?.paymentResponsesData, !paymentResponsesData.isEmpty {
                 let rvc = ResultViewController.instantiate(data: paymentResponsesData)
                 self?.navigationController?.pushViewController(rvc, animated: true)
+                self?.paymentResponsesData = []
             }
         }
     }
@@ -399,8 +398,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
     }
     
-    func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(clientToken as String)")
+    func onResumeSuccess(_ resumeToken: String, resumeHandler: ResumeHandlerProtocol) {
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(resumeToken as String)")
         
         guard let transactionResponse = transactionResponse,
               let url = URL(string: "\(endpoint)/api/payments/\(transactionResponse.id)/resume")
@@ -416,7 +415,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let bodyDic: [String: Any] = [
-            "resumeToken": clientToken
+            "resumeToken": resumeToken
         ]
         
         var bodyData: Data!

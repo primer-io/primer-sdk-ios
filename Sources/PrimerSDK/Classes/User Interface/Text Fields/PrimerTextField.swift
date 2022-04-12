@@ -11,8 +11,21 @@ import UIKit
 
 internal class PrimerTextField: UITextField {
     
-    internal enum Validation {
+    internal enum Validation: Equatable {
         case valid, invalid(_ error: Error?), notAvailable
+        
+        static func ==(lhs: Validation, rhs: Validation) -> Bool {
+                switch (lhs, rhs) {
+                case (.valid, .valid):
+                    return lhs == rhs
+                case (.invalid, .invalid):
+                    return lhs == rhs
+                case (.notAvailable, .notAvailable):
+                    return lhs == rhs
+                default:
+                    return false
+                }
+            }
     }
     
     override var delegate: UITextFieldDelegate? {

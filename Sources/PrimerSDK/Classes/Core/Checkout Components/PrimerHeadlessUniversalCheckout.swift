@@ -20,6 +20,7 @@ public class PrimerHeadlessUniversalCheckout {
     fileprivate init() {}
     
     public func start(withClientToken clientToken: String, settings: PrimerSettings? = nil, delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil, completion: @escaping (_ paymentMethodTypes: [PrimerPaymentMethodType]?, _ err: Error?) -> Void) {
+        
         if delegate != nil {
             PrimerHeadlessUniversalCheckout.current.delegate = delegate
         }
@@ -32,21 +33,18 @@ public class PrimerHeadlessUniversalCheckout {
             }
             return
         }
-        
-        do {
-            try ClientTokenService.storeClientToken(clientToken)
-            PrimerHeadlessUniversalCheckout.current.clientToken = clientToken
-        } catch {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
-        }
-        
+                        
         if let settings = settings {
             DependencyContainer.register(settings as PrimerSettingsProtocol)
         }
         
-        let primerConfigurationService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
         firstly {
-            primerConfigurationService.fetchConfig()
+            return ClientTokenService.storeClientToken(clientToken)
+        }
+        .then { () -> Promise<Void> in
+            PrimerHeadlessUniversalCheckout.current.clientToken = clientToken
+            let primerConfigurationService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+            return primerConfigurationService.fetchConfig()
         }
         .done {
             let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
@@ -69,53 +67,81 @@ public class PrimerHeadlessUniversalCheckout {
         }
     }
     
-    internal func validateSession() throws {
-        let appState: AppStateProtocol = DependencyContainer.resolve()
+    private func continueValidateSession() -> Promise<Void> {
         
-        if appState.clientToken == nil, PrimerHeadlessUniversalCheckout.current.clientToken != nil {
-            do {
-                try ClientTokenService.storeClientToken(PrimerHeadlessUniversalCheckout.current.clientToken!)
-            } catch {
-                throw error
+        return Promise { seal in
+            
+            let appState: AppStateProtocol = DependencyContainer.resolve()
+
+            guard let clientToken = appState.clientToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token is nil"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
             }
-        }
-        
-        guard let clientToken = appState.clientToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token is nil"])
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-        
-        guard let decodedClientToken = clientToken.jwtTokenPayload else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"])
-            throw err
-        }
-        
-        do {
-            try decodedClientToken.validate()
-        } catch {
-            throw error
-        }
-        
-        guard let primerConfiguration = appState.primerConfiguration else {
-            let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            throw err
-        }
-        
-        guard let paymentMethods = primerConfiguration.paymentMethods, !paymentMethods.isEmpty else {
-            let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            throw err
+            
+            guard let decodedClientToken = clientToken.jwtTokenPayload else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"])
+                seal.reject(err)
+                return
+            }
+            
+            do {
+                try decodedClientToken.validate()
+            } catch {
+                seal.reject(error)
+            }
+            
+            guard let primerConfiguration = appState.primerConfiguration else {
+                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                seal.reject(err)
+                return
+            }
+            
+            guard let paymentMethods = primerConfiguration.paymentMethods, !paymentMethods.isEmpty else {
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                seal.reject(err)
+                return
+            }
+            
+            seal.fulfill()
         }
     }
     
-    internal func listAvailablePaymentMethodsTypes() -> [PrimerPaymentMethodType]? {
-        do {
-            try PrimerHeadlessUniversalCheckout.current.validateSession()
-        } catch {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
-            return nil
-        }
+    internal func validateSession() -> Promise<Void> {
         
+        return Promise { seal in
+            
+            let appState: AppStateProtocol = DependencyContainer.resolve()
+            
+            if appState.clientToken == nil, let clientToken = PrimerHeadlessUniversalCheckout.current.clientToken {
+                
+                firstly {
+                    ClientTokenService.storeClientToken(clientToken)
+                }
+                .then({ () -> Promise<Void> in
+                    self.continueValidateSession()
+                })
+                .catch { error in
+                    seal.reject(error)
+                }
+                
+            } else {
+                
+                firstly {
+                    continueValidateSession()
+                }
+                .done({ () -> Void in
+                    seal.fulfill()
+                })
+                .catch { error in
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+
+    internal func listAvailablePaymentMethodsTypes() -> [PrimerPaymentMethodType]? {
         return PrimerConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
     }
     
@@ -123,13 +149,19 @@ public class PrimerHeadlessUniversalCheckout {
         switch paymentMethodType {
         case .adyenAlipay:
             return []
+        case .adyenBlik:
+            return []
         case .adyenDotPay:
             return []
         case .adyenGiropay:
             return []
         case .adyenIDeal:
             return []
+        case .adyenInterac:
+            return []
         case .adyenMobilePay:
+            return []
+        case .adyenPayTrail:
             return []
         case .adyenSofort:
             return []
@@ -176,13 +208,6 @@ public class PrimerHeadlessUniversalCheckout {
         case .payNLPayconiq:
             return []
         case .paymentCard:
-            do {
-                try PrimerHeadlessUniversalCheckout.current.validateSession()
-            } catch {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
-                return nil
-            }
-            
             let appState: AppStateProtocol = DependencyContainer.resolve()
 
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
@@ -199,7 +224,7 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .xfers:
             return []
-        case .other(let rawValue):
+        case .other(_):
             return []
         }
     }
@@ -209,7 +234,7 @@ public class PrimerHeadlessUniversalCheckout {
         guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
         return paymentMethodConfig.tokenizationViewModel?.paymentMethodButton
     }
-    
+
     public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType) -> UIImage? {
         return brand.getImage(assetType: assetType)
     }
@@ -224,12 +249,6 @@ public class PrimerHeadlessUniversalCheckout {
     
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType) {
         DispatchQueue.main.async {
-            do {
-                try PrimerHeadlessUniversalCheckout.current.validateSession()
-            } catch {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
-                return
-            }
             
             var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             settings.hasDisabledSuccessScreen = true
@@ -280,6 +299,8 @@ public struct PrimerAsset {
         switch paymentMethodType {
         case .adyenAlipay:
             brand = .aliPay
+        case .adyenBlik:
+            brand = .blik
         case .adyenDotPay:
             brand = .dotPay
         case .adyenGiropay,
@@ -291,8 +312,12 @@ public struct PrimerAsset {
                 .mollieIdeal,
                 .payNLIdeal:
             brand = .iDeal
+        case .adyenInterac:
+            brand = .interac
         case .adyenMobilePay:
             brand = .mobilePay
+        case .adyenPayTrail:
+            brand = .payTrail
         case .adyenSofort,
                 .buckarooSofort:
             brand = .sofort
@@ -374,14 +399,15 @@ public struct PrimerAsset {
         case dLocal = "d-local", directDebit = "direct-debit", discover, dotPay = "dotpay", eMerchantPay = "emerchantpay", eps, fintecture, fonoa, forter, fpx
         case gCash = "gcash", giroPay = "giropay", globalPayments = "global-payments", goCardless = "go-cardless", googlePay = "google-pay", grabPay = "grab-pay"
         case hoolah
-        case iDeal = "ideal"
+        case iDeal = "ideal", interac
         case ingenico
         case jcb
         case klarna, kount
         case layBuy = "lay-buy", looker
         case masterCard = "master-card", mbWay = "mb-way", mercadoPago = "mercado-pago", metamask, mobilePay = "mobile-pay", mollie
         case neonomics, netSuite = "netsuite", nexi, nuvei
-        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, ravelin, riskified
+        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail"
+        case ravelin, riskified
         case seon, sepa, sift, signifyd, sofort, stitch, stripe, swish
         case tableau, taxjar, telserv, tink, trilo, trueLayer = "truelayer", trueMoney = "truemoney", trustly, twillio, twint
         case vipps, visa, volt, voucherify, vyne

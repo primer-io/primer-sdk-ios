@@ -20,7 +20,6 @@ enum PrimerAPI: Endpoint, Equatable {
             (.createDirectDebitMandate, .createDirectDebitMandate),
             (.createPayPalOrderSession, .createPayPalOrderSession),
             (.createPayPalSBillingAgreementSession, .createPayPalSBillingAgreementSession),
-            
             (.confirmPayPalBillingAgreement, .confirmPayPalBillingAgreement),
             (.createKlarnaPaymentSession, .createKlarnaPaymentSession),
             (.createKlarnaCustomerToken, .createKlarnaCustomerToken),
@@ -31,7 +30,8 @@ enum PrimerAPI: Endpoint, Equatable {
             (.begin3DSRemoteAuth, .begin3DSRemoteAuth),
             (.continue3DSRemoteAuth, .continue3DSRemoteAuth),
             (.poll, .poll),
-            (.sendAnalyticsEvents, .sendAnalyticsEvents):
+            (.sendAnalyticsEvents, .sendAnalyticsEvents),
+            (.validateClientToken, .validateClientToken):
             return true
         default:
             return false
@@ -39,7 +39,6 @@ enum PrimerAPI: Endpoint, Equatable {
     }
     
 
-    
     case exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String)
     case fetchConfiguration(clientToken: DecodedClientToken)
     case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
@@ -66,6 +65,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?)
     
     case fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request)
+    case validateClientToken(request: ClientTokenValidationRequest)
 }
 
 internal extension PrimerAPI {
@@ -101,7 +101,12 @@ internal extension PrimerAPI {
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
-            
+        
+        case .validateClientToken(let request):
+            if let token = request.clientToken.jwtTokenPayload?.accessToken {
+                tmpHeaders["Primer-Client-Token"] = token
+            }
+
         case .fetchConfiguration(let clientToken):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
@@ -160,6 +165,8 @@ internal extension PrimerAPI {
             return url
         case .sendAnalyticsEvents(let url, _):
             return url.absoluteString
+        case .validateClientToken(let request):
+            return request.clientToken.jwtTokenPayload?.pciUrl
         }
     }
     // MARK: Path
@@ -204,6 +211,8 @@ internal extension PrimerAPI {
             return ""
         case .fetchPayPalExternalPayerInfo:
             return "/paypal/orders"
+        case .validateClientToken:
+            return "/client-token/validate"
         }
     }
     
@@ -237,7 +246,8 @@ internal extension PrimerAPI {
                 .createApayaSession,
                 .listAdyenBanks,
                 .sendAnalyticsEvents,
-                .fetchPayPalExternalPayerInfo:
+                .fetchPayPalExternalPayerInfo,
+                .validateClientToken:
             return .post
         case .poll:
             return .get
@@ -280,6 +290,8 @@ internal extension PrimerAPI {
                 return try? JSONEncoder().encode(request)
             } else if let request = paymentMethodTokenizationRequest as? BankSelectorTokenizationRequest {
                 return try? JSONEncoder().encode(request)
+            } else if let request = paymentMethodTokenizationRequest as? BlikPaymentMethodTokenizationRequest {
+                return try? JSONEncoder().encode(request)
             } else {
                 return nil
             }
@@ -298,9 +310,22 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(body)
         case .fetchPayPalExternalPayerInfo(_, let payPalExternalPayerInfoRequestBody):
             return try? JSONEncoder().encode(payPalExternalPayerInfoRequestBody)
+        case .validateClientToken(let clientTokenToValidate):
+            return try? JSONEncoder().encode(clientTokenToValidate)
         }
     }
     
+    // MARK: Should Return Response Body
+    
+    var shouldParseResponseBody: Bool {
+        switch self {
+        case .deleteVaultedPaymentMethod(_, _):
+            return false
+        default:
+            return true
+        }
+    }
+
 }
 
 #endif

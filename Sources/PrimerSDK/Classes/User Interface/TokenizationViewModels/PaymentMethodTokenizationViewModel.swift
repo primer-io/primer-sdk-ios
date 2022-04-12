@@ -178,8 +178,12 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .mollieIdeal,
                 .payNLIdeal:
             return "ideal"
+        case .adyenInterac:
+            return "interac"
         case .adyenMobilePay:
             return "mobile-pay"
+        case .adyenPayTrail:
+            return "paytrail"
         case .adyenSofort,
                 .buckarooSofort:
             return "sofort"
@@ -195,6 +199,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "apple-pay"
         case .atome:
             return "atome"
+        case .adyenBlik:
+            return "blik"
         case .buckarooBancontact,
                 .mollieBankcontact,
                 .payNLBancontact:
@@ -228,8 +234,11 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }()
     
     lazy var squareLogo: UIImage? = {
-        guard let imageName = imageName else { return nil }
-        return UIImage(named: "\(imageName)-logo-square", in: Bundle.primerResources, compatibleWith: nil)
+        guard let imageName = imageName else { return nil }        
+        // In case we don't have a square icon, we show the icon image
+        let imageLogoSquare = UIImage(named: "\(imageName)-logo-square", in: Bundle.primerResources, compatibleWith: nil)
+        let imageIcon = UIImage(named: "\(imageName)-icon", in: Bundle.primerResources, compatibleWith: nil)
+        return imageLogoSquare ?? imageIcon
     }()
     
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView? {
@@ -266,10 +275,13 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         paymentMethodButton.clipsToBounds = true
         paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         let imagePadding: CGFloat = 20
-        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: -2,
-                                                           left: UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0,
+        let leftPadding = UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0
+        let defaultRightPadding = config.type == .paymentCard ? imagePadding : 0
+        let rightPadding = UILocalizableUtil.isRightToLeftLocale ? 0 : defaultRightPadding
+        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 0,
+                                                           left: leftPadding,
                                                            bottom: 0,
-                                                           right: UILocalizableUtil.isRightToLeftLocale ? 0 : imagePadding)
+                                                           right: rightPadding)
         paymentMethodButton.titleLabel?.font = buttonFont
         if let buttonCornerRadius = buttonCornerRadius {
             paymentMethodButton.layer.cornerRadius = buttonCornerRadius

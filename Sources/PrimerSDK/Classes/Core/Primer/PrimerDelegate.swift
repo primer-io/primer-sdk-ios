@@ -62,8 +62,16 @@ public protocol PrimerDelegate {
 
 internal class PrimerDelegateProxy {
     
-    static func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void) {4
+    static var isClientTokenCallbackImplemented: Bool {
+        return Primer.shared.delegate?.clientTokenCallback != nil
+    }
+    
+    static func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void) {
         Primer.shared.delegate?.clientTokenCallback(completion)
+    }
+    
+    static var isTokenAddedToVaultImplemented: Bool {
+        return Primer.shared.delegate?.tokenAddedToVault != nil
     }
     
     static func tokenAddedToVault(_ token: PaymentMethodToken) {
@@ -87,9 +95,17 @@ internal class PrimerDelegateProxy {
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: resumeHandler)
     }
     
+    static var isOnResumeSuccessImplemented: Bool {
+        return Primer.shared.delegate?.onResumeSuccess != nil
+    }
+    
     static func onResumeSuccess(_ resumeToken: String, resumeHandler: ResumeHandlerProtocol) {
         Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: resumeHandler)
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutResume(withResumeToken: resumeToken, resumeHandler: resumeHandler)
+    }
+    
+    static var isOnResumeErrorImplemented: Bool {
+        return Primer.shared.delegate?.onResumeError != nil
     }
     
     static func onResumeError(_ error: Error) {
@@ -97,8 +113,16 @@ internal class PrimerDelegateProxy {
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
     }
     
+    static var isOnCheckoutDismissedImplemented: Bool {
+        return Primer.shared.delegate?.onCheckoutDismissed != nil
+    }
+    
     static func onCheckoutDismissed() {
         Primer.shared.delegate?.onCheckoutDismissed?()
+    }
+    
+    static var isCheckoutFailedImplemented: Bool {
+        return Primer.shared.delegate?.checkoutFailed != nil
     }
     
     static func checkoutFailed(with error: Error) {
@@ -107,15 +131,16 @@ internal class PrimerDelegateProxy {
     }
     
     static var isClientSessionActionsImplemented: Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        if let implementedReactNativeCallbacks = state.implementedReactNativeCallbacks {
+            return implementedReactNativeCallbacks.isClientSessionActionsImplemented == true
+        }
         return Primer.shared.delegate?.onClientSessionActions != nil
     }
     
-    static func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) -> Bool {
-        if Primer.shared.delegate?.onClientSessionActions != nil {
+    static func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
             Primer.shared.delegate!.onClientSessionActions?(actions, resumeHandler: resumeHandler)
-            return true
-        } else {
-            return false
         }
     }
     
@@ -138,26 +163,6 @@ internal class PrimerDelegateProxy {
     static func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error) {
 
     }
-    
-//    static func onEvent(_ event: PrimerHeadlessUniversalCheckout.Event) {
-//        switch event {
-//        case .clientSessionSetupSuccessfully,
-//                .preparationStarted,
-//                .paymentMethodPresented,
-//                .tokenizationStarted:
-//            PrimerHeadlessUniversalCheckout.delegate?.onEvent(event)
-//        case .tokenizationSucceeded(let paymentMethodToken, let resumeHandler):
-//            PrimerHeadlessUniversalCheckout.delegate?.onEvent(event)
-//
-//            if let resumeHandler = resumeHandler {
-//                Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: resumeHandler)
-//            }
-//        case .failure(let error):
-//            PrimerHeadlessUniversalCheckout.delegate?.onEvent(event)
-//            Primer.shared.delegate?.checkoutFailed?(with: error)
-//        }
-//    }
-    
     
 }
 

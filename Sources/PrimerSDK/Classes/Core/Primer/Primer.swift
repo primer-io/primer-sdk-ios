@@ -185,7 +185,8 @@ public class Primer {
         show(flow: flow)
     }
     
-    public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil) {
+    public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
+
         checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
@@ -209,16 +210,11 @@ public class Primer {
                 id: self.timingEventId!))
         
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-        
-        if let clientToken = clientToken {
-            try? ClientTokenService.storeClientToken(clientToken)
-        }
-        
-        presentingViewController = viewController
-        show(flow: .default)
+                
+        self.show(on: viewController, flow: .default, with: clientToken, completion: completion)
     }
     
-    public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil) {
+    public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
         checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
@@ -242,17 +238,12 @@ public class Primer {
                 id: self.timingEventId!))
         
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-        
-        if let clientToken = clientToken {
-            try? ClientTokenService.storeClientToken(clientToken)
-        }
-        
-        presentingViewController = viewController
-        show(flow: .defaultWithVault)
+
+        self.show(on: viewController, flow: .defaultWithVault, with: clientToken)
     }
     
     // swiftlint:disable cyclomatic_complexity
-    public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil) {
+    public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
         checkoutSessionId = UUID().uuidString
         
         switch (paymentMethod, intent) {
@@ -267,9 +258,15 @@ public class Primer {
             
         case (.adyenIDeal, .checkout):
             flow = .checkoutWithAdyenBank
-            
+
+        case (.adyenInterac, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenInterac)
+
         case (.adyenMobilePay, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenMobilePay)
+        
+        case (.adyenPayTrail, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenPayTrail)
             
         case (.adyenSofort, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenSofort)
@@ -292,6 +289,9 @@ public class Primer {
         case (.atome, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .atome)
             
+        case (.adyenBlik, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenBlik)
+            
         case (.buckarooBancontact, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooEps)
             
@@ -306,7 +306,7 @@ public class Primer {
             
         case (.buckarooSofort, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooSofort)
-            
+                        
         case (.hoolah, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
             
@@ -357,7 +357,10 @@ public class Primer {
             (.adyenDotPay, .vault),
             (.adyenGiropay, .vault),
             (.adyenIDeal, .vault),
+            (.adyenInterac, .vault),
+            (.adyenPayTrail, .vault),
             (.atome, .vault),
+            (.adyenBlik, .vault),
             (.buckarooBancontact, .vault),
             (.buckarooEps, .vault),
             (.buckarooGiropay, .vault),
@@ -404,8 +407,7 @@ public class Primer {
                 id: self.timingEventId!))
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
-        presentingViewController = viewController
-        show(flow: flow!)
+        self.show(on: viewController, flow: flow, with: clientToken, completion: completion)
     }
     // swiftlint:enable cyclomatic_complexity
 
@@ -468,6 +470,22 @@ public class Primer {
         }
     }
     
+    private func show(on viewController: UIViewController, flow: PrimerSessionFlow, with clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
+        
+        guard let clientToken = clientToken else {
+            presentingViewController = viewController
+            show(flow: flow)
+            completion?(nil)
+            return
+        }
+        
+        ClientTokenService.storeClientToken(clientToken) { [weak self] error in
+            self?.presentingViewController = viewController
+            self?.show(flow: flow)
+            completion?(error)
+        }
+    }
+    
     public func show(flow: PrimerSessionFlow) {
         self.flow = flow
         
@@ -504,6 +522,11 @@ public class Primer {
                 self.primerWindow!.makeKeyAndVisible()
             }
         }
+    }
+    
+    public func setImplementedReactNativeCallbacks(_ implementedReactNativeCallbacks: ImplementedReactNativeCallbacks) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        state.implementedReactNativeCallbacks = implementedReactNativeCallbacks
     }
     
 }
