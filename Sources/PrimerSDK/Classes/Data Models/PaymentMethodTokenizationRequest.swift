@@ -49,8 +49,8 @@ struct PaymentInstrument: Codable {
     // PayPal
     var paypalOrderId: String?
     var paypalBillingAgreementId: String?
-    var shippingAddress: ShippingAddress?
-    var externalPayerInfo: ExternalPayerInfo?
+    var shippingAddress: PaymentMethod.PayPal.ShippingAddress?
+    var externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo?
     // Apple Pay
     var paymentMethodConfigId: String?
     var token: ApplePayPaymentResponseToken?
@@ -70,15 +70,9 @@ struct PaymentInstrument: Codable {
     var productId: String?
     var currencyCode: String?
     // DotPay
-    var sessionInfo: BankSelectorSessionInfo?
+    var sessionInfo: PaymentMethod.DotPay.SessionInfo?
     var type: String?
     var paymentMethodType: String?
-}
-
-internal struct BankSelectorSessionInfo: Codable {
-    var issuer: String?
-    var locale: String = "en_US"
-    var platform: String = "IOS"
 }
 
 public enum TokenType: String, Codable {
@@ -105,32 +99,9 @@ struct PayPal {
         
         struct Response: Codable {
             let orderId: String
-            let externalPayerInfo: ExternalPayerInfo
+            let externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo
         }
     }
-}
-
-/**
- Contains information of the payer (if available).
- 
- *Values*
- 
- `externalPayerId`: ID representing the payer.
- 
- `email`: The payer's email.
- 
- `firstName`: The payer's firstName.
- 
- `lastName`: The payer's lastName.
- 
- - Author:
- Primer
- - Version:
- 1.2.2
- */
-
-public struct ExternalPayerInfo: Codable {
-    public var externalPayerId, email, firstName, lastName: String?
 }
 
 #endif

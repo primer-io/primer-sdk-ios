@@ -35,9 +35,9 @@ extension PaymentMethod {
             
             public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
                 public let hashedIdentifier: String?
-                public let mnc: Int?
-                public let mcc: Int?
-                public let mx: String?
+                public let mnc: Int
+                public let mcc: Int
+                public let mx: String
                 public let currencyCode: Currency?
                 public let productId: String?
             }
@@ -80,22 +80,22 @@ extension PaymentMethod {
             struct Options: PaymentMethodConfigurationOptions {
                 let paymentMethodConfigId: String
                 let paymentMethodType: PaymentMethod.PaymentMethodType
-                let sessionInfo: Blik.Configuration.Options.SessionInfo
+                let sessionInfo: Blik.SessionInfo
                 lazy var type: String = {
                     "OFF_SESSION_PAYMENT"
                 }()
-                
-                struct SessionInfo: Codable {
-                    let blikCode: String
-                    let locale: String
-                    lazy var platform: String = {
-                        "IOS"
-                    }()
-                    lazy var redirectionUrl: String? = {
-                        PrimerSettings.current.urlScheme
-                    }()
-                }
             }
+        }
+        
+        struct SessionInfo: Codable {
+            let blikCode: String
+            let locale: String
+            lazy var platform: String = {
+                "IOS"
+            }()
+            lazy var redirectionUrl: String? = {
+                PrimerSettings.current.urlScheme
+            }()
         }
         
     }
@@ -104,12 +104,18 @@ extension PaymentMethod {
     class DotPay {
         class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
-                let sessionInfo: BankSelectorSessionInfo
+                let sessionInfo: PaymentMethod.DotPay.SessionInfo
                 lazy var type: String = {
                     "OFF_SESSION_PAYMENT"
                 }()
                 let paymentMethodType: String
             }
+        }
+        
+        struct SessionInfo: Codable {
+            var issuer: String?
+            var locale: String = "en_US"
+            var platform: String = "IOS"
         }
     }
     
@@ -190,14 +196,13 @@ extension PaymentMethod {
             }
             
             public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
-                public let paypalBillingAgreementId: String?
-                public let first6Digits: String?
-                public let last4Digits: String?
-                public let expirationMonth: String?
-                public let expirationYear: String?
-                public let cardholderName: String?
-                public let network: String?
-                public let isNetworkTokenized: Bool?
+                public let first6Digits: String
+                public let last4Digits: String
+                public let expirationMonth: String
+                public let expirationYear: String
+                public let cardholderName: String
+                public let network: String
+                public let isNetworkTokenized: Bool
                 public let binData: PaymentMethod.PaymentCard.BinData?
                 public let threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
             }
@@ -246,15 +251,23 @@ extension PaymentMethod {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let paypalOrderId: String?
                 let paypalBillingAgreementId: String?
-                let shippingAddress: ShippingAddress?
-                let externalPayerInfo: ExternalPayerInfo?
+                let shippingAddress: PaymentMethod.PayPal.ShippingAddress?
+                let externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo?
             }
             
             public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
-                public let externalPayerInfo: ExternalPayerInfo?
+                public let paypalOrderId: PaymentMethod.PayPal.ShippingAddress
+                public let externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo
             }
         }
         
+        public struct ExternalPayerInfo: Codable {
+            public var externalPayerId, email, firstName, lastName: String?
+        }
+        
+        public struct ShippingAddress: Codable {
+            let firstName, lastName, addressLine1, addressLine2, city, state, countryCode, postalCode: String?
+        }
     }
     
     // MARK: - Primer Test ECom
@@ -291,6 +304,12 @@ extension PaymentMethod {
                 lazy var type: String = {
                     "OFF_SESSION_PAYMENT"
                 }()
+                let sessionInfo: PaymentMethod.Redirect.SessionInfo
+            }
+            
+            struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
+                let paymentMethodConfigId: String
+                let paymentMethodType: PaymentMethod.PaymentMethodType
                 let sessionInfo: PaymentMethod.Redirect.SessionInfo
             }
         }

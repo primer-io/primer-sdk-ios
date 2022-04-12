@@ -65,39 +65,8 @@ struct PayPalConfirmBillingAgreementRequest: Encodable {
 
 struct PayPalConfirmBillingAgreementResponse: Codable {
     let billingAgreementId: String
-    let externalPayerInfo: ExternalPayerInfo
-    let shippingAddress: ShippingAddress
-}
-
-/**
- Contains information of the shipping address (if available).
- 
- *Values*
- 
- `firstName`: Recipient's firstname.
- 
- `lastName`: Recipient's lastname.
- 
- `addressLine1`: Recipient's address line 1.
- 
- `addressLine2`: Recipient's address line 2.
- 
- `city`: Recipient's city.
- 
- `state`: Recipient's state.
- 
- `countryCode`: Recipient's country code.
- 
- `postalCode`: Recipient's postal code.
- 
- - Author:
- Primer
- - Version:
- 1.2.2
- */
-
-public struct ShippingAddress: Codable {
-    let firstName, lastName, addressLine1, addressLine2, city, state, countryCode, postalCode: String?
+    let externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo
+    let shippingAddress: PaymentMethod.PayPal.ShippingAddress
 }
 
 #endif

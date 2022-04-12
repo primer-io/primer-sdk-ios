@@ -131,12 +131,14 @@ public class PaymentMethod {
                 isAlreadyVaulted = (try? container.decode(Bool?.self, forKey: .isAlreadyVaulted)) ?? nil
                 paymentInstrumentType = try container.decode(PaymentMethod.Tokenization.Response.InstrumentType.self, forKey: .paymentInstrumentType)
                 
-                if let paymentCardInstrumentResponseData = (try? container.decode(PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData?.self, forKey: .paymentInstrumentData)) {
-                    self.paymentInstrumentData = paymentCardInstrumentResponseData
-                } else if let apayaInstrumentResponseData = (try? container.decode(PaymentMethod.Apaya.Tokenization.InstrumentResponseData?.self, forKey: .paymentInstrumentData)) {
+                if let apayaInstrumentResponseData = (try? container.decode(PaymentMethod.Apaya.Tokenization.InstrumentResponseData.self, forKey: .paymentInstrumentData)) {
                     self.paymentInstrumentData = apayaInstrumentResponseData
+                } else if let paymentCardInstrumentResponseData = (try? container.decode(PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData.self, forKey: .paymentInstrumentData)) {
+                    self.paymentInstrumentData = paymentCardInstrumentResponseData
+                } else if let redirectInstrumentResponseData = (try? container.decode(PaymentMethod.Redirect.Tokenization.InstrumentResponseData.self, forKey: .paymentInstrumentData)) {
+                    self.paymentInstrumentData = redirectInstrumentResponseData
                 } else {
-                    self.paymentInstrumentData = nil
+                    
                 }
                 
                 if paymentInstrumentType == .paymentCard {
@@ -161,6 +163,8 @@ public class PaymentMethod {
                     try? container.encode(paymentCardInstrumentResponseData, forKey: .paymentInstrumentData)
                 } else if let apayaInstrumentResponseData = self.paymentInstrumentData as? PaymentMethod.Apaya.Tokenization.InstrumentResponseData {
                     try? container.encode(apayaInstrumentResponseData, forKey: .paymentInstrumentData)
+                } else if let redirectInstrumentResponseData = self.paymentInstrumentData as? PaymentMethod.Redirect.Tokenization.InstrumentResponseData {
+                    try? container.encode(redirectInstrumentResponseData, forKey: .paymentInstrumentData)
                 }
                 
                 try? container.encode(token, forKey: .token)
@@ -254,7 +258,7 @@ public class PaymentMethod {
                         imageName: self.icon,
                         paymentMethodType: self.paymentInstrumentType)
                 case .payPalBillingAgreement:
-                    guard let cardholder = (self.paymentInstrumentData as? PaymentMethod.PayPal.Tokenization.InstrumentResponseData)?.externalPayerInfo?.email else { return nil }
+                    guard let cardholder = (self.paymentInstrumentData as? PaymentMethod.PayPal.Tokenization.InstrumentResponseData)?.externalPayerInfo.email else { return nil }
                     return PaymentMethod.PaymentCard.ButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
                 case .goCardlessMandate:
                     return PaymentMethod.PaymentCard.ButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)

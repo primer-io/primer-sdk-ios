@@ -342,7 +342,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         let req = BankSelectorTokenizationRequest(
             paymentInstrument: PaymentInstrument(
                 paymentMethodConfigId: self.config.id!,
-                sessionInfo: BankSelectorSessionInfo(issuer: bank.id),
+                sessionInfo: PaymentMethod.DotPay.SessionInfo(issuer: bank.id),
                 type: "OFF_SESSION_PAYMENT",
                 paymentMethodType: config.type.rawValue))
         

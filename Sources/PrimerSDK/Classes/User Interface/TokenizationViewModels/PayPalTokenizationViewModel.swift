@@ -374,7 +374,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo, completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
+    private func generatePaypalPaymentInstrument(externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo, completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
             guard let orderId = orderId else {
