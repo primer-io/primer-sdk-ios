@@ -309,9 +309,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                   return
               }
         
-        self.paymentResponsesData.append(paymentData)
-    }
-    
     func checkoutWillCreatePayment(_ paymentMethodData: String, completion: @escaping (PaymentCreateAdditionalValues?) -> Void) {
         completion(nil)
     }
