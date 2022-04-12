@@ -31,7 +31,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private lazy var _buttonTitle: String? = {
         switch config.type {
         case .paymentCard:
-            return Primer.shared.flow.internalSessionFlow.vaulted
+            return (Primer.shared.flow?.internalSessionFlow.vaulted ?? false)
             ? NSLocalizedString("payment-method-type-card-vaulted",
                                 tableName: nil,
                                 bundle: Bundle.primerResources,
@@ -353,7 +353,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     required init(config: PaymentMethodConfig) {
-        self.flow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout
+        self.flow = (Primer.shared.flow?.internalSessionFlow.vaulted ?? false) ? .vault : .checkout
         super.init(config: config)
         
         self.cardComponentsManager = CardComponentsManager(
