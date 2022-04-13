@@ -245,6 +245,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             data = try primer3DS!.createTransaction(directoryServerId: directoryServerId, protocolVersion: protocolVersion.rawValue)
         } catch {
             ErrorHandler.shared.handle(error: error)
+            completion(.failure(error))
             return
         }
         

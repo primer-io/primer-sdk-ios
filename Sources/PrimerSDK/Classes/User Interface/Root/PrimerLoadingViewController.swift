@@ -57,9 +57,9 @@ class PrimerLoadingViewController: PrimerViewController {
         resultView = PrimerResultComponentView(frame: .zero, imageView: self.imageView, message: self.message, loadingIndicator: self.activityIndicatorView)
         view.addSubview(resultView)
         resultView.translatesAutoresizingMaskIntoConstraints = false
-        resultView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12).isActive = true
+        resultView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         resultView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        resultView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 12).isActive = true
+        resultView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         resultView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
     

@@ -84,7 +84,6 @@ class MerchantCheckoutViewController: UIViewController {
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
 
-        
         Primer.shared.configure(settings: generalSettings, theme: CheckoutTheme.primer)
         Primer.shared.delegate = self
     }
@@ -383,6 +382,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             if let paymentResponsesData = self?.paymentResponsesData, !paymentResponsesData.isEmpty {
                 let rvc = ResultViewController.instantiate(data: paymentResponsesData)
                 self?.navigationController?.pushViewController(rvc, animated: true)
+                self?.paymentResponsesData = []
             }
         }
     }

@@ -176,8 +176,7 @@ internal extension String {
     
     var isValidCardholderName: Bool {
         if isEmpty { return false }
-        let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-")
-        return !(self.rangeOfCharacter(from: set.inverted) != nil)
+        return rangeOfCharacter(from: .decimalDigits) == nil
     }
     
     var isValidPostalCode: Bool {
