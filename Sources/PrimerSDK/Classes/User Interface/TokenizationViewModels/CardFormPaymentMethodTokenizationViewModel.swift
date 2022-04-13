@@ -540,10 +540,20 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             self.willPresentExternalView?()
             
             self.webViewCompletion = { (id, err) in
+                DispatchQueue.main.async {
+                    self.willDismissExternalView?()
+                    self.webViewController?.dismiss(animated: true, completion: {
+                        self.didDismissExternalView?()
+                    })
+                }
+                
                 if let err = err {
                     ErrorHandler.handle(error: err)
                     PrimerDelegateProxy.onResumeError(err)
-                    return
+                } else if let id = id {
+                    PrimerDelegateProxy.onResumeSuccess(id, resumeHandler: self)
+                } else {
+                    assert(true, "Should have received an id or an error")
                 }
             }
             
@@ -558,12 +568,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             })
             
             self.startPolling(on: URL(string: pollingUrls.status)!) { id, err in
-                if let err = err {
-                    ErrorHandler.handle(error: err)
-                    PrimerDelegateProxy.onResumeError(err)
-                } else {
-                    PrimerDelegateProxy.onResumeSuccess(id!, resumeHandler: self)
-                }
+                self.webViewCompletion?(id, err)
             }
         }
     }
