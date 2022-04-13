@@ -12,7 +12,7 @@ import UIKit
 
 class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
-    private var flow: PaymentFlow
+    private var flow: PaymentMethod.Flow
     private var cardComponentsManager: CardComponentsManager!
     var onConfigurationFetched: (() -> Void)?
     

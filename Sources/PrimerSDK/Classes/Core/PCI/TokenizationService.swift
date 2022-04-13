@@ -5,10 +5,10 @@ import Foundation
 internal protocol TokenizationServiceProtocol {
     var tokenizedPaymentMethodToken: PaymentMethod.Tokenization.Response? { get set }
     func tokenize(
-        request: TokenizationRequest,
+        request: PaymentMethod.Tokenization.Request,
         onTokenizeSuccess: @escaping (Result<PaymentMethod.Tokenization.Response, Error>) -> Void
     )
-    func tokenize(request: TokenizationRequest) -> Promise<PaymentMethod.Tokenization.Response>
+    func tokenize(request: PaymentMethod.Tokenization.Request) -> Promise<PaymentMethod.Tokenization.Response>
 }
 
 internal class TokenizationService: TokenizationServiceProtocol {
@@ -20,7 +20,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
     }
 
     func tokenize(
-        request: TokenizationRequest,
+        request: PaymentMethod.Tokenization.Request,
         onTokenizeSuccess: @escaping (Result<PaymentMethod.Tokenization.Response, Error>) -> Void
     ) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -131,7 +131,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
         }
     }
     
-    func tokenize(request: TokenizationRequest) -> Promise<PaymentMethod.Tokenization.Response> {
+    func tokenize(request: PaymentMethod.Tokenization.Request) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             self.tokenize(request: request) { result in
                 switch result {

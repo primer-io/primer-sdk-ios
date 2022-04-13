@@ -352,17 +352,15 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             return
         }
         
-        let instrument = PaymentInstrument(mx: apayaWebViewResponse.mxNumber,
-                                           mnc: apayaWebViewResponse.mnc,
-                                           mcc: apayaWebViewResponse.mcc,
-                                           hashedIdentifier: apayaWebViewResponse.hashedIdentifier,
-                                           productId: apayaWebViewResponse.productId,
-                                           currencyCode: currencyStr)
+        let paymentInstrument = PaymentMethod.Apaya.Tokenization.InstrumentRequestParameters(
+            currencyCode: currencyStr,
+            hashedIdentifier: apayaWebViewResponse.hashedIdentifier,
+            mcc: apayaWebViewResponse.mcc,
+            mnc: apayaWebViewResponse.mnc,
+            mx: apayaWebViewResponse.mxNumber,
+            productId: apayaWebViewResponse.productId)
         
-        let request = PaymentMethodTokenizationRequest(
-            paymentInstrument: instrument,
-            state: state
-        )
+        let request = PaymentMethod.Tokenization.Request(paymentInstrument: paymentInstrument)
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])

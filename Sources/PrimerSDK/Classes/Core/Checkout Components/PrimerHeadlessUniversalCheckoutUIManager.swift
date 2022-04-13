@@ -119,7 +119,7 @@ extension PrimerHeadlessUniversalCheckout {
             .then { () -> Promise<Void> in
                 self.validateInputData()
             }
-            .then { () -> Promise<PaymentMethodTokenizationRequest> in
+            .then { () -> Promise<PaymentMethod.Tokenization.Request> in
                 self.buildRequestBody()
             }
             .then { requestbody -> Promise<PaymentMethod.Tokenization.Response> in
@@ -167,7 +167,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func buildRequestBody() -> Promise<PaymentMethodTokenizationRequest> {
+        private func buildRequestBody() -> Promise<PaymentMethod.Tokenization.Request> {
             return Promise { seal in
                 switch self.paymentMethodType {
                 case .paymentCard:
@@ -217,27 +217,14 @@ extension PrimerHeadlessUniversalCheckout {
                         cardholderName = cardholderNameField._text
                     }
                     
-                    let paymentInstrument = PaymentInstrument(
-                        number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String,
+                    let paymentInstrument = PaymentMethod.PaymentCard.Tokenization.InstrumentRequestParameters(
+                        number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as! String,
                         cvv: cvv,
                         expirationMonth: expiryMonth,
                         expirationYear: expiryYear,
-                        cardholderName: cardholderName,
-                        paypalOrderId: nil,
-                        paypalBillingAgreementId: nil,
-                        shippingAddress: nil,
-                        externalPayerInfo: nil,
-                        paymentMethodConfigId: nil,
-                        token: nil,
-                        sourceConfig: nil,
-                        gocardlessMandateId: nil,
-                        klarnaAuthorizationToken: nil,
-                        klarnaCustomerToken: nil,
-                        sessionData: nil)
+                        cardholderName: cardholderName)
                     
-                    let primerSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    let customerId = primerSettings.customerId
-                    let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil, customerId: customerId)
+                    let request = PaymentMethod.Tokenization.Request(paymentInstrument: paymentInstrument)
                     seal.fulfill(request)
                     
                 default:
@@ -246,7 +233,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func tokenize(request: PaymentMethodTokenizationRequest) -> Promise<PaymentMethod.Tokenization.Response> {
+        private func tokenize(request: PaymentMethod.Tokenization.Request) -> Promise<PaymentMethod.Tokenization.Response> {
             return Promise { seal in
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                 apiClient.tokenizePaymentMethod(clientToken: ClientTokenService.decodedClientToken!, paymentMethodTokenizationRequest: request) { result in

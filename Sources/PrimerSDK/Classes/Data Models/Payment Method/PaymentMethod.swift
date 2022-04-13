@@ -28,10 +28,16 @@ public class PaymentMethod {
             let paymentInstrument: PaymentMethodTokenizationInstrumentRequestParameters
             let tokenType: PaymentMethod.TokenType
             let paymentFlow: PaymentMethod.Flow?
-            let customerId: String?
+            var customerId: String? = nil
             
             private enum CodingKeys: String, CodingKey {
                 case paymentInstrument, tokenType, paymentFlow, customerId
+            }
+            
+            init(paymentInstrument: PaymentMethodTokenizationInstrumentRequestParameters) {
+                self.paymentInstrument = paymentInstrument
+                self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : .singleUse
+                self.paymentFlow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
             }
             
             init(
@@ -43,7 +49,6 @@ public class PaymentMethod {
                 self.paymentInstrument = paymentInstrument
                 self.tokenType = tokenType
                 self.paymentFlow = paymentFlow
-                self.customerId = customerId
             }
             
             init(from decoder: Decoder) throws {
@@ -68,8 +73,8 @@ public class PaymentMethod {
                 }
                 
                 self.tokenType = try container.decode(PaymentMethod.TokenType.self, forKey: .tokenType)
-                self.paymentFlow = try container.decode(PaymentMethod.Flow?.self, forKey: .paymentFlow)
-                self.customerId = try container.decode(String?.self, forKey: .customerId)
+                self.paymentFlow = (try? container.decode(PaymentMethod.Flow?.self, forKey: .paymentFlow)) ?? nil
+                self.customerId = (try? container.decode(String?.self, forKey: .customerId)) ?? nil
             }
             
             func encode(to encoder: Encoder) throws {
@@ -90,12 +95,18 @@ public class PaymentMethod {
                 } else if let redirectTokenizationInstrumentParameters = paymentInstrument as? PaymentMethod.Redirect.Tokenization.InstrumentRequestParameters {
                     try container.encode(redirectTokenizationInstrumentParameters, forKey: .paymentInstrument)
                 } else {
-                    fatalError()
+                    
                 }
                 
                 try container.encode(self.tokenType, forKey: .tokenType)
-                try? container.encode(self.paymentFlow, forKey: .paymentFlow)
-                try? container.encode(self.customerId, forKey: .customerId)
+                
+                if let paymentFlow = paymentFlow {
+                    try? container.encode(paymentFlow, forKey: .paymentFlow)
+                }
+                
+                if let customerId = customerId {
+                    try? container.encode(customerId, forKey: .paymentFlow)
+                }
             }
         }
         

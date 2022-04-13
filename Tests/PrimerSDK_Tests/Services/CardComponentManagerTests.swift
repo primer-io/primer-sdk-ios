@@ -21,7 +21,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var postalCodeField: PrimerPostalCodeFieldView?
     
-    var flow: PaymentFlow
+    var flow: PaymentMethod.Flow
     
     var delegate: CardComponentsManagerDelegate?
     
@@ -39,7 +39,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var paymentMethodsConfig: PrimerConfiguration?
     
-    public init(flow: PaymentFlow,
+    public init(flow: PaymentMethod.Flow,
         cardnumberField: PrimerCardNumberFieldView,
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,

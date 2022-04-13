@@ -96,7 +96,7 @@ extension PaymentMethod {
         class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let paymentMethodConfigId: String
-                let paymentMethodType: PaymentMethod.PaymentMethodType
+                let paymentMethodType: String
                 let sessionInfo: PaymentMethod.Blik.SessionInfo
             }
             
@@ -129,16 +129,17 @@ extension PaymentMethod {
         
         class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
+                let paymentMethodConfigId: String
+                let paymentMethodType: String
                 let sessionInfo: PaymentMethod.DotPay.SessionInfo
                 lazy var type: String = {
                     "OFF_SESSION_PAYMENT"
                 }()
-                let paymentMethodType: String
             }
             
             public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
                 public let paymentMethodConfigId: String
-                public let paymentMethodType: PaymentMethod.PaymentMethodType
+                public let paymentMethodType: String
                 public let sessionInfo: PaymentMethod.Blik.SessionInfo
             }
         }
@@ -351,22 +352,20 @@ extension PaymentMethod {
         class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let paymentMethodConfigId: String
-                let paymentMethodType: PaymentMethod.PaymentMethodType
-                lazy var type: String = {
-                    "OFF_SESSION_PAYMENT"
-                }()
+                let paymentMethodType: String
                 let sessionInfo: PaymentMethod.Redirect.SessionInfo
+                let type: String = "OFF_SESSION_PAYMENT"
             }
             
             struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
                 let paymentMethodConfigId: String
-                let paymentMethodType: PaymentMethod.PaymentMethodType
+                let paymentMethodType: String
                 let sessionInfo: PaymentMethod.Redirect.SessionInfo
             }
         }
         
         struct SessionInfo: Codable {
-            var locale: String
+            var locale: String?
             var platform: String = "IOS"
             var redirectionUrl: String? = PrimerSettings.current.urlScheme
         }

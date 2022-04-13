@@ -218,7 +218,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 self.willPresentExternalView?()
                 return self.createOAuthSession(url)
             }
-            .then { url -> Promise<PaymentInstrument> in
+            .then { url -> Promise<PaymentMethodTokenizationInstrumentRequestParameters> in
                 return self.generatePaypalPaymentInstrument()
             }
             .then { instrument -> Promise<PaymentMethod.Tokenization.Response> in
@@ -346,7 +346,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    private func generatePaypalPaymentInstrument() -> Promise<PaymentInstrument> {
+    private func generatePaypalPaymentInstrument() -> Promise<PaymentMethodTokenizationInstrumentRequestParameters> {
         return Promise { seal in
             guard let orderId = orderId else {
                 let err = PrimerError.invalidValue(key: "orderId", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -374,7 +374,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    private func generatePaypalPaymentInstrument(externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo, completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
+    private func generatePaypalPaymentInstrument(externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo, completion: @escaping (Result<PaymentMethodTokenizationInstrumentRequestParameters, Error>) -> Void) {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
             guard let orderId = orderId else {
@@ -384,7 +384,12 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 return
             }
             
-            let paymentInstrument = PaymentInstrument(paypalOrderId: orderId, externalPayerInfo: externalPayerInfo)
+            let paymentInstrument = PaymentMethod.PayPal.Tokenization.InstrumentRequestParameters(
+                paypalOrderId: orderId,
+                paypalBillingAgreementId: nil,
+                shippingAddress: nil,
+                externalPayerInfo: externalPayerInfo)
+            
             completion(.success(paymentInstrument))
             
         case .VAULT:
@@ -398,12 +403,13 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 }
                 return
             }
-            let paymentInstrument = PaymentInstrument(
+            
+            let paymentInstrument = PaymentMethod.PayPal.Tokenization.InstrumentRequestParameters(
+                paypalOrderId: nil,
                 paypalBillingAgreementId: confirmedBillingAgreement.billingAgreementId,
                 shippingAddress: confirmedBillingAgreement.shippingAddress,
-                externalPayerInfo: confirmedBillingAgreement.externalPayerInfo
-            )
-            
+                externalPayerInfo: confirmedBillingAgreement.externalPayerInfo)
+                    
             completion(.success(paymentInstrument))
         }
     }
@@ -423,10 +429,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         })
     }
     
-    private func tokenize(instrument: PaymentInstrument) -> Promise<PaymentMethod.Tokenization.Response> {
+    private func tokenize(instrument: PaymentMethodTokenizationInstrumentRequestParameters) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+            let request = PaymentMethod.Tokenization.Request(paymentInstrument: instrument)
             
             let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
             tokenizationService.tokenize(request: request) { result in

@@ -30,7 +30,7 @@ protocol CardComponentsManagerProtocol {
     var expiryDateField: PrimerExpiryDateFieldView { get }
     var cvvField: PrimerCVVFieldView { get }
     var cardholderField: PrimerCardholderNameFieldView? { get }
-    var flow: PaymentFlow { get }
+    var flow: PaymentMethod.Flow { get }
     var delegate: CardComponentsManagerDelegate? { get }
     var customerId: String? { get }
     var merchantIdentifier: String? { get }
@@ -51,7 +51,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var cardholderField: PrimerCardholderNameFieldView?
     public var postalCodeField: PrimerPostalCodeFieldView?
     
-    private(set) public var flow: PaymentFlow
+    private(set) public var flow: PaymentMethod.Flow
     public var delegate: CardComponentsManagerDelegate?
     public var customerId: String?
     public var merchantIdentifier: String?
@@ -70,7 +70,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     
     /// The CardComponentsManager can be initialized with/out an access token. In the case that is initialized without an access token, the delegate function cardComponentsManager(_:clientTokenCallback:) will be called. You can initialize an instance (representing a session) by providing the flow (checkout or vault) and registering the necessary PrimerTextFieldViews
     public init(
-        flow: PaymentFlow,
+        flow: PaymentMethod.Flow,
         cardnumberField: PrimerCardNumberFieldView,
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
@@ -248,29 +248,17 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             .done { paymentMethodsConfig in
                 self.paymentMethodsConfig = paymentMethodsConfig
                 
-                let paymentInstrument = PaymentInstrument(
+                let paymentInstrument = PaymentMethod.PaymentCard.Tokenization.InstrumentRequestParameters(
                     number: self.cardnumberField.cardnumber,
                     cvv: self.cvvField.cvv,
                     expirationMonth: self.expiryDateField.expiryMonth!,
                     expirationYear: "20" + self.expiryDateField.expiryYear!,
-                    cardholderName: self.cardholderField?.cardholderName,
-                    paypalOrderId: nil,
-                    paypalBillingAgreementId: nil,
-                    shippingAddress: nil,
-                    externalPayerInfo: nil,
-                    paymentMethodConfigId: nil,
-                    token: nil,
-                    sourceConfig: nil,
-                    gocardlessMandateId: nil,
-                    klarnaAuthorizationToken: nil,
-                    klarnaCustomerToken: nil,
-                    sessionData: nil)
+                    cardholderName: self.cardholderField?.cardholderName)
                 
-                let paymentFlow: PaymentFlow? = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
-                let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout, customerId: self.customerId)
+                let request = PaymentMethod.Tokenization.Request(paymentInstrument: paymentInstrument)
                 
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-                apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in
+                apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: request) { result in
                     switch result {
                     case .success(let paymentMethodToken):
                         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -374,7 +362,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var postalCodeField: PrimerPostalCodeFieldView?
     
-    var flow: PaymentFlow
+    var flow: PaymentMethod.Flow
     
     var delegate: CardComponentsManagerDelegate?
     
@@ -393,7 +381,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     var paymentMethodsConfig: PrimerConfiguration?
     
     public init(
-        flow: PaymentFlow,
+        flow: PaymentMethod.Flow,
         cardnumberField: PrimerCardNumberFieldView,
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,

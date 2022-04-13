@@ -506,16 +506,18 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
+            var sessionInfo = PaymentMethod.Redirect.SessionInfo()
             if let localeCode = settings.localeData.localeCode {
-                sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: localeCode)
+                sessionInfo.locale = localeCode
             }
             
-            let request = AsyncPaymentMethodTokenizationRequest(
-                paymentInstrument: AsyncPaymentMethodOptions(
-                    paymentMethodType: config.type,
-                    paymentMethodConfigId: configId,
-                    sessionInfo: sessionInfo))
+            let paymentInstrument = PaymentMethod.Redirect.Tokenization.InstrumentRequestParameters(
+                paymentMethodConfigId: configId,
+                paymentMethodType: self.config.type.rawValue,
+                sessionInfo: sessionInfo)
+            
+            let request = PaymentMethod.Tokenization.Request(
+                paymentInstrument: paymentInstrument)
             
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {

@@ -343,12 +343,13 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     }
 
     private func tokenize(bank: Bank, completion: @escaping (_ paymentMethod: PaymentMethod.Tokenization.Response?, _ err: Error?) -> Void) {
-        let req = BankSelectorTokenizationRequest(
-            paymentInstrument: PaymentInstrument(
-                paymentMethodConfigId: self.config.id!,
-                sessionInfo: PaymentMethod.DotPay.SessionInfo(issuer: bank.id),
-                type: "OFF_SESSION_PAYMENT",
-                paymentMethodType: config.type.rawValue))
+        let paymentInstrument = PaymentMethod.DotPay.Tokenization.InstrumentRequestParameters(
+            paymentMethodConfigId: self.config.id!,
+            paymentMethodType: self.config.type.rawValue,
+            sessionInfo: PaymentMethod.DotPay.SessionInfo(issuer: bank.id))
+        
+        
+        let request = PaymentMethod.Tokenization.Request(paymentInstrument: paymentInstrument)
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -360,7 +361,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
         apiClient.tokenizePaymentMethod(
             clientToken: decodedClientToken,
-            paymentMethodTokenizationRequest: req) { result in
+            paymentMethodTokenizationRequest: request) { result in
                 switch result {
                 case .success(let paymentMethod):
                     self.paymentMethod = paymentMethod

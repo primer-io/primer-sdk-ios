@@ -27,7 +27,7 @@ internal class Input {
 
 class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
-    private var flow: PaymentFlow
+    private var flow: PaymentMethod.Flow
     var inputs: [Input] = []
     private var cardComponentsManager: CardComponentsManager!
     var onConfigurationFetched: (() -> Void)?
@@ -624,16 +624,17 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 
-                let tokenizationRequest = BlikPaymentMethodTokenizationRequest(
-                    paymentInstrument: BlikPaymentMethodOptions(
-                        paymentMethodType: config.type,
-                        paymentMethodConfigId: configId,
-                        sessionInfo: BlikPaymentMethodOptions.SessionInfo(
-                            blikCode: blikCode,
-                            locale: settings.localeData.localeCode ?? "en-UK")))
+                let sessionInfo = PaymentMethod.Blik.SessionInfo(blikCode: blikCode, locale: settings.localeData.localeCode ?? "en-UK")
+                
+                let paymentInstrument = PaymentMethod.Blik.Tokenization.InstrumentRequestParameters(
+                    paymentMethodConfigId: configId,
+                    paymentMethodType: config.type.rawValue,
+                    sessionInfo: sessionInfo)
+                
+                let request = PaymentMethod.Tokenization.Request(paymentInstrument: paymentInstrument)
 
                 let apiClient = PrimerAPIClient()
-                apiClient.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: tokenizationRequest) { result in
+                apiClient.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: request) { result in
                     switch result {
                     case .success(let paymentMethodToken):
                         seal.fulfill(paymentMethodToken)

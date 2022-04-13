@@ -180,26 +180,20 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 }
             })
             
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            var instrument: PaymentInstrument
-            var request: PaymentMethodTokenizationRequest
             if Primer.shared.flow.internalSessionFlow.vaulted {
-                instrument = PaymentInstrument(klarnaCustomerToken: res.customerTokenId, sessionData: res.sessionData)
-                request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: instrument,
-                    paymentFlow: .vault,
-                    customerId: nil)
+                let paymentInstrument = PaymentMethod.KlarnaCustomer.Tokenization.InstrumentRequestParameters(
+                    klarnaCustomerToken: res.customerTokenId!,
+                    sessionData: res.sessionData)
                 
+                let request = PaymentMethod.Tokenization.Request(paymentInstrument: paymentInstrument)
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                return tokenizationService.tokenize(request: request)
+
             } else {
-                instrument = PaymentInstrument(klarnaAuthorizationToken: self.authorizationToken!, sessionData: res.sessionData)
-                request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: instrument,
-                    paymentFlow: .checkout,
-                    customerId: settings.customerId)
+                assert(true, "Klarna Auth has not implemented")
+                let err = PrimerError.generic(message: "Klarna Checkout has not been implemented", userInfo: nil)
+                throw err
             }
-            
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-            return tokenizationService.tokenize(request: request)
         }
         .done { paymentMethod in
             self.paymentMethod = paymentMethod

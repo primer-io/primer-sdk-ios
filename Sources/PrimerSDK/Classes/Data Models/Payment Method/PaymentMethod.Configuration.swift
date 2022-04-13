@@ -101,7 +101,8 @@ extension PaymentMethod {
             } else if let redirectPaymentMethodOptions = (try? container.decode(PaymentMethod.Redirect.Configuration.Options?.self, forKey: .options)) {
                 self.options = redirectPaymentMethodOptions
             } else {
-                fatalError()
+//                fatalError()
+                self.options = nil
             }
         }
         

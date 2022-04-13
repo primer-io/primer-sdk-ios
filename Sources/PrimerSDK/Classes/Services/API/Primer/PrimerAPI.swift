@@ -52,7 +52,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest)
     case finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
     case createApayaSession(clientToken: DecodedClientToken, request: PaymentMethod.Apaya.CreateSessionAPIRequest)
-    case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest)
+    case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethod.Tokenization.Request)
     case listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest)
     
     // 3DS
@@ -284,17 +284,8 @@ internal extension PrimerAPI {
         case .createApayaSession(_, let request):
             return try? JSONEncoder().encode(request)
         case .tokenizePaymentMethod(_, let paymentMethodTokenizationRequest):
-            if let request = paymentMethodTokenizationRequest as? PaymentMethodTokenizationRequest {
-                return try? JSONEncoder().encode(request)
-            } else if let request = paymentMethodTokenizationRequest as? AsyncPaymentMethodTokenizationRequest {
-                return try? JSONEncoder().encode(request)
-            } else if let request = paymentMethodTokenizationRequest as? BankSelectorTokenizationRequest {
-                return try? JSONEncoder().encode(request)
-            } else if let request = paymentMethodTokenizationRequest as? BlikPaymentMethodTokenizationRequest {
-                return try? JSONEncoder().encode(request)
-            } else {
-                return nil
-            }
+            let test = try? JSONEncoder().encode(paymentMethodTokenizationRequest)
+            return test
         case .begin3DSRemoteAuth(_, _, let threeDSecureBeginAuthRequest):
             return try? JSONEncoder().encode(threeDSecureBeginAuthRequest)
         case .listAdyenBanks(_, let request):
