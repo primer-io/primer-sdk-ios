@@ -195,6 +195,10 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
+        DispatchQueue.main.async {
+            UIApplication.shared.endIgnoringInteractionEvents()
+        }
+        
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
