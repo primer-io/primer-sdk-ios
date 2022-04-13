@@ -92,10 +92,8 @@ extension PaymentMethod {
                 self.options = applePayOptions
             } else if let blikPaymentMethodOptions = (try? container.decode(PaymentMethod.Blik.Configuration.Options?.self, forKey: .options)) {
                 self.options = blikPaymentMethodOptions
-            } else if let googlePayOptions = (try? container.decode(PaymentMethod.GooglePay.Configuration.Options?.self, forKey: .options)) {
-                self.options = googlePayOptions
-            } else if let primerTestEComOptions = (try? container.decode(PaymentMethod.PrimerTestECom.Configuration.Options?.self, forKey: .options)) {
-                self.options = primerTestEComOptions
+            } else if let klarnaCustomerOptions = (try? container.decode(PaymentMethod.KlarnaCustomer.Configuration.Options?.self, forKey: .options)) {
+                self.options = klarnaCustomerOptions
             } else if let paymentCardOptions = (try? container.decode(PaymentMethod.PaymentCard.Configuration.Options?.self, forKey: .options)) {
                 self.options = paymentCardOptions
             } else if let payPalOptions = (try? container.decode(PaymentMethod.PayPal.Configuration.Options?.self, forKey: .options)) {
@@ -120,10 +118,6 @@ extension PaymentMethod {
                 try? container.encode(applePayOptions, forKey: .options)
             } else if let blikPaymentMethodOptions = self.options as? PaymentMethod.Blik.Configuration.Options {
                 try? container.encode(blikPaymentMethodOptions, forKey: .options)
-            } else if let googlePayOptions = self.options as? PaymentMethod.GooglePay.Configuration.Options {
-                try? container.encode(googlePayOptions, forKey: .options)
-            } else if let primerTestEComOptions = self.options as? PaymentMethod.PrimerTestECom.Configuration.Options {
-                try? container.encode(primerTestEComOptions, forKey: .options)
             } else if let paymentCardOptions = self.options as? PaymentMethod.PaymentCard.Configuration.Options {
                 try? container.encode(paymentCardOptions, forKey: .options)
             } else if let payPalOptions = self.options as? PaymentMethod.PayPal.Configuration.Options {

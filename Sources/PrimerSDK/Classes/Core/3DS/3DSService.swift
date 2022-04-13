@@ -212,7 +212,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return
         }
         
-        let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodToken.paymentInstrumentData?.network ?? "")
+        let cardNetwork = CardNetwork(cardNetworkStr: (paymentMethodToken.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.network ?? "")
         
         guard let directoryServerId = cardNetwork.directoryServerId else {
             let err = PrimerError.invalidValue(key: "cardNetwork.directoryServerId", value: cardNetwork.directoryServerId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -239,7 +239,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         var data: Primer3DSSDKGeneratedAuthData!
         
         do {
-            let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodToken.paymentInstrumentData?.network ?? "")
+            let cardNetwork = CardNetwork(cardNetworkStr: (paymentMethodToken.paymentInstrumentData as? PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.network ?? "")
 
             try primer3DS!.initializeSDK(licenseKey: licenseKey, certificates: certs)
             data = try primer3DS!.createTransaction(directoryServerId: directoryServerId, protocolVersion: protocolVersion.rawValue)

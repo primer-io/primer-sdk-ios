@@ -14,11 +14,12 @@ public protocol PaymentMethodTokenizationInstrumentResponseData: Codable {}
 
 extension PaymentMethod {
     
-    // MARK: - Apaya
+    // MARK: - Apaya ✅
     public class Apaya {
         
         public class Configuration {
             struct Options: PaymentMethodConfigurationOptions {
+                let merchantId: String
                 let merchantAccountId: String
             }
         }
@@ -45,7 +46,7 @@ extension PaymentMethod {
         
     }
     
-    // MARK: - ApplePay
+    // MARK: - ApplePay ✅
     class ApplePay {
         
         public class Configuration {
@@ -69,22 +70,39 @@ extension PaymentMethod {
                 let token: ApplePayPaymentResponseToken
                 let sourceConfig: ApplePaySourceConfig
             }
+            
+            public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
+                public let last4Digits: String?
+                public let expirationYear: String?
+                public let expirationMonth: String?
+                public let isNetworkTokenized: Bool?
+                public let binData: PaymentMethod.PaymentCard.BinData?
+                public let network: String?
+            }
         }
         
     }
     
-    // MARK: - Blik
+    // MARK: - Blik ✅
     class Blik {
         
         public class Configuration {
             struct Options: PaymentMethodConfigurationOptions {
+                let merchantId: String
+                let merchantAccountId: String
+            }
+        }
+        
+        class Tokenization {
+            struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let paymentMethodConfigId: String
                 let paymentMethodType: PaymentMethod.PaymentMethodType
-                let sessionInfo: Blik.SessionInfo
-                lazy var type: String = {
-                    "OFF_SESSION_PAYMENT"
-                }()
+                let sessionInfo: PaymentMethod.Blik.SessionInfo
             }
+            
+//            public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
+//
+//            }
         }
         
         struct SessionInfo: Codable {
@@ -100,8 +118,15 @@ extension PaymentMethod {
         
     }
     
-    // MARK: - Dot Pay
+    // MARK: - Dot Pay ✅
     class DotPay {
+        public class Configuration {
+            struct Options: PaymentMethodConfigurationOptions {
+                let merchantId: String
+                let merchantAccountId: String
+            }
+        }
+        
         class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let sessionInfo: PaymentMethod.DotPay.SessionInfo
@@ -109,6 +134,12 @@ extension PaymentMethod {
                     "OFF_SESSION_PAYMENT"
                 }()
                 let paymentMethodType: String
+            }
+            
+            public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
+                public let paymentMethodConfigId: String
+                public let paymentMethodType: PaymentMethod.PaymentMethodType
+                public let sessionInfo: PaymentMethod.Blik.SessionInfo
             }
         }
         
@@ -119,47 +150,62 @@ extension PaymentMethod {
         }
     }
     
-    // MARK: - GoCardless
-    class GoCardless {
-        class Tokenization {
-            struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
-                let gocardlessMandateId: String
-            }
-        }
-    }
+//    // MARK: - GoCardless (not used yet)
+//    class GoCardless {
+//        public class Configuration {
+//            struct Options: PaymentMethodConfigurationOptions {
+//                let merchantId: String
+//                let merchantAccountId: String
+//                let clientId: String
+//            }
+//        }
+//
+//        class Tokenization {
+//            struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
+//                let gocardlessMandateId: String
+//            }
+//        }
+//    }
     
-    // MARK: - Google Pay
-    class GooglePay {
-        
+//    // MARK: - Google Pay (not used)
+//    class GooglePay {
+//        public class Configuration {
+//            struct Options: PaymentMethodConfigurationOptions {
+//                let merchantId: String
+//                let merchantName: String
+//                let type: String
+//            }
+//        }
+//
+//        class Tokenization {
+//            struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
+//                let paymentMethodConfigId: String
+//                let token: ApplePayPaymentResponseToken
+//                let sourceConfig: ApplePaySourceConfig
+//            }
+//        }
+//
+//    }
+    
+//    // MARK: - KlarnaAuth (not used yet)
+//    class KlarnaAuth {
+//        class Tokenization {
+//            struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
+//                let klarnaAuthorizationToken: String
+//            }
+//        }
+//    }
+    
+    // MARK: - KlarnaCustomer ✅
+    public class KlarnaCustomer {
         public class Configuration {
             struct Options: PaymentMethodConfigurationOptions {
+                let clientId: String
+                let merchantAccountId: String
                 let merchantId: String
-                let merchantName: String
-                let type: String
             }
         }
         
-        class Tokenization {
-            struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
-                let paymentMethodConfigId: String
-                let token: ApplePayPaymentResponseToken
-                let sourceConfig: ApplePaySourceConfig
-            }
-        }
-        
-    }
-    
-    // MARK: - KlarnaAuth
-    class KlarnaAuth {
-        class Tokenization {
-            struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
-                let klarnaAuthorizationToken: String
-            }
-        }
-    }
-    
-    // MARK: - KlarnaCustomer
-    public class KlarnaCustomer {
         public class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let klarnaCustomerToken: String
@@ -167,15 +213,25 @@ extension PaymentMethod {
             }
             
             public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
-                public let klarnaCustomerToken: String?
-                public let sessionData: KlarnaSessionData?
+                public let klarnaCustomerToken: String
+                public let sessionData: PaymentMethod.KlarnaCustomer.SessionData?
             }
+        }
+        
+        public struct SessionData: Codable {
+            public let recurringDescription: String?
+            public let purchaseCountry: String?
+            public let purchaseCurrency: String?
+            public let locale: String?
+            public let orderAmount: Int?
+            public let orderLines: [KlarnaSessionOrderLines]
+            public let billingAddress: KlarnaBillingAddress?
+            public let tokenDetails: KlarnaSessionDataTokenDetails?
         }
     }
     
-    // MARK: - Payment Card
+    // MARK: - Payment Card ✅
     public class PaymentCard {
-        
         public class Configuration {
             struct Options: PaymentMethodConfigurationOptions {
                 let threeDSecureEnabled: Bool
@@ -196,31 +252,29 @@ extension PaymentMethod {
             }
             
             public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
-                public let first6Digits: String
+                public let first6Digits: String?
                 public let last4Digits: String
                 public let expirationMonth: String
                 public let expirationYear: String
-                public let cardholderName: String
+                public let cardholderName: String?
                 public let network: String
                 public let isNetworkTokenized: Bool
                 public let binData: PaymentMethod.PaymentCard.BinData?
-                public let threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
             }
-            
         }
         
         public struct BinData: Codable {
+            public var accountFundingType: String?
+            public var accountNumberType: String?
             public var network: String?
             public var issuerCountryCode: String?
-            public var issuerName: String?
             public var issuerCurrencyCode: String?
-            public var regionalRestriction: String?
-            public var accountNumberType: String?
-            public var accountFundingType: String?
+            public var issuerName: String?
             public var prepaidReloadableIndicator: String?
-            public var productUsageType: String?
             public var productCode: String?
             public var productName: String?
+            public var productUsageType: String?
+            public var regionalRestriction: String?
         }
         
         struct ButtonViewModel {
@@ -238,12 +292,13 @@ extension PaymentMethod {
         }
     }
     
-    // MARK: - Pay Pal
+    // MARK: - Pay Pal ✅
     public class PayPal: PaymentMethodTokenizationInstrumentRequestParameters {
-        
         public class Configuration {
             struct Options: PaymentMethodConfigurationOptions {
                 let clientId: String
+                let merchantAccountId: String
+                let merchantId: String
             }
         }
         
@@ -262,7 +317,8 @@ extension PaymentMethod {
         }
         
         public struct ExternalPayerInfo: Codable {
-            public var externalPayerId, email, firstName, lastName: String?
+            public var email: String
+            public var externalPayerId, firstName, lastName: String?
         }
         
         public struct ShippingAddress: Codable {
@@ -270,37 +326,32 @@ extension PaymentMethod {
         }
     }
     
-    // MARK: - Primer Test ECom
-    public class PrimerTestECom: PaymentMethodTokenizationInstrumentRequestParameters {
-        
-        public class Configuration {
-            struct Options: PaymentMethodConfigurationOptions {
-                let merchantId: String
-                let clientId: String
-                let merchantAccountId: String
-            }
-        }
-        
-    }
+//    // MARK: - Primer Test ECom
+//    public class PrimerTestECom: PaymentMethodTokenizationInstrumentRequestParameters {
+//        
+//        public class Configuration {
+//            struct Options: PaymentMethodConfigurationOptions {
+//                let merchantId: String
+//                let clientId: String
+//                let merchantAccountId: String
+//            }
+//        }
+//        
+//    }
     
-    // MARK: - Redirect
+    // MARK: - Redirect ✅
     public class Redirect: PaymentMethodTokenizationInstrumentRequestParameters {
-        
         class Configuration {
             struct Options: PaymentMethodConfigurationOptions {
-                let paymentMethodConfigId: String
-                let paymentMethodType: PaymentMethod.PaymentMethodType
-                let sessionInfo: PaymentMethod.Redirect.SessionInfo
-                lazy var type: String = {
-                    "OFF_SESSION_PAYMENT"
-                }()
+                let merchantAccountId: String
+                let merchantId: String
             }
         }
 
         class Tokenization {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
-                let paymentMethodType: PaymentMethod.PaymentMethodType
                 let paymentMethodConfigId: String
+                let paymentMethodType: PaymentMethod.PaymentMethodType
                 lazy var type: String = {
                     "OFF_SESSION_PAYMENT"
                 }()

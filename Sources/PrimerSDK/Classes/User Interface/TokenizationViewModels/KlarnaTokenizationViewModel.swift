@@ -188,7 +188,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 request = PaymentMethodTokenizationRequest(
                     paymentInstrument: instrument,
                     paymentFlow: .vault,
-                    customerId: settings.customerId)
+                    customerId: nil)
                 
             } else {
                 instrument = PaymentInstrument(klarnaAuthorizationToken: self.authorizationToken!, sessionData: res.sessionData)

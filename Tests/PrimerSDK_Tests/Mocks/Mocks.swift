@@ -154,7 +154,7 @@ let mockPaymentMethodConfig = PrimerConfiguration(
         PaymentMethod.Configuration(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
         PaymentMethod.Configuration(
             id: "Apaya",
-            options: PaymentMethod.Apaya.Configuration.Options(merchantAccountId: "merchant_account_id"),
+            options: PaymentMethod.Apaya.Configuration.Options(merchantId: "merchant_id", merchantAccountId: "merchant_account_id"),
             processorConfigId: nil,
             type: .apaya)
     ],
@@ -182,7 +182,7 @@ class MockAppState: AppStateProtocol {
                 PaymentMethod.Configuration(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
                 PaymentMethod.Configuration(
                     id: "Apaya",
-                    options: PaymentMethod.Apaya.Configuration.Options(merchantAccountId: "merchant_account_id"),
+                    options: PaymentMethod.Apaya.Configuration.Options(merchantId: "merchant_id", merchantAccountId: "merchant_account_id"),
                     processorConfigId: nil,
                     type: .apaya)
             ],
@@ -195,7 +195,7 @@ class MockAppState: AppStateProtocol {
     }
 }
 
-let mockPayPalBillingAgreement = PayPalConfirmBillingAgreementResponse(billingAgreementId: "agreementId", externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo(externalPayerId: "", email: "", firstName: "", lastName: ""), shippingAddress: PaymentMethod.PayPal.ShippingAddress(firstName: "", lastName: "", addressLine1: "", addressLine2: "", city: "", state: "", countryCode: "", postalCode: ""))
+let mockPayPalBillingAgreement = PayPalConfirmBillingAgreementResponse(billingAgreementId: "agreementId", externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo(email: "", externalPayerId: "", firstName: "", lastName: ""), shippingAddress: PaymentMethod.PayPal.ShippingAddress(firstName: "", lastName: "", addressLine1: "", addressLine2: "", city: "", state: "", countryCode: "", postalCode: ""))
 
 class MockLocator {
     static func registerDependencies() {
