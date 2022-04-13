@@ -30,6 +30,8 @@ protocol PrimerAPIClientProtocol {
     func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (_ result: Result<[Bank], Error>) -> Void)
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
     
+    func requestClientSessionWithActions(request: ClientSessionActionsRequest, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void)
+    
     func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
     func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void)
 
@@ -238,6 +240,18 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     ) {
         let endpoint = PrimerAPI.poll(clientToken: clientToken, url: url)
         networkService.request(endpoint) { (result: Result<PollingResponse, Error>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func requestClientSessionWithActions(request: ClientSessionActionsRequest, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void) {
+        let endpoint = PrimerAPI.requestClientSessionWithActions(request: request)
+        networkService.request(endpoint) { (result: Result<PrimerConfiguration, Error>) in
             switch result {
             case .success(let response):
                 completion(.success(response))

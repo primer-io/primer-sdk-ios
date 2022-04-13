@@ -297,6 +297,13 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
 extension MockPrimerAPIClient {
     
+    func requestClientSessionWithActions(request: ClientSessionActionsRequest, completion: @escaping (Result<PrimerConfiguration, Error>) -> Void) {
+        
+    }
+}
+
+extension MockPrimerAPIClient {
+    
     func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
