@@ -298,8 +298,9 @@ internal extension Encodable {
 extension ClientSession.Action {
     
     private static func requestClientSessionWithActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
+        
         let actionsAsDictionary = try? actions.asDictionary()
-
+        
         do {
             DispatchQueue.main.async {
                 PrimerDelegateProxy.clientSessionUpdateDidStart(actionsAsDictionary ?? [:], resumeHandler: resumeHandler)
@@ -321,7 +322,12 @@ extension ClientSession.Action {
                     PrimerDelegateProxy.clientSessionUpdateDidFinish(actionsAsDictionary ?? [:], resumeHandler: resumeHandler)
                 }
             }
-            
+        }
+        .catch { error in
+            ErrorHandler.handle(error: error)
+            DispatchQueue.main.async {
+                PrimerDelegateProxy.checkoutFailed(with: error)
+            }
         }
     }
     
