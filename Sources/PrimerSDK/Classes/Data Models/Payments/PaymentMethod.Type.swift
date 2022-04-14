@@ -15,7 +15,9 @@ extension PaymentMethod {
         case adyenDotPay
         case adyenGiropay
         case adyenIDeal
+        case adyenInterac
         case adyenMobilePay
+        case adyenPayTrail
         case adyenSofort
         case adyenTrustly
         case adyenTwint
@@ -125,8 +127,12 @@ extension PaymentMethod {
                 return "ADYEN_GIROPAY"
             case .adyenIDeal:
                 return "ADYEN_IDEAL"
+            case .adyenInterac:
+                return "ADYEN_INTERAC"
             case .adyenMobilePay:
                 return "ADYEN_MOBILEPAY"
+            case .adyenPayTrail:
+                return "ADYEN_PAYTRAIL"
             case .adyenSofort:
                 return "ADYEN_SOFORT"
             case .adyenTrustly:
@@ -189,7 +195,9 @@ extension PaymentMethod {
                     .adyenDotPay,
                     .adyenGiropay,
                     .adyenIDeal,
+                    .adyenInterac,
                     .adyenMobilePay,
+                    .adyenPayTrail,
                     .adyenSofort,
                     .adyenTrustly,
                     .adyenTwint,

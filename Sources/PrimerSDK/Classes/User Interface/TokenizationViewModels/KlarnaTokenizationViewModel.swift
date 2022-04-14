@@ -51,6 +51,21 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         set { _buttonColor = newValue }
     }
     
+    
+    private lazy var _buttonTintColor: UIColor? = {
+        switch config.type {
+        case .klarna:
+            return .black
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
+    }()
+    override var buttonTintColor: UIColor? {
+        get { return _buttonTintColor }
+        set { _buttonTintColor = newValue }
+    }
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
