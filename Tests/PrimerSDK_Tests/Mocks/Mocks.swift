@@ -101,7 +101,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     
     var klarnaPaymentDescription: String?
     
-    var klarnaSessionType: KlarnaSessionType?
+    var klarnaSessionType: PaymentMethod.Klarna.Session.SessionType?
     
     var orderItems: [OrderItem]? = []
 

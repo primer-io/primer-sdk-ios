@@ -19,9 +19,9 @@ protocol PrimerAPIClientProtocol {
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PaymentMethod.PayPal.CreateOrder.Request, completion: @escaping (_ result: Result<PaymentMethod.PayPal.CreateOrder.Response, Error>) -> Void)
     func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PaymentMethod.PayPal.CreateBillingAgreement.Request, completion: @escaping (_ result: Result<PaymentMethod.PayPal.CreateBillingAgreement.Response, Error>) -> Void)
     func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PaymentMethod.PayPal.ConfirmBillingAgreement.Request, completion: @escaping (_ result: Result<PaymentMethod.PayPal.ConfirmBillingAgreement.Response, Error>) -> Void)
-    func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (_ result: Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void)
-    func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
-    func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
+    func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: PaymentMethod.Klarna.CreatePaymentSession.Request, completion: @escaping (_ result: Result<PaymentMethod.Klarna.CreatePaymentSession.Response, Error>) -> Void)
+    func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: PaymentMethod.Klarna.CreateCustomerToken.Request, completion: @escaping (_ result: Result<PaymentMethod.Klarna.CreateCustomerToken.Response, Error>) -> Void)
+    func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: PaymentMethod.Klarna.FinalizePaymentSession.Request, completion: @escaping (_ result: Result<PaymentMethod.Klarna.CreateCustomerToken.Response, Error>) -> Void)
     func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethod.Tokenization.Request, completion: @escaping (_ result: Result<PaymentMethod.Tokenization.Response, Error>) -> Void)
     func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethod.Tokenization.Response, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
     func continue3DSAuth(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
@@ -148,9 +148,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (_ result: Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void) {
+    func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: PaymentMethod.Klarna.CreatePaymentSession.Request, completion: @escaping (_ result: Result<PaymentMethod.Klarna.CreatePaymentSession.Response, Error>) -> Void) {
         let endpoint = PrimerAPI.createKlarnaPaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest)
-        networkService.request(endpoint) { (result: Result<KlarnaCreatePaymentSessionAPIResponse, Error>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethod.Klarna.CreatePaymentSession.Response, Error>) in
             switch result {
             case .success(let klarnaCreatePaymentSessionAPIResponse):
                 completion(.success(klarnaCreatePaymentSessionAPIResponse))
@@ -160,9 +160,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+    func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: PaymentMethod.Klarna.CreateCustomerToken.Request, completion: @escaping (_ result: Result<PaymentMethod.Klarna.CreateCustomerToken.Response, Error>) -> Void) {
         let endpoint = PrimerAPI.createKlarnaCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: klarnaCreateCustomerTokenAPIRequest)
-        networkService.request(endpoint) { (result: Result<KlarnaCustomerTokenAPIResponse, Error>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethod.Klarna.CreateCustomerToken.Response, Error>) in
             switch result {
             case .success(let klarnaCreateCustomerTokenAPIRequest):
                 completion(.success(klarnaCreateCustomerTokenAPIRequest))
@@ -172,9 +172,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+    func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: PaymentMethod.Klarna.FinalizePaymentSession.Request, completion: @escaping (_ result: Result<PaymentMethod.Klarna.CreateCustomerToken.Response, Error>) -> Void) {
         let endpoint = PrimerAPI.finalizeKlarnaPaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: klarnaFinalizePaymentSessionRequest)
-        networkService.request(endpoint) { (result: Result<KlarnaCustomerTokenAPIResponse, Error>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethod.Klarna.CreateCustomerToken.Response, Error>) in
             switch result {
             case .success(let klarnaFinalizePaymentSessionResponse):
                 completion(.success(klarnaFinalizePaymentSessionResponse))

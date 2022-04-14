@@ -123,6 +123,7 @@
 		849E90EE27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentRequestParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentRequestParameters.swift */; };
 		849E90F027FF2711004E8F27 /* PaymentMethod.Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90EF27FF2711004E8F27 /* PaymentMethod.Type.swift */; };
 		849E90F227FF2B61004E8F27 /* PaymentMethod.Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E90F127FF2B61004E8F27 /* PaymentMethod.Configuration.swift */; };
+		84AFF7E828080D3C001D5C1E /* LocaleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AFF7E728080D3C001D5C1E /* LocaleData.swift */; };
 		84EED8E0FAA69C8337DECB311796A429 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15ED121DB41C8CFE40BA0EE9B1E18534 /* Parser.swift */; };
 		88FF2FEF87D235D59DC2EF6F82A7CCAE /* Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088B445AADAB9DB464BE38E5DAEC590A /* Cancellable.swift */; };
 		8AA5BB0C5F53C2B97D1DF18FE38C6BB6 /* CancellablePromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B1B2F815F4A5CDBA5F39E9523AB464 /* CancellablePromise.swift */; };
@@ -407,6 +408,7 @@
 		849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentRequestParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodTokenizationInstrumentRequestParameters.swift; sourceTree = "<group>"; };
 		849E90EF27FF2711004E8F27 /* PaymentMethod.Type.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethod.Type.swift; sourceTree = "<group>"; };
 		849E90F127FF2B61004E8F27 /* PaymentMethod.Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethod.Configuration.swift; sourceTree = "<group>"; };
+		84AFF7E728080D3C001D5C1E /* LocaleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocaleData.swift; sourceTree = "<group>"; };
 		863ED78BC1254836A8CE75F196EC21FC /* CustomStringConvertible.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomStringConvertible.swift; sourceTree = "<group>"; };
 		87556D501EDE22FAD3E42747DD9CDD6A /* PrimerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerViewController.swift; sourceTree = "<group>"; };
 		87B6CECD85108A042B7E9BADC563C3B9 /* SuccessViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SuccessViewController.swift; sourceTree = "<group>"; };
@@ -939,6 +941,7 @@
 				4839F4EA74238BD10C9EC37A3C083A9D /* Apaya.swift */,
 				130E7DB609EC110BB13A3598C9727C2A /* ApplePay.swift */,
 				FA2B9DB3991FA8FBE7B96589F50B2978 /* Bank.swift */,
+				46F1EEC6E1641A4DBD663A1AA16BD49F /* Klarna.swift */,
 				4E06A9EEA532BDA40BD15E650DA2F90E /* PayPal.swift */,
 			);
 			path = "Payment Methods";
@@ -1056,7 +1059,7 @@
 				1D2D4FA4311295145AB050079D313A43 /* Customer.swift */,
 				49753107A8E10F7D11CEB3D61C13E9AA /* DirectDebitMandate.swift */,
 				6901A602AAAC8B582866848026B45F86 /* ImageName.swift */,
-				46F1EEC6E1641A4DBD663A1AA16BD49F /* Klarna.swift */,
+				84AFF7E728080D3C001D5C1E /* LocaleData.swift */,
 				5CF523A2449492CCED8D7016CC2CF8B8 /* OrderItem.swift */,
 				493427E6A1BAB813AC2ED1A8892421D7 /* PaymentMethodConfigurationOptions.swift */,
 				7A0FD2D5C5099594D955D8820D2DCBE9 /* GetVaultedPaymentMethodsResponse.swift */,
@@ -1636,6 +1639,7 @@
 				4794A4B2F1A02B17DBABF8A2EFBDEF8E /* PrimerLoadingViewController.swift in Sources */,
 				3D627C44D5ADCB9B92D05EB2A6CD230C /* PrimerNavigationBar.swift in Sources */,
 				6DF489869B535718F64763CA0F556336 /* PrimerNavigationController.swift in Sources */,
+				84AFF7E828080D3C001D5C1E /* LocaleData.swift in Sources */,
 				1E6D1FBC5255033FAF323CCEA64EE96D /* PrimerNibView.swift in Sources */,
 				D261652DA70A33B04D3493AD2CCB9F25 /* PrimerPostalCodeFieldView.swift in Sources */,
 				565D91331D5ABBFA108E0B6DE4192C52 /* PrimerResultComponentView.swift in Sources */,

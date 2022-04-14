@@ -8,7 +8,7 @@ internal protocol PrimerSettingsProtocol {
     var merchantIdentifier: String? { get }
     @available(*, deprecated, message: "Set the countryCode in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var countryCode: CountryCode? { get }
-    var klarnaSessionType: KlarnaSessionType? { get }
+    var klarnaSessionType: PaymentMethod.Klarna.Session.SessionType? { get }
     var klarnaPaymentDescription: String? { get }
     @available(*, deprecated, message: "Set the customerId in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var customerId: String? { get }
@@ -74,7 +74,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var currency: Currency?
     internal(set) public var merchantIdentifier: String?
     internal(set) public var countryCode: CountryCode?
-    internal(set) public var klarnaSessionType: KlarnaSessionType?
+    internal(set) public var klarnaSessionType: PaymentMethod.Klarna.Session.SessionType?
     internal(set) public var klarnaPaymentDescription: String?
     internal(set) public var customerId: String?
     private var _urlScheme: String?
@@ -127,7 +127,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         amount: Int? = nil,
         currency: Currency? = nil,
         countryCode: CountryCode? = nil,
-        klarnaSessionType: KlarnaSessionType? = nil,
+        klarnaSessionType: PaymentMethod.Klarna.Session.SessionType? = nil,
         klarnaPaymentDescription: String? = nil,
         urlScheme: String? = nil,
         urlSchemeIdentifier: String? = nil,
@@ -175,7 +175,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     
     public init(
         merchantIdentifier: String? = nil,
-        klarnaSessionType: KlarnaSessionType? = nil,
+        klarnaSessionType: PaymentMethod.Klarna.Session.SessionType? = nil,
         klarnaPaymentDescription: String? = nil,
         urlScheme: String? = nil,
         urlSchemeIdentifier: String? = nil,

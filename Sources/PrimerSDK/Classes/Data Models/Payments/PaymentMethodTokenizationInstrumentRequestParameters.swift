@@ -93,39 +93,7 @@ extension PaymentMethod {
 //        }
 //    }
     
-    // MARK: - KlarnaCustomer ✅
-    public class KlarnaCustomer {
-        public class Configuration {
-            struct Options: PaymentMethodConfigurationOptions {
-                let clientId: String
-                let merchantAccountId: String
-                let merchantId: String
-            }
-        }
-        
-        public class Tokenization {
-            struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
-                let klarnaCustomerToken: String
-                let sessionData: KlarnaSessionData
-            }
-            
-            public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
-                public let klarnaCustomerToken: String
-                public let sessionData: PaymentMethod.KlarnaCustomer.SessionData?
-            }
-        }
-        
-        public struct SessionData: Codable {
-            public let recurringDescription: String?
-            public let purchaseCountry: String?
-            public let purchaseCurrency: String?
-            public let locale: String?
-            public let orderAmount: Int?
-            public let orderLines: [KlarnaSessionOrderLines]
-            public let billingAddress: KlarnaBillingAddress?
-            public let tokenDetails: KlarnaSessionDataTokenDetails?
-        }
-    }
+
     
     // MARK: - Payment Card ✅
     public class PaymentCard {

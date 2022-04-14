@@ -119,7 +119,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void) {
+    func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: PaymentMethod.Klarna.CreatePaymentSession.Request, completion: @escaping (Result<PaymentMethod.Klarna.CreatePaymentSession.Response, Error>) -> Void) {
         isCalled = true
 
         guard throwsError == false else {
@@ -129,14 +129,14 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(KlarnaCreatePaymentSessionAPIResponse.self, from: response)
+            let value = try JSONDecoder().decode(PaymentMethod.Klarna.CreatePaymentSession.Response.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
 
-    func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+    func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: PaymentMethod.Klarna.CreateCustomerToken.Request, completion: @escaping (Result<PaymentMethod.Klarna.CreateCustomerToken.Response, Error>) -> Void) {
         isCalled = true
 
         guard throwsError == false else {
@@ -146,14 +146,14 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
         guard let response = response else { return }
         do {
-            let value = try JSONDecoder().decode(KlarnaCustomerTokenAPIResponse.self, from: response)
+            let value = try JSONDecoder().decode(PaymentMethod.Klarna.CreateCustomerToken.Response.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
 
-    func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+    func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: PaymentMethod.Klarna.FinalizePaymentSession.Request, completion: @escaping (Result<PaymentMethod.Klarna.CreateCustomerToken.Response, Error>) -> Void) {
         isCalled = true
 
         guard throwsError == false else {
@@ -164,7 +164,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(KlarnaCustomerTokenAPIResponse.self, from: response)
+            let value = try JSONDecoder().decode(PaymentMethod.Klarna.CreateCustomerToken.Response.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
