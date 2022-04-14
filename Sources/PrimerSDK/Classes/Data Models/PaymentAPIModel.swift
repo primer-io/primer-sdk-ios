@@ -265,9 +265,12 @@ public struct ClientSessionRequestBody {
 
 }
 
-public struct ClientSessionActionsRequest: Encodable {
-    let clientToken: RawJWTToken?
+public struct ClientSessionAction: Encodable {
     let actions: [ClientSession.Action]
+}
+
+public struct ClientSessionUpdateRequest: Encodable {
+    let actions: ClientSessionAction
 }
 
 extension String {
