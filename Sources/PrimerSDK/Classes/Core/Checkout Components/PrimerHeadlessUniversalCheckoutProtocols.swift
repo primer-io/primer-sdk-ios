@@ -26,7 +26,7 @@ public enum PrimerInputElementType: Int {
             
         case .cvv:
             guard let text = value as? String else { return false }
-            if let cardNetwork = detectedValueType as? CardNetwork, cardNetwork != .unknown {
+            if let cardNetwork = detectedValueType as? PaymentMethod.PaymentCard.Network, cardNetwork != .unknown {
                 return text.isValidCVV(cardNetwork: cardNetwork)
             } else {
                 return text.count >= 3 && text.count <= 5
@@ -81,7 +81,7 @@ public enum PrimerInputElementType: Int {
         switch self {
         case .cardNumber:
             guard let text = value as? String else { return nil }
-            return CardNetwork(cardNumber: text)
+            return PaymentMethod.PaymentCard.Network(cardNumber: text)
             
         default:
             return value

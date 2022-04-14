@@ -239,7 +239,7 @@ public class PrimerHeadlessUniversalCheckout {
         return PrimerAsset.getAsset(for: paymentMethodType, assetType: assetType)
     }
     
-    public static func getAsset(for cardNetwork: CardNetwork, assetType: PrimerAsset.ImageType) -> UIImage? {
+    public static func getAsset(for cardNetwork: PaymentMethod.PaymentCard.Network, assetType: PrimerAsset.ImageType) -> UIImage? {
         return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType)
     }
     
@@ -354,7 +354,7 @@ public struct PrimerAsset {
         return brand?.getImage(assetType: assetType)
     }
     
-    public static func getAsset(for cardNetwork: CardNetwork, assetType: PrimerAsset.ImageType) -> UIImage? {
+    public static func getAsset(for cardNetwork: PaymentMethod.PaymentCard.Network, assetType: PrimerAsset.ImageType) -> UIImage? {
         var brand: PrimerAsset.Brand?
         
         switch cardNetwork {
@@ -485,7 +485,7 @@ extension PrimerHeadlessUniversalCheckout {
 //            DispatchQueue.main.async {
             
             if self.inputElement.type == .cardNumber {
-                if let cardNetwork = self.inputElement.type.detectType(for: newText) as? CardNetwork {
+                if let cardNetwork = self.inputElement.type.detectType(for: newText) as? PaymentMethod.PaymentCard.Network {
                     if self.detectedType == nil, cardNetwork != .unknown {
                         self.detectedType = cardNetwork
                         self.inputElementDelegate?.inputElementDidDetectType?(self.inputElement, type: self.detectedType)
@@ -501,14 +501,14 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
             
-            if let cardNetwork = self.detectedType as? CardNetwork {
+            if let cardNetwork = self.detectedType as? PaymentMethod.PaymentCard.Network {
                 if self.inputElement.type == .cardNumber,
                    let cardNetworkMaxAllowedLength = cardNetwork.validation?.lengths.max(),
                    newText.count > cardNetworkMaxAllowedLength {
                     return false
                 }
                 
-            } else if let cardNetwork = primerCheckoutComponentsTextField.detectedValueType as? CardNetwork {
+            } else if let cardNetwork = primerCheckoutComponentsTextField.detectedValueType as? PaymentMethod.PaymentCard.Network {
                 if self.inputElement.type == .cvv {
                     if let cvvMaxAllowedLength = cardNetwork.validation?.code.length,
                        newText.count > cvvMaxAllowedLength {

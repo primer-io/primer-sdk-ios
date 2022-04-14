@@ -14,7 +14,7 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
     internal var cvv: String {
         return textField._text ?? ""
     }
-    public var cardNetwork: CardNetwork = .unknown
+    public var cardNetwork: PaymentMethod.PaymentCard.Network = .unknown
     
     override func xibSetup() {
         super.xibSetup()

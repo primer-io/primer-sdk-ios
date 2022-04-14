@@ -306,7 +306,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         return btn
     }()
 
-    var cardNetwork: CardNetwork? {
+    var cardNetwork: PaymentMethod.PaymentCard.Network? {
         didSet {
             cvvField.cardNetwork = cardNetwork ?? .unknown
         }

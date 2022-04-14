@@ -346,7 +346,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return submitButton
     }()
     
-    var cardNetwork: CardNetwork? {
+    var cardNetwork: PaymentMethod.PaymentCard.Network? {
         didSet {
             cvvField.cardNetwork = cardNetwork ?? .unknown
         }
@@ -464,7 +464,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    func configurePayButton(cardNetwork: CardNetwork?) {
+    func configurePayButton(cardNetwork: PaymentMethod.PaymentCard.Network?) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         var amount: Int = settings.amount ?? 0
         
@@ -724,7 +724,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         enableSubmitButtonIfNeeded()
     }
     
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: PaymentMethod.PaymentCard.Network?) {
         self.cardNetwork = cardNetwork
         
         if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImage2 == nil && cardNetwork.icon != nil {

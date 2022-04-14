@@ -11,7 +11,7 @@ import UIKit
 
 public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         
-    private(set) public var cardNetwork: CardNetwork = .unknown
+    private(set) public var cardNetwork: PaymentMethod.PaymentCard.Network = .unknown
     internal var cardnumber: String {
         return (textField._text ?? "").replacingOccurrences(of: " ", with: "").withoutWhiteSpace
     }
@@ -71,7 +71,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         primerTextField._text = newText
         
         DispatchQueue.global(qos: .userInitiated).async {
-            self.cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
+            self.cardNetwork = PaymentMethod.PaymentCard.Network(cardNumber: primerTextField._text ?? "")
             
             DispatchQueue.main.async {
                 if newText.isEmpty {

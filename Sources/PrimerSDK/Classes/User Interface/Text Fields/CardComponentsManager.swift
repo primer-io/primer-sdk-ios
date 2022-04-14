@@ -208,7 +208,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             errors.append(ValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         }
         
-        if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
+        if !cvvField.cvv.isValidCVV(cardNetwork: PaymentMethod.PaymentCard.Network(cardNumber: cardnumberField.cardnumber)) {
             errors.append(ValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         }
         

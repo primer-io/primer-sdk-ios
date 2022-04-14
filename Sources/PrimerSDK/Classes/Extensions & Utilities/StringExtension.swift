@@ -52,7 +52,7 @@ internal extension String {
     var isValidCardNumber: Bool {
         let clearedCardNumber = self.withoutNonNumericCharacters
         
-        let cardNetwork = CardNetwork(cardNumber: clearedCardNumber)
+        let cardNetwork = PaymentMethod.PaymentCard.Network(cardNumber: clearedCardNumber)
         if let cardNumberValidation = cardNetwork.validation {
             if !cardNumberValidation.lengths.contains(clearedCardNumber.count) {
                 return false
@@ -141,7 +141,7 @@ internal extension String {
         return isValid
     }
     
-    func isTypingValidCVV(cardNetwork: CardNetwork?) -> Bool? {
+    func isTypingValidCVV(cardNetwork: PaymentMethod.PaymentCard.Network?) -> Bool? {
         let maxDigits = cardNetwork?.validation?.code.length ?? 4
         if !isNumeric && !isEmpty { return false }
         if count > maxDigits { return false }
@@ -149,7 +149,7 @@ internal extension String {
         return nil
     }
     
-    func isValidCVV(cardNetwork: CardNetwork?) -> Bool {
+    func isValidCVV(cardNetwork: PaymentMethod.PaymentCard.Network?) -> Bool {
         if let numberOfDigits = cardNetwork?.validation?.code.length {
             return count == numberOfDigits
         }

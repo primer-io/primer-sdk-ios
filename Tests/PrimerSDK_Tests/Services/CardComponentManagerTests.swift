@@ -76,7 +76,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
 
 class CardComponentManagerTests: XCTestCase {
         
-    let testCardNumbers: [CardNetwork: [String]] = [
+    let testCardNumbers: [PaymentMethod.PaymentCard.Network: [String]] = [
         .amex: [
             "3700 0000 0000 002",
             "3700 0000 0100 018"
@@ -189,7 +189,7 @@ class CardComponentManagerTests: XCTestCase {
     func test_card_number_network() throws {
         for (cardNetwork, cardnumbers) in testCardNumbers {
             for cardnumber in cardnumbers {
-                XCTAssert(CardNetwork(cardNumber: cardnumber.withoutWhiteSpace) == cardNetwork, "Failed to match card \(cardnumber) to network \(cardNetwork.rawValue)")
+                XCTAssert(PaymentMethod.PaymentCard.Network(cardNumber: cardnumber.withoutWhiteSpace) == cardNetwork, "Failed to match card \(cardnumber) to network \(cardNetwork.rawValue)")
             }
         }
     }
@@ -214,7 +214,7 @@ class CardComponentManagerTests: XCTestCase {
         
         for (_, cardnumbers) in testCardNumbers {
             for cardnumber in cardnumbers {
-                let cardNetwork = CardNetwork(cardNumber: cardnumber)
+                let cardNetwork = PaymentMethod.PaymentCard.Network(cardNumber: cardnumber)
                 let cvvDigits = cardNetwork.validation?.code.length ?? 4
                 
                 if cardNetwork != .unknown {
