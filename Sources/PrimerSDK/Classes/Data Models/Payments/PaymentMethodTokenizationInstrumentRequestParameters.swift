@@ -14,38 +14,6 @@ public protocol PaymentMethodTokenizationInstrumentResponseData: Codable {}
 
 extension PaymentMethod {
     
-    // MARK: - Apaya ✅
-    public class Apaya {
-        
-        public class Configuration {
-            struct Options: PaymentMethodConfigurationOptions {
-                let merchantId: String
-                let merchantAccountId: String
-            }
-        }
-        
-        public class Tokenization {
-            struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
-                let currencyCode: String
-                let hashedIdentifier: String
-                let mcc: String
-                let mnc: String
-                let mx: String
-                let productId: String
-            }
-            
-            public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
-                public let hashedIdentifier: String?
-                public let mnc: Int
-                public let mcc: Int
-                public let mx: String
-                public let currencyCode: Currency?
-                public let productId: String?
-            }
-        }
-        
-    }
-    
     // MARK: - Blik ✅
     class Blik {
         public class Configuration {

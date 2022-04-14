@@ -936,6 +936,7 @@
 			isa = PBXGroup;
 			children = (
 				AA4119A6E8DD070AE3FBBBC4D4402960 /* AdyenDotPay.swift */,
+				4839F4EA74238BD10C9EC37A3C083A9D /* Apaya.swift */,
 				130E7DB609EC110BB13A3598C9727C2A /* ApplePay.swift */,
 				FA2B9DB3991FA8FBE7B96589F50B2978 /* Bank.swift */,
 			);
@@ -1044,7 +1045,6 @@
 			isa = PBXGroup;
 			children = (
 				849E90EC27FF049D004E8F27 /* Payments */,
-				4839F4EA74238BD10C9EC37A3C083A9D /* Apaya.swift */,
 				11971FF7F990F1BD9125C26D3FF6A9DB /* CardNetwork.swift */,
 				5A3B0954044A3C1603009612C17EFD0D /* CheckoutModule.swift */,
 				03662D6ABDCFE2F2A9F1D8B793FFB252 /* ClientSession.swift */,
