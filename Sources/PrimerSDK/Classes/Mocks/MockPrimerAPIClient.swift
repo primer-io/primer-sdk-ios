@@ -199,7 +199,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
+    func listAdyenBanks(clientToken: DecodedClientToken, request: PaymentMethod.Bank.Session.Request, completion: @escaping (Result<[PaymentMethod.Bank], Error>) -> Void) {
         
     }
     

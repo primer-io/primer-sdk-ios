@@ -79,39 +79,6 @@ extension PaymentMethod {
         }
     }
     
-    // MARK: - Dot Pay ✅
-    class DotPay {
-        public class Configuration {
-            struct Options: PaymentMethodConfigurationOptions {
-                let merchantId: String
-                let merchantAccountId: String
-            }
-        }
-        
-        class Tokenization {
-            struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
-                let paymentMethodConfigId: String
-                let paymentMethodType: String
-                let sessionInfo: PaymentMethod.DotPay.SessionInfo
-                lazy var type: String = {
-                    "OFF_SESSION_PAYMENT"
-                }()
-            }
-            
-            public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
-                public let paymentMethodConfigId: String
-                public let paymentMethodType: String
-                public let sessionInfo: PaymentMethod.Blik.SessionInfo
-            }
-        }
-        
-        struct SessionInfo: Codable {
-            var issuer: String?
-            var locale: String = "en_US"
-            var platform: String = "IOS"
-        }
-    }
-    
 //    // MARK: - GoCardless (not used yet)
 //    class GoCardless {
 //        public class Configuration {

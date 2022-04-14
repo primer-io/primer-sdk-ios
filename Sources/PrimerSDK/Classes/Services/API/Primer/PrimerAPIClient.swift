@@ -26,7 +26,7 @@ protocol PrimerAPIClientProtocol {
     func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethod.Tokenization.Response, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
     func continue3DSAuth(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
     func createApayaSession(clientToken: DecodedClientToken, request: PaymentMethod.Apaya.CreateSessionAPIRequest, completion: @escaping (_ result: Result<PaymentMethod.Apaya.CreateSessionAPIResponse, Error>) -> Void)
-    func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (_ result: Result<[Bank], Error>) -> Void)
+    func listAdyenBanks(clientToken: DecodedClientToken, request: PaymentMethod.Bank.Session.Request, completion: @escaping (_ result: Result<[PaymentMethod.Bank], Error>) -> Void)
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
     
     func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
@@ -212,9 +212,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
+    func listAdyenBanks(clientToken: DecodedClientToken, request: PaymentMethod.Bank.Session.Request, completion: @escaping (Result<[PaymentMethod.Bank], Error>) -> Void) {
         let endpoint = PrimerAPI.listAdyenBanks(clientToken: clientToken, request: request)
-        networkService.request(endpoint) { (result: Result<BanksListSessionResponse, Error>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethod.Bank.Session.Response, Error>) in
             switch result {
             case .success(let res):
                 let banks = res.result

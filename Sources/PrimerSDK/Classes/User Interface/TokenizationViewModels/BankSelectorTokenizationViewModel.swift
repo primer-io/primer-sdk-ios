@@ -108,8 +108,8 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         set { _buttonTintColor = newValue }
     }
     
-    internal private(set) var banks: [Bank] = []
-    internal private(set) var dataSource: [Bank] = [] {
+    internal private(set) var banks: [PaymentMethod.Bank] = []
+    internal private(set) var dataSource: [PaymentMethod.Bank] = [] {
         didSet {
             tableView.reloadData()
         }
@@ -278,7 +278,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func fetchBanks() -> Promise<[Bank]> {
+    private func fetchBanks() -> Promise<[PaymentMethod.Bank]> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -298,9 +298,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             }
                     
             let client: PrimerAPIClientProtocol = PrimerAPIClient()
-            let request = BankTokenizationSessionRequest(
+            let request = PaymentMethod.Bank.Session.Request(
                 paymentMethodConfigId: config.id!,
-                parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
+                parameters: PaymentMethod.Bank.Session.Request.Parameters(paymentMethod: paymentMethodRequestValue))
             
             client.listAdyenBanks(clientToken: decodedClientToken, request: request) { result in
                 switch result {
@@ -328,7 +328,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func tokenize(bank: Bank) -> Promise<PaymentMethod.Tokenization.Response> {
+    private func tokenize(bank: PaymentMethod.Bank) -> Promise<PaymentMethod.Tokenization.Response> {
         return Promise { seal in
             self.tokenize(bank: bank) { paymentMethod, err in
                 if let err = err {
@@ -342,7 +342,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
 
-    private func tokenize(bank: Bank, completion: @escaping (_ paymentMethod: PaymentMethod.Tokenization.Response?, _ err: Error?) -> Void) {
+    private func tokenize(bank: PaymentMethod.Bank, completion: @escaping (_ paymentMethod: PaymentMethod.Tokenization.Response?, _ err: Error?) -> Void) {
         let paymentInstrument = PaymentMethod.DotPay.Tokenization.InstrumentRequestParameters(
             paymentMethodConfigId: self.config.id!,
             paymentMethodType: self.config.type.rawValue,
@@ -423,7 +423,7 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
             return true
         }
         
-        var bankResults: [Bank] = []
+        var bankResults: [PaymentMethod.Bank] = []
         
         for bank in banks {
             if bank.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {

@@ -920,16 +920,26 @@
 			path = "Example/Pods/Target Support Files/PrimerSDK";
 			sourceTree = "<group>";
 		};
-		849E90EC27FF049D004E8F27 /* Payment Method */ = {
+		849E90EC27FF049D004E8F27 /* Payments */ = {
 			isa = PBXGroup;
 			children = (
-				130E7DB609EC110BB13A3598C9727C2A /* ApplePay.swift */,
 				849E90EA27FEFA15004E8F27 /* PaymentMethod.swift */,
 				849E90ED27FF04D9004E8F27 /* PaymentMethodTokenizationInstrumentRequestParameters.swift */,
 				849E90EF27FF2711004E8F27 /* PaymentMethod.Type.swift */,
 				849E90F127FF2B61004E8F27 /* PaymentMethod.Configuration.swift */,
+				84AFF7E628080170001D5C1E /* Payment Methods */,
 			);
-			path = "Payment Method";
+			path = Payments;
+			sourceTree = "<group>";
+		};
+		84AFF7E628080170001D5C1E /* Payment Methods */ = {
+			isa = PBXGroup;
+			children = (
+				AA4119A6E8DD070AE3FBBBC4D4402960 /* AdyenDotPay.swift */,
+				130E7DB609EC110BB13A3598C9727C2A /* ApplePay.swift */,
+				FA2B9DB3991FA8FBE7B96589F50B2978 /* Bank.swift */,
+			);
+			path = "Payment Methods";
 			sourceTree = "<group>";
 		};
 		877B556C03DE1AD3D586C888E0F1EC30 /* Third Party */ = {
@@ -1033,10 +1043,8 @@
 		A6C87D98355BFE3BD196497FC3C390C7 /* Data Models */ = {
 			isa = PBXGroup;
 			children = (
-				849E90EC27FF049D004E8F27 /* Payment Method */,
-				AA4119A6E8DD070AE3FBBBC4D4402960 /* AdyenDotPay.swift */,
+				849E90EC27FF049D004E8F27 /* Payments */,
 				4839F4EA74238BD10C9EC37A3C083A9D /* Apaya.swift */,
-				FA2B9DB3991FA8FBE7B96589F50B2978 /* Bank.swift */,
 				11971FF7F990F1BD9125C26D3FF6A9DB /* CardNetwork.swift */,
 				5A3B0954044A3C1603009612C17EFD0D /* CheckoutModule.swift */,
 				03662D6ABDCFE2F2A9F1D8B793FFB252 /* ClientSession.swift */,

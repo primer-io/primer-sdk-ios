@@ -53,7 +53,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
     case createApayaSession(clientToken: DecodedClientToken, request: PaymentMethod.Apaya.CreateSessionAPIRequest)
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: PaymentMethod.Tokenization.Request)
-    case listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest)
+    case listAdyenBanks(clientToken: DecodedClientToken, request: PaymentMethod.Bank.Session.Request)
     
     // 3DS
     case begin3DSRemoteAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethod.Tokenization.Response, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
