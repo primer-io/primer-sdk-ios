@@ -622,7 +622,7 @@ extension PrimerUniversalCheckoutViewController {
                             
             guard let resumePaymentId = self.resumePaymentId else {
                 DispatchQueue.main.async {
-                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume payment id token not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: resumePaymentIdError)
                     self.handleErrorBasedOnSDKSettings(resumePaymentIdError)
                 }
