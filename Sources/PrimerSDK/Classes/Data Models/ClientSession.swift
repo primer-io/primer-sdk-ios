@@ -298,7 +298,6 @@ internal extension Encodable {
 extension ClientSession.Action {
     
     private static func requestClientSessionWithActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
-        
         let actionsAsDictionary = try? actions.asDictionary()
 
         do {
@@ -314,9 +313,7 @@ extension ClientSession.Action {
             return clientSessionService.requestClientSessionWithActions(actionsRequest: clientSessionActionsRequest)
         }
         .then { primerConfiguration -> Promise<Void> in
-            let appState: AppStateProtocol = DependencyContainer.resolve()
-            appState.primerConfiguration = primerConfiguration
-            return Promise<Void>
+            return ClientSession.Action.setPrimerConfiguration(primerConfiguration)
         }
         .done {
             do {
@@ -325,6 +322,14 @@ extension ClientSession.Action {
                 }
             }
             
+        }
+    }
+    
+    private static func setPrimerConfiguration(_ primerConfiguration: PrimerConfiguration) -> Promise<Void> {
+        return Promise { seal in
+            let appState: AppStateProtocol = DependencyContainer.resolve()
+            appState.primerConfiguration = primerConfiguration
+            seal.fulfill()
         }
     }
 }
