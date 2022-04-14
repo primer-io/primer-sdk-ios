@@ -297,7 +297,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
 extension MockPrimerAPIClient {
     
-    func requestClientSessionWithActions(request: ClientSessionActionsRequest, completion: @escaping (Result<PrimerConfiguration, Error>) -> Void) {
+    func requestClientSessionWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest, completion: @escaping (Result<PrimerConfiguration, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])

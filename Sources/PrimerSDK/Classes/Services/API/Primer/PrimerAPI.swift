@@ -56,7 +56,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest)
     case listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest)
 
-    case requestClientSessionWithActions(request: ClientSessionActionsRequest)
+    case requestClientSessionWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest)
     
     // 3DS
     case begin3DSRemoteAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
@@ -107,15 +107,11 @@ internal extension PrimerAPI {
                 .continue3DSRemoteAuth(let clientToken, _),
                 .createApayaSession(let clientToken, _),
                 .listAdyenBanks(let clientToken, _),
+                .requestClientSessionWithActions(let clientToken, _),
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
                 .createPayment(let clientToken, _),
                 .resumePayment(let clientToken, _, _):
             if let token = clientToken.accessToken {
-                tmpHeaders["Primer-Client-Token"] = token
-            }
-            
-        case .requestClientSessionWithActions(let request):
-            if let token = request.clientToken?.jwtTokenPayload?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
         
@@ -174,7 +170,8 @@ internal extension PrimerAPI {
                 .begin3DSRemoteAuth(let clientToken, _, _),
                 .continue3DSRemoteAuth(let clientToken, _),
                 .createPayment(let clientToken, _),
-                .resumePayment(let clientToken, _, _):
+                .resumePayment(let clientToken, _, _),
+                .requestClientSessionWithActions(let clientToken, _):
             guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
         case .fetchConfiguration(let clientToken):
@@ -184,8 +181,6 @@ internal extension PrimerAPI {
             return url
         case .sendAnalyticsEvents(let url, _):
             return url.absoluteString
-        case .requestClientSessionWithActions(let request):
-            return request.clientToken?.jwtTokenPayload?.pciUrl
         case .validateClientToken(let request):
             return request.clientToken.jwtTokenPayload?.pciUrl
         }
@@ -227,7 +222,7 @@ internal extension PrimerAPI {
         case .listAdyenBanks:
             return "/adyen/checkout"
         case .requestClientSessionWithActions:
-            return "/client-sessions/actions"
+            return "/client-session/actions"
         case .poll:
             return ""
         case .sendAnalyticsEvents:
@@ -329,8 +324,8 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(threeDSecureBeginAuthRequest)
         case .listAdyenBanks(_, let request):
             return try? JSONEncoder().encode(request)
-        case .requestClientSessionWithActions(let request):
-            return try? JSONEncoder().encode(request.clientToken)
+        case .requestClientSessionWithActions(_, let request):
+            return try? JSONEncoder().encode(request.actions)
         case .deleteVaultedPaymentMethod,
                 .exchangePaymentMethodToken,
                 .fetchConfiguration,
