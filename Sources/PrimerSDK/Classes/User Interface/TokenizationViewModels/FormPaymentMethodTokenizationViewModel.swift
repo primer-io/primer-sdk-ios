@@ -440,7 +440,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+            ClientSession.Action.selectPaymentMethodWithParameters(params)
         } else {
             continueTokenizationFlow()
         }
@@ -590,7 +590,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     actions.append(billingAddressAction)
                 }
                 
-                ClientSession.Action.dispatchMultiple(resumeHandler: self, actions: actions)
+                ClientSession.Action.dispatchMultipleActions(actions)
             } else {
                 cardComponentsManager.tokenize()
             }
@@ -972,7 +972,7 @@ extension FormPaymentMethodTokenizationViewModel {
     override func handle(error: Error) {
         DispatchQueue.main.async {
             if self.onClientSessionActionCompletion != nil {
-                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                ClientSession.Action.unselectPaymentMethod()
                 self.onClientSessionActionCompletion?(error)
                 self.onClientSessionActionCompletion = nil
             }

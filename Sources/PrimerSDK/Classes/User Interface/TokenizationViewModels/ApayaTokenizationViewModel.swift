@@ -188,7 +188,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+            ClientSession.Action.selectPaymentMethodWithParameters(params)
         } else {
             continueTokenizationFlow()
         }
@@ -199,7 +199,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                ClientSession.Action.unselectPaymentMethod()
                 PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
@@ -222,7 +222,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
         .catch { err in
             DispatchQueue.main.async {
-                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                ClientSession.Action.unselectPaymentMethod()
                 PrimerDelegateProxy.checkoutFailed(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
@@ -419,7 +419,7 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
 extension ApayaTokenizationViewModel {
     
     override func handle(error: Error) {
-        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+        ClientSession.Action.unselectPaymentMethod()
         self.completion?(nil, error)
         self.completion = nil
     }

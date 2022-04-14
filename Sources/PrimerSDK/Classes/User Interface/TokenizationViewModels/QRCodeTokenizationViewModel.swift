@@ -129,7 +129,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             try validate()
         } catch {
             DispatchQueue.main.async {
-                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                ClientSession.Action.unselectPaymentMethod()
                 PrimerDelegateProxy.checkoutFailed(with: error)
                 self.handleFailedTokenizationFlow(error: error)
             }
@@ -388,7 +388,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
 extension QRCodeTokenizationViewModel {
     
     override func handle(error: Error) {
-        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+        ClientSession.Action.unselectPaymentMethod()
         self.completion?(nil, error)
         self.completion = nil
         onResumeTokenCompletion?(nil, error)
