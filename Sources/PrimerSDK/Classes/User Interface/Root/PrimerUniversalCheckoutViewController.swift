@@ -301,7 +301,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             onClientSessionActionCompletion = { err in
                 if let err = err {
                     DispatchQueue.main.async {
-                        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                        ClientSession.Action.unselectPaymentMethod()
                         PrimerDelegateProxy.onResumeError(err)
                         self.onClientSessionActionCompletion = nil
                     }
@@ -310,7 +310,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 }
             }
             
-            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+            ClientSession.Action.selectPaymentMethodWithParameters(params)
             
         } else {
             continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)

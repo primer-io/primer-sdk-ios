@@ -42,23 +42,23 @@ public class ClientSession: Codable {
     
     public class Action: NSObject, Encodable {
         
-        static func unselectPaymentMethod(resumeHandler: ResumeHandlerProtocol?) {
+        static func unselectPaymentMethod() {
             let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
-            requestClientSessionWithActions(actions, resumeHandler: resumeHandler)
+            requestClientSessionWithActions(actions)
         }
         
-        static func selectPaymentMethod(resumeHandler: ResumeHandlerProtocol, withParameters parameters: [String: Any]) {
+        static func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
             let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
-            requestClientSessionWithActions(actions, resumeHandler: resumeHandler)
+            requestClientSessionWithActions(actions)
         }
         
-        static func setPostalCode(resumeHandler: ResumeHandlerProtocol, withParameters parameters: [String: Any]) {
+        static func setPostalCodeWithParameters(_ parameters: [String: Any]) {
             let actions: [ClientSession.Action] = [ClientSession.Action(type: "SET_BILLING_ADDRESS", params: parameters)]
-            requestClientSessionWithActions(actions, resumeHandler: resumeHandler)
+            requestClientSessionWithActions(actions)
         }
         
-        static func dispatchMultiple(resumeHandler: ResumeHandlerProtocol, actions: [ClientSession.Action]) {
-            requestClientSessionWithActions(actions, resumeHandler: resumeHandler)
+        static func dispatchMultipleActions(_ actions: [ClientSession.Action]) {
+            requestClientSessionWithActions(actions)
         }
         
         public var type: String
@@ -297,37 +297,39 @@ internal extension Encodable {
 
 extension ClientSession.Action {
     
-    private static func requestClientSessionWithActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
-        
-        let actionsAsDictionary = try? actions.asDictionary()
-        
-        do {
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.clientSessionUpdateDidStart(actionsAsDictionary ?? [:], resumeHandler: resumeHandler)
-            }
-        }
-        
+    private static func requestClientSessionWithActions(_ actions: [ClientSession.Action]) {
+                
         firstly {
+            ClientSession.Action.raiseClientSessionUpdateDidStartEvent()
+        }
+        .then { () -> Promise<PrimerConfiguration> in
             let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
             let appState: AppStateProtocol = DependencyContainer.resolve()
             let clientSessionActionsRequest = ClientSessionActionsRequest(clientToken: appState.clientToken, actions: actions)
             return clientSessionService.requestClientSessionWithActions(actionsRequest: clientSessionActionsRequest)
         }
         .then { primerConfiguration -> Promise<Void> in
-            return ClientSession.Action.setPrimerConfiguration(primerConfiguration)
+            ClientSession.Action.setPrimerConfiguration(primerConfiguration)
         }
         .done {
-            do {
-                DispatchQueue.main.async {
-                    PrimerDelegateProxy.clientSessionUpdateDidFinish(actionsAsDictionary ?? [:], resumeHandler: resumeHandler)
-                }
-            }
+            ClientSession.Action.raiseClientSessionUpdateDidFinishEvent()
         }
         .catch { error in
             ErrorHandler.handle(error: error)
             DispatchQueue.main.async {
                 PrimerDelegateProxy.checkoutFailed(with: error)
             }
+        }
+    }
+    
+    private static func raiseClientSessionUpdateDidFinishEvent() {
+        PrimerDelegateProxy.clientSessionUpdateDidFinish()
+    }
+    
+    private static func raiseClientSessionUpdateDidStartEvent() -> Promise<Void> {
+        return Promise { seal in
+            PrimerDelegateProxy.clientSessionUpdateDidStart()
+            seal.fulfill()
         }
     }
     

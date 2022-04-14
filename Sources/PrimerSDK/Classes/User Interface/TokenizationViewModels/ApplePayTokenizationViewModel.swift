@@ -157,7 +157,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+            ClientSession.Action.selectPaymentMethodWithParameters(params)
         } else {
             continueTokenizationFlow()
         }
@@ -185,7 +185,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         }
         .catch { err in
             DispatchQueue.main.async {
-                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                ClientSession.Action.unselectPaymentMethod()
                 PrimerDelegateProxy.checkoutFailed(with: err)
                 self.handleFailedTokenizationFlow(error: err)
             }
@@ -252,7 +252,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
                 let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
-                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                ClientSession.Action.unselectPaymentMethod()
                 PrimerDelegateProxy.checkoutFailed(with: err)
                 return completion(nil, err)
             }
@@ -371,7 +371,7 @@ extension ApplePayTokenizationViewModel {
         if #available(iOS 11.0, *) {
             self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
         }
-        ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+        ClientSession.Action.unselectPaymentMethod()
         self.applePayControllerCompletion = nil
         self.completion?(nil, error)
         self.completion = nil

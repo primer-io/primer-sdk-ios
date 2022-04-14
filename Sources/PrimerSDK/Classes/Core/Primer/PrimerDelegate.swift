@@ -64,8 +64,8 @@ public protocol PrimerDelegate {
     @available(*, deprecated, renamed: "onTokenizeSuccess")
     @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
-    @objc optional func clientSessionUpdateDidStart(_ updatedFields: [String: Any], resumeHandler: ResumeHandlerProtocol?)
-    @objc optional func clientSessionUpdateDidFinish(_ updatedFields: [String: Any], resumeHandler: ResumeHandlerProtocol?)
+    @objc optional func clientSessionUpdateDidStart()
+    @objc optional func clientSessionUpdateDidFinish()
 
     /// This function will be called when the SDK is about to initiate a payment.
     /// - Parameters:
@@ -165,14 +165,14 @@ internal class PrimerDelegateProxy {
         return isClientSessionActionDidStartImplemented || isClientSessionActionDidFinishImplemented
     }
     
-    static func clientSessionUpdateDidStart(_ updatedFields: [String: Any], resumeHandler: ResumeHandlerProtocol?) {
+    static func clientSessionUpdateDidStart() {
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            Primer.shared.delegate?.clientSessionUpdateDidStart?(updatedFields, resumeHandler: resumeHandler)
+            Primer.shared.delegate?.clientSessionUpdateDidStart?()
         }
     }
-    static func clientSessionUpdateDidFinish(_ updatedFields: [String: Any], resumeHandler: ResumeHandlerProtocol?) {
+    static func clientSessionUpdateDidFinish() {
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            Primer.shared.delegate?.clientSessionUpdateDidFinish?(updatedFields, resumeHandler: resumeHandler)
+            Primer.shared.delegate?.clientSessionUpdateDidFinish?()
         }
     }
 
