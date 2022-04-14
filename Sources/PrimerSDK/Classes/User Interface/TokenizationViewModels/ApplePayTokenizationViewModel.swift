@@ -247,7 +247,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             items: orderItems
         )
         
-        let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+        let supportedNetworks = PaymentMethod.PaymentCard.Network.iOSSupportedPKPaymentNetworks
         if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
             request = PKPaymentRequest()
             request.currencyCode = applePayRequest.currency.rawValue

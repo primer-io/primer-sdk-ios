@@ -9,6 +9,8 @@
 #if canImport(UIKit)
 
 import Foundation
+import PassKit
+import UIKit
 
 extension PaymentMethod {
     
@@ -73,8 +75,20 @@ extension PaymentMethod {
             }
         }
         
+        struct NetworkValidation {
+            var niceType: String
+            var patterns: [[Int]]
+            var gaps: [Int]
+            var lengths: [Int]
+            var code: NetworkCode
+        }
+
+        struct NetworkCode {
+            var name: String
+            var length: Int
+        }
+        
         public enum Network: String, CaseIterable {
-            
             case amex
             case bancontact
             case diners
@@ -89,16 +103,77 @@ extension PaymentMethod {
             case visa
             case unionpay
             case unknown
+                        
+            static var iOSSupportedPKPaymentNetworks: [PKPaymentNetwork] {
+                var supportedNetworks: [PKPaymentNetwork] = [
+                    .amex,
+                    .chinaUnionPay,
+                    .discover,
+                    .interac,
+                    .masterCard,
+                    .privateLabel,
+                    .visa
+                ]
+                
+                if #available(iOS 11.2, *) {
+        //            @available(iOS 11.2, *)
+                    supportedNetworks.append(.cartesBancaires)
+                } else if #available(iOS 11.0, *) {
+        //            @available(iOS, introduced: 11.0, deprecated: 11.2, message: "Use PKPaymentNetworkCartesBancaires instead.")
+                    supportedNetworks.append(.carteBancaires)
+                } else if #available(iOS 10.3, *) {
+        //            @available(iOS, introduced: 10.3, deprecated: 11.0, message: "Use PKPaymentNetworkCartesBancaires instead.")
+                    supportedNetworks.append(.carteBancaire)
+                }
+
+                if #available(iOS 12.0, *) {
+        //            @available(iOS 12.0, *)
+                    supportedNetworks.append(.eftpos)
+                    supportedNetworks.append(.electron)
+                    supportedNetworks.append(.maestro)
+                    supportedNetworks.append(.vPay)
+                }
+
+                if #available(iOS 12.1.1, *) {
+        //            @available(iOS 12.1.1, *)
+                    supportedNetworks.append(.elo)
+                    supportedNetworks.append(.mada)
+                }
+                
+                if #available(iOS 10.3.1, *) {
+        //            @available(iOS 10.3, *)
+                    supportedNetworks.append(.idCredit)
+                }
+                
+                if #available(iOS 10.1, *) {
+        //            @available(iOS 10.1, *)
+                    supportedNetworks.append(.JCB)
+                    supportedNetworks.append(.suica)
+                }
+                
+                if #available(iOS 10.3, *) {
+        //            @available(iOS 10.3, *)
+                    supportedNetworks.append(.quicPay)
+                }
+                
+                if #available(iOS 14.0, *) {
+        //            @available(iOS 14.0, *)
+        //            supportedNetworks.append(.barcode)
+                    supportedNetworks.append(.girocard)
+                }
+                
+                return supportedNetworks
+            }
             
-            var validation: CardNetworkValidation? {
+            var validation: NetworkValidation? {
                 switch self {
                 case .amex:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "American Express",
                         patterns: [[34], [37]],
                         gaps: [4, 10],
                         lengths: [15],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CID",
                             length: 4))
                     
@@ -106,27 +181,27 @@ extension PaymentMethod {
                     return nil
                     
                 case .diners:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "Diners",
                         patterns: [[300, 305], [36], [38], [39]],
                         gaps: [4, 10],
                         lengths: [14, 16, 19],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CVV",
                             length: 3))
                     
                 case .discover:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "Discover",
                         patterns: [[6011], [644, 649], [65]],
                         gaps: [4, 8, 12],
                         lengths: [16, 19],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CID",
                             length: 3))
                     
                 case .elo:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "Elo",
                         patterns: [
                             [401178],
@@ -157,52 +232,52 @@ extension PaymentMethod {
                         ],
                         gaps: [4, 8, 12],
                         lengths: [16],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CVE",
                             length: 3))
                     
                 case .hiper:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "Hiper",
                         patterns: [[637095], [63737423], [63743358], [637568], [637599], [637609], [637612]],
                         gaps: [4, 8, 12],
                         lengths: [16],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CVC",
                             length: 3))
                     
                 case .hipercard:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "Hiper",
                         patterns: [[606282]],
                         gaps: [4, 8, 12],
                         lengths: [16],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CVC",
                             length: 3))
                     
                 case .jcb:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "JCB",
                         patterns: [[2131], [1800], [3528, 3589]],
                         gaps: [4, 8, 12],
                         lengths: [16, 17, 18, 19],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CVV",
                             length: 3))
                     
                 case .masterCard:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "Mastercard",
                         patterns: [[51, 55], [2221, 2229], [223, 229], [23, 26], [270, 271], [2720]],
                         gaps: [4, 10],
                         lengths: [16],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CVC",
                             length: 3))
                     
                 case .maestro:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "Maestro",
                         patterns: [
                             [493698],
@@ -216,32 +291,32 @@ extension PaymentMethod {
                           ],
                         gaps: [4, 8, 12],
                         lengths: [16, 17, 18, 19],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CVC",
                             length: 3))
                     
                 case .mir:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "Mir",
                         patterns: [[2200, 2204]],
                         gaps: [4, 8, 12],
                         lengths: [16, 17, 18, 19],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CVP2",
                             length: 3))
                     
                 case .visa:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "Visa",
                         patterns: [[4]],
                         gaps: [4, 8, 12],
                         lengths: [16, 18, 19],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CVV",
                             length: 3))
 
                 case .unionpay:
-                    return CardNetworkValidation(
+                    return NetworkValidation(
                         niceType: "UnionPay",
                         patterns: [
                       [620],
@@ -272,7 +347,7 @@ extension PaymentMethod {
                     ],
                         gaps: [4, 8, 12],
                         lengths: [14, 15, 16, 17, 18, 19],
-                        code: CardNetworkCode(
+                        code: NetworkCode(
                             name: "CVN",
                             length: 3))
                 case .unknown:

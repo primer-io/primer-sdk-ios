@@ -96,7 +96,6 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     
     var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
         
-    var supportedNetworks: [PaymentNetwork]?
     var isInitialLoadingHidden: Bool = false
     
     var klarnaPaymentDescription: String?

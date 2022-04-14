@@ -43,7 +43,6 @@
 		3A3269143B1557AAC8D65C80807A66AA /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6179010E1A5FEBE6F7A32A034E7A74C /* VaultService.swift */; };
 		3A7F45CCEF0886F954ACCAC463AE89E2 /* PostalCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47F1E22001CF7A099074E369FA3713D /* PostalCode.swift */; };
 		3C4D657CEBBA7B9640CBF879641D0849 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26775BD7367A7498167257A32A5AEF3A /* BundleExtension.swift */; };
-		3CEC976F832E8B3FD4F7BEFE8F3D4E45 /* CardNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11971FF7F990F1BD9125C26D3FF6A9DB /* CardNetwork.swift */; };
 		3D627C44D5ADCB9B92D05EB2A6CD230C /* PrimerNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F16A92057E41EDE3F25FB1A1F82CA12E /* PrimerNavigationBar.swift */; };
 		3F346647BA402671717250A3ECA065D4 /* Consolable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1710D63F3F5643782F87144B55AE87 /* Consolable.swift */; };
 		4058E05D2B8D9AFB09C068BA476C4148 /* race.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54BF11A5BA11F78769AC9E4190586A8 /* race.swift */; };
@@ -289,7 +288,6 @@
 		10008AD75D44C8828FE70617B88C5DC5 /* VaultPaymentMethodView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodView.swift; sourceTree = "<group>"; };
 		106A7DC140F4EA8375F6015807DF927C /* PayPalService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PayPalService.swift; sourceTree = "<group>"; };
 		118D8127D2601C7C17552C495F7881DA /* FormType.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormType.swift; sourceTree = "<group>"; };
-		11971FF7F990F1BD9125C26D3FF6A9DB /* CardNetwork.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardNetwork.swift; sourceTree = "<group>"; };
 		11C5537605394E16B7022D8C749C8543 /* CountryCode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountryCode.swift; sourceTree = "<group>"; };
 		12C5CAA44B1517806BA952FDBB10FA24 /* PrimerConfiguration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerConfiguration.swift; sourceTree = "<group>"; };
 		130E7DB609EC110BB13A3598C9727C2A /* ApplePay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePay.swift; sourceTree = "<group>"; };
@@ -1058,7 +1056,6 @@
 			isa = PBXGroup;
 			children = (
 				849E90EC27FF049D004E8F27 /* Payments */,
-				11971FF7F990F1BD9125C26D3FF6A9DB /* CardNetwork.swift */,
 				5A3B0954044A3C1603009612C17EFD0D /* CheckoutModule.swift */,
 				03662D6ABDCFE2F2A9F1D8B793FFB252 /* ClientSession.swift */,
 				23BC4FD84EEB2EDF65C5F11694961004 /* ClientToken.swift */,
@@ -1549,7 +1546,6 @@
 				B417DE1ADD59E3378FCF375E12FD8D1D /* CardButton.swift in Sources */,
 				62FADC9215335C1003A6C3EABF0171A1 /* CardComponentsManager.swift in Sources */,
 				9B1CCDA6177B9378E6223504B0FFDB96 /* CardFormPaymentMethodTokenizationViewModel.swift in Sources */,
-				3CEC976F832E8B3FD4F7BEFE8F3D4E45 /* CardNetwork.swift in Sources */,
 				1770DAFA52AE7A8E9158C86D16BE590F /* CardScannerViewController.swift in Sources */,
 				BB616934FB95FBE738916CCFED6B683F /* CardScannerViewController+SimpleScanDelegate.swift in Sources */,
 				8C1843C60C419902140AC74F7C5CE508 /* Catchable.swift in Sources */,
