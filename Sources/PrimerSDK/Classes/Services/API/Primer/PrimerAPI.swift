@@ -115,7 +115,7 @@ internal extension PrimerAPI {
             }
             
         case .requestClientSessionWithActions(let request):
-            if let token = request.clientToken.jwtTokenPayload?.accessToken {
+            if let token = request.clientToken?.jwtTokenPayload?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
         
@@ -185,7 +185,7 @@ internal extension PrimerAPI {
         case .sendAnalyticsEvents(let url, _):
             return url.absoluteString
         case .requestClientSessionWithActions(let request):
-            return request.clientToken.jwtTokenPayload?.pciUrl
+            return request.clientToken?.jwtTokenPayload?.pciUrl
         case .validateClientToken(let request):
             return request.clientToken.jwtTokenPayload?.pciUrl
         }
