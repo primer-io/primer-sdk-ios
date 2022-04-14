@@ -12,6 +12,7 @@ import Foundation
 extension PaymentMethod {
     
     // MARK: - KlarnaCustomer ✅
+    // This is used for vaulting
     public class KlarnaCustomer {
         public class Configuration {
             struct Options: PaymentMethodConfigurationOptions {
