@@ -64,7 +64,7 @@ enum PrimerAPI: Endpoint, Equatable {
     
     case sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?)
     
-    case fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request)
+    case fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PaymentMethod.PayPal.PayerInfo.Request)
     case validateClientToken(request: ClientTokenValidationRequest)
 }
 

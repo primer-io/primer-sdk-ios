@@ -244,7 +244,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {
+    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PaymentMethod.PayPal.PayerInfo.Request, completion: @escaping (Result<PaymentMethod.PayPal.PayerInfo.Response, Error>) -> Void) {
         
     }
     

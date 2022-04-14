@@ -280,7 +280,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                     let paymentInstrument = PaymentMethod.ApplePay.Tokenization.InstrumentRequestParameters(
                         paymentMethodConfigId: applePayConfigId,
                         token: applePayPaymentResponse.token,
-                        sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier))
+                        sourceConfig: PaymentMethod.ApplePay.SourceConfig(source: "IN_APP", merchantId: merchantIdentifier))
 
                     let request = PaymentMethod.Tokenization.Request(paymentInstrument: paymentInstrument)
                     

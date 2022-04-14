@@ -68,7 +68,7 @@ extension PaymentMethod {
             struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
                 let paymentMethodConfigId: String
                 let token: ApplePayPaymentResponseToken
-                let sourceConfig: ApplePaySourceConfig
+                let sourceConfig: PaymentMethod.ApplePay.SourceConfig
             }
             
             public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
@@ -81,11 +81,15 @@ extension PaymentMethod {
             }
         }
         
+        
+        struct SourceConfig: Codable {
+            let source: String
+            let merchantId: String
+        }
     }
     
     // MARK: - Blik ✅
     class Blik {
-        
         public class Configuration {
             struct Options: PaymentMethodConfigurationOptions {
                 let merchantId: String
@@ -115,7 +119,6 @@ extension PaymentMethod {
                 PrimerSettings.current.urlScheme
             }()
         }
-        
     }
     
     // MARK: - Dot Pay ✅
@@ -324,6 +327,18 @@ extension PaymentMethod {
         
         public struct ShippingAddress: Codable {
             let firstName, lastName, addressLine1, addressLine2, city, state, countryCode, postalCode: String?
+        }
+        
+        class PayerInfo {
+            struct Request: Codable {
+                let paymentMethodConfigId: String
+                let orderId: String
+            }
+            
+            struct Response: Codable {
+                let orderId: String
+                let externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo
+            }
         }
     }
     

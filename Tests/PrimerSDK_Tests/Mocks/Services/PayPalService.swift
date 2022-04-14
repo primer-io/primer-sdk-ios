@@ -32,7 +32,7 @@ class MockPayPalService: PayPalServiceProtocol {
         completion(.success(res))
     }
     
-    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {
+    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PaymentMethod.PayPal.PayerInfo.Response, Error>) -> Void) {
         
     }
 }

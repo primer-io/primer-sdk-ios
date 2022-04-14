@@ -332,7 +332,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    func fetchPayPalExternalPayerInfo(orderId: String) -> Promise<PayPal.PayerInfo.Response> {
+    func fetchPayPalExternalPayerInfo(orderId: String) -> Promise<PaymentMethod.PayPal.PayerInfo.Response> {
         return Promise { seal in
             let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
             paypalService.fetchPayPalExternalPayerInfo(orderId: orderId) { result in

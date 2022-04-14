@@ -30,7 +30,7 @@ protocol PrimerAPIClientProtocol {
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
     
     func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
-    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void)
+    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PaymentMethod.PayPal.PayerInfo.Request, completion: @escaping (Result<PaymentMethod.PayPal.PayerInfo.Response, Error>) -> Void)
     func validateClientToken(request: ClientTokenValidationRequest, completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void)
 }
 
@@ -253,9 +253,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {
+    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PaymentMethod.PayPal.PayerInfo.Request, completion: @escaping (Result<PaymentMethod.PayPal.PayerInfo.Response, Error>) -> Void) {
         let endpoint = PrimerAPI.fetchPayPalExternalPayerInfo(clientToken: clientToken, payPalExternalPayerInfoRequestBody: payPalExternalPayerInfoRequestBody)
-        networkService.request(endpoint) { (result: Result<PayPal.PayerInfo.Response, Error>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethod.PayPal.PayerInfo.Response, Error>) in
             switch result {
             case .success(let res):
                 completion(.success(res))

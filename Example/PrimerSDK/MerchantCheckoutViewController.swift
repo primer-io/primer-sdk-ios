@@ -476,7 +476,7 @@ extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDele
             let title = "•••• •••• •••• \((paymentMethod.paymentInstrumentData as? PrimerSDK.PaymentMethod.PaymentCard.Tokenization.InstrumentResponseData)?.last4Digits ?? "••••")"
             cell.configure(title: title, image: paymentMethod.icon.image!)
         case .payPalBillingAgreement:
-            let title = (paymentMethod.paymentInstrumentData as? PrimerSDK.PaymentMethod.PayPal.Tokenization.InstrumentResponseData)?.externalPayerInfo?.email ?? "PayPal"
+            let title = (paymentMethod.paymentInstrumentData as? PrimerSDK.PaymentMethod.PayPal.Tokenization.InstrumentResponseData)?.externalPayerInfo.email ?? "PayPal"
             cell.configure(title: title, image: paymentMethod.icon.image!)
         case .goCardlessMandate:
             let title = "Direct Debit"
