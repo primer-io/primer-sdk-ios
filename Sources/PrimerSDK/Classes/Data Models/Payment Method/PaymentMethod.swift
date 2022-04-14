@@ -119,7 +119,7 @@ public class PaymentMethod {
             public var paymentInstrumentData: PaymentMethodTokenizationInstrumentResponseData?
             public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
             public var token: String?
-            public var tokenType: TokenType?
+            public var tokenType: PaymentMethod.TokenType?
             public var vaultData: VaultData?
             
             enum CodingKeys: String, CodingKey {
@@ -221,6 +221,10 @@ public class PaymentMethod {
                         return .other(rawValue: PaymentMethod.Tokenization.Response.InstrumentType.unknown.rawValue)
                     }
                 }
+            }
+            
+            public struct VaultData: Codable {
+                public var customerId: String
             }
 
             public var icon: ImageName {
