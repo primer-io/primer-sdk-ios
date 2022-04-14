@@ -16,9 +16,9 @@ protocol PrimerAPIClientProtocol {
     func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Void, Error>) -> Void)
     func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void)
     func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
-    func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void)
-    func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalCreateBillingAgreementResponse, Error>) -> Void)
-    func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void)
+    func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PaymentMethod.PayPal.CreateOrder.Request, completion: @escaping (_ result: Result<PaymentMethod.PayPal.CreateOrder.Response, Error>) -> Void)
+    func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PaymentMethod.PayPal.CreateBillingAgreement.Request, completion: @escaping (_ result: Result<PaymentMethod.PayPal.CreateBillingAgreement.Response, Error>) -> Void)
+    func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PaymentMethod.PayPal.ConfirmBillingAgreement.Request, completion: @escaping (_ result: Result<PaymentMethod.PayPal.ConfirmBillingAgreement.Response, Error>) -> Void)
     func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (_ result: Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void)
     func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
     func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (_ result: Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void)
@@ -112,9 +112,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void) {
+    func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PaymentMethod.PayPal.CreateOrder.Request, completion: @escaping (_ result: Result<PaymentMethod.PayPal.CreateOrder.Response, Error>) -> Void) {
         let endpoint = PrimerAPI.createPayPalOrderSession(clientToken: clientToken, payPalCreateOrderRequest: payPalCreateOrderRequest)
-        networkService.request(endpoint) { (result: Result<PayPalCreateOrderResponse, Error>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethod.PayPal.CreateOrder.Response, Error>) in
             switch result {
             case .success(let payPalCreateOrderResponse):
                 completion(.success(payPalCreateOrderResponse))
@@ -124,9 +124,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalCreateBillingAgreementResponse, Error>) -> Void) {
+    func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PaymentMethod.PayPal.CreateBillingAgreement.Request, completion: @escaping (_ result: Result<PaymentMethod.PayPal.CreateBillingAgreement.Response, Error>) -> Void) {
         let endpoint = PrimerAPI.createPayPalSBillingAgreementSession(clientToken: clientToken, payPalCreateBillingAgreementRequest: payPalCreateBillingAgreementRequest)
-        networkService.request(endpoint) { (result: Result<PayPalCreateBillingAgreementResponse, Error>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethod.PayPal.CreateBillingAgreement.Response, Error>) in
             switch result {
             case .success(let payPalCreateOrderResponse):
                 completion(.success(payPalCreateOrderResponse))
@@ -136,9 +136,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
+    func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PaymentMethod.PayPal.ConfirmBillingAgreement.Request, completion: @escaping (_ result: Result<PaymentMethod.PayPal.ConfirmBillingAgreement.Response, Error>) -> Void) {
         let endpoint = PrimerAPI.confirmPayPalBillingAgreement(clientToken: clientToken, payPalConfirmBillingAgreementRequest: payPalConfirmBillingAgreementRequest)
-        networkService.request(endpoint) { (result: Result<PayPalConfirmBillingAgreementResponse, Error>) in
+        networkService.request(endpoint) { (result: Result<PaymentMethod.PayPal.ConfirmBillingAgreement.Response, Error>) in
             switch result {
             case .success(let payPalCreateOrderResponse):
                 completion(.success(payPalCreateOrderResponse))

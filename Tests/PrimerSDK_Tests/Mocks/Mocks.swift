@@ -193,7 +193,7 @@ class MockAppState: AppStateProtocol {
     }
 }
 
-let mockPayPalBillingAgreement = PayPalConfirmBillingAgreementResponse(billingAgreementId: "agreementId", externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo(email: "", externalPayerId: "", firstName: "", lastName: ""), shippingAddress: PaymentMethod.PayPal.ShippingAddress(firstName: "", lastName: "", addressLine1: "", addressLine2: "", city: "", state: "", countryCode: "", postalCode: ""))
+let mockPayPalBillingAgreement = PaymentMethod.PayPal.ConfirmBillingAgreement.Response(billingAgreementId: "agreementId", externalPayerInfo: PaymentMethod.PayPal.ExternalPayerInfo(email: "", externalPayerId: "", firstName: "", lastName: ""), shippingAddress: PaymentMethod.PayPal.ShippingAddress(firstName: "", lastName: "", addressLine1: "", addressLine2: "", city: "", state: "", countryCode: "", postalCode: ""))
 
 class MockLocator {
     static func registerDependencies() {

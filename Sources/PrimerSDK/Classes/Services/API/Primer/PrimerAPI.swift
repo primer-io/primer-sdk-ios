@@ -45,9 +45,9 @@ enum PrimerAPI: Endpoint, Equatable {
     case deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String)
     
     case createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
-    case createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest)
-    case createPayPalSBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest)
-    case confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest)
+    case createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PaymentMethod.PayPal.CreateOrder.Request)
+    case createPayPalSBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PaymentMethod.PayPal.CreateBillingAgreement.Request)
+    case confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PaymentMethod.PayPal.ConfirmBillingAgreement.Request)
     case createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest)
     case createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest)
     case finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)

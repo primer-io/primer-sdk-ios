@@ -3,9 +3,9 @@
 import Foundation
 
 internal protocol PayPalServiceProtocol {
-    func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void)
+    func startOrderSession(_ completion: @escaping (Result<PaymentMethod.PayPal.CreateOrder.Response, Error>) -> Void)
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
-    func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void)
+    func confirmBillingAgreement(_ completion: @escaping (Result<PaymentMethod.PayPal.ConfirmBillingAgreement.Response, Error>) -> Void)
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PaymentMethod.PayPal.PayerInfo.Response, Error>) -> Void)
 }
 
@@ -39,7 +39,7 @@ internal class PayPalService: PayPalServiceProtocol {
         return (decodedClientToken, url, configId)
     }
 
-    func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
+    func startOrderSession(_ completion: @escaping (Result<PaymentMethod.PayPal.CreateOrder.Response, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -83,7 +83,7 @@ internal class PayPalService: PayPalServiceProtocol {
             urlScheme = urlScheme.replacingOccurrences(of: "://", with: "")
         }
 
-        let body = PayPalCreateOrderRequest(
+        let body = PaymentMethod.PayPal.CreateOrder.Request(
             paymentMethodConfigId: configId,
             amount: amount,
             currencyCode: currency,
@@ -135,14 +135,13 @@ internal class PayPalService: PayPalServiceProtocol {
             urlScheme = urlScheme.replacingOccurrences(of: "://", with: "")
         }
 
-        let body = PayPalCreateBillingAgreementRequest(
+        let body = PaymentMethod.PayPal.CreateBillingAgreement.Request(
             paymentMethodConfigId: configId,
             returnUrl: "\(urlScheme)://paypal-success",
             cancelUrl: "\(urlScheme)://paypal-cancel"
         )
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-
         api.createPayPalBillingAgreementSession(clientToken: decodedClientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
@@ -156,7 +155,7 @@ internal class PayPalService: PayPalServiceProtocol {
         }
     }
 
-    func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
+    func confirmBillingAgreement(_ completion: @escaping (Result<PaymentMethod.PayPal.ConfirmBillingAgreement.Response, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -180,7 +179,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        let body = PayPalConfirmBillingAgreementRequest(paymentMethodConfigId: configId, tokenId: tokenId)
+        let body = PaymentMethod.PayPal.ConfirmBillingAgreement.Request(paymentMethodConfigId: configId, tokenId: tokenId)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 

@@ -939,6 +939,7 @@
 				4839F4EA74238BD10C9EC37A3C083A9D /* Apaya.swift */,
 				130E7DB609EC110BB13A3598C9727C2A /* ApplePay.swift */,
 				FA2B9DB3991FA8FBE7B96589F50B2978 /* Bank.swift */,
+				4E06A9EEA532BDA40BD15E650DA2F90E /* PayPal.swift */,
 			);
 			path = "Payment Methods";
 			sourceTree = "<group>";
@@ -1060,7 +1061,6 @@
 				493427E6A1BAB813AC2ED1A8892421D7 /* PaymentMethodConfigurationOptions.swift */,
 				7A0FD2D5C5099594D955D8820D2DCBE9 /* GetVaultedPaymentMethodsResponse.swift */,
 				2CB676D10E86F0190EAB3D4D5D739CF5 /* PaymentResponse.swift */,
-				4E06A9EEA532BDA40BD15E650DA2F90E /* PayPal.swift */,
 				12C5CAA44B1517806BA952FDBB10FA24 /* PrimerConfiguration.swift */,
 				247B8541A32718A3E2FD3AA2226EC568 /* PrimerContent.swift */,
 				B17F6E7F8BBF94251697E8DCD8EE5381 /* PrimerFlowEnums.swift */,

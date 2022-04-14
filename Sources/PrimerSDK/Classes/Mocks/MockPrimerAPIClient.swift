@@ -83,36 +83,36 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
+    func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PaymentMethod.PayPal.CreateOrder.Request, completion: @escaping (Result<PaymentMethod.PayPal.CreateOrder.Response, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(PayPalCreateOrderResponse.self, from: response)
+            let value = try JSONDecoder().decode(PaymentMethod.PayPal.CreateOrder.Response.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
 
-    func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (Result<PayPalCreateBillingAgreementResponse, Error>) -> Void) {
+    func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PaymentMethod.PayPal.CreateBillingAgreement.Request, completion: @escaping (Result<PaymentMethod.PayPal.CreateBillingAgreement.Response, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(PayPalCreateBillingAgreementResponse.self, from: response)
+            let value = try JSONDecoder().decode(PaymentMethod.PayPal.CreateBillingAgreement.Response.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
 
-    func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
+    func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PaymentMethod.PayPal.ConfirmBillingAgreement.Request, completion: @escaping (Result<PaymentMethod.PayPal.ConfirmBillingAgreement.Response, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(PayPalConfirmBillingAgreementResponse.self, from: response)
+            let value = try JSONDecoder().decode(PaymentMethod.PayPal.ConfirmBillingAgreement.Response.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))

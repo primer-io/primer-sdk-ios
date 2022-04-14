@@ -13,7 +13,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     
     private var session: Any!
     private var orderId: String?
-    private var confirmBillingAgreementResponse: PayPalConfirmBillingAgreementResponse?
+    private var confirmBillingAgreementResponse: PaymentMethod.PayPal.ConfirmBillingAgreement.Response?
     
     private lazy var _title: String = { return "PayPal" }()
     override var title: String  {
