@@ -579,7 +579,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 actions.append(billingAddressAction)
             }
             
-            ClientSession.Action.dispatchMultiple(resumeHandler: self, actions: actions)
+            ClientSession.Action.dispatchMultipleActions(actions)
         } else {
             cardComponentsManager.tokenize()
         }
@@ -800,7 +800,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 "countryCode": currentBillingAddress?.countryCode as Any
             ] as [String: Any]
             
-            ClientSession.Action.setPostalCode(resumeHandler: self, withParameters: params)
+            ClientSession.Action.setPostalCodeWithParameters(params)
         }
         
         autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
@@ -824,11 +824,11 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 ]
             ]
             
-            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+            ClientSession.Action.selectPaymentMethodWithParameters(params)
             cardNumberContainerView.rightImage2 = cardNetwork.icon
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
-            ClientSession.Action.unselectPaymentMethod(resumeHandler: self)
+            ClientSession.Action.unselectPaymentMethod()
         }
     }
     
@@ -965,7 +965,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
     override func handle(error: Error) {
         DispatchQueue.main.async {
             if self.onClientSessionActionCompletion != nil {
-                ClientSession.Action.unselectPaymentMethod(resumeHandler: nil)
+                ClientSession.Action.unselectPaymentMethod()
                 self.onClientSessionActionCompletion?(error)
                 self.onClientSessionActionCompletion = nil
             }
