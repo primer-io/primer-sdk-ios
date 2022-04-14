@@ -280,35 +280,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             }
         }
     }
-    
-//    func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
-//        guard let clientToken = clientToken else {
-//            print("Failed to find client token")
-//            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong setting the actions..."])
-//            resumeHandler?.handle(error: merchantErr)
-//            return
-//        }
-//
-//        let networking = Networking()
-//        networking.requestClientSessionWithActions(clientToken: clientToken, actions: actions) { (newClientToken, err) in
-//            if let err = err {
-//                print(err)
-//                let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong setting the actions..."])
-//                resumeHandler?.handle(error: merchantErr)
-//            } else if let newClientToken = newClientToken {
-//                resumeHandler?.handle(newClientToken: newClientToken)
-//            }
-//        }
-//    }
-    
-    func onPaymentPending(_ payment: [String: Any]) {
-        
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(payment)\n")
-        
-        guard let paymentData = try? JSONSerialization.data(withJSONObject:payment) else {
-                  return
-              }
-        
+            
     func checkoutWillCreatePayment(_ paymentMethodData: String, completion: @escaping (PaymentCreateAdditionalValues?) -> Void) {
         completion(nil)
     }

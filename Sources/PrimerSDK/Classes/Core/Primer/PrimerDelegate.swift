@@ -64,8 +64,9 @@ public protocol PrimerDelegate {
     @available(*, deprecated, renamed: "onTokenizeSuccess")
     @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
-    @objc optional func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?)
-        
+    @objc optional func clientSessionUpdateDidStart(_ updatedFields: [String: Any], resumeHandler: ResumeHandlerProtocol?)
+    @objc optional func clientSessionUpdateDidFinish(_ updatedFields: [String: Any], resumeHandler: ResumeHandlerProtocol?)
+
     /// This function will be called when the SDK is about to initiate a payment.
     /// - Parameters:
     ///   - paymentMethodData: The payment method data containing the token's information.
@@ -115,7 +116,6 @@ internal class PrimerDelegateProxy {
         if Primer.shared.flow.internalSessionFlow.vaulted {
             Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
         }
-        
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: resumeHandler)
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: resumeHandler)
     }
@@ -160,15 +160,22 @@ internal class PrimerDelegateProxy {
         if let implementedReactNativeCallbacks = state.implementedReactNativeCallbacks {
             return implementedReactNativeCallbacks.isClientSessionActionsImplemented == true
         }
-        return Primer.shared.delegate?.onClientSessionActions != nil
+        let isClientSessionActionDidStartImplemented = Primer.shared.delegate?.clientSessionUpdateDidStart != nil
+        let isClientSessionActionDidFinishImplemented = Primer.shared.delegate?.clientSessionUpdateDidFinish != nil
+        return isClientSessionActionDidStartImplemented || isClientSessionActionDidFinishImplemented
     }
     
-    static func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
+    static func clientSessionUpdateDidStart(_ updatedFields: [String: Any], resumeHandler: ResumeHandlerProtocol?) {
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            Primer.shared.delegate!.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+            Primer.shared.delegate?.clientSessionUpdateDidStart?(updatedFields, resumeHandler: resumeHandler)
         }
     }
-    
+    static func clientSessionUpdateDidFinish(_ updatedFields: [String: Any], resumeHandler: ResumeHandlerProtocol?) {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
+            Primer.shared.delegate?.clientSessionUpdateDidFinish?(updatedFields, resumeHandler: resumeHandler)
+        }
+    }
+
     static func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully() {
         
     }

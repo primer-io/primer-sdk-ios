@@ -43,30 +43,22 @@ public class ClientSession: Codable {
     public class Action: NSObject, Encodable {
         
         static func unselectPaymentMethod(resumeHandler: ResumeHandlerProtocol?) {
-            DispatchQueue.main.async {
-                let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
-                PrimerDelegateProxy.onClientSessionActions(actions, resumeHandler: resumeHandler)
-            }
+            let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
+            requestClientSessionWithActions(actions, resumeHandler: resumeHandler)
         }
         
         static func selectPaymentMethod(resumeHandler: ResumeHandlerProtocol, withParameters parameters: [String: Any]) {
-            DispatchQueue.main.async {
-                let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
-                PrimerDelegateProxy.onClientSessionActions(actions, resumeHandler: resumeHandler)
-            }
+            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
+            requestClientSessionWithActions(actions, resumeHandler: resumeHandler)
         }
         
         static func setPostalCode(resumeHandler: ResumeHandlerProtocol, withParameters parameters: [String: Any]) {
-            DispatchQueue.main.async {
-                let actions: [ClientSession.Action] = [ClientSession.Action(type: "SET_BILLING_ADDRESS", params: parameters)]
-                PrimerDelegateProxy.onClientSessionActions(actions, resumeHandler: resumeHandler)
-            }
+            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SET_BILLING_ADDRESS", params: parameters)]
+            requestClientSessionWithActions(actions, resumeHandler: resumeHandler)
         }
         
         static func dispatchMultiple(resumeHandler: ResumeHandlerProtocol, actions: [ClientSession.Action]) {
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.onClientSessionActions(actions, resumeHandler: resumeHandler)
-            }
+            requestClientSessionWithActions(actions, resumeHandler: resumeHandler)
         }
         
         public var type: String
@@ -300,6 +292,40 @@ internal extension Encodable {
             throw NSError()
         }
         return dictionary
+    }
+}
+
+extension ClientSession.Action {
+    
+    private static func requestClientSessionWithActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
+        
+        let actionsAsDictionary = try? actions.asDictionary()
+
+        do {
+            DispatchQueue.main.async {
+                PrimerDelegateProxy.clientSessionUpdateDidStart(actionsAsDictionary ?? [:], resumeHandler: resumeHandler)
+            }
+        }
+        
+        firstly {
+            let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
+            let appState: AppStateProtocol = DependencyContainer.resolve()
+            let clientSessionActionsRequest = ClientSessionActionsRequest(clientToken: appState.clientToken, actions: actions)
+            return clientSessionService.requestClientSessionWithActions(actionsRequest: clientSessionActionsRequest)
+        }
+        .then { primerConfiguration -> Promise<Void> in
+            let appState: AppStateProtocol = DependencyContainer.resolve()
+            appState.primerConfiguration = primerConfiguration
+            return Promise<Void>
+        }
+        .done {
+            do {
+                DispatchQueue.main.async {
+                    PrimerDelegateProxy.clientSessionUpdateDidFinish(actionsAsDictionary ?? [:], resumeHandler: resumeHandler)
+                }
+            }
+            
+        }
     }
 }
 

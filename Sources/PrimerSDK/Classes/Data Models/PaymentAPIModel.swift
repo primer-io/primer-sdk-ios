@@ -266,7 +266,7 @@ public struct ClientSessionRequestBody {
 }
 
 public struct ClientSessionActionsRequest: Encodable {
-    let clientToken: RawJWTToken
+    let clientToken: RawJWTToken?
     let actions: [ClientSession.Action]
 }
 
