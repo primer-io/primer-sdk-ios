@@ -95,9 +95,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     var customer: Customer?
     
     var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
-    
-    var merchantCapabilities: [MerchantCapability]?
-    
+        
     var supportedNetworks: [PaymentNetwork]?
     var isInitialLoadingHidden: Bool = false
     

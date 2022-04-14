@@ -31,7 +31,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     private var applePayWindow: UIWindow?
     private var request: PKPaymentRequest!
     // This is the completion handler that notifies that the necessary data were received.
-    private var applePayReceiveDataCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
+    private var applePayReceiveDataCompletion: ((Result<PaymentMethod.ApplePay.PKPaymentsResponse, Error>) -> Void)?
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((NSObject) -> Void)?
     private var isCancelled: Bool = false
@@ -240,7 +240,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                 name: "Total", unitAmount: settings.amount ?? 0, quantity: 1)
         ]
         
-        let applePayRequest = ApplePayRequest(
+        let applePayRequest = PaymentMethod.ApplePay.PKPaymentsRequest(
             currency: currency,
             merchantIdentifier: merchantIdentifier,
             countryCode: countryCode,
@@ -346,10 +346,10 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         }
         
         do {
-            let tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)
-            let applePayPaymentResponse = ApplePayPaymentResponse(
-                token: ApplePayPaymentResponseToken(
-                    paymentMethod: ApplePayPaymentResponsePaymentMethod(
+            let tokenPaymentData = try JSONParser().parse(PaymentMethod.ApplePay.PKPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)
+            let applePayPaymentResponse = PaymentMethod.ApplePay.PKPaymentsResponse(
+                token: PaymentMethod.ApplePay.PKPaymentResponseToken(
+                    paymentMethod: PaymentMethod.ApplePay.PKPaymentResponsePaymentMethod(
                         displayName: payment.token.paymentMethod.displayName,
                         network: payment.token.paymentMethod.network?.rawValue,
                         type: payment.token.paymentMethod.type.primerValue

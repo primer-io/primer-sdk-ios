@@ -46,48 +46,6 @@ extension PaymentMethod {
         
     }
     
-    // MARK: - ApplePay ✅
-    class ApplePay {
-        
-        public class Configuration {
-            struct Options: PaymentMethodConfigurationOptions {
-                let certificates: [PaymentMethod.ApplePay.Configuration.Options.Certificate]
-                
-                struct Certificate: Codable {
-                    let certificateId: String?
-                    let createdAt: String?
-                    let expirationTimestamp: String?
-                    let merchantId: String?
-                    let status: String?
-                    let validFromTimestamp: String?
-                }
-            }
-        }
-        
-        class Tokenization {
-            struct InstrumentRequestParameters: PaymentMethodTokenizationInstrumentRequestParameters {
-                let paymentMethodConfigId: String
-                let token: ApplePayPaymentResponseToken
-                let sourceConfig: PaymentMethod.ApplePay.SourceConfig
-            }
-            
-            public struct InstrumentResponseData: PaymentMethodTokenizationInstrumentResponseData {
-                public let last4Digits: String?
-                public let expirationYear: String?
-                public let expirationMonth: String?
-                public let isNetworkTokenized: Bool?
-                public let binData: PaymentMethod.PaymentCard.BinData?
-                public let network: String?
-            }
-        }
-        
-        
-        struct SourceConfig: Codable {
-            let source: String
-            let merchantId: String
-        }
-    }
-    
     // MARK: - Blik ✅
     class Blik {
         public class Configuration {
