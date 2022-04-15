@@ -42,23 +42,23 @@ public class ClientSession: Codable {
     
     public class Action: NSObject, Encodable {
         
-        static func unselectPaymentMethod() {
+        static func unselectPaymentMethod() -> Promise<Void> {
             let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
-            requestClientSessionWithActions(actions)
+            return requestClientSessionWithActions(actions)
         }
         
-        static func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+        static func selectPaymentMethodWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
             let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
-            requestClientSessionWithActions(actions)
+            return requestClientSessionWithActions(actions)
         }
         
-        static func setPostalCodeWithParameters(_ parameters: [String: Any]) {
+        static func setPostalCodeWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
             let actions: [ClientSession.Action] = [ClientSession.Action(type: "SET_BILLING_ADDRESS", params: parameters)]
-            requestClientSessionWithActions(actions)
+            return requestClientSessionWithActions(actions)
         }
         
-        static func dispatchMultipleActions(_ actions: [ClientSession.Action]) {
-            requestClientSessionWithActions(actions)
+        static func dispatchMultipleActions(_ actions: [ClientSession.Action]) -> Promise<Void> {
+            return requestClientSessionWithActions(actions)
         }
         
         public var type: String
@@ -297,26 +297,31 @@ internal extension Encodable {
 
 extension ClientSession.Action {
     
-    private static func requestClientSessionWithActions(_ actions: [ClientSession.Action]) {
-                
-        firstly {
-            ClientSession.Action.raiseClientSessionUpdateDidStartEvent()
-        }
-        .then { () -> Promise<PrimerConfiguration> in
-            let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
-            let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
-            return clientSessionService.requestClientSessionWithActions(actionsRequest: clientSessionActionsRequest)
-        }
-        .then { primerConfiguration -> Promise<Void> in
-            ClientSession.Action.setPrimerConfiguration(primerConfiguration)
-        }
-        .done {
-            ClientSession.Action.raiseClientSessionUpdateDidFinishEvent()
-        }
-        .catch { error in
-            ErrorHandler.handle(error: error)
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.checkoutFailed(with: error)
+    private static func requestClientSessionWithActions(_ actions: [ClientSession.Action]) -> Promise<Void> {
+        
+        return Promise { seal in
+            
+            firstly {
+                ClientSession.Action.raiseClientSessionUpdateDidStartEvent()
+            }
+            .then { () -> Promise<PrimerConfiguration> in
+                let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
+                let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
+                return clientSessionService.requestClientSessionWithActions(actionsRequest: clientSessionActionsRequest)
+            }
+            .then { primerConfiguration -> Promise<Void> in
+                ClientSession.Action.setPrimerConfiguration(primerConfiguration)
+            }
+            .done {
+                ClientSession.Action.raiseClientSessionUpdateDidFinishEvent()
+                seal.fulfill()
+            }
+            .catch { error in
+                ErrorHandler.handle(error: error)
+                DispatchQueue.main.async {
+                    PrimerDelegateProxy.checkoutFailed(with: error)
+                }
+                seal.reject(error)
             }
         }
     }

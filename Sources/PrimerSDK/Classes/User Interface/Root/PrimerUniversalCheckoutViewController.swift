@@ -18,7 +18,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var selectedPaymentMethod: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
-    private var onClientSessionActionCompletion: ((Error?) -> Void)?
+    private var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     private var singleUsePaymentMethod: PaymentMethodToken?
     private var resumePaymentId: String?
     
@@ -298,12 +298,12 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 ]
             }
             
-            onClientSessionActionCompletion = { err in
+            onClientSessionActionUpdateCompletion = { err in
                 if let err = err {
                     DispatchQueue.main.async {
                         ClientSession.Action.unselectPaymentMethod()
                         PrimerDelegateProxy.onResumeError(err)
-                        self.onClientSessionActionCompletion = nil
+                        self.onClientSessionActionUpdateCompletion = nil
                     }
                 } else {
                     self.continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)
@@ -374,7 +374,7 @@ extension PrimerUniversalCheckoutViewController {
             #if canImport(Primer3DS)
             guard let paymentMethod = singleUsePaymentMethod else {
                 DispatchQueue.main.async {
-                    self.onClientSessionActionCompletion = nil
+                    self.onClientSessionActionUpdateCompletion = nil
                     let err = PrimerError.invalid3DSKey(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     self.handleErrorBasedOnSDKSettings(err)
@@ -390,7 +390,7 @@ extension PrimerUniversalCheckoutViewController {
                         guard let threeDSPostAuthResponse = paymentMethodToken.1,
                               let resumeToken = threeDSPostAuthResponse.resumeToken else {
                                   DispatchQueue.main.async {
-                                      self.onClientSessionActionCompletion = nil
+                                      self.onClientSessionActionUpdateCompletion = nil
                                       let err = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                                       ErrorHandler.handle(error: err)
                                       self.handleErrorBasedOnSDKSettings(err)
@@ -405,7 +405,7 @@ extension PrimerUniversalCheckoutViewController {
                     log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
                     
                     DispatchQueue.main.async {
-                        self.onClientSessionActionCompletion = nil
+                        self.onClientSessionActionUpdateCompletion = nil
                         let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: containerErr)
                         self.handleErrorBasedOnSDKSettings(containerErr)
@@ -415,7 +415,7 @@ extension PrimerUniversalCheckoutViewController {
             #else
             
             DispatchQueue.main.async {
-                self.onClientSessionActionCompletion = nil
+                self.onClientSessionActionUpdateCompletion = nil
                 let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 self.handleErrorBasedOnSDKSettings(err)
@@ -429,7 +429,7 @@ extension PrimerUniversalCheckoutViewController {
                 configService.fetchConfig()
             }
             .done {
-                self.onClientSessionActionCompletion?(nil)
+                self.onClientSessionActionUpdateCompletion?(nil)
             }
             .catch { err in
                 ErrorHandler.handle(error: err)
@@ -586,7 +586,7 @@ extension PrimerUniversalCheckoutViewController: ResumeHandlerProtocol {
     
     func handle(error: Error) {
         DispatchQueue.main.async {
-            self.onClientSessionActionCompletion?(error)
+            self.onClientSessionActionUpdateCompletion?(error)
             self.payButton.stopAnimating()
             self.enableView(true)
             self.dismissOrShowResultScreen(error)
