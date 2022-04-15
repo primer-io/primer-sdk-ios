@@ -314,7 +314,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
 
     
-    var onClientSessionActionCompletion: ((Error?) -> Void)?
+    var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     var onResumeHandlerCompletion: ((URL?, Error?) -> Void)?
     var onResumeTokenCompletion: ((Error?) -> Void)?
     private var isCanceled: Bool = false
@@ -367,7 +367,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     func cancel() {
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-        self.onClientSessionActionCompletion = nil
+        self.onClientSessionActionUpdateCompletion = nil
         self.onResumeHandlerCompletion = nil
         self.onResumeTokenCompletion = nil
         
@@ -447,7 +447,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     private func continueTokenizationFlow() {
-        self.onClientSessionActionCompletion = nil
+        self.onClientSessionActionUpdateCompletion = nil
 
         do {
             try self.validate()
@@ -524,7 +524,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             }
             .ensure {
                 Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-                self.onClientSessionActionCompletion = nil
+                self.onClientSessionActionUpdateCompletion = nil
                 self.onResumeHandlerCompletion = nil
                 self.onResumeTokenCompletion = nil
             }
@@ -552,7 +552,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     ]
                 ]
         
-                onClientSessionActionCompletion = { err in
+                onClientSessionActionUpdateCompletion = { err in
                     if let err = err {
                         DispatchQueue.main.async {
                             self.submitButton.stopAnimating()
@@ -562,7 +562,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     } else {
                         self.cardComponentsManager.tokenize()
                     }
-                    self.onClientSessionActionCompletion = nil
+                    self.onClientSessionActionUpdateCompletion = nil
                 }
                 
                 var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
@@ -971,10 +971,10 @@ extension FormPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
         DispatchQueue.main.async {
-            if self.onClientSessionActionCompletion != nil {
+            if self.onClientSessionActionUpdateCompletion != nil {
                 ClientSession.Action.unselectPaymentMethod()
-                self.onClientSessionActionCompletion?(error)
-                self.onClientSessionActionCompletion = nil
+                self.onClientSessionActionUpdateCompletion?(error)
+                self.onClientSessionActionUpdateCompletion = nil
             }
 
             switch self.config.type {
