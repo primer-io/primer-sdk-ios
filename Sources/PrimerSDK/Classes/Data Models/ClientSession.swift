@@ -304,7 +304,6 @@ extension ClientSession.Action {
         }
         .then { () -> Promise<PrimerConfiguration> in
             let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
-            let appState: AppStateProtocol = DependencyContainer.resolve()
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
             return clientSessionService.requestClientSessionWithActions(actionsRequest: clientSessionActionsRequest)
         }
