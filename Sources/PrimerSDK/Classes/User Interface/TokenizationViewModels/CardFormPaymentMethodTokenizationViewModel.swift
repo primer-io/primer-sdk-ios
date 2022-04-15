@@ -504,7 +504,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    var onClientSessionActionCompletion: ((Error?) -> Void)?
+    var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     
     @objc
     func payButtonTapped(_ sender: UIButton) {
@@ -540,7 +540,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 ]
             ]
             
-            onClientSessionActionCompletion = { err in
+            onClientSessionActionUpdateCompletion = { err in
                 if let err = err {
                     DispatchQueue.main.async {
                         self.submitButton.stopAnimating()
@@ -551,7 +551,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 } else {
                     self.cardComponentsManager.tokenize()
                 }
-                self.onClientSessionActionCompletion = nil
+                self.onClientSessionActionUpdateCompletion = nil
             }
             
             var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
@@ -824,14 +824,44 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 ]
             ]
             
-            ClientSession.Action.selectPaymentMethodWithParameters(params)
+            self.selectPaymentMethodWithParameters(params)
             cardNumberContainerView.rightImage2 = cardNetwork.icon
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
-            ClientSession.Action.unselectPaymentMethod()
+            self.unselectPaymentMethod()
+        }
+    }
+}
+
+extension CardFormPaymentMethodTokenizationViewModel {
+    
+    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+        firstly {
+            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
+        }
+        .done {
+            self.updateButtonUI()
+            self.raiseOnConfigurationFetchedCallback()
+            self.raiseOnClientSessionActionUpdateCompletion()
+        }
+        .catch { error in
+            self.handle(error: error)
         }
     }
     
+    private func unselectPaymentMethod() {
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .done {
+            self.updateButtonUI()
+            self.raiseOnConfigurationFetchedCallback()
+            self.raiseOnClientSessionActionUpdateCompletion()
+        }
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
 }
 
 extension CardFormPaymentMethodTokenizationViewModel {
@@ -917,39 +947,6 @@ extension CardFormPaymentMethodTokenizationViewModel {
             }
 #endif
             
-        } else if decodedClientToken.intent == RequiredActionName.processor3DS.rawValue {
-            if let redirectUrl = decodedClientToken.redirectUrl,
-               let statusUrl = decodedClientToken.statusUrl {
-                let pollingUrls = PollingURLs(status: statusUrl, redirect: redirectUrl, complete: nil)
-                self.presentWeb3DS(with: pollingUrls)
-                
-            } else {
-                let err = PrimerError.invalidValue(key: "Polling parameters", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.onResumeError(err)
-            }
-
-        } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
-            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            
-            firstly {
-                configService.fetchConfig()
-            }
-            .done {
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                
-                if let amount = settings.amount, !self.isTokenizing {
-                    self.configurePayButton(amount: amount)
-                }
-                
-                // determine postal code textfield visibility
-                self.onConfigurationFetched?()
-                
-                self.onClientSessionActionCompletion?(nil)
-            }
-            .catch { err in
-                self.onClientSessionActionCompletion?(err)
-            }
         } else {
             let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -962,12 +959,32 @@ extension CardFormPaymentMethodTokenizationViewModel {
 
 extension CardFormPaymentMethodTokenizationViewModel {
     
+    private func updateButtonUI() {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        if let amount = settings.amount, !self.isTokenizing {
+            self.configurePayButton(amount: amount)
+        }
+    }
+    
+    private func raiseOnConfigurationFetchedCallback() {
+        self.onConfigurationFetched?()
+    }
+    
+    private func raiseOnClientSessionActionUpdateCompletion(_ error: Error? = nil) {
+        self.onClientSessionActionUpdateCompletion?(error)
+        self.onClientSessionActionUpdateCompletion = nil
+    }
+}
+
+extension CardFormPaymentMethodTokenizationViewModel {
+    
     override func handle(error: Error) {
+        
         DispatchQueue.main.async {
-            if self.onClientSessionActionCompletion != nil {
-                ClientSession.Action.unselectPaymentMethod()
-                self.onClientSessionActionCompletion?(error)
-                self.onClientSessionActionCompletion = nil
+            
+            if self.onClientSessionActionUpdateCompletion != nil {
+                _ = ClientSession.Action.unselectPaymentMethod()
+                self.raiseOnClientSessionActionUpdateCompletion(error)
             }
             
             self.handleFailedTokenizationFlow(error: error)
