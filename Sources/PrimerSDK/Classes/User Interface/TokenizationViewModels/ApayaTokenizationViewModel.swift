@@ -188,7 +188,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            ClientSession.Action.selectPaymentMethodWithParameters(params)
+            self.selectPaymentMethodWithParameters(params)
         } else {
             continueTokenizationFlow()
         }
@@ -199,9 +199,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                ClientSession.Action.unselectPaymentMethod()
-                PrimerDelegateProxy.checkoutFailed(with: error)
-                self.handleFailedTokenizationFlow(error: error)
+                self.unselectPaymentMethodWithError(error)
             }
             return
         }
@@ -220,11 +218,9 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
                 self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
             }
         }
-        .catch { err in
+        .catch { error in
             DispatchQueue.main.async {
-                ClientSession.Action.unselectPaymentMethod()
-                PrimerDelegateProxy.checkoutFailed(with: err)
-                self.handleFailedTokenizationFlow(error: err)
+                self.unselectPaymentMethodWithError(error)
             }
         }
     }
@@ -418,10 +414,49 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
 
 extension ApayaTokenizationViewModel {
     
-    override func handle(error: Error) {
-        ClientSession.Action.unselectPaymentMethod()
+    private func executeCompletionAndNullifyAfter(error: Error? = nil) {
         self.completion?(nil, error)
         self.completion = nil
+    }
+    
+    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+        
+        firstly {
+            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
+        }
+        .done {}
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+        
+    private func unselectPaymentMethodWithError(_ error: Error) {
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .done {
+            PrimerDelegateProxy.checkoutFailed(with: error)
+            self.handleFailedTokenizationFlow(error: error)
+        }
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+}
+
+extension ApayaTokenizationViewModel {
+    
+    override func handle(error: Error) {
+        
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .done {
+            self.executeCompletionAndNullifyAfter(error: error)
+        }
+        .catch { error in
+            self.executeCompletionAndNullifyAfter(error: error)
+        }
     }
     
     override func handle(newClientToken clientToken: String) {
