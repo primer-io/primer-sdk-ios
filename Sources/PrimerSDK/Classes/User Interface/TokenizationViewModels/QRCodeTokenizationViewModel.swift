@@ -129,9 +129,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             try validate()
         } catch {
             DispatchQueue.main.async {
-                ClientSession.Action.unselectPaymentMethod()
-                PrimerDelegateProxy.checkoutFailed(with: error)
-                self.handleFailedTokenizationFlow(error: error)
+                self.unselectPaymentMethodWithError(error)
             }
             return
         }
@@ -169,13 +167,12 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             self.onResumeTokenCompletion = nil
             self.onClientToken = nil
         }
-        .catch { err in
+        .catch { error in
             DispatchQueue.main.async {
-                if let primerErr = err as? PrimerError, case PrimerError.cancelled = primerErr {
-                    self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
+                if let primerErr = error as? PrimerError, case PrimerError.cancelled = primerErr {
+                    self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
                 } else {
-                    PrimerDelegateProxy.checkoutFailed(with: err)
-                    self.handleFailedTokenizationFlow(error: err)
+                    self.unselectPaymentMethodWithError(error)
                 }
             }
         }
@@ -387,12 +384,48 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
 
 extension QRCodeTokenizationViewModel {
     
-    override func handle(error: Error) {
-        ClientSession.Action.unselectPaymentMethod()
+    private func executeCompletionAndNullifyAfter(error: Error? = nil) {
         self.completion?(nil, error)
         self.completion = nil
         onResumeTokenCompletion?(nil, error)
         onResumeTokenCompletion = nil
+    }
+    
+    private func handleCheckoutFailedEventWithError(_ error: Error) {
+        self.executeCompletionAndNullifyAfter(error: error)
+        PrimerDelegateProxy.checkoutFailed(with: error)
+        self.handleFailedTokenizationFlow(error: error)
+    }
+    
+    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+        
+        firstly {
+            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
+        }
+        .done {}
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+        
+    private func unselectPaymentMethodWithError(_ error: Error) {
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .done {
+            self.handleCheckoutFailedEventWithError(error)
+        }
+        .catch { error in
+            self.handleCheckoutFailedEventWithError(error)
+        }
+    }
+}
+
+
+extension QRCodeTokenizationViewModel {
+    
+    override func handle(error: Error) {
+        self.unselectPaymentMethodWithError(error)
     }
     
     override func handle(newClientToken clientToken: String) {
