@@ -183,8 +183,13 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         
         if completion != nil {
             DispatchQueue.main.async {
-                ClientSession.Action.unselectPaymentMethod()
-                self.completion = nil
+                firstly {
+                    ClientSession.Action.unselectPaymentMethod()
+                }
+                .done {
+                    self.completion = nil
+                }
+                .catch { _ in }
             }
         }
         
@@ -220,9 +225,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             try validate()
         } catch {
             DispatchQueue.main.async {
-                ClientSession.Action.unselectPaymentMethod()
-                PrimerDelegateProxy.checkoutFailed(with: error)
-                self.handleFailedTokenizationFlow(error: error)
+                self.unselectPaymentMethodWithError(error)
             }
             return
         }
@@ -269,11 +272,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             self.onResumeTokenCompletion = nil
             self.onClientToken = nil
         }
-        .catch { err in
+        .catch { error in
             DispatchQueue.main.async {
-                ClientSession.Action.unselectPaymentMethod()
-                PrimerDelegateProxy.checkoutFailed(with: err)
-                self.handleFailedTokenizationFlow(error: err)
+                self.unselectPaymentMethodWithError(error)
             }
         }
     }
@@ -443,10 +444,31 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
 
 extension BankSelectorTokenizationViewModel {
     
-    override func handle(error: Error) {
-        ClientSession.Action.unselectPaymentMethod()
+    private func executeCompletionAndNullifyAfter(error: Error? = nil) {
         self.completion?(nil, error)
         self.completion = nil
+    }
+            
+    private func unselectPaymentMethodWithError(_ error: Error) {
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .done {
+            self.executeCompletionAndNullifyAfter(error: error)
+            PrimerDelegateProxy.checkoutFailed(with: error)
+            self.handleFailedTokenizationFlow(error: error)
+        }
+        .catch { error in
+            PrimerDelegateProxy.checkoutFailed(with: error)
+            self.handleFailedTokenizationFlow(error: error)
+        }
+    }
+}
+
+extension BankSelectorTokenizationViewModel {
+    
+    override func handle(error: Error) {
+        self.unselectPaymentMethodWithError(error)
     }
     
     override func handle(newClientToken clientToken: String) {
