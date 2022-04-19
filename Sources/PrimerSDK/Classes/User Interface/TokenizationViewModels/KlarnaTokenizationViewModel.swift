@@ -153,7 +153,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            ClientSession.Action.selectPaymentMethodWithParameters(params)
+            self.selectPaymentMethodWithParameters(params)
         } else {
             continueTokenizationFlow()
         }
@@ -500,6 +500,44 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     
 }
 
+extension KlarnaTokenizationViewModel {
+    
+    private func executeCompletionAndNullifyAfter(error: Error? = nil) {
+        self.completion?(nil, error)
+        self.completion = nil
+    }
+    
+    private func handleCheckoutFailedEventWithError(_ error: Error) {
+        self.executeCompletionAndNullifyAfter(error: error)
+        PrimerDelegateProxy.checkoutFailed(with: error)
+        self.handleFailedTokenizationFlow(error: error)
+    }
+    
+    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+        
+        firstly {
+            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
+        }
+        .done {}
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+        
+    private func unselectPaymentMethodWithError(_ error: Error) {
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .done {
+            self.handleCheckoutFailedEventWithError(error)
+        }
+        .catch { error in
+            self.handleCheckoutFailedEventWithError(error)
+        }
+    }
+}
+
+
 extension KlarnaTokenizationViewModel: WKNavigationDelegate {
     
     func webView(
@@ -591,9 +629,7 @@ extension KlarnaTokenizationViewModel: WKNavigationDelegate {
 extension KlarnaTokenizationViewModel {
     
     override func handle(error: Error) {
-        ClientSession.Action.unselectPaymentMethod()
-        self.completion?(nil, error)
-        self.completion = nil
+        self.unselectPaymentMethodWithError(error)
     }
     
     override func handle(newClientToken clientToken: String) {
