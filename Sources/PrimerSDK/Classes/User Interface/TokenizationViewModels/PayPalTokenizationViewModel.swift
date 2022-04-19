@@ -164,7 +164,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            ClientSession.Action.selectPaymentMethodWithParameters(params)
+            self.selectPaymentMethodWithParameters(params)
         } else {
             continueTokenizationFlow()
         }
@@ -175,9 +175,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                ClientSession.Action.unselectPaymentMethod()
-                PrimerDelegateProxy.checkoutFailed(with: error)
-                self.handleFailedTokenizationFlow(error: error)
+                self.unselectPaymentMethodWithError(error)
             }
             return
         }
@@ -195,10 +193,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             self.paymentMethod = paymentMethod
             self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
         }
-        .catch { err in
-            ClientSession.Action.unselectPaymentMethod()
-            PrimerDelegateProxy.checkoutFailed(with: err)
-            self.handleFailedTokenizationFlow(error: err)
+        .catch { error in
+            self.unselectPaymentMethodWithError(error)
         }
     }
     
@@ -437,10 +433,47 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
 
 extension PayPalTokenizationViewModel {
     
-    override func handle(error: Error) {
-        ClientSession.Action.unselectPaymentMethod()
+    private func executeCompletionAndNullifyAfter(error: Error? = nil) {
         self.completion?(nil, error)
         self.completion = nil
+    }
+    
+    private func handleCheckoutFailedEventWithError(_ error: Error) {
+        self.executeCompletionAndNullifyAfter(error: error)
+        PrimerDelegateProxy.checkoutFailed(with: error)
+        self.handleFailedTokenizationFlow(error: error)
+    }
+    
+    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+        
+        firstly {
+            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
+        }
+        .done {}
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+        
+    private func unselectPaymentMethodWithError(_ error: Error) {
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .done {
+            self.handleCheckoutFailedEventWithError(error)
+            self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
+        }
+        .catch { error in
+            self.handleCheckoutFailedEventWithError(error)
+            self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
+        }
+    }
+}
+
+extension PayPalTokenizationViewModel {
+    
+    override func handle(error: Error) {
+        self.unselectPaymentMethodWithError(error)
     }
 
     override func handle(newClientToken clientToken: String) {
