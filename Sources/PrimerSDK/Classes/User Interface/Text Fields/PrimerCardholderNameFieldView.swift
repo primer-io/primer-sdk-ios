@@ -18,7 +18,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
     override func xibSetup() {
         super.xibSetup()
         
-        textField.keyboardType = .namePhonePad
+        textField.keyboardType = .default
         textField.isAccessibilityElement = true
         textField.accessibilityIdentifier = "card_holder_txt_fld"
         textField.delegate = self
