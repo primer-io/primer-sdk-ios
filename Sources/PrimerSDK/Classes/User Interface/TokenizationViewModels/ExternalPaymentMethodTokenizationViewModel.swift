@@ -394,7 +394,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            ClientSession.Action.selectPaymentMethodWithParameters(params)
+            self.selectPaymentMethodWithParameters(params)
         } else {
             continueTokenizationFlow()
         }
@@ -698,14 +698,38 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
             self.didPresentExternalView?()
         }
     }
-    
 }
+
+extension ExternalPaymentMethodTokenizationViewModel {
+        
+    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+        
+        firstly {
+            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
+        }
+        .done {}
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+        
+    private func unselectPaymentMethodWithError(_ error: Error) {
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .done {}
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+}
+
 
 extension ExternalPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
         DispatchQueue.main.async {
-            ClientSession.Action.unselectPaymentMethod()
+            self.unselectPaymentMethodWithError(error)
         }
         
         // onClientToken will be created when we're awaiting a new client token from the developer
