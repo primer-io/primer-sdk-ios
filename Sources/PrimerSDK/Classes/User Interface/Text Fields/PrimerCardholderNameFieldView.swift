@@ -66,7 +66,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
         let cursorLocation = textField.position(from: positionOriginal, offset: (range.location + NSString(string: string).length))
         
         guard let primerTextField = textField as? PrimerTextField else { return true }
-        guard string.isValidCardholderName == true else { return false }
+        guard string.isValidCardholderName == true || string.isEmpty else { return false }
         let currentText = primerTextField._text ?? ""
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         
