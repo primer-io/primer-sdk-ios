@@ -47,7 +47,8 @@ class PrimerFormViewController: PrimerViewController {
                                                                tableName: nil,
                                                                bundle: Bundle.primerResources,
                                                                value: "Available payment methods",
-                                                               comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").uppercased().folding(options: .diacriticInsensitive, locale: .current)
+                                                               comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").localizedUppercase
+        
         otherPaymentMethodsTitleLabel.textColor = theme.text.subtitle.color
         otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         availablePaymentMethodsContainerStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
