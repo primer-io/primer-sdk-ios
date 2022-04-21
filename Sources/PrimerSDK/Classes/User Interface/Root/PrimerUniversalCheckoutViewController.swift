@@ -301,22 +301,20 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             onClientSessionActionUpdateCompletion = { err in
                 if let err = err {
                     DispatchQueue.main.async {
-                        ClientSession.Action.unselectPaymentMethod()
-                        PrimerDelegateProxy.onResumeError(err)
-                        self.onClientSessionActionUpdateCompletion = nil
+                        self.unselectPaymentMethodWithError(err)
                     }
                 } else {
                     self.continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)
                 }
             }
             
-            ClientSession.Action.selectPaymentMethodWithParameters(params)
+            self.selectPaymentMethodWithParameters(params)
             
         } else {
             continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)
         }
     }
-    
+        
     private func continuePayment(withVaultedPaymentMethod paymentMethodToken: PaymentMethodToken) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else { return }
         let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
@@ -331,6 +329,32 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     self.dismissOrShowResultScreen(error)
                 }
             }
+        }
+    }
+}
+
+extension PrimerUniversalCheckoutViewController {
+        
+    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+        
+        firstly {
+            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
+        }
+        .done {}
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+        
+    private func unselectPaymentMethodWithError(_ error: Error) {
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .done {
+            self.onClientSessionActionUpdateCompletion = nil
+        }
+        .catch { error in
+            self.handle(error: error)
         }
     }
 }
