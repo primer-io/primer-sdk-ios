@@ -65,7 +65,7 @@ public protocol PrimerDelegate {
     @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
     @objc optional func clientSessionUpdateDidStart()
-    @objc optional func clientSessionUpdateDidFinish()
+    @objc optional func clientSessionUpdateDidFinish(clientSession: CheckoutDataClientSession)
 
     /// This function will be called when the SDK is about to initiate a payment.
     /// - Parameters:
@@ -76,14 +76,14 @@ public protocol PrimerDelegate {
     /// This function will be called when the checkout has been successful.
     /// - Parameters:
     ///   - payment: The Payment object containing the completed payment.
-    @objc optional func checkoutDidComplete(_ data: [String: Any])
+    @objc optional func checkoutDidComplete(_ data: CheckoutData)
     
     /// This function will be called when the checkout encountered an error.
     /// - Parameters:
     ///   - error: The Error object containing the error description.
     ///   - payment: The additional payment data if present
     ///   - completion: The completion handler containing a custom error to optionally pass to the SDK
-    @objc optional func checkoutDidFail(error: Error, data: [String: Any]?, completion: @escaping (String?) -> Void)
+    @objc optional func checkoutDidFail(error: Error, data: CheckoutData?, completion: @escaping (String?) -> Void)
 }
 
 internal class PrimerDelegateProxy {
@@ -189,9 +189,9 @@ internal class PrimerDelegateProxy {
             Primer.shared.delegate?.clientSessionUpdateDidStart?()
         }
     }
-    static func clientSessionUpdateDidFinish() {
+    static func clientSessionUpdateDidFinish(clientSession: CheckoutDataClientSession) {
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            Primer.shared.delegate?.clientSessionUpdateDidFinish?()
+            Primer.shared.delegate?.clientSessionUpdateDidFinish?(clientSession: clientSession)
         }
     }
 

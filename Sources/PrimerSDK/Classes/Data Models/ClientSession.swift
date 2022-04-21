@@ -309,11 +309,13 @@ extension ClientSession.Action {
                 let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
                 return clientSessionService.requestClientSessionWithActions(actionsRequest: clientSessionActionsRequest)
             }
-            .then { primerConfiguration -> Promise<Void> in
+            .then { primerConfiguration -> Promise<PrimerConfiguration> in
                 ClientSession.Action.setPrimerConfiguration(primerConfiguration)
             }
+            .then { primerConfiguration -> Promise<Void> in
+                ClientSession.Action.raiseClientSessionUpdateDidFinishEvent(primerConfiguration: primerConfiguration)
+            }
             .done {
-                ClientSession.Action.raiseClientSessionUpdateDidFinishEvent()
                 seal.fulfill()
             }
             .catch { error in
@@ -326,8 +328,53 @@ extension ClientSession.Action {
         }
     }
     
-    private static func raiseClientSessionUpdateDidFinishEvent() {
-        PrimerDelegateProxy.clientSessionUpdateDidFinish()
+    private static func raiseClientSessionUpdateDidFinishEvent(primerConfiguration: PrimerConfiguration) -> Promise<Void> {
+        return Promise { seal in
+            
+            let lineItems = primerConfiguration.clientSession?.order?.lineItems?.compactMap { CheckoutDataLineItem(itemId: $0.itemId,
+                                                                                                                   itemDescription: $0.description,
+                                                                                                                   amount: $0.amount,
+                                                                                                                   discountAmount: $0.discountAmount,
+                                                                                                                   quantity: $0.quantity) }
+            
+            let order = CheckoutDataOrder(countryCode: primerConfiguration.clientSession?.order?.countryCode?.rawValue,
+                                          currencyCode: primerConfiguration.clientSession?.order?.currencyCode?.rawValue,
+                                          lineItems: lineItems)
+            
+            let billingAddress = CheckoutDataPaymentAPIModelAddress(firstName: primerConfiguration.clientSession?.customer?.billingAddress?.firstName,
+                                                                    lastName: primerConfiguration.clientSession?.customer?.billingAddress?.lastName,
+                                                                    addressLine1: primerConfiguration.clientSession?.customer?.billingAddress?.addressLine1,
+                                                                    addressLine2: primerConfiguration.clientSession?.customer?.billingAddress?.addressLine2,
+                                                                    city: primerConfiguration.clientSession?.customer?.billingAddress?.city,
+                                                                    state: primerConfiguration.clientSession?.customer?.billingAddress?.state,
+                                                                    countryCode: primerConfiguration.clientSession?.customer?.billingAddress?.countryCode?.rawValue,
+                                                                    postalCode: primerConfiguration.clientSession?.customer?.billingAddress?.postalCode)
+                        
+            let shippingAddress = CheckoutDataPaymentAPIModelAddress(firstName: primerConfiguration.clientSession?.customer?.shippingAddress?.firstName,
+                                                                    lastName: primerConfiguration.clientSession?.customer?.shippingAddress?.lastName,
+                                                                    addressLine1: primerConfiguration.clientSession?.customer?.shippingAddress?.addressLine1,
+                                                                    addressLine2: primerConfiguration.clientSession?.customer?.shippingAddress?.addressLine2,
+                                                                    city: primerConfiguration.clientSession?.customer?.shippingAddress?.city,
+                                                                    state: primerConfiguration.clientSession?.customer?.shippingAddress?.state,
+                                                                    countryCode: primerConfiguration.clientSession?.customer?.shippingAddress?.countryCode?.rawValue,
+                                                                    postalCode: primerConfiguration.clientSession?.customer?.shippingAddress?.postalCode)
+
+            let customer = CheckoutDataCustomer(firstName: primerConfiguration.clientSession?.customer?.firstName,
+                                                lastName: primerConfiguration.clientSession?.customer?.lastName,
+                                                emailAddress: primerConfiguration.clientSession?.customer?.emailAddress,
+                                                mobileNumber: primerConfiguration.clientSession?.customer?.mobileNumber,
+                                                billingAddress: billingAddress,
+                                                shippingAddress: shippingAddress)
+            
+            let clientSession = CheckoutDataClientSession(customerId: primerConfiguration.clientSession?.customer?.id,
+                                                          orderId: primerConfiguration.clientSession?.order?.id,
+                                                          totalAmount: primerConfiguration.clientSession?.order?.totalOrderAmount,
+                                                          order: order,
+                                                          customer: customer)
+            
+            PrimerDelegateProxy.clientSessionUpdateDidFinish(clientSession: clientSession)
+            seal.fulfill()
+        }
     }
     
     private static func raiseClientSessionUpdateDidStartEvent() -> Promise<Void> {
@@ -337,11 +384,11 @@ extension ClientSession.Action {
         }
     }
     
-    private static func setPrimerConfiguration(_ primerConfiguration: PrimerConfiguration) -> Promise<Void> {
+    private static func setPrimerConfiguration(_ primerConfiguration: PrimerConfiguration) -> Promise<PrimerConfiguration> {
         return Promise { seal in
             let appState: AppStateProtocol = DependencyContainer.resolve()
             appState.primerConfiguration = primerConfiguration
-            seal.fulfill()
+            seal.fulfill(primerConfiguration)
         }
     }
 }

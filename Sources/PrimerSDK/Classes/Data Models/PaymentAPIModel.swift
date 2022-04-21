@@ -273,18 +273,7 @@ public struct ClientSessionUpdateRequest: Encodable {
     let actions: ClientSessionAction
 }
 
-extension String {
-    
-    var fixedBase64Format: Self {
-        let str = self.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
-        let offset = str.count % 4
-        guard offset != 0 else { return str }
-        return str.padding(toLength: str.count + 4 - offset, withPad: "=", startingAt: 0)
-    }
-
-}
-
-struct JWTToken: Decodable {
+internal struct JWTToken: Decodable {
     var accessToken: String?
     var exp: Int?
     var expDate: Date? {
@@ -310,8 +299,6 @@ public struct PaymentAPIModelAddress: Codable {
     let state: String?
     let countryCode: String?
     let postalCode: String?
-    
-    
     
     public init(
         firstName: String?,
@@ -371,11 +358,6 @@ public struct PaymentAPIModelAddress: Codable {
         return dic.keys.count == 0 ? nil : dic
     }
 }
-
-public struct CheckoutData {
-    public let payment: Payment.Response?
-}
-
 public struct Payment {
     
     public struct CreateRequest: Encodable {
@@ -437,5 +419,169 @@ public struct Payment {
             case pending = "PENDING"
             case success = "SUCCESS"
         }
+    }
+}
+
+//MARK: - Public / User Facing
+
+@objc public class CheckoutData: NSObject {
+    
+    public let payment: CheckoutDataPayment?
+    
+    public init(payment: CheckoutDataPayment?) {
+        self.payment = payment
+    }
+}
+
+@objc public enum PaymentErrorCode: Int, RawRepresentable, Codable {
+    case failed
+    case cancelledByCustomer
+
+    public typealias RawValue = String
+
+    public var rawValue: RawValue {
+        switch self {
+            case .failed:
+                return "payment-failed"
+            case .cancelledByCustomer:
+                return "cancelled-by-customer"
+        }
+    }
+
+    public init?(rawValue: RawValue) {
+        switch rawValue {
+            case "payment-failed":
+                self = .failed
+            case "cancelled-by-customer":
+                self = .cancelledByCustomer
+            default:
+                return nil
+        }
+    }
+}
+
+// TODO: Update / Temporary name to avoid conflicts
+@objc public class CheckoutDataPayment: NSObject {
+    public let id: String?
+    public let orderId: String?
+    public let paymentFailureReason: PaymentErrorCode?
+    
+    public init(id: String?, orderId: String?, paymentFailureReason: PaymentErrorCode?) {
+        self.id = id
+        self.orderId = orderId
+        self.paymentFailureReason = paymentFailureReason
+    }
+}
+
+extension CheckoutDataPayment {
+    
+    convenience init(from paymentReponse: Payment.Response) {
+        self.init(id: paymentReponse.id, orderId: paymentReponse.orderId, paymentFailureReason: nil)
+    }
+}
+
+@objc public class CheckoutDataClientSession: NSObject {
+    public let customerId: String?
+    public let orderId: String?
+    public let totalAmount: Int?
+    public let order: CheckoutDataOrder?
+    public let customer: CheckoutDataCustomer?
+    
+    public init(customerId: String?,
+                         orderId: String?,
+                         totalAmount: Int?,
+                         order: CheckoutDataOrder?,
+                         customer: CheckoutDataCustomer?) {
+        self.customerId = customerId
+        self.orderId = orderId
+        self.totalAmount = totalAmount
+        self.order = order
+        self.customer = customer
+    }
+}
+
+@objc public class CheckoutDataOrder: NSObject {
+    public let countryCode: String?
+    public let currencyCode: String?
+    public let lineItems: [CheckoutDataLineItem]?
+    
+    public init(countryCode: String?, currencyCode: String?, lineItems: [CheckoutDataLineItem]?) {
+        self.countryCode = countryCode
+        self.currencyCode = currencyCode
+        self.lineItems = lineItems
+    }
+}
+
+@objc public class CheckoutDataCustomer: NSObject {
+    public let firstName: String?
+    public let lastName: String?
+    public let emailAddress: String?
+    public let mobileNumber: String?
+    public let billingAddress: CheckoutDataPaymentAPIModelAddress?
+    public let shippingAddress: CheckoutDataPaymentAPIModelAddress?
+    
+    public init(firstName: String?, lastName: String?, emailAddress: String?, mobileNumber: String?, billingAddress: CheckoutDataPaymentAPIModelAddress?, shippingAddress: CheckoutDataPaymentAPIModelAddress?) {
+        
+        self.firstName = firstName
+        self.lastName = lastName
+        self.emailAddress = emailAddress
+        self.mobileNumber = mobileNumber
+        self.billingAddress = billingAddress
+        self.shippingAddress = shippingAddress
+    }
+}
+
+@objc public class CheckoutDataLineItem: NSObject {
+    
+    public let itemId: String?
+    public let itemDescription: String?
+    public let amount: Int?
+    public let discountAmount: Int?
+    public let quantity: Int?
+    
+    public init (
+        itemId: String?,
+        itemDescription: String?,
+        amount: Int?,
+        discountAmount: Int?,
+        quantity: Int?
+    ) {
+        self.itemId = itemId
+        self.itemDescription = itemDescription
+        self.amount = amount
+        self.discountAmount = discountAmount
+        self.quantity = quantity
+    }
+}
+
+@objc public class CheckoutDataPaymentAPIModelAddress: NSObject {
+    
+    public let firstName: String?
+    public let lastName: String?
+    public let addressLine1: String?
+    public let addressLine2: String?
+    public let city: String?
+    public let state: String?
+    public let countryCode: String?
+    public let postalCode: String?
+    
+    public init(
+        firstName: String?,
+        lastName: String?,
+        addressLine1: String?,
+        addressLine2: String?,
+        city: String?,
+        state: String?,
+        countryCode: String?,
+        postalCode: String?
+    ) {
+        self.addressLine1 = addressLine1
+        self.addressLine2 = addressLine2
+        self.city = city
+        self.countryCode = countryCode
+        self.postalCode = postalCode
+        self.firstName = firstName
+        self.lastName = lastName
+        self.state = state
     }
 }
