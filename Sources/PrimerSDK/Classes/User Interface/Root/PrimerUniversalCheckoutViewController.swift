@@ -480,8 +480,7 @@ extension PrimerUniversalCheckoutViewController {
             }
             .done { paymentResponse -> Void in
                 
-                guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary() else {
+                guard let paymentResponse = paymentResponse else {
                           return
                       }
                 
@@ -490,7 +489,8 @@ extension PrimerUniversalCheckoutViewController {
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
-                    Primer.shared.delegate?.checkoutDidComplete?(paymentResponseDict)
+                    let checkoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
+                    Primer.shared.delegate?.checkoutDidComplete?(checkoutData)
                     self.handleSuccess()
                 }
             }
@@ -633,7 +633,6 @@ extension PrimerUniversalCheckoutViewController {
             createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
                 
                 guard let paymentResponse = paymentResponse,
-                      let paymentResponseDict = try? paymentResponse.asDictionary(),
                       error == nil else {
                     self.handleErrorBasedOnSDKSettings(error!)
                     return
@@ -642,7 +641,8 @@ extension PrimerUniversalCheckoutViewController {
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
-                    Primer.shared.delegate?.checkoutDidComplete?(paymentResponseDict)
+                    let checkoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
+                    Primer.shared.delegate?.checkoutDidComplete?(checkoutData)
                     self.handleSuccess()
                 }
             }

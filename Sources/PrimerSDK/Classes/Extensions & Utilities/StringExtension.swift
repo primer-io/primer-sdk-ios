@@ -275,7 +275,16 @@ internal extension String {
         
         return str
     }
+}
+
+extension String {
     
+    var fixedBase64Format: Self {
+        let str = self.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+        let offset = str.count % 4
+        guard offset != 0 else { return str }
+        return str.padding(toLength: str.count + 4 - offset, withPad: "=", startingAt: 0)
+    }
 }
 
 #endif
