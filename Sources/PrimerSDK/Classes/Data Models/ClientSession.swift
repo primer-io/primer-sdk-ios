@@ -337,9 +337,8 @@ extension ClientSession.Action {
                                                                                                                    discountAmount: $0.discountAmount,
                                                                                                                    quantity: $0.quantity) }
             
-            let order = CheckoutDataOrder(countryCode: primerConfiguration.clientSession?.order?.countryCode?.rawValue,
-                                          currencyCode: primerConfiguration.clientSession?.order?.currencyCode?.rawValue,
-                                          lineItems: lineItems)
+            let orderDetails = CheckoutDataOrder(countryCode: primerConfiguration.clientSession?.order?.countryCode?.rawValue,
+                                          currencyCode: primerConfiguration.clientSession?.order?.currencyCode?.rawValue)
             
             let billingAddress = CheckoutDataPaymentAPIModelAddress(firstName: primerConfiguration.clientSession?.customer?.billingAddress?.firstName,
                                                                     lastName: primerConfiguration.clientSession?.customer?.billingAddress?.lastName,
@@ -369,7 +368,8 @@ extension ClientSession.Action {
             let clientSession = CheckoutDataClientSession(customerId: primerConfiguration.clientSession?.customer?.id,
                                                           orderId: primerConfiguration.clientSession?.order?.id,
                                                           totalAmount: primerConfiguration.clientSession?.order?.totalOrderAmount,
-                                                          order: order,
+                                                          lineItems: lineItems,
+                                                          orderDetails: orderDetails,
                                                           customer: customer)
             
             PrimerDelegateProxy.clientSessionUpdateDidFinish(clientSession: clientSession)
