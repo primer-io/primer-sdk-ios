@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 @objc public class PaymentCreationDecision: NSObject {
     
     public enum DecisionType {

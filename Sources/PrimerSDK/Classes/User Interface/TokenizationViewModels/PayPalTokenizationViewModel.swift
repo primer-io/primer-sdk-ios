@@ -443,7 +443,7 @@ extension PayPalTokenizationViewModel {
     
     private func handleCheckoutFailedEventWithError(_ error: Error) {
         self.executeCompletionAndNullifyAfter(error: error)
-        PrimerDelegateProxy.checkoutFailed(with: error)
+        PrimerDelegateProxy.primerDidFailWithError(error)
         self.handleFailedTokenizationFlow(error: error)
     }
     

@@ -332,7 +332,7 @@ extension PaymentMethodTokenizationViewModel {
             PrimerDelegateProxy.onResumeError(error)
             handle(error: error)
         } else {
-            Primer.shared.delegate?.checkoutDidFail?(error: error, data: nil, completion: { errorMessage in
+            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: { errorMessage in
                 let merchantError = PrimerError.merchantError(message: errorMessage ?? "")
                 self.handle(error: merchantError)
             })
