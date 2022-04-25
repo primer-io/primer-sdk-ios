@@ -581,7 +581,23 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             
             ClientSession.Action.dispatchMultipleActions(actions)
         } else {
-            cardComponentsManager.tokenize()
+            
+            firstly {
+                self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+            }
+            .done {
+                self.cardComponentsManager.tokenize()
+            }
+            .ensure {
+                Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+            }
+            .catch { error in
+                DispatchQueue.main.async {
+                    ErrorHandler.handle(error: error)
+                    Primer.shared.delegate?.checkoutFailed?(with: error)
+                    self.handleFailedTokenizationFlow(error: error)
+                }
+            }
         }
     }
     

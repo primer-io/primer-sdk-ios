@@ -231,6 +231,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
         
         firstly {
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: config.type))
+        }
+        .then {
             self.fetchBanks()
         }
         .then { banks -> Promise<PaymentMethodToken> in

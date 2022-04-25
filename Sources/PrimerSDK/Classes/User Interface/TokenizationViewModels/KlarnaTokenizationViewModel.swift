@@ -171,6 +171,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         
         firstly {
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: config.type))
+        }
+        .then {
             self.generateWebViewUrl()
         }
         .then { url -> Promise<String> in

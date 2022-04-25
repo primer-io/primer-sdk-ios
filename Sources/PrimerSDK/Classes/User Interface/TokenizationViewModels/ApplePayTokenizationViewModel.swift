@@ -178,8 +178,11 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             self.handle(error: error)
             return
         }
-                
+        
         firstly {
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+        }
+        .then {
             self.tokenize()
         }
         .done { [unowned self] paymentMethod in
