@@ -385,7 +385,7 @@ extension PaymentMethodTokenizationViewModel {
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     let checkoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
-                    Primer.shared.delegate?.checkoutDidComplete?(checkoutData)
+                    Primer.shared.delegate?.primerDidCompleteCheckoutWithData?(checkoutData)
                     self.handleSuccess()
                 }
             }
@@ -481,7 +481,7 @@ extension PaymentMethodTokenizationViewModel {
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     let checkoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
-                    Primer.shared.delegate?.checkoutDidComplete?(checkoutData)
+                    Primer.shared.delegate?.primerDidCompleteCheckoutWithData?(checkoutData)
                     self.handleSuccess()
                 }
             }
