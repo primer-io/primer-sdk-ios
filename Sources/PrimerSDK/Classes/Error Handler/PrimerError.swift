@@ -271,6 +271,8 @@ internal enum PrimerError: PrimerErrorProtocol {
     case underlyingErrors(errors: [Error], userInfo: [String: String]?)
     case missingCustomUI(paymentMethod: PaymentMethodConfigType, userInfo: [String: String]?)
     case merchantError(message: String)
+    case cancelledByCustomer(message: String?)
+    case paymentFailed
     case applePayTimedOut(userInfo: [String: String]?)
     
     var errorId: String {
@@ -291,6 +293,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "missing-primer-input-element"
         case .cancelled:
             return "payment-cancelled"
+        case .cancelledByCustomer:
+            return PaymentErrorCode.cancelledByCustomer.rawValue
         case .failedToCreateSession:
             return "failed-to-create-session"
         case .failedOnWebViewFlow:
@@ -327,6 +331,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "missing-custom-ui"
         case .merchantError:
             return "merchant-error"
+        case .paymentFailed:
+            return PaymentErrorCode.failed.rawValue
         case .applePayTimedOut:
             return "apple-pay-timed-out"
         }
@@ -356,6 +362,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Payment methods haven't been set up correctly"
         case .cancelled(let paymentMethodType, _):
             return "[\(errorId)] Payment method \(paymentMethodType.rawValue) cancelled"
+        case .cancelledByCustomer(let message):
+            return "[\(errorId)] Payment cancelled with message: \(message)"
         case .failedToCreateSession(error: let error, _):
             return "[\(errorId)] Failed to create session with error: \(error?.localizedDescription ?? "nil")"
         case .failedOnWebViewFlow(error: let error, _):
@@ -392,6 +400,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Missing custom user interface for \(paymentMethod.rawValue)"
         case .merchantError(let message):
             return message
+        case .paymentFailed:
+            return "[\(errorId)] The payment failed, retry."
         case .applePayTimedOut:
             return "[\(errorId)] Apple Pay timed out"
         }
@@ -428,7 +438,9 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .missingCustomUI(_, let userInfo),
                 .applePayTimedOut(let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .merchantError:
+        case .merchantError,
+                .cancelledByCustomer,
+                .paymentFailed:
             return nil
         }
         
@@ -456,6 +468,8 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .misconfiguredPaymentMethods:
             return "Payment Methods are not configured correctly. Ensure that you have configured them in the Connection, and/or that they are set up for the specified conditions on your dashboard https://dashboard.primer.io/"
         case .cancelled:
+            return nil
+        case .cancelledByCustomer:
             return nil
         case .failedToCreateSession:
             // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
@@ -501,6 +515,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "You have to built your UI for \(paymentMethod.rawValue) and utilize PrimerCheckoutComponents.UIManager's functionality."
         case .merchantError:
             return nil
+        case .paymentFailed:
+            return nil
         case .applePayTimedOut:
             return "Make sure you have an active internet connection and your Apple Pay configuration is correct."
         }
@@ -510,6 +526,22 @@ internal enum PrimerError: PrimerErrorProtocol {
         return self
     }
     
+}
+
+// TODO: Reiew custom initializer for simplified payment error
+extension PrimerError {
+    
+    internal static func simplifiedErrorFromErrorID(_ errorCode: PaymentErrorCode, message: String? = nil) -> PrimerError? {
+        
+        switch errorCode {
+        case .failed:
+            return PrimerError.paymentFailed
+        case .cancelledByCustomer:
+            return PrimerError.cancelledByCustomer(message: message)
+        default:
+            return nil
+        }
+    }
 }
 
 fileprivate extension Array where Element == Error {
