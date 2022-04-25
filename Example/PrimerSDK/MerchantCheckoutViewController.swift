@@ -280,9 +280,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             }
         }
     }
-            
-    func checkoutWillCreatePayment(_ paymentMethodData: String, completion: @escaping (PaymentCreateAdditionalValues?) -> Void) {
-        completion(nil)
+    
+    func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void) {
+//        decisionHandler(.abortPaymentCreation(errorMessage: "Intentinally failing the process"))
+        decisionHandler(.continuePaymentCreation(clientToken: nil))
     }
     
     func checkoutDidComplete(_ payment: [String: Any]) {
