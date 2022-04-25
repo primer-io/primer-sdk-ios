@@ -395,7 +395,7 @@ public class Primer {
                 self?.primerRootVC = nil
                 self?.primerWindow?.resignKey()
                 self?.primerWindow = nil
-                PrimerDelegateProxy.onCheckoutDismissed()
+                PrimerDelegateProxy.primerDidDismiss()
             })
         }
     }

@@ -40,7 +40,7 @@ class MockPrimerDelegate: PrimerDelegate {
     var authorizePaymentFails: Bool
     var clientTokenCallbackCalled = false
     var authorizePaymentCalled = false
-    var onCheckoutDismissedCalled = false
+    var primerDidDismissCalled = false
 
     init(token: String? = nil, authorizePaymentFails: Bool = false) {
         self.token = token
@@ -72,8 +72,8 @@ class MockPrimerDelegate: PrimerDelegate {
         if authorizePaymentFails { completion(PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])) }
     }
 
-    func onCheckoutDismissed() {
-        onCheckoutDismissedCalled = true
+    func primerDidDismiss() {
+        primerDidDismissCalled = true
     }
     
     func checkoutFailed(with error: Error) {
