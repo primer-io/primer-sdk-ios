@@ -283,7 +283,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     
     func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void) {
 //        decisionHandler(.abortPaymentCreation(errorMessage: "Intentinally failing the process"))
-        decisionHandler(.continuePaymentCreation(clientToken: nil))
+        decisionHandler(.continuePaymentCreation())
     }
     
     func checkoutDidComplete(_ payment: [String: Any]) {
