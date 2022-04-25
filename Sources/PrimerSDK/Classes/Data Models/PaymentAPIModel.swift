@@ -505,18 +505,21 @@ extension CheckoutDataPayment {
     public let customerId: String?
     public let orderId: String?
     public let totalAmount: Int?
-    public let order: CheckoutDataOrder?
+    public let lineItems: [CheckoutDataLineItem]?
+    public let orderDetails: CheckoutDataOrder?
     public let customer: CheckoutDataCustomer?
     
     public init(customerId: String?,
-                         orderId: String?,
-                         totalAmount: Int?,
-                         order: CheckoutDataOrder?,
-                         customer: CheckoutDataCustomer?) {
+                orderId: String?,
+                totalAmount: Int?,
+                lineItems: [CheckoutDataLineItem]?,
+                orderDetails: CheckoutDataOrder?,
+                customer: CheckoutDataCustomer?) {
         self.customerId = customerId
         self.orderId = orderId
         self.totalAmount = totalAmount
-        self.order = order
+        self.lineItems = lineItems
+        self.orderDetails = orderDetails
         self.customer = customer
     }
 }
@@ -524,12 +527,10 @@ extension CheckoutDataPayment {
 @objc public class CheckoutDataOrder: NSObject {
     public let countryCode: String?
     public let currencyCode: String?
-    public let lineItems: [CheckoutDataLineItem]?
     
-    public init(countryCode: String?, currencyCode: String?, lineItems: [CheckoutDataLineItem]?) {
+    public init(countryCode: String?, currencyCode: String?) {
         self.countryCode = countryCode
         self.currencyCode = currencyCode
-        self.lineItems = lineItems
     }
 }
 
