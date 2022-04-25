@@ -391,9 +391,10 @@ public struct Payment {
         public let orderId: String?
         public let requiredAction: Payment.Response.RequiredAction?
         public let status: Status
+        public let paymentFailureReason: PaymentErrorCode.RawValue?
         
         public enum CodingKeys: String, CodingKey {
-            case id, paymentId, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status
+            case id, paymentId, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status, paymentFailureReason
             case dateStr = "date"
         }
         

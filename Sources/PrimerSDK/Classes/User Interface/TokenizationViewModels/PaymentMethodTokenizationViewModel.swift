@@ -427,6 +427,14 @@ extension PaymentMethodTokenizationViewModel {
                     return
                 }
                 
+                if let paymentFailureReason = paymentResponse?.paymentFailureReason,
+                let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
+                   let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode) {
+                    
+                    seal.reject(error)
+                    return
+                }
+                                
                 seal.fulfill(paymentResponse)
             }
         }
