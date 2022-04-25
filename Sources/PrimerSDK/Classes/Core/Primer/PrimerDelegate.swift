@@ -165,15 +165,11 @@ internal class PrimerDelegateProxy {
         if let implementedReactNativeCallbacks = state.implementedReactNativeCallbacks {
             return implementedReactNativeCallbacks.isClientSessionActionsImplemented == true
         }
-        let isClientSessionActionDidStartImplemented = Primer.shared.delegate?.primerClientSession
-        let isClientSessionActionDidFinishImplemented = Primer.shared.delegate?.clientSessionUpdateDidFinish != nil
-        return isClientSessionActionDidStartImplemented || isClientSessionActionDidFinishImplemented
+        return true
     }
     
     static func primerClientSession(_ clientSession: CheckoutDataClientSession?, willUpdateWith updateData: [String: Any]?) {
-        if PrimerDelegateProxy.isClientSessionActionsImplemented {
             Primer.shared.delegate?.primerClientSession?(clientSession, willUpdateWith: updateData)
-        }
     }
 
     static func primerClientSession(_ clientSession: CheckoutDataClientSession?, didUpdateBy source: PrimerSource) {
