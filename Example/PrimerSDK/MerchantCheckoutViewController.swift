@@ -306,7 +306,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nToken added to vault\nToken: \(token)\n")
     }
     
-    func onCheckoutDismissed() {
+    func primerDidDismiss() {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nPrimer view dismissed\n")
         
         DispatchQueue.main.async { [weak self] in

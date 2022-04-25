@@ -5,7 +5,7 @@ import UIKit
 /**
  Primer's required protocol. You need to conform to this protocol in order to take advantage of Primer's functionalities.
  
- It exposes three required methods, **clientTokenCallback**, **authorizePayment**, **onCheckoutDismissed**.
+ It exposes three required methods, **clientTokenCallback**, **authorizePayment**, **primerDidDismiss**.
  
  *Values*
  
@@ -16,7 +16,7 @@ import UIKit
  
  `authorizePayment(_:)`: This function will be called only on checkout flows. Use it to provide the payment method token to your backend and call the completion when your API is called is finished. Pass an error if needed.
  
- `onCheckoutDismissed(_:)`: This function notifies you when the drop-in UI is dismissed.
+ `primerDidDismiss(_:)`: This function notifies you when the drop-in UI is dismissed.
  
  - Author:
  Primer
@@ -50,7 +50,7 @@ public protocol PrimerDelegate {
     @available(*, deprecated, message: "Use SIMPLIFY DX!.")
     @objc optional func onResumeError(_ error: Error)
     
-    @objc optional func onCheckoutDismissed()
+    @objc optional func primerDidDismiss()
     
     @objc optional func checkoutFailed(with error: Error)
     
@@ -154,13 +154,11 @@ internal class PrimerDelegateProxy {
     }
     
     static var isOnCheckoutDismissedImplemented: Bool {
-        return Primer.shared.delegate?.onCheckoutDismissed != nil
+        return Primer.shared.delegate?.primerDidDismiss != nil
     }
     
-    static func onCheckoutDismissed() {
-        DispatchQueue.main.async {
-            Primer.shared.delegate?.onCheckoutDismissed?()
-        }
+    static func primerDidDismiss() {
+        Primer.shared.delegate?.primerDidDismiss?()
     }
     
     static var isCheckoutFailedImplemented: Bool {
@@ -235,7 +233,7 @@ internal class MockPrimerDelegate: PrimerDelegate {
         
     }
 
-    func onCheckoutDismissed() {
+    func primerDidDismiss() {
 
     }
     
