@@ -38,13 +38,13 @@ public protocol PrimerDelegate {
     ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
     ///
-    @available(*, deprecated, message: "Use checkoutDidCompleteWithPayment(:) function")
+    @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
-    @available(*, deprecated, message: "Use checkoutDidCompleteWithPayment(:) function")
+    @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
 
-    @available(*, deprecated, message: "The resuming is now handled by the SDK internally so that the payment can either succeed or fail.\nSee checkoutDidCompleteWithPayment(:) and checkoutDidFail(:)")
+    @available(*, deprecated, message: "The resuming is now handled by the SDK internally so that the payment can either succeed or fail.\nSee primerDidCompleteCheckoutWithData(:) and checkoutDidFail(:)")
     @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
     
     @available(*, deprecated, message: "Use SIMPLIFY DX!.")
@@ -76,7 +76,7 @@ public protocol PrimerDelegate {
     /// This function will be called when the checkout has been successful.
     /// - Parameters:
     ///   - payment: The Payment object containing the completed payment.
-    @objc optional func checkoutDidComplete(_ data: CheckoutData)
+    @objc optional func primerDidCompleteCheckoutWithData(_ data: CheckoutData)
     
     /// This function will be called when the checkout encountered an error.
     /// - Parameters:
