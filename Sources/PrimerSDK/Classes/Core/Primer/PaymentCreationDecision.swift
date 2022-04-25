@@ -31,11 +31,11 @@ import Foundation
 
 public extension PaymentCreationDecision {
     
-    static func abortPaymentCreation(errorMessage: String?) -> PaymentCreationDecision {
+    static func abortPaymentCreation(errorMessage: String? = nil) -> PaymentCreationDecision {
         PaymentCreationDecision(type: .abort, additionalInfo: [.message: errorMessage])
     }
     
-    static func continuePaymentCreation(clientToken: RawJWTToken?) -> PaymentCreationDecision {
+    static func continuePaymentCreation(clientToken: RawJWTToken? = nil) -> PaymentCreationDecision {
         PaymentCreationDecision(type: .continue, additionalInfo: [.clientToken: clientToken])
     }
 }
