@@ -64,11 +64,17 @@ public protocol PrimerDelegate {
     @available(*, deprecated, renamed: "onTokenizeSuccess")
     @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
-    @objc optional func primerClientSession(_ clientSession: CheckoutDataClientSession, willUpdateWith updateData: [String: Any])
-    @objc optional func primerClientSession(_ clientSession: CheckoutDataClientSession, didUpdateBy source: PrimerSource)
-
-    @objc optional func clientSessionUpdateDidStart()
-    @objc optional func clientSessionUpdateDidFinish(clientSession: CheckoutDataClientSession)
+    /// This function will be called when the SDK is about to initiate a client session update.
+    /// - Parameters:
+    ///   - clientSession: The client session containing all the current info about the checkout.
+    ///   - updateData: The parameters the `clientSession` will be updated with
+    @objc optional func primerClientSession(_ clientSession: CheckoutDataClientSession?, willUpdateWith updateData: [String: Any]?)
+    
+    /// This function will be called when the SDK finishes to update a client session.
+    /// - Parameters:
+    ///   - clientSession: The client session containing all the current info about the checkout.
+    ///   - source: The info about the source of the actor of the update. `IOS_NATIVE` for SDK based ones.
+    @objc optional func primerClientSession(_ clientSession: CheckoutDataClientSession?, didUpdateBy source: PrimerSource)
 
     /// This function will be called when the SDK is about to initiate a payment.
     /// - Parameters:
@@ -159,22 +165,23 @@ internal class PrimerDelegateProxy {
         if let implementedReactNativeCallbacks = state.implementedReactNativeCallbacks {
             return implementedReactNativeCallbacks.isClientSessionActionsImplemented == true
         }
-        let isClientSessionActionDidStartImplemented = Primer.shared.delegate?.clientSessionUpdateDidStart != nil
+        let isClientSessionActionDidStartImplemented = Primer.shared.delegate?.primerClientSession
         let isClientSessionActionDidFinishImplemented = Primer.shared.delegate?.clientSessionUpdateDidFinish != nil
         return isClientSessionActionDidStartImplemented || isClientSessionActionDidFinishImplemented
     }
     
-    static func clientSessionUpdateDidStart() {
+    static func primerClientSession(_ clientSession: CheckoutDataClientSession?, willUpdateWith updateData: [String: Any]?) {
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            Primer.shared.delegate?.clientSessionUpdateDidStart?()
-        }
-    }
-    static func clientSessionUpdateDidFinish(clientSession: CheckoutDataClientSession) {
-        if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            Primer.shared.delegate?.clientSessionUpdateDidFinish?(clientSession: clientSession)
+            Primer.shared.delegate?.primerClientSession?(clientSession, willUpdateWith: updateData)
         }
     }
 
+    static func primerClientSession(_ clientSession: CheckoutDataClientSession?, didUpdateBy source: PrimerSource) {
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
+            Primer.shared.delegate?.primerClientSession?(clientSession, didUpdateBy: source)
+        }
+    }
+    
     static func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully() {
         
     }
