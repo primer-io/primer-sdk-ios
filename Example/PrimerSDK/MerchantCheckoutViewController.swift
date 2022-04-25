@@ -286,17 +286,16 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         decisionHandler(.continuePaymentCreation())
     }
     
-    func checkoutDidComplete(_ payment: [String: Any]) {
-        
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(payment)\n")
-        
-        guard let paymentData = try? JSONSerialization.data(withJSONObject:payment) else {
-                  return
-              }
-        
-        self.paymentResponsesData.append(paymentData)
+    func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
+//        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(payment)\n")
+//
+//        guard let paymentData = try? JSONSerialization.data(withJSONObject:payment) else {
+//                  return
+//              }
+//
+//        self.paymentResponsesData.append(paymentData)
     }
-    
+        
     func checkoutDidFail(_ error: Error) {
         print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
     }
