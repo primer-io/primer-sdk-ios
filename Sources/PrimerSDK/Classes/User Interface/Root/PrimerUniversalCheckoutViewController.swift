@@ -325,7 +325,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     self.singleUsePaymentMethod = singleUsePaymentMethod
                     self.handleContinuePaymentFlowWithPaymentMethod(singleUsePaymentMethod)
                 case .failure(let error):
-                    PrimerDelegateProxy.checkoutFailed(with: error)
+                    PrimerDelegateProxy.primerDidFailWithError(error)
                     self.dismissOrShowResultScreen(error)
                 }
             }
@@ -658,7 +658,7 @@ extension PrimerUniversalCheckoutViewController {
             PrimerDelegateProxy.onResumeError(error)
             handle(error: error)
         } else {
-            Primer.shared.delegate?.checkoutDidFail?(error: error, data: nil, completion: { errorMessage in
+            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: { errorMessage in
                 let merchantError = PrimerError.merchantError(message: errorMessage ?? "")
                 self.handle(error: merchantError)
             })

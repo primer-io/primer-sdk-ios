@@ -439,7 +439,7 @@ extension ApayaTokenizationViewModel {
             ClientSession.Action.unselectPaymentMethod()
         }
         .done {
-            PrimerDelegateProxy.checkoutFailed(with: error)
+            PrimerDelegateProxy.primerDidFailWithError(error)
             self.handleFailedTokenizationFlow(error: error)
         }
         .catch { error in

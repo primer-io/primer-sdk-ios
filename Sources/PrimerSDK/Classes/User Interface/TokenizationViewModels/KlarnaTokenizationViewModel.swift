@@ -164,7 +164,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                PrimerDelegateProxy.checkoutFailed(with: error)
+                PrimerDelegateProxy.primerDidFailWithError(error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -231,7 +231,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         .catch { err in
             DispatchQueue.main.async {
-                PrimerDelegateProxy.checkoutFailed(with: err)
+                PrimerDelegateProxy.primerDidFailWithError(err)
                 self.handleFailedTokenizationFlow(error: err)
             }
         }
@@ -512,7 +512,7 @@ extension KlarnaTokenizationViewModel {
     
     private func handleCheckoutFailedEventWithError(_ error: Error) {
         self.executeCompletionAndNullifyAfter(error: error)
-        PrimerDelegateProxy.checkoutFailed(with: error)
+        PrimerDelegateProxy.primerDidFailWithError(error)
         self.handleFailedTokenizationFlow(error: error)
     }
     
@@ -649,7 +649,7 @@ extension KlarnaTokenizationViewModel {
         }
         .catch { error in
             DispatchQueue.main.async {
-                PrimerDelegateProxy.checkoutFailed(with: error)
+                PrimerDelegateProxy.primerDidFailWithError(error)
             }
             self.handle(error: error)
         }

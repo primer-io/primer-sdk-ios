@@ -76,7 +76,7 @@ class MockPrimerDelegate: PrimerDelegate {
         primerDidDismissCalled = true
     }
     
-    func checkoutFailed(with error: Error) {
+    func primerDidFailWithError(_ error: Error) {
         
     }
 }
