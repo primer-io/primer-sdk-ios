@@ -64,6 +64,9 @@ public protocol PrimerDelegate {
     @available(*, deprecated, renamed: "onTokenizeSuccess")
     @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
+    @objc optional func primerClientSession(_ clientSession: CheckoutDataClientSession, willUpdateWith updateData: [String: Any])
+    @objc optional func primerClientSession(_ clientSession: CheckoutDataClientSession, didUpdateBy source: PrimerSource)
+
     @objc optional func clientSessionUpdateDidStart()
     @objc optional func clientSessionUpdateDidFinish(clientSession: CheckoutDataClientSession)
 
