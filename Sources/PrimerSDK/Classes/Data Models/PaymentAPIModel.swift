@@ -59,18 +59,18 @@ public struct LineItem: Codable {
 
 public struct PaymentAPIModelOrder: Codable {
     let countryCode: String?
-//    let fees: Fees?
+    //    let fees: Fees?
     let lineItems: [LineItem]?
     let shipping: Shipping?
     
     public init (
         countryCode: String?,
-//        fees: Fees?,
+        //        fees: Fees?,
         lineItems: [LineItem]?,
         shipping: Shipping?
     ) {
         self.countryCode = countryCode
-//        self.fees = fees
+        //        self.fees = fees
         self.lineItems = lineItems
         self.shipping = shipping
     }
@@ -117,7 +117,7 @@ public struct ClientSessionRequestBody {
     
     var dictionaryValue: [String: Any]? {
         var dic: [String: Any] = [:]
-                
+        
         if let customerId = customerId {
             dic["customerId"] = customerId
         }
@@ -149,7 +149,7 @@ public struct ClientSessionRequestBody {
         if let paymentMethod = paymentMethod {
             dic["paymentMethod"] = paymentMethod.dictionaryValue
         }
-
+        
         return dic.keys.count == 0 ? nil : dic
     }
     
@@ -191,7 +191,7 @@ public struct ClientSessionRequestBody {
             if let shippingAddress = shippingAddress {
                 dic["shippingAddress"] = shippingAddress.dictionaryValue
             }
-
+            
             return dic.keys.count == 0 ? nil : dic
         }
     }
@@ -210,7 +210,7 @@ public struct ClientSessionRequestBody {
             if let lineItems = lineItems {
                 dic["lineItems"] = lineItems.compactMap({ $0.dictionaryValue })
             }
-
+            
             return dic.keys.count == 0 ? nil : dic
         }
         
@@ -262,7 +262,7 @@ public struct ClientSessionRequestBody {
             return dic.keys.count == 0 ? nil : dic
         }
     }
-
+    
 }
 
 public struct ClientSessionAction: Encodable {
@@ -322,7 +322,7 @@ public struct PaymentAPIModelAddress: Codable {
     
     var dictionaryValue: [String: Any]? {
         var dic: [String: Any] = [:]
-                    
+        
         if let firstName = firstName {
             dic["firstName"] = firstName
         }
@@ -354,7 +354,7 @@ public struct PaymentAPIModelAddress: Codable {
         if let countryCode = countryCode {
             dic["countryCode"] = countryCode
         }
-
+        
         return dic.keys.count == 0 ? nil : dic
     }
 }
@@ -375,7 +375,7 @@ public struct Payment {
             self.resumeToken = token
         }
     }
-
+    
     public struct Response: Codable {
         public let id: String?
         public let paymentId: String?
@@ -441,26 +441,26 @@ internal struct PaymentMethodData {
 @objc public enum PaymentErrorCode: Int, RawRepresentable, Codable {
     case failed
     case cancelledByCustomer
-
+    
     public typealias RawValue = String
-
+    
     public var rawValue: RawValue {
         switch self {
-            case .failed:
-                return "payment-failed"
-            case .cancelledByCustomer:
-                return "cancelled-by-customer"
+        case .failed:
+            return "payment-failed"
+        case .cancelledByCustomer:
+            return "cancelled-by-customer"
         }
     }
-
+    
     public init?(rawValue: RawValue) {
         switch rawValue {
-            case "payment-failed":
-                self = .failed
-            case "cancelled-by-customer":
-                self = .cancelledByCustomer
-            default:
-                return nil
+        case "payment-failed":
+            self = .failed
+        case "cancelled-by-customer":
+            self = .cancelledByCustomer
+        default:
+            return nil
         }
     }
 }
@@ -607,4 +607,57 @@ extension CheckoutDataPayment {
         self.lastName = lastName
         self.state = state
     }
+}
+
+extension CheckoutDataClientSession {
+    
+    internal convenience init?(from primerConfiguration: PrimerConfiguration?) {
+        
+        guard let primerConfiguration = primerConfiguration else {
+            return nil
+        }
+        
+        let lineItems = primerConfiguration.clientSession?.order?.lineItems?.compactMap { CheckoutDataLineItem(itemId: $0.itemId,
+                                                                                                               itemDescription: $0.description,
+                                                                                                               amount: $0.amount,
+                                                                                                               discountAmount: $0.discountAmount,
+                                                                                                               quantity: $0.quantity) }
+        
+        let orderDetails = CheckoutDataOrder(countryCode: primerConfiguration.clientSession?.order?.countryCode?.rawValue,
+                                             currencyCode: primerConfiguration.clientSession?.order?.currencyCode?.rawValue)
+        
+        let billingAddress = CheckoutDataPaymentAPIModelAddress(firstName: primerConfiguration.clientSession?.customer?.billingAddress?.firstName,
+                                                                lastName: primerConfiguration.clientSession?.customer?.billingAddress?.lastName,
+                                                                addressLine1: primerConfiguration.clientSession?.customer?.billingAddress?.addressLine1,
+                                                                addressLine2: primerConfiguration.clientSession?.customer?.billingAddress?.addressLine2,
+                                                                city: primerConfiguration.clientSession?.customer?.billingAddress?.city,
+                                                                state: primerConfiguration.clientSession?.customer?.billingAddress?.state,
+                                                                countryCode: primerConfiguration.clientSession?.customer?.billingAddress?.countryCode?.rawValue,
+                                                                postalCode: primerConfiguration.clientSession?.customer?.billingAddress?.postalCode)
+        
+        let shippingAddress = CheckoutDataPaymentAPIModelAddress(firstName: primerConfiguration.clientSession?.customer?.shippingAddress?.firstName,
+                                                                 lastName: primerConfiguration.clientSession?.customer?.shippingAddress?.lastName,
+                                                                 addressLine1: primerConfiguration.clientSession?.customer?.shippingAddress?.addressLine1,
+                                                                 addressLine2: primerConfiguration.clientSession?.customer?.shippingAddress?.addressLine2,
+                                                                 city: primerConfiguration.clientSession?.customer?.shippingAddress?.city,
+                                                                 state: primerConfiguration.clientSession?.customer?.shippingAddress?.state,
+                                                                 countryCode: primerConfiguration.clientSession?.customer?.shippingAddress?.countryCode?.rawValue,
+                                                                 postalCode: primerConfiguration.clientSession?.customer?.shippingAddress?.postalCode)
+        
+        let customer = CheckoutDataCustomer(firstName: primerConfiguration.clientSession?.customer?.firstName,
+                                            lastName: primerConfiguration.clientSession?.customer?.lastName,
+                                            emailAddress: primerConfiguration.clientSession?.customer?.emailAddress,
+                                            mobileNumber: primerConfiguration.clientSession?.customer?.mobileNumber,
+                                            billingAddress: billingAddress,
+                                            shippingAddress: shippingAddress)
+        
+        
+        self.init(customerId: primerConfiguration.clientSession?.customer?.id,
+                  orderId: primerConfiguration.clientSession?.order?.id,
+                  totalAmount: primerConfiguration.clientSession?.order?.totalOrderAmount,
+                  lineItems: lineItems,
+                  orderDetails: orderDetails,
+                  customer: customer)
+    }
+    
 }
