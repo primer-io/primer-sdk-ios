@@ -422,6 +422,10 @@ public struct Payment {
     }
 }
 
+internal struct PaymentMethodData {
+    let type: PaymentMethodConfigType
+}
+
 //MARK: - Public / User Facing
 
 @objc public class CheckoutData: NSObject {
@@ -461,6 +465,23 @@ public struct Payment {
 }
 
 // TODO: Update / Temporary name to avoid conflicts
+
+@objc public class CheckoutPaymentMethodData: NSObject {
+    public let paymentMethodType: CheckoutPaymentMethodType
+    
+    public init(type: CheckoutPaymentMethodType) {
+        self.paymentMethodType = type
+    }
+}
+
+@objc public class CheckoutPaymentMethodType: NSObject {
+    public let type: String
+    
+    public init(type: String) {
+        self.type = type
+    }
+}
+
 @objc public class CheckoutDataPayment: NSObject {
     public let id: String?
     public let orderId: String?

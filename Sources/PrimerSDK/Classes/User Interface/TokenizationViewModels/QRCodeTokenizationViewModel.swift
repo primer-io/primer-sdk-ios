@@ -135,6 +135,9 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         }
         
         firstly {
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: config.type))
+        }
+        .then {
             self.tokenize()
         }
         .then { tmpPaymentMethod -> Promise<PaymentMethodToken> in

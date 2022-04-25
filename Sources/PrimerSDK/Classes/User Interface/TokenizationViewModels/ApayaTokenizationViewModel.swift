@@ -195,6 +195,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     }
     
     fileprivate func continueTokenizationFlow() {
+        
         do {
             try self.validate()
         } catch {
@@ -205,6 +206,9 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
         
         firstly {
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: config.type))
+        }
+        .then {
             self.generateWebViewUrl()
         }
         .then { url -> Promise<Apaya.WebViewResponse> in

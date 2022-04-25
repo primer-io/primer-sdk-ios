@@ -186,6 +186,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             configService.fetchConfig()
         }
         .then {
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+        }
+        .then {
             self.tokenize()
         }
         .done { paymentMethod in

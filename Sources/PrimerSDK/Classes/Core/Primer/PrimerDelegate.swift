@@ -69,9 +69,9 @@ public protocol PrimerDelegate {
 
     /// This function will be called when the SDK is about to initiate a payment.
     /// - Parameters:
-    ///   - paymentMethodData: The payment method data containing the token's information.
+    ///   - data: The payment method data containing the token's information.
     ///   - completion: The completion handler managing a custom error to optionally pass to the SDK
-    @objc optional func checkoutWillCreatePayment(_ paymentMethodData: String, completion: @escaping (PaymentCreateAdditionalValues?) -> Void)
+    @objc optional func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void)
     
     /// This function will be called when the checkout has been successful.
     /// - Parameters:

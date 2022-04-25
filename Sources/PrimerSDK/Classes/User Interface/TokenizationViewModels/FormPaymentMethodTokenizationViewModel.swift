@@ -502,7 +502,10 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             self.submitButton.startAnimating()
             
             firstly {
-                return self.tokenize()
+                self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: config.type))
+            }
+            .then {
+                self.tokenize()
             }.then { paymentMethodToken -> Promise<URL> in
                 self.paymentMethod = paymentMethodToken
                 return self.fetchPollingUrl(for: paymentMethodToken)
@@ -560,7 +563,19 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                             self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
                         }
                     } else {
-                        self.cardComponentsManager.tokenize()
+                        firstly {
+                            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+                        }
+                        .done {
+                            self.cardComponentsManager.tokenize()
+                        }
+                        .catch { error in
+                            DispatchQueue.main.async {
+                                self.submitButton.stopAnimating()
+                                Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+                                self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
+                            }
+                        }
                     }
                     self.onClientSessionActionUpdateCompletion = nil
                 }
