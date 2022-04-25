@@ -496,11 +496,7 @@ extension PrimerUniversalCheckoutViewController {
             }
             
             firstly {
-                self.handleCheckoutWillCreatePaymentEvent(paymentMethodTokenString)
-            }
-            .then { paymentCreateAdditionalValues -> Promise<Payment.Response?> in
-                let clientToken = paymentCreateAdditionalValues?.clientToken ?? paymentMethodTokenString
-                return self.handleCreatePaymentEvent(clientToken)
+                self.handleCreatePaymentEvent(paymentMethodTokenString)
             }
             .done { paymentResponse -> Void in
                 
@@ -523,29 +519,7 @@ extension PrimerUniversalCheckoutViewController {
             }
         }
     }
-    
-    // Raise "payment creation started" event
-    
-    private func handleCheckoutWillCreatePaymentEvent(_ paymentMethodData: String) -> Promise<PaymentCreateAdditionalValues?> {
-        return Promise { seal in
-            Primer.shared.delegate?.checkoutWillCreatePayment?(paymentMethodData, completion: { paymentCreateAdditionalValues in
-                // If merchant sents a custom data
-                if let clientToken = paymentCreateAdditionalValues?.clientToken {
-                    seal.fulfill(PaymentCreateAdditionalValues(clientToken: clientToken))
-                }
-                // If merchant sents an error to show
-                // The flow will terminate
-                else if let errorMessage = paymentCreateAdditionalValues?.error {
-                    seal.reject(errorMessage)
-                }
-                // If merchant will continue only with SDK data
-                else {
-                    seal.fulfill(nil)
-                }
-            })
-        }
-    }
-    
+        
     // Create payment with Payment method token
 
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Payment.Response?> {

@@ -65,9 +65,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     func validate() throws {
         assert(true, "\(#function) needs to be overriden")
     }
-    
-    @objc
-    func startTokenizationFlow() {
+        
+    @objc func startTokenizationFlow() {
         didStartTokenization?()
         
         self.completion = { (tok, err) in
@@ -325,20 +324,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 }
 
 extension PaymentMethodTokenizationViewModel {
-    func handle(error: Error) {
-        assert(true, "\(self.self).\(#function) should be overriden")
-    }
-    
-    func handle(newClientToken clientToken: String) {
-        assert(true, "\(self.self).\(#function) should be overriden")
-    }
-    
-    func handleSuccess() {
-        assert(true, "\(self.self).\(#function) should be overriden")
-    }
-}
-
-extension PaymentMethodTokenizationViewModel {
     
     internal func handleErrorBasedOnSDKSettings(_ error: Error, isOnResumeFlow: Bool = false) {
         
@@ -386,11 +371,7 @@ extension PaymentMethodTokenizationViewModel {
             }
             
             firstly {
-                self.handleCheckoutWillCreatePaymentEvent(paymentMethodTokenString)
-            }
-            .then { paymentCreateAdditionalValues -> Promise<Payment.Response?> in
-                let clientToken = paymentCreateAdditionalValues?.clientToken ?? paymentMethodTokenString
-                return self.handleCreatePaymentEvent(clientToken)
+                self.handleCreatePaymentEvent(paymentMethodTokenString)
             }
             .done { paymentResponse -> Void in
                 
@@ -413,29 +394,37 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
+        
+    // Raise Primer will create Payment event
     
-    // Raise "payment creation started" event
-    
-    private func handleCheckoutWillCreatePaymentEvent(_ paymentMethodData: String) -> Promise<PaymentCreateAdditionalValues?> {
+    internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PaymentMethodData) -> Promise<Void> {
         return Promise { seal in
-            Primer.shared.delegate?.checkoutWillCreatePayment?(paymentMethodData, completion: { paymentCreateAdditionalValues in
-                // If merchant sents a custom data
-                if let clientToken = paymentCreateAdditionalValues?.clientToken {
-                    seal.fulfill(PaymentCreateAdditionalValues(clientToken: clientToken))
+            let checkoutPaymentMethodType = CheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
+            let checkoutPaymentMethodData = CheckoutPaymentMethodData(type: checkoutPaymentMethodType)
+            Primer.shared.delegate?.primerWillCreatePaymentWithData?(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
+                
+                guard paymentCreationDecision?.type != .abort else {
+                    let message = paymentCreationDecision?.additionalInfo?[.message] as? String ?? ""
+                    let error = PrimerError.generic(message: message, userInfo: nil)
+                    seal.reject(error)
+                    return
                 }
-                // If merchant sents an error to show
-                // The flow will terminate
-                else if let errorMessage = paymentCreateAdditionalValues?.error {
-                    seal.reject(errorMessage)
-                }
-                // If merchant will continue only with SDK data
-                else {
-                    seal.fulfill(nil)
+                
+                if let modifiedClientToken = paymentCreationDecision?.additionalInfo?[.clientToken] as? RawJWTToken {
+                    ClientTokenService.storeClientToken(modifiedClientToken) { error in
+                        guard error == nil else {
+                            seal.reject(error!)
+                            return
+                        }
+                        seal.fulfill(())
+                    }
+                } else {
+                    seal.fulfill(())
                 }
             })
         }
     }
-    
+
     // Create payment with Payment method token
 
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Payment.Response?> {
@@ -455,8 +444,6 @@ extension PaymentMethodTokenizationViewModel {
         }
     }
 }
-
-
 
 extension PaymentMethodTokenizationViewModel {
     
@@ -499,6 +486,20 @@ extension PaymentMethodTokenizationViewModel {
                 }
             }
         }
+    }
+}
+
+extension PaymentMethodTokenizationViewModel {
+    func handle(error: Error) {
+        assert(true, "\(self.self).\(#function) should be overriden")
+    }
+    
+    func handle(newClientToken clientToken: String) {
+        assert(true, "\(self.self).\(#function) should be overriden")
+    }
+    
+    func handleSuccess() {
+        assert(true, "\(self.self).\(#function) should be overriden")
     }
 }
 
