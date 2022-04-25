@@ -440,7 +440,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
             let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            ClientSession.Action.selectPaymentMethodWithParameters(params)
+            self.selectPaymentMethodWithParameters(params)
         } else {
             continueTokenizationFlow()
         }
@@ -605,7 +605,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     actions.append(billingAddressAction)
                 }
                 
-                ClientSession.Action.dispatchMultipleActions(actions)
+                self.dispatchMultipleActions(actions)
             } else {
                 cardComponentsManager.tokenize()
             }
@@ -983,11 +983,46 @@ extension FormPaymentMethodTokenizationViewModel {
 }
 
 extension FormPaymentMethodTokenizationViewModel {
+        
+    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+        
+        firstly {
+            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
+        }
+        .done {}
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+        
+    private func unselectPaymentMethodWithError(_ error: Error) {
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .done {
+            self.onClientSessionActionUpdateCompletion = nil
+        }
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+    
+    private func dispatchMultipleActions(_ actions: [ClientSession.Action]) {
+        firstly {
+            ClientSession.Action.dispatchMultipleActions(actions)
+        }
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+}
+
+extension FormPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
         DispatchQueue.main.async {
             if self.onClientSessionActionUpdateCompletion != nil {
-                ClientSession.Action.unselectPaymentMethod()
+                self.unselectPaymentMethodWithError(error)
                 self.onClientSessionActionUpdateCompletion?(error)
                 self.onClientSessionActionUpdateCompletion = nil
             }

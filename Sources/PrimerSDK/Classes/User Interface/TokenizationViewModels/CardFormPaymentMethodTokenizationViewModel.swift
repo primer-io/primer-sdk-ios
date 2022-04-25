@@ -579,7 +579,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 actions.append(billingAddressAction)
             }
             
-            ClientSession.Action.dispatchMultipleActions(actions)
+            self.dispatchMultipleActions(actions)
         } else {
             
             firstly {
@@ -685,6 +685,18 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     self.startPolling(on: url, completion: completion)
                 }
             }
+        }
+    }
+}
+
+extension CardFormPaymentMethodTokenizationViewModel {
+    
+    private func dispatchMultipleActions(_ actions: [ClientSession.Action]) {
+        firstly {
+            ClientSession.Action.dispatchMultipleActions(actions)
+        }
+        .catch { error in
+            self.handle(error: error)
         }
     }
 }
