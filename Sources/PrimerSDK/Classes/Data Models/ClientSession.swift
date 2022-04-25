@@ -321,7 +321,7 @@ extension ClientSession.Action {
             .catch { error in
                 ErrorHandler.handle(error: error)
                 DispatchQueue.main.async {
-                    PrimerDelegateProxy.checkoutFailed(with: error)
+                    PrimerDelegateProxy.primerDidFailWithError(error)
                 }
                 seal.reject(error)
             }

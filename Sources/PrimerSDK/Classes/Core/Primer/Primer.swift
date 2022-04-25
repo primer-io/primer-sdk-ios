@@ -382,7 +382,7 @@ public class Primer {
             (.other, _):
             let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.checkoutFailed(with: err)
+            PrimerDelegateProxy.primerDidFailWithError(err)
             return
         }
         

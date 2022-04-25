@@ -44,7 +44,7 @@ public protocol PrimerDelegate {
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
 
-    @available(*, deprecated, message: "The resuming is now handled by the SDK internally so that the payment can either succeed or fail.\nSee primerDidCompleteCheckoutWithData(:) and checkoutDidFail(:)")
+    @available(*, deprecated, message: "The resuming is now handled by the SDK internally so that the payment can either succeed or fail.\nSee primerDidCompleteCheckoutWithData(:) and primerDidFailWithError(:)")
     @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
     
     @available(*, deprecated, message: "Use SIMPLIFY DX!.")
@@ -52,7 +52,7 @@ public protocol PrimerDelegate {
     
     @objc optional func primerDidDismiss()
     
-    @objc optional func checkoutFailed(with error: Error)
+    @objc optional func primerDidFailWithError(_ error: Error)
     
     /// This function will be called when the user tries to make a payment. You should make the pay API call to your backend, and
     /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
@@ -83,7 +83,7 @@ public protocol PrimerDelegate {
     ///   - error: The Error object containing the error description.
     ///   - payment: The additional payment data if present
     ///   - completion: The completion handler containing a custom error to optionally pass to the SDK
-    @objc optional func checkoutDidFail(error: Error, data: CheckoutData?, completion: @escaping (String?) -> Void)
+    @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, completion: @escaping (String?) -> Void)
 }
 
 internal class PrimerDelegateProxy {
@@ -145,13 +145,9 @@ internal class PrimerDelegateProxy {
     static func primerDidDismiss() {
         Primer.shared.delegate?.primerDidDismiss?()
     }
-    
-    static var isCheckoutFailedImplemented: Bool {
-        return Primer.shared.delegate?.checkoutFailed != nil
-    }
-    
-    static func checkoutFailed(with error: Error) {
-        Primer.shared.delegate?.checkoutFailed?(with: error)
+        
+    static func primerDidFailWithError(_ error: Error) {
+        Primer.shared.delegate?.primerDidFailWithError?(error)
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
     }
     
@@ -220,7 +216,7 @@ internal class MockPrimerDelegate: PrimerDelegate {
 
     }
     
-    func checkoutFailed(with error: Error) {
+    func primerDidFailWithError(_ error: Error) {
         
     }
     

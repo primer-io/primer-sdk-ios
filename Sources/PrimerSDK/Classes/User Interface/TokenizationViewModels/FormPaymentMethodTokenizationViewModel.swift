@@ -430,7 +430,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                PrimerDelegateProxy.checkoutFailed(with: error)
+                PrimerDelegateProxy.primerDidFailWithError(error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -453,7 +453,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                PrimerDelegateProxy.checkoutFailed(with: error)
+                PrimerDelegateProxy.primerDidFailWithError(error)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -679,7 +679,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         DispatchQueue.main.async {
             let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.checkoutFailed(with: err)
+            PrimerDelegateProxy.primerDidFailWithError(err)
             self.handleFailedTokenizationFlow(error: err)
         }
     }

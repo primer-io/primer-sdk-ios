@@ -458,11 +458,11 @@ extension BankSelectorTokenizationViewModel {
         }
         .done {
             self.executeCompletionAndNullifyAfter(error: error)
-            PrimerDelegateProxy.checkoutFailed(with: error)
+            PrimerDelegateProxy.primerDidFailWithError(error)
             self.handleFailedTokenizationFlow(error: error)
         }
         .catch { error in
-            PrimerDelegateProxy.checkoutFailed(with: error)
+            PrimerDelegateProxy.primerDidFailWithError(error)
             self.handleFailedTokenizationFlow(error: error)
         }
     }

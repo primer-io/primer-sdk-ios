@@ -295,11 +295,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 //
 //        self.paymentResponsesData.append(paymentData)
     }
-        
-    func checkoutDidFail(_ error: Error) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
-    }
-    
+            
     func tokenAddedToVault(_ token: PaymentMethodToken) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nToken added to vault\nToken: \(token)\n")
     }
@@ -321,11 +317,6 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             }
         }
     }
-    
-    func checkoutFailed(with error: Error) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError domain: \((error as NSError).domain)\nError code: \((error as NSError).code)\n\((error as NSError).localizedDescription)")
-    }
-            
 }
 
 // MARK: - TABLE VIEW DATA SOURCE & DELEGATE
