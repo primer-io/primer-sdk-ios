@@ -505,6 +505,7 @@ extension CheckoutDataPayment {
 @objc public class CheckoutDataClientSession: NSObject {
     public let customerId: String?
     public let orderId: String?
+    public let currencyCode: String?
     public let totalAmount: Int?
     public let lineItems: [CheckoutDataLineItem]?
     public let orderDetails: CheckoutDataOrder?
@@ -512,12 +513,14 @@ extension CheckoutDataPayment {
     
     public init(customerId: String?,
                 orderId: String?,
+                currencyCode: String?,
                 totalAmount: Int?,
                 lineItems: [CheckoutDataLineItem]?,
                 orderDetails: CheckoutDataOrder?,
                 customer: CheckoutDataCustomer?) {
         self.customerId = customerId
         self.orderId = orderId
+        self.currencyCode = currencyCode
         self.totalAmount = totalAmount
         self.lineItems = lineItems
         self.orderDetails = orderDetails
@@ -527,26 +530,20 @@ extension CheckoutDataPayment {
 
 @objc public class CheckoutDataOrder: NSObject {
     public let countryCode: String?
-    public let currencyCode: String?
     
-    public init(countryCode: String?, currencyCode: String?) {
+    public init(countryCode: String?) {
         self.countryCode = countryCode
-        self.currencyCode = currencyCode
     }
 }
 
 @objc public class CheckoutDataCustomer: NSObject {
-    public let firstName: String?
-    public let lastName: String?
     public let emailAddress: String?
     public let mobileNumber: String?
     public let billingAddress: CheckoutDataPaymentAPIModelAddress?
     public let shippingAddress: CheckoutDataPaymentAPIModelAddress?
     
-    public init(firstName: String?, lastName: String?, emailAddress: String?, mobileNumber: String?, billingAddress: CheckoutDataPaymentAPIModelAddress?, shippingAddress: CheckoutDataPaymentAPIModelAddress?) {
+    public init(emailAddress: String?, mobileNumber: String?, billingAddress: CheckoutDataPaymentAPIModelAddress?, shippingAddress: CheckoutDataPaymentAPIModelAddress?) {
         
-        self.firstName = firstName
-        self.lastName = lastName
         self.emailAddress = emailAddress
         self.mobileNumber = mobileNumber
         self.billingAddress = billingAddress
@@ -623,8 +620,7 @@ extension CheckoutDataClientSession {
                                                                                                                discountAmount: $0.discountAmount,
                                                                                                                quantity: $0.quantity) }
         
-        let orderDetails = CheckoutDataOrder(countryCode: primerConfiguration.clientSession?.order?.countryCode?.rawValue,
-                                             currencyCode: primerConfiguration.clientSession?.order?.currencyCode?.rawValue)
+        let orderDetails = CheckoutDataOrder(countryCode: primerConfiguration.clientSession?.order?.countryCode?.rawValue)
         
         let billingAddress = CheckoutDataPaymentAPIModelAddress(firstName: primerConfiguration.clientSession?.customer?.billingAddress?.firstName,
                                                                 lastName: primerConfiguration.clientSession?.customer?.billingAddress?.lastName,
@@ -644,9 +640,7 @@ extension CheckoutDataClientSession {
                                                                  countryCode: primerConfiguration.clientSession?.customer?.shippingAddress?.countryCode?.rawValue,
                                                                  postalCode: primerConfiguration.clientSession?.customer?.shippingAddress?.postalCode)
         
-        let customer = CheckoutDataCustomer(firstName: primerConfiguration.clientSession?.customer?.firstName,
-                                            lastName: primerConfiguration.clientSession?.customer?.lastName,
-                                            emailAddress: primerConfiguration.clientSession?.customer?.emailAddress,
+        let customer = CheckoutDataCustomer(emailAddress: primerConfiguration.clientSession?.customer?.emailAddress,
                                             mobileNumber: primerConfiguration.clientSession?.customer?.mobileNumber,
                                             billingAddress: billingAddress,
                                             shippingAddress: shippingAddress)
@@ -654,6 +648,7 @@ extension CheckoutDataClientSession {
         
         self.init(customerId: primerConfiguration.clientSession?.customer?.id,
                   orderId: primerConfiguration.clientSession?.order?.id,
+                  currencyCode: primerConfiguration.clientSession?.order?.currencyCode?.rawValue,
                   totalAmount: primerConfiguration.clientSession?.order?.totalOrderAmount,
                   lineItems: lineItems,
                   orderDetails: orderDetails,
