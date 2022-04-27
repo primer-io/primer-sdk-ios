@@ -363,7 +363,8 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .cancelled(let paymentMethodType, _):
             return "[\(errorId)] Payment method \(paymentMethodType.rawValue) cancelled"
         case .cancelledByCustomer(let message):
-            return "[\(errorId)] Payment cancelled with message: \(message)"
+            let messageToShow = message != nil ? " with message \(message!)" : ""
+            return "[\(errorId)] Payment cancelled\(messageToShow)"
         case .failedToCreateSession(error: let error, _):
             return "[\(errorId)] Failed to create session with error: \(error?.localizedDescription ?? "nil")"
         case .failedOnWebViewFlow(error: let error, _):
