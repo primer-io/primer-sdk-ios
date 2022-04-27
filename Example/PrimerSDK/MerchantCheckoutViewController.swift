@@ -63,7 +63,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     var customer: PrimerSDK.Customer?
     var address: PrimerSDK.Address?
-    var paymentResponsesData: [Data] = []
+    var checkoutData: CheckoutData?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -288,13 +288,9 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
-//        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(payment)\n")
-//
-//        guard let paymentData = try? JSONSerialization.data(withJSONObject:payment) else {
-//                  return
-//              }
-//
-//        self.paymentResponsesData.append(paymentData)
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(data)\n")
+
+        self.checkoutData = data
     }
             
     func tokenAddedToVault(_ token: PaymentMethodToken) {
@@ -311,10 +307,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 self?.present(threeDSAlert, animated: true, completion: nil)
             }
             
-            if let paymentResponsesData = self?.paymentResponsesData, !paymentResponsesData.isEmpty {
-                let rvc = ResultViewController.instantiate(data: paymentResponsesData)
+            if let checkoutData = self?.checkoutData {
+                let rvc = ResultViewController.instantiate(data: checkoutData)
                 self?.navigationController?.pushViewController(rvc, animated: true)
-                self?.paymentResponsesData = []
+                self?.checkoutData = nil
             }
         }
     }

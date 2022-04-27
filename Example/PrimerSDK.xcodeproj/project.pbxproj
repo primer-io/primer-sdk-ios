@@ -42,11 +42,15 @@
 		1DE0355C2716E4D1007BADAB /* CheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE0355B2716E4D1007BADAB /* CheckoutTheme.swift */; };
 		1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */; };
 		1DED53B02739561800CD9DE6 /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DED53AF2739561800CD9DE6 /* ThemeTests.swift */; };
+		2CE2888A2818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE288892818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift */; };
+		2CE2888C2819547500649E61 /* HUCResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2888B2819547500649E61 /* HUCResultViewController.swift */; };
+		2CE2888E281954FE00649E61 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2888D281954FE00649E61 /* String+Extensions.swift */; };
+		2CE288902819550400649E61 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2888F2819550400649E61 /* Data+Extensions.swift */; };
+		2CE288922819553100649E61 /* Range+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE288912819553100649E61 /* Range+Extensions.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
-		63690B988970365C5C9842E5 /* Pods_PrimerSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85ED96F59FEA3D3737955A8B /* Pods_PrimerSDK_Example.framework */; };
 		849A28EB275614070037C2D1 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EA275614070037C2D1 /* Networking.swift */; };
 		849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */; };
 		849AFD14275A725600A1F4CB /* ResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849AFD13275A725600A1F4CB /* ResultViewController.swift */; };
@@ -54,7 +58,8 @@
 		849D5BC227B105E5002953C2 /* MerchantPaymentMethodsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D5BC127B105E5002953C2 /* MerchantPaymentMethodsViewController.swift */; };
 		849D5BC427B12E57002953C2 /* MerchantAssetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D5BC327B12E57002953C2 /* MerchantAssetsViewController.swift */; };
 		84DE08AC2767306E00AC9D52 /* DirectCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DE08AB2767306E00AC9D52 /* DirectCheckout.swift */; };
-		BC45B8A49F6C7508BA5DFC3B /* Pods_PrimerSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12A201CB5055EC9AF4E61D3A /* Pods_PrimerSDK_Tests.framework */; };
+		BB59447FCE7925E4869E603E /* Pods_PrimerSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9CFFE61E31DB6D0885D9995 /* Pods_PrimerSDK_Tests.framework */; };
+		E80CD1079629F6A39C0301A6 /* Pods_PrimerSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 801372410DB75CCFCF392A35 /* Pods_PrimerSDK_Example.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,7 +81,6 @@
 
 /* Begin PBXFileReference section */
 		0BEFFA023E994EF5B370A80C /* PrimerSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = PrimerSDK.podspec; path = ../PrimerSDK.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		12A201CB5055EC9AF4E61D3A /* Pods_PrimerSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		151B09F4267B7F9400FB49B8 /* 3DSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3DSTests.swift; sourceTree = "<group>"; };
 		151B0A1B267CE24B00FB49B8 /* 3DSConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3DSConstants.swift; sourceTree = "<group>"; };
 		15300DB8267A1211009A1B9C /* Vault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vault.swift; sourceTree = "<group>"; };
@@ -128,8 +132,13 @@
 		1DE0355B2716E4D1007BADAB /* CheckoutTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutTheme.swift; sourceTree = "<group>"; };
 		1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApayaTests.swift; sourceTree = "<group>"; };
 		1DED53AF2739561800CD9DE6 /* ThemeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemeTests.swift; sourceTree = "<group>"; };
-		1E9A9B249BE9BA9B47B02FEF /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		2CE288892818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
+		2CE2888B2819547500649E61 /* HUCResultViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HUCResultViewController.swift; sourceTree = "<group>"; };
+		2CE2888D281954FE00649E61 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
+		2CE2888F2819550400649E61 /* Data+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extensions.swift"; sourceTree = "<group>"; };
+		2CE288912819553100649E61 /* Range+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Range+Extensions.swift"; sourceTree = "<group>"; };
 		3B55FBF1D40BE6B25F29A5D9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		3FF2EDBD231B9FE7772D72D1 /* Pods-PrimerSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		45CA532A34F52954A21835C5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* PrimerSDK_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrimerSDK_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -138,6 +147,8 @@
 		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* PrimerSDK_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimerSDK_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		65C3ABA1D787D7D7DECEC41D /* Pods-PrimerSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		801372410DB75CCFCF392A35 /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		846BE6C8280FEE5F0052E4DB /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
 		846BE6C9280FEE620052E4DB /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Main.strings; sourceTree = "<group>"; };
 		846BE6CA280FEE640052E4DB /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Main.strings; sourceTree = "<group>"; };
@@ -155,10 +166,9 @@
 		849D5BC127B105E5002953C2 /* MerchantPaymentMethodsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantPaymentMethodsViewController.swift; sourceTree = "<group>"; };
 		849D5BC327B12E57002953C2 /* MerchantAssetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantAssetsViewController.swift; sourceTree = "<group>"; };
 		84DE08AB2767306E00AC9D52 /* DirectCheckout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectCheckout.swift; sourceTree = "<group>"; };
-		85ED96F59FEA3D3737955A8B /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CFF79DDAB25C1C0F49A228BC /* Pods-PrimerSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Tests/Pods-PrimerSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		EA08C76B4CD2F7C67540D8E0 /* Pods-PrimerSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
-		F8EAC7DDD75B4B5A2DAAA5B2 /* Pods-PrimerSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		B15CFEB34C15A6064D29591E /* Pods-PrimerSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
+		B9CFFE61E31DB6D0885D9995 /* Pods_PrimerSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0F622DAE3669AFDB6668320 /* Pods-PrimerSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,7 +183,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63690B988970365C5C9842E5 /* Pods_PrimerSDK_Example.framework in Frameworks */,
+				E80CD1079629F6A39C0301A6 /* Pods_PrimerSDK_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,7 +191,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC45B8A49F6C7508BA5DFC3B /* Pods_PrimerSDK_Tests.framework in Frameworks */,
+				BB59447FCE7925E4869E603E /* Pods_PrimerSDK_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +258,7 @@
 			children = (
 				1582B96C260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift */,
 				1582B96B260A3F2900C80BD7 /* VaultPaymentMethodViewModelTests.swift */,
+				2CE288892818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -330,6 +341,9 @@
 			isa = PBXGroup;
 			children = (
 				15F97C7C2624730800DCB3BA /* UIViewController+API.swift */,
+				2CE2888D281954FE00649E61 /* String+Extensions.swift */,
+				2CE2888F2819550400649E61 /* Data+Extensions.swift */,
+				2CE288912819553100649E61 /* Range+Extensions.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -356,6 +370,7 @@
 		1DC7EE0A261FA37800BCBFFC /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				2CE2888B2819547500649E61 /* HUCResultViewController.swift */,
 				15F97C622624480500DCB3BA /* AppViewController.swift */,
 				15F97C672624488700DCB3BA /* MerchantCheckoutViewController.swift */,
 				15F97C71262470CB00DCB3BA /* MerchantCheckoutViewController+Helpers.swift */,
@@ -389,7 +404,7 @@
 				607FACD11AFB9204008FA782 /* Products */,
 				151219E426E5F4EC007EFEA1 /* Recovered References */,
 				CAECC3F22E94EA70F1F01CFC /* Pods */,
-				61B223D3C2AEFF1C347FD55E /* Frameworks */,
+				8BEFC28AE0BA67B86A39C6A3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -427,11 +442,11 @@
 			name = "Podspec Metadata";
 			sourceTree = "<group>";
 		};
-		61B223D3C2AEFF1C347FD55E /* Frameworks */ = {
+		8BEFC28AE0BA67B86A39C6A3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				85ED96F59FEA3D3737955A8B /* Pods_PrimerSDK_Example.framework */,
-				12A201CB5055EC9AF4E61D3A /* Pods_PrimerSDK_Tests.framework */,
+				801372410DB75CCFCF392A35 /* Pods_PrimerSDK_Example.framework */,
+				B9CFFE61E31DB6D0885D9995 /* Pods_PrimerSDK_Tests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -439,10 +454,10 @@
 		CAECC3F22E94EA70F1F01CFC /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				F8EAC7DDD75B4B5A2DAAA5B2 /* Pods-PrimerSDK_Example.debug.xcconfig */,
-				EA08C76B4CD2F7C67540D8E0 /* Pods-PrimerSDK_Example.release.xcconfig */,
-				CFF79DDAB25C1C0F49A228BC /* Pods-PrimerSDK_Tests.debug.xcconfig */,
-				1E9A9B249BE9BA9B47B02FEF /* Pods-PrimerSDK_Tests.release.xcconfig */,
+				F0F622DAE3669AFDB6668320 /* Pods-PrimerSDK_Example.debug.xcconfig */,
+				B15CFEB34C15A6064D29591E /* Pods-PrimerSDK_Example.release.xcconfig */,
+				65C3ABA1D787D7D7DECEC41D /* Pods-PrimerSDK_Tests.debug.xcconfig */,
+				3FF2EDBD231B9FE7772D72D1 /* Pods-PrimerSDK_Tests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -472,11 +487,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "PrimerSDK_Example" */;
 			buildPhases = (
-				B383CC7308F2969E838B90CA /* [CP] Check Pods Manifest.lock */,
+				BECFB05A1E01C4D8E4D46AD8 /* [CP] Check Pods Manifest.lock */,
 				607FACCC1AFB9204008FA782 /* Sources */,
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
-				EEA64B1A7EFEAED89C75B527 /* [CP] Embed Pods Frameworks */,
+				3F415405E11E16AB541DB069 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -491,7 +506,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 607FACF21AFB9204008FA782 /* Build configuration list for PBXNativeTarget "PrimerSDK_Tests" */;
 			buildPhases = (
-				134B44C6D61DEAB7D77A188E /* [CP] Check Pods Manifest.lock */,
+				49B7DB623F25B53818F37837 /* [CP] Check Pods Manifest.lock */,
 				607FACE11AFB9204008FA782 /* Sources */,
 				607FACE21AFB9204008FA782 /* Frameworks */,
 				607FACE31AFB9204008FA782 /* Resources */,
@@ -526,7 +541,7 @@
 						CreatedOnToolsVersion = 6.3.1;
 						DevelopmentTeam = N8UN9TR5DY;
 						LastSwiftMigration = 0900;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
@@ -599,7 +614,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		134B44C6D61DEAB7D77A188E /* [CP] Check Pods Manifest.lock */ = {
+		3F415405E11E16AB541DB069 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/PrimerSDK/PrimerSDK.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PrimerSDK.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		49B7DB623F25B53818F37837 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -621,7 +654,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B383CC7308F2969E838B90CA /* [CP] Check Pods Manifest.lock */ = {
+		BECFB05A1E01C4D8E4D46AD8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -641,24 +674,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EEA64B1A7EFEAED89C75B527 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/PrimerSDK/PrimerSDK.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PrimerSDK.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -682,20 +697,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CE288902819550400649E61 /* Data+Extensions.swift in Sources */,
 				15F97C682624488700DCB3BA /* MerchantCheckoutViewController.swift in Sources */,
 				15F97C632624480500DCB3BA /* AppViewController.swift in Sources */,
 				15F97C7D2624730800DCB3BA /* UIViewController+API.swift in Sources */,
 				849A28EB275614070037C2D1 /* Networking.swift in Sources */,
+				2CE2888E281954FE00649E61 /* String+Extensions.swift in Sources */,
 				15F97C772624718800DCB3BA /* PaymentMethodCell.swift in Sources */,
 				849D5BC427B12E57002953C2 /* MerchantAssetsViewController.swift in Sources */,
 				15B2E64826F8A9EE005B8343 /* Apaya.swift in Sources */,
 				1DE0355C2716E4D1007BADAB /* CheckoutTheme.swift in Sources */,
+				2CE2888C2819547500649E61 /* HUCResultViewController.swift in Sources */,
 				15F97C6D26246FD300DCB3BA /* MerchantCheckoutViewController+Primer.swift in Sources */,
 				1DC7EE0C261FA39200BCBFFC /* SpinnerViewController.swift in Sources */,
 				15F97C72262470CB00DCB3BA /* MerchantCheckoutViewController+Helpers.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				849D5BC227B105E5002953C2 /* MerchantPaymentMethodsViewController.swift in Sources */,
 				1DC7EE14261FA3D400BCBFFC /* CreateClientToken.swift in Sources */,
+				2CE288922819553100649E61 /* Range+Extensions.swift in Sources */,
 				849D5BC027B105CA002953C2 /* MerchantCardFormViewController.swift in Sources */,
 				849AFD14275A725600A1F4CB /* ResultViewController.swift in Sources */,
 			);
@@ -710,6 +729,7 @@
 				1582B991260A3F2900C80BD7 /* ClientTokenServiceTests.swift in Sources */,
 				1582B98E260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift in Sources */,
 				15F5E2FF26982B21003AFF8A /* CardComponentManagerTests.swift in Sources */,
+				2CE2888A2818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift in Sources */,
 				1582B98B260A3F2900C80BD7 /* MaskTests.swift in Sources */,
 				1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */,
 				1582B980260A3F2900C80BD7 /* PaymentMethodConfigService.swift in Sources */,
@@ -954,15 +974,15 @@
 		};
 		607FACF01AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8EAC7DDD75B4B5A2DAAA5B2 /* Pods-PrimerSDK_Example.debug.xcconfig */;
+			baseConfigurationReference = F0F622DAE3669AFDB6668320 /* Pods-PrimerSDK_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PrimerSDK_Example.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1638969694;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = N8UN9TR5DY;
 				INFOPLIST_FILE = PrimerSDK/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -971,7 +991,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.primerapi.PrimerSDKExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development com.primerapi.PrimerSDKExample";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.2;
 			};
@@ -979,15 +999,15 @@
 		};
 		607FACF11AFB9204008FA782 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EA08C76B4CD2F7C67540D8E0 /* Pods-PrimerSDK_Example.release.xcconfig */;
+			baseConfigurationReference = B15CFEB34C15A6064D29591E /* Pods-PrimerSDK_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PrimerSDK_Example.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1638969694;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = N8UN9TR5DY;
 				INFOPLIST_FILE = PrimerSDK/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -996,7 +1016,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.primerapi.PrimerSDKExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development com.primerapi.PrimerSDKExample";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.2;
 			};
@@ -1004,7 +1024,7 @@
 		};
 		607FACF31AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CFF79DDAB25C1C0F49A228BC /* Pods-PrimerSDK_Tests.debug.xcconfig */;
+			baseConfigurationReference = 65C3ABA1D787D7D7DECEC41D /* Pods-PrimerSDK_Tests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
@@ -1033,7 +1053,7 @@
 		};
 		607FACF41AFB9204008FA782 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1E9A9B249BE9BA9B47B02FEF /* Pods-PrimerSDK_Tests.release.xcconfig */;
+			baseConfigurationReference = 3FF2EDBD231B9FE7772D72D1 /* Pods-PrimerSDK_Tests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";

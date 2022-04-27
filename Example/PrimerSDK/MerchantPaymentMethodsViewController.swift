@@ -248,7 +248,7 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
             } else if let res = res {
                 if let data = try? JSONEncoder().encode(res) {
                     DispatchQueue.main.async {
-                        let rvc = ResultViewController.instantiate(data: [data])
+                        let rvc = HUCResultViewController.instantiate(data: [data])
                         self.navigationController?.pushViewController(rvc, animated: true)
                     }
                 }
