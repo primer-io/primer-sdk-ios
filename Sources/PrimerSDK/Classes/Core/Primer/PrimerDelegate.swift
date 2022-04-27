@@ -51,9 +51,7 @@ public protocol PrimerDelegate {
     @objc optional func onResumeError(_ error: Error)
     
     @objc optional func primerDidDismiss()
-    
-    @objc optional func primerDidFailWithError(_ error: Error)
-    
+        
     /// This function will be called when the user tries to make a payment. You should make the pay API call to your backend, and
     /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
     /// Deprecated in favour of onTokenizeSuccess
@@ -92,7 +90,7 @@ public protocol PrimerDelegate {
     ///   - error: The Error object containing the error description.
     ///   - payment: The additional payment data if present
     ///   - completion: The completion handler containing a custom error to optionally pass to the SDK
-    @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, completion: @escaping (String?) -> Void)
+    @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, completion: ((String?) -> Void)?)
 }
 
 internal class PrimerDelegateProxy {
@@ -155,8 +153,8 @@ internal class PrimerDelegateProxy {
         Primer.shared.delegate?.primerDidDismiss?()
     }
         
-    static func primerDidFailWithError(_ error: Error) {
-        Primer.shared.delegate?.primerDidFailWithError?(error)
+    static func primerDidFailWithError(_ error: Error, data: CheckoutData?, completion: ((String?) -> Void)?) {
+        Primer.shared.delegate?.primerDidFailWithError?(error, data: data, completion: completion)
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
     }
     

@@ -321,8 +321,12 @@ extension PaymentMethodTokenizationViewModel {
             handle(error: error)
         } else {
             Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: { errorMessage in
-                let merchantError = PrimerError.merchantError(message: errorMessage ?? "")
-                self.handle(error: merchantError)
+                if let errorMessage = errorMessage {
+                    let merchantError = PrimerError.merchantError(message: errorMessage)
+                    self.handle(error: merchantError)
+                } else {
+                    self.handle(error: error)
+                }                
             })
         }
     }
@@ -364,9 +368,9 @@ extension PaymentMethodTokenizationViewModel {
             .done { paymentResponse -> Void in
                 
                 guard let paymentResponse = paymentResponse else {
-                          return
-                      }
-                
+                    return
+                }
+
                 self.resumePaymentId = paymentResponse.id
                 
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
@@ -427,10 +431,45 @@ extension PaymentMethodTokenizationViewModel {
                     return
                 }
                 
+                guard let status = paymentResponse?.status, status != .failed else {
+                    seal.reject(PrimerError.paymentFailed)
+                    return
+                }
+                
                 if let paymentFailureReason = paymentResponse?.paymentFailureReason,
                 let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
                    let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode) {
-                    
+                    seal.reject(error)
+                    return
+                }
+                                
+                seal.fulfill(paymentResponse)
+            }
+        }
+    }
+    
+    // Resume payment with Resume payment ID
+    
+    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Payment.Response?> {
+        
+        return Promise { seal in
+            
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
+                
+                guard error == nil else {
+                    seal.reject(error!)
+                    return
+                }
+                
+                guard let status = paymentResponse?.status, status != .failed else {
+                    seal.reject(PrimerError.paymentFailed)
+                    return
+                }
+                
+                if let paymentFailureReason = paymentResponse?.paymentFailureReason,
+                let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
+                   let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode) {
                     seal.reject(error)
                     return
                 }
@@ -448,11 +487,11 @@ extension PaymentMethodTokenizationViewModel {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if settings.isManualPaymentHandlingEnabled {
+            
             PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
+            
         } else {
             
-            // Resume payment with Payment method token
-                            
             guard let resumePaymentId = self.resumePaymentId else {
                 
                 DispatchQueue.main.async {
@@ -464,15 +503,15 @@ extension PaymentMethodTokenizationViewModel {
                 return
             }
             
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
+            firstly {
+                self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
+            }
+            .done { paymentResponse -> Void in
                 
-                guard let paymentResponse = paymentResponse,
-                      error == nil else {
-                    self.handleErrorBasedOnSDKSettings(error!, isOnResumeFlow: true)
+                guard let paymentResponse = paymentResponse else {
                     return
                 }
-                
+
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
@@ -480,6 +519,9 @@ extension PaymentMethodTokenizationViewModel {
                     Primer.shared.delegate?.primerDidCompleteCheckoutWithData?(checkoutData)
                     self.handleSuccess()
                 }
+            }
+            .catch { error in
+                self.handleErrorBasedOnSDKSettings(error)
             }
         }
     }

@@ -396,7 +396,7 @@ extension QRCodeTokenizationViewModel {
     
     private func handleCheckoutFailedEventWithError(_ error: Error) {
         self.executeCompletionAndNullifyAfter(error: error)
-        PrimerDelegateProxy.primerDidFailWithError(error)
+        PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
         self.handleFailedTokenizationFlow(error: error)
     }
     

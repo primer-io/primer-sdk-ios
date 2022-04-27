@@ -406,7 +406,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         } catch {
             DispatchQueue.main.async {
                 UIApplication.shared.endIgnoringInteractionEvents()
-                PrimerDelegateProxy.primerDidFailWithError(error)
+                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
                 self.handleFailedTokenizationFlow(error: error)
                 self.completion?(nil, error)
             }
@@ -452,7 +452,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
         .catch { err in
             DispatchQueue.main.async {
-                PrimerDelegateProxy.primerDidFailWithError(err)
+                PrimerDelegateProxy.primerDidFailWithError(err, data: nil, completion: nil)
                 self.handleFailedTokenizationFlow(error: err)
             }
         }
