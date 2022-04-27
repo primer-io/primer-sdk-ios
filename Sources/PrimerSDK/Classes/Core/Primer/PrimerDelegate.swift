@@ -165,7 +165,7 @@ internal class PrimerDelegateProxy {
         if let implementedReactNativeCallbacks = state.implementedReactNativeCallbacks {
             return implementedReactNativeCallbacks.isClientSessionActionsImplemented == true
         }
-        return true
+        return false
     }
     
     static func primerClientSession(_ clientSession: CheckoutDataClientSession?, willUpdateWith updateData: [String: Any]?) {

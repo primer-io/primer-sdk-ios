@@ -429,7 +429,7 @@ internal struct PaymentMethodData {
 
 //MARK: - Public / User Facing
 
-@objc public class CheckoutData: NSObject {
+@objc public class CheckoutData: NSObject, Codable {
     
     public let payment: CheckoutDataPayment?
     
@@ -467,7 +467,7 @@ internal struct PaymentMethodData {
 
 // TODO: Update / Temporary name to avoid conflicts
 
-@objc public class CheckoutPaymentMethodData: NSObject {
+@objc public class CheckoutPaymentMethodData: NSObject, Codable {
     public let paymentMethodType: CheckoutPaymentMethodType
     
     public init(type: CheckoutPaymentMethodType) {
@@ -475,7 +475,7 @@ internal struct PaymentMethodData {
     }
 }
 
-@objc public class CheckoutPaymentMethodType: NSObject {
+@objc public class CheckoutPaymentMethodType: NSObject, Codable {
     public let type: String
     
     public init(type: String) {
@@ -483,7 +483,7 @@ internal struct PaymentMethodData {
     }
 }
 
-@objc public class CheckoutDataPayment: NSObject {
+@objc public class CheckoutDataPayment: NSObject, Codable {
     public let id: String?
     public let orderId: String?
     public let paymentFailureReason: PaymentErrorCode?
