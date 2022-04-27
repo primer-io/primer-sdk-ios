@@ -504,7 +504,7 @@ public enum Currency: String, Codable, CaseIterable {
     
     var isZeroDecimal: Bool {
         switch self {
-        case .JPY, .KRW, .CLP:
+        case .JPY, .KRW, .CLP, .VND:
             return true
         default:
             return false
