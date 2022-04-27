@@ -435,7 +435,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.primerDidFailWithError?(error)
+                Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: nil)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -457,7 +457,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                Primer.shared.delegate?.primerDidFailWithError?(error)
+                Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: nil)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -594,7 +594,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             .catch { error in
                 DispatchQueue.main.async {
                     ErrorHandler.handle(error: error)
-                    Primer.shared.delegate?.primerDidFailWithError?(error)
+                    Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: nil)
                     self.handleFailedTokenizationFlow(error: error)
                 }
             }
@@ -731,7 +731,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         DispatchQueue.main.async {
             let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            Primer.shared.delegate?.primerDidFailWithError?(err)
+            Primer.shared.delegate?.primerDidFailWithError?(err, data: nil, completion: nil)
             self.handleFailedTokenizationFlow(error: err)
         }
     }

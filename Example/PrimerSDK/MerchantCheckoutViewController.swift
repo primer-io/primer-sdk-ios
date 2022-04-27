@@ -287,9 +287,18 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         decisionHandler(.continuePaymentCreation())
     }
     
+    func primerDidFailWithError(_ error: Error, data: CheckoutData?, completion: ((String?) -> Void)?) {
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Failed\n")
+        completion?(nil)
+    }
+    
+//    func primerDidFailWithError(_ error: Error, data: CheckoutData?, completion: @escaping (String?) -> Void) {
+//        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Failed: \(data)\n")
+//        completion("Payment Failed - Merchant error message")
+//    }
+    
     func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(data)\n")
-
         self.checkoutData = data
     }
             
