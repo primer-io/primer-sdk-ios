@@ -133,7 +133,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
                 self.activityIndicator = nil
 
                 if !self.paymentResponsesData.isEmpty {
-                    let rvc = ResultViewController.instantiate(data: self.paymentResponsesData)
+                    let rvc = HUCResultViewController.instantiate(data: self.paymentResponsesData)
                     self.navigationController?.pushViewController(rvc, animated: true)
                 }
             }
@@ -143,7 +143,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
             } else if let res = res {
                 if let data = try? JSONEncoder().encode(res) {
                     DispatchQueue.main.async {
-                        let rvc = ResultViewController.instantiate(data: [data])
+                        let rvc = HUCResultViewController.instantiate(data: [data])
                         self.navigationController?.pushViewController(rvc, animated: true)
                     }
                 }
@@ -194,7 +194,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
             self.activityIndicator = nil
 
             if !self.paymentResponsesData.isEmpty {
-                let rvc = ResultViewController.instantiate(data: self.paymentResponsesData)
+                let rvc = HUCResultViewController.instantiate(data: self.paymentResponsesData)
                 self.navigationController?.pushViewController(rvc, animated: true)
             }
         }
