@@ -26,7 +26,7 @@ class ClientTokenServiceTests: XCTestCase {
         let state = MockAppState()
         DependencyContainer.register(state as AppStateProtocol)
         
-        let service = ClientTokenService()
+        let service: ClientTokenServiceProtocol = DependencyContainer.resolve()
         service.fetchClientToken { (err) in
             if let err = err {
                 if case PrimerError.invalidClientToken = err {
