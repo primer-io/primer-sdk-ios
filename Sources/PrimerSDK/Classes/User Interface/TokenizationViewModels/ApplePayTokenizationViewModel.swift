@@ -183,9 +183,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                 self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
             }
         }
-        .ensure {
-            
-        }
         .catch { error in
             DispatchQueue.main.async {
                 self.unselectPaymentMethodWithError(error)

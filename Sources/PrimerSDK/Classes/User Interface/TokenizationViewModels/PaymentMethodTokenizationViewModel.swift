@@ -341,8 +341,7 @@ extension PaymentMethodTokenizationViewModel {
         if Primer.shared.flow.internalSessionFlow.vaulted {
             Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
             self.handleSuccess()
-        }
-        else if settings.isManualPaymentHandlingEnabled {
+        } else if settings.isManualPaymentHandlingEnabled {
             
             PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
             PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in

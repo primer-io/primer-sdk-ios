@@ -314,7 +314,7 @@ class Base: XCTestCase {
     }
     
     func successMessageExists() throws {
-        let successLabel = app.staticTexts["success_screen_message_label"]
+        let successLabel = app.staticTexts["result_component_view_message_label"]
         let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
         wait(for: [successLabelExists], timeout: 30)
     }
