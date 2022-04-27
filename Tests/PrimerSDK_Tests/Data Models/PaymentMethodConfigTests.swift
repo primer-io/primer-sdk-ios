@@ -19,7 +19,8 @@ class PaymentMethodConfigTests: XCTestCase {
             {
                 "pciUrl": "\(pciUrl)",
                 "coreUrl": "\(coreUrl)",
-                "paymentMethods": \(paymentMethods)
+                "paymentMethods": \(paymentMethods),
+                "checkoutModules": []
             }
             
             """
@@ -172,7 +173,7 @@ class PaymentMethodConfigTests: XCTestCase {
             }
 
         } catch {
-            XCTFail(error.localizedDescription)
+            XCTFail("\(error)")
         }
         
         applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: 1, type: PaymentMethodConfigType.applePay.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
