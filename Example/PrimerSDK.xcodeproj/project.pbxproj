@@ -42,6 +42,8 @@
 		1DE0355C2716E4D1007BADAB /* CheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE0355B2716E4D1007BADAB /* CheckoutTheme.swift */; };
 		1DEBE0DF26B6FD06004E3064 /* ApayaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */; };
 		1DED53B02739561800CD9DE6 /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DED53AF2739561800CD9DE6 /* ThemeTests.swift */; };
+		2C4480D52819755700BD431A /* CreateResumePaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4480D42819755700BD431A /* CreateResumePaymentService.swift */; };
+		2C4480D728197F7E00BD431A /* CreateResumePaymentServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4480D628197F7E00BD431A /* CreateResumePaymentServiceTests.swift */; };
 		2CE2888A2818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE288892818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift */; };
 		2CE2888C2819547500649E61 /* HUCResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2888B2819547500649E61 /* HUCResultViewController.swift */; };
 		2CE2888E281954FE00649E61 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2888D281954FE00649E61 /* String+Extensions.swift */; };
@@ -132,6 +134,8 @@
 		1DE0355B2716E4D1007BADAB /* CheckoutTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutTheme.swift; sourceTree = "<group>"; };
 		1DEBE0DE26B6FD06004E3064 /* ApayaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApayaTests.swift; sourceTree = "<group>"; };
 		1DED53AF2739561800CD9DE6 /* ThemeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemeTests.swift; sourceTree = "<group>"; };
+		2C4480D42819755700BD431A /* CreateResumePaymentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateResumePaymentService.swift; sourceTree = "<group>"; };
+		2C4480D628197F7E00BD431A /* CreateResumePaymentServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateResumePaymentServiceTests.swift; sourceTree = "<group>"; };
 		2CE288892818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		2CE2888B2819547500649E61 /* HUCResultViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HUCResultViewController.swift; sourceTree = "<group>"; };
 		2CE2888D281954FE00649E61 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
@@ -249,6 +253,7 @@
 				1582B965260A3F2900C80BD7 /* VaultService.swift */,
 				1582B966260A3F2900C80BD7 /* ClientTokenService.swift */,
 				1582B967260A3F2900C80BD7 /* TokenizationService.swift */,
+				2C4480D42819755700BD431A /* CreateResumePaymentService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -280,6 +285,7 @@
 				1582B978260A3F2900C80BD7 /* PayPalServiceTests.swift */,
 				1582B976260A3F2900C80BD7 /* TokenizationServiceTests.swift */,
 				15F5E2FE26982B21003AFF8A /* CardComponentManagerTests.swift */,
+				2C4480D628197F7E00BD431A /* CreateResumePaymentServiceTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -731,11 +737,13 @@
 				1DED53B02739561800CD9DE6 /* ThemeTests.swift in Sources */,
 				1582B981260A3F2900C80BD7 /* PayPalService.swift in Sources */,
 				1582B991260A3F2900C80BD7 /* ClientTokenServiceTests.swift in Sources */,
+				2C4480D728197F7E00BD431A /* CreateResumePaymentServiceTests.swift in Sources */,
 				1582B98E260A3F2900C80BD7 /* PaymentMethodConfigServiceTests.swift in Sources */,
 				15F5E2FF26982B21003AFF8A /* CardComponentManagerTests.swift in Sources */,
 				2CE2888A2818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift in Sources */,
 				1582B98B260A3F2900C80BD7 /* MaskTests.swift in Sources */,
 				1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */,
+				2C4480D52819755700BD431A /* CreateResumePaymentService.swift in Sources */,
 				1582B980260A3F2900C80BD7 /* PaymentMethodConfigService.swift in Sources */,
 				15F32E1D26FDA8E4004B3903 /* PrimerTests.swift in Sources */,
 				1582B988260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift in Sources */,
