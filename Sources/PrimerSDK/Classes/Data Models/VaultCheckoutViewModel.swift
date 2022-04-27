@@ -111,6 +111,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 }
 
 extension VaultCheckoutViewModel: ResumeHandlerProtocol {
+    
     func handle(error: Error) {
         DispatchQueue.main.async {
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
