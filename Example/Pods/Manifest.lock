@@ -1,18 +1,25 @@
 PODS:
-  - PrimerSDK (1.33.2):
-    - PrimerSDK/Core (= 1.33.2)
-  - PrimerSDK/Core (1.33.2)
+  - Primer3DS (1.0.0)
+  - PrimerSDK (1.32.4):
+    - PrimerSDK/Core (= 1.32.4)
+  - PrimerSDK/Core (1.32.4)
 
 DEPENDENCIES:
+  - Primer3DS
   - PrimerSDK (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - Primer3DS
 
 EXTERNAL SOURCES:
   PrimerSDK:
     :path: "../"
 
 SPEC CHECKSUMS:
-  PrimerSDK: cf313a34d1b2e06493dcde2201a79294009e7d2d
+  Primer3DS: 0b298ca54adb07e3f5ae3d74e574b6d3084e8a0d
+  PrimerSDK: 92c0a236d72b77ee2dbbf52ea389f9be895c1087
 
-PODFILE CHECKSUM: a4c4610ffac4d0f88dd6045d1d16e3b45798b2c9
+PODFILE CHECKSUM: 8cc848c88f1011d77d5ef15938ad74e891344b0f
 
 COCOAPODS: 1.11.2
