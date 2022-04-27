@@ -88,7 +88,7 @@ public protocol PrimerDelegate {
     /// This function will be called when the checkout encountered an error.
     /// - Parameters:
     ///   - error: The Error object containing the error description.
-    ///   - payment: The additional payment data if present
+    ///   - data: The additional payment data if present
     ///   - completion: The completion handler containing a custom error to optionally pass to the SDK
     @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, completion: ((String?) -> Void)?)
 }
