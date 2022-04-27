@@ -338,7 +338,7 @@ extension PaymentMethodTokenizationViewModel {
                     self.handle(error: merchantError)
                 } else {
                     self.handle(error: error)
-                }                
+                }
             })
         }
     }
@@ -350,7 +350,11 @@ extension PaymentMethodTokenizationViewModel {
                 
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        if settings.isManualPaymentHandlingEnabled {
+        if Primer.shared.flow.internalSessionFlow.vaulted {
+            Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
+            self.handleSuccess()
+        }
+        else if settings.isManualPaymentHandlingEnabled {
             
             PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
             PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
