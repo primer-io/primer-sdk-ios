@@ -634,15 +634,18 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="actionsStackView" destination="jxL-iG-utE" id="b8g-eh-PWd"/>
                         <outlet property="amountLabel" destination="tFg-X3-Grv" id="8Sr-YI-Xo7"/>
+                        <outlet property="amountStackView" destination="dwO-AD-daJ" id="tIM-lG-DBl"/>
                         <outlet property="requiredActionsLabel" destination="BP7-Bj-0Wd" id="UOS-gA-ofD"/>
+                        <outlet property="responseStackView" destination="RWM-73-UkS" id="Fnh-JT-nGV"/>
                         <outlet property="responseStatus" destination="NSy-AC-wir" id="fwH-L2-lFZ"/>
                         <outlet property="responseTextView" destination="zH0-YR-jKP" id="UNG-nf-vM7"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bha-S1-DUW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3719" y="133"/>
+            <point key="canvasLocation" x="3687" y="151"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="k2f-Pv-jbT">
