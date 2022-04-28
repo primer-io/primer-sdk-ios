@@ -282,36 +282,24 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         enableView(false)
         payButton.startAnimating()
         
-        if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            var params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            if config.type == .paymentCard {
-                var network = selectedPaymentMethod.paymentInstrumentData?.network?.uppercased()
-                if network == nil || network == "UNKNOWN" {
-                    network = "OTHER"
-                }
-                
-                params = [
-                    "paymentMethodType": "PAYMENT_CARD",
-                    "binData": [
-                        "network": network,
-                    ]
-                ]
+        firstly {
+            self.dispatchActions(config: config, selectedPaymentMethod: selectedPaymentMethod)
+        }
+        .then {
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: config.type))
+        }
+        .done {
+            self.continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)
+        }
+        .ensure {
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+        }
+        .catch { error in
+            DispatchQueue.main.async {
+                ErrorHandler.handle(error: error)
+                Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: nil)
+                self.handle(error: error)
             }
-            
-            onClientSessionActionUpdateCompletion = { err in
-                if let err = err {
-                    DispatchQueue.main.async {
-                        self.unselectPaymentMethodWithError(err)
-                    }
-                } else {
-                    self.continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)
-                }
-            }
-            
-            self.selectPaymentMethodWithParameters(params)
-            
-        } else {
-            continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)
         }
     }
         
@@ -328,6 +316,39 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
                     self.dismissOrShowResultScreen(error)
                 }
+            }
+        }
+    }
+}
+
+extension PrimerUniversalCheckoutViewController {
+    
+    private func dispatchActions(config: PaymentMethodConfig, selectedPaymentMethod: PaymentMethodToken) -> Promise<Void> {
+        
+        return Promise { seal in
+            
+            var params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            if config.type == .paymentCard {
+                var network = selectedPaymentMethod.paymentInstrumentData?.network?.uppercased()
+                if network == nil || network == "UNKNOWN" {
+                    network = "OTHER"
+                }
+                
+                params = [
+                    "paymentMethodType": "PAYMENT_CARD",
+                    "binData": [
+                        "network": network,
+                    ]
+                ]
+            }
+
+            firstly {
+                ClientSession.Action.selectPaymentMethodWithParameters(params)
+            }.done {
+                seal.fulfill()
+            }
+            .catch { error in
+                seal.reject(error)
             }
         }
     }

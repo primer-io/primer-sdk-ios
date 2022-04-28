@@ -503,9 +503,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
         }
     }
-    
-    var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
-    
+        
     @objc
     func payButtonTapped(_ sender: UIButton) {
         let viewEvent = Analytics.Event(
@@ -526,8 +524,35 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         isTokenizing = true
         submitButton.startAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+                            
+        firstly {
+            self.dispatchActions()
+        }
+        .then {
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+        }
+        .done {
+            self.cardComponentsManager.tokenize()
+        }
+        .ensure {
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+        }
+        .catch { error in
+            DispatchQueue.main.async {
+                ErrorHandler.handle(error: error)
+                Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: nil)
+                self.handleFailedTokenizationFlow(error: error)
+            }
+        }
+    }
+}
+
+extension CardFormPaymentMethodTokenizationViewModel {
+    
+    private func dispatchActions() -> Promise<Void> {
         
-        if PrimerDelegateProxy.isClientSessionActionsImplemented {
+        return Promise { seal in
+            
             var network = self.cardNetwork?.rawValue.uppercased()
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
@@ -539,21 +564,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     "network": network,
                 ]
             ]
-            
-            onClientSessionActionUpdateCompletion = { err in
-                if let err = err {
-                    DispatchQueue.main.async {
-                        self.submitButton.stopAnimating()
-                        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-                        self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-                    }
-                    self.handle(error: err)
-                } else {
-                    self.cardComponentsManager.tokenize()
-                }
-                self.onClientSessionActionUpdateCompletion = nil
-            }
-            
+                        
             var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
             
             if (requirePostalCode) {
@@ -578,25 +589,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 )
                 actions.append(billingAddressAction)
             }
-            
-            self.dispatchMultipleActions(actions)
-        } else {
-            
+
             firstly {
-                self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
-            }
-            .done {
-                self.cardComponentsManager.tokenize()
-            }
-            .ensure {
-                Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+                ClientSession.Action.dispatchMultipleActions(actions)
+            }.done {
+                seal.fulfill()
             }
             .catch { error in
-                DispatchQueue.main.async {
-                    ErrorHandler.handle(error: error)
-                    Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: nil)
-                    self.handleFailedTokenizationFlow(error: error)
-                }
+                seal.reject(error)
             }
         }
     }
@@ -685,18 +685,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     self.startPolling(on: url, completion: completion)
                 }
             }
-        }
-    }
-}
-
-extension CardFormPaymentMethodTokenizationViewModel {
-    
-    private func dispatchMultipleActions(_ actions: [ClientSession.Action]) {
-        firstly {
-            ClientSession.Action.dispatchMultipleActions(actions)
-        }
-        .catch { error in
-            self.handle(error: error)
         }
     }
 }
@@ -804,6 +792,20 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     
 }
 
+extension CardFormPaymentMethodTokenizationViewModel {
+    
+    private func updateBillingAddressWithParameters(_ parameters: [String: Any]) {
+        
+        firstly {
+            ClientSession.Action.setPostalCodeWithParameters(parameters)
+        }
+        .done{}
+        .catch { error in
+            self.handle(error: error)
+        }
+    }
+}
+
 extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
     
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
@@ -828,7 +830,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 "countryCode": currentBillingAddress?.countryCode as Any
             ] as [String: Any]
             
-            ClientSession.Action.setPostalCodeWithParameters(params)
+            self.updateBillingAddressWithParameters(params)
         }
         
         autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
@@ -870,7 +872,6 @@ extension CardFormPaymentMethodTokenizationViewModel {
         .done {
             self.updateButtonUI()
             self.raiseOnConfigurationFetchedCallback()
-            self.raiseOnClientSessionActionUpdateCompletion()
         }
         .catch { error in
             self.handle(error: error)
@@ -884,7 +885,6 @@ extension CardFormPaymentMethodTokenizationViewModel {
         .done {
             self.updateButtonUI()
             self.raiseOnConfigurationFetchedCallback()
-            self.raiseOnClientSessionActionUpdateCompletion()
         }
         .catch { error in
             self.handle(error: error)
@@ -997,11 +997,6 @@ extension CardFormPaymentMethodTokenizationViewModel {
     private func raiseOnConfigurationFetchedCallback() {
         self.onConfigurationFetched?()
     }
-    
-    private func raiseOnClientSessionActionUpdateCompletion(_ error: Error? = nil) {
-        self.onClientSessionActionUpdateCompletion?(error)
-        self.onClientSessionActionUpdateCompletion = nil
-    }
 }
 
 extension CardFormPaymentMethodTokenizationViewModel {
@@ -1009,12 +1004,6 @@ extension CardFormPaymentMethodTokenizationViewModel {
     override func handle(error: Error) {
         
         DispatchQueue.main.async {
-            
-            if self.onClientSessionActionUpdateCompletion != nil {
-                _ = ClientSession.Action.unselectPaymentMethod()
-                self.raiseOnClientSessionActionUpdateCompletion(error)
-            }
-            
             self.handleFailedTokenizationFlow(error: error)
             self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
