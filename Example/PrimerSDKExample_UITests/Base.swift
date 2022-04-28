@@ -156,8 +156,8 @@ class Base: XCTestCase {
             currency: "DKK",
             countryCode: "DK",
             amount: "100",
-            expectations: Payment.Expectations(
-                amount: "DKK 1.00",
+            expecations: Payment.Expecations(
+                amount: "kr.1.00",
                 surcharge: nil,
                 webviewImage: "mobilepay-logo",
                 webviewTexts: nil,
@@ -165,7 +165,7 @@ class Base: XCTestCase {
                 resultScreenTexts: [
                     "status": "PENDING",
                     "actions": "USE_PRIMER_SDK",
-                    "amount": "DKK 1.00"
+                    "amount": "kr.1.00"
                 ]
             )
         ),
