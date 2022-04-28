@@ -169,17 +169,17 @@ class Base: XCTestCase {
             )
         ),
         Payment(
-            id: "3DS_PAYMENT_CARD",
+            id: "PAYMENT_CARD",
             environment: .sandbox,
             currency: "EUR",
             countryCode: "FR",
             amount: "10500",
             expecations: Payment.Expecations(
-                amount: "EUR 1.00",
+                amount: "€105.00",
                 surcharge: "Additional fee may apply",
                 webviewImage: nil,
                 webviewTexts: nil,
-                buttonTexts: ["Pay € 1.00"],
+                buttonTexts: ["Pay €105.00"],
                 resultScreenTexts: nil
             )
         )
@@ -449,6 +449,7 @@ class Base: XCTestCase {
 }
 
 extension XCUIElement {
+    
     func clearText() {
         guard let stringValue = self.value as? String else {
             return
