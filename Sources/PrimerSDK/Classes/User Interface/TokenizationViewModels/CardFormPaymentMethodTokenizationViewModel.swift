@@ -587,6 +587,13 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     internal func presentWeb3DS(with pollingUrls: PollingURLs) {
         DispatchQueue.main.async { [unowned self] in
+            guard let redirectUrl = URL(string: pollingUrls.redirect) else {
+                let err = PrimerError.invalidUrl(url: pollingUrls.redirect, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                PrimerDelegateProxy.onResumeError(err)
+                return
+            }
+            
             self.willPresentExternalView?()
             
             self.webViewCompletion = { (id, err) in
@@ -607,7 +614,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
             }
             
-            self.webViewController = SFSafariViewController(url: URL(string: pollingUrls.redirect)!)
+            self.webViewController = SFSafariViewController(url: redirectUrl)
             self.webViewController?.delegate = self
             
             self.willPresentExternalView?()
@@ -921,7 +928,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 self.presentWeb3DS(with: pollingUrls)
                 
             } else {
-                let err = PrimerError.invalidValue(key: "polling params", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.invalidValue(key: "Polling parameters", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 PrimerDelegateProxy.onResumeError(err)
             }
