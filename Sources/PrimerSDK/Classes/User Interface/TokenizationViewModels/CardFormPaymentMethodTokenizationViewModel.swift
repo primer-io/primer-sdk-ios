@@ -594,6 +594,13 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 return
             }
             
+            guard let statusUrl = URL(string: pollingUrls.status) else {
+                let err = PrimerError.invalidUrl(url: pollingUrls.status, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                PrimerDelegateProxy.onResumeError(err)
+                return
+            }
+            
             self.willPresentExternalView?()
             
             self.webViewCompletion = { (id, err) in
@@ -624,7 +631,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
             })
             
-            self.startPolling(on: URL(string: pollingUrls.status)!) { id, err in
+            self.startPolling(on: statusUrl) { id, err in
                 self.webViewCompletion?(id, err)
             }
         }
