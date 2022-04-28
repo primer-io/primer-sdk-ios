@@ -72,6 +72,9 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "UniversalCheckout/testAdyenAlipay()">
+               </Test>
+               <Test
                   Identifier = "UniversalCheckout/testAdyenMobilePay()">
                </Test>
                <Test
