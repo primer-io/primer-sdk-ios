@@ -111,7 +111,7 @@ class Base: XCTestCase {
             id: "PAY_NL_BANCONTACT",
             environment: .sandbox,
             currency: "EUR",
-            countryCode: "NL",
+            countryCode: "BE",
             amount: "100",
             expecations: Payment.Expecations(
                 amount: "€1.00",
@@ -120,9 +120,7 @@ class Base: XCTestCase {
                 webviewTexts: ["Primer API Ltd", "€ 1,00"],
                 buttonTexts: nil,
                 resultScreenTexts: [
-                    "status": "PENDING",
-                    "actions": "USE_PRIMER_SDK",
-                    "amount": "EUR 1.29"
+                    "status": "SUCCESS"
                 ]
             )
         ),
