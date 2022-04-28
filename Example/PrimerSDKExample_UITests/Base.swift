@@ -40,6 +40,38 @@ class Base: XCTestCase {
     
     static var paymentMethods: [Payment] = [
         Payment(
+            id: "ADYEN_DOTPAY",
+            environment: .sandbox,
+            currency: "PLN",
+            countryCode: "PL",
+            amount: "288",
+            expecations: Payment.Expecations(
+                amount: "zł2.88",
+                surcharge: nil,
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "SUCCESS"
+                ]
+            )
+        ),
+        Payment(
+            id: "ADYEN_BLIK",
+            environment: .sandbox,
+            currency: "PLN",
+            countryCode: "PL",
+            amount: "288",
+            expecations: Payment.Expecations(
+                amount: "zł2.88",
+                surcharge: nil,
+                webviewImage: "blik",
+                webviewTexts: nil,
+                buttonTexts: nil,
+                resultScreenTexts: nil
+            )
+        ),
+        Payment(
             id: "ADYEN_GIROPAY",
             environment: .sandbox,
             currency: "EUR",
@@ -52,9 +84,7 @@ class Base: XCTestCase {
                 webviewTexts: nil,
                 buttonTexts: nil,
                 resultScreenTexts: [
-                    "status": "SETTLED",
-                    "actions": "USE_PRIMER_SDK",
-                    "amount": "EUR 1.79"
+                    "status": "SUCCESS"
                 ]
             )
         ),

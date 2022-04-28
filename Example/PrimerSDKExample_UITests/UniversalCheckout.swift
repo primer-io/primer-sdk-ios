@@ -194,12 +194,89 @@ class UniversalCheckout: XCTestCase {
         
         try base.successMessageExists()
         try base.dismissSDK()
-//        try base.resultScreenExpectations(for: payment)
+        try base.resultScreenExpectations(for: payment)
     }
     
     func testAdyenMobilePay() throws {
         let payment = Base.paymentMethods.filter({ $0.id == "ADYEN_MOBILEPAY" }).first!
         try base.testPayment(payment)
+    }
+    
+    func testAdyenBlik() throws {
+        let payment = Base.paymentMethods.filter({ $0.id == "ADYEN_BLIK" }).first!
+        try openCardForm(for: payment)
+        
+        XCTAssert(app.images.matching(NSPredicate(format: "identifier CONTAINS 'blik-logo'")).firstMatch.exists, "The Blik logo should be visible")
+        
+        let sixDigitsBlikTextField = app.textFields.matching(NSPredicate(format: "identifier == 'generic_txt_fld'")).firstMatch
+        sixDigitsBlikTextField.tap()
+        sixDigitsBlikTextField.typeText("777")
+        
+        let confirmButton = app.buttons.matching(NSPredicate(format: "label == 'Confirm'")).firstMatch
+        
+        XCTAssert(confirmButton.isEnabled == false, "The Confirm button should be disabled logo should be visible")
+
+        sixDigitsBlikTextField.typeText("666")
+        
+        XCTAssert(confirmButton.isEnabled, "The Confirm button should be enabled now")
+        
+        // Tested till this point as Blik is raising an endless PENDING
+    }
+    
+    func testAdyenDotPayViaBlik() throws {
+        let payment = Base.paymentMethods.filter({ $0.id == "ADYEN_DOTPAY" }).first!
+        try openCardForm(for: payment)
+        
+        let safariWebView = app.otherElements.matching(NSPredicate(format: "identifier CONTAINS 'BrowserView?WebViewProcessID'"))
+        
+        let buttonImage = safariWebView.images.matching(NSPredicate(format: "label CONTAINS 'BLIK'")).firstMatch
+        let buttonImageIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: buttonImage, handler: nil)
+        wait(for: [buttonImageIsHittable], timeout: 30)
+        buttonImage.tap()
+
+        let firstNameTextField = app.otherElements.containing(NSPredicate(format: "label == 'Firstname:'")).firstMatch.textFields.firstMatch
+        let firstNameTextFieldIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: firstNameTextField, handler: nil)
+        wait(for: [firstNameTextFieldIsHittable], timeout: 30)
+        firstNameTextField.tap()
+        firstNameTextField.typeText("John")
+        
+        let toolBarDoneButton = app.toolbars["Toolbar"].firstMatch.buttons["Done"].firstMatch
+        toolBarDoneButton.tap()
+        
+        let surnameTextField = app.otherElements.containing(NSPredicate(format: "label == 'Surname:'")).firstMatch.textFields.element(boundBy: 1)
+        let surnameTextFieldIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: surnameTextField, handler: nil)
+        wait(for: [surnameTextFieldIsHittable], timeout: 30)
+        surnameTextField.tap()
+        surnameTextField.typeText("Smith")
+
+        toolBarDoneButton.tap()
+        safariWebView.webViews.firstMatch.pinch(withScale: 0.5, velocity: -0.5)
+        
+        let emailTextField = app.otherElements.containing(NSPredicate(format: "label == 'Email:'")).firstMatch.textFields.element(boundBy: 2)
+        let emailTextFieldIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: emailTextField, handler: nil)
+        wait(for: [emailTextFieldIsHittable], timeout: 30)
+        emailTextField.tap()
+        emailTextField.typeText("john.smith@example.mail.com")
+        
+        toolBarDoneButton.tap()
+        safariWebView.webViews.firstMatch.pinch(withScale: 0.5, velocity: -0.5)
+                
+        let payButton = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Pay 2.88 PLN'")).firstMatch
+        payButton.tap()
+        
+        let acceptButton = app.buttons.containing(NSPredicate(format: "label == 'accept'")).firstMatch
+        let acceptButtonIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: acceptButton, handler: nil)
+        wait(for: [acceptButtonIsHittable], timeout: 30)
+        acceptButton.tap()
+        
+        let successLabel = app.staticTexts["result_component_view_message_label"]
+        let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
+        wait(for: [successLabelExists], timeout: 15)
+        
+        let scrollView = app.scrollViews["primer_container_scroll_view"]
+        scrollView.swipeDown()
+        
+        try base.resultScreenExpectations(for: payment)
     }
     
     func testPayNLBancontact() throws {
@@ -215,6 +292,7 @@ class UniversalCheckout: XCTestCase {
         let expiryTextField = app.textFields["expiry_txt_fld"]
         let cvcTextField = app.textFields["cvc_txt_fld"]
         let cardholderTextField = app.textFields["card_holder_txt_fld"]
+        let postalCodeTextField = app.textFields["postal_code_txt_fld"]
         let submitButton = app.buttons["submit_btn"]
         
         if let submitButtonTexts = payment.expecations?.buttonTexts {
@@ -248,6 +326,10 @@ class UniversalCheckout: XCTestCase {
         
         cardnumberTextField.clearText()
         cardnumberTextField.typeText("4242424242424242")
+        submitButtonText = submitButton.staticTexts["Pay £2.09"]
+        submitButtonTextExists = expectation(for: Expectation.exists, evaluatedWith: submitButtonText, handler: nil)
+        wait(for: [submitButtonTextExists], timeout: 15)
+        
         XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
         
         expiryTextField.tap()
@@ -262,6 +344,11 @@ class UniversalCheckout: XCTestCase {
         
         cardholderTextField.tap()
         cardholderTextField.typeText("John Smith")
+        
+        XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
+
+        postalCodeTextField.tap()
+        postalCodeTextField.typeText("EC1V")
         
         XCTAssert(submitButton.isEnabled, "Submit button should be enabled")
         
@@ -439,6 +526,8 @@ class UniversalCheckout: XCTestCase {
         let errorLabelExists = expectation(for: Expectation.exists, evaluatedWith: errorLabel, handler: nil)
         wait(for: [errorLabelExists], timeout: 15)
     }
+    
+    
 }
 
 extension UniversalCheckout {
@@ -479,5 +568,4 @@ extension UniversalCheckout {
         
         paymentMethodButton.tap()
     }
-
 }
