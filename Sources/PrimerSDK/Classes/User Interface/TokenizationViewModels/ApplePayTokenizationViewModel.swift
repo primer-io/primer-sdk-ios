@@ -155,12 +155,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            self.selectPaymentMethodWithParameters(params)
-        } else {
-            continueTokenizationFlow()
-        }
+        let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+        self.selectPaymentMethodWithParameters(params)
     }
     
     fileprivate func continueTokenizationFlow() {
@@ -377,7 +373,9 @@ extension ApplePayTokenizationViewModel {
         firstly {
             ClientSession.Action.selectPaymentMethodWithParameters(parameters)
         }
-        .done {}
+        .done {
+            self.continueTokenizationFlow()
+        }
         .catch { error in
             self.handle(error: error)
         }

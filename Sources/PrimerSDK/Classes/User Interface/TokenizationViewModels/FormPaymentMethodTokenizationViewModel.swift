@@ -314,7 +314,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
 
     
-    var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     var onResumeHandlerCompletion: ((URL?, Error?) -> Void)?
     var onResumeTokenCompletion: ((Error?) -> Void)?
     private var isCanceled: Bool = false
@@ -367,7 +366,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     func cancel() {
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-        self.onClientSessionActionUpdateCompletion = nil
         self.onResumeHandlerCompletion = nil
         self.onResumeTokenCompletion = nil
         
@@ -438,17 +436,18 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            self.selectPaymentMethodWithParameters(params)
-        } else {
-            continueTokenizationFlow()
+        firstly {
+            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": config.type.rawValue])
+        }
+        .done {
+            self.continueTokenizationFlow()
+        }
+        .catch { error in
+            self.handle(error: error)
         }
     }
     
     private func continueTokenizationFlow() {
-        self.onClientSessionActionUpdateCompletion = nil
-
         do {
             try self.validate()
         } catch {
@@ -527,7 +526,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             }
             .ensure {
                 Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-                self.onClientSessionActionUpdateCompletion = nil
                 self.onResumeHandlerCompletion = nil
                 self.onResumeTokenCompletion = nil
             }
@@ -542,72 +540,24 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             submitButton.startAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
             
-            if PrimerDelegateProxy.isClientSessionActionsImplemented {
-                var network = self.cardNetwork?.rawValue.uppercased()
-                if network == nil || network == "UNKNOWN" {
-                    network = "OTHER"
+            firstly {
+                self.dispatchActions()
+            }
+            .then {
+                self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+            }
+            .done {
+                self.cardComponentsManager.tokenize()
+            }
+            .ensure {
+                Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+            }
+            .catch { error in
+                DispatchQueue.main.async {
+                    ErrorHandler.handle(error: error)
+                    Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: nil)
+                    self.handleFailedTokenizationFlow(error: error)
                 }
-                
-                let params: [String: Any] = [
-                    "paymentMethodType": "PAYMENT_CARD",
-                    "binData": [
-                        "network": network,
-                    ]
-                ]
-        
-                onClientSessionActionUpdateCompletion = { err in
-                    if let err = err {
-                        DispatchQueue.main.async {
-                            self.submitButton.stopAnimating()
-                            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-                            self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-                        }
-                    } else {
-                        firstly {
-                            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
-                        }
-                        .done {
-                            self.cardComponentsManager.tokenize()
-                        }
-                        .catch { error in
-                            DispatchQueue.main.async {
-                                self.submitButton.stopAnimating()
-                                Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-                                self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
-                            }
-                        }
-                    }
-                    self.onClientSessionActionUpdateCompletion = nil
-                }
-                
-                var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
-                
-                if (requirePostalCode) {
-                    let state: AppStateProtocol = DependencyContainer.resolve()
-                    
-                    let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
-                    
-                    let billingAddressParams = [
-                        "firstName": currentBillingAddress?.firstName as Any,
-                        "lastName": currentBillingAddress?.lastName as Any,
-                        "addressLine1": currentBillingAddress?.addressLine1 as Any,
-                        "addressLine2": currentBillingAddress?.addressLine2 as Any,
-                        "city": currentBillingAddress?.city as Any,
-                        "postalCode": postalCodeField.postalCode,
-                        "state": currentBillingAddress?.state as Any,
-                        "countryCode": currentBillingAddress?.countryCode as Any
-                    ] as [String: Any]
-                    
-                    let billingAddressAction = ClientSession.Action(
-                        type: "SET_BILLING_ADDRESS",
-                        params: billingAddressParams
-                    )
-                    actions.append(billingAddressAction)
-                }
-                
-                self.dispatchMultipleActions(actions)
-            } else {
-                cardComponentsManager.tokenize()
             }
         }
     }
@@ -983,49 +933,65 @@ extension FormPaymentMethodTokenizationViewModel {
 }
 
 extension FormPaymentMethodTokenizationViewModel {
-        
-    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
-        
-        firstly {
-            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
-        }
-        .done {}
-        .catch { error in
-            self.handle(error: error)
-        }
-    }
-        
-    private func unselectPaymentMethodWithError(_ error: Error) {
-        firstly {
-            ClientSession.Action.unselectPaymentMethod()
-        }
-        .done {
-            self.onClientSessionActionUpdateCompletion = nil
-        }
-        .catch { error in
-            self.handle(error: error)
-        }
-    }
     
-    private func dispatchMultipleActions(_ actions: [ClientSession.Action]) {
-        firstly {
-            ClientSession.Action.dispatchMultipleActions(actions)
-        }
-        .catch { error in
-            self.handle(error: error)
+    private func dispatchActions() -> Promise<Void> {
+        
+        return Promise { seal in
+            
+            var network = self.cardNetwork?.rawValue.uppercased()
+            if network == nil || network == "UNKNOWN" {
+                network = "OTHER"
+            }
+            
+            let params: [String: Any] = [
+                "paymentMethodType": "PAYMENT_CARD",
+                "binData": [
+                    "network": network,
+                ]
+            ]
+                
+            var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
+            
+            if (requirePostalCode) {
+                let state: AppStateProtocol = DependencyContainer.resolve()
+                
+                let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
+                
+                let billingAddressParams = [
+                    "firstName": currentBillingAddress?.firstName as Any,
+                    "lastName": currentBillingAddress?.lastName as Any,
+                    "addressLine1": currentBillingAddress?.addressLine1 as Any,
+                    "addressLine2": currentBillingAddress?.addressLine2 as Any,
+                    "city": currentBillingAddress?.city as Any,
+                    "postalCode": postalCodeField.postalCode,
+                    "state": currentBillingAddress?.state as Any,
+                    "countryCode": currentBillingAddress?.countryCode as Any
+                ] as [String: Any]
+                
+                let billingAddressAction = ClientSession.Action(
+                    type: "SET_BILLING_ADDRESS",
+                    params: billingAddressParams
+                )
+                actions.append(billingAddressAction)
+            }
+
+            firstly {
+                ClientSession.Action.dispatchMultipleActions(actions)
+            }.done {
+                seal.fulfill()
+            }
+            .catch { error in
+                seal.reject(error)
+            }
         }
     }
 }
+
 
 extension FormPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
         DispatchQueue.main.async {
-            if self.onClientSessionActionUpdateCompletion != nil {
-                self.unselectPaymentMethodWithError(error)
-                self.onClientSessionActionUpdateCompletion?(error)
-                self.onClientSessionActionUpdateCompletion = nil
-            }
 
             switch self.config.type {
             case .adyenBlik:

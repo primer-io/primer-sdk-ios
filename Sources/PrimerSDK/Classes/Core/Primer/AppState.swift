@@ -42,7 +42,6 @@ public struct ImplementedReactNativeCallbacks: Codable {
     public var isOnResumeErrorImplemented: Bool?
     public var isOnCheckoutDismissedImplemented: Bool?
     public var isCheckoutFailedImplemented: Bool?
-    public var isClientSessionActionsImplemented: Bool?
 }
 
 #endif

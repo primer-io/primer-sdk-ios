@@ -162,11 +162,14 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            self.selectPaymentMethodWithParameters(params)
-        } else {
-            continueTokenizationFlow()
+        firstly {
+            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": config.type.rawValue])
+        }
+        .done {
+            self.continueTokenizationFlow()
+        }
+        .catch { error in
+            self.handle(error: error)
         }
     }
     
