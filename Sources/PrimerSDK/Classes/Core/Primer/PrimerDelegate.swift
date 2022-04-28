@@ -178,32 +178,4 @@ internal class PrimerDelegateProxy {
     
 }
 
-internal class MockPrimerDelegate: PrimerDelegate {
-    
-    func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
-        
-    }
-    
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
-        
-    }
-    
-    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-        
-    }
-    
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-        
-    }
-    
-    func primerDidDismiss() {
-        
-    }
-    
-    func primerDidFailWithError(_ error: Error) {
-        
-    }
-    
-}
-
 #endif
