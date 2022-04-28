@@ -542,6 +542,7 @@ class Base: XCTestCase {
 }
 
 extension XCUIElement {
+    
     func clearText() {
         guard let stringValue = self.value as? String else {
             return

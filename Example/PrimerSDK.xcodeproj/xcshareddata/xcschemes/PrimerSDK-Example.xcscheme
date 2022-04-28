@@ -77,15 +77,6 @@
                <Test
                   Identifier = "UniversalCheckout/testAdyenMobilePay()">
                </Test>
-               <Test
-                  Identifier = "UniversalCheckout/testCancel3DSChallenge()">
-               </Test>
-               <Test
-                  Identifier = "UniversalCheckout/testFail3DSChallenge()">
-               </Test>
-               <Test
-                  Identifier = "UniversalCheckout/testPass3DSChallenge()">
-               </Test>
             </SkippedTests>
          </TestableReference>
       </Testables>
