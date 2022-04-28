@@ -72,7 +72,7 @@ class DirectCheckout: XCTestCase {
         
         let payNowButton = app.webViews.buttons["Pay Now"].firstMatch
         let payNowButtonExists = expectation(for: Expectation.exists, evaluatedWith: payNowButton, handler: nil)
-        wait(for: [payNowButtonExists], timeout: 15)
+        wait(for: [payNowButtonExists], timeout: 30)
         payNowButton.tap()
 
         try base.resultScreenExpectations(for: payment)
