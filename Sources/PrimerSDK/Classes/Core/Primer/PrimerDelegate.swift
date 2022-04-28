@@ -63,16 +63,12 @@ public protocol PrimerDelegate {
     @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
     /// This function will be called when the SDK is about to initiate a client session update.
-    /// - Parameters:
-    ///   - clientSession: The client session containing all the current info about the checkout.
-    ///   - updateData: The parameters the `clientSession` will be updated with
-    @objc optional func primerClientSession(_ clientSession: CheckoutDataClientSession?, willUpdateWith updateData: [String: Any]?)
+    @objc optional func primerClientSessionUpdateWillStart()
     
     /// This function will be called when the SDK finishes to update a client session.
     /// - Parameters:
     ///   - clientSession: The client session containing all the current info about the checkout.
-    ///   - source: The info about the source of the actor of the update. `IOS_NATIVE` for SDK based ones.
-    @objc optional func primerClientSession(_ clientSession: CheckoutDataClientSession?, didUpdateBy source: PrimerSource)
+    @objc optional func primerClientSessionUpdateDidFinish(_ clientSession: CheckoutDataClientSession?)
 
     /// This function will be called when the SDK is about to initiate a payment.
     /// - Parameters:
@@ -160,13 +156,13 @@ internal class PrimerDelegateProxy {
         return false
     }
     
-    static func primerClientSession(_ clientSession: CheckoutDataClientSession?, willUpdateWith updateData: [String: Any]?) {
-            Primer.shared.delegate?.primerClientSession?(clientSession, willUpdateWith: updateData)
+    static func primerClientSessionUpdateWillStart() {
+            Primer.shared.delegate?.primerClientSessionUpdateWillStart?()
     }
 
-    static func primerClientSession(_ clientSession: CheckoutDataClientSession?, didUpdateBy source: PrimerSource) {
+    static func primerClientSessionUpdateDidFinish(_ clientSession: CheckoutDataClientSession?) {
         if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            Primer.shared.delegate?.primerClientSession?(clientSession, didUpdateBy: source)
+            Primer.shared.delegate?.primerClientSessionUpdateDidFinish?(clientSession)
         }
     }
     
