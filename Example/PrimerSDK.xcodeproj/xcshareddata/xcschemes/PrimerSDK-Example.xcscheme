@@ -77,6 +77,9 @@
                <Test
                   Identifier = "UniversalCheckout/testAdyenMobilePay()">
                </Test>
+               <Test
+                  Identifier = "UniversalCheckout/testPayNLBancontact()">
+               </Test>
             </SkippedTests>
          </TestableReference>
       </Testables>

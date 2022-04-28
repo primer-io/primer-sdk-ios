@@ -279,6 +279,8 @@ class UniversalCheckout: XCTestCase {
         try base.resultScreenExpectations(for: payment)
     }
     
+    ///  Not possible to test at the moment
+    ///  Requires 3DS all the time + real account
     func testPayNLBancontact() throws {
         let payment = Base.paymentMethods.filter({ $0.id == "PAY_NL_BANCONTACT" }).first!
         try base.testPayment(payment)
