@@ -70,6 +70,17 @@
                BlueprintName = "PrimerSDKExample_UITests"
                ReferencedContainer = "container:PrimerSDK.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "UniversalCheckout/testCancel3DSChallenge()">
+               </Test>
+               <Test
+                  Identifier = "UniversalCheckout/testFail3DSChallenge()">
+               </Test>
+               <Test
+                  Identifier = "UniversalCheckout/testPass3DSChallenge()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
