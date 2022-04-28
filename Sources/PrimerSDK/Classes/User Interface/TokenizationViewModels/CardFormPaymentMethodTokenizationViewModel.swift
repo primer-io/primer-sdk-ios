@@ -656,8 +656,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 } else if res.status == .complete {
                     completion(res.id, nil)
                 } else {
-                    let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let err = PrimerError.generic(message: "Should never end up here, retry", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
+                    Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+                        self.startPolling(on: url, completion: completion)
+                    }
                 }
             case .failure(let err):
                 ErrorHandler.handle(error: err)
