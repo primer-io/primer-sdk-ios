@@ -146,8 +146,7 @@ class Base: XCTestCase {
                 webviewTexts: nil,
                 buttonTexts: nil,
                 resultScreenTexts: [
-                    "status": "FAILED",
-                    "amount": "GBP 10.49"
+                    "status": "SUCCESS"
                 ]
             )
         ),
