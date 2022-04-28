@@ -43,7 +43,7 @@ public protocol PrimerDelegate {
     
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
-
+    
     @available(*, deprecated, message: "The resuming is now handled by the SDK internally so that the payment can either succeed or fail.\nSee primerDidCompleteCheckoutWithData(:) and primerDidFailWithError(:)")
     @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
     
@@ -51,7 +51,7 @@ public protocol PrimerDelegate {
     @objc optional func onResumeError(_ error: Error)
     
     @objc optional func primerDidDismiss()
-        
+    
     /// This function will be called when the user tries to make a payment. You should make the pay API call to your backend, and
     /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
     /// Deprecated in favour of onTokenizeSuccess
@@ -69,7 +69,7 @@ public protocol PrimerDelegate {
     /// - Parameters:
     ///   - clientSession: The client session containing all the current info about the checkout.
     @objc optional func primerClientSessionUpdateDidFinish(_ clientSession: CheckoutDataClientSession?)
-
+    
     /// This function will be called when the SDK is about to initiate a payment.
     /// - Parameters:
     ///   - data: The payment method data containing the token's information.
@@ -142,28 +142,18 @@ internal class PrimerDelegateProxy {
     static func primerDidDismiss() {
         Primer.shared.delegate?.primerDidDismiss?()
     }
-        
+    
     static func primerDidFailWithError(_ error: Error, data: CheckoutData?, completion: ((String?) -> Void)?) {
         Primer.shared.delegate?.primerDidFailWithError?(error, data: data, completion: completion)
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
     }
     
-    static var isClientSessionActionsImplemented: Bool {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        if let implementedReactNativeCallbacks = state.implementedReactNativeCallbacks {
-            return implementedReactNativeCallbacks.isClientSessionActionsImplemented == true
-        }
-        return false
+    static func primerClientSessionUpdateWillStart() {
+        Primer.shared.delegate?.primerClientSessionUpdateWillStart?()
     }
     
-    static func primerClientSessionUpdateWillStart() {
-            Primer.shared.delegate?.primerClientSessionUpdateWillStart?()
-    }
-
     static func primerClientSessionUpdateDidFinish(_ clientSession: CheckoutDataClientSession?) {
-        if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            Primer.shared.delegate?.primerClientSessionUpdateDidFinish?(clientSession)
-        }
+        Primer.shared.delegate?.primerClientSessionUpdateDidFinish?(clientSession)
     }
     
     static func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully() {
@@ -183,7 +173,7 @@ internal class PrimerDelegateProxy {
     }
     
     static func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error) {
-
+        
     }
     
 }
@@ -197,17 +187,17 @@ internal class MockPrimerDelegate: PrimerDelegate {
     func tokenAddedToVault(_ token: PaymentMethodToken) {
         
     }
-
+    
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-
+        
     }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
         
     }
-
+    
     func primerDidDismiss() {
-
+        
     }
     
     func primerDidFailWithError(_ error: Error) {

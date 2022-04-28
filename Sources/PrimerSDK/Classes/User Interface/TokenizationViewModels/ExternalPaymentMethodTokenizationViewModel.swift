@@ -430,11 +430,14 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-            self.selectPaymentMethodWithParameters(params)
-        } else {
-            continueTokenizationFlow()
+        firstly {
+            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": config.type.rawValue])
+        }
+        .done {
+            self.continueTokenizationFlow()
+        }
+        .catch { error in
+            self.handle(error: error)
         }
     }
     
@@ -742,18 +745,7 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
 }
 
 extension ExternalPaymentMethodTokenizationViewModel {
-        
-    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
-        
-        firstly {
-            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
-        }
-        .done {}
-        .catch { error in
-            self.handle(error: error)
-        }
-    }
-        
+    
     private func unselectPaymentMethodWithError(_ error: Error) {
         firstly {
             ClientSession.Action.unselectPaymentMethod()

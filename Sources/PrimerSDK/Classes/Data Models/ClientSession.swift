@@ -43,13 +43,41 @@ public class ClientSession: Codable {
     public class Action: NSObject, Encodable {
         
         static func unselectPaymentMethod() -> Promise<Void> {
-            let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
-            return requestClientSessionWithActions(actions)
+            return Promise { seal in
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    seal.fulfill()
+                } else {
+                    let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
+                    firstly {
+                        requestClientSessionWithActions(actions)
+                    }
+                    .done {
+                        seal.fulfill()
+                    }
+                    .catch { error in
+                        seal.reject(error)
+                    }
+                }
+            }
         }
         
         static func selectPaymentMethodWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
-            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
-            return requestClientSessionWithActions(actions)
+            return Promise { seal in
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    seal.fulfill()
+                } else {
+                    let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
+                    firstly {
+                        requestClientSessionWithActions(actions)
+                    }
+                    .done {
+                        seal.fulfill()
+                    }
+                    .catch { error in
+                        seal.reject(error)
+                    }
+                }
+            }
         }
         
         static func setPostalCodeWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
