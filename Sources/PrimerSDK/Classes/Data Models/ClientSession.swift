@@ -302,7 +302,7 @@ extension ClientSession.Action {
         return Promise { seal in
             
             firstly {
-                ClientSession.Action.raiseClientSessionUpdateWillStartEventForActions(actions)
+                ClientSession.Action.raiseClientSessionUpdateWillStartEventForActions()
             }
             .then { () -> Promise<PrimerConfiguration> in
                 let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
@@ -330,16 +330,14 @@ extension ClientSession.Action {
     
     private static func raiseClientSessionUpdateDidFinishEvent(primerConfiguration: PrimerConfiguration) -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerClientSession(CheckoutDataClientSession(from: primerConfiguration), didUpdateBy: .iOSNative)
+            PrimerDelegateProxy.primerClientSessionUpdateDidFinish(CheckoutDataClientSession(from: primerConfiguration))
             seal.fulfill()
         }
     }
     
-    private static func raiseClientSessionUpdateWillStartEventForActions(_ actions: [ClientSession.Action]) -> Promise<Void> {
+    private static func raiseClientSessionUpdateWillStartEventForActions() -> Promise<Void> {
         return Promise { seal in
-            let appState: AppStateProtocol = DependencyContainer.resolve()
-            let actions = try? actions.asDictionary()
-            PrimerDelegateProxy.primerClientSession(CheckoutDataClientSession(from: appState.primerConfiguration), willUpdateWith: actions)
+            PrimerDelegateProxy.primerClientSessionUpdateWillStart()
             seal.fulfill()
         }
     }
