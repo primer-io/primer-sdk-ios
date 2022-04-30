@@ -169,7 +169,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             self.continueTokenizationFlow()
         }
         .catch { error in
-            self.handle(error: error)
+            self.handleErrorBasedOnSDKSettings(error)
         }
     }
     
@@ -178,7 +178,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                self.unselectPaymentMethodWithError(error)
+                self.handleErrorBasedOnSDKSettings(error)
             }
             return
         }
@@ -195,12 +195,11 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             self.tokenize()
         }
         .done { paymentMethod in
-            
             self.paymentMethod = paymentMethod
             self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
         }
         .catch { error in
-            self.unselectPaymentMethodWithError(error)
+            self.handleErrorBasedOnSDKSettings(error)
         }
     }
     
@@ -444,12 +443,6 @@ extension PayPalTokenizationViewModel {
         self.completion = nil
     }
     
-    private func handleCheckoutFailedEventWithError(_ error: Error) {
-        self.executeCompletionAndNullifyAfter(error: error)
-        PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
-        self.handleFailedTokenizationFlow(error: error)
-    }
-    
     private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
         
         firstly {
@@ -457,7 +450,7 @@ extension PayPalTokenizationViewModel {
         }
         .done {}
         .catch { error in
-            self.handle(error: error)
+            self.handleErrorBasedOnSDKSettings(error)
         }
     }
         
@@ -465,13 +458,9 @@ extension PayPalTokenizationViewModel {
         firstly {
             ClientSession.Action.unselectPaymentMethod()
         }
-        .done {
-            self.handleCheckoutFailedEventWithError(error)
-            self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
-        }
+        .done {}
         .catch { error in
-            self.handleCheckoutFailedEventWithError(error)
-            self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
+            self.handleErrorBasedOnSDKSettings(error)
         }
     }
 }
@@ -479,7 +468,9 @@ extension PayPalTokenizationViewModel {
 extension PayPalTokenizationViewModel {
     
     override func handle(error: Error) {
+        self.executeCompletionAndNullifyAfter(error: error)
         self.unselectPaymentMethodWithError(error)
+        self.handleFailedTokenizationFlow(error: error)
     }
 
     override func handle(newClientToken clientToken: String) {
@@ -492,8 +483,7 @@ extension PayPalTokenizationViewModel {
         }
         .catch { error in
             DispatchQueue.main.async {
-                self.handle(error: error)
-                self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
+                self.handleErrorBasedOnSDKSettings(error)
             }
         }
     }
