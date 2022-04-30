@@ -317,7 +317,9 @@ extension PaymentMethodTokenizationViewModel {
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         if settings.isManualPaymentHandlingEnabled {
-            PrimerDelegateProxy.onResumeError(error)
+            if isOnResumeFlow {
+                PrimerDelegateProxy.onResumeError(error)
+            }
             handle(error: error)
         } else {
             Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: { errorMessage in

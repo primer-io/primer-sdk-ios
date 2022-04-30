@@ -193,7 +193,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             self.continueTokenizationFlow()
         }
         .catch { error in
-            self.handle(error: error)
+            self.handleErrorBasedOnSDKSettings(error)
         }
     }
     
@@ -433,7 +433,7 @@ extension ApayaTokenizationViewModel {
         }
         .done {}
         .catch { error in
-            self.handle(error: error)
+            self.handleErrorBasedOnSDKSettings(error)
         }
     }
         
@@ -441,12 +441,9 @@ extension ApayaTokenizationViewModel {
         firstly {
             ClientSession.Action.unselectPaymentMethod()
         }
-        .done {
-            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
-            self.handleFailedTokenizationFlow(error: error)
-        }
+        .done {}
         .catch { error in
-            self.handle(error: error)
+            self.handleErrorBasedOnSDKSettings(error)
         }
     }
 }
@@ -454,18 +451,11 @@ extension ApayaTokenizationViewModel {
 extension ApayaTokenizationViewModel {
     
     override func handle(error: Error) {
-        
-        firstly {
-            ClientSession.Action.unselectPaymentMethod()
-        }
-        .done {
-            self.executeCompletionAndNullifyAfter(error: error)
-        }
-        .catch { error in
-            self.executeCompletionAndNullifyAfter(error: error)
-        }
+        self.executeCompletionAndNullifyAfter(error: error)
+        self.unselectPaymentMethodWithError(error)
+        self.handleFailedTokenizationFlow(error: error)
     }
-    
+        
     override func handle(newClientToken clientToken: String) {
         
         // For Apaya there's no redirection URL, once the webview is presented it will get its response from a URL redirection.
