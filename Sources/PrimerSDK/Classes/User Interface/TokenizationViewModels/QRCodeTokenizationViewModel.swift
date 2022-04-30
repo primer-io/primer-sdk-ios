@@ -393,13 +393,7 @@ extension QRCodeTokenizationViewModel {
         onResumeTokenCompletion?(nil, error)
         onResumeTokenCompletion = nil
     }
-    
-    private func handleCheckoutFailedEventWithError(_ error: Error) {
-        self.executeCompletionAndNullifyAfter(error: error)
-        PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
-        self.handleFailedTokenizationFlow(error: error)
-    }
-    
+        
     private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
         
         firstly {
@@ -407,7 +401,7 @@ extension QRCodeTokenizationViewModel {
         }
         .done {}
         .catch { error in
-            self.handle(error: error)
+            self.handleErrorBasedOnSDKSettings(error)
         }
     }
         
@@ -415,11 +409,9 @@ extension QRCodeTokenizationViewModel {
         firstly {
             ClientSession.Action.unselectPaymentMethod()
         }
-        .done {
-            self.handleCheckoutFailedEventWithError(error)
-        }
+        .done {}
         .catch { error in
-            self.handleCheckoutFailedEventWithError(error)
+            self.handleErrorBasedOnSDKSettings(error)
         }
     }
 }
@@ -428,14 +420,16 @@ extension QRCodeTokenizationViewModel {
 extension QRCodeTokenizationViewModel {
     
     override func handle(error: Error) {
+        self.executeCompletionAndNullifyAfter(error: error)
         self.unselectPaymentMethodWithError(error)
+        self.handleFailedTokenizationFlow(error: error)
     }
-    
+
     override func handle(newClientToken clientToken: String) {
         guard let decodedClientToken = clientToken.jwtTokenPayload else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            self.handle(error: err)
+            self.handleErrorBasedOnSDKSettings(err)
             return
         }
         
@@ -462,12 +456,12 @@ extension QRCodeTokenizationViewModel {
                 self.continueTokenizationFlow()
             }
             .catch { err in
-                self.handle(error: err)
+                self.handleErrorBasedOnSDKSettings(err)
             }
         } else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            self.handle(error: err)
+            self.handleErrorBasedOnSDKSettings(err)
             return
         }
     }
