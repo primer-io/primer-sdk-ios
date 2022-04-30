@@ -99,7 +99,7 @@ class UniversalCheckout: XCTestCase {
     }
 
 
-    func testPayPal() throws {
+    func testPresentPayPalAndDismiss() throws {
         let payment = Base.paymentMethods.filter({ $0.id == "PAYPAL" }).first!
         try base.testPayment(payment, cancelPayment: false)
 
@@ -112,14 +112,10 @@ class UniversalCheckout: XCTestCase {
         let alertContinueButton = alert.buttons["Continue"]
         alertContinueButton.tap()
         
-        let payNowButton = app.webViews.buttons["Pay Now"].firstMatch
-        let payNowButtonExists = expectation(for: Expectation.exists, evaluatedWith: payNowButton, handler: nil)
-        wait(for: [payNowButtonExists], timeout: 15)
-        payNowButton.tap()
+        let safariDoneButton = app.otherElements["TopBrowserBar"].buttons["Cancel"]
+        safariDoneButton.tap()
 
-        try base.successMessageExists()
         try base.dismissSDK()
-        try base.resultScreenExpectations(for: payment)
     }
     
     func testAdyenAlipay() throws {

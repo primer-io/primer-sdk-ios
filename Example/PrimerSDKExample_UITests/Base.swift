@@ -416,14 +416,14 @@ class Base: XCTestCase {
             }
         }
         
-        let adyenGiropayButton = scrollView.otherElements.buttons[payment.id]
-        adyenGiropayButton.tap()
+        let paymentButton = scrollView.otherElements.buttons[payment.id]
+        paymentButton.tap()
         
         let webViews = app.webViews
         if let webViewImageExpectation = payment.expecations?.webviewImage {
-            let webViewGiroPayImage = webViews.images[webViewImageExpectation]
-            let webViewGiroPayImageExists = expectation(for: Expectation.exists, evaluatedWith: webViewGiroPayImage, handler: nil)
-            wait(for: [webViewGiroPayImageExists], timeout: 30)
+            let webViewPaymentImage = webViews.images[webViewImageExpectation]
+            let webViewPaymentImageExists = expectation(for: Expectation.exists, evaluatedWith: webViewPaymentImage, handler: nil)
+            wait(for: [webViewPaymentImageExists], timeout: 30)
         }
         
         if let webviewTexts = payment.expecations?.webviewTexts {
