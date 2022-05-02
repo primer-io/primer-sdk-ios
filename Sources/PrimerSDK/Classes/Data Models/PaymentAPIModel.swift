@@ -558,19 +558,25 @@ extension CheckoutDataPayment {
     public let amount: Int?
     public let discountAmount: Int?
     public let quantity: Int?
+    public let taxCode: String?
+    public let taxAmount: Int?
     
     public init (
         itemId: String?,
         itemDescription: String?,
         amount: Int?,
         discountAmount: Int?,
-        quantity: Int?
+        quantity: Int?,
+        taxCode: String?,
+        taxAmount: Int?
     ) {
         self.itemId = itemId
         self.itemDescription = itemDescription
         self.amount = amount
         self.discountAmount = discountAmount
         self.quantity = quantity
+        self.taxCode = taxCode
+        self.taxAmount = taxAmount
     }
 }
 
@@ -618,7 +624,9 @@ extension CheckouClientSessionData {
                                                                                                                itemDescription: $0.description,
                                                                                                                amount: $0.amount,
                                                                                                                discountAmount: $0.discountAmount,
-                                                                                                               quantity: $0.quantity) }
+                                                                                                               quantity: $0.quantity,
+                                                                                                               taxCode: primerConfiguration.clientSession?.customer?.taxId,
+                                                                                                               taxAmount: primerConfiguration.clientSession?.order?.totalTaxAmount) }
         
         let orderDetails = CheckoutDataOrder(countryCode: primerConfiguration.clientSession?.order?.countryCode?.rawValue)
         
