@@ -365,7 +365,7 @@ extension ClientSession.Action {
     
     private static func raiseClientSessionUpdateWillStartEventForActions() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerClientSessionUpdateWillStart()
+            PrimerDelegateProxy.primerClientSessionWillUpdate()
             seal.fulfill()
         }
     }
