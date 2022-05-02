@@ -297,7 +297,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         .catch { error in
             DispatchQueue.main.async {
                 ErrorHandler.handle(error: error)
-                Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: nil)
+                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
                 self.handle(error: error)
             }
         }
@@ -313,7 +313,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     self.singleUsePaymentMethod = singleUsePaymentMethod
                     self.handleContinuePaymentFlowWithPaymentMethod(singleUsePaymentMethod)
                 case .failure(let error):
-                    PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
+                    PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
                     self.dismissOrShowResultScreen(error)
                 }
             }
@@ -556,8 +556,8 @@ extension PrimerUniversalCheckoutViewController {
             PrimerDelegateProxy.onResumeError(error)
             handle(error: error)
         } else {
-            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: { errorMessage in
-                if let errorMessage = errorMessage {
+            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, decisionHandler: { errorDecision in
+                if let errorMessage = errorDecision?.additionalInfo?[.message] as? String {
                     let merchantError = PrimerError.merchantError(message: errorMessage)
                     self.handle(error: merchantError)
                 } else {
@@ -602,8 +602,8 @@ extension PrimerUniversalCheckoutViewController {
             PrimerDelegateProxy.onResumeError(error)
             handle(error: error)
         } else {
-            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: { errorMessage in
-                if let errorMessage = errorMessage {
+            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, decisionHandler: { errorDecision in
+                if let errorMessage = errorDecision?.additionalInfo?[.message] as? String {
                     let merchantError = PrimerError.merchantError(message: errorMessage)
                     self.handle(error: merchantError)
                 } else {
