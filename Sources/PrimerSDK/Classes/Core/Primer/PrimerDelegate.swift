@@ -63,7 +63,7 @@ public protocol PrimerDelegate {
     @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
     
     /// This function will be called when the SDK is about to initiate a client session update.
-    @objc optional func primerClientSessionUpdateWillStart()
+    @objc optional func primerClientSessionWillUpdate()
     
     /// This function will be called when the SDK finishes to update a client session.
     /// - Parameters:
@@ -148,8 +148,8 @@ internal class PrimerDelegateProxy {
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
     }
     
-    static func primerClientSessionUpdateWillStart() {
-        Primer.shared.delegate?.primerClientSessionUpdateWillStart?()
+    static func primerClientSessionWillUpdate() {
+        Primer.shared.delegate?.primerClientSessionWillUpdate?()
     }
     
     static func primerClientSessionUpdateDidFinish(_ clientSession: CheckoutDataClientSession?) {
