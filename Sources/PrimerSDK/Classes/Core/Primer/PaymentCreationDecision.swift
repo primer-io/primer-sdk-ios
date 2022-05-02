@@ -34,7 +34,7 @@ public extension PaymentCreationDecision {
         PaymentCreationDecision(type: .abort, additionalInfo: [.message: errorMessage])
     }
     
-    static func continuePaymentCreation(clientToken: RawJWTToken? = nil) -> PaymentCreationDecision {
-        PaymentCreationDecision(type: .continue, additionalInfo: [.clientToken: clientToken])
+    static func continuePaymentCreation() -> PaymentCreationDecision {
+        PaymentCreationDecision(type: .continue, additionalInfo: nil)
     }
 }
