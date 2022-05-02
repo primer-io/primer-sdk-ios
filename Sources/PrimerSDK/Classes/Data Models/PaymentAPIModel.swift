@@ -502,7 +502,7 @@ extension CheckoutDataPayment {
     }
 }
 
-@objc public class CheckoutDataClientSession: NSObject {
+@objc public class CheckouClientSessionData: NSObject {
     public let customerId: String?
     public let orderId: String?
     public let currencyCode: String?
@@ -606,7 +606,7 @@ extension CheckoutDataPayment {
     }
 }
 
-extension CheckoutDataClientSession {
+extension CheckouClientSessionData {
     
     internal convenience init?(from primerConfiguration: PrimerConfiguration?) {
         
