@@ -458,11 +458,11 @@ extension BankSelectorTokenizationViewModel {
         }
         .done {
             self.executeCompletionAndNullifyAfter(error: error)
-            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
             self.handleFailedTokenizationFlow(error: error)
         }
         .catch { error in
-            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
             self.handleFailedTokenizationFlow(error: error)
         }
     }

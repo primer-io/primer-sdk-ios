@@ -73,7 +73,7 @@ public protocol PrimerDelegate {
     /// This function will be called when the SDK is about to initiate a payment.
     /// - Parameters:
     ///   - data: The payment method data containing the token's information.
-    ///   - completion: The completion handler managing a custom error to optionally pass to the SDK
+    ///   - decisionHandler: The handler managing a custom error to optionally pass to the SDK
     @objc optional func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void)
     
     /// This function will be called when the checkout has been successful.
@@ -85,8 +85,8 @@ public protocol PrimerDelegate {
     /// - Parameters:
     ///   - error: The Error object containing the error description.
     ///   - data: The additional payment data if present
-    ///   - completion: The completion handler containing a custom error to optionally pass to the SDK
-    @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, completion: ((String?) -> Void)?)
+    ///   - decisionHandler: The handler containing a custom error message to optionally pass to the SDK
+    @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: ((ErrorDecision?) -> Void)?)
 }
 
 internal class PrimerDelegateProxy {
@@ -143,8 +143,8 @@ internal class PrimerDelegateProxy {
         Primer.shared.delegate?.primerDidDismiss?()
     }
     
-    static func primerDidFailWithError(_ error: Error, data: CheckoutData?, completion: ((String?) -> Void)?) {
-        Primer.shared.delegate?.primerDidFailWithError?(error, data: data, completion: completion)
+    static func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: ((ErrorDecision?) -> Void)?) {
+        Primer.shared.delegate?.primerDidFailWithError?(error, data: data, decisionHandler: decisionHandler)
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
     }
     

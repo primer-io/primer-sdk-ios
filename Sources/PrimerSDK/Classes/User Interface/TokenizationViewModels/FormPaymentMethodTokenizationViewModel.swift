@@ -428,7 +428,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
+                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -452,7 +452,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             try self.validate()
         } catch {
             DispatchQueue.main.async {
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
+                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
                 self.handleFailedTokenizationFlow(error: error)
             }
             return
@@ -555,7 +555,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             .catch { error in
                 DispatchQueue.main.async {
                     ErrorHandler.handle(error: error)
-                    Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: nil)
+                    PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
                     self.handleFailedTokenizationFlow(error: error)
                 }
             }
@@ -629,7 +629,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         DispatchQueue.main.async {
             let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.primerDidFailWithError(err, data: nil, completion: nil)
+            PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: nil)
             self.handleFailedTokenizationFlow(error: err)
         }
     }

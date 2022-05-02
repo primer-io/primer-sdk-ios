@@ -182,7 +182,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         .catch { error in
             DispatchQueue.main.async {
                 self.unselectPaymentMethodWithError(error)
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
+                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
                 self.handleFailedTokenizationFlow(error: error)
             }
         }
@@ -249,7 +249,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                 let error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: error)
                 self.unselectPaymentMethodWithError(error)
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
+                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
                 return completion(nil, error)
             }
             
@@ -389,7 +389,7 @@ extension ApplePayTokenizationViewModel {
             self.applePayControllerCompletion = nil
         }
         .catch { error in
-            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
         }
     }
 }

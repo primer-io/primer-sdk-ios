@@ -439,7 +439,7 @@ extension PrimerRootViewController {
         guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
             let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.primerDidFailWithError(err, data: nil, completion: nil)
+            PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: nil)
             return
         }
         
@@ -500,8 +500,8 @@ extension PrimerRootViewController {
             PrimerDelegateProxy.onResumeError(error)
             handle(error: error)
         } else {
-            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: { errorMessage in
-                if let errorMessage = errorMessage {
+            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, decisionHandler: { errorDecision in
+                if let errorMessage = errorDecision?.additionalInfo?[.message] as? String {
                     let merchantError = PrimerError.merchantError(message: errorMessage)
                     self.handle(error: merchantError)
                 } else {

@@ -349,7 +349,7 @@ extension ClientSession.Action {
             .catch { error in
                 ErrorHandler.handle(error: error)
                 DispatchQueue.main.async {
-                    PrimerDelegateProxy.primerDidFailWithError(error, data: nil, completion: nil)
+                    PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
                 }
                 seal.reject(error)
             }

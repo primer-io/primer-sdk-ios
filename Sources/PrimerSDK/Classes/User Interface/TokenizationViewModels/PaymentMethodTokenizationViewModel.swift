@@ -322,8 +322,8 @@ extension PaymentMethodTokenizationViewModel {
             }
             handle(error: error)
         } else {
-            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, completion: { errorMessage in
-                if let errorMessage = errorMessage {
+            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, decisionHandler: { errorDecision in
+                if let errorMessage = errorDecision?.additionalInfo?[.message] as? String {
                     let merchantError = PrimerError.merchantError(message: errorMessage)
                     self.handle(error: merchantError)
                 } else {
