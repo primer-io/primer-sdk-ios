@@ -184,7 +184,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         if completion != nil {
             DispatchQueue.main.async {
                 firstly {
-                    ClientSession.Action.unselectPaymentMethod()
+                    ClientSession.Action.unselectPaymentMethodIfNeeded()
                 }
                 .done {
                     self.completion = nil
@@ -442,7 +442,7 @@ extension BankSelectorTokenizationViewModel {
     
     override func handle(error: Error) {
         firstly {
-            ClientSession.Action.unselectPaymentMethod()
+            ClientSession.Action.unselectPaymentMethodIfNeeded()
         }
         .ensure {
             self.executeCompletionAndNullifyAfter(error: error)

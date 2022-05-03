@@ -831,20 +831,20 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 ]
             ]
             
-            self.selectPaymentMethodWithParameters(params)
+            self.selectPaymentMethodWithParametersIfNeeded(params)
             cardNumberContainerView.rightImage2 = cardNetwork.icon
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
-            self.unselectPaymentMethod()
+            self.unselectPaymentMethodIfNeeded()
         }
     }
 }
 
 extension CardFormPaymentMethodTokenizationViewModel {
     
-    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+    private func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) {
         firstly {
-            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
+            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(parameters)
         }
         .ensure {
             self.updateButtonUI()
@@ -855,9 +855,9 @@ extension CardFormPaymentMethodTokenizationViewModel {
         }
     }
     
-    private func unselectPaymentMethod() {
+    private func unselectPaymentMethodIfNeeded() {
         firstly {
-            ClientSession.Action.unselectPaymentMethod()
+            ClientSession.Action.unselectPaymentMethodIfNeeded()
         }
         .ensure {
             self.updateButtonUI()

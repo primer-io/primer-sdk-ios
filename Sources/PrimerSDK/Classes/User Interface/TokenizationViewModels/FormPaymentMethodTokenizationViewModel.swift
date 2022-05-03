@@ -444,7 +444,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             self.validateReturningPromise()
         }
         .then { () -> Promise<Void> in
-            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": self.config.type.rawValue])
+            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
         }
         .done {
             DispatchQueue.main.async {

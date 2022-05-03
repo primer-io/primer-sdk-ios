@@ -42,7 +42,7 @@ public class ClientSession: Codable {
     
     public class Action: NSObject, Encodable {
         
-        static func unselectPaymentMethod() -> Promise<Void> {
+        static func unselectPaymentMethodIfNeeded() -> Promise<Void> {
             return Promise { seal in
                 
                 guard !Primer.shared.flow.internalSessionFlow.vaulted else {
@@ -63,7 +63,7 @@ public class ClientSession: Codable {
             }
         }
         
-        static func selectPaymentMethodWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
+        static func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) -> Promise<Void> {
             return Promise { seal in
                 
                 guard !Primer.shared.flow.internalSessionFlow.vaulted else {

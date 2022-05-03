@@ -388,7 +388,7 @@ extension QRCodeTokenizationViewModel {
     
     private func unselectPaymentMethodWithError(_ error: Error) {
         firstly {
-            ClientSession.Action.unselectPaymentMethod()
+            ClientSession.Action.unselectPaymentMethodIfNeeded()
         }
         .done {}
         .catch { error in
@@ -402,7 +402,7 @@ extension QRCodeTokenizationViewModel {
     
     override func handle(error: Error) {
         firstly {
-            ClientSession.Action.unselectPaymentMethod()
+            ClientSession.Action.unselectPaymentMethodIfNeeded()
         }
         .ensure {
             self.executeCompletionAndNullifyAfter(error: error)
