@@ -322,7 +322,7 @@ extension PaymentMethodTokenizationViewModel {
             }
             handle(error: error)
         } else {
-            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, decisionHandler: { errorDecision in
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: { errorDecision in
                 if let errorMessage = errorDecision?.additionalInfo?[.message] as? String {
                     let merchantError = PrimerError.merchantError(message: errorMessage, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     self.handle(error: merchantError)
@@ -360,7 +360,7 @@ extension PaymentMethodTokenizationViewModel {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if Primer.shared.flow.internalSessionFlow.vaulted {
-            Primer.shared.delegate?.tokenAddedToVault?(paymentMethod)
+            PrimerDelegateProxy.tokenAddedToVault(paymentMethod)
             self.handleSuccess()
         } else if settings.isManualPaymentHandlingEnabled {
             
@@ -401,7 +401,7 @@ extension PaymentMethodTokenizationViewModel {
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     let checkoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
-                    Primer.shared.delegate?.primerDidCompleteCheckoutWithData?(checkoutData)
+                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     self.handleSuccess()
                 }
             }
@@ -417,7 +417,7 @@ extension PaymentMethodTokenizationViewModel {
         return Promise { seal in
             let checkoutPaymentMethodType = CheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
             let checkoutPaymentMethodData = CheckoutPaymentMethodData(type: checkoutPaymentMethodType)
-            Primer.shared.delegate?.primerWillCreatePaymentWithData?(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
+            PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
                 
                 guard paymentCreationDecision?.type != .abort else {
                     let message = paymentCreationDecision?.additionalInfo?[.message] as? String ?? ""
@@ -540,7 +540,7 @@ extension PaymentMethodTokenizationViewModel {
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     let checkoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
-                    Primer.shared.delegate?.primerDidCompleteCheckoutWithData?(checkoutData)
+                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     self.handleSuccess()
                 }
             }
