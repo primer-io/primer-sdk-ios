@@ -237,7 +237,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             stackView.axis = .vertical
             stackView.alignment = .fill
             stackView.distribution = .fill
-
+            
             let inputTextFieldView = PrimerGenericFieldView()
             inputTextFieldView.delegate = self
             inputTextFieldView.translatesAutoresizingMaskIntoConstraints = false
@@ -305,18 +305,18 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         
         return btn
     }()
-
+    
     var cardNetwork: CardNetwork? {
         didSet {
             cvvField.cardNetwork = cardNetwork ?? .unknown
         }
     }
-
+    
     
     var onResumeHandlerCompletion: ((URL?, Error?) -> Void)?
     var onResumeTokenCompletion: ((Error?) -> Void)?
     private var isCanceled: Bool = false
-
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
@@ -435,36 +435,33 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        firstly {
-            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": config.type.rawValue])
-        }
-        .done {
-            self.continueTokenizationFlow()
-        }
-        .catch { error in
-            self.handle(error: error)
-        }
+        self.continueTokenizationFlow()
     }
     
     private func continueTokenizationFlow() {
-        do {
-            try self.validate()
-        } catch {
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                self.handleFailedTokenizationFlow(error: error)
-            }
-            return
-        }
         
-        DispatchQueue.main.async {
-            switch self.config.type {
-            case .adyenBlik:
-                let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil), formPaymentMethodTokenizationViewModel: self)
-                Primer.shared.primerRootVC?.show(viewController: pcfvc)
-                
-            default:
-                break
+        firstly {
+            self.validateReturningPromise()
+        }
+        .then { () -> Promise<Void> in
+            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": self.config.type.rawValue])
+        }
+        .done {
+            DispatchQueue.main.async {
+                switch self.config.type {
+                case .adyenBlik:
+                    let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil), formPaymentMethodTokenizationViewModel: self)
+                    Primer.shared.primerRootVC?.show(viewController: pcfvc)
+                    
+                default:
+                    break
+                }
+            }
+        }
+        .catch { err in
+            DispatchQueue.main.async {
+                PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: nil)
+                self.handleFailedTokenizationFlow(error: err)
             }
         }
     }
@@ -492,7 +489,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 objectClass: "\(Self.self)",
                 place: .cardForm))
         Analytics.Service.record(event: viewEvent)
-
+        
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         
         switch config.type {
@@ -560,7 +557,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             }
         }
     }
-
+    
     private func tokenize() -> Promise<PaymentMethodToken> {
         switch config.type {
         case .adyenBlik:
@@ -585,7 +582,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     seal.reject(err)
                     return
                 }
-
+                
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 
                 let tokenizationRequest = BlikPaymentMethodTokenizationRequest(
@@ -595,7 +592,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                         sessionInfo: BlikPaymentMethodOptions.SessionInfo(
                             blikCode: blikCode,
                             locale: settings.localeData.localeCode ?? "en-UK")))
-
+                
                 let apiClient = PrimerAPIClient()
                 apiClient.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: tokenizationRequest) { result in
                     switch result {
@@ -606,21 +603,21 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     }
                 }
             }
-    
+            
         default:
             fatalError("Payment method card should never end here.")
         }
     }
-
+    
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethod: PaymentMethodToken) {
-                
+        
         self.paymentMethod = paymentMethod
         
         DispatchQueue.main.async {
             self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
         }
     }
-
+    
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
         submitButton.stopAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
@@ -649,7 +646,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             }
         }
     }
-
+    
     private func fetchPollingUrl(for paymentMethodToken: PaymentMethodToken) -> Promise<URL> {
         return Promise { seal in
             self.onResumeHandlerCompletion = { (pollingUrl, err) in
@@ -677,7 +674,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             self.handleContinuePaymentFlowWithPaymentMethod(paymentMethodToken)
         }
     }
-
+    
     private func startPolling(on url: URL) -> Promise<String> {
         return Promise { seal in
             self.startPolling(on: url) { (id, err) in
@@ -739,7 +736,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             }
         }
     }
-
+    
     fileprivate func enableSubmitButtonIfNeeded() {
         var validations = [
             cardNumberField.isTextValid,
@@ -764,7 +761,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
     
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
-
+        
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
@@ -790,7 +787,7 @@ extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
     }
     
     func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView) {
-
+        
     }
     
 }
@@ -805,13 +802,13 @@ extension FormPaymentMethodTokenizationViewModel {
             
             ClientTokenService.storeClientToken(clientToken) { error in
                 DispatchQueue.main.async {
-
+                    
                     guard error == nil else {
                         ErrorHandler.handle(error: error!)
                         self.handleErrorBasedOnSDKSettings(error!, isOnResumeFlow: true)
                         return
                     }
-
+                    
                     self.continueHandleNewClientToken(clientToken)
                 }
             }
@@ -829,12 +826,12 @@ extension FormPaymentMethodTokenizationViewModel {
             }
             return
         }
-
+        
         switch config.type {
         case .adyenBlik:
             if decodedClientToken.intent?.contains("_REDIRECTION") == true,
-                let statusUrlStr = decodedClientToken.statusUrl,
-                let statusUrl = URL(string: statusUrlStr) {
+               let statusUrlStr = decodedClientToken.statusUrl,
+               let statusUrl = URL(string: statusUrlStr) {
                 self.onResumeHandlerCompletion?(statusUrl, nil)
             } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
                 let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
@@ -859,7 +856,7 @@ extension FormPaymentMethodTokenizationViewModel {
             }
         default:
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                #if canImport(Primer3DS)
+#if canImport(Primer3DS)
                 guard let paymentMethod = paymentMethod else {
                     DispatchQueue.main.async {
                         let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -876,15 +873,15 @@ extension FormPaymentMethodTokenizationViewModel {
                     case .success(let paymentMethodToken):
                         DispatchQueue.main.async {
                             guard let threeDSPostAuthResponse = paymentMethodToken.1,
-                                let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                    DispatchQueue.main.async {
-                                        let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                        let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                        ErrorHandler.handle(error: err)
-                                        self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-                                    }
-                                    return
+                                  let resumeToken = threeDSPostAuthResponse.resumeToken else {
+                                DispatchQueue.main.async {
+                                    let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                    let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                    ErrorHandler.handle(error: err)
+                                    self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
                                 }
+                                return
+                            }
                             
                             self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
                         }
@@ -898,13 +895,13 @@ extension FormPaymentMethodTokenizationViewModel {
                         }
                     }
                 }
-                #else
+#else
                 let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 DispatchQueue.main.async {
                     self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
                 }
-                #endif
+#endif
                 
             } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
                 let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
@@ -948,7 +945,7 @@ extension FormPaymentMethodTokenizationViewModel {
                     "network": network,
                 ]
             ]
-                
+            
             var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
             
             if (requirePostalCode) {
@@ -973,7 +970,7 @@ extension FormPaymentMethodTokenizationViewModel {
                 )
                 actions.append(billingAddressAction)
             }
-
+            
             firstly {
                 ClientSession.Action.dispatchMultipleActions(actions)
             }.done {
@@ -991,7 +988,7 @@ extension FormPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
         DispatchQueue.main.async {
-
+            
             switch self.config.type {
             case .adyenBlik:
                 if self.onResumeHandlerCompletion != nil {

@@ -151,29 +151,20 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        firstly {
-            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": config.type.rawValue])
-        }
-        .done {
-            self.continueTokenizationFlow()
-        }
-        .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
-        }
+        self.continueTokenizationFlow()
     }
     
-    fileprivate func continueTokenizationFlow() {
-        do {
-            try self.validate()
-        } catch {
-            DispatchQueue.main.async {
-                self.handleErrorBasedOnSDKSettings(error)
-            }
-            return
-        }
+
+    private func continueTokenizationFlow() {
         
         firstly {
-            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: config.type))
+            self.validateReturningPromise()
+        }
+        .then { () -> Promise<Void> in
+            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": self.config.type.rawValue])
+        }
+        .then { () -> Promise<Void> in
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
         }
         .then {
             self.generateWebViewUrl()
