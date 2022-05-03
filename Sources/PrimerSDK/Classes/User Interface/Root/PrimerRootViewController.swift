@@ -502,7 +502,7 @@ extension PrimerRootViewController {
         } else {
             Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, decisionHandler: { errorDecision in
                 if let errorMessage = errorDecision?.additionalInfo?[.message] as? String {
-                    let merchantError = PrimerError.merchantError(message: errorMessage)
+                    let merchantError = PrimerError.merchantError(message: errorMessage, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     self.handle(error: merchantError)
                 } else {
                     self.handle(error: error)

@@ -569,7 +569,7 @@ extension PrimerUniversalCheckoutViewController {
         } else {
             Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, decisionHandler: { errorDecision in
                 if let errorMessage = errorDecision?.additionalInfo?[.message] as? String {
-                    let merchantError = PrimerError.merchantError(message: errorMessage)
+                    let merchantError = PrimerError.merchantError(message: errorMessage, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     self.handle(error: merchantError)
                 } else {
                     self.handle(error: error)
@@ -615,7 +615,7 @@ extension PrimerUniversalCheckoutViewController {
         } else {
             Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, decisionHandler: { errorDecision in
                 if let errorMessage = errorDecision?.additionalInfo?[.message] as? String {
-                    let merchantError = PrimerError.merchantError(message: errorMessage)
+                    let merchantError = PrimerError.merchantError(message: errorMessage, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     self.handle(error: merchantError)
                 } else {
                     self.handle(error: error)
@@ -718,13 +718,13 @@ extension PrimerUniversalCheckoutViewController {
                 }
                 
                 guard let status = paymentResponse?.status, status != .failed else {
-                    seal.reject(PrimerError.paymentFailed)
+                    seal.reject(PrimerError.paymentFailed(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
                     return
                 }
                 
                 if let paymentFailureReason = paymentResponse?.paymentFailureReason,
                 let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
-                   let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode) {
+                   let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
                     seal.reject(error)
                     return
                 }
@@ -749,13 +749,13 @@ extension PrimerUniversalCheckoutViewController {
                 }
                 
                 guard let status = paymentResponse?.status, status != .failed else {
-                    seal.reject(PrimerError.paymentFailed)
+                    seal.reject(PrimerError.paymentFailed(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
                     return
                 }
                 
                 if let paymentFailureReason = paymentResponse?.paymentFailureReason,
                 let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
-                   let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode) {
+                   let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
                     seal.reject(error)
                     return
                 }
