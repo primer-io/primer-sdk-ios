@@ -385,16 +385,14 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         } catch {
             completion(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
             controller.dismiss(animated: true, completion: nil)
-            applePayReceiveDataCompletion?(.failure(error))
+            let err = PrimerError.underlyingErrors(errors: [error], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            applePayReceiveDataCompletion?(.failure(err))
             applePayReceiveDataCompletion = nil
         }
     }
-    
-    
 }
 
 extension ApplePayTokenizationViewModel {
-    
     override func handle(error: Error) {
         if #available(iOS 11.0, *) {
             self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
@@ -433,7 +431,6 @@ extension ApplePayTokenizationViewModel {
         self.completion?(self.paymentMethod, nil)
         self.completion = nil
     }
-    
 }
 
 #endif

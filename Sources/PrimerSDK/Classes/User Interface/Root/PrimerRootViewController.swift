@@ -614,7 +614,15 @@ extension PrimerRootViewController {
             Primer.shared.dismiss()
         } else {
             let status: PrimerResultViewController.ScreenType = error == nil ? .success : .failure
-            let resultViewController = PrimerResultViewController(screenType: status, message: error?.localizedDescription)
+            
+            var msg: String?
+            if error as? PrimerError != nil {
+                msg = "Something went wrong, please try again."
+            } else {
+                msg = error?.localizedDescription
+            }
+            
+            let resultViewController = PrimerResultViewController(screenType: status, message: msg)
             resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
             resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
             Primer.shared.primerRootVC?.show(viewController: resultViewController)
