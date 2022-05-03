@@ -427,26 +427,11 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
 }
 
 extension PayPalTokenizationViewModel {
-    
-    private func executeCompletionAndNullifyAfter(error: Error? = nil) {
-        self.completion?(nil, error)
-        self.completion = nil
-    }
-    
+        
     private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
         
         firstly {
             ClientSession.Action.selectPaymentMethodWithParameters(parameters)
-        }
-        .done {}
-        .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
-        }
-    }
-        
-    private func unselectPaymentMethodWithError(_ error: Error) {
-        firstly {
-            ClientSession.Action.unselectPaymentMethod()
         }
         .done {}
         .catch { error in
@@ -458,9 +443,13 @@ extension PayPalTokenizationViewModel {
 extension PayPalTokenizationViewModel {
     
     override func handle(error: Error) {
-        self.executeCompletionAndNullifyAfter(error: error)
-        self.unselectPaymentMethodWithError(error)
-        self.handleFailedTokenizationFlow(error: error)
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .ensure {
+            self.executeCompletionAndNullifyAfter(error: error)
+        }
+        .catch { _ in }
     }
 
     override func handle(newClientToken clientToken: String) {

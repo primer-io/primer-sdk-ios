@@ -336,6 +336,11 @@ extension PaymentMethodTokenizationViewModel {
 
 extension PaymentMethodTokenizationViewModel {
     
+    @objc func executeCompletionAndNullifyAfter(error: Error? = nil) {
+        self.completion?(nil, error)
+        self.completion = nil
+    }
+    
     func validateReturningPromise() -> Promise<Void> {
         return Promise { seal in
             do {

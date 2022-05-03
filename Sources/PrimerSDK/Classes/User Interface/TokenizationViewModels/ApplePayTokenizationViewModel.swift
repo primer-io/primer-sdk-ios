@@ -180,7 +180,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         }
         .catch { error in
             DispatchQueue.main.async {
-                self.unselectPaymentMethodWithError(error)
                 PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
                 self.handleFailedTokenizationFlow(error: error)
             }
@@ -247,7 +246,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
                 let error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: error)
-                self.unselectPaymentMethodWithError(error)
                 PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
                 return completion(nil, error)
             }
@@ -362,44 +360,19 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
 
 extension ApplePayTokenizationViewModel {
     
-    private func executeCompletionAndNullifyAfter(error: Error? = nil) {
-        self.completion?(nil, error)
-        self.completion = nil
-    }
-    
-    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
-        
-        firstly {
-            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
-        }
-        .done {
-            self.continueTokenizationFlow()
-        }
-        .catch { error in
-            self.handle(error: error)
-        }
-    }
-        
-    private func unselectPaymentMethodWithError(_ error: Error) {
-        firstly {
-            ClientSession.Action.unselectPaymentMethod()
-        }
-        .done {
-            self.applePayControllerCompletion = nil
-        }
-        .catch { error in
-            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-        }
-    }
-}
-
-extension ApplePayTokenizationViewModel {
-    
     override func handle(error: Error) {
+        
         if #available(iOS 11.0, *) {
             self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
         }
-        self.unselectPaymentMethodWithError(error)
+        
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .ensure {
+            self.applePayControllerCompletion = nil
+        }
+        .catch { _ in }
     }
     
     override func handle(newClientToken clientToken: String) {

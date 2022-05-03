@@ -695,31 +695,18 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
 
 extension ExternalPaymentMethodTokenizationViewModel {
     
-    private func unselectPaymentMethodWithError(_ error: Error) {
+    override func handle(error: Error) {
+        
         firstly {
             ClientSession.Action.unselectPaymentMethod()
         }
-        .done {}
-        .catch { error in
-            self.handle(error: error)
+        .ensure {
+            self.executeCompletionAndNullifyAfter(error: error)
+            // onResumeTokenCompletion will be created when we're awaiting the payment response
+            self.onResumeTokenCompletion?(nil, error)
+            self.onResumeTokenCompletion = nil
         }
-    }
-}
-
-
-extension ExternalPaymentMethodTokenizationViewModel {
-    
-    override func handle(error: Error) {
-        DispatchQueue.main.async {
-            self.unselectPaymentMethodWithError(error)
-        }
-        
-        // onClientToken will be created when we're awaiting a new client token from the developer
-        onClientToken?(nil, error)
-        onClientToken = nil
-        // onResumeTokenCompletion will be created when we're awaiting the payment response
-        onResumeTokenCompletion?(nil, error)
-        onResumeTokenCompletion = nil
+        .catch { _ in }
     }
     
     override func handle(newClientToken clientToken: String) {
