@@ -27,7 +27,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
-
+    
     private var applePayWindow: UIWindow?
     private var request: PKPaymentRequest!
     // This is the completion handler that notifies that the necessary data were received.
@@ -84,7 +84,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         get { return _buttonTintColor }
         set { _buttonTintColor = newValue }
     }
-
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
@@ -140,7 +140,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             throw err
         }
     }
-        
+    
     @objc
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
@@ -186,13 +186,11 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             }
         }
         .catch { error in
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                self.handleFailedTokenizationFlow(error: error)
-            }
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
+            self.handleFailedTokenizationFlow(error: error)
         }
     }
-
+    
     func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             if Primer.shared.flow.internalSessionFlow.vaulted {
@@ -213,7 +211,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             }
         }
     }
-
+    
     
     private func payWithApple(completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -271,14 +269,14 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                 switch result {
                 case .success(let applePayPaymentResponse):
                     let state: AppStateProtocol = DependencyContainer.resolve()
-                                        
+                    
                     guard let applePayConfigId = self.config.id else {
                         let err = PrimerError.invalidValue(key: "configuration.id", value: self.config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: err)
                         completion(nil, err)
                         return
                     }
-
+                    
                     let instrument = PaymentInstrument(
                         paymentMethodConfigId: applePayConfigId,
                         token: applePayPaymentResponse.token,
@@ -421,12 +419,10 @@ extension ApplePayTokenizationViewModel {
             self.continueTokenizationFlow()
         }
         .catch { error in
-            DispatchQueue.main.async {
-                self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
-            }
+            self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
         }
     }
-
+    
     override func handleSuccess() {
         if #available(iOS 11.0, *) {
             self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .success, errors: nil))

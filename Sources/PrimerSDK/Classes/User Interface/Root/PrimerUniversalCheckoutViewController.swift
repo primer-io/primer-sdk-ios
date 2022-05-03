@@ -38,10 +38,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         Analytics.Service.record(event: viewEvent)
         
         title = NSLocalizedString("primer-checkout-nav-bar-title",
-                                          tableName: nil,
-                                          bundle: Bundle.primerResources,
-                                          value: "Choose payment method",
-                                          comment: "Choose payment method - Checkout Navigation Bar Title")
+                                  tableName: nil,
+                                  bundle: Bundle.primerResources,
+                                  value: "Choose payment method",
+                                  comment: "Choose payment method - Checkout Navigation Bar Title")
         
         view.backgroundColor = theme.view.backgroundColor
         
@@ -113,10 +113,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             
             let savedPaymentMethodLabel = UILabel()
             savedPaymentMethodLabel.text = NSLocalizedString("primer-vault-checkout-payment-method-title",
-                                                                      tableName: nil,
-                                                                      bundle: Bundle.primerResources,
-                                                                      value: "SAVED PAYMENT METHOD",
-                                                                      comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
+                                                             tableName: nil,
+                                                             bundle: Bundle.primerResources,
+                                                             value: "SAVED PAYMENT METHOD",
+                                                             comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
             savedPaymentMethodLabel.adjustsFontSizeToFitWidth = true
             savedPaymentMethodLabel.minimumScaleFactor = 0.8
             savedPaymentMethodLabel.textColor = theme.text.subtitle.color
@@ -153,7 +153,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if #available(iOS 11.0, *) {
                 paymentMethodStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
             }
-
+            
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             var amount: Int = settings.amount ?? 0
             
@@ -182,7 +182,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if payButton == nil {
                 payButton = PrimerButton()
             }
-
+            
             var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
                                           tableName: nil,
                                           bundle: Bundle.primerResources,
@@ -192,7 +192,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if amount != 0, let currency = settings.currency {
                 title += " \(amount.toCurrencyString(currency: currency))"
             }
-                                    
+            
             payButton.layer.cornerRadius = 4
             payButton.setTitle(title, for: .normal)
             payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
@@ -205,7 +205,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if !paymentMethodStackView.arrangedSubviews.isEmpty {
                 savedPaymentMethodStackView.addArrangedSubview(paymentMethodStackView)
             }
-
+            
             if let index = index {
                 verticalStackView.insertArrangedSubview(savedPaymentMethodStackView, at: index)
             } else {
@@ -231,11 +231,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         Primer.shared.primerRootVC?.layoutIfNeeded()
     }
-
+    
     private func renderAvailablePaymentMethods() {
         PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
     }
-
+    
     @objc
     func seeAllButtonTapped(_ sender: Any) {
         let uiEvent = Analytics.Event(
@@ -299,14 +299,12 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
         .catch { error in
-            DispatchQueue.main.async {
-                ErrorHandler.handle(error: error)
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                self.handle(error: error)
-            }
+            ErrorHandler.handle(error: error)
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
+            self.handle(error: error)
         }
     }
-        
+    
     private func continuePayment(withVaultedPaymentMethod paymentMethodToken: PaymentMethodToken) -> Promise<PaymentMethodToken> {
         
         return Promise { seal in
@@ -352,7 +350,7 @@ extension PrimerUniversalCheckoutViewController {
                     ]
                 ]
             }
-
+            
             firstly {
                 ClientSession.Action.selectPaymentMethodWithParameters(params)
             }.done {
@@ -366,7 +364,7 @@ extension PrimerUniversalCheckoutViewController {
 }
 
 extension PrimerUniversalCheckoutViewController {
-        
+    
     private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
         
         firstly {
@@ -377,7 +375,7 @@ extension PrimerUniversalCheckoutViewController {
             self.handle(error: error)
         }
     }
-        
+    
     private func unselectPaymentMethodWithError(_ error: Error) {
         firstly {
             ClientSession.Action.unselectPaymentMethod()
@@ -405,7 +403,7 @@ extension PrimerUniversalCheckoutViewController {
                         PrimerDelegateProxy.onResumeError(error!)
                         return
                     }
-
+                    
                     self.continueHandleNewClientToken(clientToken)
                 }
             }
@@ -424,10 +422,10 @@ extension PrimerUniversalCheckoutViewController {
             }
             return
         }
-
+        
         if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
             
-            #if canImport(Primer3DS)
+#if canImport(Primer3DS)
             guard let paymentMethod = singleUsePaymentMethod else {
                 DispatchQueue.main.async {
                     self.onClientSessionActionUpdateCompletion = nil
@@ -445,14 +443,14 @@ extension PrimerUniversalCheckoutViewController {
                     DispatchQueue.main.async {
                         guard let threeDSPostAuthResponse = paymentMethodToken.1,
                               let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                  DispatchQueue.main.async {
-                                      self.onClientSessionActionUpdateCompletion = nil
-                                      let err = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                      ErrorHandler.handle(error: err)
-                                      self.handleErrorBasedOnSDKSettings(err)
-                                  }
-                                  return
-                              }
+                            DispatchQueue.main.async {
+                                self.onClientSessionActionUpdateCompletion = nil
+                                let err = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                ErrorHandler.handle(error: err)
+                                self.handleErrorBasedOnSDKSettings(err)
+                            }
+                            return
+                        }
                         
                         self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
                     }
@@ -468,7 +466,7 @@ extension PrimerUniversalCheckoutViewController {
                     }
                 }
             }
-            #else
+#else
             
             DispatchQueue.main.async {
                 self.onClientSessionActionUpdateCompletion = nil
@@ -476,7 +474,7 @@ extension PrimerUniversalCheckoutViewController {
                 ErrorHandler.handle(error: err)
                 self.handleErrorBasedOnSDKSettings(err)
             }
-            #endif
+#endif
             
         } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
             let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
@@ -502,7 +500,7 @@ extension PrimerUniversalCheckoutViewController {
         }
     }
 }
-    
+
 extension PrimerUniversalCheckoutViewController {
     
     private func enableView(_ isEnabled: Bool) {
@@ -628,15 +626,15 @@ extension PrimerUniversalCheckoutViewController {
 extension PrimerUniversalCheckoutViewController {
     
     internal func handleContinuePaymentFlowWithPaymentMethod(_ paymentMethod: PaymentMethodToken) {
-                
+        
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if settings.isManualPaymentHandlingEnabled {
             
             PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
-
+            
         } else {
-                        
+            
             guard let paymentMethodTokenString = paymentMethod.token else {
                 
                 DispatchQueue.main.async {
@@ -656,7 +654,7 @@ extension PrimerUniversalCheckoutViewController {
                 guard let paymentResponse = paymentResponse else {
                     return
                 }
-
+                
                 self.resumePaymentId = paymentResponse.id
                 
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
@@ -672,7 +670,7 @@ extension PrimerUniversalCheckoutViewController {
             }
         }
     }
-        
+    
     // Raise Primer will create Payment event
     
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PaymentMethodData) -> Promise<Void> {
@@ -702,13 +700,13 @@ extension PrimerUniversalCheckoutViewController {
             })
         }
     }
-
+    
     // Create payment with Payment method token
-
+    
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Payment.Response?> {
         
         return Promise { seal in
-        
+            
             let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
             createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodData)) { paymentResponse, error in
                 
@@ -723,12 +721,12 @@ extension PrimerUniversalCheckoutViewController {
                 }
                 
                 if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
+                   let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
                    let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
                     seal.reject(error)
                     return
                 }
-                                
+                
                 seal.fulfill(paymentResponse)
             }
         }
@@ -754,12 +752,12 @@ extension PrimerUniversalCheckoutViewController {
                 }
                 
                 if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
+                   let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
                    let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
                     seal.reject(error)
                     return
                 }
-                                
+                
                 seal.fulfill(paymentResponse)
             }
         }
@@ -797,7 +795,7 @@ extension PrimerUniversalCheckoutViewController {
                 guard let paymentResponse = paymentResponse else {
                     return
                 }
-
+                
                 if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {

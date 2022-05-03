@@ -461,9 +461,7 @@ extension PayPalTokenizationViewModel {
             self.continueTokenizationFlow()
         }
         .catch { error in
-            DispatchQueue.main.async {
-                self.handleErrorBasedOnSDKSettings(error)
-            }
+            self.handleErrorBasedOnSDKSettings(error)
         }
     }
     

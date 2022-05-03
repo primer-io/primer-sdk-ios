@@ -271,9 +271,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             self.onClientToken = nil
         }
         .catch { error in
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-            }
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
         }
     }
     
