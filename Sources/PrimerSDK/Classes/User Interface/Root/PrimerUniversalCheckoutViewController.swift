@@ -352,7 +352,7 @@ extension PrimerUniversalCheckoutViewController {
             }
             
             firstly {
-                ClientSession.Action.selectPaymentMethodWithParameters(params)
+                ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(params)
             }.done {
                 seal.fulfill()
             }
@@ -365,10 +365,10 @@ extension PrimerUniversalCheckoutViewController {
 
 extension PrimerUniversalCheckoutViewController {
     
-    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+    private func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) {
         
         firstly {
-            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
+            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(parameters)
         }
         .done {}
         .catch { error in
@@ -378,7 +378,7 @@ extension PrimerUniversalCheckoutViewController {
     
     private func unselectPaymentMethodWithError(_ error: Error) {
         firstly {
-            ClientSession.Action.unselectPaymentMethod()
+            ClientSession.Action.unselectPaymentMethodIfNeeded()
         }
         .done {
             self.onClientSessionActionUpdateCompletion = nil
