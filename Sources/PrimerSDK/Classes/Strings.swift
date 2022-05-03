@@ -11,7 +11,18 @@ import Foundation
 struct Strings {
     
     enum PrimerButton {
-        static let title = NSLocalizedString("PRIMER_BUTTON_TITLE_DEFAULT", bundle: Bundle.primerResources, comment: "The title of the primer deafult button")
+        static let title = NSLocalizedString(
+            "PRIMER_BUTTON_TITLE_DEFAULT",
+            bundle: Bundle.primerResources,
+            comment: "The title of the primer deafult button")
+    }
+    
+    enum Generic {
+        static let somethingWentWrong = NSLocalizedString(
+            "GENERIC_MESSAGE_SOMETHING_WENT_WRONG",
+            bundle: Bundle.primerResources,
+            value: "Something went wrong, please try again.",
+            comment: "A generic error message that is displayed on the error view")
     }
     
 }

@@ -534,7 +534,7 @@ extension PrimerUniversalCheckoutViewController {
         } else {
             var msg: String?
             if error as? PrimerError != nil {
-                msg = "Something went wrong, please try again."
+                msg = Strings.Generic.somethingWentWrong
             } else {
                 msg = error?.localizedDescription
             }
