@@ -35,6 +35,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((NSObject) -> Void)?
     private var isCancelled: Bool = false
+    private var didTimeout: Bool = false
     
     private lazy var _title: String = { return "Apple Pay" }()
     override var title: String  {
@@ -341,6 +342,12 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
             ErrorHandler.handle(error: err)
             applePayReceiveDataCompletion?(.failure(err))
             applePayReceiveDataCompletion = nil
+        } else if self.didTimeout {
+            controller.dismiss(animated: true, completion: nil)
+            let err = PrimerError.applePayTimedOut(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            applePayReceiveDataCompletion?(.failure(err))
+            applePayReceiveDataCompletion = nil
         }
     }
     
@@ -351,8 +358,11 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
         self.isCancelled = false
+        self.didTimeout = true
+        
         applePayControllerCompletion = { obj in
             completion(obj as! PKPaymentAuthorizationResult)
+            self.didTimeout = false
         }
         
         do {
