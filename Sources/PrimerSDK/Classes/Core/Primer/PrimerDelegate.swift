@@ -108,11 +108,17 @@ internal class PrimerDelegateProxy {
     }
     
     static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) {
+        if Primer.shared.flow.internalSessionFlow.vaulted {
+            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+        }
         Primer.shared.delegate?.authorizePayment?(paymentMethodToken, completion)
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, completion)
     }
     
     static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol) {
+        if Primer.shared.flow.internalSessionFlow.vaulted {
+            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+        }
         Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: resumeHandler)
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: resumeHandler)
     }
