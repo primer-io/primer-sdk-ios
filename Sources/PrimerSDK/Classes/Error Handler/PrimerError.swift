@@ -272,7 +272,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case missingCustomUI(paymentMethod: PaymentMethodConfigType, userInfo: [String: String]?)
     case merchantError(message: String)
     case cancelledByCustomer(message: String?)
-    case paymentFailed
+    case paymentFailed(userInfo: [String: String]?)
     case applePayTimedOut(userInfo: [String: String]?)
     
     var errorId: String {
@@ -362,7 +362,7 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Payment methods haven't been set up correctly"
         case .cancelled(let paymentMethodType, _):
             return "[\(errorId)] Payment method \(paymentMethodType.rawValue) cancelled"
-        case .cancelledByCustomer(let message):
+        case .cancelledByCustomer(let message, _):
             let messageToShow = message != nil ? " with message \(message!)" : ""
             return "[\(errorId)] Payment cancelled\(messageToShow)"
         case .failedToCreateSession(error: let error, _):
@@ -399,9 +399,9 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Multiple errors occured: \(errors.combinedDescription)"
         case .missingCustomUI(let paymentMethod, _):
             return "[\(errorId)] Missing custom user interface for \(paymentMethod.rawValue)"
-        case .merchantError(let message):
+        case .merchantError(let message, _):
             return message
-        case .paymentFailed:
+        case .paymentFailed(_):
             return "[\(errorId)] The payment failed, retry."
         case .applePayTimedOut:
             return "[\(errorId)] Apple Pay timed out"
@@ -437,12 +437,11 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .unsupportedIntent(_, let userInfo),
                 .underlyingErrors(_, let userInfo),
                 .missingCustomUI(_, let userInfo),
+                .merchantError(_, let userInfo),
+                .cancelledByCustomer(_, let userInfo),
+                .paymentFailed(let userInfo),
                 .applePayTimedOut(let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        case .merchantError,
-                .cancelledByCustomer,
-                .paymentFailed:
-            return nil
         }
         
         return tmpUserInfo
@@ -532,13 +531,13 @@ internal enum PrimerError: PrimerErrorProtocol {
 // TODO: Reiew custom initializer for simplified payment error
 extension PrimerError {
     
-    internal static func simplifiedErrorFromErrorID(_ errorCode: PaymentErrorCode, message: String? = nil) -> PrimerError? {
+    internal static func simplifiedErrorFromErrorID(_ errorCode: PaymentErrorCode, message: String? = nil, userInfo: [String: String]?) -> PrimerError? {
         
         switch errorCode {
         case .failed:
-            return PrimerError.paymentFailed
+            return PrimerError.paymentFailed(userInfo: userInfo)
         case .cancelledByCustomer:
-            return PrimerError.cancelledByCustomer(message: message)
+            return PrimerError.cancelledByCustomer(message: message, userInfo: userInfo)
         default:
             return nil
         }
