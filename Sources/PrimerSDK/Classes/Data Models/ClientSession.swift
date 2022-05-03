@@ -49,7 +49,7 @@ public class ClientSession: Codable {
                 } else {
                     let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
                     firstly {
-                        requestClientSessionWithActions(actions)
+                        requestPrimerConfigurationWithActions(actions)
                     }
                     .done {
                         seal.fulfill()
@@ -68,7 +68,7 @@ public class ClientSession: Codable {
                 } else {
                     let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
                     firstly {
-                        requestClientSessionWithActions(actions)
+                        requestPrimerConfigurationWithActions(actions)
                     }
                     .done {
                         seal.fulfill()
@@ -82,11 +82,11 @@ public class ClientSession: Codable {
         
         static func setPostalCodeWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
             let actions: [ClientSession.Action] = [ClientSession.Action(type: "SET_BILLING_ADDRESS", params: parameters)]
-            return requestClientSessionWithActions(actions)
+            return requestPrimerConfigurationWithActions(actions)
         }
         
         static func dispatchMultipleActions(_ actions: [ClientSession.Action]) -> Promise<Void> {
-            return requestClientSessionWithActions(actions)
+            return requestPrimerConfigurationWithActions(actions)
         }
         
         public var type: String
@@ -325,7 +325,7 @@ internal extension Encodable {
 
 extension ClientSession.Action {
     
-    private static func requestClientSessionWithActions(_ actions: [ClientSession.Action]) -> Promise<Void> {
+    private static func requestPrimerConfigurationWithActions(_ actions: [ClientSession.Action]) -> Promise<Void> {
         
         return Promise { seal in
             
@@ -335,7 +335,7 @@ extension ClientSession.Action {
             .then { () -> Promise<PrimerConfiguration> in
                 let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
                 let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
-                return clientSessionService.requestClientSessionWithActions(actionsRequest: clientSessionActionsRequest)
+                return clientSessionService.requestPrimerConfigurationWithActions(actionsRequest: clientSessionActionsRequest)
             }
             .then { primerConfiguration -> Promise<PrimerConfiguration> in
                 ClientSession.Action.setPrimerConfiguration(primerConfiguration)

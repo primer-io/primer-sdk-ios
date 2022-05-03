@@ -1,17 +1,17 @@
 import Foundation
 
 internal protocol ClientSessionServiceProtocol {
-    func requestClientSessionWithActions(actionsRequest: ClientSessionUpdateRequest, completion: @escaping (PrimerConfiguration?, Error?) -> Void)
-    func requestClientSessionWithActions(actionsRequest: ClientSessionUpdateRequest) -> Promise<PrimerConfiguration>
+    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest, completion: @escaping (PrimerConfiguration?, Error?) -> Void)
+    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest) -> Promise<PrimerConfiguration>
 }
 
 internal class ClientSessionService: ClientSessionServiceProtocol {
     
-    func requestClientSessionWithActions(actionsRequest: ClientSessionUpdateRequest, completion: @escaping (PrimerConfiguration?, Error?) -> Void) {
+    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest, completion: @escaping (PrimerConfiguration?, Error?) -> Void) {
         self.requestClientSessionWithActionsRequest(actionsRequest, completion: completion)
     }
     
-    func requestClientSessionWithActions(actionsRequest: ClientSessionUpdateRequest) -> Promise<PrimerConfiguration> {
+    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest) -> Promise<PrimerConfiguration> {
         return Promise { seal in
             self.requestClientSessionWithActionsRequest(actionsRequest, completion: { configuration, err in
                 if let err = err {
