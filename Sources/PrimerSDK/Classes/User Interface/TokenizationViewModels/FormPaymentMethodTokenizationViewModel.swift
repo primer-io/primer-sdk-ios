@@ -549,11 +549,10 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
             }
             .catch { error in
-                DispatchQueue.main.async {
-                    ErrorHandler.handle(error: error)
-                    PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                    self.handleFailedTokenizationFlow(error: error)
-                }
+                ErrorHandler.handle(error: error)
+                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
+                self.handleFailedTokenizationFlow(error: error)
+                
             }
         }
     }

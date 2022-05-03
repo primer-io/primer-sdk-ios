@@ -379,7 +379,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         get { return _buttonTintColor }
         set { _buttonTintColor = newValue }
     }
-        
+    
     var willPresentExternalView: (() -> Void)?
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
@@ -597,11 +597,11 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                             seal.reject(error!)
                             return
                         }
-
+                        
                         if let decodedClientToken = ClientTokenService.decodedClientToken,
-                            let redirectUrl = decodedClientToken.redirectUrl,
-                            let statusUrl = decodedClientToken.statusUrl,
-                            decodedClientToken.intent != nil {
+                           let redirectUrl = decodedClientToken.redirectUrl,
+                           let statusUrl = decodedClientToken.statusUrl,
+                           decodedClientToken.intent != nil {
                             seal.fulfill(PollingURLs(status: statusUrl, redirect: redirectUrl, complete: nil))
                             return
                         }
@@ -774,20 +774,13 @@ extension ExternalPaymentMethodTokenizationViewModel {
                     self?.continueTokenizationFlow()
                 }
                 .catch { error in
-                    DispatchQueue.main.async {
-                        self?.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
-                    }
+                    self?.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
                 }
             }
         }
         .catch { error in
-            
-            DispatchQueue.main.async {
-                self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
-            }
-            
-            self.onClientToken?(nil, error)
-            self.onClientToken = nil
+            self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
+            self.executeCompletionAndNullifyAfter(error: error)
         }
     }
     

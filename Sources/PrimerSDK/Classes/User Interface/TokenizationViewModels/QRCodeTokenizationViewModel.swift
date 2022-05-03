@@ -99,7 +99,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             throw err
         }
     }
-        
+    
     @objc
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
@@ -143,7 +143,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-
+                
                 self.completion?(self.paymentMethod, nil)
                 self.handleSuccessfulTokenizationFlow()
             }
@@ -166,12 +166,10 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             self.onClientToken = nil
         }
         .catch { error in
-            DispatchQueue.main.async {
-                if let primerErr = error as? PrimerError, case PrimerError.cancelled = primerErr {
-                    self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
-                } else {
-                    self.unselectPaymentMethodWithError(error)
-                }
+            if let primerErr = error as? PrimerError, case PrimerError.cancelled = primerErr {
+                self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
+            } else {
+                self.unselectPaymentMethodWithError(error)
             }
         }
     }
@@ -272,10 +270,10 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                             seal.reject(error!)
                             return
                         }
-
+                        
                         if let decodedClientToken = ClientTokenService.decodedClientToken,
-                            let statusUrl = decodedClientToken.statusUrl,
-                            decodedClientToken.intent != nil {
+                           let statusUrl = decodedClientToken.statusUrl,
+                           decodedClientToken.intent != nil {
                             seal.fulfill(QRCodePollingURLs(status: statusUrl, complete: nil))
                             return
                         }
@@ -387,7 +385,7 @@ extension QRCodeTokenizationViewModel {
         onResumeTokenCompletion?(nil, error)
         onResumeTokenCompletion = nil
     }
-        
+    
     private func unselectPaymentMethodWithError(_ error: Error) {
         firstly {
             ClientSession.Action.unselectPaymentMethod()
@@ -412,7 +410,7 @@ extension QRCodeTokenizationViewModel {
         }
         .catch { _ in }
     }
-
+    
     override func handle(newClientToken clientToken: String) {
         guard let decodedClientToken = clientToken.jwtTokenPayload else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
