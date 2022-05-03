@@ -327,7 +327,7 @@ extension PaymentMethodTokenizationViewModel {
                     let merchantError = PrimerError.merchantError(message: errorMessage, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     self.handle(error: merchantError)
                 } else {
-                    self.handle(error: error)
+                    self.handle(error: emptyDescriptionError)
                 }
             })
         }

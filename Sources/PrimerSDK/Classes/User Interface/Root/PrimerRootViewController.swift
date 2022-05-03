@@ -498,14 +498,13 @@ extension PrimerRootViewController {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         if settings.isManualPaymentHandlingEnabled {
             PrimerDelegateProxy.onResumeError(error)
-            handle(error: error)
         } else {
-            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, decisionHandler: { errorDecision in
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: { errorDecision in
                 if let errorMessage = errorDecision?.additionalInfo?[.message] as? String {
                     let merchantError = PrimerError.merchantError(message: errorMessage, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     self.handle(error: merchantError)
                 } else {
-                    self.handle(error: error)
+                    self.handle(error: emptyDescriptionError)
                 }
             })
         }
