@@ -10,39 +10,39 @@
 import Foundation
 
 extension UINavigationController {
-    func pushViewController(viewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
+    func pushViewController(viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
         pushViewController(viewController, animated: animated)
 
         if animated, let coordinator = transitionCoordinator {
             coordinator.animate(alongsideTransition: nil) { _ in
-                completion()
+                completion?()
             }
         } else {
-            completion()
+            completion?()
         }
     }
 
-    func popViewController(animated: Bool, completion: @escaping () -> Void) {
+    func popViewController(animated: Bool, completion: (() -> Void)?) {
         popViewController(animated: animated)
 
         if animated, let coordinator = transitionCoordinator {
             coordinator.animate(alongsideTransition: nil) { _ in
-                completion()
+                completion?()
             }
         } else {
-            completion()
+            completion?()
         }
     }
     
-    func popToViewController(_ viewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
+    func popToViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
         popToViewController(viewController, animated: animated)
 
         if animated, let coordinator = transitionCoordinator {
             coordinator.animate(alongsideTransition: nil) { _ in
-                completion()
+                completion?()
             }
         } else {
-            completion()
+            completion?()
         }
     }
 }
