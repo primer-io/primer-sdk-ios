@@ -473,7 +473,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
         }
     }
-        
+    
     @objc
     func payButtonTapped(_ sender: UIButton) {
         let viewEvent = Analytics.Event(
@@ -494,7 +494,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         isTokenizing = true
         submitButton.startAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
-                            
+        
         firstly {
             self.dispatchActions()
         }
@@ -508,11 +508,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
         .catch { error in
-            DispatchQueue.main.async {
-                ErrorHandler.handle(error: error)
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                self.handleFailedTokenizationFlow(error: error)
-            }
+            ErrorHandler.handle(error: error)
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
+            self.handleFailedTokenizationFlow(error: error)
         }
     }
 }
@@ -534,7 +532,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     "network": network,
                 ]
             ]
-                        
+            
             var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
             
             if (requirePostalCode) {
@@ -559,7 +557,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 )
                 actions.append(billingAddressAction)
             }
-
+            
             firstly {
                 ClientSession.Action.dispatchMultipleActions(actions)
             }.done {
@@ -827,14 +825,14 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     DispatchQueue.main.async {
                         guard let threeDSPostAuthResponse = paymentMethodToken.1,
                               let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                  DispatchQueue.main.async {
-                                      let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                      let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                      ErrorHandler.handle(error: err)
-                                      self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-                                  }
-                                  return
-                              }
+                            DispatchQueue.main.async {
+                                let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                ErrorHandler.handle(error: err)
+                                self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
+                            }
+                            return
+                        }
                         
                         self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
                     }

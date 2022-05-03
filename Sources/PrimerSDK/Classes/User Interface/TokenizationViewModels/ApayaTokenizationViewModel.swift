@@ -211,14 +211,10 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
         }
         .done { paymentMethod in
-            DispatchQueue.main.async {
-                self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
-            }
+            self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
         }
         .catch { error in
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-            }
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
         }
     }
     
@@ -452,9 +448,7 @@ extension ApayaTokenizationViewModel {
             self.continueTokenizationFlow()
         }
         .catch { error in
-            DispatchQueue.main.async {
-                self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
-            }
+            self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
         }
     }
     
