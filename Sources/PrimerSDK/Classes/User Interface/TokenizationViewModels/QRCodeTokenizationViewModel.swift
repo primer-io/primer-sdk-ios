@@ -382,22 +382,10 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
 
 extension QRCodeTokenizationViewModel {
     
-    private func executeCompletionAndNullifyAfter(error: Error? = nil) {
-        self.completion?(nil, error)
-        self.completion = nil
+    override func executeCompletionAndNullifyAfter(error: Error? = nil) {
+        super.executeCompletionAndNullifyAfter(error: error)
         onResumeTokenCompletion?(nil, error)
         onResumeTokenCompletion = nil
-    }
-        
-    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
-        
-        firstly {
-            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
-        }
-        .done {}
-        .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
-        }
     }
         
     private func unselectPaymentMethodWithError(_ error: Error) {
@@ -415,9 +403,14 @@ extension QRCodeTokenizationViewModel {
 extension QRCodeTokenizationViewModel {
     
     override func handle(error: Error) {
-        self.executeCompletionAndNullifyAfter(error: error)
-        self.unselectPaymentMethodWithError(error)
-        self.handleFailedTokenizationFlow(error: error)
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .ensure {
+            self.executeCompletionAndNullifyAfter(error: error)
+            self.handleFailedTokenizationFlow(error: error)
+        }
+        .catch { _ in }
     }
 
     override func handle(newClientToken clientToken: String) {

@@ -496,12 +496,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
 }
 
 extension KlarnaTokenizationViewModel {
-    
-    private func executeCompletionAndNullifyAfter(error: Error? = nil) {
-        self.completion?(nil, error)
-        self.completion = nil
-    }
-        
+            
     private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
         
         firstly {
@@ -616,9 +611,14 @@ extension KlarnaTokenizationViewModel: WKNavigationDelegate {
 extension KlarnaTokenizationViewModel {
     
     override func handle(error: Error) {
-        self.executeCompletionAndNullifyAfter(error: error)
-        self.unselectPaymentMethodWithError(error)
-        self.handleFailedTokenizationFlow(error: error)
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .ensure {
+            self.executeCompletionAndNullifyAfter(error: error)
+            self.handleFailedTokenizationFlow(error: error)
+        }
+        .catch { _ in }
     }
 
     override func handle(newClientToken clientToken: String) {

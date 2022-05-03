@@ -848,7 +848,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
         firstly {
             ClientSession.Action.selectPaymentMethodWithParameters(parameters)
         }
-        .done {
+        .ensure {
             self.updateButtonUI()
             self.raiseOnConfigurationFetchedCallback()
         }
@@ -861,13 +861,11 @@ extension CardFormPaymentMethodTokenizationViewModel {
         firstly {
             ClientSession.Action.unselectPaymentMethod()
         }
-        .done {
+        .ensure {
             self.updateButtonUI()
             self.raiseOnConfigurationFetchedCallback()
         }
-        .catch { error in
-            self.handle(error: error)
-        }
+        .catch { _ in }
     }
 }
 
@@ -981,6 +979,8 @@ extension CardFormPaymentMethodTokenizationViewModel {
 extension CardFormPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
+        
+        
         
         DispatchQueue.main.async {
             self.handleFailedTokenizationFlow(error: error)

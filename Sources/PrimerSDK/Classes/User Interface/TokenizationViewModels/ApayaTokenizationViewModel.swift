@@ -217,7 +217,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
         .catch { error in
             DispatchQueue.main.async {
-                self.unselectPaymentMethodWithError(error)
+                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
             }
         }
     }
@@ -410,26 +410,11 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
 }
 
 extension ApayaTokenizationViewModel {
-    
-    private func executeCompletionAndNullifyAfter(error: Error? = nil) {
-        self.completion?(nil, error)
-        self.completion = nil
-    }
-    
+        
     private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
         
         firstly {
             ClientSession.Action.selectPaymentMethodWithParameters(parameters)
-        }
-        .done {}
-        .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
-        }
-    }
-        
-    private func unselectPaymentMethodWithError(_ error: Error) {
-        firstly {
-            ClientSession.Action.unselectPaymentMethod()
         }
         .done {}
         .catch { error in
@@ -441,9 +426,14 @@ extension ApayaTokenizationViewModel {
 extension ApayaTokenizationViewModel {
     
     override func handle(error: Error) {
-        self.executeCompletionAndNullifyAfter(error: error)
-        self.unselectPaymentMethodWithError(error)
-        self.handleFailedTokenizationFlow(error: error)
+        firstly {
+            ClientSession.Action.unselectPaymentMethod()
+        }
+        .ensure {
+            self.executeCompletionAndNullifyAfter(error: error)
+            self.handleFailedTokenizationFlow(error: error)
+        }
+        .catch { _ in }
     }
         
     override func handle(newClientToken clientToken: String) {
