@@ -31,7 +31,9 @@ extension ClientSessionService {
     private func requestClientSessionWithActionsRequest(_ request: ClientSessionUpdateRequest, completion: @escaping (PrimerConfiguration?, Error?) -> Void) {
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            completion(nil, nil)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(nil, err)
             return
         }
         
