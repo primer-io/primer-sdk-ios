@@ -430,32 +430,19 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        firstly {
-            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": config.type.rawValue])
-        }
-        .done {
-            self.continueTokenizationFlow()
-        }
-        .catch { error in
-            self.handle(error: error)
-        }
+        self.continueTokenizationFlow()
     }
     
     fileprivate func continueTokenizationFlow() {
-        do {
-            try self.validate()
-        } catch {
-            DispatchQueue.main.async {
-                UIApplication.shared.endIgnoringInteractionEvents()
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                self.handleFailedTokenizationFlow(error: error)
-                self.completion?(nil, error)
-            }
-            return
-        }
         
         firstly {
-            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: config.type))
+            self.validateReturningPromise()
+        }
+        .then { () -> Promise<Void> in
+            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": self.config.type.rawValue])
+        }
+        .then { () -> Promise<Void> in
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
         }
         .then {
             self.tokenize()

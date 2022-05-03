@@ -125,17 +125,12 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     }
     
     fileprivate func continueTokenizationFlow() {
-        do {
-            try validate()
-        } catch {
-            DispatchQueue.main.async {
-                self.unselectPaymentMethodWithError(error)
-            }
-            return
-        }
         
         firstly {
-            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: config.type))
+            self.validateReturningPromise()
+        }
+        .then { () -> Promise<Void> in
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
         }
         .then {
             self.tokenize()

@@ -348,6 +348,20 @@ extension PaymentMethodTokenizationViewModel {
 
 extension PaymentMethodTokenizationViewModel {
     
+    func validateReturningPromise() -> Promise<Void> {
+        return Promise { seal in
+            do {
+                try self.validate()
+                seal.fulfill()
+            } catch {
+                seal.reject(error)
+            }
+        }
+    }
+}
+
+extension PaymentMethodTokenizationViewModel {
+    
     internal func handleContinuePaymentFlowWithPaymentMethod(_ paymentMethod: PaymentMethodToken) {
                 
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()

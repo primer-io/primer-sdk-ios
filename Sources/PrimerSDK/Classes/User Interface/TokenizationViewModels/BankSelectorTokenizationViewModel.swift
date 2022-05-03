@@ -220,18 +220,13 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         Analytics.Service.record(event: event)
     }
     
-    fileprivate func continueTokenizationFlow() {
-        do {
-            try validate()
-        } catch {
-            DispatchQueue.main.async {
-                self.unselectPaymentMethodWithError(error)
-            }
-            return
-        }
+    private func continueTokenizationFlow() {
         
         firstly {
-            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: config.type))
+            self.validateReturningPromise()
+        }
+        .then { () -> Promise<Void> in
+            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
         }
         .then {
             self.fetchBanks()
