@@ -19,7 +19,7 @@ struct Strings {
     
     enum Generic {
         static let somethingWentWrong = NSLocalizedString(
-            "GENERIC_MESSAGE_SOMETHING_WENT_WRONG",
+            "primer-error-screen",
             bundle: Bundle.primerResources,
             value: "Something went wrong, please try again.",
             comment: "A generic error message that is displayed on the error view")
