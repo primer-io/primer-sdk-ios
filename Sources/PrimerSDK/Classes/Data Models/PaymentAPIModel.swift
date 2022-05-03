@@ -59,18 +59,18 @@ public struct LineItem: Codable {
 
 public struct PaymentAPIModelOrder: Codable {
     let countryCode: String?
-    //    let fees: Fees?
+    let fees: Fees?
     let lineItems: [LineItem]?
     let shipping: Shipping?
     
     public init (
         countryCode: String?,
-        //        fees: Fees?,
+        fees: Fees?,
         lineItems: [LineItem]?,
         shipping: Shipping?
     ) {
         self.countryCode = countryCode
-        //        self.fees = fees
+                self.fees = fees
         self.lineItems = lineItems
         self.shipping = shipping
     }
