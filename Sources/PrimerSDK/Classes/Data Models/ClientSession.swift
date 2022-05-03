@@ -362,7 +362,7 @@ extension ClientSession.Action {
     
     private static func raiseClientSessionUpdateDidFinishEvent(primerConfiguration: PrimerConfiguration) -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerClientSessionDidUpdate(CheckouClientSessionData(from: primerConfiguration))
+            PrimerDelegateProxy.primerClientSessionDidUpdate(CheckoutClientSessionData(from: primerConfiguration))
             seal.fulfill()
         }
     }
