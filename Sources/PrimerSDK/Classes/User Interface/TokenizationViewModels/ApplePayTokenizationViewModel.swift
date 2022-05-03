@@ -299,6 +299,14 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
                         }
                     
                 case .failure(let err):
+                    if let primerError = err as? PrimerError {
+                        if case .cancelled = primerError {
+                            Primer.shared.primerRootVC?.popToMainScreen(completion: {
+                                
+                            })
+                            return
+                        }
+                    }
                     completion(nil, err)
                 }
             }
