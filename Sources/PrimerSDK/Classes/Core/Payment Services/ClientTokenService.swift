@@ -3,7 +3,7 @@
 import Foundation
 
 /// Helper typealias to identify the JWT Token
-public typealias RawJWTToken = String
+internal typealias RawJWTToken = String
 
 internal protocol ClientTokenServiceProtocol {
     static func storeClientToken(_ clientToken: String) -> Promise<Void>
