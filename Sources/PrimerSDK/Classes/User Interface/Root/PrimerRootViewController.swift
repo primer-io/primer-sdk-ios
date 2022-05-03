@@ -431,6 +431,53 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
     
+    internal func popToMainScreen(completion: (() -> Void)?) {
+        var vcToPop: PrimerContainerViewController?
+        if Primer.shared.flow.internalSessionFlow.vaulted {
+            for vc in nc.viewControllers {
+                if let cvc = vc as? PrimerContainerViewController, cvc.childViewController is PrimerVaultManagerViewController {
+                    vcToPop = cvc
+                    break
+                }
+            }
+            
+        } else {
+            for vc in nc.viewControllers {
+                if let cvc = vc as? PrimerContainerViewController, cvc.childViewController is PrimerUniversalCheckoutViewController {
+                    vcToPop = cvc
+                    break
+                }
+            }
+        }
+        
+        guard let mainScreenViewController = vcToPop else {
+            completion?()
+            return
+        }
+        
+        let navigationControllerHeight = calculateNavigationControllerHeight(for: mainScreenViewController.childViewController)
+        self.childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
+
+        UIView.animate(
+            withDuration: 0.3,
+            delay: TimeInterval(0),
+            options: .curveEaseInOut,
+            animations: { self.view.layoutIfNeeded() },
+            completion: { finished in
+                
+            })
+        
+        self.nc.popToViewController(mainScreenViewController, animated: true, completion: completion)
+    }
+    
+    private func calculateNavigationControllerHeight(for viewController: UIViewController) -> CGFloat {
+        if viewController.view.bounds.size.height + nc.navigationBar.bounds.height > availableScreenHeight {
+            return self.availableScreenHeight
+        } else {
+            return viewController.view.bounds.size.height + nc.navigationBar.bounds.height
+        }
+    }
+    
 }
 
 extension PrimerRootViewController {
@@ -533,7 +580,6 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
 }
 
 extension PrimerRootViewController: ResumeHandlerProtocol {
-    
     func handle(newClientToken clientToken: String) {
         ClientTokenService.storeClientToken(clientToken) { [weak self] error in
             DispatchQueue.main.async {
@@ -562,7 +608,6 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
 extension PrimerRootViewController {
     
     func dismissOrShowResultScreen(_ error: Error? = nil) {
-        
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if settings.hasDisabledSuccessScreen {
