@@ -443,27 +443,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    fileprivate func continueTokenizationFlow() {
-        do {
-            try self.validate()
-        } catch {
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                self.handleFailedTokenizationFlow(error: error)
-            }
-            return
-        }
-        
-        switch config.type {
-        case .adyenBlik:
-            DispatchQueue.main.async {
-                
-            }
-        default:
-            break
-        }
-    }
-    
     func configurePayButton(cardNetwork: CardNetwork?) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         var amount: Int = settings.amount ?? 0

@@ -133,7 +133,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             throw err
         }
     }
-    
+        
     @objc
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
@@ -155,19 +155,18 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
-        self.selectPaymentMethodWithParameters(params)
+        self.continueTokenizationFlow()
     }
     
-    fileprivate func continueTokenizationFlow() {
-        do {
-            try self.validate()
-        } catch {
-            self.handle(error: error)
-            return
-        }
+    private func continueTokenizationFlow() {
         
         firstly {
+            self.validateReturningPromise()
+        }
+        .then { () -> Promise<Void> in
+            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": self.config.type.rawValue])
+        }
+        .then { () -> Promise<Void> in
             self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
         }
         .then {
@@ -187,7 +186,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             }
         }
     }
-    
+
     func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             if Primer.shared.flow.internalSessionFlow.vaulted {
