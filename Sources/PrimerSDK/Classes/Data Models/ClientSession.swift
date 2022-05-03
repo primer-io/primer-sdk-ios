@@ -44,38 +44,42 @@ public class ClientSession: Codable {
         
         static func unselectPaymentMethod() -> Promise<Void> {
             return Promise { seal in
-                if Primer.shared.flow.internalSessionFlow.vaulted {
+                
+                guard !Primer.shared.flow.internalSessionFlow.vaulted else {
                     seal.fulfill()
-                } else {
-                    let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
-                    firstly {
-                        requestPrimerConfigurationWithActions(actions)
-                    }
-                    .done {
-                        seal.fulfill()
-                    }
-                    .catch { error in
-                        seal.reject(error)
-                    }
+                    return
+                }
+                
+                let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
+                firstly {
+                    requestPrimerConfigurationWithActions(actions)
+                }
+                .done {
+                    seal.fulfill()
+                }
+                .catch { error in
+                    seal.reject(error)
                 }
             }
         }
         
         static func selectPaymentMethodWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
             return Promise { seal in
-                if Primer.shared.flow.internalSessionFlow.vaulted {
+                
+                guard !Primer.shared.flow.internalSessionFlow.vaulted else {
                     seal.fulfill()
-                } else {
-                    let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
-                    firstly {
-                        requestPrimerConfigurationWithActions(actions)
-                    }
-                    .done {
-                        seal.fulfill()
-                    }
-                    .catch { error in
-                        seal.reject(error)
-                    }
+                    return
+                }
+                
+                let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
+                firstly {
+                    requestPrimerConfigurationWithActions(actions)
+                }
+                .done {
+                    seal.fulfill()
+                }
+                .catch { error in
+                    seal.reject(error)
                 }
             }
         }
