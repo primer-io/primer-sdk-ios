@@ -196,7 +196,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             self.validateReturningPromise()
         }
         .then { () -> Promise<Void> in
-            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": self.config.type.rawValue])
+            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
         }
         .then { () -> Promise<Void> in
             self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
@@ -407,10 +407,10 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
 
 extension ApayaTokenizationViewModel {
         
-    private func selectPaymentMethodWithParameters(_ parameters: [String: Any]) {
+    private func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) {
         
         firstly {
-            ClientSession.Action.selectPaymentMethodWithParameters(parameters)
+            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(parameters)
         }
         .done {}
         .catch { error in
@@ -423,7 +423,7 @@ extension ApayaTokenizationViewModel {
     
     override func handle(error: Error) {
         firstly {
-            ClientSession.Action.unselectPaymentMethod()
+            ClientSession.Action.unselectPaymentMethodIfNeeded()
         }
         .ensure {
             self.executeCompletionAndNullifyAfter(error: error)

@@ -439,7 +439,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             self.validateReturningPromise()
         }
         .then { () -> Promise<Void> in
-            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": self.config.type.rawValue])
+            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
         }
         .then { () -> Promise<Void> in
             self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
@@ -736,7 +736,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
     override func handle(error: Error) {
         
         firstly {
-            ClientSession.Action.unselectPaymentMethod()
+            ClientSession.Action.unselectPaymentMethodIfNeeded()
         }
         .ensure {
             self.executeCompletionAndNullifyAfter(error: error)

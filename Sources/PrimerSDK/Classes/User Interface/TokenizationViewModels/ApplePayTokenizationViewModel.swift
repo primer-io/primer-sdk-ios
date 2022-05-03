@@ -171,7 +171,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             self.validateReturningPromise()
         }
         .then { () -> Promise<Void> in
-            ClientSession.Action.selectPaymentMethodWithParameters(["paymentMethodType": self.config.type.rawValue])
+            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
         }
         .then { () -> Promise<Void> in
             self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
@@ -397,7 +397,7 @@ extension ApplePayTokenizationViewModel {
         }
         
         firstly {
-            ClientSession.Action.unselectPaymentMethod()
+            ClientSession.Action.unselectPaymentMethodIfNeeded()
         }
         .ensure {
             self.applePayControllerCompletion = nil
