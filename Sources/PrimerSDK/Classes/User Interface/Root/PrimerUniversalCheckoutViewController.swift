@@ -570,7 +570,7 @@ extension PrimerUniversalCheckoutViewController {
                     let merchantError = PrimerError.merchantError(message: errorMessage, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     self.handle(error: merchantError)
                 } else {
-                    self.handle(error: emptyDescriptionError)
+                    self.handle(error: NSError.emptyDescriptionError)
                 }
             })
         }
@@ -616,7 +616,7 @@ extension PrimerUniversalCheckoutViewController {
                     let merchantError = PrimerError.merchantError(message: errorMessage, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     self.handle(error: merchantError)
                 } else {
-                    self.handle(error: emptyDescriptionError)
+                    self.handle(error: NSError.emptyDescriptionError)
                 }
             })
         }

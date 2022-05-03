@@ -13,7 +13,3 @@ import Foundation
 /// For implementation example check PrimerButton.swift
 ///
 internal typealias PrimerAction = () -> Void
-
-static var emptyDescriptionError: NSError {
-    NSError(domain: "", code: 0001)
-}
