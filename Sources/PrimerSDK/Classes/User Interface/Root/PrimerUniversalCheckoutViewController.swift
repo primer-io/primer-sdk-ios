@@ -285,11 +285,15 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         firstly {
             self.dispatchActions(config: config, selectedPaymentMethod: selectedPaymentMethod)
         }
-        .then {
+        .then { () -> Promise<Void> in
             self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: config.type))
         }
-        .done {
+        .then { () -> Promise<PaymentMethodToken> in
             self.continuePayment(withVaultedPaymentMethod: selectedPaymentMethod)
+        }
+        .done { singleUsePaymentMethod in
+            self.singleUsePaymentMethod = singleUsePaymentMethod
+            self.handleContinuePaymentFlowWithPaymentMethod(singleUsePaymentMethod)
         }
         .ensure {
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
@@ -303,18 +307,25 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         }
     }
         
-    private func continuePayment(withVaultedPaymentMethod paymentMethodToken: PaymentMethodToken) {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else { return }
-        let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        client.exchangePaymentMethodToken(clientToken: decodedClientToken, paymentMethodId: paymentMethodToken.id!) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let singleUsePaymentMethod):
-                    self.singleUsePaymentMethod = singleUsePaymentMethod
-                    self.handleContinuePaymentFlowWithPaymentMethod(singleUsePaymentMethod)
-                case .failure(let error):
-                    PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                    self.dismissOrShowResultScreen(error)
+    private func continuePayment(withVaultedPaymentMethod paymentMethodToken: PaymentMethodToken) -> Promise<PaymentMethodToken> {
+        
+        return Promise { seal in
+            
+            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            client.exchangePaymentMethodToken(clientToken: decodedClientToken, paymentMethodId: paymentMethodToken.id!) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let singleUsePaymentMethod):
+                        seal.fulfill(singleUsePaymentMethod)
+                    case .failure(let error):
+                        seal.reject(error)
+                    }
                 }
             }
         }
