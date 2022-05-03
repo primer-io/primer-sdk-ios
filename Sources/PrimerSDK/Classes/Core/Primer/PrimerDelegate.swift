@@ -132,6 +132,14 @@ internal class PrimerDelegateProxy {
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutResume(withResumeToken: resumeToken, resumeHandler: resumeHandler)
     }
     
+    static func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void) {
+        if Primer.shared.delegate?.primerWillCreatePaymentWithData != nil {
+            Primer.shared.delegate?.primerWillCreatePaymentWithData?(data, decisionHandler: decisionHandler)
+        } else {
+            decisionHandler(nil)
+        }
+    }
+    
     static var isOnResumeErrorImplemented: Bool {
         return Primer.shared.delegate?.onResumeError != nil
     }
@@ -149,9 +157,18 @@ internal class PrimerDelegateProxy {
         Primer.shared.delegate?.primerDidDismiss?()
     }
     
+    static func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
+        Primer.shared.delegate?.primerDidCompleteCheckoutWithData?(data)
+    }
+    
     static func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: ((ErrorDecision?) -> Void)?) {
-        Primer.shared.delegate?.primerDidFailWithError?(error, data: data, decisionHandler: decisionHandler)
-        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
+        if Primer.shared.delegate?.primerDidFailWithError != nil {
+            Primer.shared.delegate?.primerDidFailWithError?(error, data: data, decisionHandler: decisionHandler)
+        } else if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail != nil {
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
+        } else {
+            decisionHandler?(nil)
+        }
     }
     
     static func primerClientSessionWillUpdate() {

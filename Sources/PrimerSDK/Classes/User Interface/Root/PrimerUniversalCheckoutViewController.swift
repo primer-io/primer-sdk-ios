@@ -567,7 +567,7 @@ extension PrimerUniversalCheckoutViewController {
             PrimerDelegateProxy.onResumeError(error)
             handle(error: error)
         } else {
-            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, decisionHandler: { errorDecision in
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: { errorDecision in
                 if let errorMessage = errorDecision?.additionalInfo?[.message] as? String {
                     let merchantError = PrimerError.merchantError(message: errorMessage, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     self.handle(error: merchantError)
@@ -613,7 +613,7 @@ extension PrimerUniversalCheckoutViewController {
             PrimerDelegateProxy.onResumeError(error)
             handle(error: error)
         } else {
-            Primer.shared.delegate?.primerDidFailWithError?(error, data: nil, decisionHandler: { errorDecision in
+            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: { errorDecision in
                 if let errorMessage = errorDecision?.additionalInfo?[.message] as? String {
                     let merchantError = PrimerError.merchantError(message: errorMessage, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     self.handle(error: merchantError)
@@ -663,7 +663,7 @@ extension PrimerUniversalCheckoutViewController {
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     let checkoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
-                    Primer.shared.delegate?.primerDidCompleteCheckoutWithData?(checkoutData)
+                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     self.handleSuccess()
                 }
             }
@@ -679,7 +679,7 @@ extension PrimerUniversalCheckoutViewController {
         return Promise { seal in
             let checkoutPaymentMethodType = CheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
             let checkoutPaymentMethodData = CheckoutPaymentMethodData(type: checkoutPaymentMethodType)
-            Primer.shared.delegate?.primerWillCreatePaymentWithData?(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
+            PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
                 
                 guard paymentCreationDecision?.type != .abort else {
                     let message = paymentCreationDecision?.additionalInfo?[.message] as? String ?? ""
@@ -802,7 +802,7 @@ extension PrimerUniversalCheckoutViewController {
                     self.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     let checkoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
-                    Primer.shared.delegate?.primerDidCompleteCheckoutWithData?(checkoutData)
+                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     self.handleSuccess()
                 }
             }
