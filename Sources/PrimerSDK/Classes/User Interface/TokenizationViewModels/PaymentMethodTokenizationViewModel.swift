@@ -360,7 +360,6 @@ extension PaymentMethodTokenizationViewModel {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if Primer.shared.flow.internalSessionFlow.vaulted {
-            PrimerDelegateProxy.tokenAddedToVault(paymentMethod)
             self.handleSuccess()
         } else if settings.isManualPaymentHandlingEnabled {
             

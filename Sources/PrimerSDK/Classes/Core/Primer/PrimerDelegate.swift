@@ -30,9 +30,7 @@ public typealias PaymentMethodTokenData = PaymentMethodToken
 public protocol PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
-    
-    @objc optional func tokenAddedToVault(_ token: PaymentMethodTokenData)
-    
+        
     /// This function will be called when the user tries to make a payment. You should make the pay API call to your backend, and
     /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
     ///
@@ -103,22 +101,8 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static var isTokenAddedToVaultImplemented: Bool {
-        return Primer.shared.delegate?.tokenAddedToVault != nil
-    }
-    
-    static func tokenAddedToVault(_ token: PaymentMethodTokenData) {
-        DispatchQueue.main.async {
-            Primer.shared.delegate?.tokenAddedToVault?(token)
-        }
-    }
-    
     static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, _ completion:  @escaping (Error?) -> Void) {
         DispatchQueue.main.async {
-            
-            if Primer.shared.flow.internalSessionFlow.vaulted {
-                Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
-            }
             Primer.shared.delegate?.authorizePayment?(paymentMethodToken, completion)
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, completion)
         }
