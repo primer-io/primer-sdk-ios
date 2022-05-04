@@ -144,7 +144,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     private var isCardholderNameFieldEnabled: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        if (state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName == false {
+        if (state.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName == false {
             return false
         } else {
             return true
@@ -163,7 +163,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     var requireCardHolderName: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let cardHolderNameModule = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first else { return false }
+        guard let cardHolderNameModule = state.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first else { return false }
         return (cardHolderNameModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName ?? false
     }
     
@@ -201,13 +201,13 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     var requirePostalCode: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let billingAddressModule = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
+        guard let billingAddressModule = state.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
         return (billingAddressModule.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
     }
     
     private var localSamplePostalCode: String {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        let countryCode = state.primerConfiguration?.clientSession?.order?.countryCode
+        let countryCode = state.apiConfiguration?.clientSession?.order?.countryCode
         return PostalCode.sample(for: countryCode)
     }
     
@@ -950,7 +950,7 @@ extension FormPaymentMethodTokenizationViewModel {
             if (requirePostalCode) {
                 let state: AppStateProtocol = DependencyContainer.resolve()
                 
-                let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
+                let currentBillingAddress = state.apiConfiguration?.clientSession?.customer?.billingAddress
                 
                 let billingAddressParams = [
                     "firstName": currentBillingAddress?.firstName as Any,

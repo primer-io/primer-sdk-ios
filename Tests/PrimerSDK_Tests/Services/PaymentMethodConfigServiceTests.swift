@@ -24,12 +24,12 @@ class PaymentMethodConfigServiceTests: XCTestCase {
             checkoutModules: nil
         )
 
-        let state = MockAppState(decodedClientToken: nil, primerConfiguration: config)
+        let state = MockAppState(decodedClientToken: nil, apiConfiguration: config)
 
         MockLocator.registerDependencies()
         Primer.shared.showUniversalCheckout(on: UIViewController())
 
-        XCTAssertEqual(state.primerConfiguration?.coreUrl, "coreUrl")
+        XCTAssertEqual(state.apiConfiguration?.coreUrl, "coreUrl")
         XCTAssertEqual(PrimerAPIConfiguration.paymentMethodConfigViewModels.count, 1)
     }
 }

@@ -42,7 +42,7 @@ class Analytics {
             }
             
             let state: AppStateProtocol = DependencyContainer.resolve()
-            if let config = state.primerConfiguration, let clientSessionId = config.clientSession?.clientSessionId {
+            if let config = state.apiConfiguration, let clientSessionId = config.clientSession?.clientSessionId {
                 self.clientSessionId = clientSessionId
             }
             

@@ -198,14 +198,14 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         let env = Environment(rawValue: decodedClientToken.env ?? "")
         
-        guard let primerConfiguration = state.primerConfiguration else {
+        guard let apiConfiguration = state.apiConfiguration else {
             let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
         
-        guard let licenseKey = primerConfiguration.keys?.netceteraLicenseKey else {
+        guard let licenseKey = apiConfiguration.keys?.netceteraLicenseKey else {
             let err = PrimerError.invalid3DSKey(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
@@ -231,7 +231,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
         
         var certs: [Primer3DSCertificate] = []
-        for certificate in primerConfiguration.keys?.threeDSecureIoCertificates ?? [] {
+        for certificate in apiConfiguration.keys?.threeDSecureIoCertificates ?? [] {
             let cer = ThreeDS.Cer(cardScheme: certificate.cardNetwork, rootCertificate: certificate.rootCertificate, encryptionKey: certificate.encryptionKey)
             certs.append(cer)
         }
