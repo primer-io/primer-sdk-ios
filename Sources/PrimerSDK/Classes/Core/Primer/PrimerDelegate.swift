@@ -27,7 +27,7 @@ public typealias PaymentMethodTokenData = PaymentMethodToken
 @objc
 public protocol PrimerDelegate {
     
-    func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
+    @objc optional func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
     
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, resumeHandler:  ResumeHandlerProtocol)
@@ -75,7 +75,18 @@ internal class PrimerDelegateProxy {
     
     static func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void) {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.clientTokenCallback(completion)
+            if Primer.shared.delegate?.clientTokenCallback != nil {
+                Primer.shared.delegate?.clientTokenCallback?(completion)
+            } else {
+                let state: AppStateProtocol = DependencyContainer.resolve()
+                if let clientToken = state.clientToken {
+                    completion(clientToken, nil)
+                } else {
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    completion(nil, err)
+                }
+            }
         }
     }
     
