@@ -16,14 +16,14 @@ struct PrimerAPIConfiguration: Codable {
     
     static var current: PrimerAPIConfiguration? {
         let appState: AppStateProtocol = DependencyContainer.resolve()
-        return appState.primerConfiguration
+        return appState.apiConfiguration
     }
     
     static var paymentMethodConfigs: [PaymentMethodConfig]? {
         let state: AppStateProtocol = DependencyContainer.resolve()
         
         let pms = state
-            .primerConfiguration?
+            .apiConfiguration?
             .paymentMethods
         
         return pms

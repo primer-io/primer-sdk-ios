@@ -341,11 +341,11 @@ extension ClientSession.Action {
                 let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
                 return clientSessionService.requestPrimerConfigurationWithActions(actionsRequest: clientSessionActionsRequest)
             }
-            .then { primerConfiguration -> Promise<PrimerAPIConfiguration> in
-                ClientSession.Action.setPrimerConfiguration(primerConfiguration)
+            .then { apiConfiguration -> Promise<PrimerAPIConfiguration> in
+                ClientSession.Action.setPrimerConfiguration(apiConfiguration)
             }
-            .then { primerConfiguration -> Promise<Void> in
-                ClientSession.Action.raiseClientSessionUpdateDidFinishEvent(primerConfiguration: primerConfiguration)
+            .then { apiConfiguration -> Promise<Void> in
+                ClientSession.Action.raiseClientSessionUpdateDidFinishEvent(apiConfiguration: apiConfiguration)
             }
             .done {
                 seal.fulfill()
@@ -358,9 +358,9 @@ extension ClientSession.Action {
         }
     }
     
-    private static func raiseClientSessionUpdateDidFinishEvent(primerConfiguration: PrimerAPIConfiguration) -> Promise<Void> {
+    private static func raiseClientSessionUpdateDidFinishEvent(apiConfiguration: PrimerAPIConfiguration) -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerClientSessionDidUpdate(CheckoutClientSessionData(from: primerConfiguration))
+            PrimerDelegateProxy.primerClientSessionDidUpdate(CheckoutClientSessionData(from: apiConfiguration))
             seal.fulfill()
         }
     }
@@ -372,11 +372,11 @@ extension ClientSession.Action {
         }
     }
     
-    private static func setPrimerConfiguration(_ primerConfiguration: PrimerAPIConfiguration) -> Promise<PrimerAPIConfiguration> {
+    private static func setPrimerConfiguration(_ apiConfiguration: PrimerAPIConfiguration) -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
             let appState: AppStateProtocol = DependencyContainer.resolve()
-            appState.primerConfiguration = primerConfiguration
-            seal.fulfill(primerConfiguration)
+            appState.apiConfiguration = apiConfiguration
+            seal.fulfill(apiConfiguration)
         }
     }
 }

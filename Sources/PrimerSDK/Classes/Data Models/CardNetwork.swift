@@ -294,7 +294,7 @@ public enum CardNetwork: String, CaseIterable {
     
     var surcharge: Int? {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let options = state.primerConfiguration?.clientSession?.paymentMethod?.options, !options.isEmpty else { return nil }
+        guard let options = state.apiConfiguration?.clientSession?.paymentMethod?.options, !options.isEmpty else { return nil }
         
         for paymentMethodOption in options {
             guard let type = paymentMethodOption["type"] as? String, type == "PAYMENT_CARD" else { continue }

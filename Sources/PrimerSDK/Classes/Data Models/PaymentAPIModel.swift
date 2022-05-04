@@ -616,50 +616,50 @@ extension CheckoutDataPayment {
 
 extension CheckoutClientSessionData {
     
-    internal convenience init?(from primerConfiguration: PrimerAPIConfiguration?) {
+    internal convenience init?(from apiConfiguration: PrimerAPIConfiguration?) {
         
-        guard let primerConfiguration = primerConfiguration else {
+        guard let apiConfiguration = apiConfiguration else {
             return nil
         }
         
-        let lineItems = primerConfiguration.clientSession?.order?.lineItems?.compactMap { CheckoutDataLineItem(itemId: $0.itemId,
+        let lineItems = apiConfiguration.clientSession?.order?.lineItems?.compactMap { CheckoutDataLineItem(itemId: $0.itemId,
                                                                                                                itemDescription: $0.description,
                                                                                                                amount: $0.amount,
                                                                                                                discountAmount: $0.discountAmount,
                                                                                                                quantity: $0.quantity,
-                                                                                                               taxCode: primerConfiguration.clientSession?.customer?.taxId,
-                                                                                                               taxAmount: primerConfiguration.clientSession?.order?.totalTaxAmount) }
+                                                                                                               taxCode: apiConfiguration.clientSession?.customer?.taxId,
+                                                                                                               taxAmount: apiConfiguration.clientSession?.order?.totalTaxAmount) }
         
-        let orderDetails = CheckoutDataOrder(countryCode: primerConfiguration.clientSession?.order?.countryCode?.rawValue)
+        let orderDetails = CheckoutDataOrder(countryCode: apiConfiguration.clientSession?.order?.countryCode?.rawValue)
         
-        let billingAddress = CheckoutDataPaymentAPIModelAddress(firstName: primerConfiguration.clientSession?.customer?.billingAddress?.firstName,
-                                                                lastName: primerConfiguration.clientSession?.customer?.billingAddress?.lastName,
-                                                                addressLine1: primerConfiguration.clientSession?.customer?.billingAddress?.addressLine1,
-                                                                addressLine2: primerConfiguration.clientSession?.customer?.billingAddress?.addressLine2,
-                                                                city: primerConfiguration.clientSession?.customer?.billingAddress?.city,
-                                                                state: primerConfiguration.clientSession?.customer?.billingAddress?.state,
-                                                                countryCode: primerConfiguration.clientSession?.customer?.billingAddress?.countryCode?.rawValue,
-                                                                postalCode: primerConfiguration.clientSession?.customer?.billingAddress?.postalCode)
+        let billingAddress = CheckoutDataPaymentAPIModelAddress(firstName: apiConfiguration.clientSession?.customer?.billingAddress?.firstName,
+                                                                lastName: apiConfiguration.clientSession?.customer?.billingAddress?.lastName,
+                                                                addressLine1: apiConfiguration.clientSession?.customer?.billingAddress?.addressLine1,
+                                                                addressLine2: apiConfiguration.clientSession?.customer?.billingAddress?.addressLine2,
+                                                                city: apiConfiguration.clientSession?.customer?.billingAddress?.city,
+                                                                state: apiConfiguration.clientSession?.customer?.billingAddress?.state,
+                                                                countryCode: apiConfiguration.clientSession?.customer?.billingAddress?.countryCode?.rawValue,
+                                                                postalCode: apiConfiguration.clientSession?.customer?.billingAddress?.postalCode)
         
-        let shippingAddress = CheckoutDataPaymentAPIModelAddress(firstName: primerConfiguration.clientSession?.customer?.shippingAddress?.firstName,
-                                                                 lastName: primerConfiguration.clientSession?.customer?.shippingAddress?.lastName,
-                                                                 addressLine1: primerConfiguration.clientSession?.customer?.shippingAddress?.addressLine1,
-                                                                 addressLine2: primerConfiguration.clientSession?.customer?.shippingAddress?.addressLine2,
-                                                                 city: primerConfiguration.clientSession?.customer?.shippingAddress?.city,
-                                                                 state: primerConfiguration.clientSession?.customer?.shippingAddress?.state,
-                                                                 countryCode: primerConfiguration.clientSession?.customer?.shippingAddress?.countryCode?.rawValue,
-                                                                 postalCode: primerConfiguration.clientSession?.customer?.shippingAddress?.postalCode)
+        let shippingAddress = CheckoutDataPaymentAPIModelAddress(firstName: apiConfiguration.clientSession?.customer?.shippingAddress?.firstName,
+                                                                 lastName: apiConfiguration.clientSession?.customer?.shippingAddress?.lastName,
+                                                                 addressLine1: apiConfiguration.clientSession?.customer?.shippingAddress?.addressLine1,
+                                                                 addressLine2: apiConfiguration.clientSession?.customer?.shippingAddress?.addressLine2,
+                                                                 city: apiConfiguration.clientSession?.customer?.shippingAddress?.city,
+                                                                 state: apiConfiguration.clientSession?.customer?.shippingAddress?.state,
+                                                                 countryCode: apiConfiguration.clientSession?.customer?.shippingAddress?.countryCode?.rawValue,
+                                                                 postalCode: apiConfiguration.clientSession?.customer?.shippingAddress?.postalCode)
         
-        let customer = CheckoutDataCustomer(emailAddress: primerConfiguration.clientSession?.customer?.emailAddress,
-                                            mobileNumber: primerConfiguration.clientSession?.customer?.mobileNumber,
+        let customer = CheckoutDataCustomer(emailAddress: apiConfiguration.clientSession?.customer?.emailAddress,
+                                            mobileNumber: apiConfiguration.clientSession?.customer?.mobileNumber,
                                             billingAddress: billingAddress,
                                             shippingAddress: shippingAddress)
         
         
-        self.init(customerId: primerConfiguration.clientSession?.customer?.id,
-                  orderId: primerConfiguration.clientSession?.order?.id,
-                  currencyCode: primerConfiguration.clientSession?.order?.currencyCode?.rawValue,
-                  totalAmount: primerConfiguration.clientSession?.order?.totalOrderAmount,
+        self.init(customerId: apiConfiguration.clientSession?.customer?.id,
+                  orderId: apiConfiguration.clientSession?.order?.id,
+                  currencyCode: apiConfiguration.clientSession?.order?.currencyCode?.rawValue,
+                  totalAmount: apiConfiguration.clientSession?.order?.totalOrderAmount,
                   lineItems: lineItems,
                   orderDetails: orderDetails,
                   customer: customer)

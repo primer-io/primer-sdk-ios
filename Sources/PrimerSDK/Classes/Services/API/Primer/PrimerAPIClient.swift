@@ -100,8 +100,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken)
         networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
             switch result {
-            case .success(let primerConfiguration):
-                completion(.success(primerConfiguration))
+            case .success(let apiConfiguration):
+                completion(.success(apiConfiguration))
             case .failure(let err):
                 completion(.failure(err))
             }
@@ -112,8 +112,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.createDirectDebitMandate(clientToken: clientToken, mandateRequest: mandateRequest)
         networkService.request(endpoint) { (result: Result<DirectDebitCreateMandateResponse, Error>) in
             switch result {
-            case .success(let primerConfiguration):
-                completion(.success(primerConfiguration))
+            case .success(let apiConfiguration):
+                completion(.success(apiConfiguration))
             case .failure(let err):
                 completion(.failure(err))
             }

@@ -11,9 +11,7 @@ import UIKit
  
  `clientTokenCallback(_:)`: This function will be called once Primer can provide you a client token. Provide the token to
  your backend in order retrieve a session token.
- 
- `tokenAddedToVault(_:)`: This function will be called only when a payment method has beed successfully added in vault.
- 
+  
  `authorizePayment(_:)`: This function will be called only on checkout flows. Use it to provide the payment method token to your backend and call the completion when your API is called is finished. Pass an error if needed.
  
  `primerDidDismiss(_:)`: This function notifies you when the drop-in UI is dismissed.
@@ -29,19 +27,7 @@ public typealias PaymentMethodTokenData = PaymentMethodToken
 @objc
 public protocol PrimerDelegate {
     
-    func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
-    
-    @objc optional func tokenAddedToVault(_ token: PaymentMethodTokenData)
-    
-    /// This function will be called when the user tries to make a payment. You should make the pay API call to your backend, and
-    /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
-    ///
-    /// - Parameters:
-    ///   - paymentMethodToken: The PaymentMethodToken object containing the token's information.
-    ///   - completion: Call with error or nil when the pay API call returns a result.
-    ///
-    @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
-    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, _ completion:  @escaping (Error?) -> Void)
+    @objc optional func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
     
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
     @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, resumeHandler:  ResumeHandlerProtocol)
@@ -53,16 +39,6 @@ public protocol PrimerDelegate {
     @objc optional func onResumeError(_ error: Error)
     
     @objc optional func primerDidDismiss()
-    
-    /// This function will be called when the user tries to make a payment. You should make the pay API call to your backend, and
-    /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
-    /// Deprecated in favour of onTokenizeSuccess
-    ///
-    /// - Parameters:
-    ///   - result: The PaymentMethodToken object containing the token's information.
-    ///   - completion: Call with error or nil when the pay API call returns a result.
-    @available(*, deprecated, renamed: "onTokenizeSuccess")
-    @objc optional func authorizePayment(_ result: PaymentMethodTokenData, _ completion:  @escaping (Error?) -> Void)
     
     /// This function will be called when the SDK is about to initiate a client session update.
     @objc optional func primerClientSessionWillUpdate()
@@ -99,28 +75,18 @@ internal class PrimerDelegateProxy {
     
     static func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void) {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.clientTokenCallback(completion)
-        }
-    }
-    
-    static var isTokenAddedToVaultImplemented: Bool {
-        return Primer.shared.delegate?.tokenAddedToVault != nil
-    }
-    
-    static func tokenAddedToVault(_ token: PaymentMethodTokenData) {
-        DispatchQueue.main.async {
-            Primer.shared.delegate?.tokenAddedToVault?(token)
-        }
-    }
-    
-    static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, _ completion:  @escaping (Error?) -> Void) {
-        DispatchQueue.main.async {
-            
-            if Primer.shared.flow.internalSessionFlow.vaulted {
-                Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+            if Primer.shared.delegate?.clientTokenCallback != nil {
+                Primer.shared.delegate?.clientTokenCallback?(completion)
+            } else {
+                let state: AppStateProtocol = DependencyContainer.resolve()
+                if let clientToken = state.clientToken {
+                    completion(clientToken, nil)
+                } else {
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    completion(nil, err)
+                }
             }
-            Primer.shared.delegate?.authorizePayment?(paymentMethodToken, completion)
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, completion)
         }
     }
     

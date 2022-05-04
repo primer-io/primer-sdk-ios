@@ -105,7 +105,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             guard let currency = settings.currency else { return nil }
             
             let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let availablePaymentMethods = state.primerConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
+            guard let availablePaymentMethods = state.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
             
             guard let str = availablePaymentMethods.filter({ $0.type == config.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
             
@@ -372,18 +372,9 @@ extension PaymentMethodTokenizationViewModel {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if Primer.shared.flow.internalSessionFlow.vaulted {
-            PrimerDelegateProxy.tokenAddedToVault(paymentMethod)
             self.handleSuccess()
         } else if settings.isManualPaymentHandlingEnabled {
-            
             PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { err in
-                if let err = err {
-                    self.handleFailedTokenizationFlow(error: err)
-                } else {
-                    self.handleSuccessfulTokenizationFlow()
-                }
-            })
 
         } else {
                         

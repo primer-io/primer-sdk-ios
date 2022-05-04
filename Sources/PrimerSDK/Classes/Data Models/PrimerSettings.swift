@@ -48,6 +48,25 @@ public struct PrimerDebugOptions {
     }
 }
 
+public class PrimerConfiguration {
+    let settings: PrimerSettings?
+    let theme: PrimerTheme?
+    
+    public init(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
+        if let settings = settings {
+            self.settings = settings
+        } else {
+            self.settings = PrimerSettings()
+        }
+        
+        if let theme = theme {
+            self.theme = theme
+        } else {
+            self.theme = PrimerTheme()
+        }
+    }
+}
+
 /**
  Set the settings of your Primer integration. Various settings for the payment or the drop-in UI customization can be set
  

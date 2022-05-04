@@ -24,7 +24,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return nil
         }
 
-        guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
+        guard let configId = state.apiConfiguration?.getConfigId(for: .payPal) else {
             return nil
         }
 
@@ -49,8 +49,8 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
-            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard let configId = state.apiConfiguration?.getConfigId(for: .payPal) else {
+            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.apiConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -115,8 +115,8 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
-            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard let configId = state.apiConfiguration?.getConfigId(for: .payPal) else {
+            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.apiConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -166,8 +166,8 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
-            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard let configId = state.apiConfiguration?.getConfigId(for: .payPal) else {
+            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.apiConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -206,8 +206,8 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
         
-        guard let configId = state.primerConfiguration?.getConfigId(for: .payPal) else {
-            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.primerConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard let configId = state.apiConfiguration?.getConfigId(for: .payPal) else {
+            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.apiConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
