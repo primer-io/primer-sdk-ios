@@ -71,7 +71,7 @@ class MerchantCheckoutViewController: UIViewController {
         title = "Primer [\(environment.rawValue)]"
         
         generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.dx.team",
+            merchantIdentifier: "merchant.checkout.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "merchant://",
