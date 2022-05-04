@@ -5,6 +5,8 @@
 //  Created by Dario Carlomagno on 24/04/22.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 @objc public class PaymentCreationDecision: NSObject {
@@ -38,3 +40,5 @@ public extension PaymentCreationDecision {
         PaymentCreationDecision(type: .continue, additionalInfo: nil)
     }
 }
+
+#endif

@@ -143,9 +143,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                
                 self.completion?(self.paymentMethod, nil)
-                self.handleSuccessfulTokenizationFlow()
             }
         }
         .ensure { [unowned self] in

@@ -495,31 +495,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     
 }
 
-extension KlarnaTokenizationViewModel {
-            
-    private func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) {
-        
-        firstly {
-            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(parameters)
-        }
-        .done {}
-        .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
-        }
-    }
-        
-    private func unselectPaymentMethodWithError(_ error: Error) {
-        firstly {
-            ClientSession.Action.unselectPaymentMethodIfNeeded()
-        }
-        .done {}
-        .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
-        }
-    }
-}
-
-
 extension KlarnaTokenizationViewModel: WKNavigationDelegate {
     
     func webView(
