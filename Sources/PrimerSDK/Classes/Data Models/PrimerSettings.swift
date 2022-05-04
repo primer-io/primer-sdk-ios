@@ -223,9 +223,9 @@ public class PrimerSettings: PrimerSettingsProtocol {
         is3DSOnVaultingEnabled: Bool = true,
         debugOptions: PrimerDebugOptions? = nil
     ) {
+        self.merchantIdentifier = merchantIdentifier
         self.klarnaSessionType = klarnaSessionType
         self.klarnaPaymentDescription = klarnaPaymentDescription
-        self.merchantIdentifier = merchantIdentifier
         self.urlSchemeIdentifier = urlSchemeIdentifier
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
