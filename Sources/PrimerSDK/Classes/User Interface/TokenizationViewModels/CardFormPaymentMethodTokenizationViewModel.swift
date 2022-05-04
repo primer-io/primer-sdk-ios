@@ -185,7 +185,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     private var isCardholderNameFieldEnabled: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        if (state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName == false {
+        if (state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName == false {
             return false
         } else {
             return true
@@ -205,7 +205,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     var requirePostalCode: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
         guard let billingAddressModule = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
-        return (billingAddressModule.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
+        return (billingAddressModule.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
     }
     
     lazy var expiryDateField: PrimerExpiryDateFieldView = {

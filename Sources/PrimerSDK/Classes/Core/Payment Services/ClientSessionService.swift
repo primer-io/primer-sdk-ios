@@ -3,19 +3,19 @@
 import Foundation
 
 internal protocol ClientSessionServiceProtocol {
-    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest, completion: @escaping (PrimerConfiguration?, Error?) -> Void)
-    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest) -> Promise<PrimerConfiguration>
+    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest, completion: @escaping (PrimerAPIConfiguration?, Error?) -> Void)
+    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest) -> Promise<PrimerAPIConfiguration>
 }
 
 internal class ClientSessionService: ClientSessionServiceProtocol {
     
-    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest, completion: @escaping (PrimerConfiguration?, Error?) -> Void) {
-        self.requestPrimerConfigurationWithActions(actionsRequest, completion: completion)
+    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest, completion: @escaping (PrimerAPIConfiguration?, Error?) -> Void) {
+        self.requestPrimerConfigurationWithActions(actionsRequest: actionsRequest, completion: completion)
     }
     
-    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest) -> Promise<PrimerConfiguration> {
+    func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest) -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
-            self.requestPrimerConfigurationWithActions(actionsRequest, completion: { configuration, err in
+            self.requestPrimerConfigurationWithActions(actionsRequest: actionsRequest, completion: { configuration, err in
                 if let err = err {
                     seal.reject(err)
                 } else if let configuration = configuration {
@@ -30,8 +30,7 @@ extension ClientSessionService {
     
     // MARK: - API Request
     
-    private func requestPrimerConfigurationWithActions(_ request: ClientSessionUpdateRequest, completion: @escaping (PrimerConfiguration?, Error?) -> Void) {
-        
+    private func requestClientSessionWithActionsRequest(_ request: ClientSessionUpdateRequest, completion: @escaping (PrimerAPIConfiguration?, Error?) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)

@@ -59,12 +59,12 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 //        }
     }
 
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (Result<PrimerConfiguration, Error>) -> Void) {
+    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (Result<PrimerAPIConfiguration, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(PrimerConfiguration.self, from: response)
+            let value = try JSONDecoder().decode(PrimerAPIConfiguration.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
@@ -297,7 +297,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
 extension MockPrimerAPIClient {
     
-    func requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest, completion: @escaping (Result<PrimerConfiguration, Error>) -> Void) {
+    func requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest, completion: @escaping (Result<PrimerAPIConfiguration, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
@@ -306,7 +306,7 @@ extension MockPrimerAPIClient {
         }
         
         do {
-            let value = try JSONDecoder().decode(PrimerConfiguration.self, from: response)
+            let value = try JSONDecoder().decode(PrimerAPIConfiguration.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
