@@ -145,7 +145,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             throw err
         }
         
-        guard let configuration = state.primerConfiguration else {
+        guard let configuration = state.apiConfiguration else {
             let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             throw err
@@ -234,7 +234,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     private func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = DependencyContainer.resolve()
         guard let decodedClientToken = ClientTokenService.decodedClientToken,
-              let merchantAccountId = state.primerConfiguration?.getProductId(for: .apaya)
+              let merchantAccountId = state.apiConfiguration?.getProductId(for: .apaya)
         else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)

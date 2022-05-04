@@ -64,7 +64,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 self.tokenizedPaymentMethodToken = paymentMethodToken
                 
                 var isThreeDSEnabled: Bool = false
-                if state.primerConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                if state.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                     isThreeDSEnabled = true
                 }
 

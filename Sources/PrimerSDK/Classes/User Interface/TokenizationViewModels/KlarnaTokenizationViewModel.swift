@@ -417,7 +417,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
+        guard let configId = state.apiConfiguration?.getConfigId(for: .klarna),
               let sessionId = self.sessionId else {
                   let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                   ErrorHandler.handle(error: err)
@@ -468,7 +468,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             return
         }
         
-        guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
+        guard let configId = state.apiConfiguration?.getConfigId(for: .klarna),
               let sessionId = self.sessionId else {
                   let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                   ErrorHandler.handle(error: err)

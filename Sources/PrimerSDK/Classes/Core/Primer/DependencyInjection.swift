@@ -75,8 +75,8 @@ final internal class DependencyContainer {
                 return self.resolve()
                 
             } else if key == String(describing: PaymentMethodConfigServiceProtocol.self) {
-                let primerConfiguration: PaymentMethodConfigServiceProtocol = PaymentMethodConfigService()
-                DependencyContainer.register(primerConfiguration)
+                let apiConfiguration: PaymentMethodConfigServiceProtocol = PaymentMethodConfigService()
+                DependencyContainer.register(apiConfiguration)
                 return self.resolve()
                 
             } else if key == String(describing: PrimerAPIClientProtocol.self) {
