@@ -82,11 +82,8 @@ public class Primer {
 
     public func configure(configuration: PrimerConfiguration? = nil, delegate: PrimerDelegate? = nil) {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        if let configuration = configuration {
-            state.configuration = configuration
-        } else {
-            state.configuration = PrimerConfiguration()
-        }
+        self.delegate = delegate
+        state.configuration = configuration ?? PrimerConfiguration()
     }
     
     public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {

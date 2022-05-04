@@ -75,7 +75,7 @@ internal class PrimerDelegateProxy {
     
     static func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void) {
         DispatchQueue.main.async {
-            if Primer.shared.delegate?.clientTokenCallback != nil {
+            if isClientTokenCallbackImplemented {
                 Primer.shared.delegate?.clientTokenCallback?(completion)
             } else {
                 let state: AppStateProtocol = DependencyContainer.resolve()
