@@ -81,11 +81,23 @@ public class Primer {
      */
 
     public func configure(configuration: PrimerConfiguration? = nil, delegate: PrimerDelegate? = nil) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         self.delegate = delegate
+        let state: AppStateProtocol = DependencyContainer.resolve()
         state.configuration = configuration ?? PrimerConfiguration()
+        if let settings = configuration?.settings as? PrimerSettingsProtocol {
+            DependencyContainer.register(settings)
+        }
+        if let configuration = state.configuration {
+            DependencyContainer.register(configuration)
+        }
     }
     
+    // MARK: - SHOW
+
+    /**
+     Show Primer Checkout
+     */
+
     public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
         checkoutSessionId = UUID().uuidString
         
