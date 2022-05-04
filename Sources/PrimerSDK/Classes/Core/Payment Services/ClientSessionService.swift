@@ -10,12 +10,12 @@ internal protocol ClientSessionServiceProtocol {
 internal class ClientSessionService: ClientSessionServiceProtocol {
     
     func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest, completion: @escaping (PrimerAPIConfiguration?, Error?) -> Void) {
-        self.requestPrimerConfigurationWithActions(actionsRequest: actionsRequest, completion: completion)
+        self.requestClientSessionWithActionsRequest(actionsRequest, completion: completion)
     }
     
     func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest) -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
-            self.requestPrimerConfigurationWithActions(actionsRequest: actionsRequest, completion: { configuration, err in
+            self.requestClientSessionWithActionsRequest(actionsRequest, completion: { configuration, err in
                 if let err = err {
                     seal.reject(err)
                 } else if let configuration = configuration {
