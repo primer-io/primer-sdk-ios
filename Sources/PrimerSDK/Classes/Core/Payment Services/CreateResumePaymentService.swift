@@ -5,6 +5,8 @@
 //  Created by Dario Carlomagno on 24/02/22.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 internal protocol CreateResumePaymentServiceProtocol {
@@ -66,3 +68,4 @@ extension CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     }
 }
 
+#endif

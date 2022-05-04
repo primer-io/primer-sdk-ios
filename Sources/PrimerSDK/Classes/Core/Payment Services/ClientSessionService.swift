@@ -1,3 +1,5 @@
+#if canImport(UIKit)
+
 import Foundation
 
 internal protocol ClientSessionServiceProtocol {
@@ -8,12 +10,12 @@ internal protocol ClientSessionServiceProtocol {
 internal class ClientSessionService: ClientSessionServiceProtocol {
     
     func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest, completion: @escaping (PrimerConfiguration?, Error?) -> Void) {
-        self.requestClientSessionWithActionsRequest(actionsRequest, completion: completion)
+        self.requestPrimerConfigurationWithActions(actionsRequest, completion: completion)
     }
     
     func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest) -> Promise<PrimerConfiguration> {
         return Promise { seal in
-            self.requestClientSessionWithActionsRequest(actionsRequest, completion: { configuration, err in
+            self.requestPrimerConfigurationWithActions(actionsRequest, completion: { configuration, err in
                 if let err = err {
                     seal.reject(err)
                 } else if let configuration = configuration {
@@ -28,7 +30,7 @@ extension ClientSessionService {
     
     // MARK: - API Request
     
-    private func requestClientSessionWithActionsRequest(_ request: ClientSessionUpdateRequest, completion: @escaping (PrimerConfiguration?, Error?) -> Void) {
+    private func requestPrimerConfigurationWithActions(_ request: ClientSessionUpdateRequest, completion: @escaping (PrimerConfiguration?, Error?) -> Void) {
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -38,7 +40,7 @@ extension ClientSessionService {
         }
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        api.requestClientSessionWithActions(clientToken: decodedClientToken, request: request) { result in
+        api.requestPrimerConfigurationWithActions(clientToken: decodedClientToken, request: request) { result in
             switch result {
             case .success(let configuration):
                 completion(configuration, nil)
@@ -48,3 +50,5 @@ extension ClientSessionService {
         }
     }
 }
+
+#endif

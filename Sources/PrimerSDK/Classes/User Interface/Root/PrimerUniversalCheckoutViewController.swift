@@ -365,32 +365,6 @@ extension PrimerUniversalCheckoutViewController {
 
 extension PrimerUniversalCheckoutViewController {
     
-    private func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) {
-        
-        firstly {
-            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(parameters)
-        }
-        .done {}
-        .catch { error in
-            self.handle(error: error)
-        }
-    }
-    
-    private func unselectPaymentMethodWithError(_ error: Error) {
-        firstly {
-            ClientSession.Action.unselectPaymentMethodIfNeeded()
-        }
-        .done {
-            self.onClientSessionActionUpdateCompletion = nil
-        }
-        .catch { error in
-            self.handle(error: error)
-        }
-    }
-}
-
-extension PrimerUniversalCheckoutViewController {
-    
     private func handle(_ clientToken: String) {
         
         if PrimerHeadlessUniversalCheckout.current.clientToken != clientToken {

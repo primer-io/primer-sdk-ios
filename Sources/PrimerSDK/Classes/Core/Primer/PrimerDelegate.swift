@@ -24,12 +24,14 @@ import UIKit
  1.4.3
  */
 
+public typealias PaymentMethodTokenData = PaymentMethodToken
+
 @objc
 public protocol PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
     
-    @objc optional func tokenAddedToVault(_ token: PaymentMethodToken)
+    @objc optional func tokenAddedToVault(_ token: PaymentMethodTokenData)
     
     /// This function will be called when the user tries to make a payment. You should make the pay API call to your backend, and
     /// pass an error or nil on completion. This way the SDK will show the error passed on the modal view controller.
@@ -39,10 +41,10 @@ public protocol PrimerDelegate {
     ///   - completion: Call with error or nil when the pay API call returns a result.
     ///
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
-    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
+    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, _ completion:  @escaping (Error?) -> Void)
     
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
-    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol)
+    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, resumeHandler:  ResumeHandlerProtocol)
     
     @available(*, deprecated, message: "The resuming is now handled by the SDK internally so that the payment can either succeed or fail.\nSee primerDidCompleteCheckoutWithData(:) and primerDidFailWithError(:)")
     @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
@@ -60,7 +62,7 @@ public protocol PrimerDelegate {
     ///   - result: The PaymentMethodToken object containing the token's information.
     ///   - completion: Call with error or nil when the pay API call returns a result.
     @available(*, deprecated, renamed: "onTokenizeSuccess")
-    @objc optional func authorizePayment(_ result: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void)
+    @objc optional func authorizePayment(_ result: PaymentMethodTokenData, _ completion:  @escaping (Error?) -> Void)
     
     /// This function will be called when the SDK is about to initiate a client session update.
     @objc optional func primerClientSessionWillUpdate()
@@ -105,13 +107,13 @@ internal class PrimerDelegateProxy {
         return Primer.shared.delegate?.tokenAddedToVault != nil
     }
     
-    static func tokenAddedToVault(_ token: PaymentMethodToken) {
+    static func tokenAddedToVault(_ token: PaymentMethodTokenData) {
         DispatchQueue.main.async {
             Primer.shared.delegate?.tokenAddedToVault?(token)
         }
     }
     
-    static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) {
+    static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, _ completion:  @escaping (Error?) -> Void) {
         DispatchQueue.main.async {
             
             if Primer.shared.flow.internalSessionFlow.vaulted {
@@ -122,12 +124,8 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol) {
+    static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, resumeHandler:  ResumeHandlerProtocol) {
         DispatchQueue.main.async {
-            
-            if Primer.shared.flow.internalSessionFlow.vaulted {
-                Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
-            }
             Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: resumeHandler)
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: resumeHandler)
         }
@@ -216,7 +214,7 @@ internal class PrimerDelegateProxy {
         
     }
     
-    static func tokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
+    static func tokenizationSucceeded(paymentMethodToken: PaymentMethodTokenData, resumeHandler: ResumeHandlerProtocol?) {
         
     }
     

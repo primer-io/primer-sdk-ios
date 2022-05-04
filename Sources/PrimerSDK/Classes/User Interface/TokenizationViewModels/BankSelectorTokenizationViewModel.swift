@@ -250,7 +250,6 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             
             DispatchQueue.main.async {
                 self.completion?(self.paymentMethod, nil)
-                self.handleSuccessfulTokenizationFlow()
             }
         }
         .ensure { [unowned self] in
