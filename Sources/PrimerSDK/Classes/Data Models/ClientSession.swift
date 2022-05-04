@@ -336,12 +336,12 @@ extension ClientSession.Action {
             firstly {
                 ClientSession.Action.raiseClientSessionUpdateWillStartEventForActions()
             }
-            .then { () -> Promise<PrimerConfiguration> in
+            .then { () -> Promise<PrimerAPIConfiguration> in
                 let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
                 let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
                 return clientSessionService.requestPrimerConfigurationWithActions(actionsRequest: clientSessionActionsRequest)
             }
-            .then { primerConfiguration -> Promise<PrimerConfiguration> in
+            .then { primerConfiguration -> Promise<PrimerAPIConfiguration> in
                 ClientSession.Action.setPrimerConfiguration(primerConfiguration)
             }
             .then { primerConfiguration -> Promise<Void> in
@@ -358,7 +358,7 @@ extension ClientSession.Action {
         }
     }
     
-    private static func raiseClientSessionUpdateDidFinishEvent(primerConfiguration: PrimerConfiguration) -> Promise<Void> {
+    private static func raiseClientSessionUpdateDidFinishEvent(primerConfiguration: PrimerAPIConfiguration) -> Promise<Void> {
         return Promise { seal in
             PrimerDelegateProxy.primerClientSessionDidUpdate(CheckoutClientSessionData(from: primerConfiguration))
             seal.fulfill()
@@ -372,7 +372,7 @@ extension ClientSession.Action {
         }
     }
     
-    private static func setPrimerConfiguration(_ primerConfiguration: PrimerConfiguration) -> Promise<PrimerConfiguration> {
+    private static func setPrimerConfiguration(_ primerConfiguration: PrimerAPIConfiguration) -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
             let appState: AppStateProtocol = DependencyContainer.resolve()
             appState.primerConfiguration = primerConfiguration

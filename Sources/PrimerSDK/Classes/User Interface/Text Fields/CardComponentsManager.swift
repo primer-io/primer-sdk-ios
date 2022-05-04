@@ -37,7 +37,7 @@ protocol CardComponentsManagerProtocol {
     var amount: Int? { get }
     var currency: Currency? { get }
     var decodedClientToken: DecodedClientToken? { get }
-    var paymentMethodsConfig: PrimerConfiguration? { get }
+    var paymentMethodsConfig: PrimerAPIConfiguration? { get }
     
     func tokenize()
 }
@@ -60,7 +60,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     internal var decodedClientToken: DecodedClientToken? {
         return ClientTokenService.decodedClientToken
     }
-    internal var paymentMethodsConfig: PrimerConfiguration?
+    internal var paymentMethodsConfig: PrimerAPIConfiguration?
     private(set) public var isLoading: Bool = false
     internal private(set) var paymentMethod: PaymentMethodToken?
     
@@ -166,7 +166,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         }
     }
     
-    private func fetchPaymentMethodConfigIfNeeded() -> Promise<PrimerConfiguration> {
+    private func fetchPaymentMethodConfigIfNeeded() -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
             if let paymentMethodsConfig = paymentMethodsConfig {
                 seal.fulfill(paymentMethodsConfig)
@@ -242,7 +242,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             firstly {
                 self.fetchClientTokenIfNeeded()
             }
-            .then { decodedClientToken -> Promise<PrimerConfiguration> in
+            .then { decodedClientToken -> Promise<PrimerAPIConfiguration> in
                 return self.fetchPaymentMethodConfigIfNeeded()
             }
             .done { paymentMethodsConfig in
@@ -390,7 +390,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         return ClientTokenService.decodedClientToken
     }
     
-    var paymentMethodsConfig: PrimerConfiguration?
+    var paymentMethodsConfig: PrimerAPIConfiguration?
     
     public init(
         flow: PaymentFlow,

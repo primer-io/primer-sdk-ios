@@ -48,9 +48,9 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
         }
     }
     
-    func fetchPrimerConfigurationIfNeeded() -> Promise<PrimerConfiguration> {
+    func fetchPrimerConfigurationIfNeeded() -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
-            if let paymentMethodsConfig = PrimerConfiguration.current {
+            if let paymentMethodsConfig = PrimerAPIConfiguration.current {
                 seal.fulfill(paymentMethodsConfig)
             } else {
                 guard let decodedClientToken = ClientTokenService.decodedClientToken else {

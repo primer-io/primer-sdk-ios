@@ -436,7 +436,7 @@ internal class PrimerRootViewController: PrimerViewController {
 extension PrimerRootViewController {
     
     func presentPaymentMethod(type: PaymentMethodConfigType) {
-        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
+        guard let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
             let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: nil)
@@ -444,7 +444,7 @@ extension PrimerRootViewController {
         }
         
         var imgView: UIImageView?
-        if let squareLogo = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.squareLogo {
+        if let squareLogo = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.squareLogo {
             imgView = UIImageView()
             imgView?.image = squareLogo
             imgView?.contentMode = .scaleAspectFit

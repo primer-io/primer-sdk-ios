@@ -37,7 +37,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         return ClientTokenService.decodedClientToken
     }
     
-    var paymentMethodsConfig: PrimerConfiguration?
+    var paymentMethodsConfig: PrimerAPIConfiguration?
     
     public init(flow: PaymentFlow,
         cardnumberField: PrimerCardNumberFieldView,

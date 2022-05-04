@@ -23,7 +23,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     private var resumeHandler: ResumeHandlerProtocol!
 
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] {
-        return PrimerConfiguration.paymentMethodConfigViewModels
+        return PrimerAPIConfiguration.paymentMethodConfigViewModels
     }
 
     var amountStringed: String? {
