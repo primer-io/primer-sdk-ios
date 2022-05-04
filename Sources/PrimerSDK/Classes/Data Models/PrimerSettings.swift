@@ -52,9 +52,18 @@ public class PrimerConfiguration {
     let settings: PrimerSettings?
     let theme: PrimerTheme?
     
-    init(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
-        self.settings = settings
-        self.theme = theme
+    public init(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
+        if let settings = settings {
+            self.settings = settings
+        } else {
+            self.settings = PrimerSettings()
+        }
+        
+        if let theme = theme {
+            self.theme = theme
+        } else {
+            self.theme = PrimerTheme()
+        }
     }
 }
 

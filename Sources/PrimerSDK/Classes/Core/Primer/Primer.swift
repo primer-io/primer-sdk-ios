@@ -85,22 +85,12 @@ public class Primer {
      1.4.0
      */
 
-    public func configure(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
-        DispatchQueue.main.async {
-            if let settings = settings {
-                DependencyContainer.register(settings as PrimerSettingsProtocol)
-            }
-
-            if let theme = theme {
-                DependencyContainer.register(theme as PrimerThemeProtocol)
-            }
-            
-            let event = Analytics.Event(
-                eventType: .sdkEvent,
-                properties: SDKEventProperties(
-                    name: #function,
-                    params: nil))
-            Analytics.Service.record(event: event)
+    public func configure(configuration: PrimerConfiguration? = nil, delegate: PrimerDelegate? = nil) {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        if let configuration = configuration {
+            state.configuration = configuration
+        } else {
+            state.configuration = PrimerConfiguration()
         }
     }
 
