@@ -44,8 +44,16 @@ public class ClientSession: Codable {
         
         static func unselectPaymentMethodIfNeeded() -> Promise<Void> {
             return Promise { seal in
-                
                 guard !Primer.shared.flow.internalSessionFlow.vaulted else {
+                    seal.fulfill()
+                    return
+                }
+                
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                if settings.isManualPaymentHandlingEnabled {
+                    // Merchant won't be able to utilize client session actions on the manual
+                    // flow since no delegate function will be present. Therefore, just fulfill
+                    // directly and save ourselves from an API call.
                     seal.fulfill()
                     return
                 }
@@ -65,8 +73,16 @@ public class ClientSession: Codable {
         
         static func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) -> Promise<Void> {
             return Promise { seal in
-                
                 guard !Primer.shared.flow.internalSessionFlow.vaulted else {
+                    seal.fulfill()
+                    return
+                }
+                
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                if settings.isManualPaymentHandlingEnabled {
+                    // Merchant won't be able to utilize client session actions on the manual
+                    // flow since no delegate function will be present. Therefore, just fulfill
+                    // directly and save ourselves from an API call.
                     seal.fulfill()
                     return
                 }
