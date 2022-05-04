@@ -78,11 +78,6 @@ public class Primer {
 
     /**
      Configure SDK's settings and/or theme
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
      */
 
     public func configure(configuration: PrimerConfiguration? = nil, delegate: PrimerDelegate? = nil) {
@@ -93,90 +88,8 @@ public class Primer {
             state.configuration = PrimerConfiguration()
         }
     }
-
-    /**
-     Set form's top title
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
-    public func setFormTopTitle(_ text: String, for formType: PrimerFormType) {
-        let event = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "title": text,
-                    "formType": formType.rawValue
-                ]))
-        Analytics.Service.record(event: event)
-    }
-
-    /**
-     Set form's main title
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
-    public func setFormMainTitle(_ text: String, for formType: PrimerFormType) {
-        let event = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "title": text,
-                    "formType": formType.rawValue
-                ]))
-        Analytics.Service.record(event: event)
-    }
-
-    /**
-     Pre-fill direct debit details of user in form
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
-    @available(swift, obsoleted: 4.1, message: "Set direct debit details in the client session.")
-    public func setDirectDebitDetails(
-        firstName: String,
-        lastName: String,
-        email: String,
-        iban: String,
-        address: Address
-    ) {
-
-    }
-
-    /**
-     Presents a bottom sheet view for Primer checkout. To determine the user journey specify the PrimerSessionFlow of the method. Additionally a parent view controller needs to be passed in to display the sheet view.
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
-    @available(*, deprecated, message: "Use showUniversalCheckout or showVaultManager instead.")
-    public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
-        let event = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "flow": flow.internalSessionFlow.rawValue
-                ]))
-        Analytics.Service.record(event: event)
-        
-        show(flow: flow)
-    }
     
     public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
-
         checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
@@ -400,28 +313,6 @@ public class Primer {
         self.show(on: viewController, flow: flow, with: clientToken, completion: completion)
     }
     // swiftlint:enable cyclomatic_complexity
-
-    /**
-     Performs an asynchronous get call returning all the saved payment methods for the user ID specified in the settings object when instantiating Primer. Provide a completion handler to access the returned list of saved payment methods (these have already been added to Primer vault and can be sent directly to your backend to authorize or capture a payment)
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
-    public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
-        let event = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: nil))
-        Analytics.Service.record(event: event)
-        
-        DispatchQueue.main.async {
-            let externalViewModel: ExternalViewModelProtocol = DependencyContainer.resolve()
-            externalViewModel.fetchVaultedPaymentMethods(completion)
-        }
-    }
 
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
