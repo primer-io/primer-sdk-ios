@@ -367,7 +367,7 @@ public class Primer {
         }
     }
     
-    public func show(flow: PrimerSessionFlow) {
+    private func show(flow: PrimerSessionFlow) {
         self.flow = flow
         
         let event = Analytics.Event(
