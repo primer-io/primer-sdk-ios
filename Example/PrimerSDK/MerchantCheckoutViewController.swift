@@ -83,9 +83,9 @@ class MerchantCheckoutViewController: UIViewController {
             is3DSOnVaultingEnabled: true,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
-
-        Primer.shared.configure(settings: generalSettings, theme: CheckoutTheme.primer)
-        Primer.shared.delegate = self
+        
+        let configuration = PrimerConfiguration(settings: generalSettings)
+        Primer.shared.configure(configuration: configuration, delegate: self)
     }
     
     // MARK: - ACTIONS
@@ -97,8 +97,8 @@ class MerchantCheckoutViewController: UIViewController {
             isInitialLoadingHidden: true
         )
         
-        Primer.shared.configure(settings: vaultApayaSettings)
-        Primer.shared.showPaymentMethod(.apaya, withIntent: .vault, on: self)
+        let configuration = PrimerConfiguration(settings: vaultApayaSettings)
+        Primer.shared.configure(configuration: configuration, delegate: self)
     }
     
     @IBAction func addCardButtonTapped(_ sender: Any) {
@@ -117,7 +117,8 @@ class MerchantCheckoutViewController: UIViewController {
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
         
-        Primer.shared.configure(settings: cardSettings)
+        let configuration = PrimerConfiguration(settings: cardSettings)
+        Primer.shared.configure(configuration: configuration, delegate: self)
         Primer.shared.showPaymentMethod(.paymentCard, withIntent: .checkout, on: self)
     }
     
@@ -129,7 +130,8 @@ class MerchantCheckoutViewController: UIViewController {
             isInitialLoadingHidden: true
         )
         
-        Primer.shared.configure(settings: vaultPayPalSettings)
+        let configuration = PrimerConfiguration(settings: vaultPayPalSettings)
+        Primer.shared.configure(configuration: configuration, delegate: self)
         Primer.shared.showPaymentMethod(.payPal, withIntent: .checkout, on: self)
     }
     
@@ -140,7 +142,8 @@ class MerchantCheckoutViewController: UIViewController {
             isInitialLoadingHidden: true
         )
         
-        Primer.shared.configure(settings: vaultKlarnaSettings)
+        let configuration = PrimerConfiguration(settings: vaultKlarnaSettings)
+        Primer.shared.configure(configuration: configuration, delegate: self)
         Primer.shared.showPaymentMethod(.klarna, withIntent: .vault, on: self)
     }
     
@@ -151,17 +154,20 @@ class MerchantCheckoutViewController: UIViewController {
             isInitialLoadingHidden: true
         )
         
-        Primer.shared.configure(settings: applePaySettings)
+        let configuration = PrimerConfiguration(settings: applePaySettings)
+        Primer.shared.configure(configuration: configuration, delegate: self)
         Primer.shared.showPaymentMethod(.applePay, withIntent: .checkout, on: self)
     }
     
     @IBAction func openVaultButtonTapped(_ sender: Any) {
-        Primer.shared.configure(settings: generalSettings)
+        let configuration = PrimerConfiguration(settings: generalSettings)
+        Primer.shared.configure(configuration: configuration, delegate: self)
         Primer.shared.showVaultManager(on: self)
     }
     
     @IBAction func openUniversalCheckoutTapped(_ sender: Any) {
-        Primer.shared.configure(settings: generalSettings)
+        let configuration = PrimerConfiguration(settings: generalSettings)
+        Primer.shared.configure(configuration: configuration, delegate: self)
         Primer.shared.showUniversalCheckout(on: self)
     }
 }

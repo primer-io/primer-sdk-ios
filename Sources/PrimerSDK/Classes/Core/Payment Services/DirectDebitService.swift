@@ -27,8 +27,8 @@ internal class DirectDebitService: DirectDebitServiceProtocol {
             return
         }
 
-        guard let configId = state.primerConfiguration?.getConfigId(for: .goCardlessMandate) else {
-            let err = PrimerError.invalidValue(key: "configId", value: state.primerConfiguration?.getConfigId(for: .goCardlessMandate), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard let configId = state.apiConfiguration?.getConfigId(for: .goCardlessMandate) else {
+            let err = PrimerError.invalidValue(key: "configId", value: state.apiConfiguration?.getConfigId(for: .goCardlessMandate), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(err)
             return

@@ -92,13 +92,13 @@ public class PrimerHeadlessUniversalCheckout {
                 seal.reject(error)
             }
             
-            guard let primerConfiguration = appState.primerConfiguration else {
+            guard let apiConfiguration = appState.apiConfiguration else {
                 let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 seal.reject(err)
                 return
             }
             
-            guard let paymentMethods = primerConfiguration.paymentMethods, !paymentMethods.isEmpty else {
+            guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 seal.reject(err)
                 return
@@ -216,7 +216,7 @@ public class PrimerHeadlessUniversalCheckout {
 
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
             
-            if let checkoutModule = appState.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
+            if let checkoutModule = appState.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
                let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
                 if options.cardHolderName == true {
                     requiredFields.append(.cardholderName)
