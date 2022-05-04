@@ -117,7 +117,7 @@ class PaymentMethodConfigTests: XCTestCase {
         ]
         
         do {
-            let config = try JSONParser().parse(PrimerConfiguration.self, from: jsonData!)
+            let config = try JSONParser().parse(PrimerAPIConfiguration.self, from: jsonData!)
             
             if config.pciUrl != pciUrl {
                 XCTFail("Failed to parse PCI URL")
@@ -184,7 +184,7 @@ class PaymentMethodConfigTests: XCTestCase {
         ]
         
         do {
-            let config = try JSONParser().parse(PrimerConfiguration.self, from: jsonData!)
+            let config = try JSONParser().parse(PrimerAPIConfiguration.self, from: jsonData!)
             
             if config.pciUrl != pciUrl {
                 XCTFail("Failed to parse PCI URL")

@@ -142,7 +142,7 @@ public class PrimerHeadlessUniversalCheckout {
     }
 
     internal func listAvailablePaymentMethodsTypes() -> [PrimerPaymentMethodType]? {
-        return PrimerConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
+        return PrimerAPIConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
     }
     
     public func listRequiredInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType]? {
@@ -217,7 +217,7 @@ public class PrimerHeadlessUniversalCheckout {
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
             
             if let checkoutModule = appState.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
-               let options = checkoutModule.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions {
+               let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
                 if options.cardHolderName == true {
                     requiredFields.append(.cardholderName)
                 }
@@ -238,7 +238,7 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     public static func makeButton(for paymentMethodType: PrimerPaymentMethodType) -> UIButton? {
-        guard let paymentMethodConfigs = PrimerConfiguration.paymentMethodConfigs else { return nil }
+        guard let paymentMethodConfigs = PrimerAPIConfiguration.paymentMethodConfigs else { return nil }
         guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
         return paymentMethodConfig.tokenizationViewModel?.paymentMethodButton
     }

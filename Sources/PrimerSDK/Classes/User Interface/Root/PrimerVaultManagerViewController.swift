@@ -12,7 +12,7 @@ import UIKit
 internal class PrimerVaultManagerViewController: PrimerFormViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
+    private let paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
     
     override var title: String? {
         didSet {

@@ -1,5 +1,5 @@
 //
-//  PrimerConfiguration.swift
+//  PrimerAPIConfiguration.swift
 //  PrimerSDK
 //
 //  Created by Evangelos on 28/12/21.
@@ -12,9 +12,9 @@ import PassKit
 
 protocol CheckoutModuleOptions: Codable {}
 
-struct PrimerConfiguration: Codable {
+struct PrimerAPIConfiguration: Codable {
     
-    static var current: PrimerConfiguration? {
+    static var current: PrimerAPIConfiguration? {
         let appState: AppStateProtocol = DependencyContainer.resolve()
         return appState.primerConfiguration
     }
@@ -30,7 +30,7 @@ struct PrimerConfiguration: Codable {
     }
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
-        var viewModels = PrimerConfiguration.paymentMethodConfigs?
+        var viewModels = PrimerAPIConfiguration.paymentMethodConfigs?
             .filter({ $0.type.isEnabled })
             .compactMap({ $0.tokenizationViewModel })
         ?? []
@@ -113,7 +113,7 @@ struct PrimerConfiguration: Codable {
         clientSession: ClientSession?,
         paymentMethods: [PaymentMethodConfig]?,
         keys: ThreeDS.Keys?,
-        checkoutModules: [PrimerConfiguration.CheckoutModule]?
+        checkoutModules: [PrimerAPIConfiguration.CheckoutModule]?
     ) {
         self.coreUrl = coreUrl
         self.pciUrl = pciUrl
@@ -140,7 +140,7 @@ struct PrimerConfiguration: Codable {
     }
 }
 
-extension PrimerConfiguration {
+extension PrimerAPIConfiguration {
     struct CheckoutModule: Codable {
         let type: String
         let requestUrlStr: String?

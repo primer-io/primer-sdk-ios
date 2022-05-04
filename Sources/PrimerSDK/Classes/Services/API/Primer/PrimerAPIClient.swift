@@ -15,7 +15,7 @@ protocol PrimerAPIClientProtocol {
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse>
     func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
     func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Void, Error>) -> Void)
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void)
+    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
     func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void)
     func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalCreateBillingAgreementResponse, Error>) -> Void)
@@ -30,7 +30,7 @@ protocol PrimerAPIClientProtocol {
     func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (_ result: Result<[Bank], Error>) -> Void)
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
     
-    func requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void)
+    func requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
     
     func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
     func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void)
@@ -96,9 +96,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void) {
+    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken)
-        networkService.request(endpoint) { (result: Result<PrimerConfiguration, Error>) in
+        networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
             switch result {
             case .success(let primerConfiguration):
                 completion(.success(primerConfiguration))
@@ -249,9 +249,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void) {
+    func requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest, completion: @escaping (Result<PrimerAPIConfiguration, Error>) -> Void) {
         let endpoint = PrimerAPI.requestPrimerConfigurationWithActions(clientToken: clientToken, request: request)
-        networkService.request(endpoint) { (result: Result<PrimerConfiguration, Error>) in
+        networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
             switch result {
             case .success(let response):
                 completion(.success(response))

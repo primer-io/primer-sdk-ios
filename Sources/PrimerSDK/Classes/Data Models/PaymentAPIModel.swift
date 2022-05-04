@@ -616,7 +616,7 @@ extension CheckoutDataPayment {
 
 extension CheckoutClientSessionData {
     
-    internal convenience init?(from primerConfiguration: PrimerConfiguration?) {
+    internal convenience init?(from primerConfiguration: PrimerAPIConfiguration?) {
         
         guard let primerConfiguration = primerConfiguration else {
             return nil

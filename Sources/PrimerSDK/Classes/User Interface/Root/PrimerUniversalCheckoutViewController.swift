@@ -17,7 +17,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var payButton: PrimerButton!
     private var selectedPaymentMethod: PaymentMethodToken?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private let paymentMethodConfigViewModels = PrimerConfiguration.paymentMethodConfigViewModels
+    private let paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
     private var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     private var singleUsePaymentMethod: PaymentMethodToken?
     private var resumePaymentId: String?
@@ -260,7 +260,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     @objc
     func payButtonTapped() {
         guard let selectedPaymentMethod = selectedPaymentMethod else { return }
-        guard let config = PrimerConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == selectedPaymentMethod.paymentInstrumentType.rawValue }).first else {
+        guard let config = PrimerAPIConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == selectedPaymentMethod.paymentInstrumentType.rawValue }).first else {
             return
         }
         
