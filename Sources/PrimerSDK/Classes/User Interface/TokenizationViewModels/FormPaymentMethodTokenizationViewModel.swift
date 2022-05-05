@@ -428,7 +428,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         } catch {
             DispatchQueue.main.async {
                 PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                self.handleFailedTokenizationFlow(error: error)
+                self.handleFailureFlow(error: error)
             }
             return
         }
@@ -461,7 +461,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         .catch { err in
             DispatchQueue.main.async {
                 PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: nil)
-                self.handleFailedTokenizationFlow(error: err)
+                self.handleFailureFlow(error: err)
             }
         }
     }
@@ -526,7 +526,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 self.onResumeTokenCompletion = nil
             }
             .catch { err in
-                self.handleFailedTokenizationFlow(error: err)
+                self.handleFailureFlow(error: err)
                 self.submitButton.stopAnimating()
                 self.tokenizationCompletion?(nil, err)
                 self.tokenizationCompletion = nil
@@ -551,8 +551,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             .catch { error in
                 ErrorHandler.handle(error: error)
                 PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                self.handleFailedTokenizationFlow(error: error)
-                
+                self.handleFailureFlow(error: error)
             }
         }
     }
@@ -625,7 +624,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: nil)
-            self.handleFailedTokenizationFlow(error: err)
+            self.handleFailureFlow(error: err)
         }
     }
     
@@ -997,7 +996,7 @@ extension FormPaymentMethodTokenizationViewModel {
                     self.onResumeTokenCompletion = nil
                 }
             default:
-                self.handleFailedTokenizationFlow(error: error)
+                self.handleFailureFlow(error: error)
                 self.submitButton.stopAnimating()
                 Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
             }

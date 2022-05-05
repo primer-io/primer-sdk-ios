@@ -32,8 +32,8 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     
     func validate() throws
     func startTokenizationFlow()
-    func handleSuccessfulTokenizationFlow()
-    func handleFailedTokenizationFlow(error: Error)
+    func handleSuccessfulFlow()
+    func handleFailureFlow(error: Error)
 }
 
 internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
@@ -70,9 +70,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         
         self.tokenizationCompletion = { (tok, err) in
             if let err = err {
-                self.handleFailedTokenizationFlow(error: err)
+                self.handleFailureFlow(error: err)
             } else {
-                self.handleSuccessfulTokenizationFlow()
+                self.handleSuccessfulFlow()
             }
         }
     }
@@ -308,11 +308,11 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         return paymentMethodButton
     }()
     
-    func handleSuccessfulTokenizationFlow() {
+    func handleSuccessfulFlow() {
         Primer.shared.primerRootVC?.handleSuccess()
     }
     
-    func handleFailedTokenizationFlow(error: Error) {
+    func handleFailureFlow(error: Error) {
         Primer.shared.primerRootVC?.handle(error: error)
     }
 }
