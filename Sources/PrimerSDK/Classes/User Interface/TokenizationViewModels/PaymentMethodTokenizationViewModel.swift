@@ -30,6 +30,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     var paymentCompletion: PaymentCompletion? { get set }
     var paymentMethodTokenData: PaymentMethodTokenData? { get set }
     var paymentCheckoutData: CheckoutData? { get set }
+    var completion: ((Error?) -> Void)? { get set }
     
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
     func makeSquareLogoImageView(withDimension dimension: CGFloat) -> UIImageView?
@@ -54,6 +55,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var paymentCompletion: PaymentCompletion?
     var paymentMethodTokenData: PaymentMethodTokenData?
     var paymentCheckoutData: CheckoutData?
+    var completion: ((Error?) -> Void)?
     
     var didStartTokenization: (() -> Void)?
     var resumePaymentId: String?
@@ -75,11 +77,15 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     @objc func startTokenizationFlow() {
         didStartTokenization?()
         
-        self.tokenizationCompletion = { (tok, err) in
+        // The flow will end up in the completion once we're done and we need
+        // to present the result, or dismiss the SDK.
+        //     - On vaulting this is on tokenization result.
+        //     - On checkout this is on payment result.
+        self.completion = { [weak self] err in
             if let err = err {
-                self.handleFailureFlow(error: err)
+                self?.handleFailureFlow(error: err)
             } else {
-                self.handleSuccessfulFlow()
+                self?.handleSuccessfulFlow()
             }
         }
     }
