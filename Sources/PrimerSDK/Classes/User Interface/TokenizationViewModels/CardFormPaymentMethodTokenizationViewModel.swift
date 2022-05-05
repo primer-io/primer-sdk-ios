@@ -407,12 +407,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     @objc
-    override func presentNativeUI() {
-        let cfvc = PrimerCardFormViewController(viewModel: self)
-        Primer.shared.primerRootVC?.show(viewController: cfvc)
-    }
-    
-    @objc
     override func startTokenizationFlow() {
         super.startTokenizationFlow()
         
