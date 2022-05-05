@@ -427,8 +427,8 @@ extension ApplePayTokenizationViewModel {
             self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .success, errors: nil))
         }
         self.applePayControllerCompletion = nil
-        self.completion?(self.paymentMethod, nil)
-        self.completion = nil
+        self.tokenizationCompletion?(self.paymentMethod, nil)
+        self.tokenizationCompletion = nil
     }
 }
 

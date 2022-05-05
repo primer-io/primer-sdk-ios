@@ -466,8 +466,8 @@ extension PayPalTokenizationViewModel {
     }
     
     override func handleSuccess() {
-        self.completion?(self.paymentMethod, nil)
-        self.completion = nil
+        self.tokenizationCompletion?(self.paymentMethod, nil)
+        self.tokenizationCompletion = nil
     }
     
 }

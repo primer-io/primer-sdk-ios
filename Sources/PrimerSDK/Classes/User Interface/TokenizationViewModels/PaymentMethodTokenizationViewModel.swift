@@ -24,7 +24,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     var squareLogo: UIImage? { get }
     var paymentMethodButton: PrimerButton { get }
     var didStartTokenization: (() -> Void)? { get set }
-    var completion: TokenizationCompletion? { get set }
+    var tokenizationCompletion: TokenizationCompletion? { get set }
     var paymentMethod: PaymentMethodToken? { get set }
     
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
@@ -47,7 +47,7 @@ internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
     
     var config: PaymentMethodConfig
-    var completion: TokenizationCompletion?
+    var tokenizationCompletion: TokenizationCompletion?
     var paymentMethod: PaymentMethodToken?
     var didStartTokenization: (() -> Void)?
     var resumePaymentId: String?
@@ -69,7 +69,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     @objc func startTokenizationFlow() {
         didStartTokenization?()
         
-        self.completion = { (tok, err) in
+        self.tokenizationCompletion = { (tok, err) in
             if let err = err {
                 self.handleFailedTokenizationFlow(error: err)
             } else {
@@ -349,8 +349,8 @@ extension PaymentMethodTokenizationViewModel {
 extension PaymentMethodTokenizationViewModel {
     
     @objc func executeCompletionAndNullifyAfter(error: Error? = nil) {
-        self.completion?(nil, error)
-        self.completion = nil
+        self.tokenizationCompletion?(nil, error)
+        self.tokenizationCompletion = nil
     }
     
     func validateReturningPromise() -> Promise<Void> {

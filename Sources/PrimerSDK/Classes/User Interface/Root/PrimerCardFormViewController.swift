@@ -80,7 +80,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         // submit button
         renderSubmitButton()
                 
-        formPaymentMethodTokenizationViewModel.completion = { (paymentMethodToken, err) in
+        formPaymentMethodTokenizationViewModel.tokenizationCompletion = { (paymentMethodToken, err) in
             if let err = err {
                 Primer.shared.primerRootVC?.handle(error: err)
             } else {
