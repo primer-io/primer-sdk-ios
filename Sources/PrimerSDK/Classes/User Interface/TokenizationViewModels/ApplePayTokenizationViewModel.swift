@@ -172,10 +172,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         .then {
             self.tokenize()
         }
-        .done { [unowned self] paymentMethod in
+        .done { [unowned self] paymentMethodTokenData in
             DispatchQueue.main.async {
-                self.paymentMethod = paymentMethod
-                self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
+                self.paymentMethodTokenData = paymentMethodTokenData
+                self.handleContinuePaymentFlowWithPaymentMethod(self.paymentMethodTokenData!)
             }
         }
         .catch { error in
@@ -395,7 +395,7 @@ extension ApplePayTokenizationViewModel {
             self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .success, errors: nil))
         }
         self.applePayControllerCompletion = nil
-        self.tokenizationCompletion?(self.paymentMethod, nil)
+        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
         self.tokenizationCompletion = nil
     }
     

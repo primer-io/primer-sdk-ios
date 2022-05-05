@@ -409,15 +409,15 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         .then {
             self.tokenize()
         }
-        .then { tmpPaymentMethod -> Promise<PaymentMethodToken> in
-            self.paymentMethod = tmpPaymentMethod
-            return self.continueTokenizationFlow(for: tmpPaymentMethod)
+        .then { tmpPaymentMethodTokenData -> Promise<PaymentMethodToken> in
+            self.paymentMethodTokenData = tmpPaymentMethodTokenData
+            return self.continueTokenizationFlow(for: tmpPaymentMethodTokenData)
         }
-        .done { paymentMethod in
-            self.paymentMethod = paymentMethod
+        .done { paymentMethodTokenData in
+            self.paymentMethodTokenData = paymentMethodTokenData
             
             DispatchQueue.main.async {
-                self.tokenizationCompletion?(self.paymentMethod, nil)
+                self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
             }
         }
         .ensure { [unowned self] in
@@ -748,7 +748,7 @@ extension ExternalPaymentMethodTokenizationViewModel {
     
     override func handleSuccess() {
         // completion will be created when we're awaiting the payment response
-        onResumeTokenCompletion?(self.paymentMethod, nil)
+        onResumeTokenCompletion?(self.paymentMethodTokenData, nil)
         onResumeTokenCompletion = nil
     }
 }

@@ -25,7 +25,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     var paymentMethodButton: PrimerButton { get }
     var didStartTokenization: (() -> Void)? { get set }
     var tokenizationCompletion: TokenizationCompletion? { get set }
-    var paymentMethod: PaymentMethodToken? { get set }
+    var paymentMethodTokenData: PaymentMethodTokenData? { get set }
     
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
     func makeSquareLogoImageView(withDimension dimension: CGFloat) -> UIImageView?
@@ -48,7 +48,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     var config: PaymentMethodConfig
     var tokenizationCompletion: TokenizationCompletion?
-    var paymentMethod: PaymentMethodToken?
+    var paymentMethodTokenData: PaymentMethodTokenData?
     var didStartTokenization: (() -> Void)?
     var resumePaymentId: String?
     internal let theme: PrimerThemeProtocol = DependencyContainer.resolve()

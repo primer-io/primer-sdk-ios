@@ -212,11 +212,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             return tokenizationService.tokenize(request: request)
         }
-        .done { paymentMethod in
-            self.paymentMethod = paymentMethod
+        .done { paymentMethodTokenData in
+            self.paymentMethodTokenData = paymentMethodTokenData
             
             DispatchQueue.main.async {
-                self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
+                self.handleContinuePaymentFlowWithPaymentMethod(self.paymentMethodTokenData!)
             }
         }
         .ensure {
@@ -614,7 +614,7 @@ extension KlarnaTokenizationViewModel {
     }
     
     override func handleSuccess() {
-        self.tokenizationCompletion?(self.paymentMethod, nil)
+        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
         self.tokenizationCompletion = nil
     }
     

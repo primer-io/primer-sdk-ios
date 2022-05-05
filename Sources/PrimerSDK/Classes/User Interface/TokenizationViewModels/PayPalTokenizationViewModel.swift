@@ -184,9 +184,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         .then {
             self.tokenize()
         }
-        .done { paymentMethod in
-            self.paymentMethod = paymentMethod
-            self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
+        .done { paymentMethodTokenData in
+            self.paymentMethodTokenData = paymentMethodTokenData
+            self.handleContinuePaymentFlowWithPaymentMethod(paymentMethodTokenData)
         }
         .catch { error in
             self.handleErrorBasedOnSDKSettings(error)
@@ -466,7 +466,7 @@ extension PayPalTokenizationViewModel {
     }
     
     override func handleSuccess() {
-        self.tokenizationCompletion?(self.paymentMethod, nil)
+        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
         self.tokenizationCompletion = nil
     }
     

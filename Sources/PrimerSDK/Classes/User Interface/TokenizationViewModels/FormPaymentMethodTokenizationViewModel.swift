@@ -501,9 +501,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             }
             .then {
                 self.tokenize()
-            }.then { paymentMethodToken -> Promise<URL> in
-                self.paymentMethod = paymentMethodToken
-                return self.fetchPollingUrl(for: paymentMethodToken)
+            }.then { paymentMethodTokenData -> Promise<URL> in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                return self.fetchPollingUrl(for: paymentMethodTokenData)
             }.then { pollingUrl -> Promise<String> in
                 self.onResumeHandlerCompletion = nil
                 
@@ -517,7 +517,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 return self.passResumeToken(resumeToken)
             }
             .done {
-                self.tokenizationCompletion?(self.paymentMethod, nil)
+                self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
                 self.tokenizationCompletion = nil
             }
             .ensure {
@@ -610,7 +610,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethod: PaymentMethodToken) {
         
-        self.paymentMethod = paymentMethod
+        self.paymentMethodTokenData = paymentMethod
         
         DispatchQueue.main.async {
             self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)

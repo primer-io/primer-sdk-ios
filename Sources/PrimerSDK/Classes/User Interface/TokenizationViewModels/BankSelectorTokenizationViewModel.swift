@@ -241,15 +241,15 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             
             return self.fetchPaymentMethodToken()
         }
-        .then { tmpPaymentMethod -> Promise<PaymentMethodToken> in
-            self.paymentMethod = tmpPaymentMethod
-            return self.continueTokenizationFlow(for: tmpPaymentMethod)
+        .then { tmpPaymentMethodTokenData -> Promise<PaymentMethodToken> in
+            self.paymentMethodTokenData = tmpPaymentMethodTokenData
+            return self.continueTokenizationFlow(for: tmpPaymentMethodTokenData)
         }
-        .done { paymentMethod in
-            self.paymentMethod = paymentMethod
+        .done { paymentMethodTokenData in
+            self.paymentMethodTokenData = paymentMethodTokenData
             
             DispatchQueue.main.async {
-                self.tokenizationCompletion?(self.paymentMethod, nil)
+                self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
             }
         }
         .ensure { [unowned self] in
@@ -358,9 +358,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             clientToken: decodedClientToken,
             paymentMethodTokenizationRequest: req) { result in
                 switch result {
-                case .success(let paymentMethod):
-                    self.paymentMethod = paymentMethod
-                    completion(paymentMethod, nil)
+                case .success(let paymentMethodTokenData):
+                    self.paymentMethodTokenData = paymentMethodTokenData
+                    completion(self.paymentMethodTokenData, nil)
                 case .failure(let err):
                     completion(nil, err)
                 }
@@ -482,7 +482,7 @@ extension BankSelectorTokenizationViewModel {
     }
     
     override func handleSuccess() {
-        self.tokenizationCompletion?(self.paymentMethod, nil)
+        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
         self.tokenizationCompletion = nil
     }
     

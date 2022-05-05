@@ -358,9 +358,9 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             clientToken: decodedClientToken,
             paymentMethodTokenizationRequest: request) { result in
                 switch result {
-                case .success(let paymentMethod):
-                    self.paymentMethod = paymentMethod
-                    completion(paymentMethod, nil)
+                case .success(let paymentMethodTokenData):
+                    self.paymentMethodTokenData = paymentMethodTokenData
+                    completion(self.paymentMethodTokenData, nil)
                 case .failure(let err):
                     completion(nil, err)
                 }
@@ -453,7 +453,7 @@ extension ApayaTokenizationViewModel {
     }
     
     override func handleSuccess() {
-        self.tokenizationCompletion?(self.paymentMethod, nil)
+        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
         self.tokenizationCompletion = nil
     }
     
