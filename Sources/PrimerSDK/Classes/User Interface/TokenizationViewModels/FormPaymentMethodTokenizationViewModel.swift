@@ -612,7 +612,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         self.paymentMethodTokenData = paymentMethod
         
         DispatchQueue.main.async {
-            self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
+            self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
         }
     }
     
@@ -669,7 +669,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 self.onResumeTokenCompletion = nil
             }
             
-            self.handleContinuePaymentFlowWithPaymentMethod(paymentMethodToken)
+            self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
         }
     }
     

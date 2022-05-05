@@ -182,7 +182,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         .done { [unowned self] paymentMethodTokenData in
             DispatchQueue.main.async {
                 self.paymentMethodTokenData = paymentMethodTokenData
-                self.handleContinuePaymentFlowWithPaymentMethod(self.paymentMethodTokenData!)
+                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
             }
         }
         .catch { error in
