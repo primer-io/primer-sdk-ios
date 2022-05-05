@@ -37,6 +37,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     
     func validate() throws
     func startTokenizationFlow()
+    func handleResumeDecision(_ resumeDecision: ResumeDecision)
     func handleSuccessfulFlow()
     func handleFailureFlow(error: Error)
 }
@@ -331,6 +332,17 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 }
 
 extension PaymentMethodTokenizationViewModel {
+    
+    func handleResumeDecision(_ resumeDecision: ResumeDecision) {
+        switch resumeDecision.type {
+        case .showErrorMessage(let message):
+            break
+        case .showSuccessMessage(let message):
+            break
+        case .handleNewClientToken(let newClientToken):
+            break
+        }
+    }
     
     internal func handleErrorBasedOnSDKSettings(_ error: Error, isOnResumeFlow: Bool = false) {
         
