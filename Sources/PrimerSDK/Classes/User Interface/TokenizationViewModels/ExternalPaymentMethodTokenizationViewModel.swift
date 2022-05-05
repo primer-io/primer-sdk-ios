@@ -744,13 +744,12 @@ extension ExternalPaymentMethodTokenizationViewModel {
                     self?.continueTokenizationFlow()
                 }
                 .catch { error in
-                    self?.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
+                    self?.raisePrimerDidFailWithError(error)
                 }
             }
         }
         .catch { error in
-            self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
-            self.executeCompletionAndNullifyAfter(error: error)
+            self.raisePrimerDidFailWithError(error)
         }
     }
     

@@ -195,7 +195,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             }
         }
         .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
+            self.raisePrimerDidFailWithError(error)
         }
     }
     
@@ -441,7 +441,7 @@ extension PayPalTokenizationViewModel {
         }
         .done {}
         .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
+            self.raisePrimerDidFailWithError(error)
         }
     }
 }
@@ -467,7 +467,7 @@ extension PayPalTokenizationViewModel {
             self.continueTokenizationFlow()
         }
         .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
+            self.raisePrimerDidFailWithError(error)
         }
     }
     

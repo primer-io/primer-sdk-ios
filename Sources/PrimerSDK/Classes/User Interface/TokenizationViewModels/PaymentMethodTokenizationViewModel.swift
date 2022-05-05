@@ -323,6 +323,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 extension PaymentMethodTokenizationViewModel {
     
     func handleResumeDecision(_ resumeDecision: ResumeDecision) {
+        fatalError("handleResumeDecision must be overriden")
         switch resumeDecision.type {
         case .showErrorMessage(let message):
             break
@@ -333,28 +334,28 @@ extension PaymentMethodTokenizationViewModel {
         }
     }
     
-    internal func handleErrorBasedOnSDKSettings(_ error: Error, isOnResumeFlow: Bool = false) {
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        if settings.isManualPaymentHandlingEnabled {
-            if isOnResumeFlow {
-                PrimerDelegateProxy.onResumeError(error)
-            }
-            handle(error: error)
-        } else {
-            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: { errorDecision in
-                switch errorDecision?.type {
-                case .showErrorMessage(let message):
-                    if let message = message {
-                        let merchantError = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        self.handle(error: merchantError)
-                    } else {
-                        self.handle(error: NSError.emptyDescriptionError)
-                    }
-                default:
-                    self.handle(error: NSError.emptyDescriptionError)
+    // This function will raise the error to the merchants, and the merchants will
+    // return the error message they want to present.
+    internal func raisePrimerDidFailWithError(_ primerError: Error) {
+        PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { errorDecision in
+            var merchantErr: Error!
+            switch errorDecision?.type {
+            case .showErrorMessage(let message):
+                if let message = message {
+                    let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    merchantErr = err
+                } else {
+                    merchantErr = NSError.emptyDescriptionError
                 }
-            })
+            default:
+                merchantErr = NSError.emptyDescriptionError
+            }
+            
+            // The merchants' error will be propagated via the completion handlers, which
+            // will handle the UI flow.
+            self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: self.paymentMethodTokenData, error: merchantErr)
+            self.executePaymentCompletionAndNullifyAfter(checkoutData: self.paymentCheckoutData, error: merchantErr)
+            self.executeCompletionAndNullifyAfter(error: merchantErr)
         }
     }
 }
@@ -419,13 +420,9 @@ extension PaymentMethodTokenizationViewModel {
         } else {
                         
             guard let paymentMethodTokenString = paymentMethodTokenData.token else {
-                
-                DispatchQueue.main.async {
-                    let paymentMethodTokenError = PrimerError.invalidValue(key: "resumePaymentId", value: "Payment method token not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: paymentMethodTokenError)
-                    self.handleErrorBasedOnSDKSettings(paymentMethodTokenError)
-                }
-                
+                let paymentMethodTokenError = PrimerError.invalidValue(key: "resumePaymentId", value: "Payment method token not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: paymentMethodTokenError)
+                self.raisePrimerDidFailWithError(paymentMethodTokenError)
                 return
             }
             
@@ -449,7 +446,7 @@ extension PaymentMethodTokenizationViewModel {
                 }
             }
             .catch { error in
-                self.handleErrorBasedOnSDKSettings(error)
+                self.raisePrimerDidFailWithError(error)
             }
         }
     }
@@ -560,13 +557,9 @@ extension PaymentMethodTokenizationViewModel {
         } else {
             
             guard let resumePaymentId = self.resumePaymentId else {
-                
-                DispatchQueue.main.async {
-                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: resumePaymentIdError)
-                    self.handleErrorBasedOnSDKSettings(resumePaymentIdError, isOnResumeFlow: true)
-                }
-                
+                let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: resumePaymentIdError)
+                self.raisePrimerDidFailWithError(resumePaymentIdError)
                 return
             }
             
@@ -574,7 +567,6 @@ extension PaymentMethodTokenizationViewModel {
                 self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
             }
             .done { paymentResponse -> Void in
-                
                 guard let paymentResponse = paymentResponse else {
                     return
                 }
@@ -588,7 +580,7 @@ extension PaymentMethodTokenizationViewModel {
                 }
             }
             .catch { error in
-                self.handleErrorBasedOnSDKSettings(error)
+                self.raisePrimerDidFailWithError(error)
             }
         }
     }
