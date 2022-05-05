@@ -666,8 +666,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
 extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
-        
-        self.paymentMethod = paymentMethodToken
+        self.paymentMethodTokenData = paymentMethodToken
         
         DispatchQueue.main.async {            
             self.handleContinuePaymentFlowWithPaymentMethod(paymentMethodToken)
@@ -990,7 +989,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
-        tokenizationCompletion?(paymentMethod, nil)
+        tokenizationCompletion?(self.paymentMethodTokenData, nil)
     }
 }
 
