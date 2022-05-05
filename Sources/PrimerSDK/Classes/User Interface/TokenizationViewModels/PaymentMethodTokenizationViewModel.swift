@@ -382,7 +382,7 @@ extension PaymentMethodTokenizationViewModel {
         } else if let checkoutData = checkoutData {
             self.paymentCompletion?(checkoutData, nil)
         } else {
-            fatalError("Must receive paymentMethodTokenData or error")
+            fatalError("Must receive checkoutData or error")
         }
         self.paymentCompletion = nil
     }
