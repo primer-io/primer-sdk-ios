@@ -474,9 +474,7 @@ extension BankSelectorTokenizationViewModel {
                 self.continueTokenizationFlow()
             }
             .catch { err in
-                DispatchQueue.main.async {
-                    self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-                }
+                self.raisePrimerDidFailWithError(err)
             }
         }
     }

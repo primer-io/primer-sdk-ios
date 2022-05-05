@@ -164,11 +164,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             self.onClientToken = nil
         }
         .catch { error in
-            if let primerErr = error as? PrimerError, case PrimerError.cancelled = primerErr {
-                self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
-            } else {
-                self.unselectPaymentMethodWithError(error)
-            }
+            self.raisePrimerDidFailWithError(error)
         }
     }
     
@@ -397,7 +393,7 @@ extension QRCodeTokenizationViewModel {
         }
         .done {}
         .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
+            self.raisePrimerDidFailWithError(error)
         }
     }
 }
@@ -420,7 +416,7 @@ extension QRCodeTokenizationViewModel {
         guard let decodedClientToken = clientToken.jwtTokenPayload else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            self.handleErrorBasedOnSDKSettings(err)
+            self.raisePrimerDidFailWithError(err)
             return
         }
         
@@ -447,12 +443,12 @@ extension QRCodeTokenizationViewModel {
                 self.continueTokenizationFlow()
             }
             .catch { err in
-                self.handleErrorBasedOnSDKSettings(err)
+                self.raisePrimerDidFailWithError(err)
             }
         } else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            self.handleErrorBasedOnSDKSettings(err)
+            self.raisePrimerDidFailWithError(err)
             return
         }
     }

@@ -868,10 +868,8 @@ extension CardFormPaymentMethodTokenizationViewModel {
             
             ClientTokenService.storeClientToken(clientToken) { error in
                 DispatchQueue.main.async {
-                    
-                    guard error == nil else {
-                        ErrorHandler.handle(error: error!)
-                        self.handleErrorBasedOnSDKSettings(error!, isOnResumeFlow: true)
+                    guard error != nil else {
+                        self.raisePrimerDidFailWithError(error!)
                         return
                     }
                     
@@ -936,17 +934,13 @@ extension CardFormPaymentMethodTokenizationViewModel {
 #else
             let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            DispatchQueue.main.async {
-                self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-            }
+            self.raisePrimerDidFailWithError(err)
 #endif
             
         } else {
             let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            DispatchQueue.main.async {
-                self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-            }
+            self.raisePrimerDidFailWithError(err)
         }
     }
 }

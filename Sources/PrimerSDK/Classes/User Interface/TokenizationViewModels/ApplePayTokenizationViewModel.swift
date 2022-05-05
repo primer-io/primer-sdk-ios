@@ -423,7 +423,7 @@ extension ApplePayTokenizationViewModel {
             self.continueTokenizationFlow()
         }
         .catch { error in
-            self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
+            self.raisePrimerDidFailWithError(error)
         }
     }
     
