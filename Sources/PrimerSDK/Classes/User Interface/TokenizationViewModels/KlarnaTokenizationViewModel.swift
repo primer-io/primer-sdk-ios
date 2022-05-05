@@ -213,10 +213,15 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             return tokenizationService.tokenize(request: request)
         }
         .done { paymentMethodTokenData in
-            self.paymentMethodTokenData = paymentMethodTokenData
-            
             DispatchQueue.main.async {
-                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+                self.paymentMethodTokenData = paymentMethodTokenData
+                
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: paymentMethodTokenData, error: nil)
+                    self.executeCompletionAndNullifyAfter()
+                } else {
+                    self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+                }
             }
         }
         .ensure {

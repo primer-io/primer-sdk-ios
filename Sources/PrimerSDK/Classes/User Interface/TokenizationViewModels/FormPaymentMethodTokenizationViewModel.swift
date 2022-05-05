@@ -608,11 +608,15 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethod: PaymentMethodToken) {
-        
-        self.paymentMethodTokenData = paymentMethod
-        
         DispatchQueue.main.async {
-            self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+            self.paymentMethodTokenData = paymentMethod
+            
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: self.paymentMethodTokenData!, error: nil)
+                self.executeCompletionAndNullifyAfter()
+            } else {
+                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+            }
         }
     }
     
@@ -669,7 +673,15 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 self.onResumeTokenCompletion = nil
             }
             
-            self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+            // FIXME: This will not work, needs fixing
+            self.paymentMethodTokenData = paymentMethodToken
+            
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: self.paymentMethodTokenData!, error: nil)
+                self.executeCompletionAndNullifyAfter()
+            } else {
+                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+            }
         }
     }
     

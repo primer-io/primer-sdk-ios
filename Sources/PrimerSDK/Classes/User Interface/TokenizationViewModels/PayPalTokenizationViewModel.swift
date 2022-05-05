@@ -186,7 +186,13 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         .done { paymentMethodTokenData in
             self.paymentMethodTokenData = paymentMethodTokenData
-            self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+            
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: paymentMethodTokenData, error: nil)
+                self.executeCompletionAndNullifyAfter()
+            } else {
+                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+            }
         }
         .catch { error in
             self.handleErrorBasedOnSDKSettings(error)
