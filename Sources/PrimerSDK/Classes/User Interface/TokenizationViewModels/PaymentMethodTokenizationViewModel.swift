@@ -10,7 +10,7 @@
 import Foundation
 import UIKit
 
-typealias TokenizationCompletion = ((PaymentMethodToken?, Error?) -> Void)
+typealias TokenizationCompletion = ((PaymentMethodTokenData?, Error?) -> Void)
 
 internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHandlerProtocol {
     init(config: PaymentMethodConfig)
