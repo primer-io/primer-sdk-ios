@@ -660,9 +660,12 @@ extension CardFormPaymentMethodTokenizationViewModel {
 extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
-        self.paymentMethodTokenData = paymentMethodToken
+        self.paymentMethodTokenData = paymentMethodTokenData
         
-        DispatchQueue.main.async {            
+        if Primer.shared.flow.internalSessionFlow.vaulted {
+            self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: paymentMethodTokenData, error: nil)
+            self.executeCompletionAndNullifyAfter()
+        } else {
             self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
         }
     }

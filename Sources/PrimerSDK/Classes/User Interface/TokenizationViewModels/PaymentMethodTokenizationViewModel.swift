@@ -375,6 +375,17 @@ extension PaymentMethodTokenizationViewModel {
     
     // This is a helper function that will be called from any view model, and
     // it will call the completion handler, and nullify it in the end.
+    @objc func executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: PaymentMethodTokenData?, error: Error?) {
+        if let error = error {
+            self.tokenizationCompletion?(nil, error)
+        } else if let paymentMethodTokenData = paymentMethodTokenData {
+            self.tokenizationCompletion?(paymentMethodTokenData, nil)
+        } else {
+            fatalError("Must receive paymentMethodTokenData or error")
+        }
+        self.tokenizationCompletion = nil
+    }
+    
     @objc func executeCompletionAndNullifyAfter(error: Error? = nil) {
         self.completion?(error)
         self.completion = nil
@@ -397,9 +408,7 @@ extension PaymentMethodTokenizationViewModel {
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
-        if Primer.shared.flow.internalSessionFlow.vaulted {
-            self.handleSuccess()
-        } else if settings.isManualPaymentHandlingEnabled {
+        if settings.isManualPaymentHandlingEnabled {
             PrimerDelegateProxy.onTokenizeSuccess(paymentMethodTokenData, resumeHandler: self)
 
         } else {

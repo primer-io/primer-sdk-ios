@@ -253,7 +253,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         }
     }
     
-    fileprivate func fetchQRCodePollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<QRCodePollingURLs> {
+    fileprivate func fetchQRCodePollingURLs(for paymentMethodTokenData: PaymentMethodToken) -> Promise<QRCodePollingURLs> {
         return Promise { seal in
             self.onClientToken = { (clientToken, error) in
                 
@@ -284,7 +284,14 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             }
             
             DispatchQueue.main.async {
-                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+                self.paymentMethodTokenData = paymentMethodTokenData
+                
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: paymentMethodTokenData, error: nil)
+                    self.executeCompletionAndNullifyAfter()
+                } else {
+                    self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+                }
             }
         }
     }

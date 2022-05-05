@@ -210,8 +210,15 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         .then { apayaWebViewResponse -> Promise<PaymentMethodToken> in
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
         }
-        .done { paymentMethod in
-            self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+        .done { paymentMethodTokenData in
+            self.paymentMethodTokenData = paymentMethodTokenData
+            
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: paymentMethodTokenData, error: nil)
+                self.executeCompletionAndNullifyAfter()
+            } else {
+                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+            }
         }
         .catch { error in
             PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
