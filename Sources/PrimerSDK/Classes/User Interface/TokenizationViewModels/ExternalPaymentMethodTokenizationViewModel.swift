@@ -544,7 +544,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    internal func fetchPollingURLs(for paymentMethod: PaymentMethodToken) -> Promise<PollingURLs> {
+    internal func fetchPollingURLs(for paymentMethodTokenData: PaymentMethodTokenData) -> Promise<PollingURLs> {
         return Promise { seal in
             self.onClientToken = { (clientToken, error) in
                 
@@ -576,7 +576,15 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             DispatchQueue.main.async {
-                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+                // FIXME: This will not work, needs fixing
+                self.paymentMethodTokenData = paymentMethodTokenData
+                
+                if Primer.shared.flow.internalSessionFlow.vaulted {
+                    self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: paymentMethodTokenData, error: nil)
+                    self.executeCompletionAndNullifyAfter()
+                } else {
+                    self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+                }
             }
         }
     }

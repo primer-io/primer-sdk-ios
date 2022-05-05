@@ -173,8 +173,12 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             self.tokenize()
         }
         .done { [unowned self] paymentMethodTokenData in
-            DispatchQueue.main.async {
-                self.paymentMethodTokenData = paymentMethodTokenData
+            self.paymentMethodTokenData = paymentMethodTokenData
+            
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: paymentMethodTokenData, error: nil)
+                self.executeCompletionAndNullifyAfter()
+            } else {
                 self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
             }
         }
