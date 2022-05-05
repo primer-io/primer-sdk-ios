@@ -374,7 +374,7 @@ extension PaymentMethodTokenizationViewModel {
 extension PaymentMethodTokenizationViewModel {
     
     // This is a helper function that will be called from any view model, and
-    // it will call the completion handler, and nullify it in the end.
+    // it will call the tokenization completion handler, and nullify it in the end.
     @objc func executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: PaymentMethodTokenData?, error: Error?) {
         if let error = error {
             self.tokenizationCompletion?(nil, error)
@@ -386,6 +386,21 @@ extension PaymentMethodTokenizationViewModel {
         self.tokenizationCompletion = nil
     }
     
+    // This is a helper function that will be called from any view model, and
+    // it will call the payment completion handler, and nullify it in the end.
+    @objc func executePaymentCompletionAndNullifyAfter(checkoutData: CheckoutData?, error: Error?) {
+        if let error = error {
+            self.paymentCompletion?(nil, error)
+        } else if let checkoutData = checkoutData {
+            self.paymentCompletion?(checkoutData, nil)
+        } else {
+            fatalError("Must receive paymentMethodTokenData or error")
+        }
+        self.paymentCompletion = nil
+    }
+    
+    // This is a helper function that will be called from any view model, and
+    // it will call the completion handler, and nullify it in the end.
     @objc func executeCompletionAndNullifyAfter(error: Error? = nil) {
         self.completion?(error)
         self.completion = nil
@@ -409,7 +424,9 @@ extension PaymentMethodTokenizationViewModel {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if settings.isManualPaymentHandlingEnabled {
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethodTokenData, resumeHandler: self)
+            PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { [unowned self] resumeDecision in
+                self.handleResumeDecision(resumeDecision)
+            }
 
         } else {
                         
