@@ -15,7 +15,6 @@ internal protocol VaultCheckoutViewModelProtocol {
     var selectedPaymentMethod: PaymentMethodToken? { get }
     var amountStringed: String? { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
-    func authorizePayment(_ completion: @escaping (Error?) -> Void)
 }
 
 internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
@@ -94,18 +93,6 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
                 }
             })
         }
-    }
-
-    func authorizePayment(_ completion: @escaping (Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let selectedPaymentMethod = state.selectedPaymentMethod else {
-            let err = PrimerError.invalidValue(key: "state.selectedPaymentMethod", value: state.selectedPaymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            completion(err)
-            return
-        }
-        
-        PrimerDelegateProxy.onTokenizeSuccess(selectedPaymentMethod, resumeHandler: self)
     }
 
 }
