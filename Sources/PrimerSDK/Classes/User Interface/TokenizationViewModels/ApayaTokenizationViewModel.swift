@@ -421,7 +421,7 @@ extension ApayaTokenizationViewModel {
         }
         .done {}
         .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
+            self.raisePrimerDidFailWithError(error)
         }
     }
 }
@@ -455,7 +455,7 @@ extension ApayaTokenizationViewModel {
             self.continueTokenizationFlow()
         }
         .catch { error in
-            self.handleErrorBasedOnSDKSettings(error, isOnResumeFlow: true)
+            self.raisePrimerDidFailWithError(error)
         }
     }
     

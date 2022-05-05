@@ -814,8 +814,7 @@ extension FormPaymentMethodTokenizationViewModel {
                 DispatchQueue.main.async {
                     
                     guard error == nil else {
-                        ErrorHandler.handle(error: error!)
-                        self.handleErrorBasedOnSDKSettings(error!, isOnResumeFlow: true)
+                        self.raisePrimerDidFailWithError(error!)
                         return
                     }
                     
@@ -853,16 +852,12 @@ extension FormPaymentMethodTokenizationViewModel {
                     self.continueTokenizationFlow()
                 }
                 .catch { err in
-                    DispatchQueue.main.async {
-                        self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-                    }
+                    self.raisePrimerDidFailWithError(err)
                 }
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
-                DispatchQueue.main.async {
-                    self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-                }
+                self.raisePrimerDidFailWithError(err)
             }
         default:
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
@@ -908,9 +903,7 @@ extension FormPaymentMethodTokenizationViewModel {
 #else
                 let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
-                DispatchQueue.main.async {
-                    self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-                }
+                self.raisePrimerDidFailWithError(err)
 #endif
                 
             } else if decodedClientToken.intent == RequiredActionName.checkout.rawValue {
@@ -923,16 +916,12 @@ extension FormPaymentMethodTokenizationViewModel {
                     self.continueTokenizationFlow()
                 }
                 .catch { err in
-                    DispatchQueue.main.async {
-                        self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-                    }
+                    self.raisePrimerDidFailWithError(err)
                 }
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
-                DispatchQueue.main.async {
-                    self.handleErrorBasedOnSDKSettings(err, isOnResumeFlow: true)
-                }
+                self.raisePrimerDidFailWithError(err)
             }
         }
     }

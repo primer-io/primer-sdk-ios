@@ -228,9 +228,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             
         }
         .catch { error in
-            DispatchQueue.main.async {
-                self.handleErrorBasedOnSDKSettings(error)
-            }
+            self.raisePrimerDidFailWithError(error)
         }
     }
     
@@ -614,7 +612,7 @@ extension KlarnaTokenizationViewModel {
             self.continueTokenizationFlow()
         }
         .catch { error in
-            self.handleErrorBasedOnSDKSettings(error)
+            self.raisePrimerDidFailWithError(error)
         }
     }
     
