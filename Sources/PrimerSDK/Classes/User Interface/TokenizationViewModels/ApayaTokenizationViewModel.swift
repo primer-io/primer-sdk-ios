@@ -427,7 +427,7 @@ extension ApayaTokenizationViewModel {
         }
         .ensure {
             self.executeCompletionAndNullifyAfter(error: error)
-            self.handleFailedTokenizationFlow(error: error)
+            self.handleFailureFlow(error: error)
         }
         .catch { _ in }
     }
