@@ -5,30 +5,28 @@
 //  Created by Dario Carlomagno on 02/05/22.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 @objc public class ErrorDecision: NSObject {
     
     public enum DecisionType {
-        case showErrorMessage
+        case showErrorMessage(_ message: String?)
     }
-    
-    enum InfoKey: String {
-        case message
-    }
-        
+  
     var type: DecisionType
-    var additionalInfo: [InfoKey: Codable]?
     
-    private init(type: DecisionType, additionalInfo: [InfoKey: Codable]?) {
+    private init(type: DecisionType) {
         self.type = type
-        self.additionalInfo = additionalInfo
     }
 }
 
 public extension ErrorDecision {
     
     static func showErrorMessage(_ message: String?) -> ErrorDecision {
-        ErrorDecision(type: .showErrorMessage, additionalInfo: [.message: message])
+        ErrorDecision(type: .showErrorMessage(message))
     }
 }
+
+#endif
