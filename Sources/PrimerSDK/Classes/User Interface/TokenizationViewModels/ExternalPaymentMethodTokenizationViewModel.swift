@@ -455,7 +455,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                self.completion?(self.paymentMethod, nil)
+                self.tokenizationCompletion?(self.paymentMethod, nil)
             }
         }
         .ensure { [unowned self] in

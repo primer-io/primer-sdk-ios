@@ -370,8 +370,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         
         let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
         ErrorHandler.handle(error: err)
-        self.completion?(nil, err)
-        self.completion = nil
+        self.tokenizationCompletion?(nil, err)
+        self.tokenizationCompletion = nil
     }
     
     override func validate() throws {
@@ -517,8 +517,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 return self.passResumeToken(resumeToken)
             }
             .done {
-                self.completion?(self.paymentMethod, nil)
-                self.completion = nil
+                self.tokenizationCompletion?(self.paymentMethod, nil)
+                self.tokenizationCompletion = nil
             }
             .ensure {
                 Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
@@ -528,8 +528,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             .catch { err in
                 self.handleFailedTokenizationFlow(error: err)
                 self.submitButton.stopAnimating()
-                self.completion?(nil, err)
-                self.completion = nil
+                self.tokenizationCompletion?(nil, err)
+                self.tokenizationCompletion = nil
             }
         default:
             isTokenizing = true
@@ -691,7 +691,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     private func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
         let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
         client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
-            if self.completion == nil {
+            if self.tokenizationCompletion == nil {
                 let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 completion(nil, err)

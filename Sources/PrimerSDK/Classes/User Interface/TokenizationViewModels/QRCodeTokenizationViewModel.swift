@@ -143,7 +143,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                self.completion?(self.paymentMethod, nil)
+                self.tokenizationCompletion?(self.paymentMethod, nil)
             }
         }
         .ensure { [unowned self] in
@@ -451,8 +451,8 @@ extension QRCodeTokenizationViewModel {
     }
     
     override func handleSuccess() {
-        self.completion?(self.paymentMethod, nil)
-        self.completion = nil
+        self.tokenizationCompletion?(self.paymentMethod, nil)
+        self.tokenizationCompletion = nil
         self.onResumeTokenCompletion?(self.paymentMethod, nil)
         self.onResumeTokenCompletion = nil
     }
