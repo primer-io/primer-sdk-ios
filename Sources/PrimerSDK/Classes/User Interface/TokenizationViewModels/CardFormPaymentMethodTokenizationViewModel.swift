@@ -876,16 +876,13 @@ extension CardFormPaymentMethodTokenizationViewModel {
 extension CardFormPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
-        
-        
-        
         DispatchQueue.main.async {
             self.handleFailedTokenizationFlow(error: error)
             self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
         
-        completion?(nil, error)
+        tokenizationCompletion?(nil, error)
     }
     
     override func handle(newClientToken clientToken: String) {
@@ -897,7 +894,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
-        completion?(paymentMethod, nil)
+        tokenizationCompletion?(paymentMethod, nil)
     }
 }
 

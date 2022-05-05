@@ -181,13 +181,13 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         self.onResumeTokenCompletion = nil
         self.onClientToken = nil
         
-        if completion != nil {
+        if tokenizationCompletion != nil {
             DispatchQueue.main.async {
                 firstly {
                     ClientSession.Action.unselectPaymentMethodIfNeeded()
                 }
                 .done {
-                    self.completion = nil
+                    self.tokenizationCompletion = nil
                 }
                 .catch { _ in }
             }
@@ -249,7 +249,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             self.paymentMethod = paymentMethod
             
             DispatchQueue.main.async {
-                self.completion?(self.paymentMethod, nil)
+                self.tokenizationCompletion?(self.paymentMethod, nil)
             }
         }
         .ensure { [unowned self] in
@@ -482,8 +482,8 @@ extension BankSelectorTokenizationViewModel {
     }
     
     override func handleSuccess() {
-        self.completion?(self.paymentMethod, nil)
-        self.completion = nil
+        self.tokenizationCompletion?(self.paymentMethod, nil)
+        self.tokenizationCompletion = nil
     }
     
 }

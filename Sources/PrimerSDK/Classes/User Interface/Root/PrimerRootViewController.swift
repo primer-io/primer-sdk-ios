@@ -471,7 +471,7 @@ extension PrimerRootViewController {
             }
         }
         
-        paymentMethodTokenizationViewModel.completion = { (tok, err) in
+        paymentMethodTokenizationViewModel.tokenizationCompletion = { (tok, err) in
             if let err = err {
                 Primer.shared.primerRootVC?.handle(error: err)
             } else {
