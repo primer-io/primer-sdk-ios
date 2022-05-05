@@ -180,7 +180,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         }
         .catch { error in
             PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-            self.handleFailedTokenizationFlow(error: error)
+            self.handleFailureFlow(error: error)
         }
     }
     

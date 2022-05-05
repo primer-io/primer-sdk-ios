@@ -443,7 +443,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         .catch { err in
             DispatchQueue.main.async {
                 PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: nil)
-                self.handleFailedTokenizationFlow(error: err)
+                self.handleFailureFlow(error: err)
             }
         }
     }

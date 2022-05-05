@@ -421,7 +421,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         } catch {
             DispatchQueue.main.async {
                 PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                self.handleFailedTokenizationFlow(error: error)
+                self.handleFailureFlow(error: error)
             }
             return
         }
@@ -504,7 +504,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         .catch { error in
             ErrorHandler.handle(error: error)
             PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-            self.handleFailedTokenizationFlow(error: error)
+            self.handleFailureFlow(error: error)
         }
     }
 }
@@ -591,7 +591,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
             let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: nil)
-            self.handleFailedTokenizationFlow(error: err)
+            self.handleFailureFlow(error: err)
         }
     }
     
@@ -870,7 +870,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
     
     override func handle(error: Error) {
         DispatchQueue.main.async {
-            self.handleFailedTokenizationFlow(error: error)
+            self.handleFailureFlow(error: error)
             self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
