@@ -360,9 +360,11 @@ extension PaymentMethodTokenizationViewModel {
 
 extension PaymentMethodTokenizationViewModel {
     
+    // This is a helper function that will be called from any view model, and
+    // it will call the completion handler, and nullify it in the end.
     @objc func executeCompletionAndNullifyAfter(error: Error? = nil) {
-        self.tokenizationCompletion?(nil, error)
-        self.tokenizationCompletion = nil
+        self.completion?(error)
+        self.completion = nil
     }
     
     func validateReturningPromise() -> Promise<Void> {
