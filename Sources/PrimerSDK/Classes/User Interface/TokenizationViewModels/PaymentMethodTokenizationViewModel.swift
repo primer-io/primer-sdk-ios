@@ -34,7 +34,6 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     func startTokenizationFlow()
     func handleSuccessfulTokenizationFlow()
     func handleFailedTokenizationFlow(error: Error)
-    func presentNativeUI()
 }
 
 internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
@@ -308,11 +307,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         paymentMethodButton.addTarget(self, action: #selector(startTokenizationFlow), for: .touchUpInside)
         return paymentMethodButton
     }()
-    
-    @objc
-    func presentNativeUI() {
-        assert(true, "Should be overriden")
-    }
     
     func handleSuccessfulTokenizationFlow() {
         Primer.shared.primerRootVC?.handleSuccess()
