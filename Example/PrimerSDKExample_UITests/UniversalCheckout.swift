@@ -45,8 +45,8 @@ class UniversalCheckout: XCTestCase {
         expectation(for: Expectation.doesNotExist, evaluatedWith: vaultTitle, handler: nil)
         waitForExpectations(timeout: 15, handler: nil)
         
-        let amountText = app.staticTexts["£1,00"]
-        XCTAssert(amountText.exists, "Amount '£1,00' should exist")
+        let amountText = app.staticTexts["£1.00"]
+        XCTAssert(amountText.exists, "Amount '£1.00' should exist")
         
         let savedPaymentMethodTitle = app.staticTexts["SAVED PAYMENT METHOD"]
         let seeAllButton = app.staticTexts["See all"]
