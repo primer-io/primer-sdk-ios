@@ -567,7 +567,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         self.paymentMethodTokenData = paymentMethodToken
         
         DispatchQueue.main.async {            
-            self.handleContinuePaymentFlowWithPaymentMethod(paymentMethodToken)
+            self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
         }
     }
     

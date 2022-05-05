@@ -284,7 +284,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             }
             
             DispatchQueue.main.async {
-                self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
+                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
             }
         }
     }

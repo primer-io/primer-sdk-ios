@@ -186,7 +186,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         .done { paymentMethodTokenData in
             self.paymentMethodTokenData = paymentMethodTokenData
-            self.handleContinuePaymentFlowWithPaymentMethod(paymentMethodTokenData)
+            self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
         }
         .catch { error in
             self.handleErrorBasedOnSDKSettings(error)

@@ -37,6 +37,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     
     func validate() throws
     func startTokenizationFlow()
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData)
     func handleResumeDecision(_ resumeDecision: ResumeDecision)
     func handleSuccessfulFlow()
     func handleFailureFlow(error: Error)
@@ -381,18 +382,17 @@ extension PaymentMethodTokenizationViewModel {
 
 extension PaymentMethodTokenizationViewModel {
     
-    internal func handleContinuePaymentFlowWithPaymentMethod(_ paymentMethod: PaymentMethodToken) {
-                
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if Primer.shared.flow.internalSessionFlow.vaulted {
             self.handleSuccess()
         } else if settings.isManualPaymentHandlingEnabled {
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: self)
+            PrimerDelegateProxy.onTokenizeSuccess(paymentMethodTokenData, resumeHandler: self)
 
         } else {
                         
-            guard let paymentMethodTokenString = paymentMethod.token else {
+            guard let paymentMethodTokenString = paymentMethodTokenData.token else {
                 
                 DispatchQueue.main.async {
                     let paymentMethodTokenError = PrimerError.invalidValue(key: "resumePaymentId", value: "Payment method token not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])

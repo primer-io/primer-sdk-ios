@@ -211,7 +211,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
         }
         .done { paymentMethod in
-            self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
+            self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
         }
         .catch { error in
             PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)

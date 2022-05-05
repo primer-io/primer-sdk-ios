@@ -576,7 +576,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             DispatchQueue.main.async {
-                self.handleContinuePaymentFlowWithPaymentMethod(paymentMethod)
+                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
             }
         }
     }

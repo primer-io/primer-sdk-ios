@@ -216,7 +216,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             self.paymentMethodTokenData = paymentMethodTokenData
             
             DispatchQueue.main.async {
-                self.handleContinuePaymentFlowWithPaymentMethod(self.paymentMethodTokenData!)
+                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
             }
         }
         .ensure {
