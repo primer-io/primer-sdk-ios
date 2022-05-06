@@ -42,6 +42,13 @@ public class ClientSession: Codable {
     
     public class Action: NSObject, Encodable {
         
+        public enum ActionType: String {
+            case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
+            case unselectPaymentMethod = "UNSELECT_PAYMENT_METHOD"
+            case setBillingAddress = "SET_BILLING_ADDRESS"
+            case setSurchargeFee = "SET_SURCHARGE_FEE"
+        }
+        
         static func unselectPaymentMethodIfNeeded() -> Promise<Void> {
             return Promise { seal in
                 
@@ -50,9 +57,8 @@ public class ClientSession: Codable {
                     return
                 }
                 
-                let actions: [ClientSession.Action] = [ClientSession.Action(type: "UNSELECT_PAYMENT_METHOD", params: nil)]
                 firstly {
-                    requestPrimerConfigurationWithActions(actions)
+                    requestPrimerConfigurationWithActions([ClientSession.Action.unselectPaymentMethodAction()])
                 }
                 .done {
                     seal.fulfill()
@@ -71,9 +77,8 @@ public class ClientSession: Codable {
                     return
                 }
                 
-                let actions: [ClientSession.Action] = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: parameters)]
                 firstly {
-                    requestPrimerConfigurationWithActions(actions)
+                    requestPrimerConfigurationWithActions([ClientSession.Action.selectPaymentMethodActionWithParameters(parameters)])
                 }
                 .done {
                     seal.fulfill()
@@ -85,7 +90,7 @@ public class ClientSession: Codable {
         }
         
         static func setPostalCodeWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
-            let actions: [ClientSession.Action] = [ClientSession.Action(type: "SET_BILLING_ADDRESS", params: parameters)]
+            let actions: [ClientSession.Action] = [ClientSession.Action(type: .setBillingAddress, params: parameters)]
             return requestPrimerConfigurationWithActions(actions)
         }
         
@@ -93,14 +98,14 @@ public class ClientSession: Codable {
             return requestPrimerConfigurationWithActions(actions)
         }
         
-        public var type: String
+        public var type: ActionType
         public var params: [String: Any]?
         
         private enum CodingKeys : String, CodingKey {
             case type, params
         }
         
-        public init(type: String, params: [String: Any]? = nil) {
+        public init(type: ActionType, params: [String: Any]? = nil) {
             self.type = type
             self.params = params
             super.init()
@@ -108,7 +113,7 @@ public class ClientSession: Codable {
         
         public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(type, forKey: .type)
+            try container.encode(type.rawValue, forKey: .type)
             
             if let params = params,
                let paramsData = try? JSONSerialization.data(withJSONObject: params, options: .fragmentsAllowed),
@@ -378,6 +383,28 @@ extension ClientSession.Action {
             appState.apiConfiguration = apiConfiguration
             seal.fulfill(apiConfiguration)
         }
+    }
+}
+
+extension ClientSession.Action {
+    
+    static func makeBillingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
+        return ["billingAddress": parameters]
+    }
+}
+
+extension ClientSession.Action {
+        
+    static func selectPaymentMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
+        ClientSession.Action(type: .selectPaymentMethod, params: parameters)
+    }
+
+    static func unselectPaymentMethodAction() -> ClientSession.Action {
+        ClientSession.Action(type: .unselectPaymentMethod, params: nil)
+    }
+    
+    static func setBillingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
+        ClientSession.Action(type: .setBillingAddress, params: makeBillingAddressDictionaryRequestFromParameters(parameters))
     }
 }
 
