@@ -433,10 +433,6 @@ class UniversalCheckout: XCTestCase {
         let resultLabel = app.staticTexts.matching(NSPredicate(format: "identifier == 'result_component_view_message_label'")).firstMatch
         let resultLabelExists = expectation(for: Expectation.exists, evaluatedWith: resultLabel, handler: nil)
         wait(for: [resultLabelExists], timeout: 15)
-        
-        let errorLabel = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'failed-to-perform-3ds'")).firstMatch
-        let errorLabelExists = expectation(for: Expectation.exists, evaluatedWith: errorLabel, handler: nil)
-        wait(for: [errorLabelExists], timeout: 15)
     }
 }
 
