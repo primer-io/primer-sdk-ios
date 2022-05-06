@@ -945,29 +945,26 @@ extension FormPaymentMethodTokenizationViewModel {
                 ]
             ]
             
-            var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
-            
+            var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
+
             if (requirePostalCode) {
                 let state: AppStateProtocol = DependencyContainer.resolve()
                 
                 let currentBillingAddress = state.apiConfiguration?.clientSession?.customer?.billingAddress
                 
-                let billingAddressParams = [
-                    "firstName": currentBillingAddress?.firstName as Any,
-                    "lastName": currentBillingAddress?.lastName as Any,
-                    "addressLine1": currentBillingAddress?.addressLine1 as Any,
-                    "addressLine2": currentBillingAddress?.addressLine2 as Any,
-                    "city": currentBillingAddress?.city as Any,
-                    "postalCode": postalCodeField.postalCode,
-                    "state": currentBillingAddress?.state as Any,
-                    "countryCode": currentBillingAddress?.countryCode as Any
-                ] as [String: Any]
+                let billingAddressWithUpdatedPostalCode = ClientSession.Address(firstName: currentBillingAddress?.firstName,
+                                                                                lastName: currentBillingAddress?.lastName,
+                                                                                addressLine1: currentBillingAddress?.addressLine1,
+                                                                                addressLine2: currentBillingAddress?.addressLine2,
+                                                                                city: currentBillingAddress?.city,
+                                                                                postalCode: postalCodeField.postalCode,
+                                                                                state: currentBillingAddress?.state,
+                                                                                countryCode: currentBillingAddress?.countryCode)
                 
-                let billingAddressAction = ClientSession.Action(
-                    type: "SET_BILLING_ADDRESS",
-                    params: billingAddressParams
-                )
-                actions.append(billingAddressAction)
+                if let billingAddressWithUpdatedPostalCode = try? billingAddressWithUpdatedPostalCode.asDictionary() {
+                    let billingAddressAction = ClientSession.Action.setBillingAddressActionWithParameters(billingAddressWithUpdatedPostalCode)
+                    actions.append(billingAddressAction)
+                }
             }
             
             firstly {
