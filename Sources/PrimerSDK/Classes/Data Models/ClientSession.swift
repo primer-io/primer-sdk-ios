@@ -48,56 +48,7 @@ public class ClientSession: Codable {
             case setBillingAddress = "SET_BILLING_ADDRESS"
             case setSurchargeFee = "SET_SURCHARGE_FEE"
         }
-        
-        static func unselectPaymentMethodIfNeeded() -> Promise<Void> {
-            return Promise { seal in
                 
-                guard !Primer.shared.flow.internalSessionFlow.vaulted else {
-                    seal.fulfill()
-                    return
-                }
-                
-                firstly {
-                    requestPrimerConfigurationWithActions([ClientSession.Action.unselectPaymentMethodAction()])
-                }
-                .done {
-                    seal.fulfill()
-                }
-                .catch { error in
-                    seal.reject(error)
-                }
-            }
-        }
-        
-        static func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) -> Promise<Void> {
-            return Promise { seal in
-                
-                guard !Primer.shared.flow.internalSessionFlow.vaulted else {
-                    seal.fulfill()
-                    return
-                }
-                
-                firstly {
-                    requestPrimerConfigurationWithActions([ClientSession.Action.selectPaymentMethodActionWithParameters(parameters)])
-                }
-                .done {
-                    seal.fulfill()
-                }
-                .catch { error in
-                    seal.reject(error)
-                }
-            }
-        }
-        
-        static func setPostalCodeWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
-            let actions: [ClientSession.Action] = [ClientSession.Action(type: .setBillingAddress, params: parameters)]
-            return requestPrimerConfigurationWithActions(actions)
-        }
-        
-        static func dispatchMultipleActions(_ actions: [ClientSession.Action]) -> Promise<Void> {
-            return requestPrimerConfigurationWithActions(actions)
-        }
-        
         public var type: ActionType
         public var params: [String: Any]?
         
@@ -383,6 +334,58 @@ extension ClientSession.Action {
             appState.apiConfiguration = apiConfiguration
             seal.fulfill(apiConfiguration)
         }
+    }
+}
+
+extension ClientSession.Action {
+    
+    static func unselectPaymentMethodIfNeeded() -> Promise<Void> {
+        return Promise { seal in
+            
+            guard !Primer.shared.flow.internalSessionFlow.vaulted else {
+                seal.fulfill()
+                return
+            }
+            
+            firstly {
+                requestPrimerConfigurationWithActions([ClientSession.Action.unselectPaymentMethodAction()])
+            }
+            .done {
+                seal.fulfill()
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+    
+    static func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) -> Promise<Void> {
+        return Promise { seal in
+            
+            guard !Primer.shared.flow.internalSessionFlow.vaulted else {
+                seal.fulfill()
+                return
+            }
+            
+            firstly {
+                requestPrimerConfigurationWithActions([ClientSession.Action.selectPaymentMethodActionWithParameters(parameters)])
+            }
+            .done {
+                seal.fulfill()
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+    
+    static func setPostalCodeWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
+        let actions: [ClientSession.Action] = [ClientSession.Action(type: .setBillingAddress, params: parameters)]
+        return requestPrimerConfigurationWithActions(actions)
+    }
+    
+    static func dispatchMultipleActions(_ actions: [ClientSession.Action]) -> Promise<Void> {
+        return requestPrimerConfigurationWithActions(actions)
     }
 }
 

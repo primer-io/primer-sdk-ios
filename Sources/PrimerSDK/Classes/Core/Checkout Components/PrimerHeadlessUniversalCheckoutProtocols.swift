@@ -42,7 +42,7 @@ public enum PrimerInputElementType: Int {
             
         case .postalCode:
             guard let text = value as? String else { return false }
-            return text.count >= 2
+            return text.isValidPostalCode
 
         default:
             return true
