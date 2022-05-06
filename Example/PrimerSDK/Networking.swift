@@ -250,14 +250,14 @@ class Networking {
 
         var merchantActions: [ClientSession.Action] = []
         for action in actions {
-            if action.type == "SET_SURCHARGE_FEE" {
+            if action.type == .setSurchargeFee {
                 let newAction = ClientSession.Action(
-                    type: "SET_SURCHARGE_FEE",
+                    type: .setSurchargeFee,
                     params: [
                         "amount": 456
                     ])
                 merchantActions.append(newAction)
-            } else if action.type == "SET_BILLING_ADDRESS" {
+            } else if action.type == .setBillingAddress {
                 if let _ = (action.params?["postalCode"] as? String) {
                     var billingAddress: [String: String] = [:]
                     
